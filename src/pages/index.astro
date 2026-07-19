@@ -14,28 +14,34 @@
 <style>
   :root{--la-accent:#00CD77}
   *{box-sizing:border-box}
-  html{scroll-behavior:smooth;overflow-x:hidden}
-  body{margin:0;background:#ffffff;overflow-x:hidden;font-family:'Schibsted Grotesk',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:#ffffff;overflow-x:clip;font-family:'Schibsted Grotesk',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
   /* makieta hero: box 1180px skalowany transformem — poniżej 1240px przycinamy,
      żeby jego layoutowa szerokość nie powodowała poziomego przewijania */
   @media (max-width:1240px){ .mockup-frame{overflow:hidden} }
   a{color:inherit;text-decoration:none}
   ::selection{background:rgba(0,205,119,0.25)}
-  input::placeholder{color:#9aa69c}
+  input::placeholder,textarea::placeholder{color:#808b83}
+  .inp{background:#f6f9f5 !important;border-color:#e4ebe2 !important;border-radius:11px !important;padding:14px 16px !important;transition:border-color .15s,background .15s,box-shadow .15s}
+  .inp:focus{border-color:#0a7a52 !important;background:#ffffff !important;box-shadow:0 0 0 3px rgba(10,122,82,0.1)}
+  .phone-field{transition:border-color .15s,box-shadow .15s,background .15s}
+  .phone-field:focus-within{border-color:#0a7a52 !important;background:#ffffff !important;box-shadow:0 0 0 3px rgba(10,122,82,0.1)}
   @keyframes la-pulse{0%,100%{opacity:1}50%{opacity:.4}}
   @keyframes la-float{0%,100%{transform:translateY(-4px) rotate(var(--rot,0deg))}50%{transform:translateY(5px) rotate(var(--rot,0deg))}}
 
   .page{width:100%;margin:0 auto;background:#ffffff;color:#16211a}
 
   /* hover / focus */
-  .nav-lnk{transition:color .15s}
-  .nav-lnk:hover{color:#0a7a52 !important}
+  .nav-lnk{padding:7px 11px;border-radius:9px;transition:color .15s,background .15s}
+  .nav-lnk:hover{color:#0a7a52 !important;background:rgba(10,122,82,0.07)}
   .btn-dark{transition:background .2s,color .2s}
   .btn-dark:hover{background:#0a7a52 !important;color:#fff !important}
   .btn-ghost{transition:color .15s,background .15s}
   .btn-ghost:hover{color:#0a7a52 !important;background:#fff !important}
   .btn-accent{transition:background .2s}
   .btn-accent:hover{background:#00b96c !important;color:#0b1a11 !important}
+  .btn-cta{transition:background .2s,box-shadow .2s}
+  .btn-cta:hover{background:#0c6a49 !important;box-shadow:0 14px 30px -14px rgba(10,122,82,0.6)}
   .lnk-green{transition:color .15s}
   .lnk-green:hover{color:#16211a !important}
   .lnk-accent{transition:color .15s}
@@ -47,12 +53,62 @@
   .inp{transition:border-color .15s}
   .inp:focus{border-color:#0a7a52 !important}
 
+  /* ---------- WARIANT A · DROGA POD HERO — reveal na scroll ---------- */
+  .la-droga .dg-line{stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset 1.5s ease .1s}
+  .la-droga.in .dg-line{stroke-dashoffset:0}
+  .la-droga .dg-fill{opacity:0;transition:opacity 1.4s ease .1s}
+  .la-droga.in .dg-fill{opacity:1}
+  .la-droga .dg-dot{opacity:0;transform:scale(.3);transition:opacity .45s ease,transform .45s ease}
+  .la-droga.in .dg-dot{opacity:1;transform:scale(1)}
+  .la-droga .dg-conn{opacity:0;transition:opacity .5s ease}
+  .la-droga.in .dg-conn{opacity:.9}
+  .la-droga .dg-chip{opacity:0;transition:opacity .5s ease}
+  .la-droga.in .dg-chip{opacity:1}
+  .la-droga .dg-card{opacity:0;transform:translateY(14px);transition:opacity .5s ease,transform .5s cubic-bezier(0.4,0,0.2,1)}
+  .la-droga.in .dg-card{opacity:1;transform:none}
+  @media (prefers-reduced-motion:reduce){
+    .la-droga .dg-line,.la-droga .dg-fill,.la-droga .dg-dot,.la-droga .dg-conn,.la-droga .dg-chip,.la-droga .dg-card{transition:none}
+  }
+
+  /* ---------- FAQ (akordeon) ---------- */
+  .faq-item{border-top:1px solid #e7ece4}
+  .faq-item:last-child{border-bottom:1px solid #e7ece4}
+  .faq-q{appearance:none;width:100%;background:none;border:none;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:20px;text-align:left;padding:24px 4px;font-size:clamp(17px,2vw,20px);font-weight:700;letter-spacing:-0.01em;color:#16211a;transition:color .15s}
+  .faq-q:hover{color:#0a7a52}
+  .faq-ico{flex-shrink:0;display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:#e9f2ea;color:#0a7a52;transition:transform .35s cubic-bezier(0.4,0,0.2,1),background .2s}
+  .faq-item.open .faq-ico{transform:rotate(180deg);background:var(--la-accent,#00CD77);color:#0b1a11}
+  .faq-a{overflow:hidden;max-height:0;transition:max-height .4s cubic-bezier(0.4,0,0.2,1)}
+  .faq-item.open .faq-a{max-height:340px}
+  .faq-a-inner{padding:0 4px 26px;max-width:660px;font-size:15.5px;line-height:1.65;color:#4c5850;text-wrap:pretty}
+  @media (prefers-reduced-motion:reduce){ .faq-a,.faq-ico{transition:none} }
+
+  /* ---------- OPINIE (ściana / marquee) ---------- */
+  .marq{position:relative;overflow:hidden;
+    -webkit-mask:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);
+            mask:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
+  .marq-track{display:flex;gap:20px;width:max-content;will-change:transform;animation:marq-scroll 46s linear infinite}
+  .marq:hover .marq-track{animation-play-state:paused}
+  .marq-card{flex:0 0 auto;width:min(340px,80vw);display:flex;flex-direction:column;background:#ffffff;border:1px solid #e7ece4;border-radius:16px;padding:24px 24px 20px}
+  @keyframes marq-scroll{from{transform:translateX(0)}to{transform:translateX(calc(-50% - 10px))}}
+  @media (prefers-reduced-motion:reduce){
+    .marq{overflow-x:auto;-webkit-mask:none;mask:none;scroll-snap-type:x mandatory}
+    .marq-track{animation:none}
+    .marq-card{scroll-snap-align:start}
+    .marq-dup{display:none !important}
+  }
+
   /* ---------- RESPONSYWNOŚĆ ---------- */
   @media (max-width:1024px){
-    .s2-grid,.s6-grid,.s7-grid,.s9-grid{grid-template-columns:1fr !important;gap:clamp(40px,6vw,64px) !important}
+    .faq-grid{grid-template-columns:1fr !important;gap:clamp(32px,5vw,48px) !important}
+    .droga-cards{grid-template-columns:repeat(3,1fr) !important;gap:28px 22px !important}
+    .s2-grid,.s6-grid,.s9-grid{grid-template-columns:1fr !important;gap:clamp(40px,6vw,64px) !important}
     .grid4{grid-template-columns:1fr 1fr !important}
   }
   @media (max-width:900px){
+    .droga-cards{grid-template-columns:repeat(2,1fr) !important}
+    .droga-cta{flex-direction:column !important;align-items:flex-start !important;gap:28px !important}
+    .droga-cta-btns{align-items:stretch !important;width:100%}
+    .droga-cta-btns a{justify-content:center !important;text-align:center}
     .s4-grid,.s8-grid,.metody-grid{grid-template-columns:1fr !important;gap:48px !important}
     .grid3{grid-template-columns:1fr !important;gap:32px !important}
     .foot-grid{grid-template-columns:1fr 1fr !important;gap:40px !important}
@@ -62,6 +118,7 @@
     .krok-layer.active{display:block !important}
   }
   @media (max-width:600px){
+    .droga-cards{grid-template-columns:1fr !important;gap:24px !important}
     .grid4,.grid2,.foot-grid{grid-template-columns:1fr !important}
     .hero-actions{flex-direction:column !important;align-items:stretch !important;width:100%}
     .hero-actions>div{width:100%}
@@ -71,31 +128,106 @@
     .stat-row{flex-wrap:wrap !important;gap:24px 32px !important}
     .metody-badge-row{flex-direction:column !important;align-items:flex-start !important;gap:16px !important}
     .final-badge-row{flex-wrap:wrap !important}
+    .cta-card{grid-template-columns:1fr !important}
+    .cta-portrait{display:none !important}
   }
+  /* ---- sticky header + mega menu ---- */
+  .site-header{position:sticky;top:0;z-index:60;padding:0 clamp(16px,4vw,40px);transition:padding-top .35s cubic-bezier(.4,0,.2,1)}
+  .site-header.scrolled{padding-top:12px}
+  .nav-pill{display:flex;align-items:center;justify-content:space-between;gap:20px;max-width:1440px;margin:0 auto;padding:16px 14px 16px 8px;background:transparent;border:1px solid transparent;border-radius:18px;box-shadow:none;transition:max-width .4s cubic-bezier(.4,0,.2,1),padding .35s cubic-bezier(.4,0,.2,1),background .3s,border-color .3s,box-shadow .3s}
+  .site-header.scrolled .nav-pill{max-width:1180px;padding:8px 12px 8px 22px;background:rgba(255,255,255,0.78);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);border-color:rgba(255,255,255,0.6);box-shadow:0 16px 46px -18px rgba(18,38,28,0.34)}
+  .nav-item{display:flex;align-items:center}
+  .mega-wrap{position:absolute;top:calc(100% - 20px);left:50%;transform:translateX(-50%) translateY(6px);width:min(940px,calc(100vw - 40px));padding-top:34px;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .18s ease,transform .18s ease}
+  .nav-item:hover .mega-wrap,.nav-item:focus-within .mega-wrap{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0);pointer-events:auto}
+  .nav-caret{transition:transform .2s}
+  .nav-item:hover .nav-caret,.nav-item:focus-within .nav-caret{transform:rotate(180deg)}
+  .mega-eyebrow{font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#808b83;padding:0 11px;margin-bottom:6px}
+  .mega-item{display:block;padding:9px 11px;border-radius:11px;transition:background .15s}
+  .mega-item:hover{background:#f4f8f2}
+  .mega-t{display:block;font-size:14.5px;font-weight:650;color:#16211a;transition:color .15s}
+  .mega-item:hover .mega-t{color:#0a7a52}
+  .mega-d{display:block;margin-top:2px;font-size:12.5px;line-height:1.4;color:#8b968d}
+  .mega-feat{display:flex;flex-direction:column;justify-content:center;background:radial-gradient(120% 120% at 100% 0%, rgba(0,205,119,0.16), transparent 55%), #0e2b1d;border-radius:14px;padding:24px 22px;color:#ffffff;transition:transform .2s,box-shadow .2s}
+  .mega-feat:hover{transform:translateY(-2px);box-shadow:0 22px 44px -22px rgba(0,0,0,0.5)}
+  @media (max-width:900px){ .mega-wrap{display:none !important} }
+  /* ---- Skala nagłówków ---- */
+  .h-sec{font-size:clamp(30px,4.6vw,52px);line-height:1.05;letter-spacing:-0.028em;font-weight:800}
+  .h-mod{font-size:clamp(24px,3.2vw,34px);line-height:1.1;letter-spacing:-0.02em;font-weight:800}
+  .sub{font-size:17px;line-height:1.6;color:#4c5850;text-wrap:pretty}
+  .sec-head{display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:24px 56px}
+  /* ---- Dowody (S5) ---- */
+  .proof-card{transition:transform .3s cubic-bezier(.4,0,.2,1),box-shadow .3s,border-color .3s}
+  .proof-card:hover{transform:translateY(-4px);border-color:var(--la-accent,#00CD77);box-shadow:0 30px 60px -30px rgba(18,38,28,0.24)}
+  @media (prefers-reduced-motion:reduce){ .proof-card{transition:none} .proof-card:hover{transform:none} }
+  /* ---- Karty etapów (S3) + wiersze oferty ---- */
+  .etap-card{transition:transform .3s cubic-bezier(.4,0,.2,1),box-shadow .3s,border-color .3s}
+  .etap-card:hover{transform:translateY(-4px);border-color:var(--la-accent,#00CD77);box-shadow:0 26px 54px -32px rgba(18,38,28,0.22)}
+  .row-lnk [aria-hidden="true"]{display:inline-block;transition:transform .18s}
+  .row-lnk:hover [aria-hidden="true"]{transform:translateX(4px)}
+  @media (prefers-reduced-motion:reduce){ .etap-card,.row-lnk [aria-hidden="true"]{transition:none} .etap-card:hover{transform:none} .row-lnk:hover [aria-hidden="true"]{transform:none} }
+  .cta-contact{transition:color .15s}
+  .cta-contact:hover{color:var(--la-accent,#00CD77) !important}
 </style>
 </head>
 <body>
 
 <div class="page">
 
-<!-- ============ S1 · HERO ============ -->
-<div style="position:relative;overflow:hidden">
-<div style="position:absolute;inset:0">
-<img src="https://images.pexels.com/photos/2559941/pexels-photo-2559941.jpeg?auto=compress&cs=tinysrgb&w=2200" alt="" style="position:absolute;left:-18%;top:-12%;width:136%;height:136%;object-fit:cover;transform:rotate(-3deg)">
-<div style="position:absolute;inset:0;background:linear-gradient(180deg,#ffffff 0%,rgba(255,255,255,0.94) 16%,rgba(255,255,255,0.72) 36%,rgba(255,255,255,0.18) 66%,rgba(255,255,255,0) 100%);pointer-events:none"></div>
+<header class="site-header">
+<div class="nav-pill">
+<img src="/uploads/logo-2.svg" alt="Let's automate" style="height:26px;display:block">
+<div class="nav-menu" style="display:flex;align-items:center;gap:clamp(2px,0.6vw,8px);font-size:15px;font-weight:550;color:#2c3a30">
+<div class="nav-item">
+<a href="#oferta" class="nav-lnk" style="display:inline-flex;align-items:center;gap:5px;color:#2c3a30">Usługi <svg class="nav-caret" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></a>
+<div class="mega-wrap">
+<div class="mega-panel" style="background:#ffffff;border:1px solid #e7ece4;border-radius:20px;box-shadow:0 40px 90px -44px rgba(18,38,28,0.45);padding:22px">
+<div style="display:grid;grid-template-columns:1fr 264px;gap:22px">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:18px 16px">
+<div>
+<div class="mega-eyebrow">Strategia</div>
+<a href="#oferta" class="mega-item"><span class="mega-t">Diagnoza i AI-Native Score</span><span class="mega-d">Tydzień z zespołem, wychodzisz z liczbą</span></a>
+<a href="#oferta" class="mega-item"><span class="mega-t">Strategia i mapa transformacji</span><span class="mega-d">Kolejność wdrożeń z policzonym zwrotem</span></a>
 </div>
-
-<div style="position:relative;z-index:3;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:18px max(clamp(20px,4vw,56px),calc((100% - 1440px) / 2))">
-<img src="/uploads/logo-2.svg" alt="Let's automate" style="height:23px;display:block">
-<div class="nav-menu" style="display:flex;align-items:center;gap:clamp(16px,2vw,32px);font-size:15px;font-weight:550;color:#2c3a30">
-<a href="#oferta" class="nav-lnk" style="color:#2c3a30">Usługi</a>
+<div>
+<div class="mega-eyebrow">Aplikacje i integracje</div>
+<a href="#oferta" class="mega-item"><span class="mega-t">Aplikacje szyte na miarę</span><span class="mega-d">Software pod Twoje procesy</span></a>
+<a href="#oferta" class="mega-item"><span class="mega-t">Automatyzacje i integracje</span><span class="mega-d">Systemy wymieniają dane same</span></a>
+</div>
+<div>
+<div class="mega-eyebrow">AI</div>
+<a href="#oferta" class="mega-item"><span class="mega-t">Agenci i konwersacyjne AI</span><span class="mega-d">Czyta maile, decyduje i odpowiada</span></a>
+<a href="https://appto.ai" class="mega-item"><span class="mega-t">Appto.ai ↗</span><span class="mega-d">Gotowe AI z półki</span></a>
+</div>
+<div>
+<div class="mega-eyebrow">Opieka</div>
+<a href="#oferta" class="mega-item"><span class="mega-t">Adopcja i szkolenia</span><span class="mega-d">Zespół pracuje po nowemu</span></a>
+<a href="#oferta" class="mega-item"><span class="mega-t">Opieka i rozwój systemów</span><span class="mega-d">Prowadzimy, mierzymy i rozwijamy</span></a>
+</div>
+</div>
+<a href="#diagnoza" class="mega-feat">
+<div style="font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.5)">Od czego zacząć</div>
+<div style="margin-top:11px;font-size:19px;font-weight:800;line-height:1.15;letter-spacing:-0.01em;color:#ffffff">Nie wiesz, od czego zacząć?</div>
+<p style="margin:9px 0 0;font-size:13px;line-height:1.5;color:rgba(255,255,255,0.72)">30 minut bezpłatnej diagnozy i masz konkretny plan — bez zobowiązań.</p>
+<span style="display:inline-flex;align-items:center;gap:7px;margin-top:18px;background:var(--la-accent,#00CD77);color:#0b1a11;font-size:13.5px;font-weight:750;padding:10px 16px;border-radius:9px;align-self:flex-start">Umów diagnozę →</span>
+</a>
+</div>
+</div>
+</div>
+</div>
 <a href="#dowody" class="nav-lnk" style="color:#2c3a30">Rozwiązania</a>
-<a href="#metody" class="nav-lnk" style="color:#2c3a30">Metody</a>
 <a href="https://appto.ai" class="nav-lnk" style="color:#2c3a30">Appto.ai ↗</a>
 <a href="#dlaczego-my" class="nav-lnk" style="color:#2c3a30">Dlaczego my</a>
 <a href="#diagnoza" class="nav-lnk" style="color:#2c3a30">Kontakt</a>
 </div>
 <a href="#diagnoza" class="btn-dark" style="display:inline-flex;align-items:center;gap:9px;background:#16211a;color:#ffffff;padding:12px 22px;border-radius:10px;font-weight:650;font-size:15px;white-space:nowrap">Bezpłatna diagnoza</a>
+</div>
+</header>
+
+<!-- ============ S1 · HERO ============ -->
+<div style="position:relative;overflow:hidden">
+<div style="position:absolute;inset:0">
+<img src="https://images.pexels.com/photos/2559941/pexels-photo-2559941.jpeg?auto=compress&cs=tinysrgb&w=2200" alt="" style="position:absolute;left:-18%;top:-12%;width:136%;height:136%;object-fit:cover;transform:rotate(-3deg)">
+<div style="position:absolute;inset:0;background:linear-gradient(180deg,#ffffff 0%,rgba(255,255,255,0.94) 16%,rgba(255,255,255,0.72) 36%,rgba(255,255,255,0.18) 66%,rgba(255,255,255,0) 100%);pointer-events:none"></div>
 </div>
 
 <div style="position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;text-align:center;padding:clamp(40px,6vw,64px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) 0">
@@ -120,7 +252,7 @@
 
 <div style="position:absolute;left:-30px;top:96px;z-index:3;--rot:-2deg;animation:la-float 7s ease-in-out infinite">
 <div style="display:flex;align-items:center;gap:11px;background:#ffffff;border:1px solid #eef1ec;border-radius:12px;padding:12px 17px;box-shadow:0 18px 44px -16px rgba(12,28,20,0.3);text-align:left">
-<span style="display:flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#e6f7ec;color:#0f7a4d;font-size:13px;font-weight:800;flex-shrink:0">✓</span>
+<span style="display:flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#e6f7ec;color:#0a7a52;font-size:13px;font-weight:800;flex-shrink:0">✓</span>
 <span><span style="display:block;font-size:13.5px;font-weight:650;color:#16211a">Faktura FV 07/183 zaksięgowana</span><span style="display:block;margin-top:2px;font-size:11.5px;color:#8b968d">przed chwilą · obieg: finanse</span></span>
 </div>
 </div>
@@ -145,12 +277,12 @@
 </div>
 <div style="display:flex;flex-direction:column;gap:2px;margin-top:16px">
 <span style="display:flex;align-items:center;justify-content:space-between;padding:7px 10px;border-radius:8px;background:#e9f2ea;font-size:13px;font-weight:700;color:#16211a">Pulpit</span>
-<span style="display:flex;align-items:center;justify-content:space-between;padding:7px 10px;border-radius:8px;font-size:13px;color:#4c5850">Procesy <span style="font-family:ui-monospace,Menlo,monospace;font-size:10.5px;color:#9aa69c">24</span></span>
-<span style="display:flex;align-items:center;justify-content:space-between;padding:7px 10px;border-radius:8px;font-size:13px;color:#4c5850">Agenci <span style="font-family:ui-monospace,Menlo,monospace;font-size:10.5px;color:#9aa69c">6</span></span>
-<span style="display:flex;align-items:center;justify-content:space-between;padding:7px 10px;border-radius:8px;font-size:13px;color:#4c5850">Skrzynka <span style="font-family:ui-monospace,Menlo,monospace;font-size:10.5px;color:#9aa69c">132</span></span>
+<span style="display:flex;align-items:center;justify-content:space-between;padding:7px 10px;border-radius:8px;font-size:13px;color:#4c5850">Procesy <span style="font-family:ui-monospace,Menlo,monospace;font-size:10.5px;color:#808b83">24</span></span>
+<span style="display:flex;align-items:center;justify-content:space-between;padding:7px 10px;border-radius:8px;font-size:13px;color:#4c5850">Agenci <span style="font-family:ui-monospace,Menlo,monospace;font-size:10.5px;color:#808b83">6</span></span>
+<span style="display:flex;align-items:center;justify-content:space-between;padding:7px 10px;border-radius:8px;font-size:13px;color:#4c5850">Skrzynka <span style="font-family:ui-monospace,Menlo,monospace;font-size:10.5px;color:#808b83">132</span></span>
 <span style="display:flex;align-items:center;justify-content:space-between;padding:7px 10px;border-radius:8px;font-size:13px;color:#4c5850">Raporty</span>
 </div>
-<div style="margin-top:18px;padding:0 8px;font-family:ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:0.1em;color:#9aa69c">AGENCI AKTYWNI</div>
+<div style="margin-top:18px;padding:0 8px;font-family:ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:0.1em;color:#808b83">AGENCI AKTYWNI</div>
 <div style="display:flex;flex-direction:column;gap:7px;margin-top:9px;padding:0 8px">
 <span style="display:flex;align-items:center;gap:8px;font-size:12.5px;color:#4c5850"><span style="width:6px;height:6px;border-radius:50%;background:var(--la-accent,#00CD77)"></span>AG Fakturowy</span>
 <span style="display:flex;align-items:center;gap:8px;font-size:12.5px;color:#4c5850"><span style="width:6px;height:6px;border-radius:50%;background:var(--la-accent,#00CD77)"></span>AG Ofertowy</span>
@@ -161,40 +293,40 @@
 <div>
 <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px">
 <div><div style="font-size:16.5px;font-weight:750;color:#16211a">Dzień dobry, Marto</div><div style="margin-top:3px;font-size:12px;color:#8b968d">piątek, 11 lipca · 4 systemy połączone</div></div>
-<span style="display:inline-flex;align-items:center;gap:8px;background:#e6f7ec;color:#0f7a4d;font-size:12px;font-weight:650;padding:6px 12px;border-radius:8px;white-space:nowrap"><span style="width:6px;height:6px;border-radius:50%;background:var(--la-accent,#00CD77);animation:la-pulse 1.6s ease-in-out infinite"></span><span id="tasksLabel">42 zadania zrobione dziś</span></span>
+<span style="display:inline-flex;align-items:center;gap:8px;background:#e6f7ec;color:#0a7a52;font-size:12px;font-weight:650;padding:6px 12px;border-radius:8px;white-space:nowrap"><span style="width:6px;height:6px;border-radius:50%;background:var(--la-accent,#00CD77);animation:la-pulse 1.6s ease-in-out infinite"></span><span id="tasksLabel">42 zadania zrobione dziś</span></span>
 </div>
 <div style="display:flex;gap:12px;margin-top:16px">
-<div style="flex:1;border:1px solid #eef1ec;border-radius:11px;padding:12px 14px"><div style="font-family:ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:0.08em;color:#9aa69c">ZADANIA DZIŚ</div><div style="margin-top:6px;font-size:22px;font-weight:800;color:#16211a" id="tasksNum">42</div><div style="margin-top:2px;font-size:11px;color:#0f7a4d;font-weight:650">↑ +12% vs średnia</div></div>
-<div style="flex:1;border:1px solid #eef1ec;border-radius:11px;padding:12px 14px"><div style="font-family:ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:0.08em;color:#9aa69c">ODZYSKANE GODZINY</div><div style="margin-top:6px;font-size:22px;font-weight:800;color:#16211a">6,5 h</div><div style="margin-top:2px;font-size:11px;color:#8b968d">dzisiaj</div></div>
-<div style="flex:1;border:1px solid #eef1ec;border-radius:11px;padding:12px 14px"><div style="font-family:ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:0.08em;color:#9aa69c">WYJĄTKI</div><div style="margin-top:6px;font-size:22px;font-weight:800;color:#16211a">3</div><div style="margin-top:2px;font-size:11px;color:#8f6c1c;font-weight:650">czekają na decyzję</div></div>
+<div style="flex:1;border:1px solid #eef1ec;border-radius:11px;padding:12px 14px"><div style="font-family:ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:0.1em;color:#808b83">ZADANIA DZIŚ</div><div style="margin-top:6px;font-size:22px;font-weight:800;color:#16211a" id="tasksNum">42</div><div style="margin-top:2px;font-size:11px;color:#0a7a52;font-weight:650">↑ +12% vs średnia</div></div>
+<div style="flex:1;border:1px solid #eef1ec;border-radius:11px;padding:12px 14px"><div style="font-family:ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:0.1em;color:#808b83">ODZYSKANE GODZINY</div><div style="margin-top:6px;font-size:22px;font-weight:800;color:#16211a">6,5 h</div><div style="margin-top:2px;font-size:11px;color:#8b968d">dzisiaj</div></div>
+<div style="flex:1;border:1px solid #eef1ec;border-radius:11px;padding:12px 14px"><div style="font-family:ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:0.1em;color:#808b83">WYJĄTKI</div><div style="margin-top:6px;font-size:22px;font-weight:800;color:#16211a">3</div><div style="margin-top:2px;font-size:11px;color:#8f6c1c;font-weight:650">czekają na decyzję</div></div>
 </div>
 <div style="display:flex;align-items:baseline;justify-content:space-between;margin-top:18px">
-<span style="font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:0.1em;color:#9aa69c">OSTATNIE PRZEBIEGI</span>
+<span style="font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:0.1em;color:#808b83">OSTATNIE PRZEBIEGI</span>
 <span style="font-size:11.5px;font-weight:650;color:#0a7a52">zobacz wszystkie →</span>
 </div>
 <div style="margin-top:6px">
 <div style="display:grid;grid-template-columns:1fr auto auto;gap:14px;align-items:center;padding:10px 2px;border-top:1px solid #f2f4ef">
-<span><span style="display:block;font-size:13px;font-weight:650;color:#16211a">Faktura FV 07/183 — zaksięgowana</span><span style="display:block;margin-top:1px;font-size:11px;color:#9aa69c">obieg: finanse · AG Fakturowy</span></span>
-<span style="font-family:ui-monospace,Menlo,monospace;font-size:11px;color:#9aa69c">12:41</span>
-<span style="background:#e6f7ec;color:#0f7a4d;font-size:11px;font-weight:700;padding:3.5px 9px;border-radius:6px">zrobione</span>
+<span><span style="display:block;font-size:13px;font-weight:650;color:#16211a">Faktura FV 07/183 — zaksięgowana</span><span style="display:block;margin-top:1px;font-size:11px;color:#808b83">obieg: finanse · AG Fakturowy</span></span>
+<span style="font-family:ui-monospace,Menlo,monospace;font-size:11px;color:#808b83">12:41</span>
+<span style="background:#e6f7ec;color:#0a7a52;font-size:11px;font-weight:700;padding:3.5px 9px;border-radius:6px">zrobione</span>
 </div>
 <div style="display:grid;grid-template-columns:1fr auto auto;gap:14px;align-items:center;padding:10px 2px;border-top:1px solid #f2f4ef">
-<span><span style="display:block;font-size:13px;font-weight:650;color:#16211a">Reklamacja #4821 — odpowiedź wysłana</span><span style="display:block;margin-top:1px;font-size:11px;color:#9aa69c">agent: obsługa · z danymi zamówienia</span></span>
-<span style="font-family:ui-monospace,Menlo,monospace;font-size:11px;color:#9aa69c">12:38</span>
-<span style="background:#e6f7ec;color:#0f7a4d;font-size:11px;font-weight:700;padding:3.5px 9px;border-radius:6px">zrobione</span>
+<span><span style="display:block;font-size:13px;font-weight:650;color:#16211a">Reklamacja #4821 — odpowiedź wysłana</span><span style="display:block;margin-top:1px;font-size:11px;color:#808b83">agent: obsługa · z danymi zamówienia</span></span>
+<span style="font-family:ui-monospace,Menlo,monospace;font-size:11px;color:#808b83">12:38</span>
+<span style="background:#e6f7ec;color:#0a7a52;font-size:11px;font-weight:700;padding:3.5px 9px;border-radius:6px">zrobione</span>
 </div>
 <div style="display:grid;grid-template-columns:1fr auto auto;gap:14px;align-items:center;padding:10px 2px;border-top:1px solid #f2f4ef">
-<span><span style="display:block;font-size:13px;font-weight:650;color:#16211a">Oferta dla Sevium — szkic z danych CRM</span><span style="display:block;margin-top:1px;font-size:11px;color:#9aa69c">agent: sprzedaż · AG Ofertowy</span></span>
-<span style="font-family:ui-monospace,Menlo,monospace;font-size:11px;color:#9aa69c">12:24</span>
+<span><span style="display:block;font-size:13px;font-weight:650;color:#16211a">Oferta dla Sevium — szkic z danych CRM</span><span style="display:block;margin-top:1px;font-size:11px;color:#808b83">agent: sprzedaż · AG Ofertowy</span></span>
+<span style="font-family:ui-monospace,Menlo,monospace;font-size:11px;color:#808b83">12:24</span>
 <span style="background:#f9efd8;color:#8f6c1c;font-size:11px;font-weight:700;padding:3.5px 9px;border-radius:6px">czeka</span>
 </div>
 </div>
 </div>
 <div>
-<div style="font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:0.1em;color:#9aa69c">CZEKA NA DECYZJĘ</div>
+<div style="font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:0.1em;color:#808b83">CZEKA NA DECYZJĘ</div>
 <div style="margin-top:8px;border:1px solid #eef1ec;border-radius:10px;padding:11px 12px">
 <div style="font-size:12.5px;font-weight:700;color:#16211a">Rabat 12% dla Sevium?</div>
-<div style="margin-top:2px;font-size:11px;color:#9aa69c">oferta #1204 · AG Ofertowy</div>
+<div style="margin-top:2px;font-size:11px;color:#808b83">oferta #1204 · AG Ofertowy</div>
 <div style="display:flex;gap:6px;margin-top:9px">
 <span style="background:#0e2b1d;color:#ffffff;font-size:11.5px;font-weight:650;padding:5px 11px;border-radius:6px">Zatwierdź</span>
 <span style="border:1px solid #e3e7e0;color:#4c5850;font-size:11.5px;font-weight:650;padding:4px 11px;border-radius:6px">Później</span>
@@ -202,14 +334,14 @@
 </div>
 <div style="margin-top:8px;border:1px solid #eef1ec;border-radius:10px;padding:11px 12px">
 <div style="font-size:12.5px;font-weight:700;color:#16211a">Zwrot 240 zł — zam. #1077</div>
-<div style="margin-top:2px;font-size:11px;color:#9aa69c">reklamacja · AG Obsługi</div>
+<div style="margin-top:2px;font-size:11px;color:#808b83">reklamacja · AG Obsługi</div>
 <div style="display:flex;gap:6px;margin-top:9px">
 <span style="background:#0e2b1d;color:#ffffff;font-size:11.5px;font-weight:650;padding:5px 11px;border-radius:6px">Zatwierdź</span>
 <span style="border:1px solid #e3e7e0;color:#4c5850;font-size:11.5px;font-weight:650;padding:4px 11px;border-radius:6px">Później</span>
 </div>
 </div>
 <div style="margin-top:12px;border:1px solid #eef1ec;border-radius:10px;padding:12px 12px 10px">
-<div style="display:flex;align-items:baseline;justify-content:space-between"><span style="font-size:11px;color:#9aa69c">Odzyskane godziny · 30 dni</span><span style="font-size:11.5px;font-weight:700;color:#0f7a4d">+18%</span></div>
+<div style="display:flex;align-items:baseline;justify-content:space-between"><span style="font-size:11px;color:#808b83">Odzyskane godziny · 30 dni</span><span style="font-size:11.5px;font-weight:700;color:#0a7a52">+18%</span></div>
 <svg viewBox="0 0 210 56" style="display:block;width:100%;height:auto;margin-top:8px">
 <polyline points="4,46 30,44 56,40 82,42 108,33 134,28 160,22 186,16 206,10" fill="none" stroke="var(--la-accent,#00CD77)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></polyline>
 <circle cx="206" cy="10" r="3" fill="var(--la-accent,#00CD77)"></circle>
@@ -236,8 +368,8 @@
 </div>
 </div>
 
-<!-- ============ S1b · ROTATOR ============ -->
-<section id="sciezki" style="padding:clamp(64px,9vw,104px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) clamp(56px,8vw,88px);scroll-margin-top:16px">
+<!-- ============ S1b · DROGA POD HERO (wariant A — wykres + oś czasu) ============ -->
+<section id="sciezki" class="la-droga" style="padding:clamp(64px,9vw,104px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) clamp(56px,8vw,92px);scroll-margin-top:16px">
 <div style="text-align:center;font-size:clamp(22px,4.4vw,40px);line-height:1.18;letter-spacing:-0.028em;font-weight:750;color:#16211a">Żeby stać się firmą AI-native, czasem najpierw trzeba</div>
 <div class="rot-mask" style="height:60px;overflow:hidden;margin-top:-6px;-webkit-mask-image:linear-gradient(180deg,transparent 0,#000 16%,#000 84%,transparent 100%);mask-image:linear-gradient(180deg,transparent 0,#000 16%,#000 84%,transparent 100%)">
 <div id="rotator-col" style="display:flex;flex-direction:column;transition:transform 0.55s cubic-bezier(0.65,0,0.35,1);transform:translateY(0px)">
@@ -249,11 +381,88 @@
 <div class="rot-item" style="height:60px;line-height:60px;text-align:center;white-space:nowrap;font-size:clamp(13px,4vw,40px);letter-spacing:-0.028em;font-weight:750;color:#0a7a52">odciążyć zespół od kopiuj-wklej</div>
 </div>
 </div>
-<p style="margin:28px auto 0;max-width:600px;text-align:center;font-size:17.5px;line-height:1.65;color:#4c5850;text-wrap:pretty">Nie musisz wiedzieć, od czego zacząć. Przeszliśmy tę drogę ze 140 firmami — przejdziemy ją i z Tobą, krok po kroku.</p>
-<div style="display:flex;justify-content:center;margin-top:24px">
-<div style="display:inline-flex;align-items:center;gap:11px;background:rgba(0,205,119,0.10);border-radius:999px;padding:11px 22px">
-<span style="font-size:14px;font-weight:600;color:#0a7a52">Jedyna w Polsce firma wdrażająca AI, za którą stoi grupa doradcza</span>
-<img src="/uploads/wisegroup_logo_retina.png.webp" alt="Wise Group" style="height:16px;width:auto;display:block;opacity:0.85">
+<p style="margin:22px auto 0;max-width:620px;text-align:center;font-size:clamp(15px,2vw,17.5px);line-height:1.6;color:#4c5850;text-wrap:pretty">Nie wielka rewolucja, tylko kolejne procesy, które przestają być ręczne — krok po kroku, przez około 12 miesięcy.</p>
+
+<!-- Wykres: AI-Native Score w czasie -->
+<div class="droga-chart" style="position:relative;margin-top:clamp(40px,5vw,56px);height:clamp(240px,26vw,380px)">
+<svg viewBox="0 0 1328 380" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%;overflow:visible">
+<defs>
+<linearGradient id="la11a-tlfill" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="var(--la-accent,#00CD77)" stop-opacity="0.15"></stop>
+<stop offset="1" stop-color="var(--la-accent,#00CD77)" stop-opacity="0"></stop>
+</linearGradient>
+</defs>
+<line x1="10" y1="275" x2="1328" y2="275" stroke="#e7ece4" stroke-width="1" stroke-dasharray="3 7"></line>
+<line x1="10" y1="190" x2="1328" y2="190" stroke="#e7ece4" stroke-width="1" stroke-dasharray="3 7"></line>
+<line x1="10" y1="105" x2="1328" y2="105" stroke="#e7ece4" stroke-width="1" stroke-dasharray="3 7"></line>
+<line x1="10" y1="360" x2="1328" y2="360" stroke="#e3e7e0" stroke-width="1.5"></line>
+<path class="dg-fill" d="M10,244 C145,244 145,204 280,204 C415,204 415,149 550,149 C685,149 685,88 820,88 C955,88 955,44 1090,44 C1190,44 1262,36 1328,30 L1328,360 L10,360 Z" fill="url(#la11a-tlfill)"></path>
+<path class="dg-line" d="M10,244 C145,244 145,204 280,204 C415,204 415,149 550,149 C685,149 685,88 820,88 C955,88 955,44 1090,44 C1190,44 1262,36 1328,30" fill="none" stroke="var(--la-accent,#00CD77)" stroke-width="3.5" stroke-linecap="round" pathLength="1"></path>
+</svg>
+<div style="position:absolute;left:0;top:-4px;font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:0.1em;color:#b6bfb6">AI-NATIVE SCORE ↑</div>
+<div style="position:absolute;right:4px;top:83.4%;transform:translateY(-50%);font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:0.1em;color:#c3cbc2">ETAP 1</div>
+<div style="position:absolute;right:4px;top:61%;transform:translateY(-50%);font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:0.1em;color:#c3cbc2">ETAP 2</div>
+<div style="position:absolute;right:4px;top:38.7%;transform:translateY(-50%);font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:0.1em;color:#c3cbc2">ETAP 3</div>
+<div style="position:absolute;right:4px;top:16.3%;transform:translateY(-50%);font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:0.1em;font-weight:700;color:#0a7a52">ETAP 4</div>
+<div style="position:absolute;left:0.75%;top:64.32%;bottom:5.26%;width:0"><div class="dg-conn" style="height:100%;transition-delay:.15s"><span style="display:block;height:100%;border-left:1px dashed #d8dfd6"></span></div></div>
+<div style="position:absolute;left:21.08%;top:53.58%;bottom:5.26%;width:0"><div class="dg-conn" style="height:100%;transition-delay:.3s"><span style="display:block;height:100%;border-left:1px dashed #d8dfd6"></span></div></div>
+<div style="position:absolute;left:41.42%;top:39.26%;bottom:5.26%;width:0"><div class="dg-conn" style="height:100%;transition-delay:.45s"><span style="display:block;height:100%;border-left:1px dashed #d8dfd6"></span></div></div>
+<div style="position:absolute;left:61.75%;top:23.16%;bottom:5.26%;width:0"><div class="dg-conn" style="height:100%;transition-delay:.6s"><span style="display:block;height:100%;border-left:1px dashed #d8dfd6"></span></div></div>
+<div style="position:absolute;left:82.08%;top:11.53%;bottom:5.26%;width:0"><div class="dg-conn" style="height:100%;transition-delay:.75s"><span style="display:block;height:100%;border-left:1px dashed #d8dfd6"></span></div></div>
+<div style="position:absolute;left:0.75%;top:64.32%;width:0;height:0;z-index:3"><div class="dg-dot" style="transition-delay:.15s"><span style="position:absolute;left:0;top:0;transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;background:var(--la-accent,#00CD77);border:3px solid #ffffff;box-shadow:0 2px 10px rgba(12,28,20,0.3);display:block"></span><span style="position:absolute;left:0;top:-32px;transform:translateX(-50%);font-family:ui-monospace,Menlo,monospace;font-size:12.5px;font-weight:700;color:#16211a">34</span></div></div>
+<div style="position:absolute;left:21.08%;top:53.58%;width:0;height:0;z-index:3"><div class="dg-dot" style="transition-delay:.3s"><span style="position:absolute;left:0;top:0;transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;background:var(--la-accent,#00CD77);border:3px solid #ffffff;box-shadow:0 2px 10px rgba(12,28,20,0.3);display:block"></span><span style="position:absolute;left:0;top:-32px;transform:translateX(-50%);font-family:ui-monospace,Menlo,monospace;font-size:12.5px;font-weight:700;color:#16211a">46</span></div></div>
+<div style="position:absolute;left:41.42%;top:39.26%;width:0;height:0;z-index:3"><div class="dg-dot" style="transition-delay:.45s"><span style="position:absolute;left:0;top:0;transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;background:var(--la-accent,#00CD77);border:3px solid #ffffff;box-shadow:0 2px 10px rgba(12,28,20,0.3);display:block"></span><span style="position:absolute;left:0;top:-32px;transform:translateX(-50%);font-family:ui-monospace,Menlo,monospace;font-size:12.5px;font-weight:700;color:#16211a">62</span></div></div>
+<div style="position:absolute;left:61.75%;top:23.16%;width:0;height:0;z-index:3"><div class="dg-dot" style="transition-delay:.6s"><span style="position:absolute;left:0;top:0;transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;background:var(--la-accent,#00CD77);border:3px solid #ffffff;box-shadow:0 2px 10px rgba(12,28,20,0.3);display:block"></span><span style="position:absolute;left:0;top:-32px;transform:translateX(-50%);font-family:ui-monospace,Menlo,monospace;font-size:12.5px;font-weight:700;color:#16211a">80</span></div></div>
+<div style="position:absolute;left:82.08%;top:11.53%;width:0;height:0;z-index:3"><div class="dg-dot" style="transition-delay:.75s"><span style="position:absolute;left:0;top:0;transform:translate(-50%,-50%);width:16px;height:16px;border-radius:50%;background:var(--la-accent,#00CD77);border:3px solid #ffffff;box-shadow:0 0 18px rgba(0,205,119,0.65);display:block"></span><span style="position:absolute;left:0;top:-44px;transform:translateX(-50%);white-space:nowrap;display:inline-flex;align-items:center;gap:7px;background:#0e2b1d;color:#ffffff;font-size:12.5px;font-weight:700;padding:6px 13px;border-radius:8px"><span style="width:7px;height:7px;border-radius:50%;background:var(--la-accent,#00CD77);display:inline-block"></span>93 · AI-native</span></div></div>
+<div style="position:absolute;left:2.4%;top:calc(64.32% + 14px);z-index:2"><div class="dg-chip" style="transition-delay:.2s"><span style="display:inline-block;background:#f9efd8;color:#8f6c1c;font-size:11.5px;font-weight:700;padding:4px 11px;border-radius:7px;white-space:nowrap">większość firm startuje tu</span></div></div>
+</div>
+
+<!-- Oś czasu: 5 kroków / 12 miesięcy -->
+<div class="droga-cards" style="display:grid;grid-template-columns:repeat(5,1fr);gap:22px;margin-top:34px">
+<div class="dg-card" style="display:flex;flex-direction:column;transition-delay:.15s">
+<div style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#0a7a52">01 · MIESIĄC 1</div>
+<div style="margin-top:10px;font-size:19px;font-weight:700;color:#16211a">Wiesz, gdzie jesteś</div>
+<p style="margin:8px 0 0;font-size:14px;line-height:1.6;color:#4c5850">Procesy spisane, koszt status quo policzony. Priorytety wybrane tam, gdzie zwrot jest największy.</p>
+<div style="margin-top:auto;padding-top:14px;font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:700;color:#8f6c1c">ucieka 305 h/mies. — policzone</div>
+</div>
+<div class="dg-card" style="display:flex;flex-direction:column;transition-delay:.3s">
+<div style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#0a7a52">02 · MIESIĄC 2–3</div>
+<div style="margin-top:10px;font-size:19px;font-weight:700;color:#16211a">Pierwszy proces działa sam</div>
+<p style="margin:8px 0 0;font-size:14px;line-height:1.6;color:#4c5850">Zaczynamy od tego, który boli najbardziej. Zespół widzi efekt na własnych zadaniach, nie na slajdach.</p>
+<div style="margin-top:auto;padding-top:14px;font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:700;color:#0a7a52">↩ wraca 80 h/mies.</div>
+</div>
+<div class="dg-card" style="display:flex;flex-direction:column;transition-delay:.45s">
+<div style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#0a7a52">03 · MIESIĄC 4–6</div>
+<div style="margin-top:10px;font-size:19px;font-weight:700;color:#16211a">Systemy zaczynają się widzieć</div>
+<p style="margin:8px 0 0;font-size:14px;line-height:1.6;color:#4c5850">Dane płyną między narzędziami bez przepisywania. Kolejne obiegi wchodzą na produkcję.</p>
+<div style="margin-top:auto;padding-top:14px;font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:700;color:#0a7a52">↩ wraca łącznie 200 h/mies.</div>
+</div>
+<div class="dg-card" style="display:flex;flex-direction:column;transition-delay:.6s">
+<div style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#0a7a52">04 · MIESIĄC 7–9</div>
+<div style="margin-top:10px;font-size:19px;font-weight:700;color:#16211a">AI wchodzi do środka procesów</div>
+<p style="margin:8px 0 0;font-size:14px;line-height:1.6;color:#4c5850">AI czyta, przygotowuje i wykonuje w środku procesu. Ludzie decydują tam, gdzie trzeba głowy.</p>
+<div style="margin-top:auto;padding-top:14px;font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:700;color:#0a7a52">↩ wraca łącznie 245 h/mies.</div>
+</div>
+<div class="dg-card" style="display:flex;flex-direction:column;transition-delay:.75s">
+<div style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#0a7a52">05 · MIESIĄC 10–12</div>
+<div style="margin-top:10px;font-size:19px;font-weight:700;color:#16211a">Firma działa po nowemu</div>
+<p style="margin:8px 0 0;font-size:14px;line-height:1.6;color:#4c5850">Nowe procesy projektujesz od razu na AI. Rośniesz bez dokładania nowych etatów.</p>
+<div style="margin-top:auto;padding-top:14px;font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:700;color:#0a7a52">↩ wraca 305 h/mies. — cały rachunek</div>
+</div>
+</div>
+
+<!-- CTA -->
+<div class="droga-cta" style="display:flex;align-items:flex-start;justify-content:space-between;gap:clamp(28px,4vw,56px);margin-top:56px;padding-top:34px;border-top:1px solid #eef1ec">
+<div style="max-width:640px">
+<p style="margin:0;font-size:clamp(16px,2.2vw,18.5px);line-height:1.55;color:#4c5850;text-wrap:pretty">Nie musisz wiedzieć, od czego zacząć. <strong style="font-weight:700;color:#16211a">Przeszliśmy tę drogę ze 140 firmami — przejdziemy ją i z Tobą, krok po kroku.</strong></p>
+<div style="display:flex;align-items:center;gap:10px;margin-top:16px">
+<span style="font-size:13.5px;color:#7c877e">Jedyna w Polsce firma wdrażająca AI, za którą stoi grupa doradcza</span>
+<img src="/uploads/wisegroup_logo_v2.webp" alt="Wise Group" style="height:14px;width:auto;display:block;opacity:0.7">
+</div>
+</div>
+<div class="droga-cta-btns" style="display:flex;flex-direction:column;align-items:flex-end;gap:13px;flex-shrink:0">
+<a href="#diagnoza" class="btn-dark" style="display:inline-flex;align-items:center;gap:10px;background:#16211a;color:#ffffff;padding:17px 30px;border-radius:12px;font-weight:650;font-size:16px;box-shadow:0 14px 30px -14px rgba(16,33,26,0.45)">Zrób krok 01 — umów bezpłatną diagnozę <span aria-hidden="true">→</span></a>
+<a href="#diagnoza" class="lnk-green" style="font-size:15px;font-weight:700;color:#0a7a52">Wolisz sam? Sprawdź swój Score online →</a>
 </div>
 </div>
 </section>
@@ -262,8 +471,8 @@
 <section id="stawka" style="padding:clamp(72px,10vw,120px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) clamp(72px,9vw,110px);scroll-margin-top:16px">
 <div class="s2-grid" style="display:grid;grid-template-columns:1fr 520px;gap:clamp(40px,6vw,88px);align-items:center">
 <div>
-<h2 style="margin:0;font-size:clamp(32px,5.2vw,58px);line-height:1.04;letter-spacing:-0.032em;font-weight:800;text-wrap:pretty">Status quo też wystawia rachunek.</h2>
-<p style="margin:26px 0 0;max-width:540px;font-size:18px;line-height:1.6;color:#4c5850;text-wrap:pretty">Tylko nikt go nie podpisuje. Ręczne przepisywanie, fakturowanie, raporty klejone z Exceli — Twój zespół płaci go co miesiąc, godzinami. Policzmy go na Twoich danych.</p>
+<h2 class="h-sec" style="margin:0;text-wrap:pretty">Status quo też wystawia rachunek.</h2>
+<p class="sub" style="margin:20px 0 0;max-width:540px">Tylko nikt go nie podpisuje. Ręczne przepisywanie, fakturowanie, raporty klejone z Exceli — Twój zespół płaci go co miesiąc, godzinami. Policzmy go na Twoich danych.</p>
 <div class="stat-row" style="display:flex;align-items:baseline;gap:44px;margin-top:44px;padding-top:32px;border-top:1px solid #eef1ec">
 <div><span style="font-size:34px;font-weight:800;letter-spacing:-0.02em">78%</span><span style="display:block;margin-top:4px;font-size:13px;line-height:1.45;color:#7c877e;max-width:160px">firm używa już AI w min. jednym procesie</span></div>
 <div><span style="font-size:34px;font-weight:800;letter-spacing:-0.02em">3,7×</span><span style="display:block;margin-top:4px;font-size:13px;line-height:1.45;color:#7c877e;max-width:160px">szybciej rosną firmy przebudowane pod AI</span></div>
@@ -277,30 +486,30 @@
 
 <div style="background:linear-gradient(160deg,#eef5ee 0%,#e6f0e8 55%,#eaf2ea 100%);border-radius:26px;padding:clamp(28px,5vw,48px) clamp(24px,5vw,56px)">
 <div id="la8-rachunek" style="background:#ffffff;border-radius:6px;padding:clamp(24px,4vw,36px) clamp(22px,4vw,36px) 28px;box-shadow:0 30px 70px -32px rgba(15,30,22,0.35);transform:rotate(-1.2deg);font-family:ui-monospace,Menlo,monospace">
-<div style="text-align:center;font-size:13px;letter-spacing:0.18em;text-transform:uppercase;color:#16211a;font-weight:700">Rachunek</div>
+<div style="text-align:center;font-size:13px;letter-spacing:0.14em;text-transform:uppercase;color:#16211a;font-weight:700">Rachunek</div>
 <div style="text-align:center;margin-top:5px;font-size:11.5px;color:#8b968d">za utrzymanie status quo · nr 2026/07 · co miesiąc</div>
 <div style="margin-top:24px;border-top:1.5px dashed #d8dcd4"></div>
 <div style="display:flex;flex-direction:column">
-<div style="display:flex;align-items:baseline;justify-content:space-between;gap:18px;padding:14px 0;border-bottom:1px dashed #e4e7e0">
+<div style="display:flex;align-items:baseline;justify-content:space-between;gap:18px;padding:14px 0;border-bottom:1px dashed #e7ece4">
 <span style="font-size:13px;color:#3f4b44">Przepisywanie danych między systemami</span>
 <span class="rcpt-val" data-h="120" style="font-size:14.5px;font-weight:700;color:#16211a;white-space:nowrap">120 h</span>
 </div>
-<div style="display:flex;align-items:baseline;justify-content:space-between;gap:18px;padding:14px 0;border-bottom:1px dashed #e4e7e0">
+<div style="display:flex;align-items:baseline;justify-content:space-between;gap:18px;padding:14px 0;border-bottom:1px dashed #e7ece4">
 <span style="font-size:13px;color:#3f4b44">Ręczne fakturowanie i rozliczenia</span>
 <span class="rcpt-val" data-h="80" style="font-size:14.5px;font-weight:700;color:#16211a;white-space:nowrap">80 h</span>
 </div>
-<div style="display:flex;align-items:baseline;justify-content:space-between;gap:18px;padding:14px 0;border-bottom:1px dashed #e4e7e0">
+<div style="display:flex;align-items:baseline;justify-content:space-between;gap:18px;padding:14px 0;border-bottom:1px dashed #e7ece4">
 <span style="font-size:13px;color:#3f4b44">Powtarzalne maile w obsłudze klienta</span>
 <span class="rcpt-val" data-h="60" style="font-size:14.5px;font-weight:700;color:#16211a;white-space:nowrap">60 h</span>
 </div>
-<div style="display:flex;align-items:baseline;justify-content:space-between;gap:18px;padding:14px 0;border-bottom:1px dashed #e4e7e0">
+<div style="display:flex;align-items:baseline;justify-content:space-between;gap:18px;padding:14px 0;border-bottom:1px dashed #e7ece4">
 <span style="font-size:13px;color:#3f4b44">Raporty klejone z Exceli</span>
 <span class="rcpt-val" data-h="45" style="font-size:14.5px;font-weight:700;color:#16211a;white-space:nowrap">45 h</span>
 </div>
 </div>
 <div style="display:flex;align-items:baseline;justify-content:space-between;gap:18px;padding:20px 0 4px">
-<span style="font-size:13.5px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#16211a">Razem</span>
-<span style="font-size:40px;font-weight:800;letter-spacing:-0.02em;color:#16211a;white-space:nowrap"><span id="rcpt-total" data-total="305">305</span> <span style="font-size:15px;font-weight:700;color:#5d6961">h / mies.</span></span>
+<span style="font-size:13.5px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#16211a">Razem</span>
+<span style="font-size:40px;font-weight:800;letter-spacing:-0.02em;color:#16211a;white-space:nowrap"><span id="rcpt-total" data-total="305">305</span> <span style="font-size:15px;font-weight:700;color:#4c5850">h / mies.</span></span>
 </div>
 <div style="text-align:right;font-size:12px;color:#0a7a52;font-weight:700">≈ 1,9 etatu pracy ręcznej</div>
 <div style="margin-top:22px;border-top:1.5px dashed #d8dcd4;padding-top:16px;font-size:11px;line-height:1.6;color:#8b968d;text-align:center">pozycje przykładowe — u Ciebie policzymy prawdziwe<br>płatność: marżą, tempem i nerwami zespołu</div>
@@ -312,29 +521,31 @@
 
 <!-- ============ S3 · CO ZNACZY AI-NATIVE ============ -->
 <section id="ai-native" style="background:#f4f8f2;padding:clamp(72px,9vw,110px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
-<h2 style="margin:0;max-width:980px;font-size:clamp(32px,5.2vw,58px);line-height:1.04;letter-spacing:-0.032em;font-weight:800;text-wrap:pretty">AI-native nie znaczy, że zespół używa <span style="color:#9aa69c;text-decoration:line-through;text-decoration-thickness:4px;text-decoration-color:var(--la-accent,#00CD77)">ChatGPT</span>.</h2>
-<p style="margin:24px 0 0;max-width:660px;font-size:18px;line-height:1.6;color:#4c5850;text-wrap:pretty">Znaczy, że firma działa na systemach, które AI napędza od środka — od ofertowania po rozliczenia. Nie chodzi o szkolenie z ChatGPT ani bota na stronie. <strong style="color:#16211a;font-weight:700">Gdzie na tej skali jest Twoja firma?</strong></p>
+<div class="sec-head">
+<h2 class="h-sec" style="margin:0;max-width:640px;text-wrap:pretty">AI-native nie znaczy, że zespół używa <span style="color:#808b83;text-decoration:line-through;text-decoration-thickness:4px;text-decoration-color:var(--la-accent,#00CD77)">ChatGPT</span>.</h2>
+<p class="sub" style="margin:0 0 6px;max-width:460px">Znaczy, że AI napędza procesy od wewnątrz — od pierwszego kontaktu po rozliczenie. <strong style="color:#16211a;font-weight:700">Gdzie na tej skali jest Twoja firma?</strong></p>
+</div>
 
-<div class="grid4" style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:18px;margin-top:64px">
-<div style="background:#ffffff;border:1px solid #e7ece4;border-radius:16px;padding:26px 26px 24px">
+<div class="grid4" style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:22px;margin-top:64px">
+<div class="etap-card" style="background:#ffffff;border:1px solid #e7ece4;border-radius:16px;padding:26px 26px 24px">
 <span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#8b968d">ETAP 1</span>
 <div style="margin-top:38px;height:4px;border-radius:2px;background:#e7ece4"><span style="display:block;width:25%;height:100%;border-radius:2px;background:#c3cbc2"></span></div>
 <div style="margin-top:18px;font-size:20px;font-weight:700;color:#4c5850">Ręczna firma</div>
 <p style="margin:8px 0 0;font-size:14px;line-height:1.55;color:#7c877e">Excel, maile, przepisywanie danych. Każdy wzrost wymaga nowych rąk.</p>
 </div>
-<div style="background:#ffffff;border:1px solid #e7ece4;border-radius:16px;padding:26px 26px 24px">
+<div class="etap-card" style="background:#ffffff;border:1px solid #e7ece4;border-radius:16px;padding:26px 26px 24px">
 <div style="display:flex;align-items:center;justify-content:space-between;gap:10px"><span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#8b968d">ETAP 2</span><span style="font-size:11.5px;font-weight:700;color:#8f6c1c;background:#f9efd8;padding:4px 10px;border-radius:7px">większość firm jest tu</span></div>
 <div style="margin-top:38px;height:4px;border-radius:2px;background:#e7ece4"><span style="display:block;width:50%;height:100%;border-radius:2px;background:#9fb3a3"></span></div>
 <div style="margin-top:18px;font-size:20px;font-weight:700;color:#4c5850">Punktowe automatyzacje</div>
 <p style="margin:8px 0 0;font-size:14px;line-height:1.55;color:#7c877e">Kilka skryptów i botów. Pomagają, ale każdy żyje osobno.</p>
 </div>
-<div style="background:#ffffff;border:1px solid #e7ece4;border-radius:16px;padding:26px 26px 24px">
+<div class="etap-card" style="background:#ffffff;border:1px solid #e7ece4;border-radius:16px;padding:26px 26px 24px">
 <span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#8b968d">ETAP 3</span>
 <div style="margin-top:38px;height:4px;border-radius:2px;background:#e7ece4"><span style="display:block;width:75%;height:100%;border-radius:2px;background:#3f8f68"></span></div>
 <div style="margin-top:18px;font-size:20px;font-weight:700;color:#16211a">Systemy zintegrowane</div>
-<p style="margin:8px 0 0;font-size:14px;line-height:1.55;color:#5d6961">Dane płyną między CRM, finansami i operacjami bez przepisywania.</p>
+<p style="margin:8px 0 0;font-size:14px;line-height:1.55;color:#4c5850">Dane płyną między CRM, finansami i operacjami bez przepisywania.</p>
 </div>
-<div style="background:#0e2b1d;border:1px solid #0e2b1d;border-radius:16px;padding:26px 26px 24px">
+<div class="etap-card" style="background:#0e2b1d;border:1px solid #0e2b1d;border-radius:16px;padding:26px 26px 24px">
 <span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--la-accent,#00CD77)">ETAP 4</span>
 <div style="margin-top:38px;height:4px;border-radius:2px;background:rgba(255,255,255,0.18)"><span style="display:block;width:100%;height:100%;border-radius:2px;background:var(--la-accent,#00CD77);box-shadow:0 0 14px rgba(0,205,119,0.6)"></span></div>
 <div style="margin-top:18px;font-size:20px;font-weight:800;color:#ffffff">AI-native</div>
@@ -349,250 +560,365 @@
 
 <!-- ============ S4 · OFERTA ============ -->
 <section id="oferta" style="padding:clamp(72px,10vw,120px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) clamp(72px,9vw,110px);scroll-margin-top:16px">
-<div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:24px 56px">
-<h2 style="margin:0;font-size:clamp(30px,4.8vw,52px);line-height:1.05;letter-spacing:-0.03em;font-weight:800">Co budujemy</h2>
-<p style="margin:0 0 6px;max-width:460px;font-size:17px;line-height:1.6;color:#4c5850;text-wrap:pretty">Jedna ścieżka, trzy kroki. Wejdź w dowolnym miejscu — każdy projekt przybliża Cię do firmy AI-native.</p>
+<div class="sec-head">
+<h2 class="h-sec" style="margin:0;max-width:520px;text-wrap:pretty">Od strategii po wdrożenie i opiekę.</h2>
+<p class="sub" style="margin:0 0 6px;max-width:460px">Wszystko, czego firma potrzebuje, by działać na AI — od strategii po opiekę, w czterech obszarach.</p>
 </div>
 
 <div class="s4-grid" style="display:grid;grid-template-columns:360px 1fr;gap:clamp(32px,5vw,72px);margin-top:56px;align-items:start;background:#f4f8f2;border-radius:24px;padding:clamp(28px,4vw,44px) clamp(24px,4vw,48px) 40px">
 <div style="display:flex;flex-direction:column;gap:6px">
-<button data-krok="plan" class="krok-tab" style="appearance:none;font-family:inherit;text-align:left;cursor:pointer;display:grid;grid-template-columns:46px 1fr;gap:14px;align-items:baseline;padding:18px 18px;border:none;border-radius:14px;background:transparent;box-shadow:none;transition:background 0.3s,box-shadow 0.3s">
-<span class="krok-num" style="font-family:ui-monospace,Menlo,monospace;font-size:13px;font-weight:700;color:#9aa69c">01</span>
-<span><span style="display:block;font-size:23px;font-weight:800;letter-spacing:-0.015em;color:#16211a">Zaplanuj</span><span style="display:block;margin-top:4px;font-size:13px;color:#7c877e">Diagnoza i Score · Strategia</span></span>
+<button data-krok="strat" class="krok-tab" style="appearance:none;font-family:inherit;text-align:left;cursor:pointer;display:block;padding:16px 18px;border:none;border-radius:14px;background:transparent;box-shadow:none;transition:background 0.3s,box-shadow 0.3s">
+<span style="display:block;font-size:22px;font-weight:800;letter-spacing:-0.015em;color:#16211a">Strategia</span><span style="display:block;margin-top:3px;font-size:13px;color:#7c877e">Diagnoza i Score · Mapa transformacji</span>
 </button>
-<button data-krok="build" class="krok-tab" style="appearance:none;font-family:inherit;text-align:left;cursor:pointer;display:grid;grid-template-columns:46px 1fr;gap:14px;align-items:baseline;padding:18px 18px;border:none;border-radius:14px;background:transparent;box-shadow:none;transition:background 0.3s,box-shadow 0.3s">
-<span class="krok-num" style="font-family:ui-monospace,Menlo,monospace;font-size:13px;font-weight:700;color:#9aa69c">02</span>
-<span><span style="display:block;font-size:23px;font-weight:800;letter-spacing:-0.015em;color:#16211a">Zbuduj</span><span style="display:block;margin-top:4px;font-size:13px;color:#7c877e">Aplikacje · Agenci AI · Integracje</span></span>
+<button data-krok="apps" class="krok-tab" style="appearance:none;font-family:inherit;text-align:left;cursor:pointer;display:block;padding:16px 18px;border:none;border-radius:14px;background:transparent;box-shadow:none;transition:background 0.3s,box-shadow 0.3s">
+<span style="display:block;font-size:22px;font-weight:800;letter-spacing:-0.015em;color:#16211a">Aplikacje i integracje</span><span style="display:block;margin-top:3px;font-size:13px;color:#7c877e">Systemy na miarę · Automatyzacje</span>
 </button>
-<button data-krok="run" class="krok-tab" style="appearance:none;font-family:inherit;text-align:left;cursor:pointer;display:grid;grid-template-columns:46px 1fr;gap:14px;align-items:baseline;padding:18px 18px;border:none;border-radius:14px;background:transparent;box-shadow:none;transition:background 0.3s,box-shadow 0.3s">
-<span class="krok-num" style="font-family:ui-monospace,Menlo,monospace;font-size:13px;font-weight:700;color:#9aa69c">03</span>
-<span><span style="display:block;font-size:23px;font-weight:800;letter-spacing:-0.015em;color:#16211a">Wdróż</span><span style="display:block;margin-top:4px;font-size:13px;color:#7c877e">Adopcja i szkolenia · Opieka</span></span>
+<button data-krok="ai" class="krok-tab" style="appearance:none;font-family:inherit;text-align:left;cursor:pointer;display:block;padding:16px 18px;border:none;border-radius:14px;background:transparent;box-shadow:none;transition:background 0.3s,box-shadow 0.3s">
+<span style="display:block;font-size:22px;font-weight:800;letter-spacing:-0.015em;color:#16211a">AI</span><span style="display:block;margin-top:3px;font-size:13px;color:#7c877e">Agenci · Konwersacje · Produkty</span>
+</button>
+<button data-krok="care" class="krok-tab" style="appearance:none;font-family:inherit;text-align:left;cursor:pointer;display:block;padding:16px 18px;border:none;border-radius:14px;background:transparent;box-shadow:none;transition:background 0.3s,box-shadow 0.3s">
+<span style="display:block;font-size:22px;font-weight:800;letter-spacing:-0.015em;color:#16211a">Opieka</span><span style="display:block;margin-top:3px;font-size:13px;color:#7c877e">Adopcja i szkolenia · Rozwój</span>
 </button>
 </div>
 <div class="s4-layers" style="position:relative;height:340px">
-<div class="krok-layer" data-layer="plan" style="position:absolute;inset:0;transition:opacity 0.45s cubic-bezier(0.4,0,0.2,1),transform 0.45s cubic-bezier(0.4,0,0.2,1)">
-<a href="#oferta" class="row-lnk" style="display:grid;grid-template-columns:1fr 36px;gap:20px;align-items:baseline;padding:6px 4px 22px;border-bottom:1px solid #dfe8df;color:#16211a">
-<span><span style="display:block;font-size:clamp(20px,2.4vw,25px);font-weight:750;letter-spacing:-0.015em">Diagnoza i AI-Native Score</span><span style="display:block;margin-top:8px;font-size:14.5px;line-height:1.55;color:#5d6961;max-width:580px">Tydzień z Twoim zespołem. Wychodzisz z liczbą: ile kosztuje Cię status quo i od czego zacząć.</span></span>
+<div class="krok-layer" data-layer="strat" style="position:absolute;inset:0;transition:opacity 0.45s cubic-bezier(0.4,0,0.2,1),transform 0.45s cubic-bezier(0.4,0,0.2,1)">
+<a href="#oferta" class="row-lnk" style="display:grid;grid-template-columns:1fr 36px;gap:20px;align-items:baseline;padding:6px 4px 22px;border-bottom:1px solid #e7ece4;color:#16211a">
+<span><span style="display:block;font-size:clamp(20px,2.4vw,25px);font-weight:750;letter-spacing:-0.015em">Diagnoza i AI-Native Score</span><span style="display:block;margin-top:8px;font-size:14.5px;line-height:1.55;color:#4c5850;max-width:580px">Tydzień z Twoim zespołem. Wychodzisz z liczbą: ile kosztuje Cię status quo i od czego zacząć.</span></span>
 <span style="font-size:22px;color:#0a7a52;justify-self:end" aria-hidden="true">→</span>
 </a>
-<a href="#oferta" class="row-lnk" style="display:grid;grid-template-columns:1fr 36px;gap:20px;align-items:baseline;padding:20px 4px 20px;border-bottom:1px solid #dfe8df;color:#16211a">
-<span><span style="display:block;font-size:clamp(20px,2.4vw,25px);font-weight:750;letter-spacing:-0.015em">Strategia i mapa transformacji</span><span style="display:block;margin-top:8px;font-size:14.5px;line-height:1.55;color:#5d6961;max-width:580px">Kolejność wdrożeń z policzonym zwrotem z każdego kroku. Plan, który obroni się przed zarządem.</span></span>
-<span style="font-size:22px;color:#0a7a52;justify-self:end" aria-hidden="true">→</span>
-</a>
-</div>
-<div class="krok-layer" data-layer="build" style="position:absolute;inset:0;transition:opacity 0.45s cubic-bezier(0.4,0,0.2,1),transform 0.45s cubic-bezier(0.4,0,0.2,1)">
-<a href="#oferta" class="row-lnk" style="display:grid;grid-template-columns:1fr 36px;gap:20px;align-items:baseline;padding:6px 4px 16px;border-bottom:1px solid #dfe8df;color:#16211a">
-<span><span style="display:block;font-size:clamp(20px,2.4vw,25px);font-weight:750;letter-spacing:-0.015em">Aplikacje i systemy szyte na miarę</span><span style="display:block;margin-top:7px;font-size:14.5px;line-height:1.55;color:#5d6961;max-width:580px">Software pod Twoje procesy — nie procesy naginane pod cudzy software.</span></span>
-<span style="font-size:22px;color:#0a7a52;justify-self:end" aria-hidden="true">→</span>
-</a>
-<a href="#oferta" class="row-lnk" style="display:grid;grid-template-columns:1fr 36px;gap:20px;align-items:baseline;padding:16px 4px 16px;border-bottom:1px solid #dfe8df;color:#16211a">
-<span><span style="display:block;font-size:clamp(20px,2.4vw,25px);font-weight:750;letter-spacing:-0.015em">Agenci i konwersacyjne AI</span><span style="display:block;margin-top:7px;font-size:14.5px;line-height:1.55;color:#5d6961;max-width:580px">AI, które czyta maile, decyduje i odpowiada — w środku procesu, nie obok niego.</span></span>
-<span style="font-size:22px;color:#0a7a52;justify-self:end" aria-hidden="true">→</span>
-</a>
-<a href="#oferta" class="row-lnk" style="display:grid;grid-template-columns:1fr 36px;gap:20px;align-items:baseline;padding:16px 4px 16px;border-bottom:1px solid #dfe8df;color:#16211a">
-<span><span style="display:block;font-size:clamp(20px,2.4vw,25px);font-weight:750;letter-spacing:-0.015em">Automatyzacje i integracje</span><span style="display:block;margin-top:7px;font-size:14.5px;line-height:1.55;color:#5d6961;max-width:580px">CRM, finanse i operacje wymieniają dane same. Nikt niczego nie przepisuje.</span></span>
+<a href="#oferta" class="row-lnk" style="display:grid;grid-template-columns:1fr 36px;gap:20px;align-items:baseline;padding:20px 4px 20px;border-bottom:1px solid #e7ece4;color:#16211a">
+<span><span style="display:block;font-size:clamp(20px,2.4vw,25px);font-weight:750;letter-spacing:-0.015em">Strategia i mapa transformacji</span><span style="display:block;margin-top:8px;font-size:14.5px;line-height:1.55;color:#4c5850;max-width:580px">Kolejność wdrożeń z policzonym zwrotem z każdego kroku. Plan, który obroni się przed zarządem.</span></span>
 <span style="font-size:22px;color:#0a7a52;justify-self:end" aria-hidden="true">→</span>
 </a>
 </div>
-<div class="krok-layer" data-layer="run" style="position:absolute;inset:0;transition:opacity 0.45s cubic-bezier(0.4,0,0.2,1),transform 0.45s cubic-bezier(0.4,0,0.2,1)">
-<a href="#oferta" class="row-lnk" style="display:grid;grid-template-columns:1fr 36px;gap:20px;align-items:baseline;padding:6px 4px 22px;border-bottom:1px solid #dfe8df;color:#16211a">
-<span><span style="display:block;font-size:clamp(20px,2.4vw,25px);font-weight:750;letter-spacing:-0.015em">Adopcja i szkolenia</span><span style="display:block;margin-top:8px;font-size:14.5px;line-height:1.55;color:#5d6961;max-width:580px">Twój zespół naprawdę pracuje po nowemu — nie wraca do Excela po miesiącu.</span></span>
+<div class="krok-layer" data-layer="apps" style="position:absolute;inset:0;transition:opacity 0.45s cubic-bezier(0.4,0,0.2,1),transform 0.45s cubic-bezier(0.4,0,0.2,1)">
+<a href="#oferta" class="row-lnk" style="display:grid;grid-template-columns:1fr 36px;gap:20px;align-items:baseline;padding:6px 4px 22px;border-bottom:1px solid #e7ece4;color:#16211a">
+<span><span style="display:block;font-size:clamp(20px,2.4vw,25px);font-weight:750;letter-spacing:-0.015em">Aplikacje i systemy szyte na miarę</span><span style="display:block;margin-top:8px;font-size:14.5px;line-height:1.55;color:#4c5850;max-width:580px">Software pod Twoje procesy — nie procesy naginane pod cudzy software.</span></span>
 <span style="font-size:22px;color:#0a7a52;justify-self:end" aria-hidden="true">→</span>
 </a>
-<a href="#oferta" class="row-lnk" style="display:grid;grid-template-columns:1fr 36px;gap:20px;align-items:baseline;padding:20px 4px 20px;border-bottom:1px solid #dfe8df;color:#16211a">
-<span><span style="display:block;font-size:clamp(20px,2.4vw,25px);font-weight:750;letter-spacing:-0.015em">Opieka i rozwój systemów</span><span style="display:block;margin-top:8px;font-size:14.5px;line-height:1.55;color:#5d6961;max-width:580px">System rośnie razem z firmą. Prowadzimy go, mierzymy i rozwijamy.</span></span>
+<a href="#oferta" class="row-lnk" style="display:grid;grid-template-columns:1fr 36px;gap:20px;align-items:baseline;padding:20px 4px 20px;border-bottom:1px solid #e7ece4;color:#16211a">
+<span><span style="display:block;font-size:clamp(20px,2.4vw,25px);font-weight:750;letter-spacing:-0.015em">Automatyzacje i integracje</span><span style="display:block;margin-top:8px;font-size:14.5px;line-height:1.55;color:#4c5850;max-width:580px">CRM, finanse i operacje wymieniają dane same. Nikt niczego nie przepisuje.</span></span>
+<span style="font-size:22px;color:#0a7a52;justify-self:end" aria-hidden="true">→</span>
+</a>
+</div>
+<div class="krok-layer" data-layer="ai" style="position:absolute;inset:0;transition:opacity 0.45s cubic-bezier(0.4,0,0.2,1),transform 0.45s cubic-bezier(0.4,0,0.2,1)">
+<a href="#oferta" class="row-lnk" style="display:grid;grid-template-columns:1fr 36px;gap:20px;align-items:baseline;padding:6px 4px 22px;border-bottom:1px solid #e7ece4;color:#16211a">
+<span><span style="display:block;font-size:clamp(20px,2.4vw,25px);font-weight:750;letter-spacing:-0.015em">Agenci i konwersacyjne AI</span><span style="display:block;margin-top:8px;font-size:14.5px;line-height:1.55;color:#4c5850;max-width:580px">AI, które czyta maile, decyduje i odpowiada — w środku procesu, nie obok niego.</span></span>
+<span style="font-size:22px;color:#0a7a52;justify-self:end" aria-hidden="true">→</span>
+</a>
+<a href="https://appto.ai" class="row-lnk" style="display:grid;grid-template-columns:1fr 36px;gap:20px;align-items:baseline;padding:20px 4px 20px;border-bottom:1px solid #e7ece4;color:#16211a">
+<span><span style="display:block;font-size:clamp(20px,2.4vw,25px);font-weight:750;letter-spacing:-0.015em">Appto.ai — gotowe AI z półki</span><span style="display:block;margin-top:8px;font-size:14.5px;line-height:1.55;color:#4c5850;max-width:580px">Nasz produkt AI, który wdrażasz szybciej niż budując od zera — sprawdzony w boju u nas.</span></span>
+<span style="font-size:22px;color:#0a7a52;justify-self:end" aria-hidden="true">↗</span>
+</a>
+</div>
+<div class="krok-layer" data-layer="care" style="position:absolute;inset:0;transition:opacity 0.45s cubic-bezier(0.4,0,0.2,1),transform 0.45s cubic-bezier(0.4,0,0.2,1)">
+<a href="#oferta" class="row-lnk" style="display:grid;grid-template-columns:1fr 36px;gap:20px;align-items:baseline;padding:6px 4px 22px;border-bottom:1px solid #e7ece4;color:#16211a">
+<span><span style="display:block;font-size:clamp(20px,2.4vw,25px);font-weight:750;letter-spacing:-0.015em">Adopcja i szkolenia</span><span style="display:block;margin-top:8px;font-size:14.5px;line-height:1.55;color:#4c5850;max-width:580px">Twój zespół naprawdę pracuje po nowemu — i zostaje przy tym na dłużej.</span></span>
+<span style="font-size:22px;color:#0a7a52;justify-self:end" aria-hidden="true">→</span>
+</a>
+<a href="#oferta" class="row-lnk" style="display:grid;grid-template-columns:1fr 36px;gap:20px;align-items:baseline;padding:20px 4px 20px;border-bottom:1px solid #e7ece4;color:#16211a">
+<span><span style="display:block;font-size:clamp(20px,2.4vw,25px);font-weight:750;letter-spacing:-0.015em">Opieka i rozwój systemów</span><span style="display:block;margin-top:8px;font-size:14.5px;line-height:1.55;color:#4c5850;max-width:580px">System rośnie razem z firmą. Prowadzimy go, mierzymy i rozwijamy.</span></span>
 <span style="font-size:22px;color:#0a7a52;justify-self:end" aria-hidden="true">→</span>
 </a>
 </div>
 </div>
 </div>
 
-<div id="metody" style="background:#0e2b1d;border-radius:26px;padding:clamp(40px,6vw,64px) clamp(24px,5vw,64px) 52px;margin-top:110px;scroll-margin-top:16px">
-<div class="metody-grid" style="display:grid;grid-template-columns:360px 1fr;gap:clamp(40px,6vw,88px);align-items:start">
+</section>
+
+<!-- ============ S5 · DLACZEGO MY ============ -->
+<section id="dlaczego-my" style="position:relative;overflow:hidden;background:radial-gradient(900px 520px at 12% -2%, rgba(0,205,119,0.14), transparent 60%), #0e2b1d;padding:clamp(72px,10vw,120px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) clamp(72px,9vw,110px);scroll-margin-top:16px">
+<div class="s6-grid" style="display:grid;grid-template-columns:1fr 400px;gap:clamp(40px,6vw,72px);align-items:stretch">
+
 <div>
-<h3 style="margin:0;font-size:clamp(28px,4vw,40px);line-height:1.08;letter-spacing:-0.024em;font-weight:800;color:#ffffff">Jak pracujemy</h3>
-<p style="margin:16px 0 0;font-size:16px;line-height:1.6;color:rgba(255,255,255,0.7);text-wrap:pretty">Ramię w ramię z Twoim zespołem — od jednego projektu albo od pełnej transformacji.</p>
-<div style="display:inline-flex;align-items:baseline;gap:12px;margin-top:30px;background:rgba(0,205,119,0.14);border:1px solid rgba(0,205,119,0.3);border-radius:10px;padding:12px 18px">
-<span style="font-size:22px;font-weight:800;color:var(--la-accent,#00CD77)">2–6 tygodni</span>
-<span style="font-size:12.5px;color:rgba(255,255,255,0.65)">do pierwszego procesu na produkcji</span>
-</div>
-</div>
-<div class="grid3" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:44px">
+<h2 class="h-sec" style="margin:0;max-width:720px;color:#ffffff;text-wrap:pretty">Czym się różnimy od dziesiątek firm „od AI".</h2>
+<div style="margin-top:clamp(30px,3.6vw,44px)">
+<div style="display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:baseline;padding:2px 0 18px">
+<span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:700;color:var(--la-accent,#00CD77)">01</span>
 <div>
-<div style="font-size:15px;font-weight:800;color:var(--la-accent,#00CD77)">01</div>
-<div style="margin-top:12px;font-size:19px;font-weight:750;color:#ffffff">Tydzień diagnozy u Ciebie</div>
-<p style="margin:9px 0 0;font-size:14px;line-height:1.6;color:rgba(255,255,255,0.62)">Siadamy z Twoim zespołem, mapujemy procesy i liczymy koszt status quo — w złotówkach i godzinach.</p>
+<div style="font-size:17px;font-weight:750;letter-spacing:-0.01em;color:#ffffff">Cały zespół, jedna odpowiedzialność</div>
+<p style="margin:5px 0 0;font-size:14px;line-height:1.55;color:rgba(255,255,255,0.62)">Analitycy, developerzy, PM i QA w jednym studiu — nie łańcuszek podwykonawców.</p>
 </div>
+</div>
+<div style="display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:baseline;padding:18px 0;border-top:1px solid rgba(255,255,255,0.11)">
+<span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:700;color:var(--la-accent,#00CD77)">02</span>
 <div>
-<div style="font-size:15px;font-weight:800;color:var(--la-accent,#00CD77)">02</div>
-<div style="margin-top:12px;font-size:19px;font-weight:750;color:#ffffff">Budowa z Twoimi ludźmi</div>
-<p style="margin:9px 0 0;font-size:14px;line-height:1.6;color:rgba(255,255,255,0.62)">Krótkie iteracje: pierwszy proces działa na produkcji w tygodnie, nie kwartały.</p>
+<div style="font-size:17px;font-weight:750;letter-spacing:-0.01em;color:#ffffff">Własny produkt AI</div>
+<p style="margin:5px 0 0;font-size:14px;line-height:1.55;color:rgba(255,255,255,0.62)">appto.ai, zbudowany tą samą metodą, którą wdrażamy u Ciebie. <a href="https://appto.ai" style="font-weight:700;color:var(--la-accent,#00CD77)">appto.ai ↗</a></p>
 </div>
+</div>
+<div style="display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:baseline;padding:18px 0;border-top:1px solid rgba(255,255,255,0.11)">
+<span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:700;color:var(--la-accent,#00CD77)">03</span>
 <div>
-<div style="font-size:15px;font-weight:800;color:var(--la-accent,#00CD77)">03</div>
-<div style="margin-top:12px;font-size:19px;font-weight:750;color:#ffffff">Adopcja, aż wejdzie w krew</div>
-<p style="margin:9px 0 0;font-size:14px;line-height:1.6;color:rgba(255,255,255,0.62)">Szkolimy, mierzymy efekty i rozwijamy system. Nie znikamy po wdrożeniu.</p>
+<div style="font-size:17px;font-weight:750;letter-spacing:-0.01em;color:#ffffff">Zaplecze Wise Group</div>
+<p style="margin:5px 0 0;font-size:14px;line-height:1.55;color:rgba(255,255,255,0.62)">Sellwise, HireWise, AdWise. Rozumiemy biznes, nie tylko kod.</p>
+</div>
+</div>
+<div style="display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:baseline;padding:18px 0;border-top:1px solid rgba(255,255,255,0.11);border-bottom:1px solid rgba(255,255,255,0.11)">
+<span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:700;color:var(--la-accent,#00CD77)">04</span>
+<div>
+<div style="font-size:17px;font-weight:750;letter-spacing:-0.01em;color:#ffffff">Stała cena, etap po etapie</div>
+<p style="margin:5px 0 0;font-size:14px;line-height:1.55;color:rgba(255,255,255,0.62)">Znasz koszt następnego kroku, zanim go zamówisz — bez roboczogodzin w ciemno.</p>
 </div>
 </div>
 </div>
-<div class="metody-badge-row" style="display:flex;align-items:center;justify-content:space-between;gap:40px;margin-top:52px;padding-top:26px;border-top:1px solid rgba(255,255,255,0.14)">
-<span style="font-size:14px;color:rgba(255,255,255,0.6)">Metody własne: <strong style="font-weight:700;color:#ffffff">WiseStack</strong> · <strong style="font-weight:700;color:#ffffff">[nazwa]</strong></span>
-<a href="#diagnoza" class="lnk-accent" style="font-size:15px;font-weight:700;color:var(--la-accent,#00CD77)">Zobacz proces →</a>
 </div>
+
+<div style="position:relative;min-height:440px">
+<div style="height:100%;border-radius:20px;overflow:hidden;background:#163021;border:1px solid rgba(255,255,255,0.08)">
+<img src="/szymon-kita.jpg" alt="Szymon Kita — założyciel Let's automate" style="width:100%;height:100%;object-fit:cover;object-position:50% 16%">
+</div>
+<div style="position:absolute;left:16px;bottom:16px;background:#ffffff;border-radius:12px;padding:11px 16px;box-shadow:0 18px 42px -18px rgba(0,0,0,0.5)">
+<div style="font-size:15px;font-weight:800;color:#16211a">Szymon Kita</div>
+<div style="margin-top:2px;font-size:12px;color:#7c877e">założyciel, Let's automate</div>
+</div>
+<div style="position:absolute;right:16px;bottom:16px;display:flex;align-items:center;gap:14px;background:#ffffff;border-radius:12px;padding:10px 15px;box-shadow:0 18px 42px -18px rgba(0,0,0,0.5)">
+<span><span style="display:block;font-size:18px;font-weight:800;color:#16211a">200+</span><span style="display:block;font-size:10.5px;color:#7c877e">wdrożeń</span></span>
+<span style="width:1px;height:26px;background:#e7ece4"></span>
+<span><span style="display:block;font-size:18px;font-weight:800;color:#16211a">30+</span><span style="display:block;font-size:10.5px;color:#7c877e">ekspertów</span></span>
+</div>
+</div>
+
 </div>
 </section>
 
-<!-- ============ S5 · DOWODY ============ -->
-<section id="dowody" style="background:#f4f8f2;padding:clamp(72px,9vw,110px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
-<div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:20px 56px">
-<div>
-<h2 style="margin:0;max-width:820px;font-size:clamp(32px,5.2vw,58px);line-height:1.04;letter-spacing:-0.032em;font-weight:800;text-wrap:pretty">Tak wygląda AI-native w praktyce.</h2>
-</div>
-<a href="#dowody" class="lnk-green" style="flex-shrink:0;margin-bottom:8px;font-size:16px;font-weight:700;color:#0a7a52">Zobacz wszystkie transformacje →</a>
+<!-- ============ S6 · DOWODY ============ -->
+<section id="dowody" style="padding:clamp(72px,9vw,110px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
+<div class="sec-head">
+<h2 class="h-sec" style="margin:0;max-width:560px;text-wrap:pretty">Tak wygląda AI-native w praktyce.</h2>
+<p class="sub" style="margin:0 0 6px;max-width:460px">Realne wdrożenia u naszych klientów — co robił zespół przed i jak ten sam proces działa po.</p>
 </div>
 
 <div class="grid4" style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:22px;margin-top:60px">
-<div style="background:#ffffff;border:1px solid #e7ece4;border-radius:18px;padding:30px 28px">
-<div style="font-family:ui-monospace,Menlo,monospace;font-size:11.5px;letter-spacing:0.1em;color:#8b968d">FINANSE</div>
+<div class="proof-card" style="background:#ffffff;border:1px solid #e7ece4;border-radius:18px;padding:30px 28px;box-shadow:0 24px 50px -34px rgba(18,38,28,0.14)">
+<div style="font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.1em;color:#808b83">FINANSE</div>
 <div style="margin-top:16px;font-size:56px;font-weight:800;letter-spacing:-0.035em;line-height:1">99,7<span style="color:var(--la-accent,#00CD77)">%</span></div>
 <div style="margin-top:8px;font-size:14px;font-weight:650;color:#4c5850">skuteczności księgowania</div>
 <div style="margin-top:22px;padding-top:18px;border-top:1px solid #eef1ec">
-<div style="font-size:12px;font-weight:700;letter-spacing:0.08em;color:#9aa69c">PRZED</div>
+<div style="font-size:12px;font-weight:700;letter-spacing:0.1em;color:#808b83">PRZED</div>
 <p style="margin:5px 0 0;font-size:13.5px;line-height:1.55;color:#7c877e">Trzy osoby przepisują faktury z maili. Zaległości rosną.</p>
-<div style="margin-top:13px;font-size:12px;font-weight:700;letter-spacing:0.08em;color:#0a7a52">PO</div>
+<div style="margin-top:13px;font-size:12px;font-weight:700;letter-spacing:0.1em;color:#0a7a52">PO</div>
 <p style="margin:5px 0 0;font-size:13.5px;line-height:1.55;color:#16211a">Obieg sam czyta, dekretuje i księguje. Zespół prowadzi wyjątki.</p>
 </div>
 </div>
-<div style="background:#ffffff;border:1px solid #e7ece4;border-radius:18px;padding:30px 28px">
-<div style="font-family:ui-monospace,Menlo,monospace;font-size:11.5px;letter-spacing:0.1em;color:#8b968d">SPRZEDAŻ</div>
+<div class="proof-card" style="background:#ffffff;border:1px solid #e7ece4;border-radius:18px;padding:30px 28px;box-shadow:0 24px 50px -34px rgba(18,38,28,0.14)">
+<div style="font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.1em;color:#808b83">SPRZEDAŻ</div>
 <div style="margin-top:16px;font-size:56px;font-weight:800;letter-spacing:-0.035em;line-height:1">−80<span style="color:var(--la-accent,#00CD77)">%</span></div>
 <div style="margin-top:8px;font-size:14px;font-weight:650;color:#4c5850">czasu przygotowania oferty</div>
 <div style="margin-top:22px;padding-top:18px;border-top:1px solid #eef1ec">
-<div style="font-size:12px;font-weight:700;letter-spacing:0.08em;color:#9aa69c">PRZED</div>
+<div style="font-size:12px;font-weight:700;letter-spacing:0.1em;color:#808b83">PRZED</div>
 <p style="margin:5px 0 0;font-size:13.5px;line-height:1.55;color:#7c877e">Oferta sklejana z CRM, cenników i maili — pół dnia pracy.</p>
-<div style="margin-top:13px;font-size:12px;font-weight:700;letter-spacing:0.08em;color:#0a7a52">PO</div>
+<div style="margin-top:13px;font-size:12px;font-weight:700;letter-spacing:0.1em;color:#0a7a52">PO</div>
 <p style="margin:5px 0 0;font-size:13.5px;line-height:1.55;color:#16211a">Szkic powstaje z danych CRM w minuty. Handlowiec dopina i wysyła.</p>
 </div>
 </div>
-<div style="background:#ffffff;border:1px solid #e7ece4;border-radius:18px;padding:30px 28px">
-<div style="font-family:ui-monospace,Menlo,monospace;font-size:11.5px;letter-spacing:0.1em;color:#8b968d">OPERACJE</div>
-<div style="margin-top:16px;font-size:56px;font-weight:800;letter-spacing:-0.035em;line-height:1">65<span style="font-size:26px;color:var(--la-accent,#00CD77)"> h/mies.</span></div>
-<div style="margin-top:8px;font-size:14px;font-weight:650;color:#4c5850">odzyskane w operacjach</div>
+<div class="proof-card" style="background:#ffffff;border:1px solid #e7ece4;border-radius:18px;padding:30px 28px;box-shadow:0 24px 50px -34px rgba(18,38,28,0.14)">
+<div style="font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.1em;color:#808b83">OPERACJE</div>
+<div style="margin-top:16px;font-size:56px;font-weight:800;letter-spacing:-0.035em;line-height:1">65<span style="color:var(--la-accent,#00CD77)">h</span></div>
+<div style="margin-top:8px;font-size:14px;font-weight:650;color:#4c5850">odzyskane miesięcznie w operacjach</div>
 <div style="margin-top:22px;padding-top:18px;border-top:1px solid #eef1ec">
-<div style="font-size:12px;font-weight:700;letter-spacing:0.08em;color:#9aa69c">PRZED</div>
+<div style="font-size:12px;font-weight:700;letter-spacing:0.1em;color:#808b83">PRZED</div>
 <p style="margin:5px 0 0;font-size:13.5px;line-height:1.55;color:#7c877e">Raporty klejone z czterech Exceli, decyzje na danych sprzed miesiąca.</p>
-<div style="margin-top:13px;font-size:12px;font-weight:700;letter-spacing:0.08em;color:#0a7a52">PO</div>
+<div style="margin-top:13px;font-size:12px;font-weight:700;letter-spacing:0.1em;color:#0a7a52">PO</div>
 <p style="margin:5px 0 0;font-size:13.5px;line-height:1.55;color:#16211a">Dane spływają same, raport czeka w poniedziałek o 7:00.</p>
 </div>
 </div>
-<div style="background:#ffffff;border:1px solid #e7ece4;border-radius:18px;padding:30px 28px">
-<div style="font-family:ui-monospace,Menlo,monospace;font-size:11.5px;letter-spacing:0.1em;color:#8b968d">OBSŁUGA KLIENTA</div>
+<div class="proof-card" style="background:#ffffff;border:1px solid #e7ece4;border-radius:18px;padding:30px 28px;box-shadow:0 24px 50px -34px rgba(18,38,28,0.14)">
+<div style="font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.1em;color:#808b83">OBSŁUGA KLIENTA</div>
 <div style="margin-top:16px;font-size:56px;font-weight:800;letter-spacing:-0.035em;line-height:1">−90<span style="color:var(--la-accent,#00CD77)">%</span></div>
 <div style="margin-top:8px;font-size:14px;font-weight:650;color:#4c5850">zapytań obsługiwanych ręcznie</div>
 <div style="margin-top:22px;padding-top:18px;border-top:1px solid #eef1ec">
-<div style="font-size:12px;font-weight:700;letter-spacing:0.08em;color:#9aa69c">PRZED</div>
+<div style="font-size:12px;font-weight:700;letter-spacing:0.1em;color:#808b83">PRZED</div>
 <p style="margin:5px 0 0;font-size:13.5px;line-height:1.55;color:#7c877e">Zespół odpisuje na te same pytania kilkanaście razy dziennie.</p>
-<div style="margin-top:13px;font-size:12px;font-weight:700;letter-spacing:0.08em;color:#0a7a52">PO</div>
+<div style="margin-top:13px;font-size:12px;font-weight:700;letter-spacing:0.1em;color:#0a7a52">PO</div>
 <p style="margin:5px 0 0;font-size:13.5px;line-height:1.55;color:#16211a">Agent AI odpowiada w minutach, z danymi zamówienia.</p>
 </div>
 </div>
 </div>
-</section>
-
-<!-- ============ S6 · DLACZEGO MY ============ -->
-<section id="dlaczego-my" style="padding:clamp(72px,10vw,120px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) clamp(72px,9vw,110px);scroll-margin-top:16px">
-<div class="s6-grid" style="display:grid;grid-template-columns:1fr 440px;gap:clamp(40px,6vw,88px);align-items:center">
-<div>
-<h2 style="margin:0;font-size:clamp(30px,4.6vw,50px);line-height:1.05;letter-spacing:-0.028em;font-weight:800;text-wrap:pretty">Czym się różnimy od dziesiątek firm „od AI".</h2>
-<div class="grid2" style="display:grid;grid-template-columns:1fr 1fr;gap:36px 48px;margin-top:48px">
-<div>
-<div style="font-family:ui-monospace,Menlo,monospace;font-size:13px;color:#0a7a52">01</div>
-<div style="margin-top:9px;font-size:20px;font-weight:700">Zostawiamy systemy, nie prezentacje</div>
-<p style="margin:8px 0 0;font-size:14.5px;line-height:1.6;color:#5d6961">Po naszej pracy w firmie działa software, który zarabia. Slajdy z rekomendacjami zostawiamy innym.</p>
-</div>
-<div>
-<div style="font-family:ui-monospace,Menlo,monospace;font-size:13px;color:#0a7a52">02</div>
-<div style="margin-top:9px;font-size:20px;font-weight:700">Cały zespół, jedna odpowiedzialność</div>
-<p style="margin:8px 0 0;font-size:14.5px;line-height:1.6;color:#5d6961">Analitycy, developerzy, PM i QA w jednym studiu. Za efekt odpowiadamy my — nie łańcuszek podwykonawców.</p>
-</div>
-<div>
-<div style="font-family:ui-monospace,Menlo,monospace;font-size:13px;color:#0a7a52">03</div>
-<div style="margin-top:9px;font-size:20px;font-weight:700">Sami jesteśmy swoim klientem</div>
-<p style="margin:8px 0 0;font-size:14.5px;line-height:1.6;color:#5d6961">appto.ai — nasz własny produkt AI — zbudowaliśmy tymi samymi metodami, które sprzedajemy. <a href="#dlaczego-my" class="lnk-green" style="font-weight:700;color:#0a7a52">appto.ai ↗</a></p>
-</div>
-<div>
-<div style="font-family:ui-monospace,Menlo,monospace;font-size:13px;color:#0a7a52">04</div>
-<div style="margin-top:9px;font-size:20px;font-weight:700">Najpierw biznes, potem technologia</div>
-<p style="margin:8px 0 0;font-size:14.5px;line-height:1.6;color:#5d6961">Za nami stoi grupa doradcza Wise Group: Sellwise (sprzedaż), HireWise (ludzie), AdWise (marketing). Rozumiemy Twoją firmę, zanim dotkniemy kodu.</p>
-</div>
-</div>
-<p style="margin:44px 0 0;font-size:21px;line-height:1.5;font-weight:550;color:#16211a;text-wrap:pretty">„Wiemy, jak to robić, bo robimy to codziennie — <span style="color:#0a7a52">na własny rachunek</span>."</p>
-</div>
-<div style="position:relative">
-<div style="height:540px">
-<img src="https://images.pexels.com/photos/3184292/pexels-photo-3184292.jpeg?auto=compress&cs=tinysrgb&w=1200" alt="Zdjęcie zespołu" style="width:100%;height:100%;object-fit:cover;border-radius:20px">
-</div>
-<div style="position:absolute;left:18px;bottom:18px;display:flex;align-items:center;gap:20px;background:#ffffff;border-radius:12px;padding:13px 20px;box-shadow:0 16px 40px -16px rgba(10,20,14,0.3)">
-<span><span style="display:block;font-size:21px;font-weight:800;color:#16211a">200+</span><span style="display:block;margin-top:1px;font-size:11.5px;color:#7c877e">wdrożeń</span></span>
-<span style="width:1px;height:32px;background:#e7ece4"></span>
-<span><span style="display:block;font-size:21px;font-weight:800;color:#16211a">30+</span><span style="display:block;margin-top:1px;font-size:11.5px;color:#7c877e">ekspertów</span></span>
-</div>
-</div>
+<div style="display:flex;justify-content:flex-end;margin-top:40px">
+<a href="#dowody" class="lnk-green" style="font-size:16px;font-weight:700;color:#0a7a52">Zobacz wszystkie transformacje →</a>
 </div>
 </section>
 
 <!-- ============ S7 · OPINIE ============ -->
-<section id="opinie" style="background:#f4f8f2;padding:clamp(72px,9vw,110px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
-<div class="s7-grid" style="display:grid;grid-template-columns:360px 1fr;gap:clamp(36px,5vw,64px);align-items:center">
-<div style="position:relative;height:420px">
-<img src="https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=900" alt="Mateusz Chinczewski" style="width:100%;height:100%;object-fit:cover;border-radius:20px">
-<div style="position:absolute;left:14px;bottom:14px;background:#ffffff;border-radius:11px;padding:10px 16px;box-shadow:0 14px 34px -14px rgba(10,20,14,0.35)">
-<div style="font-size:13.5px;font-weight:700;color:#16211a">Mateusz Chinczewski</div>
-<div style="font-size:11.5px;color:#7c877e">Prezes Zarządu, Finerto</div>
-</div>
-</div>
-<div>
-<blockquote style="margin:0;font-size:clamp(26px,3.6vw,40px);line-height:1.2;letter-spacing:-0.02em;font-weight:750;color:#16211a;text-wrap:pretty">„Wprowadzenie danych trwało godzinę. Dziś przesłanie oferty to <span style="color:#0a7a52">10 minut</span> — przy stu klientach miesięcznie oszczędności liczymy w etatach."</blockquote>
-<div style="display:inline-flex;align-items:center;flex-wrap:wrap;gap:10px;margin-top:26px;background:#ffffff;border:1px solid #e7ece4;border-radius:10px;padding:9px 16px">
-<span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#7c877e">przygotowanie oferty:</span>
-<span style="font-size:14px;font-weight:700;color:#9aa69c;text-decoration:line-through">60 min</span>
-<span style="color:#0a7a52;font-weight:800" aria-hidden="true">→</span>
-<span style="font-size:14px;font-weight:800;color:#0a7a52">10 min</span>
-</div>
+<section id="opinie" style="background:#f4f8f2;padding:clamp(72px,9vw,110px) 0;scroll-margin-top:16px;overflow:hidden">
+
+<div style="padding:0 max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2))">
+<div class="sec-head">
+<h2 class="h-sec" style="margin:0;max-width:500px;text-wrap:pretty">Nie musisz wierzyć nam na słowo.</h2>
+<p class="sub" style="margin:0 0 6px;max-width:460px">Firmy, które przeszły transformację razem z nami — o efektach współpracy własnymi słowami.</p>
 </div>
 </div>
 
-<div class="grid3" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:22px;margin-top:56px">
-<div style="background:#ffffff;border:1px solid #e7ece4;border-radius:16px;padding:26px 26px 22px">
-<p style="margin:0;font-size:15px;line-height:1.6;color:#33413a;text-wrap:pretty">„Let's automate wziął pełną odpowiedzialność za projekt i dowiózł go do końca. To dlatego powierzyliśmy im kolejny, znacznie większy."</p>
-<div style="display:flex;align-items:center;gap:12px;margin-top:18px">
-<span style="width:40px;height:40px;border-radius:50%;overflow:hidden;flex-shrink:0"><img src="https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Jakub Ciołkowski" style="width:40px;height:40px;object-fit:cover;border-radius:50%"></span>
+<!-- Ściana opinii (auto-przewijana) -->
+<div class="marq" style="margin-top:clamp(32px,4vw,48px)" role="region" aria-label="Opinie klientów">
+<div class="marq-track">
+<!-- Finerto -->
+<figure class="marq-card" style="margin:0">
+<div aria-hidden="true" style="font-size:13px;letter-spacing:2px;color:#0a7a52;margin-bottom:14px">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+<blockquote style="margin:0;flex:1;font-size:14.5px;line-height:1.6;color:#33413a;text-wrap:pretty">„Wprowadzenie danych trwało godzinę. Dziś przesłanie oferty to <span style="color:#0a7a52;font-weight:700">10 minut</span> — oszczędności liczymy w etatach."</blockquote>
+<div style="display:inline-flex;align-items:center;gap:8px;margin-top:16px;background:#f4f8f2;border:1px solid #e7ece4;border-radius:8px;padding:6px 11px;align-self:flex-start">
+<span style="font-size:12.5px;font-weight:700;color:#808b83;text-decoration:line-through">60 min</span>
+<span style="color:#0a7a52;font-weight:800" aria-hidden="true">→</span>
+<span style="font-size:12.5px;font-weight:800;color:#0a7a52">10 min</span>
+</div>
+<figcaption style="display:flex;align-items:center;gap:11px;margin-top:18px;padding-top:16px;border-top:1px solid #eef1ec">
+<span style="width:38px;height:38px;border-radius:50%;overflow:hidden;flex-shrink:0"><img src="https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Mateusz Chinczewski" style="width:38px;height:38px;object-fit:cover"></span>
+<span><span style="display:block;font-size:13.5px;font-weight:700;color:#16211a">Mateusz Chinczewski</span><span style="display:block;font-size:12px;color:#7c877e">Prezes Zarządu, Finerto</span></span>
+</figcaption>
+</figure>
+<!-- NARS -->
+<figure class="marq-card" style="margin:0">
+<div aria-hidden="true" style="font-size:13px;letter-spacing:2px;color:#0a7a52;margin-bottom:14px">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+<blockquote style="margin:0;flex:1;font-size:14.5px;line-height:1.6;color:#33413a;text-wrap:pretty">„Let's automate wziął pełną odpowiedzialność za projekt i dowiózł go do końca. To dlatego powierzyliśmy im kolejny, znacznie większy."</blockquote>
+<figcaption style="display:flex;align-items:center;gap:11px;margin-top:18px;padding-top:16px;border-top:1px solid #eef1ec">
+<span style="width:38px;height:38px;border-radius:50%;overflow:hidden;flex-shrink:0"><img src="https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Jakub Ciołkowski" style="width:38px;height:38px;object-fit:cover"></span>
 <span><span style="display:block;font-size:13.5px;font-weight:700;color:#16211a">Jakub Ciołkowski</span><span style="display:block;font-size:12px;color:#7c877e">Członek Zarządu, NARS Polska</span></span>
-</div>
-</div>
-<div style="background:#ffffff;border:1px solid #e7ece4;border-radius:16px;padding:26px 26px 22px">
-<p style="margin:0;font-size:15px;line-height:1.6;color:#33413a;text-wrap:pretty">„Bardzo dobrze zrozumieli nasze potrzeby i zaprojektowali scenariusz, który w pełni spełnił cele biznesowe. Otwartość i komunikacja to ich DNA."</p>
-<div style="display:flex;align-items:center;gap:12px;margin-top:18px">
-<span style="width:40px;height:40px;border-radius:50%;overflow:hidden;flex-shrink:0"><img src="https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Arkadiusz Andruch" style="width:40px;height:40px;object-fit:cover;border-radius:50%"></span>
+</figcaption>
+</figure>
+<!-- X2O -->
+<figure class="marq-card" style="margin:0">
+<div aria-hidden="true" style="font-size:13px;letter-spacing:2px;color:#0a7a52;margin-bottom:14px">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+<blockquote style="margin:0;flex:1;font-size:14.5px;line-height:1.6;color:#33413a;text-wrap:pretty">„Bardzo dobrze zrozumieli nasze potrzeby i zaprojektowali scenariusz, który w pełni spełnił cele biznesowe. Otwartość i komunikacja to ich DNA."</blockquote>
+<figcaption style="display:flex;align-items:center;gap:11px;margin-top:18px;padding-top:16px;border-top:1px solid #eef1ec">
+<span style="width:38px;height:38px;border-radius:50%;overflow:hidden;flex-shrink:0"><img src="https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Arkadiusz Andruch" style="width:38px;height:38px;object-fit:cover"></span>
 <span><span style="display:block;font-size:13.5px;font-weight:700;color:#16211a">Arkadiusz Andruch</span><span style="display:block;font-size:12px;color:#7c877e">Prezes Zarządu, X2O</span></span>
-</div>
-</div>
-<div style="background:#ffffff;border:1px solid #e7ece4;border-radius:16px;padding:26px 26px 22px">
-<p style="margin:0;font-size:15px;line-height:1.6;color:#33413a;text-wrap:pretty">„Korzystamy z usług Let's automate od roku. Świetna komunikacja, łatwo się dogadać, a jakość usług na wysokim poziomie."</p>
-<div style="display:flex;align-items:center;gap:12px;margin-top:18px">
-<span style="width:40px;height:40px;border-radius:50%;overflow:hidden;flex-shrink:0"><img src="https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Dominik Chylewski" style="width:40px;height:40px;object-fit:cover;border-radius:50%"></span>
+</figcaption>
+</figure>
+<!-- X3D -->
+<figure class="marq-card" style="margin:0">
+<div aria-hidden="true" style="font-size:13px;letter-spacing:2px;color:#0a7a52;margin-bottom:14px">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+<blockquote style="margin:0;flex:1;font-size:14.5px;line-height:1.6;color:#33413a;text-wrap:pretty">„Korzystamy z usług Let's automate od roku. Świetna komunikacja, łatwo się dogadać, a jakość usług na wysokim poziomie."</blockquote>
+<figcaption style="display:flex;align-items:center;gap:11px;margin-top:18px;padding-top:16px;border-top:1px solid #eef1ec">
+<span style="width:38px;height:38px;border-radius:50%;overflow:hidden;flex-shrink:0"><img src="https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Dominik Chylewski" style="width:38px;height:38px;object-fit:cover"></span>
 <span><span style="display:block;font-size:13.5px;font-weight:700;color:#16211a">Dominik Chylewski</span><span style="display:block;font-size:12px;color:#7c877e">Wspólnik, X3D</span></span>
+</figcaption>
+</figure>
+<!-- Duplikat zestawu dla płynnej pętli (ukryty dla czytników ekranu) -->
+<figure class="marq-card marq-dup" aria-hidden="true" style="margin:0">
+<div style="font-size:13px;letter-spacing:2px;color:#0a7a52;margin-bottom:14px">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+<blockquote style="margin:0;flex:1;font-size:14.5px;line-height:1.6;color:#33413a;text-wrap:pretty">„Wprowadzenie danych trwało godzinę. Dziś przesłanie oferty to <span style="color:#0a7a52;font-weight:700">10 minut</span> — oszczędności liczymy w etatach."</blockquote>
+<div style="display:inline-flex;align-items:center;gap:8px;margin-top:16px;background:#f4f8f2;border:1px solid #e7ece4;border-radius:8px;padding:6px 11px;align-self:flex-start">
+<span style="font-size:12.5px;font-weight:700;color:#808b83;text-decoration:line-through">60 min</span>
+<span style="color:#0a7a52;font-weight:800">→</span>
+<span style="font-size:12.5px;font-weight:800;color:#0a7a52">10 min</span>
+</div>
+<figcaption style="display:flex;align-items:center;gap:11px;margin-top:18px;padding-top:16px;border-top:1px solid #eef1ec">
+<span style="width:38px;height:38px;border-radius:50%;overflow:hidden;flex-shrink:0"><img src="https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=200" alt="" style="width:38px;height:38px;object-fit:cover"></span>
+<span><span style="display:block;font-size:13.5px;font-weight:700;color:#16211a">Mateusz Chinczewski</span><span style="display:block;font-size:12px;color:#7c877e">Prezes Zarządu, Finerto</span></span>
+</figcaption>
+</figure>
+<figure class="marq-card marq-dup" aria-hidden="true" style="margin:0">
+<div style="font-size:13px;letter-spacing:2px;color:#0a7a52;margin-bottom:14px">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+<blockquote style="margin:0;flex:1;font-size:14.5px;line-height:1.6;color:#33413a;text-wrap:pretty">„Let's automate wziął pełną odpowiedzialność za projekt i dowiózł go do końca. To dlatego powierzyliśmy im kolejny, znacznie większy."</blockquote>
+<figcaption style="display:flex;align-items:center;gap:11px;margin-top:18px;padding-top:16px;border-top:1px solid #eef1ec">
+<span style="width:38px;height:38px;border-radius:50%;overflow:hidden;flex-shrink:0"><img src="https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=200" alt="" style="width:38px;height:38px;object-fit:cover"></span>
+<span><span style="display:block;font-size:13.5px;font-weight:700;color:#16211a">Jakub Ciołkowski</span><span style="display:block;font-size:12px;color:#7c877e">Członek Zarządu, NARS Polska</span></span>
+</figcaption>
+</figure>
+<figure class="marq-card marq-dup" aria-hidden="true" style="margin:0">
+<div style="font-size:13px;letter-spacing:2px;color:#0a7a52;margin-bottom:14px">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+<blockquote style="margin:0;flex:1;font-size:14.5px;line-height:1.6;color:#33413a;text-wrap:pretty">„Bardzo dobrze zrozumieli nasze potrzeby i zaprojektowali scenariusz, który w pełni spełnił cele biznesowe. Otwartość i komunikacja to ich DNA."</blockquote>
+<figcaption style="display:flex;align-items:center;gap:11px;margin-top:18px;padding-top:16px;border-top:1px solid #eef1ec">
+<span style="width:38px;height:38px;border-radius:50%;overflow:hidden;flex-shrink:0"><img src="https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg?auto=compress&cs=tinysrgb&w=200" alt="" style="width:38px;height:38px;object-fit:cover"></span>
+<span><span style="display:block;font-size:13.5px;font-weight:700;color:#16211a">Arkadiusz Andruch</span><span style="display:block;font-size:12px;color:#7c877e">Prezes Zarządu, X2O</span></span>
+</figcaption>
+</figure>
+<figure class="marq-card marq-dup" aria-hidden="true" style="margin:0">
+<div style="font-size:13px;letter-spacing:2px;color:#0a7a52;margin-bottom:14px">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+<blockquote style="margin:0;flex:1;font-size:14.5px;line-height:1.6;color:#33413a;text-wrap:pretty">„Korzystamy z usług Let's automate od roku. Świetna komunikacja, łatwo się dogadać, a jakość usług na wysokim poziomie."</blockquote>
+<figcaption style="display:flex;align-items:center;gap:11px;margin-top:18px;padding-top:16px;border-top:1px solid #eef1ec">
+<span style="width:38px;height:38px;border-radius:50%;overflow:hidden;flex-shrink:0"><img src="https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=200" alt="" style="width:38px;height:38px;object-fit:cover"></span>
+<span><span style="display:block;font-size:13.5px;font-weight:700;color:#16211a">Dominik Chylewski</span><span style="display:block;font-size:12px;color:#7c877e">Wspólnik, X3D</span></span>
+</figcaption>
+</figure>
 </div>
 </div>
-</div>
-<div style="margin-top:16px;font-size:11.5px;color:#9aa69c;font-style:italic">Cytaty i nazwiska z opinii na letsautomate.pl; portrety przykładowe (sloty) — podmień na prawdziwe zdjęcia.</div>
+
 </section>
 
-<!-- ============ S8 · BAZA WIEDZY ============ -->
+<!-- ============ S8 · FINAŁ ============ -->
+<section id="diagnoza" style="padding:clamp(72px,10vw,120px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) clamp(72px,10vw,120px);scroll-margin-top:16px">
+<div class="s9-grid" style="background:#0e2b1d;border-radius:26px;overflow:hidden;padding:0;display:grid;grid-template-columns:1fr 760px;gap:0;align-items:stretch;box-shadow:0 34px 84px -44px rgba(18,38,28,0.4)">
+<div style="display:flex;flex-direction:column;padding:clamp(48px,6vw,84px) clamp(40px,5vw,64px)">
+<h2 class="h-sec" style="margin:0;color:#ffffff;text-wrap:pretty">Odzyskaj czas i pieniądze.</h2>
+<p style="margin:20px 0 0;max-width:430px;font-size:17px;line-height:1.6;color:rgba(255,255,255,0.75);text-wrap:pretty">Zacznij od bezpłatnej diagnozy — 30 minut i masz konkretny plan. Bez zobowiązań.</p>
+<div style="margin-top:30px;max-width:470px">
+<div style="font-family:ui-monospace,Menlo,monospace;font-size:11.5px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.5)">Z diagnozy wychodzisz z</div>
+<div style="display:flex;flex-direction:column;gap:11px;margin-top:14px">
+<div style="display:flex;align-items:flex-start;gap:11px;font-size:14.5px;line-height:1.5;color:rgba(255,255,255,0.85)"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#00CD77" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:2px" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span><strong style="font-weight:700;color:#fff">AI-Native Score</strong> — gdzie jesteś na skali</span></div>
+<div style="display:flex;align-items:flex-start;gap:11px;font-size:14.5px;line-height:1.5;color:rgba(255,255,255,0.85)"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#00CD77" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:2px" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span><strong style="font-weight:700;color:#fff">Koszt status quo</strong> — w złotówkach i godzinach</span></div>
+<div style="display:flex;align-items:flex-start;gap:11px;font-size:14.5px;line-height:1.5;color:rgba(255,255,255,0.85)"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#00CD77" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:2px" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span><strong style="font-weight:700;color:#fff">Mapa wdrożeń</strong> — priorytety ułożone wg ROI</span></div>
+</div>
+</div>
+<div class="final-badge-row" style="display:flex;align-items:center;gap:16px;margin-top:auto;padding-top:40px;border-top:0">
+<span style="font-size:11.5px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.5)">Część grupy</span>
+<img src="/uploads/wisegroup_logo_v2.webp" alt="Wise Group" style="height:19px;width:auto;display:block;filter:brightness(0) invert(1);opacity:0.9">
+</div>
+</div>
+
+<div class="cta-card" style="display:grid;grid-template-columns:1fr 262px;background:#ffffff">
+<div style="padding:clamp(28px,2.8vw,38px);display:flex;flex-direction:column;justify-content:center">
+<div style="display:flex;flex-direction:column;gap:15px">
+<div>
+<label style="display:block;font-size:12.5px;font-weight:650;color:#4c5850;margin-bottom:7px">E-mail <span style="color:#0a7a52">*</span></label>
+<input type="email" class="inp" placeholder="jan@firma.pl" style="width:100%;box-sizing:border-box;font-family:inherit;font-size:15px;color:#16211a;background:#fbfcfa;border:1px solid #e7ece4;border-radius:10px;padding:13px 15px;outline:none">
+</div>
+<div>
+<label style="display:block;font-size:12.5px;font-weight:650;color:#4c5850;margin-bottom:7px">Telefon <span style="color:#0a7a52">*</span></label>
+<div class="phone-field" style="display:flex;align-items:center;background:#f6f9f5;border:1px solid #e4ebe2;border-radius:11px">
+<div style="position:relative;display:flex;align-items:center;flex-shrink:0">
+<select aria-label="Numer kierunkowy" style="appearance:none;-webkit-appearance:none;-moz-appearance:none;border:0;background:transparent;font-family:inherit;font-size:15px;font-weight:600;color:#16211a;padding:14px 32px 14px 16px;outline:none;cursor:pointer">
+<option value="+48">+48</option>
+<option value="+49">+49</option>
+<option value="+44">+44</option>
+<option value="+380">+380</option>
+<option value="+420">+420</option>
+<option value="+1">+1</option>
+</select>
+<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#8a978c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;right:13px;top:50%;transform:translateY(-50%);pointer-events:none" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+</div>
+<span style="width:1px;height:22px;background:#e4ebe2;flex-shrink:0"></span>
+<input type="tel" aria-label="Numer telefonu" placeholder="571 000 000" style="flex:1;min-width:0;border:0;background:transparent;font-family:inherit;font-size:15px;color:#16211a;padding:14px 16px 14px 14px;outline:none"></div>
+</div>
+<div>
+<label style="display:block;font-size:12.5px;font-weight:650;color:#4c5850;margin-bottom:7px">W czym możemy pomóc?</label>
+<textarea class="inp" rows="3" placeholder="Np. chcemy zautomatyzować obieg faktur i połączyć CRM z ERP…" style="width:100%;box-sizing:border-box;font-family:inherit;font-size:15px;color:#16211a;background:#fbfcfa;border:1px solid #e7ece4;border-radius:10px;padding:13px 15px;outline:none;resize:vertical;min-height:80px"></textarea>
+</div>
+<label style="display:flex;align-items:flex-start;gap:10px;font-size:12.5px;line-height:1.5;color:#7c877e;cursor:pointer">
+<input type="checkbox" required style="margin-top:1px;width:16px;height:16px;flex-shrink:0;accent-color:#0a7a52;cursor:pointer">
+<span>Wyrażam zgodę na kontakt i przetwarzanie moich danych w celu obsługi zapytania. <a href="#" class="lnk-green" style="font-weight:600;color:#0a7a52">Polityka prywatności</a>.</span>
+</label>
+<a href="#diagnoza" class="btn-cta" style="display:flex;align-items:center;justify-content:center;gap:9px;margin-top:2px;background:#0a7a52;color:#ffffff;padding:16px 24px;border-radius:12px;font-weight:700;font-size:16px">Umów bezpłatną diagnozę <span aria-hidden="true">→</span></a>
+<div style="display:flex;flex-wrap:wrap;gap:9px 16px;margin-top:6px">
+<span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#7c877e"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#0a7a52" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>Twoje dane bezpieczne</span>
+<span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#7c877e"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#0a7a52" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3v5h5"/><path d="M7 3h7l5 5v11a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/></svg>NDA przed startem</span>
+<span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#7c877e"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#0a7a52" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8.5 12.4l2.4 2.4 4.6-5"/></svg>Bez zobowiązań</span>
+</div>
+</div>
+</div>
+<div class="cta-portrait" style="position:relative;background:#122a1e;min-height:360px">
+<img src="/szymon-kita.jpg" alt="Szymon Kita — założyciel Let's automate" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 16%;display:block">
+<div style="position:absolute;left:0;right:0;bottom:0;padding:30px 18px 14px;background:linear-gradient(to top,rgba(6,16,11,0.92),rgba(6,16,11,0.45) 55%,transparent)">
+<div style="font-size:14.5px;font-weight:800;color:#ffffff">Szymon Kita</div>
+<div style="margin-top:2px;font-size:11.5px;color:rgba(255,255,255,0.72)">założyciel, Let's automate</div>
+</div>
+</div>
+</div>
+</div>
+<div style="display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:6px 14px;margin-top:26px;font-size:15px;color:#4c5850">
+<span>Wolisz napisać lub zadzwonić?</span>
+<a href="mailto:hello@letsautomate.pl" class="lnk-green" style="font-weight:700;color:#0a7a52">hello@letsautomate.pl</a>
+<span style="color:#c3cbc2">·</span>
+<a href="tel:+48571399932" class="lnk-green" style="font-weight:700;color:#0a7a52">+48 571 399 932</a>
+</div>
+</section>
+
+<!-- ============ S9 · BAZA WIEDZY ============ -->
 <section id="wiedza" style="padding:clamp(64px,8vw,100px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
 <div class="s8-grid" style="display:grid;grid-template-columns:340px 1fr;gap:clamp(40px,6vw,88px);align-items:start">
 <div>
-<h2 style="margin:0;font-size:clamp(26px,3.4vw,36px);line-height:1.1;letter-spacing:-0.022em;font-weight:800">Zanim się spotkamy, poczytaj.</h2>
+<h2 class="h-mod" style="margin:0">Wolisz najpierw poczytać?</h2>
 <div style="display:flex;gap:22px;margin-top:18px;font-size:15px;font-weight:700">
 <a href="#wiedza" class="lnk-green" style="color:#0a7a52">Blog ↗</a>
 <a href="#wiedza" class="lnk-green" style="color:#0a7a52">YouTube ↗</a>
@@ -615,52 +941,57 @@
 </div>
 </section>
 
-<!-- ============ S9 · FINAŁ ============ -->
-<section id="diagnoza" style="padding:0 max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) clamp(72px,10vw,120px);scroll-margin-top:16px">
-<div class="s9-grid" style="background:#0e2b1d;border-radius:26px;padding:clamp(48px,7vw,88px) clamp(24px,6vw,80px);display:grid;grid-template-columns:1fr 460px;gap:clamp(40px,6vw,88px);align-items:center">
+<!-- ============ S10 · FAQ ============ -->
+<section id="faq" style="background:#f4f8f2;padding:clamp(72px,9vw,110px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
+<div class="faq-grid" style="display:grid;grid-template-columns:1fr 720px;gap:clamp(40px,6vw,88px);align-items:start">
 <div>
-<h2 style="margin:0;font-size:clamp(28px,4vw,42px);line-height:1.1;letter-spacing:-0.025em;font-weight:800;color:#ffffff;text-wrap:pretty">Status quo też kosztuje — tylko nikt Ci nie wystawia za nie faktury.</h2>
-<p style="margin:22px 0 0;max-width:440px;font-size:17.5px;line-height:1.6;color:rgba(255,255,255,0.75);text-wrap:pretty">Policzmy to — bezpłatnie, na Twoich danych.</p>
-<div class="stat-row" style="display:flex;gap:40px;margin-top:44px">
-<div><div style="font-size:32px;font-weight:800;color:#ffffff">200+</div><div style="margin-top:3px;font-size:13px;color:rgba(255,255,255,0.55)">wdrożeń za nami</div></div>
-<div><div style="font-size:32px;font-weight:800;color:#ffffff">140+</div><div style="margin-top:3px;font-size:13px;color:rgba(255,255,255,0.55)">firm zmienia sposób działania</div></div>
-<div><div style="font-size:32px;font-weight:800;color:#ffffff">48 h</div><div style="margin-top:3px;font-size:13px;color:rgba(255,255,255,0.55)">i wracamy z terminem</div></div>
+<h2 class="h-sec" style="margin:0;text-wrap:pretty">Masz pytania?<br>Zaczynamy od odpowiedzi.</h2>
+<p class="sub" style="margin:20px 0 0;max-width:380px">Najczęstsze wątpliwości, zanim usiądziemy do rozmowy. Nie znalazłeś swojej?</p>
+<a href="#diagnoza" class="lnk-green" style="display:inline-block;margin-top:18px;font-size:16px;font-weight:700;color:#0a7a52">Zadaj je nam wprost →</a>
 </div>
-<div class="final-badge-row" style="display:flex;align-items:center;gap:16px;margin-top:46px;padding-top:24px;border-top:1px solid rgba(255,255,255,0.14)">
-<span style="font-size:11.5px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.5)">Część grupy</span>
-<img src="/uploads/wisegroup_logo_retina.png.webp" alt="WiseGroup" style="height:20px;display:block;filter:brightness(0) invert(1);opacity:0.9">
+<div class="faq-list">
+<div class="faq-item open">
+<button class="faq-q" aria-expanded="true">Kiedy zobaczę pierwsze efekty?<span class="faq-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"></path></svg></span></button>
+<div class="faq-a"><div class="faq-a-inner">Pierwszy proces działa na produkcji zwykle w 2–6 tygodni — nie w kwartały. Pełna transformacja to droga na około 12 miesięcy, ale wartość wraca po każdym kroku, a nie dopiero na końcu.</div></div>
 </div>
+<div class="faq-item">
+<button class="faq-q" aria-expanded="false">Ile to kosztuje?<span class="faq-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"></path></svg></span></button>
+<div class="faq-a"><div class="faq-a-inner">Zaczynamy od bezpłatnej diagnozy — najpierw liczymy, ile kosztuje Cię status quo. Wycenę wdrożenia dostajesz dopiero, gdy znamy zakres i policzony zwrot z każdego kroku. Żadnych abonamentów w ciemno.</div></div>
 </div>
-<div style="background:#ffffff;border-radius:18px;padding:clamp(28px,4vw,38px) clamp(24px,4vw,40px)">
-<div style="font-size:22px;font-weight:800;letter-spacing:-0.015em;color:#16211a">Umów bezpłatną diagnozę</div>
-<div style="display:flex;flex-direction:column;gap:12px;margin-top:22px">
-<input type="email" class="inp" placeholder="Służbowy e-mail" style="width:100%;box-sizing:border-box;font-family:inherit;font-size:15px;color:#16211a;background:#fbfcfa;border:1px solid #dfe5dd;border-radius:10px;padding:14px 15px;outline:none">
-<input type="tel" class="inp" placeholder="Telefon" style="width:100%;box-sizing:border-box;font-family:inherit;font-size:15px;color:#16211a;background:#fbfcfa;border:1px solid #dfe5dd;border-radius:10px;padding:14px 15px;outline:none">
-<select class="inp" style="width:100%;box-sizing:border-box;font-family:inherit;font-size:15px;color:#5d6961;background:#fbfcfa;border:1px solid #dfe5dd;border-radius:10px;padding:14px 12px;outline:none">
-<option>Największy problem operacyjny</option>
-<option>Ręczne przepisywanie danych</option>
-<option>Fakturowanie i rozliczenia</option>
-<option>Obsługa klienta nie nadąża</option>
-<option>Raporty i decyzje czekają</option>
-<option>Coś innego</option>
-</select>
-<a href="#diagnoza" class="btn-dark" style="display:flex;align-items:center;justify-content:center;gap:9px;margin-top:4px;background:#16211a;color:#ffffff;padding:16px 24px;border-radius:12px;font-weight:700;font-size:16px">Umów bezpłatną diagnozę <span aria-hidden="true">→</span></a>
+<div class="faq-item">
+<button class="faq-q" aria-expanded="false">Czy nasze dane są bezpieczne?<span class="faq-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"></path></svg></span></button>
+<div class="faq-a"><div class="faq-a-inner">Tak. Pracujemy zgodnie z RODO, na Twojej infrastrukturze lub w wydzielonym środowisku. Twoje dane służą wyłącznie do działania Twoich procesów — nie trafiają do trenowania cudzych modeli.</div></div>
 </div>
-<div style="margin-top:14px;text-align:center;font-size:13px;line-height:1.5;color:#7c877e">W 48 h wracamy z terminem · wolisz test online? <a href="#diagnoza" class="lnk-green" style="font-weight:700;color:#0a7a52">Sprawdź Score →</a></div>
+<div class="faq-item">
+<button class="faq-q" aria-expanded="false">Mamy już jakieś narzędzia — zaczynamy od zera?<span class="faq-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"></path></svg></span></button>
+<div class="faq-a"><div class="faq-a-inner">Nie. Budujemy na tym, co już działa — łączymy Twój CRM, finanse i operacje, zamiast kazać Ci wszystko wymieniać. Software dopasowujemy do tego, jak pracujesz dzisiaj.</div></div>
+</div>
+<div class="faq-item">
+<button class="faq-q" aria-expanded="false">Czym różnicie się od firm „wdrażających ChatGPT"?<span class="faq-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"></path></svg></span></button>
+<div class="faq-a"><div class="faq-a-inner">Nie zostawiamy prezentacji ani bota na stronie. Zostawiamy działający software, który AI napędza od środka procesów — od ofertowania po rozliczenia. Za nami stoi też grupa doradcza, więc plan obroni się przed zarządem.</div></div>
+</div>
+<div class="faq-item">
+<button class="faq-q" aria-expanded="false">Co, jeśli zespół nie będzie chciał z tego korzystać?<span class="faq-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"></path></svg></span></button>
+<div class="faq-a"><div class="faq-a-inner">Dlatego nie znikamy po wdrożeniu. Szkolimy zespół, mierzymy realne użycie i rozwijamy system, aż nowy sposób pracy wejdzie w krew — a nie wróci do Excela po miesiącu.</div></div>
+</div>
 </div>
 </div>
 </section>
 
-<!-- ============ S10 · STOPKA ============ -->
+<!-- ============ S11 · STOPKA ============ -->
 <footer style="background:#16211a;color:#e8ece7;padding:64px max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) 36px">
 <div class="foot-grid" style="display:grid;grid-template-columns:1fr 220px 220px 220px;gap:clamp(32px,4vw,56px);align-items:start">
 <div>
 <img src="/uploads/logo-2.svg" alt="Let's automate" style="height:22px;display:block;filter:brightness(0) invert(1)">
 <p style="margin:18px 0 0;max-width:300px;font-size:14px;line-height:1.6;color:#9fb0a3">Studio transformacji AI. Projektujemy i budujemy systemy, na których firmy działają po nowemu.</p>
 <div style="margin-top:20px;font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.1em;color:#7d9080">CZĘŚĆ WISE GROUP · SELLWISE · HIREWISE · ADWISE</div>
+<div style="margin-top:22px;font-size:12.5px;line-height:1.75;color:#7d9080">[Let's automate sp. z o.o.]<br>[ul. Przykładowa 1, 00-000 Wrocław]<br>NIP [000-000-00-00] · KRS [0000000000]</div>
+<div style="display:flex;gap:14px;margin-top:16px">
+<a href="[URL LinkedIn firmy]" class="foot-lnk" aria-label="LinkedIn" style="display:inline-flex;align-items:center;gap:7px;color:#cfd9cf;font-size:13.5px"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 100 5 2.5 2.5 0 000-5zM3 9h4v12H3zM9 9h3.8v1.64h.05c.53-.95 1.83-1.95 3.77-1.95 4.03 0 4.78 2.5 4.78 5.75V21h-4v-4.86c0-1.16-.02-2.65-1.77-2.65-1.77 0-2.04 1.26-2.04 2.57V21H9z"/></svg>LinkedIn</a>
+</div>
 </div>
 <div>
-<div style="font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.12em;color:#7d9080;margin-bottom:15px">USŁUGI</div>
+<div style="font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.1em;color:#7d9080;margin-bottom:15px">USŁUGI</div>
 <div style="display:flex;flex-direction:column;gap:10px;font-size:14.5px">
 <a href="#oferta" class="foot-lnk" style="color:#cfd9cf">Automatyzacja procesów</a>
 <a href="#oferta" class="foot-lnk" style="color:#cfd9cf">Integracje systemów</a>
@@ -670,7 +1001,7 @@
 </div>
 </div>
 <div>
-<div style="font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.12em;color:#7d9080;margin-bottom:15px">FIRMA</div>
+<div style="font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.1em;color:#7d9080;margin-bottom:15px">FIRMA</div>
 <div style="display:flex;flex-direction:column;gap:10px;font-size:14.5px">
 <a href="#dlaczego-my" class="foot-lnk" style="color:#cfd9cf">O nas</a>
 <a href="#dowody" class="foot-lnk" style="color:#cfd9cf">Transformacje</a>
@@ -679,7 +1010,7 @@
 </div>
 </div>
 <div>
-<div style="font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.12em;color:#7d9080;margin-bottom:15px">ZACZNIJ</div>
+<div style="font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.1em;color:#7d9080;margin-bottom:15px">ZACZNIJ</div>
 <p style="margin:0;font-size:14.5px;line-height:1.6;color:#cfd9cf">Bezpłatna diagnoza kosztu status quo — wynik w liczbach.</p>
 <a href="#diagnoza" class="btn-accent" style="display:inline-flex;align-items:center;gap:8px;margin-top:15px;background:var(--la-accent,#00CD77);color:#0b1a11;padding:12px 20px;border-radius:10px;font-weight:750;font-size:14px">Umów diagnozę →</a>
 </div>
@@ -696,6 +1027,15 @@
 </div>
 
 <script>
+  // ---- Sticky header: cień/obramowanie po scrollu ----
+  (function(){
+    var h = document.querySelector('.site-header');
+    if(!h) return;
+    function upd(){ h.classList.toggle('scrolled', window.scrollY > 130); }
+    upd();
+    window.addEventListener('scroll', upd, {passive:true});
+  })();
+
   // ---- Hero: makieta pulpitu skalowana do szerokości kontenera ----
   (function(){
     var frame = document.querySelector('.mockup-frame');
@@ -725,7 +1065,40 @@
     }, 3000);
   })();
 
-  // ---- Zakładki oferty (S4) — Zaplanuj / Zbuduj / Wdróż ----
+  // ---- Droga pod hero (S1b, wariant A) — reveal wykresu i osi czasu ----
+  (function(){
+    var sec = document.querySelector('.la-droga');
+    if(!sec) return;
+    if(!('IntersectionObserver' in window)){ sec.classList.add('in'); return; }
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){ if(e.isIntersecting){ sec.classList.add('in'); io.disconnect(); } });
+    }, { threshold: 0.25 });
+    io.observe(sec);
+  })();
+
+  // ---- FAQ (S9b) — akordeon ----
+  (function(){
+    var items = document.querySelectorAll('.faq-item');
+    if(!items.length) return;
+    items.forEach(function(item){
+      var btn = item.querySelector('.faq-q');
+      if(!btn) return;
+      btn.addEventListener('click', function(){
+        var willOpen = !item.classList.contains('open');
+        items.forEach(function(other){
+          other.classList.remove('open');
+          var b = other.querySelector('.faq-q');
+          if(b) b.setAttribute('aria-expanded', 'false');
+        });
+        if(willOpen){
+          item.classList.add('open');
+          btn.setAttribute('aria-expanded', 'true');
+        }
+      });
+    });
+  })();
+
+  // ---- Zakładki oferty (S4) — Strategia / Aplikacje / AI / Opieka ----
   (function(){
     var tabs = document.querySelectorAll('.krok-tab');
     var layers = document.querySelectorAll('.krok-layer');
@@ -735,7 +1108,7 @@
         t.style.background = on ? '#ffffff' : 'transparent';
         t.style.boxShadow = on ? '0 12px 28px -16px rgba(12,28,20,0.3)' : 'none';
         var num = t.querySelector('.krok-num');
-        if(num) num.style.color = on ? '#0a7a52' : '#9aa69c';
+        if(num) num.style.color = on ? '#0a7a52' : '#808b83';
       });
       layers.forEach(function(l){
         var on = l.dataset.layer === k;
@@ -746,7 +1119,7 @@
       });
     }
     tabs.forEach(function(t){ t.addEventListener('click', function(){ setKrok(t.dataset.krok); }); });
-    setKrok('plan');
+    setKrok('strat');
   })();
 
   // ---- Rachunek (S2) — licznik od 0 do wartości docelowej gdy widoczny ----
