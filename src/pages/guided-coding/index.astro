@@ -1,0 +1,467 @@
+---
+// HUB /guided-coding — spec v2 (zastępuje v1)
+//
+// ZMIANA KIERUNKU: ze strachu na rzemiosło.
+// v1 stała na rachunku za ryzyko, wycieku danych i zegarze CRA. To ustawiało
+// nas jako tego, kto znalazł problem — czyli tego, kto chce sprzedać
+// rozwiązanie. FAQ „nie będziemy nic wciskać" było plastrem na ranę, którą
+// strona sama zadawała kilka sekcji wyżej.
+//
+// v2 stoi na jednym zdaniu, prawdziwym dla obu segmentów i niebędącym groźbą:
+//   „Pierwsza wersja powstaje w weekend. Dziesiąta zmiana zajmuje miesiąc."
+//
+// WYPADŁO CAŁKOWICIE: rachunek za ryzyko, wszystkie wzmianki o CRA
+// i regulacjach, statystyki 97/30/75, „Pytanie brzmi: które" w hero,
+// kolumna „to zbudujcie z nami" w macierzy (publiczny upsell w miejscu,
+// które miało budować zaufanie), nazwa „Score gotowości produkcyjnej".
+import LaBase from '../../layouts/LaBase.astro';
+import GcFaq from '../../components/GcFaq.astro';
+import GcCta from '../../components/GcCta.astro';
+
+const title = "Guided Coding — wsparcie dla firm, które budują software same | Let's automate";
+const description = 'Pierwsza wersja powstaje w weekend, dziesiąta zmiana zajmuje miesiąc. Uczymy, jak utrzymać tempo — standardy, przegląd i opieka nad kodem tworzonym z AI. Nie zabieramy Wam klawiatury.';
+
+// Sekcja 2 · Rozpoznanie — MOMENTY, nie zagrożenia.
+// Żadna pozycja nie może się czytać jako „zrobiliście coś źle".
+const rozpoznanie = [
+  { kat: 'TEMPO', ico: 'gauge', h: 'Pierwsza wersja w weekend, dziesiąta zmiana w miesiąc', d: 'Na początku wszystko szło błyskawicznie. Dziś każda poprawka wymaga ostrożności i trwa dłużej niż poprzednia.' },
+  { kat: 'ZAUFANIE', ico: 'shield', h: 'Boicie się ruszać to, co działa', d: 'Jest jedna część systemu, której nikt nie chce dotykać. Wszyscy ją omijają i wszyscy wiedzą która.' },
+  { kat: 'PRZEKAZANIE', ico: 'handoff', h: 'Druga osoba nie umie tego odpalić', d: 'Uruchomienie projektu od zera wie tylko autor. Nikt tego nie spisał, bo nigdy nie było na to czasu.' },
+  { kat: 'POWTARZALNOŚĆ', ico: 'repeat', h: 'Za każdym razem trochę inaczej', d: 'Każdy pracuje z AI po swojemu. Efekt jest nierówny, więc każdą zmianę trzeba czytać od początku.' },
+  { kat: 'POMIAR', ico: 'chart', h: 'Nie wiecie, czy idzie lepiej', d: 'Wrażenie mówi, że tak. Ale nie ma liczby, do której dałoby się wrócić za kwartał.' },
+  { kat: 'GRANICE', ico: 'compass', h: 'Nie wiecie, gdzie kończą się możliwości', d: 'Do którego momentu można iść samodzielnie, a kiedy warto zawołać kogoś — nie ma na to intuicji.' },
+];
+
+// Sekcja 7 · Co zwykle znajdujemy — bez liczb, dopóki nie ma statystyki.
+// Obserwacje, nie zagrożenia. Każda kończy się skalą roboty, nie skalą szkody.
+const obserwacje = [
+  { os: 'DOSTĘPY', d: 'Klucze i hasła leżą w kodzie, bo na starcie tak było najszybciej. Przeniesienie ich w bezpieczne miejsce to zwykle dwie godziny roboty.' },
+  { os: 'DANE', d: 'Aplikacja zbiera dane klientów, ale nikt nie ustalił, jak długo je trzyma i kto ma do nich dostęp. To decyzja, nie poprawka w kodzie.' },
+  { os: 'PRZEKAZANIE', d: 'Uruchomić projekt od zera potrafi jedna osoba. Zwykle ta sama, która ma najwięcej innej roboty.' },
+  { os: 'POWRÓT', d: 'Kopia zapasowa istnieje. Nikt nigdy nie sprawdził, czy da się z niej wrócić.' },
+  { os: 'KOSZTY', d: 'Rachunek rośnie z każdym eksperymentem, bo po nieudanych nikt nie sprząta.' },
+];
+
+// Sekcja 8 · FAQ huba — tylko pytania O WYBÓR ŚCIEŻKI.
+// Szczegółowe zostają na podstronach, żeby się nie dublowały.
+const faq = [
+  {
+    q: 'Czy na koniec zaproponujecie nam duży projekt?',
+    a: 'Przegląd kończy się listą rzeczy do zrobienia, w której najszersza część to „zróbcie sami" — z instrukcjami. Jeśli przy czymś naszym zdaniem warto pomóc, powiemy to i uzasadnimy. Wycenę dostaniecie tylko wtedy, gdy o nią poprosicie.',
+  },
+  {
+    q: 'Jesteśmy pomiędzy tymi dwiema ścieżkami. Co wtedy?',
+    a: 'Napiszcie w dwóch zdaniach, co macie. Odpowiemy, która ścieżka ma sens — także wtedy, gdy odpowiedź brzmi „na razie żadna".',
+  },
+  {
+    q: 'Przejmujecie nasz kod?',
+    a: 'Nie. Kod zostaje Wasz, w Waszym repozytorium. Wychodzicie z własnym sposobem pracy, nie z zależnością od nas.',
+  },
+  {
+    q: 'To szkolenie?',
+    a: 'Nie. Ze szkolenia wychodzi się z notatkami. Stąd wychodzicie z rzeczą: spisanymi zasadami, regułami dla narzędzi AI i definicją tego, co u Was znaczy „gotowe".',
+  },
+];
+---
+<LaBase title={title} description={description} ogImage="/og/hub.png" ctaHref="#rozwidlenie" ctaLabel="Zobacz ścieżki">
+<style is:global slot="head">
+  /* ---------- krzywa tempa w hero ---------- */
+  .tempo-card{max-width:1000px;margin:clamp(36px,5vw,56px) auto 0;background:#ffffff;border:1px solid #e7ece4;border-radius:22px;padding:clamp(22px,3vw,32px);box-shadow:0 34px 74px -44px rgba(18,38,28,0.3)}
+  .tempo-svg .t-line{stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset 1.6s ease .2s}
+  .tempo-card.in .t-line{stroke-dashoffset:0}
+  .tempo-svg .t-mark{opacity:0;transition:opacity .5s ease 1.4s}
+  .tempo-card.in .t-mark{opacity:1}
+  @media (prefers-reduced-motion:reduce){ .tempo-svg .t-line,.tempo-svg .t-mark{transition:none} }
+
+  /* ---------- rozwidlenie: dwa różne światy, nie dwa warianty ---------- */
+  .fork{display:flex;flex-direction:column;border-radius:22px;padding:clamp(28px,3.4vw,42px);transition:transform .3s cubic-bezier(.4,0,.2,1),box-shadow .3s,border-color .3s}
+  .fork-a{background:#ffffff;border:1px solid #e7ece4;box-shadow:0 24px 50px -34px rgba(18,38,28,0.16)}
+  .fork-a:hover{transform:translateY(-5px);border-color:var(--la-accent,#00CD77);box-shadow:0 34px 70px -34px rgba(18,38,28,0.28)}
+  .fork-b{background:#0e2b1d;background-image:radial-gradient(520px 320px at 100% 0%, rgba(0,205,119,0.2), transparent 62%);border:1px solid #0e2b1d;box-shadow:0 24px 50px -30px rgba(14,43,29,0.5)}
+  .fork-b:hover{transform:translateY(-5px);box-shadow:0 34px 70px -30px rgba(14,43,29,0.62)}
+  .fork [aria-hidden="true"].arr{display:inline-block;transition:transform .18s}
+  .fork:hover [aria-hidden="true"].arr{transform:translateX(4px)}
+  @media (prefers-reduced-motion:reduce){ .fork{transition:none} .fork:hover{transform:none} }
+
+  /* ---------- dwie ścieżki (sekcja 4) ---------- */
+  .lanes .lane-path{stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset 1.6s ease .1s}
+  .lanes.in .lane-path{stroke-dashoffset:0}
+  .lanes .lane-dash{opacity:0;transition:opacity 1.1s ease .25s}
+  .lanes.in .lane-dash{opacity:1}
+  .lanes .lane-node{opacity:0;transform:translateY(6px);transition:opacity .5s ease,transform .5s ease}
+  .lanes.in .lane-node{opacity:1;transform:none}
+  @media (prefers-reduced-motion:reduce){ .lanes .lane-path,.lanes .lane-dash,.lanes .lane-node{transition:none} }
+
+  /* ---------- kontra vibe / guided ---------- */
+  .vs-row{display:grid;grid-template-columns:132px 1fr 1fr;gap:0;border-top:1px solid #e7ece4}
+  .vs-row>*{padding:20px 22px}
+  .vs-lab{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;letter-spacing:0.1em;text-transform:uppercase;color:#808b83;display:flex;align-items:center}
+  .vs-a{color:#8b968d;font-size:15px;line-height:1.5;border-left:1px solid #e7ece4}
+  .vs-b{color:#16211a;font-size:15px;line-height:1.5;font-weight:650;border-left:1px solid #e7ece4;background:#ffffff}
+
+  @media (max-width:900px){
+    .lanes-chart{height:300px !important}
+    .vs-row{grid-template-columns:1fr}
+    .vs-row>*{padding:14px 18px}
+    .vs-a,.vs-b{border-left:0}
+    .vs-lab{padding-bottom:0}
+  }
+  @media (max-width:600px){
+    .fork-meta{flex-direction:column !important;align-items:flex-start !important;gap:10px !important}
+    .lanes-chart{height:250px !important}
+    .segc{grid-template-columns:1fr !important}
+  }
+</style>
+
+<!-- ============ S1 · HERO ============ -->
+<section style="position:relative;overflow:hidden;background:radial-gradient(900px 520px at 82% -6%, rgba(0,205,119,0.14), transparent 62%), #ffffff;padding:clamp(28px,4vw,56px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) clamp(56px,7vw,88px)">
+<div style="display:flex;flex-direction:column;align-items:center;text-align:center">
+<div class="eyebrow" style="color:#0a7a52;font-weight:650">Guided Coding</div>
+<h1 style="margin:clamp(18px,2.6vw,28px) 0 0;font-size:clamp(29px,5vw,58px);line-height:1.06;letter-spacing:-0.035em;font-weight:800;color:#16211a;text-wrap:balance;max-width:960px">Budujecie sami. Zróbcie to tak, żeby nie zwolniło.</h1>
+<p style="margin:26px 0 0;max-width:720px;font-size:clamp(17px,2.2vw,20px);line-height:1.5;color:#16211a;font-weight:650;text-wrap:pretty">Pierwsza wersja powstaje w weekend. Dziesiąta zmiana zajmuje miesiąc — i nikt nie wie dlaczego.</p>
+<p style="margin:16px 0 0;max-width:760px;font-size:clamp(16px,2.1vw,18.5px);line-height:1.6;color:#33413a;text-wrap:pretty">To nie jest wina AI ani Waszych ludzi. Start stał się darmowy, a utrzymanie tempa to zupełnie inna umiejętność, której nikt nie dostał razem z narzędziem. Tej właśnie uczymy — i nie zabieramy Wam przy tym klawiatury.</p>
+<div class="hero-actions" style="display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:16px 22px;margin-top:34px">
+<a href="#rozwidlenie" class="btn-dark" style="display:inline-flex;align-items:center;gap:10px;background:#16211a;color:#ffffff;padding:18px 32px;border-radius:12px;font-weight:650;font-size:16.5px;box-shadow:0 14px 30px -14px rgba(16,33,26,0.45)">Zobacz, która ścieżka jest Wasza <span aria-hidden="true">→</span></a>
+<a href="#metoda" class="btn-ghost" style="display:inline-flex;align-items:center;gap:8px;font-size:16.5px;font-weight:700;color:#16211a;background:rgba(255,255,255,0.6);backdrop-filter:blur(4px);padding:18px 26px;border-radius:12px;border:1px solid rgba(22,33,26,0.16)">Jak pracujemy →</a>
+</div>
+</div>
+
+<!-- Wizual: krzywa tempa. Nie panel ze score'em ryzyka — to była groźba. -->
+<div class="tempo-card">
+<div style="display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:12px 24px">
+<div style="font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#808b83">Tempo wprowadzania zmian</div>
+<div style="display:flex;flex-wrap:wrap;gap:10px 22px">
+<span style="display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:650;color:#16211a"><span style="display:block;width:22px;height:3px;border-radius:2px;background:var(--la-accent,#00CD77)"></span>z szynami</span>
+<span style="display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:650;color:#8b968d"><span style="display:block;width:22px;height:3px;border-radius:2px;background:repeating-linear-gradient(90deg,#b9a08f 0 6px,transparent 6px 10px)"></span>bez szyn</span>
+</div>
+</div>
+<svg class="tempo-svg" viewBox="0 0 1000 320" style="display:block;width:100%;height:auto;margin-top:14px" role="img" aria-label="Wykres: bez spisanych zasad tempo wprowadzania zmian spada z każdą kolejną zmianą; z szynami utrzymuje się na stałym poziomie.">
+<defs>
+<linearGradient id="gc-tempo-fill" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="#00CD77" stop-opacity="0.14"></stop>
+<stop offset="1" stop-color="#00CD77" stop-opacity="0"></stop>
+</linearGradient>
+</defs>
+<line x1="92" y1="70" x2="980" y2="70" stroke="#eef1ec" stroke-width="1" stroke-dasharray="3 7"></line>
+<line x1="92" y1="150" x2="980" y2="150" stroke="#eef1ec" stroke-width="1" stroke-dasharray="3 7"></line>
+<line x1="92" y1="230" x2="980" y2="230" stroke="#eef1ec" stroke-width="1" stroke-dasharray="3 7"></line>
+<line x1="92" y1="272" x2="980" y2="272" stroke="#e3e7e0" stroke-width="1.5"></line>
+<line x1="92" y1="44" x2="92" y2="272" stroke="#e3e7e0" stroke-width="1.5"></line>
+<text x="80" y="62" text-anchor="end" font-size="14" fill="#b6bfb6" font-family="ui-monospace,Menlo,monospace">szybko</text>
+<text x="80" y="248" text-anchor="end" font-size="14" fill="#b6bfb6" font-family="ui-monospace,Menlo,monospace">wolno</text>
+
+<path class="t-line" d="M110,66 C200,70 250,88 320,112 C400,140 450,190 540,214 C650,242 760,250 970,254" fill="none" stroke="#c2a894" stroke-width="3" stroke-linecap="round" stroke-dasharray="1" pathLength="1"></path>
+<path d="M110,96 C240,99 340,101 470,103 C640,106 800,108 970,110 L970,272 L110,272 Z" fill="url(#gc-tempo-fill)" opacity="0.9"></path>
+<path class="t-line" d="M110,96 C240,99 340,101 470,103 C640,106 800,108 970,110" fill="none" stroke="#00CD77" stroke-width="3.6" stroke-linecap="round" stroke-dasharray="1" pathLength="1"></path>
+
+<g class="t-mark">
+<line x1="540" y1="86" x2="540" y2="272" stroke="#d8dfd6" stroke-width="1" stroke-dasharray="4 5"></line>
+<circle cx="540" cy="214" r="6" fill="#ffffff" stroke="#c2a894" stroke-width="3"></circle>
+<circle cx="540" cy="104" r="6" fill="#ffffff" stroke="#00CD77" stroke-width="3"></circle>
+<text x="556" y="166" font-size="14.5" font-weight="650" fill="#16211a" font-family="'Schibsted Grotesk',system-ui,sans-serif">ta różnica</text>
+</g>
+<text x="960" y="238" text-anchor="end" font-size="14.5" font-weight="650" fill="#a08a76" font-family="'Schibsted Grotesk',system-ui,sans-serif">bez szyn</text>
+<text x="960" y="90" text-anchor="end" font-size="14.5" font-weight="700" fill="#0a7a52" font-family="'Schibsted Grotesk',system-ui,sans-serif">z szynami</text>
+
+<text x="110" y="296" text-anchor="middle" font-size="13.5" fill="#8b968d" font-family="ui-monospace,Menlo,monospace">1.</text>
+<text x="325" y="296" text-anchor="middle" font-size="13.5" fill="#8b968d" font-family="ui-monospace,Menlo,monospace">5.</text>
+<text x="540" y="296" text-anchor="middle" font-size="13.5" fill="#8b968d" font-family="ui-monospace,Menlo,monospace">10.</text>
+<text x="988" y="296" text-anchor="end" font-size="13.5" fill="#8b968d" font-family="ui-monospace,Menlo,monospace">20. zmiana</text>
+</svg>
+</div>
+<p style="margin:20px auto 0;max-width:700px;text-align:center;font-size:15.5px;line-height:1.6;color:#4c5850;text-wrap:pretty">Nie chodzi o to, żeby zacząć szybciej. Chodzi o to, żeby dziesiąta zmiana szła tak samo sprawnie jak pierwsza.</p>
+</section>
+
+<!-- ============ TRUST ============ -->
+<div style="display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:12px 28px;padding:26px max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));border-top:1px solid #eef1ec;border-bottom:1px solid #eef1ec;background:#ffffff;font-size:14px;color:#4c5850">
+<span><strong style="color:#16211a;font-weight:700">200+ wdrożeń</strong> tą samą metodą, której uczymy</span>
+<span style="color:#dfe4dd">·</span>
+<span><strong style="color:#16211a;font-weight:700">140+ firm</strong> zmienia z nami sposób działania</span>
+<span style="color:#dfe4dd">·</span>
+<span style="display:inline-flex;align-items:center;gap:9px">Zaplecze grupy doradczej <img src="/uploads/wisegroup_logo_v2.webp" alt="Wise Group" style="height:14px;width:auto;display:block;opacity:0.7"></span>
+</div>
+
+<!-- ============ S2 · ROZPOZNANIE ============ -->
+<section id="rozpoznanie" class="sec-pad">
+<div class="sec-head">
+<h2 class="h-sec" style="margin:0;max-width:420px;text-wrap:pretty">Znajome?</h2>
+<p class="sub" style="margin:0 0 6px;max-width:520px">Żadna z tych rzeczy nie znaczy, że zrobiliście coś źle. Znaczy tylko, że projekt wszedł w etap, w którym potrzeba innych narzędzi niż na starcie.</p>
+</div>
+<div class="grid3" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:22px;margin-top:56px">
+{rozpoznanie.map((r) => (
+  <div class="lift rv" style="background:#ffffff;border:1px solid #e7ece4;border-radius:18px;padding:28px 26px 26px;box-shadow:0 24px 50px -34px rgba(18,38,28,0.14)">
+    <span style="display:flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:11px;background:#e9f2ea;color:#0a7a52">
+      {r.ico === 'gauge' && <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 18a9 9 0 1 1 17 0"/><path d="M12 14l4-3.5"/></svg>}
+      {r.ico === 'shield' && <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.2 7.9-8 9-4.8-1.1-8-4.5-8-9V6l8-3z"/></svg>}
+      {r.ico === 'handoff' && <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h11"/><path d="M12 8l4 4-4 4"/><path d="M20 4v16"/></svg>}
+      {r.ico === 'repeat' && <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10a6 6 0 0 1 6-6h9"/><path d="M16 1l3 3-3 3"/><path d="M20 14a6 6 0 0 1-6 6H5"/><path d="M8 23l-3-3 3-3"/></svg>}
+      {r.ico === 'chart' && <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg>}
+      {r.ico === 'compass' && <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5 5-2z"/></svg>}
+    </span>
+    <div style="margin-top:20px;font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.1em;color:#808b83">{r.kat}</div>
+    <div style="margin-top:8px;font-size:19px;font-weight:750;line-height:1.25;letter-spacing:-0.01em;color:#16211a">{r.h}</div>
+    <p style="margin:9px 0 0;font-size:14.5px;line-height:1.6;color:#4c5850">{r.d}</p>
+  </div>
+))}
+</div>
+</section>
+
+<!-- ============ S3 · ROZWIDLENIE (sekcja główna huba) ============ -->
+<!-- Awansuje zaraz za rozpoznanie. Reszta strony ma tylko doprowadzić
+     czytelnika do właściwych drzwi. Karty muszą się czytać jako DWA RÓŻNE
+     ŚWIATY, nie dwa warianty tego samego — stąd światło kontra ciemność. -->
+<section id="rozwidlenie" style="background:#f4f8f2;padding:clamp(72px,10vw,120px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
+<div style="text-align:center">
+<h2 class="h-sec" style="margin:0;text-wrap:pretty">Dwie zupełnie różne sytuacje.</h2>
+<p class="sub" style="margin:18px auto 0;max-width:620px">Nie ma jednej odpowiedzi dla firmy, w której nikt nie jest programistą, i dla dziesięcioosobowego działu IT. Wybierzcie tę, która opisuje Was.</p>
+</div>
+
+<div class="grid2" style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:clamp(40px,5vw,60px)">
+<a href="/guided-coding/bez-dzialu-it" class="fork fork-a rv">
+<span style="display:inline-flex;align-items:center;justify-content:center;width:46px;height:46px;border-radius:13px;background:#e9f2ea;color:#0a7a52"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.8-3.8a6 6 0 0 1-7.9 7.9l-6.9 6.9a2.1 2.1 0 0 1-3-3l6.9-6.9a6 6 0 0 1 7.9-7.9l-3.8 3.8z"/></svg></span>
+<div style="margin-top:22px;font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.12em;color:#0a7a52">Budujecie bez zespołu IT</div>
+<div style="margin-top:12px;font-size:clamp(23px,2.7vw,31px);font-weight:800;line-height:1.15;letter-spacing:-0.022em;color:#16211a">Chcecie robić to porządniej</div>
+<p style="margin:16px 0 0;font-size:15.5px;line-height:1.62;color:#4c5850;text-wrap:pretty">Zbudowaliście narzędzia w Lovable, Replit czy podobnych. Działają i to nie przypadek. Teraz chcecie wiedzieć, jak robić to lepiej: szybciej, spokojniej i tak, żeby dało się do tego wrócić za pół roku.</p>
+<div style="margin-top:auto;padding-top:28px">
+<div style="padding-top:20px;border-top:1px solid #eef1ec">
+<div class="eyebrow" style="font-size:11px">Zaczynacie od</div>
+<div class="fork-meta" style="display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-top:9px">
+<span style="font-size:17px;font-weight:750;color:#16211a">Przegląd</span>
+<span style="display:inline-flex;align-items:center;gap:9px;white-space:nowrap"><span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#7c877e">5 dni</span><span style="background:#e6f7ec;color:#0a7a52;font-size:12.5px;font-weight:750;padding:4px 10px;border-radius:7px">od [8 000] zł</span></span>
+</div>
+<span class="lnk-green" style="display:inline-block;margin-top:18px;font-size:15.5px;font-weight:700;color:#0a7a52">Zobacz, co dostajecie <span class="arr" aria-hidden="true">→</span></span>
+</div>
+</div>
+</a>
+
+<a href="/guided-coding/dla-zespolow" class="fork fork-b rv">
+<span style="display:inline-flex;align-items:center;justify-content:center;width:46px;height:46px;border-radius:13px;background:rgba(0,205,119,0.16);color:var(--la-accent,#00CD77)"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="23 6 13.5 16.5 8.5 11.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></span>
+<div style="margin-top:22px;font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.12em;color:var(--la-accent,#00CD77)">Macie zespół inżynieryjny</div>
+<div style="margin-top:12px;font-size:clamp(23px,2.7vw,31px);font-weight:800;line-height:1.15;letter-spacing:-0.022em;color:#ffffff">Chcecie wycisnąć z AI wszystko</div>
+<p style="margin:16px 0 0;font-size:15.5px;line-height:1.62;color:rgba(255,255,255,0.76);text-wrap:pretty">Cały zespół ma narzędzia AI. Pytanie, którego nikt nie zadaje głośno: ile z obiecywanego przyspieszenia realnie do Was dociera — i co robią zespoły, u których dociera więcej.</p>
+<div style="margin-top:auto;padding-top:28px">
+<div style="padding-top:20px;border-top:1px solid rgba(255,255,255,0.14)">
+<div style="font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.5)">Zaczynacie od</div>
+<div class="fork-meta" style="display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-top:9px">
+<span style="font-size:17px;font-weight:750;color:#ffffff">Diagnostic sprint</span>
+<span style="display:inline-flex;align-items:center;gap:9px;white-space:nowrap"><span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:rgba(255,255,255,0.6)">2 tygodnie</span><span style="background:rgba(0,205,119,0.18);color:var(--la-accent,#00CD77);font-size:12.5px;font-weight:750;padding:4px 10px;border-radius:7px">od [25 000] zł</span></span>
+</div>
+<span style="display:inline-block;margin-top:18px;font-size:15.5px;font-weight:700;color:var(--la-accent,#00CD77)">Zobacz zakres <span class="arr" aria-hidden="true">→</span></span>
+</div>
+</div>
+</a>
+</div>
+
+<a href="#kontakt" class="segc rv" style="display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center;margin-top:20px;background:#ffffff;border:1px solid #e4ebe2;border-radius:18px;padding:26px clamp(24px,3vw,36px);transition:border-color .2s,box-shadow .2s" onmouseover="this.style.borderColor='#cfe0d3';this.style.boxShadow='0 20px 40px -30px rgba(18,38,28,0.28)'" onmouseout="this.style.borderColor='#e4ebe2';this.style.boxShadow='none'">
+<div>
+<div style="font-size:18px;font-weight:750;letter-spacing:-0.01em;color:#16211a">A jeśli macie oba naraz?</div>
+<p style="margin:8px 0 0;max-width:840px;font-size:14.5px;line-height:1.6;color:#4c5850;text-wrap:pretty">Dział IT pracuje z agentami, a równolegle marketing i operacje budują własne narzędzia, o których IT nie wie. To trzecia sytuacja i wymaga innego podejścia — zaczynamy od tego, żeby w ogóle zobaczyć, co w firmie powstało.</p>
+</div>
+<span class="lnk-green" style="font-size:15.5px;font-weight:700;color:#0a7a52;white-space:nowrap">Porozmawiajmy →</span>
+</a>
+</section>
+
+<!-- ============ S4 · TA SAMA DROGA, INNY KIEROWCA ============ -->
+<!-- Etykiety punktów przecięcia z v1 („prototyp trafia na produkcję",
+     „wchodzą wymogi CRA") wypadły — to były momenty przekazania nam roboty.
+     Zastąpione neutralnymi progami umiejętności. -->
+<section id="droga" class="lanes sec-pad">
+<div class="sec-head">
+<h2 class="h-sec" style="margin:0;max-width:640px;text-wrap:pretty">To nie jest inna droga. To ta sama droga, tylko Wy prowadzicie.</h2>
+<p class="sub" style="margin:0 0 6px;max-width:470px">Wise AI Score mierzy, gdzie jest Wasza firma — niezależnie od tego, kto pisze kod. Guided coding przesuwa Was po tej samej skali, tylko klawiaturę trzymacie Wy.</p>
+</div>
+
+<div style="display:flex;flex-wrap:wrap;gap:14px 28px;margin-top:clamp(32px,4vw,48px)">
+<span style="display:inline-flex;align-items:center;gap:9px;font-size:13.5px;font-weight:650;color:#16211a"><span style="display:block;width:26px;height:3px;border-radius:2px;background:#0e2b1d"></span>Budujemy my</span>
+<span style="display:inline-flex;align-items:center;gap:9px;font-size:13.5px;font-weight:650;color:#16211a"><span style="display:block;width:26px;height:3px;border-radius:2px;background:repeating-linear-gradient(90deg,#00CD77 0 7px,transparent 7px 11px)"></span>Budujecie Wy, prowadzimy razem</span>
+<span style="display:inline-flex;align-items:center;gap:9px;font-size:13.5px;color:#7c877e"><span style="display:block;width:11px;height:11px;border-radius:50%;border:3px solid #16211a;background:#ffffff"></span>próg umiejętności — obie ścieżki przez niego przechodzą</span>
+</div>
+
+<div class="lanes-chart" style="position:relative;margin-top:clamp(36px,4vw,52px);height:clamp(260px,27vw,380px)">
+<svg viewBox="0 0 1328 380" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%;overflow:visible">
+<line x1="10" y1="275" x2="1328" y2="275" stroke="#e7ece4" stroke-width="1" stroke-dasharray="3 7"></line>
+<line x1="10" y1="190" x2="1328" y2="190" stroke="#e7ece4" stroke-width="1" stroke-dasharray="3 7"></line>
+<line x1="10" y1="105" x2="1328" y2="105" stroke="#e7ece4" stroke-width="1" stroke-dasharray="3 7"></line>
+<line x1="10" y1="360" x2="1328" y2="360" stroke="#e3e7e0" stroke-width="1.5"></line>
+<!-- Obie krzywe przechodzą przez te same punkty H1(360,250) H2(700,168) H3(1040,96)
+     i zbiegają w E(1300,44) — przecięcia są dokładne z konstrukcji, nie „na oko". -->
+<path class="lane-path" d="M10,300 C140,300 230,250 360,250 C470,250 590,156 700,168 C810,180 930,108 1040,96 C1130,86 1210,32 1300,44" fill="none" stroke="#0e2b1d" stroke-width="3" stroke-linecap="round" pathLength="1"></path>
+<path class="lane-dash" d="M10,332 C140,332 230,250 360,250 C470,250 590,180 700,168 C810,156 930,84 1040,96 C1130,106 1210,56 1300,44" fill="none" stroke="var(--la-accent,#00CD77)" stroke-width="3.5" stroke-linecap="round" stroke-dasharray="11 9"></path>
+</svg>
+
+<div style="position:absolute;left:0;top:-4px;font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:0.1em;color:#b6bfb6">AI-NATIVE SCORE ↑</div>
+<div style="position:absolute;right:4px;top:83.4%;transform:translateY(-50%);font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:0.1em;color:#c3cbc2">ETAP 1</div>
+<div style="position:absolute;right:4px;top:61%;transform:translateY(-50%);font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:0.1em;color:#c3cbc2">ETAP 2</div>
+<div style="position:absolute;right:4px;top:38.7%;transform:translateY(-50%);font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:0.1em;color:#c3cbc2">ETAP 3</div>
+<div style="position:absolute;right:4px;top:16.3%;transform:translateY(-50%);font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:0.1em;font-weight:700;color:#0a7a52">ETAP 4</div>
+
+<div style="position:absolute;left:27.1%;top:65.8%;width:0;height:0;z-index:3"><div class="lane-node" style="transition-delay:.5s"><span style="position:absolute;left:0;top:0;transform:translate(-50%,-50%);width:13px;height:13px;border-radius:50%;background:#ffffff;border:3px solid #16211a;display:block"></span><span style="position:absolute;left:0;top:-40px;transform:translateX(-50%);white-space:nowrap;background:#ffffff;border:1px solid #e2e9e0;color:#16211a;font-size:11.5px;font-weight:650;padding:5px 11px;border-radius:7px;box-shadow:0 10px 24px -14px rgba(18,38,28,0.4)">pierwsze zasady spisane</span></div></div>
+<div style="position:absolute;left:52.7%;top:44.2%;width:0;height:0;z-index:3"><div class="lane-node" style="transition-delay:.75s"><span style="position:absolute;left:0;top:0;transform:translate(-50%,-50%);width:13px;height:13px;border-radius:50%;background:#ffffff;border:3px solid #16211a;display:block"></span><span style="position:absolute;left:0;top:-40px;transform:translateX(-50%);white-space:nowrap;background:#ffffff;border:1px solid #e2e9e0;color:#16211a;font-size:11.5px;font-weight:650;padding:5px 11px;border-radius:7px;box-shadow:0 10px 24px -14px rgba(18,38,28,0.4)">każdy pracuje tak samo</span></div></div>
+<div style="position:absolute;left:78.3%;top:25.3%;width:0;height:0;z-index:3"><div class="lane-node" style="transition-delay:1s"><span style="position:absolute;left:0;top:0;transform:translate(-50%,-50%);width:13px;height:13px;border-radius:50%;background:#ffffff;border:3px solid #16211a;display:block"></span><span style="position:absolute;left:0;top:-40px;transform:translateX(-50%);white-space:nowrap;background:#ffffff;border:1px solid #e2e9e0;color:#16211a;font-size:11.5px;font-weight:650;padding:5px 11px;border-radius:7px;box-shadow:0 10px 24px -14px rgba(18,38,28,0.4)">projekt przeżywa zmianę autora</span></div></div>
+<div style="position:absolute;left:97.9%;top:11.6%;width:0;height:0;z-index:3"><div class="lane-node" style="transition-delay:1.2s"><span style="position:absolute;left:0;top:0;transform:translate(-50%,-50%);width:16px;height:16px;border-radius:50%;background:var(--la-accent,#00CD77);border:3px solid #ffffff;box-shadow:0 0 18px rgba(0,205,119,0.65);display:block"></span><span style="position:absolute;right:6px;top:-44px;white-space:nowrap;display:inline-flex;align-items:center;gap:7px;background:#0e2b1d;color:#ffffff;font-size:12.5px;font-weight:700;padding:6px 13px;border-radius:8px"><span style="width:7px;height:7px;border-radius:50%;background:var(--la-accent,#00CD77);display:inline-block"></span>ten sam cel</span></div></div>
+</div>
+
+<p style="margin:clamp(32px,4vw,44px) 0 0;max-width:780px;font-size:clamp(16px,2.1vw,18.5px);line-height:1.58;color:#4c5850;text-wrap:pretty">Większość firm jedzie obiema naraz i to jest normalne. <strong style="color:#16211a;font-weight:700">Nie chodzi o to, żeby wybrać stronę — chodzi o to, żeby wiedzieć, na którym pasie się właśnie jest.</strong></p>
+</section>
+
+<!-- ============ S5 · CZYM JEST GUIDED CODING ============ -->
+<section id="metoda" style="background:#f4f8f2;padding:clamp(72px,10vw,120px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
+<div class="split" style="display:grid;grid-template-columns:1fr 1fr;gap:clamp(40px,6vw,80px);align-items:start">
+<div>
+<h2 class="h-sec" style="margin:0;text-wrap:pretty">Guided coding to nie kurs. To sposób pracy.</h2>
+<div style="margin-top:clamp(28px,3vw,38px);background:#0e2b1d;border-radius:20px;padding:clamp(26px,3vw,34px)">
+<div style="font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.5)">Definicja</div>
+<p style="margin:12px 0 0;font-size:clamp(17px,2.2vw,20px);line-height:1.5;color:#ffffff;text-wrap:pretty"><strong style="font-weight:800">Guided coding</strong> — praktyka, w której AI jest prowadzone przez specyfikację, ograniczenia i weryfikację, a nie przez wyczucie.</p>
+</div>
+<p style="margin:24px 0 0;font-size:15.5px;line-height:1.65;color:#4c5850;text-wrap:pretty">„Prowadzone" odnosi się do AI, nie do Was. Nie chodzi o to, żeby ktoś trzymał Waszych ludzi za rękę — chodzi o to, żeby model miał szyny, po których jedzie.</p>
+</div>
+
+<div>
+<div style="border:1px solid #e4ebe2;border-radius:18px;overflow:hidden;background:#ffffff">
+<div style="display:grid;grid-template-columns:132px 1fr 1fr">
+<div style="padding:18px 22px"></div>
+<div style="padding:18px 22px;border-left:1px solid #e7ece4;font-size:13.5px;font-weight:700;letter-spacing:0.02em;color:#8b968d">Vibe coding</div>
+<div style="padding:18px 22px;border-left:1px solid #e7ece4;background:#fbfcfa;font-size:13.5px;font-weight:800;letter-spacing:0.02em;color:#0a7a52">Guided coding</div>
+</div>
+<div class="vs-row">
+<div class="vs-lab">Zakres</div>
+<div class="vs-a">„Zrób mi panel zamówień"</div>
+<div class="vs-b">Spisany zakres i kryteria akceptacji</div>
+</div>
+<div class="vs-row">
+<div class="vs-lab">Weryfikacja</div>
+<div class="vs-a">Działa u mnie</div>
+<div class="vs-b">Testy, review, bramka przed produkcją</div>
+</div>
+<div class="vs-row">
+<div class="vs-lab">Wiedza</div>
+<div class="vs-a">W głowie autora</div>
+<div class="vs-b">W repozytorium, przeżywa rotację</div>
+</div>
+</div>
+
+<!-- UWAGA: link musi docelowo prowadzić do WŁASNEJ STRONY WISESTACKU.
+     To najmocniejszy element wiarygodności, a dziś ląduje w ogólnej sekcji
+     „Czym się różnimy" na stronie głównej. Pozycja z listy przed publikacją. -->
+<div style="margin-top:clamp(24px,3vw,30px);border:1px solid #e4ebe2;border-radius:18px;padding:clamp(24px,3vw,30px);background:#ffffff">
+<div class="eyebrow" style="font-size:11px">Dowód</div>
+<p style="margin:12px 0 0;font-size:15.5px;line-height:1.65;color:#16211a;text-wrap:pretty">Nie wymyśliliśmy tego na potrzeby oferty. Tak budujemy sami — nasza implementacja tej metodyki nazywa się <strong style="font-weight:750">WiseStack</strong> i rozwijamy ją od ponad 200 wdrożeń.</p>
+<a href="/#dlaczego-my" class="lnk-green" style="display:inline-block;margin-top:14px;font-size:15px;font-weight:700;color:#0a7a52">Zobacz WiseStack →</a>
+<p style="margin:16px 0 0;font-size:14.5px;line-height:1.6;color:#7c877e">U Was będzie wyglądać inaczej. Od tego jesteśmy.</p>
+</div>
+</div>
+</div>
+</section>
+
+<!-- ============ S6 · NIE WSZYSTKO WYMAGA TEGO SAMEGO RYGORU ============ -->
+<!-- Zastępuje macierz werdyktu z v1. Stara wersja miała kolumnę „to zbudujcie
+     z nami" — publiczny upsell w miejscu, które miało budować zaufanie.
+     Ta wersja daje czystą, użyteczną radę i nic nie sprzedaje. Rozmowa o tym,
+     przy czym możemy pomóc, dzieje się w werdykcie po przeglądzie. -->
+<section id="rygor" style="background:#0e2b1d;background-image:radial-gradient(900px 520px at 12% -2%, rgba(0,205,119,0.14), transparent 60%);padding:clamp(72px,10vw,120px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
+<div class="sec-head">
+<h2 class="h-sec" style="margin:0;max-width:560px;color:#ffffff;text-wrap:pretty">Nie wszystko trzeba budować porządnie.</h2>
+<p style="margin:0 0 6px;max-width:480px;font-size:17px;line-height:1.6;color:rgba(255,255,255,0.72);text-wrap:pretty">Najczęstszy błąd nie polega na tym, że ktoś buduje zbyt niedbale. Polega na tym, że wszystko buduje tak samo — a prototyp i system, w którym siedzą dane klientów, potrzebują zupełnie innego traktowania.</p>
+</div>
+
+<div class="grid3" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-top:clamp(40px,5vw,60px)">
+<div class="rv" style="background:rgba(0,205,119,0.09);border:1px solid rgba(0,205,119,0.34);border-radius:18px;padding:28px 26px">
+<div style="display:flex;align-items:center;gap:10px">
+<span style="display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:9px;background:var(--la-accent,#00CD77);color:#0b1a11"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"/></svg></span>
+<span style="font-size:16px;font-weight:800;color:#ffffff">Buduj szybko i nie oglądaj się</span>
+</div>
+<div style="margin-top:20px;display:flex;flex-direction:column">
+<span style="padding:11px 0;border-top:1px solid rgba(255,255,255,0.12);font-size:14.5px;line-height:1.5;color:rgba(255,255,255,0.88)">Prototypy i rzeczy do wyrzucenia</span>
+<span style="padding:11px 0;border-top:1px solid rgba(255,255,255,0.12);font-size:14.5px;line-height:1.5;color:rgba(255,255,255,0.88)">Narzędzia dla jednej osoby</span>
+<span style="padding:11px 0;border-top:1px solid rgba(255,255,255,0.12);font-size:14.5px;line-height:1.5;color:rgba(255,255,255,0.88)">Eksperymenty i wersje testowe</span>
+<span style="padding:11px 0;border-top:1px solid rgba(255,255,255,0.12);font-size:14.5px;line-height:1.5;color:rgba(255,255,255,0.88)">Jednorazowe skrypty</span>
+</div>
+</div>
+<div class="rv" style="background:rgba(255,255,255,0.05);border:1px solid rgba(240,192,74,0.34);border-radius:18px;padding:28px 26px">
+<div style="display:flex;align-items:center;gap:10px">
+<span style="display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:9px;background:#f0c04a;color:#3c2c05"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.8-3.8a6 6 0 0 1-7.9 7.9l-6.9 6.9a2.1 2.1 0 0 1-3-3l6.9-6.9a6 6 0 0 1 7.9-7.9l-3.8 3.8z"/></svg></span>
+<span style="font-size:16px;font-weight:800;color:#ffffff">Tu warto założyć szyny</span>
+</div>
+<div style="margin-top:20px;display:flex;flex-direction:column">
+<span style="padding:11px 0;border-top:1px solid rgba(255,255,255,0.12);font-size:14.5px;line-height:1.5;color:rgba(255,255,255,0.88)">Cokolwiek, z czego korzysta klient</span>
+<span style="padding:11px 0;border-top:1px solid rgba(255,255,255,0.12);font-size:14.5px;line-height:1.5;color:rgba(255,255,255,0.88)">Systemy trzymające dane osobowe</span>
+<span style="padding:11px 0;border-top:1px solid rgba(255,255,255,0.12);font-size:14.5px;line-height:1.5;color:rgba(255,255,255,0.88)">To, co ma przeżyć odejście autora</span>
+<span style="padding:11px 0;border-top:1px solid rgba(255,255,255,0.12);font-size:14.5px;line-height:1.5;color:rgba(255,255,255,0.88)">Integracje z finansami i ERP</span>
+</div>
+</div>
+<div class="rv" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.18);border-radius:18px;padding:28px 26px">
+<div style="display:flex;align-items:center;gap:10px">
+<span style="display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:9px;background:rgba(255,255,255,0.16);color:#ffffff"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16"/><path d="M9 7V5h6v2"/><path d="M6 7l1 13h10l1-13"/></svg></span>
+<span style="font-size:16px;font-weight:800;color:#ffffff">Tego nie buduj wcale</span>
+</div>
+<div style="margin-top:20px;display:flex;flex-direction:column">
+<span style="padding:11px 0;border-top:1px solid rgba(255,255,255,0.12);font-size:14.5px;line-height:1.5;color:rgba(255,255,255,0.88)">Co kupicie taniej z półki</span>
+<span style="padding:11px 0;border-top:1px solid rgba(255,255,255,0.12);font-size:14.5px;line-height:1.5;color:rgba(255,255,255,0.88)">Procesy, których jeszcze nie rozumiecie</span>
+<span style="padding:11px 0;border-top:1px solid rgba(255,255,255,0.12);font-size:14.5px;line-height:1.5;color:rgba(255,255,255,0.88)">To, co za rok i tak wymienicie</span>
+</div>
+</div>
+</div>
+
+<p style="margin:clamp(32px,4vw,44px) 0 0;max-width:780px;font-size:clamp(16px,2.1vw,18.5px);line-height:1.6;color:rgba(255,255,255,0.78);text-wrap:pretty">Pierwsza kolumna jest najszersza i tak ma zostać. <strong style="color:#ffffff;font-weight:700">Rygor kosztuje czas — sensowne jest tylko tam, gdzie coś naprawdę musi przetrwać.</strong></p>
+</section>
+
+<!-- ============ S7 · CO ZWYKLE ZNAJDUJEMY ============ -->
+<!-- Bez liczb. Na stronie, która sprzedaje dyscyplinę pomiaru, wymyślona
+     statystyka jest samozaprzeczeniem oferty. Liczby wchodzą razem z n,
+     po pierwszych płatnych przeglądach. -->
+<section id="obserwacje" class="sec-pad">
+<div class="sec-head">
+<h2 class="h-sec" style="margin:0;max-width:520px;text-wrap:pretty">Pięć rzeczy, które widzimy prawie zawsze.</h2>
+<p class="sub" style="margin:0 0 6px;max-width:470px">Nie mamy na to jeszcze statystyki i nie zamierzamy jej udawać — to lista z naszych własnych przeglądów. Kiedy uzbieramy dane z pierwszych kilkunastu, opublikujemy liczby.</p>
+</div>
+
+<div class="grid3" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-top:56px">
+{obserwacje.map((o) => (
+  <div class="lift rv" style="background:#ffffff;border:1px solid #e7ece4;border-radius:18px;padding:30px 28px;box-shadow:0 24px 50px -34px rgba(18,38,28,0.14)">
+    <div style="font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.1em;color:#0a7a52">{o.os}</div>
+    <p style="margin:16px 0 0;font-size:15.5px;line-height:1.62;color:#16211a;text-wrap:pretty">{o.d}</p>
+  </div>
+))}
+<div class="rv" style="display:flex;flex-direction:column;justify-content:center;background:#f4f8f2;border:1px solid #e4ebe2;border-radius:18px;padding:30px 28px">
+<div class="eyebrow" style="font-size:11px">Uczciwie</div>
+<p style="margin:12px 0 0;font-size:15px;line-height:1.62;color:#4c5850;text-wrap:pretty">Żadna z tych rzeczy nie jest katastrofą i żadna nie znaczy, że ktoś schrzanił robotę. To są normalne skutki tego, że projekt zaczynał się od „sprawdźmy, czy to w ogóle zadziała".</p>
+<a href="#rozwidlenie" class="lnk-green" style="display:inline-block;margin-top:16px;font-size:15px;font-weight:700;color:#0a7a52">Zobacz, jak wygląda przegląd →</a>
+</div>
+</div>
+</section>
+
+<GcFaq
+  heading="Nie wiecie, którą ścieżkę wybrać?"
+  lead="Cztery pytania, które padają najczęściej na tym etapie. Szczegółowe znajdziecie już przy konkretnej ścieżce."
+  items={faq}
+/>
+
+<GcCta
+  heading="Zobaczmy, gdzie jesteście."
+  lead="Napiszcie w dwóch zdaniach, co zbudowaliście i co Was uwiera. Odpowiemy, która ścieżka ma sens."
+  eyebrow="Odpowiadamy w ciągu dnia roboczego"
+  items={[
+    { t: 'Która ścieżka', d: 'także wtedy, gdy odpowiedź brzmi „na razie żadna”' },
+    { t: 'Co obejmuje wejście', d: 'zakres, termin i stała cena, bez roboczogodzin w ciemno' },
+    { t: 'Od czego zacząć', d: 'jedna rzecz do zrobienia jeszcze przed rozmową' },
+  ]}
+/>
+
+<script>
+  // ---- Krzywa tempa i wykres dwóch ścieżek — reveal przy wejściu w kadr ----
+  (function(){
+    var els = document.querySelectorAll('.tempo-card, .lanes');
+    if(!els.length) return;
+    if(!('IntersectionObserver' in window)){
+      els.forEach(function(el){ el.classList.add('in'); });
+      return;
+    }
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+      });
+    }, { threshold: 0.25 });
+    els.forEach(function(el){ io.observe(el); });
+  })();
+</script>
+</LaBase>

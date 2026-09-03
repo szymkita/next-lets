@@ -1,0 +1,163 @@
+---
+// Pasek przynależności do Wise Group — odwzorowanie komponentu z sellwise.pl.
+// Ciemna belka nad nawigacją: „JESTEŚMY CZĘŚCIĄ" + logo grupy, które rozwija
+// panel z sześcioma markami. Belka jest statyczna, więc przy scrollu odjeżdża
+// i zostaje sam sticky .site-header.
+//
+// UWAGA: pasek trzyma własny z-index (70) ponad .site-header (60) — inaczej
+// rozwinięty panel chowałby się pod pigułką nawigacji.
+const {
+  // Slug marki, na której stoimy. Ta pozycja nie jest linkiem, tylko
+  // wypełnionym kółkiem z aria-current.
+  current = 'letsautomate',
+} = Astro.props;
+
+// Kolejność 1:1 z sellwise.pl — na wszystkich stronach grupy siatka
+// wygląda tak samo, zmienia się tylko podświetlona marka.
+const MARKI = [
+  { slug: 'sellwise',     nazwa: 'SellWise',       url: 'https://www.sellwise.pl',    ikona: '/uploads/wisegroup/wise-brand-top.svg' },
+  { slug: 'adwise',       nazwa: 'AdWise',         url: 'https://adwise.pl',          ikona: '/uploads/wisegroup/wise-brand-adwise-nav-purple.svg' },
+  { slug: 'hirewise',     nazwa: 'HireWise',       url: 'https://hirewise.pl',        ikona: '/uploads/wisegroup/wise-brand-hirewise-nav-green.svg' },
+  { slug: 'irsm',         nazwa: 'IRSM',           url: 'https://irsm.pl',            ikona: '/uploads/wisegroup/irsm.pl-favicon-large.avif' },
+  // Nasz sygnet bierzemy z logo-2.svg, nie z favikony z sellwise.pl: favikona
+  // ma nieprzezroczyste białe tło i na wypełnionym kółku wyglądałaby jak plama.
+  { slug: 'letsautomate', nazwa: "Let's automate", url: 'https://www.letsautomate.pl', ikona: '/uploads/wisegroup/letsautomate-sygnet.svg' },
+  { slug: 'finerto',      nazwa: 'Finerto',        url: 'https://finerto.pl',         ikona: '/uploads/wisegroup/wise-brand-4.svg', px: 22 },
+];
+---
+<div class="la-topbar">
+  <div class="la-wg">
+    <span class="la-wg-txt">Jesteśmy częścią</span>
+    <span class="la-wg-logo-wrap">
+      <button type="button" class="la-wg-btn" aria-expanded="false" aria-controls="la-wg-dropdown" aria-label="Wise Group — pokaż marki grupy">
+        {/* Logo grupy jest czarne na przezroczystym, więc na ciemnej belce wybielamy je filtrem.
+            Bierzemy wariant v2 (442×52): wisegroup_logo.png ma ucięty dół liter. */}
+        <img src="/uploads/wisegroup_logo_v2.webp" alt="Wise Group" width="442" height="52" class="la-wg-logo" decoding="async">
+      </button>
+      <div id="la-wg-dropdown" class="la-wg-dd">
+        <div class="la-wg-grid">
+          {MARKI.map((m) => {
+            const tu = m.slug === current;
+            const srodek = (
+              <>
+                <span class:list={['la-wg-ic', tu && 'is-current']}>
+                  <img src={m.ikona} alt="" width={m.px || 26} height={m.px || 26} loading="lazy" decoding="async" class="la-wg-mark" style={`width:${m.px || 26}px;height:${m.px || 26}px`}>
+                </span>
+                <span class="la-wg-name">{m.nazwa}</span>
+              </>
+            );
+            return tu
+              ? <span class="la-wg-brand is-current" aria-current="true">{srodek}</span>
+              : <a href={m.url} class="la-wg-brand" target="_blank" rel="noopener">{srodek}</a>;
+          })}
+        </div>
+      </div>
+    </span>
+  </div>
+</div>
+
+<style>
+  /* index.astro trzyma swoje `*{box-sizing:border-box}` w scope'owanym <style>,
+     więc do tego komponentu ono nie dociera — bez tej linijki belka rośnie
+     o padding (55px zamiast 42), a panel puchnie do 306×262. */
+  .la-topbar,.la-topbar *{box-sizing:border-box}
+  .la-topbar{position:relative;z-index:70;width:100%;background:#161627;border-bottom:1px solid #000000}
+  /* Na sellwise.pl belka ma 42px na zewnątrz: 40px treści plus krawędź u góry
+     i u dołu. Górnej nie powielamy (na styku ze szczytem strony nic nie wnosi),
+     więc te 41px treści + 1px dolnej krawędzi daje te same 42px. */
+  .la-wg{display:flex;align-items:center;justify-content:center;gap:10px;padding:6px 16px;min-height:41px}
+  .la-wg-txt{font-size:14px;font-weight:500;line-height:1.5;text-transform:uppercase;color:#ffffff}
+
+  .la-wg-logo-wrap{position:relative;display:inline-flex;align-items:center;justify-content:center}
+  .la-wg-btn{display:inline-flex;align-items:center;justify-content:center;padding:0;border:0;background:transparent;cursor:pointer;border-radius:6px}
+  .la-wg-btn:focus-visible{outline:2px solid #00CD77;outline-offset:4px}
+  .la-wg-logo{display:block;height:16px;width:auto;filter:brightness(0) invert(1);opacity:.92;transition:opacity .18s}
+  .la-wg-btn:hover .la-wg-logo,.la-wg-btn[aria-expanded="true"] .la-wg-logo{opacity:1}
+
+  /* ---- panel marek ----
+     top:29px, a nie 35px jak na sellwise: tam kotwicą jest wrap logo wysoki
+     na 28px, u nas na 16px. Liczy się efekt — panel styka się z dolną
+     krawędzią belki (13px odsunięcia wrapa + 29px = 42px). */
+  .la-wg-dd{position:absolute;top:29px;left:50%;width:270px;height:226px;padding:18px;background:#ffffff;
+    box-shadow:0 27px 68px 24px rgba(20,16,30,0.2);
+    opacity:0;visibility:hidden;pointer-events:none;transform:translateX(-50%) translateY(8px);
+    transition:opacity .18s,transform .18s,visibility .18s}
+  .la-wg.is-open .la-wg-dd{opacity:1;visibility:visible;pointer-events:auto;transform:translateX(-50%) translateY(0)}
+  .la-wg-grid{display:grid;height:100%;grid-template-columns:repeat(3,1fr);grid-template-rows:1fr 1fr;gap:12px}
+
+  .la-wg-brand{display:grid;grid-template-rows:56px 26px;gap:7px;align-items:start;justify-items:center;text-decoration:none}
+  .la-wg-brand.is-current{cursor:default}
+  .la-wg-ic{display:flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:50%;
+    border:1px solid #000000;background:#ffffff;transition:box-shadow .18s,transform .18s}
+  .la-wg-ic.is-current{background:#161627;border-color:#161627}
+  a.la-wg-brand:hover .la-wg-ic{transform:translateY(-2px);box-shadow:0 8px 18px -8px rgba(20,16,30,0.5)}
+  a.la-wg-brand:focus-visible{outline:none}
+  a.la-wg-brand:focus-visible .la-wg-ic{outline:2px solid #161627;outline-offset:3px}
+  .la-wg-mark{display:block;object-fit:contain}
+  .la-wg-name{width:100%;font-size:12px;font-weight:500;line-height:1.08;color:#161627;text-align:center;text-wrap:balance}
+
+  @media (max-width:520px){
+    .la-wg{gap:8px;padding:6px 12px}
+    .la-wg-txt{font-size:11px}
+    .la-wg-logo{height:13px}
+    /* Logo stoi po prawej od tekstu, więc panel kotwiczony do niego wystawałby
+       poza prawą krawędź (przy 360px o ~14px). Na wąskich ekranach zdejmujemy
+       kontekst z logo i centrujemy panel względem całej belki. */
+    .la-wg-logo-wrap{position:static}
+    .la-wg-dd{top:100%}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .la-wg-dd,.la-wg-ic,.la-wg-logo{transition:none}
+    a.la-wg-brand:hover .la-wg-ic{transform:none}
+  }
+</style>
+
+<script>
+  // ---- Pasek Wise Group: rozwijanie panelu marek ----
+  (function () {
+    var wrap = document.querySelector('.la-wg-logo-wrap');
+    if (!wrap) return;
+    var btn = wrap.querySelector('.la-wg-btn');
+    var root = document.querySelector('.la-wg');
+    if (!btn || !root) return;
+
+    var zamykacz = 0;
+    var najazd = window.matchMedia('(hover:hover)').matches;
+
+    function ustaw(otwarty) {
+      window.clearTimeout(zamykacz);
+      root.classList.toggle('is-open', otwarty);
+      btn.setAttribute('aria-expanded', otwarty ? 'true' : 'false');
+    }
+
+    // Na myszy panel wychodzi po najechaniu na logo, więc kliknięcie tylko go
+    // utrzymuje — gdyby przełączało, najazd otwierałby, a klik od razu zamykał.
+    // Na dotyku najazdu nie ma i klik jest jedynym sposobem.
+    btn.addEventListener('click', function () {
+      ustaw(najazd ? true : btn.getAttribute('aria-expanded') !== 'true');
+    });
+
+    if (najazd) {
+      wrap.addEventListener('mouseenter', function () { ustaw(true); });
+      wrap.addEventListener('mouseleave', function () {
+        zamykacz = window.setTimeout(function () { ustaw(false); }, 120);
+      });
+    }
+
+    // Klawiatura otwiera panel Enterem/spacją (to zwykły click na przycisku),
+    // więc focusin celowo nie otwiera: inaczej Escape zamykałby panel, oddawał
+    // fokus przyciskowi i tym samym otwierał go z powrotem.
+    wrap.addEventListener('focusout', function (e) {
+      if (!wrap.contains(e.relatedTarget)) ustaw(false);
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key !== 'Escape' || !root.classList.contains('is-open')) return;
+      ustaw(false);
+      btn.focus();
+    });
+    document.addEventListener('click', function (e) {
+      if (!wrap.contains(e.target)) ustaw(false);
+    });
+  })();
+</script>

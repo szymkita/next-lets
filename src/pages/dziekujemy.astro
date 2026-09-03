@@ -1,0 +1,125 @@
+---
+// Strona po wysłaniu formularza. Poza indeksem — nie ma po co trafiać do
+// wyników wyszukiwania, a wejścia z Google fałszowałyby statystyki.
+//
+// Trzy kroki niżej opisują to, co strona usługowa obiecuje wcześniej:
+// odpowiedź w jeden dzień, trzydzieści minut rozmowy, uczciwe „nie" na tym
+// samym spotkaniu. Nic ponad to.
+import LaBase from '../layouts/LaBase.astro';
+
+const title = "Dziękujemy — zgłoszenie przyjęte | Let's automate";
+const description = 'Zgłoszenie ze strony Let’s automate zostało przyjęte. Odpowiadamy w jeden dzień roboczy.';
+
+const kroki = [
+  {
+    n: '01',
+    t: 'Odpisujemy w jeden dzień roboczy',
+    d: 'Zwykle dwoma terminami do wyboru i jednym pytaniem, na które warto przygotować odpowiedź przed rozmową.',
+  },
+  {
+    n: '02',
+    t: 'Trzydzieści minut rozmowy',
+    d: 'Pytamy o cele na ten rok i o miejsca, w których praca się zatrzymuje. Bez prezentacji i bez slajdów.',
+  },
+  {
+    n: '03',
+    t: 'Mówimy, czy przegląd ma u Was sens',
+    d: 'Jeśli nie ma, usłyszycie to na tym samym spotkaniu razem z powodem.',
+  },
+];
+
+const dalej = [
+  { t: 'Jak wygląda przegląd', d: 'Piętnaście dni roboczych od dostępów do dokumentu, etap po etapie.', h: '/strategia-ai#przebieg' },
+  { t: 'Co jest w dokumencie', d: 'Kolejność wdrożeń, rachunek, ryzyka i plan pierwszego kwartału.', h: '/strategia-ai#dokument' },
+  { t: 'Czym różnimy się od innych', d: 'Cztery typy dostawców i sytuacje, w których wygrywa ktoś inny niż my.', h: '/dlaczego-my' },
+];
+---
+<LaBase title={title} description={description} noindex ctaHref="/strategia-ai" ctaLabel="Wróć do strategii" nav={null}>
+<style is:global slot="head">
+  /* ---------- potwierdzenie ---------- */
+  .dz-glowa{position:relative;overflow:hidden;background:radial-gradient(760px 460px at 76% -14%, rgba(0,205,119,0.16), transparent 62%);padding:clamp(44px,6vw,84px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) clamp(48px,6vw,76px)}
+  .dz-ptak{position:relative;display:flex;align-items:center;justify-content:center;width:64px;height:64px;border-radius:50%;background:var(--la-accent,#00CD77);color:#0b1a11;box-shadow:0 0 0 10px rgba(0,205,119,0.14),0 18px 40px -20px rgba(0,205,119,0.8)}
+  .dz-ptak path{stroke-dasharray:1;stroke-dashoffset:1;animation:dzPtak .55s .15s cubic-bezier(.6,0,.3,1) forwards}
+  @keyframes dzPtak{to{stroke-dashoffset:0}}
+
+  /* ---------- trzy kroki na wspólnej osi ---------- */
+  .dz-kroki{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(20px,3vw,44px);margin-top:clamp(38px,5vw,60px);padding-top:clamp(26px,3vw,34px);border-top:1px solid #e2e9e0}
+  .dz-krok{position:relative;min-width:0}
+  .dz-krok::before{content:"";position:absolute;top:calc(-1 * clamp(26px,3vw,34px) - 1px);left:0;width:34px;height:2px;background:var(--la-accent,#00CD77)}
+  .dz-n{display:block;font-family:ui-monospace,Menlo,monospace;font-size:11.5px;letter-spacing:0.12em;color:#0a7a52}
+  .dz-kt{display:block;margin-top:10px;font-size:clamp(16px,1.8vw,19px);line-height:1.28;font-weight:750;letter-spacing:-0.015em;color:#16211a;text-wrap:pretty}
+  .dz-kd{margin:8px 0 0;font-size:14.5px;line-height:1.6;color:#4c5850;text-wrap:pretty}
+
+  /* ---------- pas z kontaktem ---------- */
+  .dz-pas{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:clamp(18px,3vw,34px);background:#0e2b1d;border-radius:22px;padding:clamp(20px,2.6vw,28px) clamp(22px,3vw,34px);margin:clamp(40px,5vw,64px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) 0}
+  .dz-foto{width:64px;height:64px;border-radius:50%;object-fit:cover;flex-shrink:0;box-shadow:0 0 0 2px rgba(255,255,255,0.14)}
+  .dz-imie{display:block;font-size:15px;font-weight:750;color:#ffffff}
+  .dz-rola{display:block;margin-top:2px;font-size:13px;line-height:1.5;color:rgba(255,255,255,0.62)}
+  .dz-kontakt{display:flex;flex-wrap:wrap;gap:10px}
+  .dz-btn{display:inline-flex;align-items:center;gap:8px;padding:12px 20px;border-radius:11px;font-size:14.5px;font-weight:700;white-space:nowrap;transition:background .2s,border-color .2s}
+  .dz-btn.pelny{background:var(--la-accent,#00CD77);color:#0b1a11}
+  .dz-btn.pelny:hover{background:#00b96c}
+  .dz-btn.pusty{border:1px solid rgba(255,255,255,0.26);color:#ffffff}
+  .dz-btn.pusty:hover{border-color:rgba(255,255,255,0.6)}
+
+  /* ---------- co dalej ---------- */
+  .dz-poz{display:grid;grid-template-columns:1fr auto;align-items:center;gap:20px;padding:19px 0;border-top:1px solid #e7ece4}
+  .dz-poz:last-child{border-bottom:1px solid #e7ece4}
+  .dz-t{font-size:16.5px;font-weight:700;color:#16211a;transition:color .15s}
+  .dz-poz:hover .dz-t{color:#0a7a52}
+  .dz-poz:hover .dz-strz{transform:translateX(4px);color:#0a7a52}
+  .dz-strz{color:#b6c0b6;transition:transform .18s,color .15s}
+  .dz-d{margin:4px 0 0;font-size:14.5px;line-height:1.55;color:#4c5850}
+
+  @media (max-width:860px){
+    .dz-kroki{grid-template-columns:1fr;gap:26px;padding-top:24px}
+    .dz-krok::before{position:static;display:block;margin-bottom:12px}
+    .dz-pas{grid-template-columns:auto 1fr;row-gap:18px}
+    .dz-kontakt{grid-column:1 / -1}
+  }
+  @media (prefers-reduced-motion:reduce){ .dz-ptak path{animation:none;stroke-dashoffset:0} }
+</style>
+
+<section class="dz-glowa">
+<div class="dz-ptak" aria-hidden="true">
+  <svg width="30" height="30" viewBox="0 0 24 24" fill="none"><path pathLength="1" d="M4.5,12.6 L9.4,17.5 L19.5,7" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</div>
+<h1 class="h-sec" style="margin:26px 0 0;max-width:680px;text-wrap:pretty">Mamy Wasze zgłoszenie</h1>
+<p class="sub" style="margin:18px 0 0;max-width:560px">Nic więcej nie musicie teraz robić. Jeśli sprawa jest pilna, telefon idzie szybciej niż skrzynka.</p>
+
+<div class="dz-kroki">
+{kroki.map((k) => (
+  <div class="dz-krok">
+    <span class="dz-n">{k.n}</span>
+    <span class="dz-kt">{k.t}</span>
+    <p class="dz-kd">{k.d}</p>
+  </div>
+))}
+</div>
+</section>
+
+<div class="dz-pas">
+<img class="dz-foto" src="/piotr-avatar.jpg" alt="Piotr Wojciuk, New Business Lead w Let's automate" width="240" height="240" loading="lazy" decoding="async">
+<div>
+<span class="dz-imie">Odezwie się Piotr Wojciuk</span>
+<span class="dz-rola">New Business Lead. NDA podpisujemy przed pierwszym dostępem do czegokolwiek.</span>
+</div>
+<div class="dz-kontakt">
+<a class="dz-btn pelny" href="tel:+48571399932">+48 571 399 932</a>
+<a class="dz-btn pusty" href="mailto:hello@letsautomate.pl">hello@letsautomate.pl</a>
+</div>
+</div>
+
+<section class="sec-pad" style="padding-top:clamp(44px,5vw,72px)">
+<h2 class="h-mod" style="margin:0 0 clamp(18px,2.4vw,26px);text-wrap:pretty">Zanim oddzwonimy</h2>
+{dalej.map((p) => (
+  <a class="dz-poz" href={p.h}>
+    <span>
+      <span class="dz-t">{p.t}</span>
+      <p class="dz-d">{p.d}</p>
+    </span>
+    <span class="dz-strz" aria-hidden="true">→</span>
+  </a>
+))}
+</section>
+</LaBase>

@@ -1,0 +1,1439 @@
+---
+// STRATEGIA AI — /strategia-ai · pierwsza podstrona usługowa z piona „Wdrażamy AI".
+//
+// POZYCJONOWANIE (pełne uzasadnienie w docs/strategia-ai-koncepcja.md):
+// Polski rynek sprzedaje „audyt AI → mapa okazji → mapa drogowa" za 2–6 tys. zł
+// i wszyscy piszą to samo. Kategoria jest zajęta przez dokument. Jedyna rzecz,
+// której konkurencja z tego przedziału nie skopiuje, to zespół, który potrafi
+// wdrożyć — więc strategia kończy się tu uruchomionym procesem, nie prezentacją.
+//
+// WARSTWA WIZUALNA (przejście v2, 29.08.2026):
+// Pierwsza wersja była złożona z tych samych klocków, co reszta serwisu —
+// wiersze na liniach, kafle, wersaliki. Uwaga: „każda nasza strona jest taka
+// sama, brak customowych grafik i animacji". Stąd pięć rysunków zrobionych
+// pod tę stronę, każdy niosący konkretny argument:
+//   · macierz priorytetyzacji w hero — osiem procesów w układzie zwrot/gotowość
+//   · siatka stu pilotaży — 95 szarych, 5 zielonych
+//   · arkusz z suwakami — podmieniasz stawkę i widzisz nowy zwrot na żywo
+//   · sito kryteriów — dwanaście kropek wpada, trzy wychodzą, jedna odbija
+//   · pasek trzech tygodni z proporcjonalnym czasem klienta
+// Wszystkie mają wyłącznik dla prefers-reduced-motion.
+//
+// DO POTWIERDZENIA PRZED PUBLIKACJĄ (oznaczone w treści nawiasami):
+// · Widełki 5–20 tys. zł podane przez Szymona 30.08.2026 — stoją przy CTA
+//   i w FAQ. Ukryta sekcja CENA ma starą hipotezę [29 000], do wyrzucenia.
+// · Trzy tygodnie i uruchomienie pilota w cenie — założenie o kształcie usługi.
+// · /og/strategia-ai.png — na razie strona dziedziczy /og/hub.png.
+// · Kartka w sekcji „Co jest w dokumencie" — spis części, nie treść.
+import LaBase from '../layouts/LaBase.astro';
+import GcFaq from '../components/GcFaq.astro';
+import GcCta from '../components/GcCta.astro';
+
+const kanon = new URL('/strategia-ai', Astro.site).href;
+
+// Dane strukturalne: usługa, okruszki i FAQ z tej samej tablicy, z której
+// renderuje się akordeon — nie ma jak się rozjechać.
+const dane = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Service',
+      '@id': `${kanon}#usluga`,
+      name: 'Strategia transformacji AI',
+      alternateName: ['Strategia AI', 'Transformacja AI'],
+      serviceType: 'Doradztwo strategiczne przy transformacji AI',
+      url: kanon,
+      description: 'Strategia AI dla firmy: trzytygodniowe warsztaty prowadzone przez analityków biznesowych i konsultantów. Wynikiem jest dokument strategii, w którym stoi kolejność wdrożeń sztucznej inteligencji, rachunek kosztu i zwrotu, ryzyka oraz plan pierwszego kwartału.',
+      provider: { '@id': new URL('/#organizacja', Astro.site).href },
+      areaServed: { '@type': 'Country', name: 'Polska' },
+      audience: { '@type': 'BusinessAudience', name: 'Średnie i duże firmy' },
+      termsOfService: 'Warsztaty trwają trzy tygodnie i kończą się dokumentem strategii.',
+    },
+    {
+      '@type': 'BreadcrumbList',
+      '@id': `${kanon}#okruszki`,
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Strona główna', item: new URL('/', Astro.site).href },
+        { '@type': 'ListItem', position: 2, name: 'Strategia transformacji AI', item: kanon },
+      ],
+    },
+  ],
+};
+
+const title = "Transformacja AI w firmie — strategia i plan wdrożeń | Let's automate";
+const description = 'Transformacja AI to kilkanaście projektów na miesiące albo lata. Strategia AI ustala kolejność: które wdrożenia dają przewagę i ile mają zwrócić.';
+
+
+// ---- Cele i lista kandydatów (hero) --------------------------------------
+// Trzy koła u góry to cele, które zarząd ma dowieźć. Pod nimi lecą kolejne
+// procesy z listy. Część z nich domyka się na cel i wtedy koło dopełnia się
+// o odcinek; reszta odpada i zostaje wyszarzona razem z powodem.
+// Wszystkie czasy są liczone z kolejności zadań, nie wpisywane ręcznie.
+const CYKL = 32;
+const PRZEWIJ = 27;            // ile trwa przesuw strumienia
+const ODDECH = 29.6;           // ile stoi na komplecie, zanim zgaśnie
+const ZGASNIE = 31;            // po tym reset dzieje się już niewidocznie
+const WIERSZ = 40, WIDOK = 360, ILE = 32;
+const LINIA = 320;             // wysokość, na której zapada werdykt
+const TOR = ILE * WIERSZ;
+
+// Strumień kandydatów. Większość przewija się jako rozmyte pozycje — w hero
+// nie ma czego czytać, ma być widać skalę przeglądu. Ostrość i nazwę dostają
+// tylko przyjęte; przy odrzuconych zostaje sam powód.
+// Żadna pojedyncza pozycja nie domyka celu — każda wnosi kilkanaście do
+// dwudziestu kilku procent, więc na każdy cel składa się pięć rzeczy.
+const strumien = [
+  { typ: 'powod', powod: 'nie rusza celu' },
+  { typ: 'tak', cel: 0, d: 22, t: 'Predykcja zamówień u kluczowych klientów' },
+  { typ: 'powod', powod: 'wygoda, nie przewaga' },
+  { typ: 'tak', cel: 1, d: 19, t: 'Wycena nietypowego zlecenia w kwadrans' },
+  { typ: 'cicho' },
+  { typ: 'tak', cel: 2, d: 25, t: 'Sygnał o kliencie, który zaraz odejdzie' },
+  { typ: 'powod', powod: 'za mały wolumen' },
+  { typ: 'tak', cel: 0, d: 18, t: 'Dobór parametrów produkcji pod marżę' },
+  { typ: 'powod', powod: 'ryzyko regulacyjne' },
+  { typ: 'tak', cel: 1, d: 24, t: 'Podpowiedź kolejnego kroku w rozmowie handlowej' },
+  { typ: 'powod', powod: 'poza procesem' },
+  { typ: 'tak', cel: 2, d: 16, t: 'Priorytet obsługi według wartości klienta' },
+  { typ: 'cicho' },
+  { typ: 'tak', cel: 0, d: 25, t: 'Wykrywanie zleceń, które zjadają marżę' },
+  { typ: 'powod', powod: 'prostsza integracja wystarczy' },
+  { typ: 'tak', cel: 1, d: 17, t: 'Dopasowanie referencji do branży klienta' },
+  { typ: 'powod', powod: 'zbyt rzadkie' },
+  { typ: 'tak', cel: 2, d: 20, t: 'Wychwytywanie reklamacji, które eskalują' },
+  { typ: 'powod', powod: 'brak właściciela' },
+  { typ: 'tak', cel: 0, d: 16, t: 'Optymalizacja tras i załadunku' },
+  { typ: 'powod', powod: 'dane poza systemem' },
+  { typ: 'tak', cel: 1, d: 21, t: 'Wychwytywanie zapytań o najwyższej szansie' },
+  { typ: 'cicho' },
+  { typ: 'tak', cel: 2, d: 22, t: 'Przewidywanie awarii u klienta przed zgłoszeniem' },
+  { typ: 'powod', powod: 'nie rusza celu' },
+  { typ: 'tak', cel: 0, d: 19, t: 'Prognoza zużycia surowca na kwartał' },
+  { typ: 'powod', powod: 'już rozwiązane' },
+  { typ: 'tak', cel: 1, d: 19, t: 'Szybsza odpowiedź na zapytanie ofertowe' },
+  { typ: 'powod', powod: 'brak zgód' },
+  { typ: 'tak', cel: 2, d: 17, t: 'Personalizacja oferty odnowieniowej' },
+  { typ: 'ogon' },
+  { typ: 'ogon' },
+];
+
+const cele = [
+  { n: 'cel 1', o: 'marża na zleceniu' },
+  { n: 'cel 2', o: 'wygrane oferty' },
+  { n: 'cel 3', o: 'utrzymani klienci' },
+];
+
+function losowy(ziarno) {
+  let a = ziarno;
+  return () => {
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+const rnd = losowy(20260831);
+
+// Chwila werdyktu wynika z tego, kiedy wiersz mija linię decyzji.
+// Procent celu to suma wkładów wszystkich pozycji, które do niego trafiły.
+const suma = [0, 0, 0];
+const lista = strumien.map((z, i) => {
+  const w = {
+    ...z, i,
+    werdykt: PRZEWIJ * ((i * WIERSZ + WIERSZ / 2 + WIDOK - LINIA) / TOR),
+    kreski: [56 + rnd() * 30, 26 + rnd() * 32],
+  };
+  if (z.typ === 'tak') {
+    suma[z.cel] += z.d;
+    w.p = suma[z.cel];
+  }
+  return w;
+});
+const przyjete = lista.filter((z) => z.typ === 'tak');
+
+const pc = (sek) => `${(Math.max(0, Math.min(1, sek / CYKL)) * 100).toFixed(2)}%`;
+
+const luki = cele.map((c, ci) => {
+  const kroki = przyjete.filter((z) => z.cel === ci);
+  let kl = `@keyframes ce-luk${ci}{0%,${pc(kroki[0].werdykt)}{stroke-dashoffset:1}`;
+  kroki.forEach((z, j) => {
+    const doc = (1 - z.p / 100).toFixed(3);
+    kl += `${pc(z.werdykt + 0.8)}{stroke-dashoffset:${doc}}`;
+    if (j < kroki.length - 1) kl += `${pc(kroki[j + 1].werdykt)}{stroke-dashoffset:${doc}}`;
+  });
+  kl += `${pc(ZGASNIE)}{stroke-dashoffset:0}100%{stroke-dashoffset:1}}`;
+  return kl;
+});
+
+const finisze = cele.map((c, ci) => {
+  const kroki = przyjete.filter((z) => z.cel === ci);
+  const t = kroki[kroki.length - 1].werdykt + 0.8;
+  return `@keyframes ce-fin${ci}{0%,${pc(t)}{opacity:0;transform:scale(1)}${pc(t + 0.18)}{opacity:.55;transform:scale(1.02)}${pc(t + 1.2)}{opacity:0;transform:scale(1.36)}100%{opacity:0;transform:scale(1.36)}}
+@keyframes ce-pop${ci}{0%,${pc(t)}{transform:scale(1)}${pc(t + 0.22)}{transform:scale(1.055)}${pc(t + 0.8)}{transform:scale(1)}100%{transform:scale(1)}}`;
+});
+
+const procenty = [];
+cele.forEach((c, ci) => {
+  const kroki = przyjete.filter((z) => z.cel === ci);
+  kroki.forEach((z, j) => {
+    const nast = kroki[j + 1];
+    const ostatni = !nast;
+    procenty.push({
+      ci, j, p: z.p, ostatni,
+      kl: ostatni
+        ? `@keyframes ce-pro${ci}_${j}{0%,${pc(z.werdykt + 0.5)}{opacity:0}${pc(z.werdykt + 0.75)}{opacity:1}${pc(ODDECH)}{opacity:1}${pc(ZGASNIE)}{opacity:0}100%{opacity:0}}`
+        : `@keyframes ce-pro${ci}_${j}{0%,${pc(z.werdykt + 0.5)}{opacity:0}${pc(z.werdykt + 0.75)}{opacity:1}${pc(nast.werdykt + 0.45)}{opacity:1}${pc(nast.werdykt + 0.65)}{opacity:0}100%{opacity:0}}`,
+    });
+  });
+});
+
+const klatki = [
+  `@keyframes st-tor{0%{transform:translateY(${WIDOK}px)}${pc(PRZEWIJ)}{transform:translateY(${-(TOR - WIDOK)}px)}100%{transform:translateY(${-(TOR - WIDOK)}px)}}`,
+  `@keyframes st-gasnie{0%,${pc(ODDECH)}{opacity:1}${pc(ZGASNIE)}{opacity:0}99.9%{opacity:0}100%{opacity:1}}`,
+  ...cele.map((c, i) => `@keyframes ce-krag${i}{0%,${pc(0.1 + i * 0.16)}{opacity:0;transform:scale(.7)}${pc(0.6 + i * 0.16)}{opacity:1;transform:scale(1)}${pc(ODDECH)}{opacity:1;transform:scale(1)}${pc(ZGASNIE)}{opacity:0;transform:scale(1)}100%{opacity:0;transform:scale(1)}}`),
+  ...luki,
+  ...finisze,
+  ...procenty.map((x) => x.kl),
+  ...lista.filter((z) => z.typ !== 'ogon').map((z) => {
+    const kon = z.typ === 'tak' ? '1' : (z.typ === 'powod' ? '.3' : '.18');
+    return `@keyframes st-w${z.i}{0%,${pc(z.werdykt)}{opacity:1}${pc(z.werdykt + 0.45)}{opacity:${kon}}100%{opacity:${kon}}}`;
+  }),
+  ...przyjete.map((z) => `@keyframes st-szk${z.i}{0%,${pc(z.werdykt)}{opacity:1}${pc(z.werdykt + 0.25)}{opacity:0}100%{opacity:0}}
+@keyframes st-txt${z.i}{0%,${pc(z.werdykt + 0.1)}{opacity:0;filter:blur(7px)}${pc(z.werdykt + 0.55)}{opacity:1;filter:blur(0)}100%{opacity:1;filter:blur(0)}}`),
+  ...lista.filter((z) => z.typ === 'tak' || z.typ === 'powod').map((z) => `@keyframes st-werd${z.i}{0%,${pc(z.werdykt)}{opacity:0;transform:scale(.75)}${pc(z.werdykt + 0.3)}{opacity:1;transform:scale(1)}100%{opacity:1;transform:scale(1)}}`),
+  ...lista.filter((z) => z.typ !== 'ogon').map((z) => `@keyframes st-bada${z.i}{0%,${pc(z.werdykt - 0.75)}{opacity:0}${pc(z.werdykt - 0.6)}{opacity:1}${pc(z.werdykt - 0.06)}{opacity:1}${pc(z.werdykt)}{opacity:0}100%{opacity:0}}`),
+].join('\n');
+
+
+// Kwalifikacja w dwóch kolumnach. Prawa strona jest tu ważniejsza niż lewa:
+// odsyłanie części pytających gdzie indziej jest jedynym miejscem na stronie,
+// które nic nie sprzedaje — i dlatego uwiarygodnia resztę.
+// Powody odmowy muszą być takie, w których klient realnie się rozpoznaje;
+// „dane w arkuszach" i „wiecie, który proces boli" brzmiały jak wymówki.
+// UWAGA: przedział 50–500 osób to założenie do potwierdzenia.
+const pasuje = [
+  { t: 'Zatrudniacie od 50 do 500 osób', d: 'Praca przechodzi między kilkoma działami i nikt nie widzi całej ścieżki od początku do końca.' },
+  { t: 'Przez procesy przechodzą setki spraw miesięcznie', d: 'Przy takim wolumenie kilka minut na jednej sprawie zamienia się w etat, a model ma się na czym oprzeć.' },
+  { t: 'Pomysłów na AI jest kilkanaście', d: 'Każdy dział przyszedł ze swoim, żaden nie ma policzonego zwrotu i nikt nie chce decydować w ciemno.' },
+  { t: 'Chcecie wiedzieć, co dziś jest możliwe', d: 'Rok temu część tych rozwiązań jeszcze nie działała. Wolicie to sprawdzić, zanim pójdzie na to budżet.' },
+];
+
+const niePasuje = [
+  { t: 'Macie gotową specyfikację i szukacie wykonawcy', d: 'Przegląd niczego do niej nie doda. Wyceniamy wdrożenie od razu.' },
+  { t: 'Firma jest w środku dużej zmiany', d: 'Przy wdrożeniu ERP albo reorganizacji procesy za kwartał wyglądają inaczej niż dziś. Lepiej zmierzyć je po zmianie.' },
+  { t: 'Chodzi o przeszkolenie zespołu z narzędzi', d: 'To osobna usługa. Warsztaty prowadzimy, ale w innym trybie niż przegląd procesów.' },
+  { t: 'Decyzja o budżecie zapada dopiero za rok', d: 'Dokument pracuje najmocniej w kwartale, w którym zapada decyzja. Wcześniej zdąży się zestarzeć.' },
+];
+
+const powody = [
+  {
+    n: '01',
+    t: 'Wdrożenie ląduje tam, gdzie nic nie waży',
+    d: 'Zespół dostaje narzędzie do zadania, które zajmowało dwie godziny w miesiącu. Robi je teraz w dwadzieścia minut i nie widać tego nigdzie poza tym jednym zadaniem.',
+  },
+  {
+    n: '02',
+    t: 'Człowiek poprawia po modelu',
+    d: 'Odpowiedź trzeba przeczytać, sprawdzić w systemie i poprawić. Do czasu pracy dochodzi kontrola, więc sprawa idzie szybciej tylko na papierze.',
+  },
+  {
+    n: '03',
+    t: 'Adopcja zatrzymuje się na części zespołu',
+    d: 'Trzy osoby z dwudziestu korzystają codziennie, reszta wróciła do starego sposobu po dwóch tygodniach. Proces musi obsłużyć obie ścieżki naraz.',
+  },
+  {
+    n: '04',
+    t: 'Proces wokół narzędzia został ten sam',
+    d: 'Kroki, akceptacje i przekazania między działami nie zmieniły się ani o jeden. Sprawa nadal czeka w tych samych miejscach, tylko dociera do nich wcześniej.',
+  },
+  {
+    n: '05',
+    t: 'Nikt nie zmierzył punktu wyjścia',
+    d: 'Przed startem nie było liczby, więc po pół roku nie ma czego porównać. Zostaje wrażenie, że jest lepiej, i faktura za licencje.',
+  },
+];
+
+
+
+
+
+
+// Pasek tygodni: udział w osi czasu (procent szerokości) + czas klienta w godzinach.
+const godz = (h) => String(h).replace('.', ',');
+
+const etapy = [
+  {
+    e: 'PRZED STARTEM', t: 'Dostępy i NDA', pct: 12,
+    d: 'Podpisujemy NDA, dostajemy dostęp do systemów i listę procesów do przejrzenia. Nie musicie niczego wcześniej opisywać ani porządkować.',
+    w: 'lista procesów do przejrzenia',
+  },
+  {
+    e: 'TYDZIEŃ 1', t: 'Warsztat i pomiar', pct: 27,
+    d: 'Warsztat z zarządem o celach na ten rok i o liczbach, po których je rozliczacie. Potem rozmowy z ludźmi, którzy wykonują pracę, i pomiar czasu na realnych dokumentach.',
+    w: 'cele z miarami i punkt wyjścia',
+  },
+  {
+    e: 'TYDZIEŃ 2', t: 'Liczenie i kolejność', pct: 25,
+    d: 'Powstaje arkusz z wyliczeniami i kolejność pozycji ułożona po wpływie na cel. Założenia potwierdzamy z Wami, zanim cokolwiek pójdzie dalej.',
+    w: 'arkusz wyliczeń i kolejność',
+  },
+  {
+    e: 'TYDZIEŃ 3', t: 'Specyfikacja i odrzucenia', pct: 27,
+    d: 'Dwa pierwsze wdrożenia opisujemy na tyle dokładnie, żeby dało się je wycenić. Reszta kandydatów trafia na listę odrzuconych razem z powodem.',
+    w: 'specyfikacja i lista odrzuconych',
+  },
+  {
+    e: 'DZIEŃ 15', t: 'Omówienie z zarządem', pct: 9,
+    d: 'Dziewięćdziesiąt minut na dokument strategii i pytania. Dokument dostajecie dwa dni wcześniej, więc na spotkanie wchodzicie z gotowymi uwagami.',
+    w: 'dokument strategii',
+  },
+];
+
+
+// PRZYKŁADOWE transformacje — do podmiany na potwierdzone przypadki.
+// Skala etapów jest ta sama, co na stronie głównej, więc podstrona i strona
+// główna mówią o transformacji jednym językiem.
+const ETAPY_FIRMY = ['Ręczna firma', 'Punktowe automatyzacje', 'Systemy zintegrowane', 'Napędzana AI'];
+
+// Artefakt przy sekcji o dokumencie: kartka ze spisem części dokumentu.
+// Zielona linia przejeżdża w dół strony i wyostrza kolejne nagłówki —
+// reszta zostaje nieostra, bo treść dokumentu jest Wasza, nie nasza.
+const CZESCI = [
+  { n: '01', t: 'Przewagi do zbudowania', l: [88, 62] },
+  { n: '02', t: 'Kolejność na dwanaście miesięcy', l: [76, 54] },
+  { n: '03', t: 'Rachunek: koszt i zwrot', l: [92, 48] },
+  { n: '04', t: 'Ryzyka i warunki wejścia', l: [70, 58] },
+  { n: '05', t: 'Plan pierwszego kwartału', l: [84, 44] },
+];
+const BLOK = 62;                       // wysokość jednej części w px
+const SKAN = 9;                        // ile sekund jedzie linia
+const WYS = CZESCI.length * BLOK;      // dystans przejazdu
+// Klatki składane w locie: var() w @keyframes potrafi zostać zignorowane,
+// więc dystans wchodzi do reguły jako liczba.
+const klatkaSkan = `@keyframes arSkan{0%{transform:translateY(0);opacity:0}3%{opacity:1}64%{transform:translateY(${WYS + 24}px);opacity:1}70%{transform:translateY(${WYS + 24}px);opacity:0}71%,100%{transform:translateY(0);opacity:0}}`;
+
+const transformacje = [
+  {
+    f: 'Producent mebli', m: '140 osób', czas: 'w 9 miesięcy', od: 1, do: 3,
+    zm: [
+      'Oferty i zamówienia idą jednym obiegiem, bez przepisywania między działami',
+      'Zamknięcie miesiąca skróciło się o pięć dni roboczych',
+      'Przy dwukrotnie większej sprzedaży dział urósł o dwie osoby, nie o sześć',
+    ],
+  },
+  {
+    f: 'Dystrybutor części', m: '320 osób', czas: 'w 14 miesięcy', od: 2, do: 4,
+    zm: [
+      'Faktury, zamówienia i reklamacje prowadzi system, ludzie prowadzą wyjątki',
+      'Decyzje o zapasach zapadają na danych z ostatniej doby',
+      'Trzy działy pracują na jednym rejestrze zamiast na trzech arkuszach',
+    ],
+  },
+  {
+    f: 'Firma serwisowa', m: '90 osób', czas: 'w 7 miesięcy', od: 1, do: 3,
+    zm: [
+      'Zgłoszenie trafia do właściwej osoby bez dyspozytora',
+      'Klient sprawdza status zlecenia sam, o każdej porze',
+      'Serwisant dostaje komplet danych przed wyjazdem, nie po telefonie',
+    ],
+  },
+];
+
+const faq = [
+  {
+    q: 'Czym to się różni od audytu AI za trzy tysiące złotych?',
+    a: 'Zakresem i tym, co zostaje na końcu. Audyt w tej cenie to zwykle warsztat i lista pomysłów uszeregowana na podstawie rozmowy. Tutaj mierzymy czas na realnych dokumentach, a przy każdej pozycji stoi cel, który ma poruszyć, i sposób pomiaru. Jeśli szukacie samej listy okazji, taki audyt wystarczy i powiemy to wprost.',
+  },
+  {
+    q: 'Ile kosztuje strategia transformacji AI?',
+    a: 'Zwykle od 5 do 20 tysięcy złotych. Różnicę robi liczba procesów do przejrzenia i to, ile z nich sięga poza jeden dział, bo wtedy dochodzą rozmowy i pomiary w kilku miejscach naraz. Dokładną kwotę podajemy po bezpłatnej konsultacji, na której ustalamy zakres. Jeśli z rozmowy wyjdzie, że przegląd nie ma u Was sensu, powiemy to na tym samym spotkaniu.',
+  },
+  {
+    q: 'Czym jest transformacja AI w firmie?',
+    a: 'Transformacja AI to nie jedno wdrożenie, tylko kilkanaście projektów rozłożonych na miesiące albo lata. Zmienia się w niej sam kształt procesów: dziś powstały wokół tego, co człowiek zdąży zrobić ręcznie, po zmianie prowadzi je technologia, a człowiek wchodzi tam, gdzie sprawa odbiega od schematu. Strategia transformacji AI ustala kolejność tych projektów i to, który cel z planu zarządu ma poruszyć każdy z nich.',
+  },
+  {
+    q: 'Od czego zacząć wdrożenie AI w firmie?',
+    a: 'Od celu i od liczby, nie od narzędzia. Najpierw warsztat z zarządem o tym, co ma się zmienić w tym roku i po czym to poznacie. Potem pomiar czasu i kosztu procesu na realnych dokumentach, bo bez punktu wyjścia po pół roku nie ma czego porównać. Dopiero na tym powstaje kolejność wdrożeń. Firmy, które zaczynają od wybranego narzędzia, najczęściej trafiają nim w proces, który nic nie waży.',
+  },
+  {
+    q: 'Co, jeśli wyjdzie, że żaden proces się nie opłaca?',
+    a: 'To zdarza się najczęściej w firmach, które mają dane rozsypane poza systemami. Wtedy dokument strategii mówi, że pierwszym krokiem jest integracja, a nie AI. Dostajecie wyliczenie, które to pokazuje, i rekomendację, żeby wstrzymać budżet na modele. Taki wynik jest wart tyle, co roczne wdrożenie zatrzymane w porę.',
+  },
+  {
+    q: 'Skąd wiadomo, że to da przewagę, a nie samą oszczędność godzin?',
+    a: 'Stąd, że kolejność powstaje po celach, nie po godzinach. Proces może zabierać trzysta godzin miesięcznie i mimo to nie wejść na listę, bo żaden cel z planu na nim nie stoi. I odwrotnie: pozycja z mniejszą oszczędnością wchodzi wyżej, jeśli pozwala odpowiedzieć klientowi szybciej niż konkurencja. Przy każdej zapisujemy, którą liczbę porusza i jak ją mierzyć.'
+  },
+  {
+    q: 'Ile czasu zajmie to naszemu zespołowi?',
+    a: 'Potrzebujemy czterech rzeczy: warsztatu z zarządem na starcie, po jednej rozmowie z osobami wykonującymi pracę w wybranych procesach, krótkiego potwierdzenia założeń w drugim tygodniu i omówienia dokumentu na koniec. Warsztat i omówienie to jedyne punkty, w których potrzebujemy całego składu naraz. Rozmowy z zespołem umawiamy pojedynczo, żeby nie zatrzymywać działu.',
+  },
+  {
+    q: 'Nasze dane są wrażliwe. Co się z nimi dzieje?',
+    a: 'NDA podpisujemy przed pierwszym dostępem. Do pomiarów wystarczają nam zwykle dane z ostatnich trzech miesięcy w zakresie jednego procesu, a tam, gdzie to możliwe, pracujemy na kopii z usuniętymi danymi osobowymi. Ustalamy z Wami, co i na jakim etapie wychodzi poza Waszą infrastrukturę, i zapisujemy to w dokumencie.',
+  },
+  {
+    q: 'Mamy już listę pomysłów od zespołu. Czy to nie to samo?',
+    a: 'Lista pomysłów mówi, co ludzi uwiera. Kolejność mówi, ile każda pozycja kosztuje i ile wraca, więc zwykle wygląda inaczej niż lista wyjściowa. Waszą listę bierzemy na wejściu i przepuszczamy przez kryteria i arkusz wyliczeń. Część pozycji spada, część awansuje, a jedna albo dwie dochodzą z rozmów z ludźmi przy procesie.',
+  },
+];
+dane['@graph'].push({
+  '@type': 'FAQPage',
+  '@id': `${kanon}#faq`,
+  mainEntity: faq.map((f) => ({
+    '@type': 'Question',
+    name: f.q,
+    acceptedAnswer: { '@type': 'Answer', text: f.a },
+  })),
+});
+
+---
+<LaBase title={title} description={description} ctaHref="#kontakt" ctaLabel="Umów rozmowę" nav="uslugi">
+<script type="application/ld+json" is:inline set:html={JSON.stringify(dane)} slot="head"></script>
+<style is:global slot="head">
+  /* ================= cele i strumień kandydatów (hero) =================
+     Trzy koła u góry to cele zarządu. Pod nimi przewija się strumień pozycji:
+     wszystkie wjeżdżają rozmyte, bo w hero nie ma czego czytać — ma być widać
+     skalę przeglądu. Ostrość i nazwę dostają tylko przyjęte.
+     Chwila werdyktu wynika z tego, kiedy wiersz mija linię decyzji; wszystkie
+     czasy liczy nagłówek pliku. Animacja idzie raz i zostaje na stu procentach. */
+  .cele{display:flex;justify-content:space-between;gap:clamp(12px,2vw,28px)}
+  .cel{flex:1;display:flex;flex-direction:column;align-items:center;opacity:0;transform-origin:center}
+  .cel svg{width:100%;height:auto;max-width:128px;display:block;overflow:visible}
+  .ce-tor{fill:none;stroke:#e7ece4;stroke-width:9}
+  .ce-luk{fill:none;stroke:var(--la-accent,#00CD77);stroke-width:9;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;transform:rotate(-90deg);transform-origin:center}
+  .ce-fin{fill:none;stroke:var(--la-accent,#00CD77);stroke-width:2.4;opacity:0;transform-box:fill-box;transform-origin:center}
+  .ce-pop{transform-box:fill-box;transform-origin:center}
+  .ce-pro{font-size:21px;font-weight:800;fill:#16211a;opacity:0}
+  .ce-pro.ostatni{fill:#0a7a52}
+  .ce-nazwa{margin-top:10px;font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:#a0aba1}
+  .ce-opis{margin-top:3px;font-size:12.5px;font-weight:650;color:#4c5850;text-align:center;line-height:1.25}
+
+  .strum{position:relative;height:360px;margin-top:clamp(20px,2.4vw,28px);overflow:hidden;
+    -webkit-mask-image:linear-gradient(180deg,transparent 0,#000 11%,#000 86%,transparent 100%);
+    mask-image:linear-gradient(180deg,transparent 0,#000 11%,#000 86%,transparent 100%)}
+  .strum-tor{animation:st-tor 32s linear infinite}
+  .strum{animation:st-gasnie 32s linear infinite}
+  .wiersz{display:flex;align-items:center;justify-content:space-between;gap:14px;height:40px;padding:0 2px;border-bottom:1px solid #eef1ec}
+  .szkielet{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px;filter:blur(2.2px)}
+  .szkielet i{display:block;height:6px;border-radius:3px;background:#dce5da}
+  .szkielet i + i{background:#e6ece4}
+  .nazwa{position:absolute;left:2px;right:120px;font-size:14px;font-weight:650;color:#16211a;line-height:1.3;opacity:0;filter:blur(7px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .wiersz{position:relative}
+  .st-w{display:inline-flex;align-items:center;gap:6px;flex-shrink:0;font-size:11.5px;font-weight:700;padding:4px 10px;border-radius:999px;opacity:0;white-space:nowrap}
+  .st-w.tak{color:#0b3a26;background:#d8f3e4}
+  .st-w.nie{color:#98a49a;background:#f1f4ee;font-weight:600}
+  .st-bada{position:absolute;right:2px;display:inline-flex;align-items:center;gap:7px;font-size:11.5px;font-weight:600;color:#9aa69b;opacity:0}
+  .st-bada i{display:block;width:6px;height:6px;border-radius:50%;background:var(--la-accent,#00CD77);animation:ce-tetno 1.1s ease-in-out infinite}
+  @keyframes ce-tetno{0%,100%{opacity:.35;transform:scale(.8)}50%{opacity:1;transform:scale(1.15)}}
+  @media (max-width:600px){ .strum{height:300px} .nazwa{font-size:13px;right:104px} .st-w{font-size:10.5px;padding:3px 8px} }
+
+  /* ================= siatka wdrożeń ================= */
+  .wf{display:grid;grid-template-columns:repeat(20,1fr);gap:5px}
+  .wf i{display:block;aspect-ratio:1;border-radius:2px;background:#ccd8ca;opacity:0;transform:translateY(6px);transition:opacity .34s,transform .34s;transition-delay:calc(var(--i)*10ms)}
+  .wf.on i{opacity:1;transform:none}
+  .wf i.hit{background:var(--la-accent,#00CD77)}
+  .wf.on i.hit{transition-delay:calc(1.2s + var(--j)*90ms);box-shadow:0 0 0 3px rgba(0,205,119,.22)}
+
+  /* ================= dla kogo =================
+     Jedna siatka na całą sekcję: dwie kolumny rozdzielone włosową linią,
+     a wezwanie do rozmowy jest jej ostatnim wierszem, nie doklejoną kartą. */
+  .dk{display:grid;grid-template-columns:1fr 1px 1fr;gap:0;align-items:stretch}
+  .dk-linia{background:#dde7db}
+  .dk-lewa{padding-right:clamp(28px,4vw,60px)}
+  .dk-prawa{padding-left:clamp(28px,4vw,60px)}
+  .dk-nag{display:flex;align-items:center;gap:10px;font-size:clamp(19px,2.2vw,23px);font-weight:750;letter-spacing:-0.018em;color:#16211a}
+  .dk-prawa .dk-nag{color:#7c877e}
+  .dk-kropka{width:9px;height:9px;border-radius:50%;background:var(--la-accent,#00CD77);flex-shrink:0}
+  .dk-prawa .dk-kropka{background:#c3cfc3}
+  .dk-poz{display:grid;grid-template-columns:22px 1fr;gap:14px;align-items:start;padding:17px 0;border-top:1px solid #e4ece2}
+  .dk-poz:first-of-type{border-top:0}
+  .dk-t{display:block;font-size:clamp(15.5px,1.8vw,17px);line-height:1.4;font-weight:700;color:#16211a;text-wrap:pretty}
+  .dk-d{display:block;margin-top:5px;font-size:14.5px;line-height:1.55;color:#4c5850;text-wrap:pretty}
+  .dk-prawa .dk-t{color:#4c5850;font-weight:650}
+  .dk-prawa .dk-d{color:#8b968d}
+  .dk-osoba{display:flex;align-items:center;gap:13px;margin-top:clamp(20px,2.4vw,26px)}
+  .dk-osoba img{width:54px;height:54px;border-radius:50%;object-fit:cover;object-position:50% 18%;display:block;flex-shrink:0;box-shadow:0 0 0 2px #ffffff}
+  .dk-pola{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .dk-inp{width:100%;box-sizing:border-box;font-family:inherit;font-size:15px;color:#16211a;background:#ffffff;border:1px solid #dde7db;border-radius:10px;padding:13px 15px;outline:none}
+  .dk-inp:focus{border-color:#0a7a52;box-shadow:0 0 0 3px rgba(10,122,82,0.1)}
+  .dk-belka{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;color:#8b968d}
+  @media (max-width:900px){
+    .dk{grid-template-columns:1fr}
+    .dk-linia{height:1px;margin:clamp(26px,4vw,34px) 0}
+    .dk-lewa,.dk-prawa{padding-left:0;padding-right:0}
+  }
+  @media (max-width:620px){ .dk-pola{grid-template-columns:1fr} }
+
+  /* ================= pas konwersji =================
+     Osobny pas, nie doklejony do kwalifikacji: formularz w jednym wierszu,
+     bo to jedno działanie, a nie ankieta. Pięć stopni pisma, nie dziewięć. */
+  /* ================= pas konwersji =================
+     Zdjęcie idzie na pełną wysokość pasa i schodzi w ciemność gradientem,
+     żeby nie wyglądało jak wklejony prostokąt. Treść leży nad nim. */
+  .kv{position:relative;z-index:2;max-width:min(62%,760px)}
+  .kv-h{margin:0;font-size:clamp(26px,3.4vw,40px);line-height:1.1;letter-spacing:-0.028em;font-weight:800;color:#ffffff;text-wrap:balance}
+  .kv-l{margin:16px 0 0;max-width:560px;font-size:16.5px;line-height:1.6;color:rgba(255,255,255,0.82);text-wrap:pretty}
+  .kv-form{display:grid;grid-template-columns:1fr 1fr;gap:16px 12px;margin-top:clamp(24px,3vw,32px);max-width:620px}
+  .kv-pole{display:block;min-width:0}
+  .kv-pole.szeroko{grid-column:1 / -1}
+  .kv-lab{display:flex;align-items:baseline;gap:7px;margin-bottom:7px;font-size:12.5px;font-weight:650;color:rgba(255,255,255,0.78)}
+  .kv-lab span[aria-hidden]{color:var(--la-accent,#00CD77)}
+  .kv-opc{font-size:11.5px;font-weight:500;color:rgba(255,255,255,0.42)}
+  /* Telefon z prefiksem — ten sam mechanizm, co w module kontaktowym niżej. */
+  .kv-tel{display:flex;align-items:center;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.34);border-radius:12px;transition:border-color .15s,background .15s}
+  .kv-tel:focus-within{border-color:var(--la-accent,#00CD77);background:rgba(255,255,255,0.16)}
+  .kv-kier{position:relative;display:flex;align-items:center;flex-shrink:0;color:rgba(255,255,255,0.55)}
+  .kv-kier select{appearance:none;-webkit-appearance:none;-moz-appearance:none;border:0;background:transparent;font-family:inherit;font-size:15.5px;font-weight:650;color:#ffffff;padding:15px 30px 15px 16px;outline:none;cursor:pointer}
+  .kv-kier select option{color:#16211a}
+  .kv-kier svg{position:absolute;right:12px;top:50%;transform:translateY(-50%);pointer-events:none}
+  .kv-kreska{width:1px;height:22px;background:rgba(255,255,255,0.22);flex-shrink:0}
+  .kv-tel input{flex:1;min-width:0;border:0;background:transparent;font-family:inherit;font-size:15.5px;color:#ffffff;padding:15px 16px 15px 13px;outline:none}
+  .kv-tel input::placeholder{color:rgba(255,255,255,0.42)}
+  .kv-zgoda{display:flex;align-items:flex-start;gap:11px;font-size:12.5px;line-height:1.5;color:rgba(255,255,255,0.62);cursor:pointer}
+  .kv-zgoda input{margin-top:1px;width:17px;height:17px;flex-shrink:0;accent-color:var(--la-accent,#00CD77);cursor:pointer}
+  .kv-pp{color:rgba(255,255,255,0.86);font-weight:650;text-decoration:underline;text-underline-offset:2px}
+  .kv-zgoda-pole.zle .kv-zgoda{color:#ffb3a0}
+  .kv-pulapka{position:absolute;width:1px;height:1px;padding:0;border:0;opacity:0;pointer-events:none;left:-9999px}
+  .sr-only{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+  .kv-blad{display:none;margin-top:6px;font-size:12.5px;line-height:1.4;color:#ffb3a0}
+  .kv-pole.zle .kv-blad{display:block}
+  .kv-pole.zle .kv-inp,.kv-pole.zle .kv-tel{border-color:#ff8f77;background:rgba(255,143,119,0.09)}
+  .kv-pole.ok .kv-inp,.kv-pole.ok .kv-tel{border-color:rgba(0,205,119,0.55)}
+  .kv-stan{grid-column:1 / -1;margin:0;font-size:13.5px;line-height:1.5;color:rgba(255,255,255,0.72)}
+  .kv-stan a{color:#ffffff;font-weight:650;text-decoration:underline}
+  .kv-stan:empty{display:none}
+  .kv-inp{width:100%;box-sizing:border-box;font-family:inherit;font-size:15.5px;color:#ffffff;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.34);border-radius:12px;padding:15px 16px;outline:none;transition:border-color .15s,background .15s}
+  .kv-inp::placeholder{color:rgba(255,255,255,0.56)}
+  .kv-inp:focus{border-color:var(--la-accent,#00CD77);background:rgba(255,255,255,0.11)}
+  textarea.kv-inp{min-height:96px;resize:vertical;line-height:1.5;display:block}
+  .kv-btn{display:inline-flex;align-items:center;gap:9px;font-family:inherit;border:0;cursor:pointer;background:var(--la-accent,#00CD77);color:#0b1a11;padding:16px 30px;border-radius:12px;font-weight:750;font-size:16px;white-space:nowrap;transition:background .2s,transform .2s,opacity .2s}
+  .kv-btn[disabled]{opacity:.6;cursor:progress;transform:none}
+  .kv-btn:hover{background:#00b96c;transform:translateY(-1px)}
+  .kv-akcja{grid-column:1 / -1;display:flex;align-items:center;flex-wrap:wrap;gap:14px 24px}
+  .kv-lnk{font-size:14.5px;font-weight:700;color:rgba(255,255,255,0.88);transition:color .15s}
+  .kv-lnk:hover{color:var(--la-accent,#00CD77)}
+  .kv-mala{display:flex;flex-wrap:wrap;gap:10px 22px;margin-top:20px;font-size:12.5px;line-height:1.5;color:rgba(255,255,255,0.6)}
+  .kv-mala span{display:inline-flex;align-items:center;gap:7px}
+  .kv-mala svg{flex-shrink:0;color:var(--la-accent,#00CD77)}
+
+  /* Zdjęcie rozpływa się maską, nie nakładką w kolorze tła — nakładka nigdy
+     nie trafiała w radialny gradient pasa i zostawiała widoczną krawędź.
+     Prawa krawędź trzyma się kolumny treści, więc na szerokim ekranie Piotr
+     nie ucieka w sam róg. */
+  .kv-foto{position:absolute;right:max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));top:0;bottom:0;width:min(52%,680px);z-index:1}
+  .kv-foto img{width:100%;height:100%;object-fit:cover;object-position:50% 24%;display:block;filter:brightness(.94) saturate(.96);
+    -webkit-mask-image:linear-gradient(to right,transparent 0%,rgba(0,0,0,0.10) 7%,rgba(0,0,0,0.34) 14%,rgba(0,0,0,0.62) 21%,rgba(0,0,0,0.85) 27%,#000 34%,#000 74%,rgba(0,0,0,0.88) 82%,rgba(0,0,0,0.62) 89%,rgba(0,0,0,0.34) 94%,rgba(0,0,0,0.14) 97.5%,rgba(0,0,0,0.04) 99.2%,transparent 100%);
+    mask-image:linear-gradient(to right,transparent 0%,rgba(0,0,0,0.10) 7%,rgba(0,0,0,0.34) 14%,rgba(0,0,0,0.62) 21%,rgba(0,0,0,0.85) 27%,#000 34%,#000 74%,rgba(0,0,0,0.88) 82%,rgba(0,0,0,0.62) 89%,rgba(0,0,0,0.34) 94%,rgba(0,0,0,0.14) 97.5%,rgba(0,0,0,0.04) 99.2%,transparent 100%)}
+  .kv-podpis{position:absolute;right:clamp(22px,3vw,48px);bottom:clamp(20px,3vw,34px);z-index:2;text-align:right}
+  .kv-podpis b{display:block;font-size:15px;font-weight:800;color:#ffffff}
+  .kv-podpis span{display:block;margin-top:2px;font-size:12.5px;color:rgba(255,255,255,0.7)}
+  @media (max-width:1000px){
+    .kv{max-width:min(68%,660px)}
+    .kv-foto{width:min(46%,440px)}
+  }
+  @media (max-width:820px){
+    .kv{max-width:100%}
+    .kv-foto{position:relative;right:auto;top:auto;bottom:auto;width:100%;height:230px;margin-bottom:26px;border-radius:16px;overflow:hidden}
+    .kv-foto img{object-position:50% 22%;-webkit-mask-image:linear-gradient(to bottom,#000 58%,rgba(0,0,0,0.75) 84%,rgba(0,0,0,0.45) 100%);mask-image:linear-gradient(to bottom,#000 58%,rgba(0,0,0,0.75) 84%,rgba(0,0,0,0.45) 100%)}
+    .kv-podpis{right:auto;left:18px;bottom:14px;text-align:left}
+  }
+  @media (max-width:560px){ .kv-form{grid-template-columns:1fr} }
+  @media (prefers-reduced-motion:reduce){ .kv-btn:hover{transform:none} }
+
+  /* ================= bento: co robimy =================
+     Każdy kafel to dwie kolumny: treść po lewej, ruchoma scenka po prawej.
+     Scenki mają wspólną ramkę 96×72, więc stoją w jednym rozmiarze i nie
+     wyglądają jak doklejone ikony. Żaden kafel nie rozpina się na dwa rzędy. */
+  .bento{display:grid;grid-template-columns:repeat(10,1fr);gap:clamp(12px,1.4vw,18px)}
+  .bt{display:grid;grid-template-columns:1fr auto;gap:clamp(16px,2vw,30px);align-items:center;background:#f4f8f2;border:1px solid #e7ece4;border-radius:22px;padding:clamp(22px,2.3vw,30px);transition:border-color .25s,transform .25s,box-shadow .25s}
+  .bt:hover{transform:translateY(-3px);border-color:var(--la-accent,#00CD77);box-shadow:0 26px 52px -30px rgba(18,38,28,.26)}
+  /* Rzędy idą naprzemiennie 60/40 i 40/60, żeby siatka nie czytała się
+     jak tabela i żeby dłuższy tekst zawsze dostawał szerszy kafel. */
+  .w6{grid-column:span 6}
+  .w4{grid-column:span 4}
+  .w10{grid-column:span 10}
+  .bt-t{margin:0;font-size:clamp(18px,2vw,21px);font-weight:750;letter-spacing:-0.015em;line-height:1.25;color:#16211a;text-wrap:balance}
+  .bt-d{margin:10px 0 0;font-size:14.5px;line-height:1.6;color:#4c5850;text-wrap:pretty}
+  .w10 .bt-t{font-size:clamp(21px,2.3vw,25px)}
+  .w10 .bt-d{font-size:15.5px}
+  .bt-ciemny{background:#0e2b1d;border-color:#0e2b1d}
+  .bt-ciemny .bt-t{color:#ffffff}
+  .bt-ciemny .bt-d{color:rgba(255,255,255,0.75)}
+  .bt-ciemny:hover{border-color:var(--la-accent,#00CD77)}
+
+  /* ---- scenki ---- */
+  .ik{height:clamp(56px,4.6vw,68px);width:auto;display:block;flex-shrink:0}
+  .w10 .ik{height:clamp(80px,6.6vw,100px)}
+  .ik-cien{stroke:#cdd9cb;fill:none;stroke-width:2.4;stroke-linecap:round}
+  .ik-akc{stroke:var(--la-accent,#00CD77);fill:none;stroke-width:2.6;stroke-linecap:round}
+  .ik-plam{fill:#cbd8c9}
+  .ik-akcf{fill:var(--la-accent,#00CD77)}
+  .bt-ciemny .ik-cien{stroke:rgba(255,255,255,0.24)}
+  .bt-ciemny .ik-plam{fill:rgba(255,255,255,0.26)}
+  .ik .s2-plyt,.ik .s3-p,.ik .s3-x,.ik .s4-os,.ik .s4-cel,.ik .s6-koniec,.ik .s7-oko{transform-box:fill-box;transform-origin:center}
+
+  /* ---- krzywe ruchu ----
+     Każda scenka ma własny czas cyklu, żeby siedem rysunków nigdy nie wpadło
+     we wspólny rytm. Ruch ma antycypację i osiadanie, a elementy reagują na
+     siebie: znacznik drgnie, gdy dojdzie miarka, a obwódka nad taśmą pulsuje
+     dokładnie wtedy, gdy mija ją skrzynka. */
+
+  /* 1 · cel */
+  .bento.on .s1-luk{animation:s1luk 6.8s cubic-bezier(.16,1,.3,1) infinite}
+  .bento.on .s1-obieg{animation:s1obieg 6.8s linear infinite;transform-origin:48px 36px}
+  .bento.on .s1-serce{animation:s1serce 6.8s ease-out infinite;transform-box:fill-box;transform-origin:center}
+  .bento.on .s1-fala{animation:s1fala 6.8s cubic-bezier(.16,1,.3,1) infinite;transform-box:fill-box;transform-origin:center;opacity:0}
+  @keyframes s1luk{0%,6%{stroke-dashoffset:1}42%{stroke-dashoffset:.24}48%{stroke-dashoffset:.28}88%{stroke-dashoffset:.28}100%{stroke-dashoffset:1}}
+  @keyframes s1obieg{0%,6%{transform:rotate(0deg)}14%{transform:rotate(22deg)}34%{transform:rotate(186deg)}43%{transform:rotate(268deg)}48%{transform:rotate(259deg)}88%{transform:rotate(259deg)}100%{transform:rotate(0deg)}}
+  @keyframes s1serce{0%,40%{transform:scale(1)}46%{transform:scale(1.32)}56%{transform:scale(.94)}66%,100%{transform:scale(1)}}
+  @keyframes s1fala{0%,42%{opacity:0;transform:scale(.86)}50%{opacity:.5;transform:scale(1)}72%{opacity:0;transform:scale(1.34)}100%{opacity:0;transform:scale(1.34)}}
+
+  /* 2 · pomiar */
+  .bento.on .s2-mier{animation:s2mier 7.6s cubic-bezier(.16,1,.3,1) infinite .3s}
+  .bento.on .s2-tick{animation:s2tick 7.6s cubic-bezier(.34,1.56,.64,1) infinite .3s;transform-box:fill-box;transform-origin:center}
+  .bento.on .s2-plyt{animation:s2plyt 7.6s cubic-bezier(.34,1.56,.64,1) infinite .3s}
+  @keyframes s2mier{0%,8%{stroke-dashoffset:1}40%{stroke-dashoffset:0}86%{stroke-dashoffset:0}100%{stroke-dashoffset:1}}
+  @keyframes s2tick{0%,38%{transform:translateX(0) scaleY(1)}43%{transform:translateX(2.5px) scaleY(1.22)}52%{transform:translateX(0) scaleY(1)}100%{transform:translateX(0) scaleY(1)}}
+  @keyframes s2plyt{0%,30%{opacity:0;transform:translateY(-7px) scale(.86)}44%{opacity:1;transform:translateY(2px) scale(1.05)}52%{transform:translateY(0) scale(1)}86%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-7px) scale(.86)}}
+
+  /* 3 · sito */
+  .bento.on .s3-brama{animation:s3brama 8.3s linear infinite}
+  .bento.on .s3-p{animation:s3pad 8.3s cubic-bezier(.5,.02,.72,.36) infinite;animation-delay:calc(.7s + var(--d))}
+  .bento.on .s3-x{animation:s3odpad 8.3s cubic-bezier(.33,.9,.6,1) infinite;animation-delay:calc(.7s + var(--d))}
+  @keyframes s3brama{0%{stroke-dashoffset:0}100%{stroke-dashoffset:-16}}
+  @keyframes s3pad{0%,12%{transform:translateY(0)}34%{transform:translateY(48px)}39%{transform:translateY(43px)}44%{transform:translateY(46px)}88%{transform:translateY(46px)}100%{transform:translateY(0)}}
+  @keyframes s3odpad{0%,12%{transform:translate(0,0);opacity:.9}36%{transform:translate(var(--bok),15px);opacity:0}88%{opacity:0}100%{transform:translate(0,0);opacity:.9}}
+
+  /* 4 · odporność */
+  .bento.on .s4-os{animation:s4os 7.1s cubic-bezier(.34,1.56,.64,1) infinite,s4oddech 3.4s ease-in-out infinite;animation-delay:calc(.9s + var(--d)),var(--faza)}
+  .bento.on .s4-nic{animation:s4nic 7.1s cubic-bezier(.16,1,.3,1) infinite;animation-delay:calc(.9s + var(--d))}
+  .bento.on .s4-cel{animation:s4cel 7.1s cubic-bezier(.34,1.56,.64,1) infinite 1.9s}
+  @keyframes s4os{0%,8%{opacity:.3;transform:scale(.6)}22%{opacity:1;transform:scale(1.14)}30%{transform:scale(1)}88%{opacity:1;transform:scale(1)}100%{opacity:.3;transform:scale(.6)}}
+  @keyframes s4oddech{0%,100%{translate:0 0}50%{translate:0 -1.4px}}
+  @keyframes s4nic{0%,10%{stroke-dashoffset:1;opacity:0}16%{opacity:.9}38%{stroke-dashoffset:0;opacity:.9}88%{stroke-dashoffset:0;opacity:.9}100%{stroke-dashoffset:1;opacity:0}}
+  @keyframes s4cel{0%,26%{fill:#cbd8c9;transform:scale(1)}33%{fill:var(--la-accent,#00CD77);transform:scale(1.12)}40%{transform:scale(.97)}47%{transform:scale(1)}88%{fill:var(--la-accent,#00CD77);transform:scale(1)}100%{fill:#cbd8c9;transform:scale(1)}}
+
+  /* 5 · koszt */
+  .bento.on .s5-slup{animation:s5slup 6.2s cubic-bezier(.34,1.56,.64,1) infinite;animation-delay:calc(1.1s + var(--i)*.42s);transform-origin:center bottom}
+  .bento.on .s5-poziom{animation:s5poziom 6.2s cubic-bezier(.34,1.56,.64,1) infinite 1.1s}
+  @keyframes s5slup{0%,10%{transform:scaleY(.04)}30%{transform:scaleY(1.07)}38%{transform:scaleY(.98)}45%{transform:scaleY(1)}88%{transform:scaleY(1)}100%{transform:scaleY(.04)}}
+  @keyframes s5poziom{0%,22%{transform:translateY(26px);opacity:0}28%{opacity:.75}40%{transform:translateY(26px);opacity:.75}52%{transform:translateY(0);opacity:.75}88%{transform:translateY(0);opacity:.75}100%{transform:translateY(26px);opacity:0}}
+
+  /* 6 · dwie drogi */
+  .bento.on .s6-nic{animation:s6nic 8.9s cubic-bezier(.16,1,.3,1) infinite;animation-delay:calc(1.4s + var(--i)*.46s)}
+  .bento.on .s6-koniec{animation:s6koniec 8.9s cubic-bezier(.34,1.56,.64,1) infinite;animation-delay:calc(1.75s + var(--i)*.46s)}
+  @keyframes s6nic{0%,10%{stroke-dashoffset:1;opacity:0}15%{opacity:.9}32%{stroke-dashoffset:0;opacity:.9}88%{stroke-dashoffset:0;opacity:.9}100%{stroke-dashoffset:1;opacity:0}}
+  @keyframes s6koniec{0%,16%{opacity:0;transform:translateY(5px) scale(.55)}30%{opacity:1;transform:translateY(-2px) scale(1.1)}38%{transform:translateY(0) scale(.98)}44%{transform:translateY(0) scale(1)}88%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(5px) scale(.55)}}
+
+  /* 7 · taśma */
+  .bento.on .s7-poz{animation:s7jazda 9.7s linear infinite;animation-delay:calc(var(--i)*-1.6167s)}
+  .bento.on .s7-buj{animation:s7buj 2.6s ease-in-out infinite;animation-delay:var(--faza)}
+  .bento.on .s7-barwa{animation:s7barwa 9.7s linear infinite;animation-delay:calc(var(--i)*-1.6167s)}
+  .bento.on .s7-band{animation:s7band 5.4s ease-in-out infinite;animation-delay:calc(var(--i)*.12s)}
+  .bento.on .s7-oko{animation:s7oko 1.6167s cubic-bezier(.16,1,.3,1) infinite .42s}
+  @keyframes s7jazda{0%{transform:translateX(-26px)}100%{transform:translateX(206px)}}
+  @keyframes s7buj{0%,100%{transform:translateY(0)}50%{transform:translateY(-1.3px)}}
+  @keyframes s7barwa{0%,50%{fill:rgba(255,255,255,0.26)}56%{fill:#8ff0c0}62%{fill:#00CD77}100%{fill:#00CD77}}
+  @keyframes s7band{0%,100%{opacity:.26}50%{opacity:.6}}
+  @keyframes s7oko{0%{opacity:.22;transform:scale(1)}12%{opacity:.62;transform:scale(1.1)}55%{opacity:.3;transform:scale(1.02)}100%{opacity:.22;transform:scale(1)}}
+
+  @media (max-width:1080px){
+    .bento{grid-template-columns:repeat(2,1fr)}
+    .w6,.w4{grid-column:span 1}
+    .w10{grid-column:span 2}
+  }
+  @media (max-width:720px){
+    .bento{grid-template-columns:1fr}
+    .w6,.w4,.w10{grid-column:span 1}
+    .bt{grid-template-columns:1fr;gap:20px}
+    .ik{order:-1}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .bt{transition:none} .bt:hover{transform:none}
+    .bento.on *{animation:none !important}
+    /* Bez ruchu rysunki i tak muszą być dorysowane do końca. */
+    .bento .s1-luk,.bento .s2-mier,.bento .s4-nic,.bento .s6-nic{stroke-dashoffset:0}
+    .bento .s1-fala{opacity:0}
+    .bento .s3-p{transform:translateY(46px)}
+    .bento .s3-x{opacity:.35}
+    .bento .s4-cel{fill:var(--la-accent,#00CD77)}
+  }
+
+  /* ================= harmonogram =================
+     Pasek pokazuje kształt procesu, nie czas klienta — szerokość odcinka
+     to długość etapu, a nasycenie rośnie w stronę dokumentu. */
+  .hm{display:flex;gap:6px;align-items:flex-end}
+  .hm-seg{display:flex;flex-direction:column;gap:10px;min-width:0}
+  .hm-bar{display:block;height:12px;border-radius:6px;background:var(--la-accent,#00CD77);opacity:var(--o);transform:scaleX(0);transform-origin:left;transition:transform .7s cubic-bezier(.4,0,.2,1);transition-delay:calc(var(--i)*140ms)}
+  .hm.on .hm-bar{transform:none}
+  .hm-lab{font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:0.1em;color:#8b968d;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .hm-row{display:grid;grid-template-columns:132px minmax(0,1fr) minmax(190px,250px);gap:clamp(18px,3vw,44px);align-items:start;padding:clamp(20px,2.4vw,28px) 0;border-top:1px solid #e2e9e0}
+  .hm-row:last-of-type{border-bottom:1px solid #e2e9e0}
+  .hm-e{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;letter-spacing:0.1em;color:#0a7a52;padding-top:5px}
+  .hm-t{display:block;margin:0;font-size:clamp(19px,2.2vw,23px);font-weight:750;letter-spacing:-0.015em;color:#16211a}
+  .hm-d{margin:9px 0 0;font-size:15px;line-height:1.62;color:#4c5850;text-wrap:pretty}
+  .hm-w{padding-top:5px;font-size:14.5px;line-height:1.5;color:#4c5850}
+  .hm-w span{display:block;margin-bottom:4px;font-size:12.5px;color:#a0aba1}
+  @media (max-width:900px){
+    .hm{display:none}
+    .hm-row{grid-template-columns:1fr;gap:8px}
+    .hm-w{padding-top:6px}
+  }
+
+  /* ================= cytat klienta =================
+     Pojedynczy głos w miejscu, w którym potwierdza konkretną obietnicę.
+     Bez kart i bez ściany opinii. */
+  .cyt{display:grid;grid-template-columns:auto 1fr;gap:clamp(20px,3vw,36px);align-items:start;max-width:1000px}
+  .cyt-znak{font-size:clamp(46px,5vw,64px);line-height:.72;font-weight:800;color:var(--la-accent,#00CD77)}
+  .cyt-t{margin:0;font-size:clamp(20px,2.6vw,29px);line-height:1.35;letter-spacing:-0.02em;font-weight:650;color:#16211a;text-wrap:pretty}
+  .cyt-a{display:block;margin-top:clamp(16px,2vw,22px);font-size:15px;font-weight:750;color:#16211a}
+  .cyt-r{display:block;margin-top:2px;font-size:14px;color:#8b968d}
+
+  /* ================= dokument =================
+     Kartka jako artefakt, nie jako eksponat: widać kształt dokumentu i jego
+     części, nie widać treści. Zielona linia przejeżdża w dół i po drodze
+     wyostrza kolejne nagłówki. */
+  .dok{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,440px);gap:clamp(28px,5vw,72px);align-items:center}
+  .ar{position:relative}
+  .ar-tyl{position:absolute;inset:0;background:#ffffff;border:1px solid #e4ebe2;border-radius:9px;box-shadow:0 16px 36px -26px rgba(15,30,22,0.45)}
+  .ar-t1{transform:rotate(-2.2deg) translate(-14px,8px)}
+  .ar-t2{transform:rotate(1.9deg) translate(13px,-9px)}
+  .ar-t3{transform:rotate(-4.4deg) translate(-26px,17px);opacity:.7}
+  .ar-p{position:relative;background:#ffffff;border:1px solid #e4ebe2;border-radius:9px;box-shadow:0 28px 58px -30px rgba(15,30,22,0.5);padding:18px 20px 20px;overflow:hidden}
+  .ar-gora{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding-bottom:12px;border-bottom:1px solid #eaefe8}
+  .ar-gora b{font-size:12.5px;font-weight:750;color:#16211a}
+  .ar-gora span{font-size:11.5px;color:#a9b3aa}
+  .ar-tresc{position:relative;margin-top:12px}
+  .ar-sek{height:62px}
+  .ar-tyt{display:flex;align-items:baseline;gap:8px;height:20px;font-size:13.5px;font-weight:700;letter-spacing:-0.01em;color:#16211a;opacity:0;filter:blur(4px)}
+  .ar-tyt b{font-size:11px;font-weight:700;color:#0a7a52}
+  .ar-l{display:block;height:6px;margin-top:8px;border-radius:3px;background:#d8e1d6;width:var(--w);filter:blur(2px)}
+  .ar-skan{position:absolute;left:-20px;right:-20px;top:-24px;height:48px;background:linear-gradient(to bottom,rgba(0,205,119,0) 0%,rgba(0,205,119,0.10) 62%,rgba(0,205,119,0) 100%);border-bottom:1px solid rgba(0,205,119,0.5);opacity:0;pointer-events:none}
+  .ar.on .ar-tyt{animation:arTyt 14s cubic-bezier(.16,1,.3,1) infinite;animation-delay:var(--d)}
+  .ar.on .ar-skan{animation:arSkan 14s linear infinite}
+  @keyframes arTyt{0%{opacity:0;filter:blur(4px);transform:translateY(3px)}5%{opacity:1;filter:blur(0);transform:none}76%{opacity:1;filter:blur(0);transform:none}84%,100%{opacity:0;filter:blur(4px);transform:translateY(3px)}}
+  @media (prefers-reduced-motion:reduce){
+    .ar.on .ar-tyt,.ar.on .ar-skan{animation:none}
+    .ar .ar-tyt{opacity:1;filter:none}
+    .ar .ar-skan{opacity:0}
+  }
+  @media (max-width:900px){
+    .dok{grid-template-columns:1fr;gap:34px}
+    /* Wąsko kartki w stosie muszą się schować, żeby nie wychodziły poza ekran. */
+    .ar{max-width:440px;padding:0 12px}
+    .ar-t1{transform:rotate(-1.8deg) translate(-8px,6px)}
+    .ar-t2{transform:rotate(1.5deg) translate(8px,-6px)}
+    .ar-t3{transform:rotate(-3deg) translate(-7px,12px)}
+  }
+
+  /* ================= dowody =================
+     Jeden wiersz to jedna firma i jej przeskok na skali etapów ze strony
+     głównej. Nie o pojedynczym procesie, tylko o tym, jak zmieniła się firma. */
+  .tr-row{display:grid;grid-template-columns:minmax(200px,250px) 1fr;gap:clamp(24px,3.6vw,60px);align-items:start;padding:clamp(30px,3.6vw,44px) 0;border-top:1px solid #dde7db}
+  .tr-row:last-of-type{border-bottom:1px solid #dde7db}
+  .tr-f{display:block;margin:0;font-size:clamp(19px,2.2vw,23px);font-weight:750;letter-spacing:-0.018em;color:#16211a}
+  .tr-m{display:block;margin-top:4px;font-size:13.5px;color:#8b968d}
+  .tr-czas{display:inline-block;margin-top:14px;font-size:13px;font-weight:700;color:#0a7a52;background:#e2f5ea;border-radius:999px;padding:6px 13px}
+  .et{position:relative;display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:40px}
+  /* Dwa momenty warte zaznaczenia: kiedy weszliśmy i gdzie firma jest dziś. */
+  .et-pin{position:absolute;bottom:calc(100% + 11px);left:var(--x);display:flex;align-items:center;gap:7px;white-space:nowrap;transform:translateX(-11px)}
+  .et-pin.teraz{flex-direction:row-reverse;transform:translateX(calc(-100% + 11px))}
+  .et-ik{position:relative;flex-shrink:0;display:flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:#ffffff;border:1.5px solid #0a7a52;color:#0a7a52}
+  .et-ik::after{content:"";position:absolute;left:50%;top:calc(100% + 2px);width:1.5px;height:11px;transform:translateX(-50%);background:#0a7a52;opacity:.45}
+  .et-pin.teraz .et-ik{background:var(--la-accent,#00CD77);border-color:var(--la-accent,#00CD77);color:#0b1a11;box-shadow:0 0 0 4px rgba(0,205,119,0.18)}
+  .et-pin.teraz .et-ik::after{background:var(--la-accent,#00CD77);opacity:.7}
+  .et-pin b{font-size:11.5px;font-weight:750;color:#4c5850}
+  .et-pin.teraz b{color:#0a7a52}
+  .et-seg{position:relative;height:9px;border-radius:5px;background:#e0e8de;transform:scaleX(0);transform-origin:left;transition:transform .6s cubic-bezier(.4,0,.2,1);transition-delay:calc(var(--i)*110ms)}
+  .et-seg.pusty{transform:none;background:#e6ece4}
+  .on .et-seg{transform:none}
+  /* Jaśniejszy odcinek to stan zastany, pełny zielony — droga przebyta z nami. */
+  .et-seg.przed{background:#bfdfcc}
+  .et-seg.znami{background:var(--la-accent,#00CD77)}
+  .et-leg{display:flex;flex-wrap:wrap;gap:8px 26px;margin-top:clamp(28px,3.4vw,40px);font-size:12.5px;color:#7c877e}
+  .et-leg span{display:inline-flex;align-items:center;gap:8px}
+  .lg{width:22px;height:7px;border-radius:4px;display:inline-block}
+  .lg-przed{background:#bfdfcc}
+  .lg-znami{background:var(--la-accent,#00CD77)}
+  .et-nap{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:10px}
+  .et-nap span{font-size:12px;line-height:1.35;color:#a0aba1}
+  .et-nap span.od{color:#4c5850;font-weight:650}
+  @media (max-width:600px){ .et-pin b{font-size:10.5px} }
+  .et-nap span.do{color:#0a7a52;font-weight:750}
+  /* Ta sama siatka, co paski etapów — inaczej trzy kolumny tekstu tną
+     cztery odcinki w przypadkowych miejscach. */
+  .tr-zm{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:clamp(22px,2.8vw,30px)}
+  .tr-zm p:last-child{grid-column:3 / -1}
+  .tr-zm p{margin:0;padding:14px 14px 0 0;border-top:1px solid #e4ece2;font-size:14px;line-height:1.55;color:#16211a;text-wrap:pretty}
+  @media (max-width:900px){
+    .tr-row{grid-template-columns:1fr;gap:22px}
+    .tr-zm{grid-template-columns:1fr;gap:0}
+    .tr-zm p{padding:12px 0}
+  }
+  @media (max-width:600px){ .et-nap span{font-size:10.5px} }
+
+  /* ================= wiersze ================= */
+  .pow-row{display:grid;grid-template-columns:96px minmax(220px,0.92fr) minmax(0,1.55fr);gap:clamp(20px,3vw,44px);align-items:start;padding:clamp(22px,2.6vw,30px) 4px;border-top:1px solid #e7ece4}
+  .pow-row:last-child{border-bottom:1px solid #e7ece4}
+  .etp-row{display:grid;grid-template-columns:132px minmax(0,1fr) 130px;gap:clamp(18px,3vw,40px);align-items:start;padding:clamp(20px,2.4vw,28px) 0;border-top:1px solid #e2e9e0}
+  .etp-row:last-of-type{border-bottom:1px solid #e2e9e0}
+  .dow-row{display:grid;grid-template-columns:150px 190px 1fr;gap:clamp(16px,3vw,40px);align-items:baseline;padding:clamp(20px,2.4vw,28px) 0;border-top:1px solid rgba(255,255,255,0.14)}
+  .dow-row:last-of-type{border-bottom:1px solid rgba(255,255,255,0.14)}
+  .dal-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(240px,0.28fr);gap:clamp(18px,3vw,40px);align-items:baseline;padding:26px 0;border-top:1px solid #e7ece4}
+  .dal-row:last-of-type{border-bottom:1px solid #e7ece4}
+
+  @media (max-width:1180px){
+  }
+  @media (max-width:1100px){
+    .pow-row{grid-template-columns:92px 1fr;gap:14px}
+    .pow-row > p{grid-column:2}
+    .zos-row{grid-template-columns:36px 1fr;gap:12px}
+    .zos-row > p{grid-column:2}
+  }
+  @media (max-width:900px){
+    .hero-split{grid-template-columns:1fr !important;gap:36px !important}
+    .syt-row,.dal-row{grid-template-columns:1fr !important;gap:8px !important}
+    .etp-row{grid-template-columns:1fr !important;gap:6px !important}
+    .etp-czas{justify-self:start !important}
+    .dow-row{grid-template-columns:1fr !important;gap:6px !important}
+    .cena-grid{grid-template-columns:1fr !important;gap:28px !important}
+    .wf{gap:4px}
+    .gt{display:none}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .cel,.ce-luk,.ce-pro,.ce-fin,.ce-pop,.strum-tor,.wiersz,.st-w,.st-bada,.szkielet,.nazwa{animation:none !important}
+    .st-bada,.ce-fin{opacity:0}
+    .ce-luk{stroke-dashoffset:0}
+    .ce-pro.ostatni,.st-w{opacity:1}
+    .strum-tor{transform:translateY(-920px)}
+    .nazwa{opacity:1;filter:none}
+    .wiersz.tak .szkielet{opacity:0}
+    .cel,.zad,.zad-w{opacity:1}
+    .zad.odpada{opacity:.42}
+    .ce-pro.ostatni{opacity:1}
+    .wf i,.bar span,.st-dot,.st-dot circle,.st-out,.gt-bar,.czas-bar span{transition:none !important}
+  }
+</style>
+
+<!-- ============ 1 · HERO ============
+     Nośnikiem jest ścieżka procesu: zielona linia jedzie od dokumentu do
+     księgowania, a przy każdym węźle zapada decyzja. Część spraw schodzi
+     odgałęzieniem w dół, do człowieka. Animacja chodzi w pętli, ma stan
+     końcowy czytelny przy wyłączonym ruchu. -->
+<!-- Poświata leży pod całą górą strony, nie w samym hero — inaczej ucina się
+     równą kreską pod menu. -->
+<div aria-hidden="true" style="position:absolute;left:0;right:0;top:0;height:1100px;background:radial-gradient(940px 660px at 88% 3%, rgba(0,205,119,0.135), transparent 64%);pointer-events:none"></div>
+<section style="position:relative;overflow:hidden;background:transparent;padding:clamp(28px,4vw,52px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) clamp(52px,6vw,78px)">
+<div class="hero-split" style="display:grid;grid-template-columns:1fr 1.05fr;gap:clamp(32px,4vw,56px);align-items:center;margin-top:clamp(10px,1.5vw,20px)">
+<div>
+<h1 style="margin:0;font-size:clamp(29px,4.4vw,51px);line-height:1.06;letter-spacing:-0.032em;font-weight:800;color:#16211a;text-wrap:balance">Transformacja AI zaczyna się od miejsc, w których AI daje Wam przewagę</h1>
+<p style="margin:26px 0 0;max-width:600px;font-size:clamp(16px,2.1vw,19px);line-height:1.6;color:#33413a;text-wrap:pretty">To kilkanaście projektów rozłożonych na lata. W trzy tygodnie ustalamy, który idzie pierwszy i którą liczbę z planu zarządu ma poruszyć.</p>
+<div class="hero-actions" style="display:flex;align-items:center;flex-wrap:wrap;gap:16px 22px;margin-top:34px">
+<a href="#kontakt" class="btn-dark" style="display:inline-flex;align-items:center;gap:10px;background:#16211a;color:#ffffff;padding:18px 32px;border-radius:12px;font-weight:650;font-size:16.5px;box-shadow:0 14px 30px -14px rgba(16,33,26,0.45)">Umów rozmowę <span aria-hidden="true">→</span></a>
+<a href="#jak-temu-zapobiegamy" class="btn-ghost" style="display:inline-flex;align-items:center;gap:8px;font-size:16.5px;font-weight:700;color:#16211a;background:rgba(255,255,255,0.6);padding:18px 26px;border-radius:12px;border:1px solid rgba(22,33,26,0.16)">Co robimy inaczej →</a>
+</div>
+</div>
+
+<div style="position:relative">
+<div class="cele" role="img" aria-label="Trzy cele zarządu wypełniają się, gdy kolejne procesy z listy zostają przyjęte; pozostałe odpadają razem z powodem">
+{cele.map((c, ci) => (
+  <div class="cel" style={`animation:ce-krag${ci} ${CYKL}s cubic-bezier(.4,0,.2,1) infinite`}>
+    <svg viewBox="0 0 120 120" aria-hidden="true">
+      <g class="ce-pop" style={`animation:ce-pop${ci} ${CYKL}s cubic-bezier(.34,1.4,.5,1) infinite`}>
+      <circle class="ce-tor" cx="60" cy="60" r="50"></circle>
+      <circle class="ce-fin" cx="60" cy="60" r="55" style={`animation:ce-fin${ci} ${CYKL}s cubic-bezier(.2,.7,.3,1) infinite`}></circle>
+      <circle class="ce-luk" cx="60" cy="60" r="50" pathLength="1" style={`animation:ce-luk${ci} ${CYKL}s cubic-bezier(.4,0,.2,1) infinite`}></circle>
+      {procenty.filter((x) => x.ci === ci).map((x, j, tab) => (
+        <text class={x.ostatni ? 'ce-pro ostatni' : 'ce-pro'} x="60" y="68" text-anchor="middle" style={`animation:ce-pro${ci}_${x.j} ${CYKL}s linear infinite`}>{x.p}%</text>
+      ))}
+      </g>
+    </svg>
+    <span class="ce-nazwa">{c.n}</span>
+    <span class="ce-opis">{c.o}</span>
+  </div>
+))}
+</div>
+
+<div class="strum" aria-hidden="true">
+<div class="strum-tor">
+{lista.map((z) => (
+  <div class={`wiersz ${z.typ}`} style={z.typ === 'ogon' ? '' : `animation:st-w${z.i} ${CYKL}s linear infinite`}>
+    <span class="szkielet" style={z.typ === 'tak' ? `animation:st-szk${z.i} ${CYKL}s linear infinite` : ''}>
+      <i style={`width:${z.kreski[0].toFixed(0)}%`}></i>
+      <i style={`width:${z.kreski[1].toFixed(0)}%`}></i>
+    </span>
+    {z.typ === 'tak' && <span class="nazwa" style={`animation:st-txt${z.i} ${CYKL}s ease-out infinite`}>{z.t}</span>}
+    {z.typ !== 'ogon' && <span class="st-bada" style={`animation:st-bada${z.i} ${CYKL}s linear infinite`}><i></i>sprawdzamy</span>}
+    {z.typ === 'tak' && <span class="st-w tak" style={`animation:st-werd${z.i} ${CYKL}s cubic-bezier(.34,1.4,.5,1) infinite`}><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#0a7a52" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>{cele[z.cel].n}</span>}
+    {z.typ === 'powod' && <span class="st-w nie" style={`animation:st-werd${z.i} ${CYKL}s cubic-bezier(.34,1.4,.5,1) infinite`}>{z.powod}</span>}
+  </div>
+))}
+</div>
+</div>
+<style is:inline set:html={klatki}></style>
+</div>
+</div>
+</section>
+
+<!-- ============ 1b · CZYM TO JEST ============
+     Pierwsze zdanie jest zbudowane jako definicja (podmiot = nazwa usługi) —
+     to fragment, po który sięgają modele językowe i wyróżnione odpowiedzi
+     w wyszukiwarce. Nie rozbijać go na dwa zdania.
+     Trzy akapity jednym stopniem pisma, bez wyróżnień. -->
+<section id="czym-jest" class="sec-pad">
+<div class="s2-grid" style="display:grid;grid-template-columns:minmax(280px,460px) 1fr;gap:clamp(32px,5vw,72px);align-items:start">
+<h2 class="h-sec" style="margin:0;text-wrap:balance">Czym jest strategia transformacji AI?</h2>
+<div style="max-width:760px;font-size:17px;line-height:1.65;color:#33413a">
+<p style="margin:0;text-wrap:pretty">Strategia transformacji AI to trzytygodniowe warsztaty prowadzone przez naszych analityków biznesowych i konsultantów, z których wychodzi konkretny plan wdrożenia AI oparty na przewagach konkurencyjnych Waszej firmy.</p>
+<p style="margin:20px 0 0;text-wrap:pretty">Plan ma dwa zadania: ominąć błędy, które kosztują dziesiątki albo setki tysięcy złotych, i dać pierwszemu wdrożeniu najwyższą możliwą szansę powodzenia.</p>
+<p style="margin:20px 0 0;text-wrap:pretty">Dalej realizujecie go z nami, własnym zespołem albo z inną firmą. Jest opisany na tyle dokładnie, że każdą z tych dróg da się wycenić.</p>
+</div>
+</div>
+</section>
+
+<!-- ============ 2 · NA CZYM TO SIĘ WYKŁADA ============
+     Siatka stu kwadratów robi ze statystyki rzecz, na którą się patrzy.
+     Pięć zielonych zapala się na końcu, po całej szarej fali. -->
+<section id="dlaczego" style="background:#f4f8f2;padding:clamp(64px,8vw,100px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
+<div class="s2-grid" style="display:grid;grid-template-columns:1.4fr 1fr;gap:clamp(40px,6vw,80px);align-items:center">
+<div>
+<h2 class="h-sec" style="margin:0;max-width:600px;text-wrap:pretty">Dlaczego warto mieć dobry plan?</h2>
+<p class="sub" style="margin:20px 0 0;max-width:520px">Bo bez niego wdrożenie sztucznej inteligencji przyspiesza pracę, ale rzadko wpływa na wynik firmy i jej cele. Do tego degraduje się z miesiąca na miesiąc.</p>
+</div>
+<div>
+<div class="wf" data-anim aria-hidden="true">
+{Array.from({ length: 100 }).map((_, i) => {
+  const hit = [3, 17, 44, 61, 88].indexOf(i);
+  return <i class={hit > -1 ? 'hit' : ''} style={`--i:${i};--j:${hit > -1 ? hit : 0}`}></i>;
+})}
+</div>
+<p style="margin:16px 0 0;font-size:13.5px;line-height:1.55;color:#4c5850"><strong style="color:#16211a;font-weight:700">Garstka wdrożeń rusza wynik firmy.</strong></p>
+</div>
+</div>
+
+<div style="margin-top:clamp(36px,4.4vw,56px)">
+{powody.map((p) => (
+  <div class="pow-row rv">
+    <span style="font-size:13.5px;font-weight:600;color:#b4776a;white-space:nowrap;padding-top:3px">Problem {p.n}</span>
+    <span style="font-size:clamp(19px,2.2vw,23px);font-weight:750;letter-spacing:-0.015em;line-height:1.2;color:#16211a">{p.t}</span>
+    <p style="margin:0;font-size:15px;line-height:1.6;color:#4c5850;text-wrap:pretty">{p.d}</p>
+  </div>
+))}
+</div>
+
+</section>
+
+<!-- ============ 2b · CO ROBIMY, ŻEBY TAK SIĘ NIE STAŁO ============
+     Odpowiedź na pięć problemów z sekcji wyżej, jeden kafel na jeden problem.
+     Układ bento: jeden duży kafel z przykładem, dwa średnie, trzy małe. -->
+<section id="jak-temu-zapobiegamy" class="sec-pad">
+<div class="sec-head">
+<h2 class="h-sec" style="margin:0;max-width:520px;text-wrap:pretty">Co robimy, żeby tak się nie stało</h2>
+<p class="sub" style="margin:0 0 6px;max-width:440px">Siedem zasad, których trzymamy się w każdym przeglądzie. Przy każdej pozycji w dokumencie da się sprawdzić, czy zostały dotrzymane.</p>
+</div>
+
+<div class="bento" data-anim style="margin-top:clamp(34px,4vw,50px)">
+
+<div class="bt w6">
+<div>
+<h3 class="bt-t">Każda pozycja zaczyna się od celu firmy</h3>
+<p class="bt-d">Na warsztacie ustalamy, co ma się zmienić w firmie w tym roku, i przypisujemy do tego miarę. Pozycja, która trafia na listę, ma wskazany cel i sposób pomiaru. Bez tego nie wchodzi.</p>
+</div>
+<svg class="ik" viewBox="0 0 96 72" aria-hidden="true">
+  <circle class="ik-cien" cx="48" cy="36" r="25"></circle>
+  <circle class="ik-akc s1-luk" cx="48" cy="36" r="25" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1" transform="rotate(-90 48 36)"></circle>
+  <circle class="ik-akc s1-fala" cx="48" cy="36" r="25" fill="none" stroke-width="1.4"></circle>
+  <g class="s1-obieg"><circle class="ik-akcf" cx="48" cy="11" r="4.6"></circle></g>
+  <circle class="ik-plam s1-serce" cx="48" cy="36" r="5"></circle>
+</svg>
+</div>
+
+<div class="bt w4">
+<div>
+<h3 class="bt-t">Mierzymy punkt wyjścia, zanim cokolwiek ruszy</h3>
+<p class="bt-d">Czas i koszt procesu liczymy na realnych dokumentach w pierwszym tygodniu. Po wdrożeniu wracamy do tej samej miary.</p>
+</div>
+<svg class="ik" viewBox="0 0 96 72" aria-hidden="true">
+  <rect class="ik-akcf s2-plyt" x="30" y="8" width="36" height="15" rx="5"></rect>
+  <line class="ik-cien" x1="8" y1="52" x2="88" y2="52"></line>
+  <line class="ik-cien" x1="8" y1="45" x2="8" y2="59"></line>
+  <line class="ik-cien s2-tick" x1="88" y1="45" x2="88" y2="59"></line>
+  <line class="ik-akc s2-mier" x1="8" y1="52" x2="88" y2="52" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1"></line>
+</svg>
+</div>
+
+<div class="bt w4">
+<div>
+<h3 class="bt-t">Odrzucamy więcej pozycji, niż przyjmujemy</h3>
+<p class="bt-d">Z kilkunastu kandydatów zostaje kilka. Wypaść może też ta, która oszczędza najwięcej godzin, jeśli nie stoi na niej żaden cel z planu.</p>
+</div>
+<svg class="ik" viewBox="0 0 96 72" aria-hidden="true">
+  <line class="ik-cien s3-brama" x1="6" y1="34" x2="90" y2="34" stroke-dasharray="3 5" stroke-width="1.6"></line>
+  {[0,1,2,3,4,5,6].map((i) => {
+    const przejdz = [1, 3, 5].includes(i);
+    const d = [0, 0.62, 0.18, 0.94, 0.4, 1.24, 0.78][i];
+    const bok = [3, -2, 0, 2, 0, -3, 1][i];
+    return <circle class={przejdz ? 'ik-akcf s3-p' : 'ik-plam s3-x'} cx={12 + i * 12} cy="13" r={przejdz ? 4.6 : 3.8} style={`--d:${d}s;--bok:${bok}px`}></circle>;
+  })}
+</svg>
+</div>
+
+<div class="bt w6">
+<div>
+<h3 class="bt-t">Wdrożenie ma działać przy każdym poziomie technicznym</h3>
+<p class="bt-d">Projektujemy je tak, żeby poradził sobie cały dział, łącznie z osobami, które nie przepadają za nowymi narzędziami. Ta sama ścieżka dla każdego, bez promptów do nauczenia i bez ukrytych warunków.</p>
+</div>
+<svg class="ik" viewBox="0 0 96 72" aria-hidden="true">
+  {[{y: 10, r: 3.6}, {y: 28, r: 5.4}, {y: 46, r: 4.2}, {y: 64, r: 5}].map((o, i) => (
+    <>
+      <path class="ik-cien s4-nic" d={`M14,${o.y} C36,${o.y} 44,${36 + (o.y - 36) * 0.25} 60,37`} pathLength="1" stroke-dasharray="1" stroke-dashoffset="1" stroke-width="1.8" fill="none" style={`--d:${[0.5, 0.92, 0.7, 1.16][i]}s`}></path>
+      <circle class="ik-plam s4-os" cx="10" cy={o.y} r={o.r} style={`--d:${[0, 0.34, 0.14, 0.52][i]}s;--faza:${[0, 1.7, 0.8, 2.4][i]}s`}></circle>
+    </>
+  ))}
+  <rect class="s4-cel" x="64" y="27" width="24" height="20" rx="7" fill="#cbd8c9"></rect>
+</svg>
+</div>
+
+<div class="bt w6">
+<div>
+<h3 class="bt-t">Do rachunku wchodzi czas na sprawdzenie wyniku</h3>
+<p class="bt-d">Przy każdej pozycji liczymy też to, co zostaje po stronie człowieka: kontrolę odpowiedzi, poprawki i utrzymanie przez rok. Zwrot policzony bez tego bywa dwa razy wyższy od tego, co zostaje po dwunastu miesiącach.</p>
+</div>
+<svg class="ik" viewBox="0 0 96 72" aria-hidden="true">
+  <line class="ik-cien" x1="8" y1="60" x2="88" y2="60" stroke-width="2"></line>
+  <rect class="ik-plam s5-slup" x="18" y="34" width="24" height="26" rx="4" style="--i:0"></rect>
+  <rect class="ik-akcf s5-slup" x="54" y="16" width="24" height="44" rx="4" style="--i:1"></rect>
+  <line class="ik-akc s5-poziom" x1="14" y1="34" x2="86" y2="34" stroke-width="1.3" stroke-dasharray="2 4"></line>
+</svg>
+</div>
+
+<div class="bt w4">
+<div>
+<h3 class="bt-t">Rekomendujemy też to, co zbudujecie sami</h3>
+<p class="bt-d">Część pozycji zamykają Wasi ludzie albo zwykła integracja między systemami. Piszemy to wprost i dopisujemy, od czego zacząć. Nie każda pozycja musi przejść przez nas.</p>
+</div>
+<svg class="ik" viewBox="0 0 96 72" aria-hidden="true">
+  <rect class="ik-cien" x="6" y="22" width="24" height="30" rx="5" fill="none"></rect>
+  <line class="ik-cien" x1="12" y1="31" x2="24" y2="31" stroke-width="2"></line>
+  <line class="ik-cien" x1="12" y1="38" x2="24" y2="38" stroke-width="2"></line>
+  <line class="ik-cien" x1="12" y1="45" x2="20" y2="45" stroke-width="2"></line>
+  <path class="ik-akc s6-nic" d="M34,30 C46,30 50,20 60,18" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1" stroke-width="1.9" fill="none" style="--i:0"></path>
+  <path class="ik-cien s6-nic" d="M34,44 C46,44 50,52 60,55" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1" stroke-width="1.9" fill="none" style="--i:1"></path>
+  <g class="s6-koniec" style="--i:0">
+    <circle class="ik-akcf" cx="74" cy="13" r="5"></circle>
+    <path class="ik-akc" d="M67,24 C68,19 80,19 81,24" stroke-width="2.4" fill="none"></path>
+  </g>
+  <rect class="ik-plam s6-koniec" x="64" y="47" width="20" height="16" rx="5" style="--i:1"></rect>
+</svg>
+</div>
+
+<div class="bt w10 bt-ciemny">
+<div>
+<h3 class="bt-t">Procesy zbudowane wokół technologii, nadzorowane przez ludzi</h3>
+<p class="bt-d">Przy każdej pozycji zapisujemy, które kroki, akceptacje i przekazania po niej znikają. Narzędzie wpięte w niezmieniony proces skraca jeden krok, a sprawa czeka potem w tych samych miejscach co wcześniej.</p>
+</div>
+<svg class="ik" viewBox="0 0 200 82" style="height:clamp(96px,8vw,124px)" aria-hidden="true">
+  <line class="ik-cien" x1="6" y1="56" x2="194" y2="56" stroke-width="2"></line>
+  <rect class="ik-plam s7-band" x="10" y="66" width="14" height="5" rx="2" style="--i:0"></rect>
+  <rect class="ik-plam s7-band" x="31" y="66" width="14" height="5" rx="2" style="--i:1"></rect>
+  <rect class="ik-plam s7-band" x="52" y="66" width="14" height="5" rx="2" style="--i:2"></rect>
+  <rect class="ik-plam s7-band" x="73" y="66" width="14" height="5" rx="2" style="--i:3"></rect>
+  <rect class="ik-plam s7-band" x="94" y="66" width="14" height="5" rx="2" style="--i:4"></rect>
+  <rect class="ik-plam s7-band" x="115" y="66" width="14" height="5" rx="2" style="--i:5"></rect>
+  <rect class="ik-plam s7-band" x="136" y="66" width="14" height="5" rx="2" style="--i:6"></rect>
+  <rect class="ik-plam s7-band" x="157" y="66" width="14" height="5" rx="2" style="--i:7"></rect>
+  <rect class="ik-plam s7-band" x="178" y="66" width="14" height="5" rx="2" style="--i:8"></rect>
+  <g class="s7-poz" style="--i:0">
+    <g class="s7-buj" style="--faza:0s">
+      <rect class="ik-plam" x="-7" y="46" width="15" height="10" rx="3.5" style="--i:0"></rect>
+    </g>
+  </g>
+  <g class="s7-poz" style="--i:1">
+    <g class="s7-buj" style="--faza:0.9s">
+      <rect class="ik-plam s7-barwa" x="-7" y="46" width="15" height="10" rx="3.5" style="--i:1"></rect>
+    </g>
+  </g>
+  <g class="s7-poz" style="--i:2">
+    <g class="s7-buj" style="--faza:0.35s">
+      <rect class="ik-plam" x="-7" y="46" width="15" height="10" rx="3.5" style="--i:2"></rect>
+    </g>
+  </g>
+  <g class="s7-poz" style="--i:3">
+    <g class="s7-buj" style="--faza:1.4s">
+      <rect class="ik-plam s7-barwa" x="-7" y="46" width="15" height="10" rx="3.5" style="--i:3"></rect>
+    </g>
+  </g>
+  <g class="s7-poz" style="--i:4">
+    <g class="s7-buj" style="--faza:0.6s">
+      <rect class="ik-plam s7-barwa" x="-7" y="46" width="15" height="10" rx="3.5" style="--i:4"></rect>
+    </g>
+  </g>
+  <g class="s7-poz" style="--i:5">
+    <g class="s7-buj" style="--faza:1.15s">
+      <rect class="ik-plam" x="-7" y="46" width="15" height="10" rx="3.5" style="--i:5"></rect>
+    </g>
+  </g>
+  <circle class="ik-akc s7-oko" cx="100" cy="20" r="18" fill="none" stroke-width="1.4"></circle>
+  <circle class="ik-akcf" cx="100" cy="13" r="6.4"></circle>
+  <path class="ik-akc" d="M91,27 C93,20 107,20 109,27" stroke-width="2.6" fill="none"></path>
+</svg>
+</div>
+
+</div>
+</section>
+
+<!-- ============ 2b2 · GŁOS KLIENTA ============
+     Stoi zaraz po opisie metody: czytelnik właśnie przeczytał, jak pracujemy,
+     więc tu potwierdza to ktoś, kto z nami pracował. -->
+<section style="padding:0 max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) clamp(64px,8vw,100px)">
+<figure class="cyt rv" style="margin:0">
+<span class="cyt-znak" aria-hidden="true">„</span>
+<div>
+<blockquote class="cyt-t" style="margin:0">Let’s automate wziął pełną odpowiedzialność za projekt i dowiózł go do końca. To dlatego powierzyliśmy im kolejny, znacznie większy.</blockquote>
+<figcaption><span class="cyt-a">Jakub Ciołkowski</span><span class="cyt-r">Członek Zarządu, NARS Polska</span></figcaption>
+</div>
+</figure>
+</section>
+
+<!-- ============ 2c · DLA KOGO ============
+     Kwalifikacja w dwóch kolumnach: „tak, jeśli" i „jeszcze nie, jeśli".
+     Prawa kolumna nic nie sprzedaje i to ona buduje zaufanie do lewej.
+     Wezwanie do rozmowy jest ostatnim wierszem tej samej siatki: po lewej
+     kto dzwoni, po prawej formularz. -->
+<section id="dla-kogo" style="background:#f4f8f2;padding:clamp(60px,7.5vw,96px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
+<h2 class="h-sec" style="margin:0;max-width:700px;text-wrap:pretty">Czy to jest dla Was?</h2>
+
+<div class="dk" style="margin-top:clamp(34px,4vw,52px)">
+
+<div class="dk-lewa">
+<div class="dk-nag"><span class="dk-kropka" aria-hidden="true"></span>Tak, jeśli</div>
+<div style="margin-top:clamp(14px,1.8vw,20px)">
+{pasuje.map((x) => (
+  <div class="dk-poz rv">
+    <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="#0a7a52" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" style="margin-top:2px" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+    <span><span class="dk-t">{x.t}</span><span class="dk-d">{x.d}</span></span>
+  </div>
+))}
+</div>
+</div>
+
+<div class="dk-linia" aria-hidden="true"></div>
+
+<div class="dk-prawa">
+<div class="dk-nag"><span class="dk-kropka" aria-hidden="true"></span>Jeszcze nie, jeśli</div>
+<div style="margin-top:clamp(14px,1.8vw,20px)">
+{niePasuje.map((x) => (
+  <div class="dk-poz rv">
+    <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="#b6c2b6" stroke-width="2.7" stroke-linecap="round" style="margin-top:2px" aria-hidden="true"><path d="M6 12h12"/></svg>
+    <span><span class="dk-t">{x.t}</span><span class="dk-d">{x.d}</span></span>
+  </div>
+))}
+</div>
+</div>
+
+</div>
+
+</section>
+
+<!-- ============ 2d · PAS KONWERSJI ============
+     Zdjęcie na pełną wysokość pasa, formularz z miejscem na dwa zdania
+     kontekstu — z nim pierwsza odpowiedź może być konkretna. -->
+<section id="rozmowa" style="position:relative;overflow:hidden;background:radial-gradient(880px 400px at 84% 6%, rgba(0,205,119,0.17), transparent 62%), #0e2b1d;padding:clamp(52px,6.5vw,84px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
+<div class="kv-foto">
+<img src="/piotr-wojciuk.jpg" alt="Piotr Wojciuk, New Business Lead w Let's automate" width="1002" height="1100" loading="lazy" decoding="async">
+<div class="kv-podpis"><b>Piotr Wojciuk</b><span>New Business Lead</span></div>
+</div>
+<div class="kv">
+<h2 class="kv-h">Trzydzieści minut, żeby to ustalić</h2>
+<p class="kv-l">Rozmowa jest bezpłatna. Jeśli wyjdzie z niej, że przegląd nie ma u Was sensu, powiemy to na tym samym spotkaniu. Sam przegląd kosztuje zwykle od 5 do 20 tysięcy złotych, a dokładną kwotę znacie po tej rozmowie.</p>
+<div class="kv-akcja" style="margin-top:28px">
+  <a href="#kontakt" class="kv-btn">Umów rozmowę <span aria-hidden="true">→</span></a>
+  <a class="kv-lnk" href="tel:+48571399932">+48 571 399 932</a>
+  <a class="kv-lnk" href="mailto:hello@letsautomate.pl">hello@letsautomate.pl</a>
+</div>
+<div class="kv-mala">
+<span><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8.5 12.4l2.4 2.4 4.6-5"/></svg>Bez zobowiązań</span>
+<span><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3v5h5"/><path d="M7 3h7l5 5v11a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/></svg>NDA przed rozmową</span>
+</div>
+</div>
+</section>
+
+<!-- ============ 7 · HARMONOGRAM ============
+     Bez kolumny „Wasz czas" — sekcja pokazuje, jak wygląda proces,
+     a nie ile godzin zabiera klientowi. -->
+<section id="przebieg" class="sec-pad">
+<div class="sec-head">
+<h2 class="h-sec" style="margin:0;max-width:480px;text-wrap:pretty">Jak wygląda przegląd</h2>
+<p class="sub" style="margin:0 0 6px;max-width:440px">Piętnaście dni roboczych od dostępów do dokumentu. Każdy etap kończy się czymś, co da się wziąć do ręki.</p>
+</div>
+
+<div class="hm" data-anim style="margin-top:clamp(32px,4vw,44px)">
+{etapy.map((e, i) => (
+  <div class="hm-seg" style={`flex:${e.pct};--i:${i}`}>
+    <span class="hm-bar" style={`--o:${(0.34 + i * 0.16).toFixed(2)}`}></span>
+    <span class="hm-lab">{e.e}</span>
+  </div>
+))}
+</div>
+
+<div style="margin-top:clamp(26px,3vw,36px)">
+{etapy.map((e) => (
+  <div class="hm-row rv">
+    <span class="hm-e">{e.e}</span>
+    <span>
+      <h3 class="hm-t">{e.t}</h3>
+      <p class="hm-d">{e.d}</p>
+    </span>
+    <span class="hm-w"><span>Zostaje po etapie</span>{e.w}</span>
+  </div>
+))}
+</div>
+</section>
+
+<!-- ============ 7b · CO JEST W DOKUMENCIE ============
+     Usługa sprzedaje dokument, a czytelnik nigdy go nie widział. Kartka jest
+     artefaktem: pokazuje, z czego dokument się składa, bez udawania, że
+     wykłada jego treść. -->
+<section id="dokument" class="sec-pad" style="padding-top:0;scroll-margin-top:16px">
+<div class="dok">
+<div>
+<h2 class="h-sec" style="margin:0;max-width:600px;text-wrap:pretty">Co jest w dokumencie</h2>
+<p class="sub" style="margin:18px 0 0;max-width:600px">Pod każdą pozycją stoi rachunek z kosztem, zwrotem i założeniami, na których się opiera. Ryzyka dostają własną część: miejsca, w których wdrożenie potrafi utknąć, i warunki do spełnienia wcześniej. Na końcu jest plan pierwszego kwartału z podziałem pracy między nas i Wasz zespół.</p>
+<p class="sub" style="margin:16px 0 0;max-width:600px">Kolejność jest rozpisana na dwanaście miesięcy, więc do dalszych pozycji wracacie w kolejnych kwartałach.</p>
+</div>
+
+<div>
+<div class="ar rv" data-anim>
+  <div class="ar-tyl ar-t3"></div>
+  <div class="ar-tyl ar-t2"></div>
+  <div class="ar-tyl ar-t1"></div>
+  <div class="ar-p">
+    <div class="ar-gora"><b>Strategia transformacji AI</b></div>
+    <div class="ar-tresc">
+      <div class="ar-skan"></div>
+      {CZESCI.map((c, k) => (
+        <div class="ar-sek">
+          <span class="ar-tyt" style={`--d:${Math.max(0.15, ((k * BLOK - 8) / (WYS + 24)) * SKAN).toFixed(2)}s`}><b>{c.n}</b>{c.t}</span>
+          {c.l.map((w) => <i class="ar-l" style={`--w:${w}%`}></i>)}
+        </div>
+      ))}
+    </div>
+  </div>
+  <style is:inline set:html={klatkaSkan}></style>
+</div>
+</div>
+</div>
+</section>
+
+<!-- ============ 8 · DOWODY ============
+     PRZYKŁADOWE transformacje — do podmiany na potwierdzone przypadki. -->
+<section id="dowody" style="background:#f4f8f2;padding:clamp(60px,7.5vw,96px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
+<div class="sec-head">
+<h2 class="h-sec" style="margin:0;max-width:560px;text-wrap:pretty">Firmy, które przez to przeszły</h2>
+<p class="sub" style="margin:0 0 6px;max-width:440px">Między firmą prowadzoną ręcznie a napędzaną sztuczną inteligencją leży kilka etapów. Te trzy ruszały z różnych miejsc skali, a każdy przeskok zaczął się od takiego planu.</p>
+</div>
+
+<div class="et-leg">
+<span><i class="lg lg-przed"></i>stan przed startem współpracy</span>
+<span><i class="lg lg-znami"></i>droga przebyta z nami</span>
+</div>
+
+<div style="margin-top:clamp(18px,2vw,24px)">
+{transformacje.map((t) => (
+  <div class="tr-row rv" data-anim>
+    <div>
+      <h3 class="tr-f">{t.f}</h3>
+      <span class="tr-m">{t.m}</span>
+      <span class="tr-czas">{t.czas}</span>
+    </div>
+    <div>
+      <div class="et">
+        {ETAPY_FIRMY.map((_, i) => {
+          const stan = t.do >= i + 1 ? (t.od >= i + 1 ? 'przed' : 'znami') : 'pusty';
+          return <span class={`et-seg ${stan}`} style={`--i:${i}`}></span>;
+        })}
+        <span class="et-pin" style={`--x:${(t.od / ETAPY_FIRMY.length * 100).toFixed(2)}%`}>
+          <span class="et-ik">
+            <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+              <path d="M3.4,1.6 V12.6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+              <path d="M3.4,2.6 H11 L9.3,5.1 L11,7.6 H3.4 Z" fill="currentColor"/>
+            </svg>
+          </span>
+          <b>start współpracy</b>
+        </span>
+        <span class="et-pin teraz" style={`--x:${(t.do / ETAPY_FIRMY.length * 100).toFixed(2)}%`}>
+          <span class="et-ik">
+            <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+              <path d="M2.6,7.4 L5.6,10.3 L11.4,4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          <b>dziś</b>
+        </span>
+      </div>
+      <div class="et-nap">
+        {ETAPY_FIRMY.map((n, i) => (
+          <span class={i + 1 === t.od ? 'od' : (i + 1 === t.do ? 'do' : '')}>{n}</span>
+        ))}
+      </div>
+      <div class="tr-zm">
+        {t.zm.map((z) => (<p>{z}</p>))}
+      </div>
+    </div>
+  </div>
+))}
+</div>
+</section>
+
+<!-- ============ 8b · GŁOS KLIENTA ============
+     Po liczbach z transformacji. Cytat z referencji na letsautomate.pl,
+     przytoczony dosłownie. Finerto tu nie wchodzi — to spółka z grupy. -->
+<section style="padding:clamp(56px,7vw,88px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2))">
+<figure class="cyt rv" style="margin:0">
+<span class="cyt-znak" aria-hidden="true">„</span>
+<div>
+<blockquote class="cyt-t" style="margin:0">Firma Let’s Automate bardzo dobrze zrozumiała potrzeby i zaprojektowała scenariusz, który w pełni spełniał cele biznesowe.</blockquote>
+<figcaption><span class="cyt-a">Arkadiusz Andruch</span><span class="cyt-r">Prezes Zarządu, X2O</span></figcaption>
+</div>
+</figure>
+</section>
+
+<!-- ============ 9 · CENA ============
+     UWAGA: [29 000] to hipoteza wyprowadzona z rynku, nie potwierdzona stawka. -->
+{false && (
+<section id="cena" class="sec-pad">
+<p class="rv" style="margin:0 0 clamp(30px,3.6vw,44px);max-width:900px;font-size:clamp(21px,2.8vw,30px);line-height:1.3;letter-spacing:-0.02em;font-weight:750;color:#16211a;text-wrap:pretty">Strategia kończy się działającym procesem, nie prezentacją.</p>
+<div class="cena-grid" style="display:grid;grid-template-columns:minmax(320px,0.32fr) 1fr;gap:clamp(32px,5vw,64px);align-items:center;background:#f4f8f2;border:1px solid #e4ebe2;border-radius:24px;padding:clamp(32px,4vw,52px)">
+<div style="background:#0e2b1d;border-radius:20px;padding:34px 30px">
+<div style="font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.5)">Trzy tygodnie, stały zakres</div>
+<div style="margin-top:14px;font-size:clamp(26px,3vw,34px);font-weight:800;letter-spacing:-0.025em;line-height:1.1;color:#ffffff">Wycena po rozmowie</div>
+<div style="margin-top:8px;font-size:13px;line-height:1.55;color:rgba(255,255,255,0.6)">Zakres zależy od liczby procesów i od tego, w ilu systemach leżą dane. Kwotę podajemy przed podpisaniem, jako stałą.</div>
+<a href="#kontakt" class="btn-accent" style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:24px;background:var(--la-accent,#00CD77);color:#0b1a11;padding:15px 24px;border-radius:11px;font-weight:750;font-size:15.5px">Umów rozmowę →</a>
+<div style="margin-top:12px;font-size:12px;line-height:1.5;color:rgba(255,255,255,0.5)">Najbliższy wolny termin podajemy w odpowiedzi</div>
+</div>
+<div>
+<h2 class="h-mod" style="margin:0;text-wrap:pretty">Kwota schodzi z pierwszego wdrożenia</h2>
+<p class="sub" style="margin:16px 0 0;max-width:560px">Jeśli wdrażamy razem, cała opłata za strategię pomniejsza fakturę za pierwszy projekt z listy. Jeśli wdraża kto inny, dokument strategii i tak zostaje Wasz.</p>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px 32px;margin-top:26px" class="grid2">
+<div style="font-size:14.5px;line-height:1.55;color:#4c5850;padding-top:12px;border-top:1px solid #dfe7dd">Do ośmiu procesów przejrzanych i policzonych</div>
+<div style="font-size:14.5px;line-height:1.55;color:#4c5850;padding-top:12px;border-top:1px solid #dfe7dd">Przy każdej pozycji cel, miara i termin startu</div>
+<div style="font-size:14.5px;line-height:1.55;color:#4c5850;padding-top:12px;border-top:1px solid #dfe7dd">Arkusz, kolejność i specyfikacja dwóch wdrożeń</div>
+<div style="font-size:14.5px;line-height:1.55;color:#4c5850;padding-top:12px;border-top:1px solid #dfe7dd">Cena rośnie przy kilku lokalizacjach z osobnymi systemami</div>
+</div>
+</div>
+</div>
+</section>
+)}
+
+<!-- ============ 10 · CO DALEJ ============ -->
+{false && (
+<section id="co-dalej" style="background:#f4f8f2;padding:clamp(64px,8vw,100px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
+<div class="sec-head">
+<h2 class="h-sec" style="margin:0;max-width:520px;text-wrap:pretty">Co dzieje się po trzecim tygodniu</h2>
+<p class="sub" style="margin:0 0 6px;max-width:430px">Trzy drogi, wszystkie równorzędne. Wyboru dokonujecie po przeczytaniu dokumentu strategii, nie przed podpisaniem umowy.</p>
+</div>
+
+<div style="margin-top:clamp(34px,4vw,48px)">
+<div class="dal-row rv">
+<span>
+<span style="display:block;font-size:clamp(19px,2.3vw,25px);font-weight:750;letter-spacing:-0.018em;color:#16211a">Wdrażamy my</span>
+<p style="margin:9px 0 0;font-size:15px;line-height:1.6;color:#4c5850;text-wrap:pretty">Wycena powstaje na specyfikacji, którą już macie w ręku, więc porównacie ją z każdą inną. Zaczynamy od pozycji, która pracuje od trzeciego tygodnia.</p>
+</span>
+<span style="font-size:14px;line-height:1.5;color:#7c877e">wycena w tydzień<br>opłata za strategię odliczona</span>
+</div>
+<div class="dal-row rv">
+<span>
+<span style="display:block;font-size:clamp(19px,2.3vw,25px);font-weight:750;letter-spacing:-0.018em;color:#16211a">Budujecie sami, my pilnujemy</span>
+<p style="margin:9px 0 0;font-size:15px;line-height:1.6;color:#4c5850;text-wrap:pretty">Wasz zespół bierze kolejne pozycje z listy, a my prowadzimy zasady, przeglądy i bramkę przed produkcją. To jest <a href="/guided-coding" class="lnk-green" style="font-weight:700;color:#0a7a52">Guided Coding</a>.</p>
+</span>
+<span style="font-size:14px;line-height:1.5;color:#7c877e">stały abonament<br>Wasz zespół dowozi</span>
+</div>
+<div class="dal-row rv">
+<span>
+<span style="display:block;font-size:clamp(19px,2.3vw,25px);font-weight:750;letter-spacing:-0.018em;color:#16211a">Bierzecie dokument strategii gdzie indziej</span>
+<p style="margin:9px 0 0;font-size:15px;line-height:1.6;color:#4c5850;text-wrap:pretty">Specyfikacja jest opisana tak, żeby wycenił ją też inny dostawca. Możecie wziąć dokument, wdrożyć wszystko z kimś innym i nie odezwać się więcej — <strong style="color:#16211a;font-weight:700">to jest w pełni akceptowalny scenariusz.</strong></p>
+</span>
+<span style="font-size:14px;line-height:1.5;color:#7c877e">dokument strategii i prawa<br>zostają u Was</span>
+</div>
+</div>
+</section>
+)}
+
+
+
+<GcCta
+  heading="Zacznijmy od Waszej listy"
+  lead="Wypiszcie cele, które macie na ten rok, i to, co próbowaliście już z AI. Odpowiemy z najbliższym wolnym terminem i pierwszym pytaniem kontrolnym."
+  eyebrow="W dokumencie strategii dostajecie"
+  items={[
+    { t: 'Listę przewag', d: 'przy każdej cel z planu, który ma poruszyć' },
+    { t: 'Arkusz wyliczeń', d: 'otwarty, z podpisem przy każdej liczbie' },
+    { t: 'Listę odrzuconych', d: 'razem z powodem, dla którego odpadły' },
+  ]}
+  placeholder="Np. mamy 1 200 faktur kosztowych miesięcznie i dwie osoby, które je przepisują…"
+  submitLabel="Umów rozmowę"
+  badges={[
+    { i: 'klodka', t: 'Wasze dane bezpieczne' },
+    { i: 'kartka', t: 'NDA przed startem' },
+    { i: 'ptaszek', t: 'Bez zobowiązań' },
+  ]}
+/>
+
+<GcFaq
+  heading="Pytania, które padają na pierwszej rozmowie"
+  lead="Pierwsze z nich zadaje prawie każdy zarząd, więc zostaje otwarte."
+  ctaLabel="Zadajcie nam swoje →"
+  items={faq}
+/>
+
+<script>
+  var redukcja = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ---- Odpalanie animacji, gdy element wchodzi w kadr ----
+  (function(){
+    var els = document.querySelectorAll('[data-anim]');
+    if(!els.length) return;
+    if(redukcja || !('IntersectionObserver' in window)){
+      els.forEach(function(el){ el.classList.add('on'); });
+      return;
+    }
+    var io = new IntersectionObserver(function(wpisy){
+      wpisy.forEach(function(w){
+        if(w.isIntersecting){ w.target.classList.add('on'); io.unobserve(w.target); }
+      });
+    }, { threshold: 0.22 });
+    els.forEach(function(el){ io.observe(el); });
+  })();
+
+  // ---- Liczniki ----
+  (function(){
+    var els = document.querySelectorAll('.cnt');
+    if(!els.length) return;
+    function pisz(el, v, dec){
+      var znak = v < 0 ? '−' : '';
+      var abs = Math.abs(v);
+      el.textContent = znak + (dec ? abs.toFixed(dec).replace('.', ',') : Math.round(abs).toString());
+    }
+    function licz(el){
+      var cel = parseFloat(el.dataset.n);
+      var dec = parseInt(el.dataset.dec || '0', 10);
+      if(redukcja){ pisz(el, cel, dec); return; }
+      var start = 0;
+      function krok(teraz){
+        if(!start) start = teraz;
+        var p = Math.min(1, (teraz - start) / 1000);
+        var e = 1 - Math.pow(1 - p, 3);
+        pisz(el, cel * e, dec);
+        if(p < 1) requestAnimationFrame(krok);
+      }
+      requestAnimationFrame(krok);
+    }
+    if(!('IntersectionObserver' in window)){ els.forEach(licz); return; }
+    var io = new IntersectionObserver(function(wpisy){
+      wpisy.forEach(function(w){ if(w.isIntersecting){ licz(w.target); io.unobserve(w.target); } });
+    }, { threshold: 0.5 });
+    els.forEach(function(el){ io.observe(el); });
+  })();
+
+</script>
+</LaBase>

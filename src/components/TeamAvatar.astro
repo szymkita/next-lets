@@ -1,0 +1,16 @@
+---
+// Awatar osoby z zespołu — używany w S4, S5, S6 i S8.
+// Bez zdjęcia (photo: null) renderuje kafel z inicjałami zamiast fotki,
+// żeby na stronie nigdy nie wylądowało cudze zdjęcie podpisane naszym nazwiskiem.
+const { person, size = 36, ring = null } = Astro.props;
+
+const words = String(person.name).replace(/[\[\]]/g, '').trim().split(/\s+/).filter(Boolean);
+const ini = (words.slice(0, 2).map((w) => w[0]).join('') || '?').toUpperCase();
+const pos = person.pos || '50% 30%';
+const box = `display:inline-flex;align-items:center;justify-content:center;width:${size}px;height:${size}px;border-radius:50%;overflow:hidden;flex-shrink:0${ring ? `;box-shadow:0 0 0 2px ${ring}` : ''}`;
+---
+<span style={box}>
+  {person.photo
+    ? <img src={person.photo} alt={person.name} width={size} height={size} loading="lazy" decoding="async" style={`width:${size}px;height:${size}px;object-fit:cover;object-position:${pos};display:block`} />
+    : <span aria-hidden="true" style={`display:flex;align-items:center;justify-content:center;width:100%;height:100%;background:linear-gradient(135deg,#0a7a52,#00CD77);color:#ffffff;font-size:${Math.max(9, Math.round(size * 0.36))}px;font-weight:750;letter-spacing:0.01em`}>{ini}</span>}
+</span>

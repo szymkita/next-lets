@@ -1,0 +1,23 @@
+---
+// Akordeon FAQ w układzie ze strony głównej (lewa kolumna = nagłówek, prawa = lista).
+// Pierwsze pytanie jest domyślnie otwarte — na Guided Coding to celowo
+// najbardziej niewygodne pytanie, bo ono buduje wiarygodność reszty.
+const { heading, lead, ctaLabel = 'Zadaj je nam wprost →', ctaHref = '#kontakt', items = [] } = Astro.props;
+---
+<section id="faq" style="background:#f4f8f2;padding:clamp(72px,9vw,110px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
+<div class="faq-grid" style="display:grid;grid-template-columns:1fr 720px;gap:clamp(40px,6vw,88px);align-items:start">
+<div>
+<h2 class="h-sec" style="margin:0;text-wrap:pretty" set:html={heading}></h2>
+{lead && <p class="sub" style="margin:20px 0 0;max-width:380px">{lead}</p>}
+<a href={ctaHref} class="lnk-green" style="display:inline-block;margin-top:18px;font-size:16px;font-weight:700;color:#0a7a52">{ctaLabel}</a>
+</div>
+<div class="faq-list">
+{items.map((it, i) => (
+  <div class={i === 0 ? 'faq-item open' : 'faq-item'}>
+    <button class="faq-q" aria-expanded={i === 0 ? 'true' : 'false'}>{it.q}<span class="faq-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"></path></svg></span></button>
+    <div class="faq-a"><div class="faq-a-inner" set:html={it.a}></div></div>
+  </div>
+))}
+</div>
+</div>
+</section>

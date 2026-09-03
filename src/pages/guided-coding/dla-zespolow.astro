@@ -1,0 +1,409 @@
+---
+// DRZWI B — /guided-coding/dla-zespolow
+// Ton: rzeczowy, techniczny, bez protekcjonalności. Czytelnik to CTO albo lead.
+//
+// KLUCZOWA DECYZJA POZYCJONUJĄCA (spec v2):
+// Wejściem NIE jest audyt kodu — to ocena kompetencji zespołu, którą CTO
+// zablokuje albo zespół storpeduje z urazy.
+// Wejściem NIE jest też governance ani compliance — nikt ich nie pragnie,
+// a strona otwierająca się kontrolą czyta się jak oferta dostawcy compliance
+// (a takiego przekierowuje się do zakupów i wycenia najniżej).
+//
+// v1 mówiła „wasze wąskie gardło się przesunęło" — to wciąż diagnoza problemu.
+// v2 pyta: ILE Z TEGO, ZA CO PŁACICIE, REALNIE DO WAS DOCIERA.
+// To pytanie ten człowiek już sobie zadaje, jest o ambicji zamiast o usterce
+// i nie konkuruje z narzędziem, za które klient już płaci.
+//
+// CRA WYPADŁO W CAŁOŚCI (spec v2): argument na piątą rozmowę,
+// nie na wystawę sklepową.
+
+import LaBase from '../../layouts/LaBase.astro';
+import GcFaq from '../../components/GcFaq.astro';
+import GcCta from '../../components/GcCta.astro';
+
+const title = "Guided Coding dla zespołów — ile z AI realnie do Was dociera | Let's automate";
+const description = 'Diagnostic sprint: baseline metryk przepływu, wąskie gardło między napisanym kodem a działającą funkcją, roadmapa i porównanie z zespołami podobnej wielkości.';
+
+// Sekcja 2 · Gdzie ucieka prędkość — cztery wąskie gardła, konkretnie.
+// Wina leży w procesie, którego nikt nie zaktualizował — nie w ludziach.
+const gardla = [
+  {
+    n: '01',
+    t: 'Review nie nadąża za tempem generowania',
+    d: 'Diff rośnie szybciej, niż ktokolwiek jest w stanie go przeczytać. Review zamienia się w formalność, a formalność nie wyłapuje niczego poza literówkami. Zmiana czeka, mimo że kod był gotowy w środę.',
+  },
+  {
+    n: '02',
+    t: 'Testy nie pokrywają tego, co model dopisał',
+    d: 'Agent generuje kod razem z testami, które sprawdzają, że kod robi to, co robi. Pokrycie rośnie, zaufanie nie. Przed wydaniem i tak ktoś klika ręcznie — i to jest prawdziwy koszt.',
+  },
+  {
+    n: '03',
+    t: 'Sześciu developerów, sześć sposobów pracy z agentem',
+    d: 'Jeden pisze specyfikację, drugi wkleja ticket, trzeci improwizuje. Efekt jest nieprzewidywalny, więc każdą zmianę trzeba czytać od zera — nie da się zaufać, że została zrobiona tak jak poprzednia.',
+  },
+  {
+    n: '04',
+    t: 'Nikt nie mierzy, więc nie wiadomo, czy jest lepiej',
+    d: 'Nie da się wtedy obronić budżetu na kolejny rok ani pokazać, że narzędzia, za które już płacicie, cokolwiek zmieniły. Pierwsza rzecz, o którą pyta zarząd, to liczba sprzed zakupu — i zwykle jej nie ma.',
+  },
+];
+
+// Sekcja 3 · Zakres diagnostic sprintu.
+const zakres = [
+  { t: 'Historia PR i czasy przejścia', d: 'Rozmiary diffów, czas od otwarcia do merge’a, czas od merge’a do produkcji, rozkład na repozytoria i etapy. Tu widać, gdzie zmiana stoi najdłużej.' },
+  { t: 'Konfiguracje agentów i reguły', d: 'Co siedzi w plikach reguł, na ile jest wspólne między repozytoriami i czy ktokolwiek to wersjonuje.' },
+  { t: 'CI', d: 'Co faktycznie blokuje merge, a co jest tylko zielonym haczykiem. Czas przebiegu, flaky testy, pokrycie ścieżek krytycznych.' },
+  { t: 'Praktyka review', d: 'Nie polityka na Confluence, tylko to, co widać w danych: kto komu review’uje, jak długo, z jakim skutkiem.' },
+  { t: 'Obsługa sekretów', d: 'Skanowanie historii, rotacja, miejsce przechowywania, dostęp z lokalnych środowisk i z pipeline’u.' },
+  { t: 'Ścieżka na produkcję', d: 'Od commita do klienta: bramki, akceptacje, rollback, obserwowalność i to, co się dzieje, gdy trzeba szybko.' },
+];
+
+// Sekcja 9 · FAQ. Pierwsze pytanie to najtwardszy zarzut — narzędzie,
+// za które już płacą. Odpowiedź nie walczy z Cursorem, tylko pokazuje,
+// że to on przesunął wąskie gardło.
+const faq = [
+  {
+    q: 'Mamy już Cursora dla całego zespołu.',
+    a: 'I dlatego właśnie ta rozmowa ma sens. Cursor i Claude Code sprzedają prędkość pisania — i naprawdę ją dowożą. Tyle że prędkość pisania nigdy nie była Waszym wąskim gardłem, a teraz, kiedy urosła kilkukrotnie, wąskie gardło zrobiło się boleśnie widoczne gdzie indziej: w review, w testach i w bramce wydawniczej. Tego żadne narzędzie do generowania kodu nie rozwiąże, bo to nie jest problem generowania. My nie sprzedajemy Wam kolejnego narzędzia — pokazujemy, gdzie prędkość, za którą już płacicie, zatrzymuje się w drodze na produkcję.',
+  },
+  {
+    q: 'Mamy seniorów. Po co im to?',
+    a: 'Właśnie im najbardziej. Problem rzadko polega na tym, że ktoś nie umie kodować — polega na tym, że sześciu dobrych developerów pracuje z agentami na sześć różnych sposobów i nikt nie ustalił, co znaczy „gotowe”. Seniorzy zwykle wychodzą z tego sprintu najbardziej zadowoleni, bo dostają liczby na rzeczy, o które i tak walczyli od dawna — na rozmiar diffa, na kolejkę w review i na to, że zielone CI niczego nie gwarantuje.',
+  },
+  {
+    q: 'Czy to nie jest kolejny framework?',
+    a: 'Nie, bo nic Wam nie instalujemy. Zostaje Wasz stack: reguły, bramki i definicja gotowości produkcyjnej zapisane w Waszych repozytoriach, w Waszej terminologii. Jeśli jutro przestaniemy istnieć, nic z tego nie przestaje działać. Nie ma tu żadnej licencji, żadnego SaaS-a i żadnej zależności od nas.',
+  },
+  {
+    q: 'Czym to się różni od spec-driven development?',
+    a: 'W warstwie idei — niczym, i nie udajemy inaczej. Branża doszła do tego konsensusu równolegle w kilku miejscach: zanim model zacznie pisać, musi mieć spisany zakres i kryteria akceptacji. Guided coding to nasza implementacja tego konsensusu — z pomiarem przepływu i bramkami jakości na wierzchu, czyli z odpowiedzią na pytanie, co się dzieje, gdy ktoś specyfikacji nie napisze, a kod i tak chce zmergować.',
+  },
+  {
+    q: 'Ile to kosztuje?',
+    a: 'Diagnostic sprint ma stałą, opublikowaną cenę — stoi niżej na tej stronie. Program adopcji wyceniamy po sprincie, bo dopiero wtedy znamy zakres. Bez roboczogodzin w ciemno, jak w każdej innej naszej usłudze.',
+  },
+];
+---
+<LaBase title={title} description={description} ogImage="/og/dla-zespolow.png" ctaHref="#kontakt" ctaLabel="Umów diagnostic sprint">
+<style is:global slot="head">
+  .mtr{width:100%;border-collapse:collapse;font-size:13.5px}
+  .mtr th{font-family:ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.45);font-weight:500;text-align:left;padding:0 0 10px}
+  .mtr td{padding:10px 0;border-top:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.88);vertical-align:middle}
+  .mtr .num{font-family:ui-monospace,Menlo,monospace;font-size:13px;color:#ffffff}
+  .mtr .goal{font-family:ui-monospace,Menlo,monospace;font-size:13px;color:rgba(255,255,255,0.5)}
+  .gap{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:0.04em;padding:3px 8px;border-radius:6px}
+  .gap-hi{background:rgba(216,120,94,0.2);color:#f0a68e}
+  .gap-md{background:rgba(240,192,74,0.18);color:#f0c04a}
+
+  /* ---------- wykres przepustowości: gdzie zwęża się rura ---------- */
+  .pipe{position:relative;display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(10px,1.6vw,20px);height:clamp(190px,20vw,250px);margin-top:34px;padding-top:26px}
+  .pipe-ref{position:absolute;left:0;right:0;top:26px;border-top:1px dashed #c3cbc2}
+  .pipe-ref span{position:absolute;right:0;top:-22px;font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:0.1em;color:#8b968d}
+  .pipe-col{display:flex;flex-direction:column;justify-content:flex-end;height:100%}
+  .pipe-bar{border-radius:12px 12px 0 0;transition:height 1s cubic-bezier(.4,0,.2,1);height:0}
+  .lanes-in .pipe-bar{height:var(--h)}
+  @media (prefers-reduced-motion:reduce){ .pipe-bar{transition:none;height:var(--h)} }
+  .pipe-lab{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(10px,1.6vw,20px);margin-top:14px}
+
+  .zak-row{display:grid;grid-template-columns:250px 1fr;gap:clamp(16px,3vw,40px);align-items:baseline;padding:20px 4px;border-top:1px solid #e7ece4}
+  .zak-row:last-child{border-bottom:1px solid #e7ece4}
+  .cra-rail{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:clamp(24px,4vw,48px);margin-top:36px}
+  .cra-rail::before{content:'';position:absolute;left:0;right:0;top:9px;height:2px;background:linear-gradient(90deg,var(--la-accent,#00CD77),rgba(0,205,119,0.25))}
+  .cra-mark{position:relative;padding-top:34px}
+  .cra-mark::before{content:'';position:absolute;left:0;top:2px;width:16px;height:16px;border-radius:50%;background:#0e2b1d;border:3px solid var(--la-accent,#00CD77)}
+  @media (max-width:900px){
+    .hero-split{grid-template-columns:1fr !important;gap:40px !important}
+    .zak-row{grid-template-columns:1fr;gap:6px}
+    .price-grid{grid-template-columns:1fr !important;gap:32px !important}
+    .cra-rail{grid-template-columns:1fr;gap:28px}
+    .cra-rail::before{display:none}
+    .pipe,.pipe-lab{grid-template-columns:repeat(4,1fr);gap:8px}
+    .pipe{height:170px}
+  }
+  @media (max-width:600px){
+    .mtr th:nth-child(3),.mtr td:nth-child(3){display:none}
+    .pipe-lab{font-size:11px}
+  }
+</style>
+
+<!-- ============ 1 · HERO ============ -->
+<section style="position:relative;overflow:hidden;background:radial-gradient(880px 520px at 86% -6%, rgba(0,205,119,0.12), transparent 62%), #ffffff;padding:clamp(28px,4vw,52px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) clamp(56px,7vw,88px)">
+<div style="display:flex;align-items:center;gap:8px;font-size:13.5px;color:#8b968d">
+<a href="/guided-coding" class="lnk-green" style="color:#0a7a52;font-weight:650">Guided Coding</a>
+<span aria-hidden="true">/</span>
+<span>Dla zespołów</span>
+</div>
+<div class="hero-split" style="display:grid;grid-template-columns:1fr 540px;gap:clamp(40px,5vw,72px);align-items:center;margin-top:clamp(24px,3vw,36px)">
+<div>
+<div class="eyebrow" style="color:#0a7a52;font-weight:650">Diagnostic sprint dla zespołów inżynieryjnych</div>
+<h1 style="margin:18px 0 0;font-size:clamp(30px,4.6vw,52px);line-height:1.06;letter-spacing:-0.033em;font-weight:800;color:#16211a;text-wrap:balance">Płacicie za AI dla całego zespołu. Ile z tego realnie wyciągacie?</h1>
+<p style="margin:24px 0 0;max-width:600px;font-size:clamp(16px,2.1vw,19px);line-height:1.6;color:#33413a;text-wrap:pretty">Narzędzia dowożą prędkość pisania — to akurat działa. Ale między napisanym kodem a działającą funkcją u klienta jest droga, której nikt nie przyspieszył. Mierzymy, ile prędkości zostaje po drodze, i pokazujemy, co robią zespoły, u których zostaje mniej.</p>
+<div class="hero-actions" style="display:flex;align-items:center;flex-wrap:wrap;gap:16px 22px;margin-top:32px">
+<a href="#kontakt" class="btn-dark" style="display:inline-flex;align-items:center;gap:10px;background:#16211a;color:#ffffff;padding:18px 32px;border-radius:12px;font-weight:650;font-size:16.5px;box-shadow:0 14px 30px -14px rgba(16,33,26,0.45)">Umów diagnostic sprint <span aria-hidden="true">→</span></a>
+<a href="#gdzie-ucieka" class="btn-ghost" style="display:inline-flex;align-items:center;gap:8px;font-size:16.5px;font-weight:700;color:#16211a;background:rgba(255,255,255,0.6);padding:18px 26px;border-radius:12px;border:1px solid rgba(22,33,26,0.16)">Gdzie ucieka prędkość →</a>
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:10px 22px;margin-top:26px;font-size:14px;color:#7c877e">
+<span style="display:inline-flex;align-items:center;gap:7px"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#0a7a52" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>2 tygodnie</span>
+<span style="display:inline-flex;align-items:center;gap:7px"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#0a7a52" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>mierzymy przepływ, nie ludzi</span>
+<span style="display:inline-flex;align-items:center;gap:7px"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#0a7a52" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>baseline do porównania za kwartał</span>
+</div>
+</div>
+
+<div style="background:#0e2b1d;background-image:radial-gradient(600px 340px at 100% 0%, rgba(0,205,119,0.16), transparent 60%);border-radius:20px;padding:clamp(24px,3vw,32px);box-shadow:0 34px 74px -40px rgba(18,38,28,0.55)">
+<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px">
+<div><div style="font-size:15.5px;font-weight:750;color:#ffffff">Baseline metryk przepływu</div><div style="margin-top:2px;font-size:12px;color:rgba(255,255,255,0.55)">tak wygląda wyjście z diagnostic sprintu</div></div>
+<span style="flex-shrink:0;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.28);color:#ffffff;font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.1em;font-weight:650;padding:5px 10px;border-radius:7px">PRZYKŁAD</span>
+</div>
+
+<!-- Rozjazd w jednym spojrzeniu: to jest teza całej strony -->
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px">
+<div style="background:rgba(0,205,119,0.12);border:1px solid rgba(0,205,119,0.3);border-radius:12px;padding:14px 16px">
+<div style="font-family:ui-monospace,Menlo,monospace;font-size:9.5px;letter-spacing:0.11em;color:rgba(255,255,255,0.55)">TEMPO GENEROWANIA</div>
+<div style="margin-top:7px;font-size:24px;font-weight:800;letter-spacing:-0.02em;color:var(--la-accent,#00CD77)">↑ 3,1×</div>
+<div style="margin-top:2px;font-size:11px;color:rgba(255,255,255,0.6)">rok do roku</div>
+</div>
+<div style="background:rgba(216,120,94,0.12);border:1px solid rgba(216,120,94,0.3);border-radius:12px;padding:14px 16px">
+<div style="font-family:ui-monospace,Menlo,monospace;font-size:9.5px;letter-spacing:0.11em;color:rgba(255,255,255,0.55)">TEMPO DOWOŻENIA</div>
+<div style="margin-top:7px;font-size:24px;font-weight:800;letter-spacing:-0.02em;color:#f0a68e">bez zmian</div>
+<div style="margin-top:2px;font-size:11px;color:rgba(255,255,255,0.6)">rok do roku</div>
+</div>
+</div>
+
+<table class="mtr" style="margin-top:20px">
+<thead><tr><th>Metryka</th><th style="text-align:right">Teraz</th><th style="text-align:right">Próg DORA</th><th style="text-align:right">Luka</th></tr></thead>
+<tbody>
+<tr><td>Lead time: commit → produkcja</td><td class="num" style="text-align:right">9 dni</td><td class="goal" style="text-align:right">&lt;1 dzień</td><td style="text-align:right"><span class="gap gap-hi">wysoka</span></td></tr>
+<tr><td>Mediana czasu w review</td><td class="num" style="text-align:right">19 h</td><td class="goal" style="text-align:right">&lt;4 h</td><td style="text-align:right"><span class="gap gap-hi">wysoka</span></td></tr>
+<tr><td>Zmiany wymagające poprawki po review</td><td class="num" style="text-align:right">34%</td><td class="goal" style="text-align:right">&lt;15%*</td><td style="text-align:right"><span class="gap gap-hi">wysoka</span></td></tr>
+<tr><td>Change failure rate</td><td class="num" style="text-align:right">21%</td><td class="goal" style="text-align:right">&lt;15%</td><td style="text-align:right"><span class="gap gap-md">średnia</span></td></tr>
+<tr><td>Spisana definicja gotowości</td><td class="num" style="text-align:right">brak</td><td class="goal" style="text-align:right">jedna, wspólna*</td><td style="text-align:right"><span class="gap gap-hi">wysoka</span></td></tr>
+</tbody>
+</table>
+<div style="margin-top:18px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.1);font-size:12.5px;line-height:1.55;color:rgba(255,255,255,0.6)">Metryki zagregowane po zespole, <strong style="color:#ffffff;font-weight:650">bez rozbicia na osoby</strong>.<br>Progi wg raportu DORA [rok — do uzupełnienia]. <span style="color:rgba(255,255,255,0.5)">* pozycje bez odpowiednika w DORA — nasza własna ocena.</span></div>
+</div>
+</div>
+</section>
+
+<!-- ============ 2 · GDZIE UCIEKA PRĘDKOŚĆ ============ -->
+<section id="gdzie-ucieka" class="lanes" style="background:#f4f8f2;padding:clamp(72px,9vw,110px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
+<div class="sec-head">
+<h2 class="h-sec" style="margin:0;max-width:600px;text-wrap:pretty">Ile prędkości zostaje na każdym etapie</h2>
+<p class="sub" style="margin:0 0 6px;max-width:450px">Wina nie leży po stronie ludzi ani narzędzi. Leży w procesie, którego nikt nie zaktualizował, kiedy zmieniło się tempo.</p>
+</div>
+
+<!-- Wykres: ile z tempa pisania faktycznie przechodzi przez kolejne etapy -->
+<div class="pipe">
+<div class="pipe-ref"><span>TEMPO PISANIA KODU</span></div>
+<div class="pipe-col"><div class="pipe-bar" style="--h:100%;background:linear-gradient(180deg,#00CD77,#0a7a52)"></div></div>
+<div class="pipe-col"><div class="pipe-bar" style="--h:34%;background:#dfa62a"></div></div>
+<div class="pipe-col"><div class="pipe-bar" style="--h:29%;background:#dfa62a"></div></div>
+<div class="pipe-col"><div class="pipe-bar" style="--h:26%;background:#c8503a"></div></div>
+</div>
+<div class="pipe-lab">
+<div><div style="font-size:14.5px;font-weight:750;color:#16211a">Pisanie</div><div style="margin-top:3px;font-size:12.5px;color:#7c877e">z agentami · ↑ 3,1×</div></div>
+<div><div style="font-size:14.5px;font-weight:750;color:#16211a">Review</div><div style="margin-top:3px;font-size:12.5px;color:#7c877e">bez zmian</div></div>
+<div><div style="font-size:14.5px;font-weight:750;color:#16211a">Testy</div><div style="margin-top:3px;font-size:12.5px;color:#7c877e">bez zmian</div></div>
+<div><div style="font-size:14.5px;font-weight:750;color:#16211a">Wydanie</div><div style="margin-top:3px;font-size:12.5px;color:#7c877e">bez zmian</div></div>
+</div>
+<p style="margin:22px 0 0;max-width:720px;font-size:14.5px;line-height:1.6;color:#7c877e;text-wrap:pretty">Wykres przykładowy. U Was policzymy prawdziwy — na historii PR-ów, a nie na deklaracjach.</p>
+
+<div class="grid2" style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:clamp(40px,5vw,56px)">
+{gardla.map((g) => (
+  <div class="lift rv" style="background:#ffffff;border:1px solid #e4ebe2;border-radius:18px;padding:30px 28px">
+    <div style="font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:700;color:#0a7a52">{g.n}</div>
+    <div style="margin-top:14px;font-size:20px;font-weight:750;line-height:1.28;letter-spacing:-0.012em;color:#16211a">{g.t}</div>
+    <p style="margin:10px 0 0;font-size:14.5px;line-height:1.6;color:#4c5850;text-wrap:pretty">{g.d}</p>
+  </div>
+))}
+</div>
+</section>
+
+<!-- ============ 3 · DIAGNOSTIC SPRINT ============ -->
+<section id="zakres" class="sec-pad">
+<div class="sec-head">
+<h2 class="h-sec" style="margin:0;max-width:560px;text-wrap:pretty">Diagnostic sprint — dwa tygodnie i mierzalne wyjście</h2>
+<p class="sub" style="margin:0 0 6px;max-width:450px">Patrzymy na to, co zostawiają po sobie dane, a nie na to, co jest napisane w politykach. Poniżej dokładny zakres.</p>
+</div>
+<div style="margin-top:48px">
+{zakres.map((z) => (
+  <div class="zak-row rv">
+    <div style="font-size:clamp(18px,2vw,21px);font-weight:750;letter-spacing:-0.012em;color:#16211a">{z.t}</div>
+    <p style="margin:0;max-width:760px;font-size:15px;line-height:1.62;color:#4c5850;text-wrap:pretty">{z.d}</p>
+  </div>
+))}
+</div>
+<div class="rv" style="display:flex;flex-wrap:wrap;align-items:center;gap:16px 28px;margin-top:28px;padding:22px clamp(22px,3vw,30px);background:#f4f8f2;border:1px solid #e4ebe2;border-radius:16px">
+<span style="font-size:15px;line-height:1.6;color:#4c5850;flex:1;min-width:280px;text-wrap:pretty">Dostęp read-only do repozytoriów i CI wystarcza. Nie potrzebujemy środowisk produkcyjnych ani danych klientów.</span>
+<a href="#kontakt" class="lnk-green" style="font-size:15px;font-weight:700;color:#0a7a52;white-space:nowrap">Zapytaj o szczegóły dostępu →</a>
+</div>
+</section>
+
+<!-- ============ 4 · CO DOSTAJESZ ============ -->
+<!-- Sedno: CTO nie kupi szkolenia. Kupi zmierzoną zmianę — baseline,
+     do którego można wrócić za kwartał i pokazać różnicę. -->
+<section id="wynik" style="background:#0e2b1d;background-image:radial-gradient(900px 520px at 12% -2%, rgba(0,205,119,0.14), transparent 60%);padding:clamp(72px,10vw,120px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
+<div class="sec-head">
+<h2 class="h-sec" style="margin:0;max-width:560px;color:#ffffff;text-wrap:pretty">Cztery rzeczy na wyjściu, z czego jedna niesie resztę</h2>
+<p style="margin:0 0 6px;max-width:450px;font-size:17px;line-height:1.6;color:rgba(255,255,255,0.72);text-wrap:pretty">Bez stanu wyjściowego każda zmiana procesu jest kwestią wiary. Z baseline’em jest kwestią pomiaru — i da się ją pokazać zarządowi w liczbach, których nie trzeba tłumaczyć.</p>
+</div>
+<div class="grid2" style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:clamp(40px,5vw,56px)">
+<div class="rv" style="grid-column:span 2;background:rgba(0,205,119,0.09);border:1px solid rgba(0,205,119,0.34);border-radius:20px;padding:clamp(28px,3.4vw,38px)">
+<div style="display:flex;align-items:center;gap:11px">
+<span style="display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:9px;background:var(--la-accent,#00CD77);color:#0b1a11"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg></span>
+<span style="font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--la-accent,#00CD77)">Sedno</span>
+</div>
+<div style="margin-top:18px;font-size:clamp(21px,2.5vw,27px);font-weight:800;line-height:1.22;letter-spacing:-0.018em;color:#ffffff">Baseline metryk przepływu</div>
+<p style="margin:12px 0 0;max-width:800px;font-size:15.5px;line-height:1.62;color:rgba(255,255,255,0.78);text-wrap:pretty">Zmierzony na Waszych danych: <strong style="color:#ffffff;font-weight:700">lead time</strong> od commita do produkcji, <strong style="color:#ffffff;font-weight:700">czas w review</strong>, <strong style="color:#ffffff;font-weight:700">odsetek zmian wymagających poprawki</strong> i <strong style="color:#ffffff;font-weight:700">change failure rate</strong>. Ten sam pomiar powtarzamy po programie adopcji — i dopiero to jest dowód, że coś się zmieniło, a nie wrażenie, że chyba idzie sprawniej.</p>
+</div>
+<div class="rv" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.14);border-radius:18px;padding:28px 26px">
+<div style="font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.1em;color:rgba(255,255,255,0.45)">02</div>
+<div style="margin-top:14px;font-size:19px;font-weight:750;color:#ffffff">Gdzie dokładnie jest wąskie gardło</div>
+<p style="margin:10px 0 0;font-size:14.5px;line-height:1.6;color:rgba(255,255,255,0.7)">Etap po etapie, z czasem, jaki zmiana spędza w każdym z nich. Zwykle okazuje się, że nie tam, gdzie zespół zakładał.</p>
+</div>
+<div class="rv" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.14);border-radius:18px;padding:28px 26px">
+<div style="font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.1em;color:rgba(255,255,255,0.45)">03</div>
+<div style="margin-top:14px;font-size:19px;font-weight:750;color:#ffffff">Roadmapa</div>
+<p style="margin:10px 0 0;font-size:14.5px;line-height:1.6;color:rgba(255,255,255,0.7)">Kolejność zmian ułożona po stosunku odzyskanego czasu do kosztu wdrożenia, z rozdziałem na to, co robicie sami, i to, przy czym pomagamy.</p>
+</div>
+<div class="rv" style="grid-column:span 2;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.14);border-radius:18px;padding:28px 26px">
+<div style="font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.1em;color:rgba(255,255,255,0.45)">04</div>
+<div style="margin-top:14px;font-size:19px;font-weight:750;color:#ffffff">Porównanie z zespołami podobnej wielkości</div>
+<p style="margin:10px 0 0;max-width:800px;font-size:14.5px;line-height:1.6;color:rgba(255,255,255,0.7)">Gdzie na tle innych zespołów o zbliżonej skali wypadacie dobrze, a gdzie odstajecie — z podaniem, ile zespołów składa się na porównanie. Tam, gdzie próbka jest jeszcze za mała, mówimy to wprost zamiast dorabiać liczbę.</p>
+</div>
+</div>
+</section>
+
+<!-- ============ 5 · CENA ============ -->
+<!-- UWAGA: widełki ze spec'u to hipoteza startowa, nie zbadana stawka.
+     Przed publikacją podmienić [25 000–45 000 zł] na potwierdzoną cenę katalogową. -->
+<section id="cena" class="sec-pad">
+<div class="price-grid" style="display:grid;grid-template-columns:1fr 380px;gap:clamp(32px,5vw,64px);align-items:center;background:#f4f8f2;border:1px solid #e4ebe2;border-radius:24px;padding:clamp(32px,4vw,52px)">
+<div>
+<div class="eyebrow" style="font-size:11px">Cena wejścia</div>
+<h2 class="h-mod" style="margin:14px 0 0;text-wrap:pretty">Diagnostic sprint</h2>
+<p class="sub" style="margin:14px 0 0;max-width:520px">Stała cena, opublikowana na stronie. Zakres jest zamknięty, więc nie ma miejsca na „wyszło więcej, niż zakładaliśmy”.</p>
+<div style="display:flex;flex-wrap:wrap;gap:10px 22px;margin-top:24px;font-size:14.5px;color:#4c5850">
+<span style="display:inline-flex;align-items:center;gap:8px"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#0a7a52" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>2 tygodnie</span>
+<span style="display:inline-flex;align-items:center;gap:8px"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#0a7a52" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>baseline + roadmapa + porównanie</span>
+<span style="display:inline-flex;align-items:center;gap:8px"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#0a7a52" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>NDA przed startem</span>
+</div>
+</div>
+<div style="background:#0e2b1d;border-radius:20px;padding:32px 30px;text-align:center">
+<div style="font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.5)">Stała cena</div>
+<div style="margin-top:12px;font-size:clamp(28px,3.2vw,36px);font-weight:800;letter-spacing:-0.02em;line-height:1.1;color:#ffffff">od [25 000] zł</div>
+<div style="margin-top:6px;font-size:12.5px;color:rgba(255,255,255,0.55)">netto · zależnie od liczby repozytoriów i zespołów</div>
+<a href="#kontakt" class="btn-accent" style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:22px;background:var(--la-accent,#00CD77);color:#0b1a11;padding:15px 24px;border-radius:11px;font-weight:750;font-size:15.5px">Umów diagnostic sprint →</a>
+<div style="margin-top:12px;font-size:12px;color:rgba(255,255,255,0.5)">Program adopcji wyceniamy dopiero po sprincie</div>
+</div>
+</div>
+</section>
+
+<!-- ============ 6 · PROGRAM ADOPCJI ============ -->
+<section id="adopcja" style="background:#f4f8f2;padding:clamp(72px,9vw,110px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
+<div class="split" style="display:grid;grid-template-columns:1fr 1fr;gap:clamp(40px,6vw,80px);align-items:start">
+<div>
+<div class="eyebrow" style="font-size:11px">Po sprincie · 6–10 tygodni</div>
+<h2 class="h-sec" style="margin:14px 0 0;text-wrap:pretty">Program adopcji: wychodzicie z własnym stackiem</h2>
+<p class="sub" style="margin:20px 0 0;max-width:520px">Nie z naszym frameworkiem, nie z licencją i nie z zależnością od nas. Ze spisanym sposobem pracy, który zostaje w Waszych repozytoriach i przeżywa rotację ludzi.</p>
+<div style="margin-top:28px;padding:22px 24px;background:#ffffff;border:1px solid #e4ebe2;border-radius:16px">
+<div class="eyebrow" style="font-size:11px">Na końcu ten sam pomiar co na starcie</div>
+<p style="margin:12px 0 0;font-size:15px;line-height:1.6;color:#4c5850;text-wrap:pretty">Powtarzamy baseline: ta sama metodyka, te same metryki, ta sama forma raportu. Różnica ma być <strong style="color:#16211a;font-weight:700">porównywalna, a nie opowiedziana</strong> — i to jest jedyny sposób, żeby po kwartale wiedzieć, czy program się zwrócił.</p>
+</div>
+</div>
+<div>
+<div class="eyebrow" style="font-size:11px">Co zostaje w repozytorium</div>
+<div style="margin-top:16px;display:flex;flex-direction:column">
+<div class="rv" style="display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:baseline;padding:18px 0;border-top:1px solid #e2e9e0">
+<span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:700;color:#0a7a52">01</span>
+<div><div style="font-size:17px;font-weight:750;color:#16211a">Standardy</div><p style="margin:6px 0 0;font-size:14.5px;line-height:1.58;color:#4c5850">Jeden sposób pracy z agentami, opisany w Waszym języku i Waszymi przykładami.</p></div>
+</div>
+<div class="rv" style="display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:baseline;padding:18px 0;border-top:1px solid #e2e9e0">
+<span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:700;color:#0a7a52">02</span>
+<div><div style="font-size:17px;font-weight:750;color:#16211a">Reguły agentów</div><p style="margin:6px 0 0;font-size:14.5px;line-height:1.58;color:#4c5850">Wersjonowane w repozytorium, wspólne między projektami, z jasnym trybem wprowadzania zmian.</p></div>
+</div>
+<div class="rv" style="display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:baseline;padding:18px 0;border-top:1px solid #e2e9e0">
+<span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:700;color:#0a7a52">03</span>
+<div><div style="font-size:17px;font-weight:750;color:#16211a">Bramki jakości</div><p style="margin:6px 0 0;font-size:14.5px;line-height:1.58;color:#4c5850">To, co realnie blokuje merge i deploy — skonfigurowane, nie opisane w dokumencie. Szybsze, nie cięższe.</p></div>
+</div>
+<div class="rv" style="display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:baseline;padding:18px 0;border-top:1px solid #e2e9e0;border-bottom:1px solid #e2e9e0">
+<span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:700;color:#0a7a52">04</span>
+<div><div style="font-size:17px;font-weight:750;color:#16211a">Definicja gotowości produkcyjnej</div><p style="margin:6px 0 0;font-size:14.5px;line-height:1.58;color:#4c5850">Jedno zdanie, pod którym podpisze się i zespół, i osoba odpowiadająca za zgodność.</p></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- ============ 7 · WISESTACK ============ -->
+<!-- WERSJA STARTOWA. Docelowo w tym miejscu staje wykres benchmarkowy
+     (cztery pary słupków przed/po wdrożeniu WiseStacku, próg DORA jako linia
+     odniesienia) — wg guided-coding-sekcja-benchmark.md.
+     Warunek: przeliczyć 4 metryki na własnych repozytoriach w oknach
+     6 mies. przed i 6 mies. po. Do tego czasu NIE publikować wykresu
+     z liczbami szacunkowymi: na stronie sprzedającej dyscyplinę pomiaru
+     niezmierzona liczba jest samozaprzeczeniem oferty. -->
+<section id="wisestack" class="sec-pad">
+<div class="split" style="display:grid;grid-template-columns:1fr 1fr;gap:clamp(40px,6vw,80px);align-items:center">
+<div>
+<div class="eyebrow" style="font-size:11px">Dowód</div>
+<h2 class="h-sec" style="margin:14px 0 0;text-wrap:pretty">Te same standardy stosujemy u siebie</h2>
+<p class="sub" style="margin:20px 0 0;max-width:520px">Nasza implementacja tej metodyki nazywa się <strong style="color:#16211a;font-weight:750">WiseStack</strong> i rozwijamy ją od ponad 200 wdrożeń. Nie sprzedajemy praktyki, której sami nie stosujemy — i nie mamy zamiaru instalować Wam jej kopii.</p>
+<p class="sub" style="margin:14px 0 0;max-width:520px">U Was będzie wyglądać inaczej: inne repozytoria, inny stos technologiczny, inna definicja gotowości. Od tego jesteśmy.</p>
+<a href="/#dlaczego-my" class="lnk-green" style="display:inline-block;margin-top:20px;font-size:16px;font-weight:700;color:#0a7a52">Zobacz WiseStack →</a>
+
+<div style="margin-top:clamp(26px,3vw,34px);border:1px solid #e4ebe2;border-radius:18px;padding:clamp(24px,3vw,30px);background:#f4f8f2">
+<div class="eyebrow" style="font-size:11px">Czego tu jeszcze nie ma</div>
+<p style="margin:12px 0 0;font-size:15px;line-height:1.62;color:#4c5850;text-wrap:pretty">Wykresu z liczbami. Mierzymy u siebie te same cztery rzeczy, które mierzymy u Was — <strong style="color:#16211a;font-weight:700">lead time, change failure rate, rework rate i czas w review</strong> — w oknie sześciu miesięcy przed wdrożeniem WiseStacku i sześciu po. Kiedy okno się domknie, opublikujemy wyniki razem z metodyką liczenia. Do tego czasu nie ma tu wykresu.</p>
+</div>
+</div>
+<div style="background:#0e2b1d;border-radius:20px;padding:clamp(26px,3vw,34px);font-family:ui-monospace,Menlo,monospace">
+<div style="display:flex;align-items:center;gap:8px">
+<span style="width:9px;height:9px;border-radius:50%;background:#2f4a3b"></span><span style="width:9px;height:9px;border-radius:50%;background:#2f4a3b"></span><span style="width:9px;height:9px;border-radius:50%;background:#2f4a3b"></span>
+<span style="margin-left:8px;font-size:10.5px;letter-spacing:0.1em;color:rgba(255,255,255,0.4)">WISESTACK · SZYNY DLA MODELU</span>
+</div>
+<div style="margin-top:22px;display:flex;flex-direction:column;gap:14px;font-size:13px;line-height:1.5">
+<div><span style="color:var(--la-accent,#00CD77)">1 ·</span> <span style="color:rgba(255,255,255,0.9)">zakres i kryteria akceptacji</span><div style="margin-top:3px;color:rgba(255,255,255,0.45)">spisane, zanim model dostanie zadanie</div></div>
+<div><span style="color:var(--la-accent,#00CD77)">2 ·</span> <span style="color:rgba(255,255,255,0.9)">twarde ograniczenia</span><div style="margin-top:3px;color:rgba(255,255,255,0.45)">czego nie wolno ruszać, czego nie wolno dodać</div></div>
+<div><span style="color:var(--la-accent,#00CD77)">3 ·</span> <span style="color:rgba(255,255,255,0.9)">weryfikacja</span><div style="margin-top:3px;color:rgba(255,255,255,0.45)">testy i review, które faktycznie blokują</div></div>
+<div><span style="color:var(--la-accent,#00CD77)">4 ·</span> <span style="color:rgba(255,255,255,0.9)">bramka przed produkcją</span><div style="margin-top:3px;color:rgba(255,255,255,0.45)">jedna, wspólna, bez ścieżek na skróty</div></div>
+</div>
+<div style="margin-top:22px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.1);font-size:11.5px;line-height:1.55;color:rgba(255,255,255,0.55)">„Prowadzone” odnosi się do AI, nie do Was.</div>
+</div>
+</div>
+</section>
+
+<GcFaq
+  heading="Pytania, które zadaje CTO"
+  lead="Zaczynamy od tego, które pada najczęściej — i zwykle decyduje o całej reszcie rozmowy."
+  items={faq}
+/>
+
+<GcCta
+  heading="Zmierzmy, ile prędkości zostaje po drodze"
+  lead="Napiszcie, ile macie repozytoriów i zespołów. Odpowiemy zakresem sprintu i najbliższym wolnym terminem."
+  eyebrow="Ze sprintu wychodzicie z"
+  items={[
+    { t: 'Baseline metryk przepływu', d: 'lead time, czas w review, poprawki, change failure rate' },
+    { t: 'Wąskie gardło i roadmapa', d: 'gdzie stoi zmiana i co przestawić najpierw' },
+    { t: 'Porównanie z innymi', d: 'jak wypadacie na tle zespołów podobnej wielkości' },
+  ]}
+  teamField={true}
+  placeholder="Np. 11 repozytoriów, dwa zespoły produktowe, agenci używani od pół roku bez wspólnych reguł…"
+  submitLabel="Umów diagnostic sprint"
+/>
+
+<script>
+  // ---- Wykres przepustowości — słupki rosną, gdy sekcja wejdzie w kadr ----
+  (function(){
+    var sec = document.getElementById('gdzie-ucieka');
+    if(!sec) return;
+    function show(){ sec.classList.add('lanes-in'); }
+    if(!('IntersectionObserver' in window)){ show(); return; }
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){ if(e.isIntersecting){ show(); io.disconnect(); } });
+    }, { threshold: 0.3 });
+    io.observe(sec);
+  })();
+</script>
+</LaBase>

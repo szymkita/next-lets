@@ -1,0 +1,880 @@
+---
+// INDYWIDUALNE ROZWIĄZANIA AI — /rozwiazania-ai · druga podstrona usługowa
+// z pionu „Wdrażamy AI". Siostra /strategia-ai, ale nie jej kalka.
+//
+// CZYM SIĘ RÓŻNI OD STRATEGII (i dlaczego wygląda inaczej):
+// Strategia sprzedaje dokument, więc tamta strona odpowiada na pytanie
+// „skąd wiem, że kolejność jest dobra". Tutaj sprzedajemy działający system,
+// więc lista pytań zakupowych jest zupełnie inna:
+//   · co ja właściwie dostaję, skoro model kupuje się za 20 dolarów
+//   · co się stanie, kiedy model się pomyli
+//   · czy to wejdzie w nasz ERP, czy stanie obok
+//   · gdzie lądują nasze dane
+//   · kto to utrzyma za rok
+// Cała strona jest ułożona pod te pytania, w tej kolejności.
+//
+// POZYCJONOWANIE:
+// Rynek sprzedaje „wdrożenie AI" jako dostęp do modelu i okno do rozmowy.
+// Nasza teza: model jest najmniejszą częścią roboty (6% czasu budowy), a to,
+// czy rozwiązanie zadziała, rozstrzyga się w warstwach wokół niego. Stąd
+// rysunek w hero — przekrój rozwiązania, który tę proporcję pokazuje wprost.
+//
+// TRZY RZECZY SPRAWDZALNE PRZED PODPISANIEM UMOWY (odpowiednik „trzech
+// mechanizmów" ze /strategia-ai — bez nich strona jest zwykłą ofertą):
+//   1. Próg jakości mierzony na sprawach klienta przed budową i zapisany
+//      w umowie razem z warunkiem odstąpienia.
+//   2. Ścieżka wyjątku projektowana razem z główną — widoczna w rysunku
+//      w ciemnym pasie, nie schowana w FAQ.
+//   3. Klucze do dostawcy modelu po stronie klienta i brak prowizji od
+//      kogokolwiek — to samo zdanie, co w FAQ na /strategia-ai.
+//
+// WARSTWA WIZUALNA — świadomie inny słownik niż /strategia-ai:
+// tam: koła wypełniane łukiem, przewijany strumień wierszy, siatka stu
+// kwadratów, kreskowe ikonki w bento, kartka ze skanem.
+// tu: trzy rysunki, żaden z tamtych mechanizmów.
+//   · PRZEKRÓJ (hero) — siedem warstw o grubości proporcjonalnej do udziału
+//     w czasie budowy; po złożeniu rozsuwa się wachlarzem na warstwie modelu
+//   · PRÓG PEWNOŚCI (ciemny pas) — jedna sprawa naraz, w powiększeniu,
+//     z paskiem pewności i werdyktem; celowo pokazujemy też sprawy odrzucone
+//   · HARMONOGRAM DWUTOROWY — jedyna animacja na stronie sterowana scrollem:
+//     głowica idzie po osi tygodni razem z ruchem strony, bloki wypełniają
+//     się w miarę jej przejścia (technika, której nie ma na żadnej innej
+//     podstronie — stąd `--p` ustawiane z JS i clamp() w CSS)
+// Wszystkie mają stan końcowy czytelny przy prefers-reduced-motion.
+//
+// DO POTWIERDZENIA PRZED PUBLIKACJĄ:
+// · Udziały procentowe warstw (22/18/14/6/15/15/10) — proporcja z naszych
+//   projektów, nie z pomiaru. Sam kształt (model najcieńszy) jest pewny.
+// · Dziewięć tygodni od warsztatu do produkcji — założenie o kształcie usługi.
+// · Warunek „poniżej progu nie płacicie za wdrożenie" — decyzja handlowa
+//   Szymona, nie moja. Bez niej sekcja PRÓG traci ostrze.
+// · Trzy przykłady w sekcji DOWODY są PRZYKŁADOWE, do podmiany.
+// · Widełki cenowe — świadomie nie ma żadnej kwoty, bo nie mam danych.
+//   Na /strategia-ai stoi 5–20 tys. zł i to jest tam przewagą; tutaj miejsce
+//   na kwotę jest przygotowane w FAQ „Ile kosztuje".
+// · /og/rozwiazania-ai.png — na razie strona dziedziczy /og/hub.png.
+import LaBase from '../layouts/LaBase.astro';
+import GcFaq from '../components/GcFaq.astro';
+import GcCta from '../components/GcCta.astro';
+
+const kanon = new URL('/rozwiazania-ai', Astro.site).href;
+
+const dane = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Service',
+      '@id': `${kanon}#usluga`,
+      name: 'Indywidualne rozwiązania AI',
+      alternateName: ['Wdrożenie AI w firmie', 'Rozwiązania AI dla firm', 'AI pod proces'],
+      serviceType: 'Projektowanie i budowa rozwiązań opartych na sztucznej inteligencji',
+      url: kanon,
+      description: 'Indywidualne rozwiązanie AI zbudowane pod jeden proces w firmie i wpięte w systemy, z których korzysta zespół. Sprawy pewne system zamyka sam, pozostałe trafiają do człowieka razem z powodem. Próg jakości mierzymy na sprawach klienta przed budową.',
+      provider: { '@id': new URL('/#organizacja', Astro.site).href },
+      areaServed: { '@type': 'Country', name: 'Polska' },
+      audience: { '@type': 'BusinessAudience', name: 'Średnie i duże firmy' },
+    },
+    {
+      '@type': 'BreadcrumbList',
+      '@id': `${kanon}#okruszki`,
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Strona główna', item: new URL('/', Astro.site).href },
+        { '@type': 'ListItem', position: 2, name: 'Indywidualne rozwiązania AI', item: kanon },
+      ],
+    },
+  ],
+};
+
+const title = "Indywidualne rozwiązania AI dla firm — wdrożenie pod Wasz proces | Let's automate";
+const description = 'Rozwiązanie AI zbudowane pod jeden proces i wpięte w Wasze systemy. Próg jakości mierzymy na Waszych sprawach przed budową, a sprawy niepewne trafiają do człowieka z uzasadnieniem.';
+
+
+// ---- PRZEKRÓJ ROZWIĄZANIA (hero) ---------------------------------------
+// Grubość warstwy to jej udział w czasie budowy. Warstwa modelu jest
+// najcieńsza i to jest cały argument tego rysunku — dlatego po złożeniu
+// przekrój rozsuwa się wachlarzem dokładnie na niej.
+// Udziały sumują się do 100; sprawdzane niżej, żeby przy edycji nie uciekło.
+const RDZEN = [
+  { n: 'Połączenie z systemami', u: 22, o: 'Sprawa leży tam, gdzie zawsze: w poczcie, w ERP, na dysku. Rozwiązanie sięga po nią samo.' },
+  { n: 'Uporządkowanie danych', u: 18, o: 'Skany, tabele i pola opisowe trzeba doprowadzić do postaci, w której da się je porównać.' },
+  { n: 'Reguły i progi', u: 14, o: 'Warunki, po których sprawa jest rozstrzygnięta. Spisujemy je z osobami, które prowadzą ją dzisiaj.' },
+  { n: 'Model', u: 6, o: 'Odczytuje treść sprawy i proponuje decyzję. Siedzi za własnym interfejsem, więc wymienia się go w jeden dzień.', model: true },
+  { n: 'Ścieżka wyjątku', u: 15, o: 'Co dzieje się ze sprawą, której system nie domyka: kto ją dostaje i z jakim uzasadnieniem.' },
+  { n: 'Miejsce pracy zespołu', u: 15, o: 'Ekran, na którym Wasi ludzie widzą sprawy i podejmują decyzje. Bez promptów do nauczenia.' },
+  { n: 'Pomiar i alarmy', u: 10, o: 'Licznik spraw, skuteczność tydzień do tygodnia i sygnał, kiedy wynik odjeżdża od normy.' },
+];
+const SUMA_U = RDZEN.reduce((a, w) => a + w.u, 0);
+if (SUMA_U !== 100) throw new Error(`Udziały warstw muszą sumować się do 100, jest ${SUMA_U}`);
+
+const RD_C = 24;               // długość cyklu animacji przekroju
+const IDX_MODEL = RDZEN.findIndex((w) => w.model);
+
+let biezaca = 0;
+const warstwy = RDZEN.map((w, i) => {
+  const poz = { ...w, i, y: biezaca, srodek: biezaca + w.u / 2 };
+  biezaca += w.u;
+  // Wachlarz: im dalej od warstwy modelu, tym mocniejszy odjazd.
+  poz.odjazd = (i - IDX_MODEL) * 9;
+  // Nasze warstwy dostają zieleń o malejącym nasyceniu, model — szarość.
+  // Kolor niesie legendę: co budujemy my, a co przychodzi od dostawcy.
+  const kroki = RDZEN.filter((x) => !x.model).length;
+  const rzad = RDZEN.slice(0, i).filter((x) => !x.model).length;
+  poz.tlo = w.model
+    ? 'rgba(22,33,26,0.17)'
+    : `rgba(0,205,119,${(0.44 - (rzad / (kroki - 1)) * 0.27).toFixed(3)})`;
+  return poz;
+});
+
+const rp = (s) => `${(Math.max(0, Math.min(1, s / RD_C)) * 100).toFixed(2)}%`;
+
+// Kalendarz cyklu. Wszystkie chwile liczone tutaj, żeby przesunięcie jednej
+// fazy nie wymagało przepisywania siedmiu reguł.
+const SKLADANIE = 0.4;         // kiedy startuje pierwsza warstwa
+const KROK = 0.34;             // odstęp między kolejnymi warstwami
+const ROZSUW = 5.0;            // początek rozsuwania wachlarza
+const TRZYMA = 6.0;            // wachlarz w pełni otwarty
+const ZAMYKA = 11.4;           // początek zamykania
+const ZAMKNIETY = 12.3;
+const ZANIK = 22.2;            // przekrój gaśnie i cykl startuje od nowa
+
+const klatkiRdzen = [
+  ...warstwy.map((w) => `@keyframes rd-w${w.i}{0%,${rp(SKLADANIE + w.i * KROK)}{opacity:0;transform:scaleY(0)}${rp(SKLADANIE + w.i * KROK + 0.62)}{opacity:1;transform:scaleY(1)}${rp(ZANIK)}{opacity:1;transform:scaleY(1)}${rp(ZANIK + 1.1)}{opacity:0;transform:scaleY(1)}100%{opacity:0;transform:scaleY(1)}}`),
+  ...warstwy.map((w) => `@keyframes rd-e${w.i}{0%,${rp(SKLADANIE + w.i * KROK + 0.2)}{opacity:0}${rp(SKLADANIE + w.i * KROK + 0.8)}{opacity:1}${rp(ZANIK)}{opacity:1}${rp(ZANIK + 0.9)}{opacity:0}100%{opacity:0}}`),
+  ...warstwy.map((w) => `@keyframes rd-roz${w.i}{0%,${rp(ROZSUW)}{transform:translateY(0)}${rp(TRZYMA)}{transform:translateY(${w.odjazd}px)}${rp(ZAMYKA)}{transform:translateY(${w.odjazd}px)}${rp(ZAMKNIETY)}{transform:translateY(0)}100%{transform:translateY(0)}}`),
+  `@keyframes rd-cal{0%,${rp(ROZSUW + 0.5)}{opacity:0;transform:translateY(-4px)}${rp(TRZYMA + 0.3)}{opacity:1;transform:translateY(0)}${rp(ZAMYKA)}{opacity:1;transform:translateY(0)}${rp(ZAMYKA + 0.5)}{opacity:0;transform:translateY(-4px)}100%{opacity:0;transform:translateY(-4px)}}`,
+  `@keyframes rd-blask{0%,${rp(ROZSUW + 0.3)}{box-shadow:0 0 0 0 rgba(0,205,119,0)}${rp(TRZYMA)}{box-shadow:0 0 0 3px rgba(0,205,119,0.85)}${rp(ZAMYKA)}{box-shadow:0 0 0 3px rgba(0,205,119,0.85)}${rp(ZAMKNIETY)}{box-shadow:0 0 0 0 rgba(0,205,119,0)}100%{box-shadow:0 0 0 0 rgba(0,205,119,0)}}`,
+].join('\n');
+
+
+// ---- PRÓG PEWNOŚCI (ciemny pas) ----------------------------------------
+// Jedna sprawa naraz, w powiększeniu — odwrotnie niż strumień na
+// /strategia-ai, gdzie leciały trzydzieści dwa rozmyte wiersze.
+// Tam chodziło o skalę przeglądu, tutaj o to, żeby dało się przeczytać
+// powód. Dwie z pięciu spraw idą do człowieka i to jest celowe:
+// lista, na której wszystko przechodzi, wygląda jak materiał sprzedażowy.
+const PROG = 92;
+const SPRAWY = [
+  { t: 'Faktura kosztowa 4471/08', p: 97, ok: true, w: 'zaksięgowana bez dotknięcia' },
+  { t: 'Reklamacja RMA-2190', p: 71, ok: false, w: 'na dokumencie i w ERP stoją dwie różne ceny' },
+  { t: 'Zapytanie ofertowe z poczty', p: 93, ok: true, w: 'wycena wyszła do klienta w cztery minuty' },
+  { t: 'Aneks do umowy ramowej', p: 64, ok: false, w: 'zapis, którego nie ma w żadnej wcześniejszej umowie' },
+  { t: 'Zamówienie z portalu klienta', p: 98, ok: true, w: 'poszło na produkcję z rezerwacją materiału' },
+];
+const SLOT = 4.4;
+const PG_C = SPRAWY.length * SLOT;
+const pgp = (s) => `${(Math.max(0, Math.min(1, s / PG_C)) * 100).toFixed(2)}%`;
+
+const klatkiProg = SPRAWY.map((s, i) => {
+  const b = i * SLOT;
+  return [
+    `@keyframes pg-k${i}{0%,${pgp(b)}{opacity:0}${pgp(b + 0.4)}{opacity:1}${pgp(b + 3.85)}{opacity:1}${pgp(b + 4.2)}{opacity:0}100%{opacity:0}}`,
+    `@keyframes pg-b${i}{0%,${pgp(b + 0.5)}{width:0%}${pgp(b + 1.75)}{width:${s.p}%}${pgp(b + 4.2)}{width:${s.p}%}100%{width:${s.p}%}}`,
+    `@keyframes pg-l${i}{0%,${pgp(b + 1.6)}{opacity:0}${pgp(b + 1.95)}{opacity:1}${pgp(b + 4.2)}{opacity:1}100%{opacity:1}}`,
+    `@keyframes pg-v${i}{0%,${pgp(b + 2.0)}{opacity:0;transform:translateY(5px)}${pgp(b + 2.4)}{opacity:1;transform:translateY(0)}${pgp(b + 4.2)}{opacity:1;transform:translateY(0)}100%{opacity:1;transform:translateY(0)}}`,
+  ].join('\n');
+}).join('\n');
+
+
+// ---- HARMONOGRAM DWUTOROWY ---------------------------------------------
+// Oś ma dziewięć tygodni. Bloki stoją na wspólnej osi w dwóch torach,
+// bo najczęstsze pytanie po „ile to trwa" brzmi „ile z tego jest po naszej
+// stronie". Wypełnienie bloków jedzie za scrollem: zmienna --p idzie z JS,
+// a każdy blok liczy sobie własne wypełnienie w CSS przez clamp().
+const TYGODNI = 9;
+const TORY = [
+  {
+    kto: 'Po naszej stronie',
+    akcent: true,
+    bloki: [
+      { t: 'Warsztat', s: 0, d: 1 },
+      { t: 'Prototyp na Waszych danych', s: 1, d: 2 },
+      { t: 'Pomiar progu', s: 3, d: 1 },
+      { t: 'Poprawki z pilota', s: 4, d: 3 },
+      { t: 'Produkcja i przekazanie', s: 7, d: 2 },
+    ],
+  },
+  {
+    kto: 'Po Waszej stronie',
+    akcent: false,
+    bloki: [
+      { t: 'Sprawy z kwartału', s: 0, d: 1 },
+      { t: 'Jedna rozmowa w tygodniu', s: 1, d: 2 },
+      { t: 'Sporne przypadki', s: 3, d: 1 },
+      { t: 'Zespół pracuje na rozwiązaniu', s: 4, d: 3 },
+      { t: 'Odbiór', s: 8, d: 1 },
+    ],
+  },
+];
+
+const etapy = [
+  {
+    e: 'TYDZIEŃ 1', t: 'Warsztat na jednym procesie',
+    d: 'Siadamy z osobami, które prowadzą sprawę dzisiaj, i rozkładamy ją na kroki razem z warunkami, po których zapada każda decyzja. Wychodzimy z kompletem spraw z ostatniego kwartału.',
+    w: 'dzień warsztatu i wydanie spraw z systemu',
+  },
+  {
+    e: 'TYDZIEŃ 2–3', t: 'Prototyp na Waszych danych',
+    d: 'Pierwsza wersja powstaje od razu na sprawach z Waszego kwartału. Po drugim tygodniu widzicie ją w działaniu i mówicie, gdzie rozstrzyga inaczej niż Wasz zespół.',
+    w: 'jedna rozmowa w tygodniu',
+  },
+  {
+    e: 'TYDZIEŃ 4', t: 'Pomiar progu',
+    d: 'Puszczamy rozwiązanie przez komplet spraw z kwartału i porównujemy jego decyzje z tym, co zrobił człowiek. Wynik jest liczbą, a przypadki sporne rozstrzygacie Wy.',
+    w: 'kilka godzin na sporne przypadki',
+  },
+  {
+    e: 'TYDZIEŃ 5–7', t: 'Pilot w jednym zespole',
+    d: 'Rozwiązanie idzie na produkcję w jednym zespole i pracuje na prawdziwym ruchu. Ścieżka wyjątku ma wtedy najwięcej pracy i to z niej biorą się poprawki.',
+    w: 'zespół pracuje na rozwiązaniu zamiast po staremu',
+  },
+  {
+    e: 'TYDZIEŃ 8–9', t: 'Produkcja i przekazanie',
+    d: 'Rozwiązanie obejmuje cały proces. Przekazujemy repozytorium, dokumentację i dostęp do panelu, a Wasz zespół dostaje szkolenie na własnych sprawach.',
+    w: 'odbiór i szkolenie',
+  },
+];
+
+
+// ---- KIEDY TEGO NIE BUDOWAĆ --------------------------------------------
+// Odpowiednik kolumny „jeszcze nie, jeśli" ze /strategia-ai, ale mocniejszy:
+// tam odsyłaliśmy klienta na później, tu odsyłamy go do tańszego rozwiązania.
+const DROGI = [
+  {
+    n: 'Gotowe narzędzie z półki',
+    k: 'Zadanie wygląda tak samo w każdej firmie: transkrypcja spotkań, tłumaczenia, pisanie treści. Nie dotyka Waszych danych ani Waszych reguł.',
+    r: 'Podajemy nazwę narzędzia i wracamy do rozmowy dopiero wtedy, kiedy zrobi się za ciasne.',
+  },
+  {
+    n: 'Integracja bez modelu',
+    k: 'Dane mają stały format, a decyzja daje się zapisać warunkiem. Model dołoży wtedy koszt zapytań i jedno miejsce, w którym coś może pójść inaczej niż zwykle.',
+    r: 'Wyceniamy integrację. Bywa, że to trzy dni pracy zamiast trzech miesięcy.',
+  },
+  {
+    n: 'Rozwiązanie zbudowane pod Was',
+    k: 'Sprawa przechodzi przez kilka systemów, dane bywają niepełne, a rozstrzygnięcie wymaga oceny. Przy takim wolumenie różnicę widać w wyniku firmy.',
+    r: 'Tu zaczyna się nasza robota.',
+    nasze: true,
+  },
+];
+
+
+// ---- PRZYKŁADY ---------------------------------------------------------
+// PRZYKŁADOWE wdrożenia — do podmiany na potwierdzone przypadki.
+// Pokrycie to udział spraw zamykanych bez człowieka po pierwszym kwartale.
+const PRZYKLADY = [
+  {
+    f: 'Producent opakowań', m: '210 osób', p: 'Obieg faktur kosztowych',
+    d: 'Faktura przychodzi na skrzynkę, rozwiązanie dopasowuje ją do zamówienia i do warunków z umowy, a potem księguje. Zgodność cen sprawdza w ERP przy każdej pozycji.',
+    pokrycie: 78,
+    ludzie: ['ceny rozjeżdżające się z umową', 'pierwsza faktura od nowego dostawcy'],
+  },
+  {
+    f: 'Dystrybutor techniczny', m: '340 osób', p: 'Zapytania ofertowe z poczty',
+    d: 'Zapytanie z poczty zamienia się w wycenę na podstawie cennika, historii tego klienta i dostępności w magazynie. Handlowiec dostaje gotowy dokument do zatwierdzenia.',
+    pokrycie: 64,
+    ludzie: ['zamienniki dla pozycji spoza katalogu', 'negocjacje przy dużych ilościach'],
+  },
+  {
+    f: 'Firma serwisowa', m: '120 osób', p: 'Kwalifikacja zgłoszeń',
+    d: 'Zgłoszenie dostaje priorytet, wymagane uprawnienia i termin z umowy serwisowej, a potem trafia do technika, który ma je najbliżej po drodze.',
+    pokrycie: 86,
+    ludzie: ['awarie z ryzykiem postoju linii'],
+  },
+];
+
+
+const faq = [
+  {
+    q: 'Czym to się różni od gotowego narzędzia AI za kilkaset złotych miesięcznie?',
+    a: 'Zakresem odpowiedzialności. Gotowe narzędzie daje okno do rozmowy i zostawia sprawę w miejscu, w którym była — ktoś nadal musi ją przenieść do systemu i domknąć. Indywidualne rozwiązanie prowadzi sprawę do końca: sięga po dane do Waszych systemów, sprawdza je Waszymi warunkami i zamyka albo przekazuje człowiekowi z uzasadnieniem. Jeśli Wasze zadanie wygląda tak samo jak w każdej innej firmie, gotowe narzędzie wystarczy i powiemy to na pierwszej rozmowie.',
+  },
+  {
+    q: 'Ile kosztuje indywidualne rozwiązanie AI?',
+    a: 'Wycena jest stałą kwotą za ustalony zakres i podajemy ją po warsztacie, kiedy proces jest rozłożony na kroki. Cenę ruszają trzy rzeczy: liczba systemów, do których trzeba się wpiąć, jakość danych w miejscu, z którego sprawa startuje, i to, jak wysoki próg jakości ustalimy. Płatność idzie etapami, po odbiorze każdego z nich.',
+  },
+  {
+    q: 'Co się stanie, kiedy model się pomyli?',
+    a: 'Rozwiązanie ma próg pewności ustalony przed budową. Poniżej niego sprawa nie zostaje rozstrzygnięta automatycznie — idzie do człowieka razem z tym, czego system nie potrafił rozstrzygnąć, i z danymi, które zdążył zebrać. Każda decyzja jest zapisana razem z powodem, więc po fakcie da się sprawdzić, na czym się oparła. Próg widzicie w panelu i możecie go podnieść albo obniżyć bez naszego udziału.',
+  },
+  {
+    q: 'Czy nasze dane trafią do OpenAI, Anthropic albo Google’a?',
+    a: 'Zapytania idą przez konta firmowe z wyłączonym uczeniem na przesyłanych danych i z zapisaną umową powierzenia. Do modelu wychodzi tylko ten fragment sprawy, który jest potrzebny do rozstrzygnięcia — resztę zostawiamy po Waszej stronie. Co dokładnie wychodzi poza Waszą infrastrukturę, jest wypisane w dokumentacji, a przy danych szczególnie wrażliwych stawiamy model na Waszej infrastrukturze.',
+  },
+  {
+    q: 'Ile czasu zajmie to naszemu zespołowi?',
+    a: 'Najwięcej na starcie: dzień warsztatu i wydanie kompletu spraw z ostatniego kwartału. Potem jedna rozmowa w tygodniu przez czas budowy i kilka godzin na rozstrzygnięcie spornych przypadków przy pomiarze progu. Najcięższy dla Was jest pilot, bo zespół pracuje wtedy na nowym rozwiązaniu przy normalnym ruchu.',
+  },
+  {
+    q: 'Kto to utrzyma za rok?',
+    a: 'Repozytorium, reguły, dokumentacja i klucze do dostawcy modelu są Wasze od pierwszego dnia, więc utrzymanie może przejąć Wasz zespół albo dowolna inna firma. Jeśli utrzymujemy my, umowa jest osobna od wdrożenia i wypowiadalna z miesięcznym terminem. Nie mamy prowizji od żadnego dostawcy modeli ani od żadnej platformy.',
+  },
+  {
+    q: 'Mamy bałagan w danych. Czy to w ogóle ma sens?',
+    a: 'To jest normalny punkt wyjścia i część roboty polega właśnie na doprowadzeniu danych do porównywalnej postaci. Granica leży gdzie indziej: jeśli informacji potrzebnej do decyzji nie ma w żadnym systemie, bo siedzi w głowach albo w notatkach, żaden model jej nie odtworzy. Wychodzi to na pomiarze progu i wtedy mówimy wprost, że pierwszym krokiem jest zebranie danych.',
+  },
+  {
+    q: 'Czy musimy najpierw zamówić strategię?',
+    a: 'Nie. Strategia układa kolejność wdrożeń wtedy, kiedy kandydatów jest kilkanaście i nikt nie chce decydować w ciemno. Jeśli wiecie, który proces boli, wchodzimy od razu w warsztat na tym procesie. Zobacz <a href="/strategia-ai" style="font-weight:700;color:#0a7a52">strategię transformacji AI</a>, jeśli kolejność jest dopiero do ustalenia.',
+  },
+  {
+    q: 'Budujecie od zera czy na gotowych platformach?',
+    a: 'Tak, jak wychodzi taniej w utrzymaniu. Połączenia między systemami często idą na gotowej platformie automatyzacji, bo tam zmiana zajmuje kwadrans. To, co dotyka reguł, ścieżki wyjątku i pracy ludzi, piszemy sami, bo w tych miejscach gotowe narzędzia najszybciej stają się ścianą. Przy każdym elemencie zapisujemy, na czym stoi i ile kosztuje jego utrzymanie przez rok.',
+  },
+];
+dane['@graph'].push({
+  '@type': 'FAQPage',
+  '@id': `${kanon}#faq`,
+  mainEntity: faq.map((f) => ({
+    '@type': 'Question',
+    name: f.q,
+    acceptedAnswer: { '@type': 'Answer', text: f.a.replace(/<[^>]+>/g, '') },
+  })),
+});
+---
+<LaBase title={title} description={description} ctaHref="#kontakt" ctaLabel="Umów rozmowę" nav="uslugi">
+<script type="application/ld+json" is:inline set:html={JSON.stringify(dane)} slot="head"></script>
+<style is:global slot="head">
+  /* ================= przekrój rozwiązania (hero) =================
+     Kolumna siedmiu warstw. Wysokość warstwy to jej udział w czasie budowy,
+     więc rysunek mówi to samo, co zdanie „model to 6% roboty", tylko bez
+     zdania. Po złożeniu przekrój rozsuwa się wachlarzem na warstwie modelu.
+     Wysokości i pozycje idą w procentach, więc kolumna skaluje się razem
+     z kontenerem i nie potrzebuje drugiego kompletu liczb na telefon. */
+  .rd{display:grid;grid-template-columns:clamp(92px,11vw,152px) minmax(0,1fr);gap:clamp(14px,1.8vw,22px);align-items:start}
+  .rd-kol{position:relative;height:clamp(288px,42vw,392px)}
+  .rd-poz{position:absolute;left:0;right:0}
+  .rd-w{position:absolute;inset:0 0 3px 0;border-radius:4px;background:var(--tlo);transform-origin:top;opacity:0;transition:background .2s}
+  .rd-warstwa:hover .rd-w{background:var(--la-accent,#00CD77)}
+  .rd-model{border-radius:5px}
+  .rd-opisy{position:relative;height:clamp(288px,42vw,392px)}
+  .rd-e{position:absolute;left:0;right:0;transform:translateY(-50%);display:flex;align-items:baseline;gap:9px;opacity:0}
+  .rd-e::before{content:"";flex-shrink:0;align-self:center;width:clamp(10px,1.4vw,20px);height:1px;background:#d3ddd1}
+  .rd-e b{font-size:clamp(12.5px,1.4vw,14.5px);font-weight:700;letter-spacing:-0.01em;color:#16211a;line-height:1.2}
+  .rd-e i{font-family:ui-monospace,Menlo,monospace;font-style:normal;font-size:11px;color:#9aa69b;flex-shrink:0}
+  .rd-e.model b{color:#0a7a52}
+  .rd-cal{position:absolute;top:calc(100% + 3px);left:calc(clamp(10px,1.4vw,20px) + 9px);font-size:12px;font-weight:650;color:#0a7a52;white-space:nowrap;opacity:0}
+  .rd-leg{display:flex;flex-wrap:wrap;gap:8px 22px;margin-top:42px;font-size:12.5px;color:#7c877e}
+  .rd-leg span{display:inline-flex;align-items:center;gap:8px}
+  .rd-leg i{width:20px;height:8px;border-radius:3px;display:inline-block}
+  @media (max-width:900px){ .rd-kol,.rd-opisy{height:clamp(330px,58vw,392px)} }
+  @media (max-width:600px){
+    .rd{grid-template-columns:78px minmax(0,1fr);gap:12px}
+    .rd-cal{font-size:11px}
+    .rd-e b{font-size:12.5px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .rd-w,.rd-e,.rd-poz,.rd-cal{animation:none !important;opacity:1;transform:none}
+    .rd-w{transform:scaleY(1)}
+    .rd-e{transform:translateY(-50%)}
+    /* Bez ruchu wachlarz się nie rozsuwa, więc przypis wchodzi w wiersz
+       warstwy zamiast pod niego — inaczej nachodzi na sąsiedni podpis. */
+    .rd-cal{position:static;opacity:1;margin-left:2px}
+    .rd-model{box-shadow:0 0 0 3px rgba(0,205,119,0.85)}
+  }
+
+  /* ================= warstwy jako wiersze (sekcja „czym to jest") =======
+     Ten sam komplet danych, co w hero, tylko rozpisany. Wiersze na liniach
+     włosowych, bez pojemników — kafle w tym miejscu robiłyby z siedmiu
+     warstw siedem równorzędnych produktów, a one nie są równorzędne. */
+  .wr{display:grid;grid-template-columns:minmax(150px,0.5fr) minmax(0,1fr);gap:clamp(14px,2.4vw,36px);align-items:baseline;padding:15px 0;border-top:1px solid #e7ece4}
+  .wr:last-of-type{border-bottom:1px solid #e7ece4}
+  .wr-n{display:flex;align-items:baseline;gap:8px;font-size:15px;font-weight:700;letter-spacing:-0.01em;color:#16211a}
+  .wr-n i{font-family:ui-monospace,Menlo,monospace;font-style:normal;font-size:11px;font-weight:500;color:#a9b3aa}
+  .wr.model .wr-n{color:#0a7a52}
+  .wr-o{margin:0;font-size:14.5px;line-height:1.55;color:#4c5850;text-wrap:pretty}
+  @media (max-width:700px){ .wr{grid-template-columns:1fr;gap:5px} }
+
+  /* ================= trzy drogi =================
+     Trzeci wiersz jest wcięty i ma akcentową krechę — jedyne miejsce, gdzie
+     lista przestaje być równa. To on niesie usługę, dwa pozostałe odsyłają
+     klienta gdzie indziej. */
+  .dr{display:grid;grid-template-columns:minmax(180px,0.6fr) minmax(0,1.25fr) minmax(0,0.85fr);gap:clamp(18px,3vw,44px);align-items:start;padding:clamp(22px,2.6vw,30px) 0;border-top:1px solid #dde7db}
+  .dr:last-of-type{border-bottom:0}
+  .dr-n{margin:0;font-size:clamp(17px,2vw,20px);font-weight:750;letter-spacing:-0.015em;line-height:1.25;color:#4c5850}
+  .dr-k{margin:0;font-size:15px;line-height:1.6;color:#4c5850;text-wrap:pretty}
+  .dr-r{margin:0;font-size:14.5px;line-height:1.55;color:#8b968d;text-wrap:pretty}
+  .dr.nasze{position:relative;padding-left:clamp(18px,2vw,26px);border-top:1px solid #c9dfcd}
+  .dr.nasze::before{content:"";position:absolute;left:0;top:clamp(22px,2.6vw,30px);bottom:clamp(22px,2.6vw,30px);width:3px;border-radius:2px;background:var(--la-accent,#00CD77)}
+  .dr.nasze .dr-n{font-size:clamp(20px,2.4vw,26px);color:#16211a}
+  .dr.nasze .dr-k{color:#16211a}
+  .dr.nasze .dr-r{color:#0a7a52;font-weight:650}
+  @media (max-width:860px){ .dr{grid-template-columns:1fr;gap:8px} }
+
+  /* ================= próg pewności (ciemny pas) =================
+     Jedna sprawa naraz, w powiększeniu. Pasek dojeżdża do wartości, przy
+     progu stoi kreska, a werdykt wchodzi dopiero po zatrzymaniu paska —
+     inaczej czyta się go, zanim wiadomo, na czym stanął. */
+  .pg{position:relative;height:230px;padding:clamp(22px,2.4vw,30px) clamp(22px,2.6vw,32px);border:1px solid rgba(255,255,255,0.13);border-radius:18px;background:rgba(255,255,255,0.035)}
+  .pg-s{position:absolute;inset:clamp(22px,2.4vw,30px) clamp(22px,2.6vw,32px);opacity:0}
+  .pg-t{display:block;font-size:clamp(15px,1.9vw,18px);font-weight:700;letter-spacing:-0.012em;color:#ffffff}
+  .pg-tor{position:relative;height:14px;margin-top:26px;border-radius:7px;background:rgba(255,255,255,0.1)}
+  .pg-bar{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:7px;background:var(--la-accent,#00CD77)}
+  .pg-s.nie .pg-bar{background:#e0a95c}
+  .pg-lab{position:absolute;top:-27px;transform:translateX(-50%);font-family:ui-monospace,Menlo,monospace;font-size:13px;font-weight:600;color:#ffffff;opacity:0;white-space:nowrap}
+  .pg-prog{position:absolute;top:-9px;bottom:-9px;left:92%;width:1px;background:rgba(255,255,255,0.5)}
+  .pg-prog span{position:absolute;right:8px;top:calc(100% + 12px);font-family:ui-monospace,Menlo,monospace;font-size:11px;color:rgba(255,255,255,0.62);white-space:nowrap}
+  .pg-osie{display:flex;justify-content:space-between;margin-top:9px;font-family:ui-monospace,Menlo,monospace;font-size:10.5px;color:rgba(255,255,255,0.3)}
+  .pg-podpis{margin:clamp(14px,1.8vw,20px) 0 0;font-size:13px;line-height:1.5;color:rgba(255,255,255,0.42)}
+  .pg-v{display:flex;align-items:flex-start;gap:11px;margin-top:26px;opacity:0}
+  .pg-ik{flex-shrink:0;display:flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:rgba(0,205,119,0.18);color:var(--la-accent,#00CD77)}
+  .pg-s.nie .pg-ik{background:rgba(224,169,92,0.2);color:#e0a95c}
+  .pg-vt{display:block;font-size:15px;font-weight:700;color:#ffffff;line-height:1.35}
+  .pg-vw{display:block;margin-top:3px;font-size:14px;line-height:1.5;color:rgba(255,255,255,0.62)}
+  @media (max-width:900px){ .pg{height:264px} }
+  @media (prefers-reduced-motion:reduce){
+    /* Bez ruchu zostaje jedna sprawa — ta, która idzie do człowieka,
+       bo to ona niesie argument sekcji. */
+    .pg-s,.pg-bar,.pg-lab,.pg-v{animation:none !important}
+    .pg-s{opacity:0}
+    .pg-s.stop{opacity:1}
+    .pg-s.stop .pg-bar{width:71%}
+    .pg-s.stop .pg-lab{opacity:1;left:71%}
+    .pg-s.stop .pg-v{opacity:1}
+  }
+
+  /* ================= harmonogram dwutorowy =================
+     Jedyna animacja na stronie sterowana scrollem. --p idzie z JS jako
+     ułamek 0–1, a każdy blok liczy własne wypełnienie z własnego położenia
+     na osi. Bez JS --p zostaje na 1 i harmonogram stoi wypełniony. */
+  .hg{--p:1;position:relative;margin-top:clamp(28px,3.4vw,40px)}
+  .hg-tor{position:relative;height:38px;margin-top:9px}
+  .hg-tor + .hg-tor{margin-top:7px}
+  .hg-blok{position:absolute;top:0;bottom:0;left:calc(var(--s) / 9 * 100%);width:calc(var(--d) / 9 * 100% - 5px);border-radius:8px;background:#e9efe6;overflow:hidden}
+  .hg-tor.drugi .hg-blok{background:#f1f4ef}
+  .hg-fill{position:absolute;left:0;top:0;bottom:0;width:100%;background:var(--la-accent,#00CD77);opacity:.9}
+  .hg-tor.drugi .hg-fill{background:#b8ddc6;opacity:1}
+  .hg-blok b{position:absolute;left:11px;right:9px;top:50%;transform:translateY(-50%);font-size:12.5px;font-weight:650;line-height:1.2;color:#16211a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;z-index:2}
+  .hg-kto{display:block;font-size:12.5px;font-weight:650;color:#8b968d}
+  .hg-glowica{position:absolute;top:17px;bottom:22px;left:calc(var(--p) * 100%);width:1.5px;background:#16211a;opacity:0;transition:opacity .3s;z-index:3}
+  .hg-glowica::before{content:"";position:absolute;left:50%;top:-4px;width:7px;height:7px;border-radius:50%;background:#16211a;transform:translateX(-50%)}
+  .hg.zywy .hg-glowica{opacity:.72}
+  .hg-os{display:flex;margin-top:12px;border-top:1px solid #e2e9e0;padding-top:8px}
+  .hg-os span{flex:1;font-family:ui-monospace,Menlo,monospace;font-size:10.5px;color:#a9b3aa}
+  @media (max-width:820px){
+    .hg{display:none}
+  }
+
+  .et-row{display:grid;grid-template-columns:118px minmax(0,1fr) minmax(190px,0.52fr);gap:clamp(18px,3vw,44px);align-items:start;padding:clamp(20px,2.4vw,28px) 0;border-top:1px solid #e2e9e0}
+  .et-row:last-of-type{border-bottom:1px solid #e2e9e0}
+  .et-e{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;letter-spacing:0.09em;color:#0a7a52;padding-top:5px}
+  .et-t{margin:0;font-size:clamp(18px,2.1vw,22px);font-weight:750;letter-spacing:-0.015em;color:#16211a}
+  .et-d{margin:9px 0 0;max-width:720px;font-size:15px;line-height:1.62;color:#4c5850;text-wrap:pretty}
+  .et-w{padding-top:5px;font-size:14.5px;line-height:1.5;color:#4c5850}
+  .et-w b{display:block;margin-bottom:4px;font-size:12.5px;font-weight:500;color:#a0aba1}
+  @media (max-width:960px){ .et-row{grid-template-columns:118px minmax(0,1fr)} .et-w{grid-column:2;padding-top:10px} }
+  @media (max-width:700px){ .et-row{grid-template-columns:1fr;gap:6px} .et-w{grid-column:auto;padding-top:6px} }
+
+  /* ================= przykłady =================
+     Wiersz na firmę. Pasek pokrycia jest tu jedyną liczbą, więc stoi
+     osobno i dostaje własną skalę — a obok niego lista tego, co zostało
+     u ludzi, bo bez niej pasek czyta się jak obietnica stu procent. */
+  .px-row{display:grid;grid-template-columns:minmax(190px,0.6fr) minmax(0,1.4fr) minmax(200px,0.62fr);gap:clamp(20px,3.2vw,52px);align-items:start;padding:clamp(28px,3.4vw,42px) 0;border-top:1px solid #dde7db}
+  .px-row:last-of-type{border-bottom:1px solid #dde7db}
+  .px-f{display:block;margin:0;font-size:clamp(18px,2.1vw,22px);font-weight:750;letter-spacing:-0.018em;color:#16211a}
+  .px-m{display:block;margin-top:4px;font-size:13.5px;color:#8b968d}
+  .px-p{display:block;margin-top:14px;font-size:14px;font-weight:700;color:#0a7a52}
+  .px-d{margin:0;font-size:15px;line-height:1.6;color:#16211a;text-wrap:pretty}
+  .px-l{margin:16px 0 0;font-size:14px;line-height:1.55;color:#8b968d}
+  .px-l b{display:block;font-size:12.5px;font-weight:600;color:#a9b3aa;margin-bottom:3px}
+  .px-liczba{display:flex;align-items:baseline;gap:7px;font-size:clamp(30px,3.6vw,42px);font-weight:800;letter-spacing:-0.03em;line-height:1;color:#16211a}
+  .px-liczba span{font-size:14px;font-weight:650;letter-spacing:0;color:#8b968d}
+  .px-tor{display:block;height:7px;margin-top:12px;border-radius:4px;background:#e0e8de;overflow:hidden}
+  .px-tor i{display:block;height:100%;border-radius:4px;background:var(--la-accent,#00CD77);width:0;transition:width .9s cubic-bezier(.4,0,.2,1)}
+  .px-row.on .px-tor i{width:var(--w)}
+  .px-op{display:block;margin-top:9px;font-size:13px;line-height:1.5;color:#8b968d}
+  @media (max-width:1000px){
+    .px-row{grid-template-columns:minmax(0,1fr) minmax(190px,0.62fr);gap:24px 40px}
+    .px-row > :first-child{grid-column:1 / -1}
+  }
+  @media (max-width:700px){
+    .px-row{grid-template-columns:1fr;gap:18px}
+    .px-row > :first-child{grid-column:auto}
+  }
+  @media (prefers-reduced-motion:reduce){ .px-tor i{transition:none} }
+
+  /* ================= co zostaje u Was ================= */
+  .zw{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(32px,5vw,72px) clamp(36px,6vw,88px);margin-top:clamp(30px,3.6vw,44px)}
+  .zw h3{margin:0 0 12px;font-size:clamp(18px,2.1vw,21px);font-weight:750;letter-spacing:-0.015em;color:#16211a}
+  .zw p{margin:0 0 12px;font-size:15px;line-height:1.65;color:#4c5850;text-wrap:pretty}
+  .zw p:last-child{margin-bottom:0}
+  .zw strong{font-weight:700;color:#16211a}
+  @media (max-width:820px){ .zw{grid-template-columns:1fr} }
+
+  /* ================= wcięta kartka z zapisem umowy =================
+     Jedyny asymetryczny moment w sekcji o progu. */
+  .um{margin-top:clamp(26px,3vw,36px);margin-left:clamp(0px,4vw,64px);padding:clamp(22px,2.6vw,30px) clamp(24px,3vw,34px);background:#ffffff;border:1px solid #e0e8de;border-left:3px solid var(--la-accent,#00CD77);border-radius:0 14px 14px 0;max-width:640px}
+  .um-e{font-size:12.5px;font-weight:650;color:#8b968d}
+  .um p{margin:11px 0 0;font-size:16px;line-height:1.6;color:#16211a;text-wrap:pretty}
+
+  /* ================= responsywność wspólna dla tej strony ================= */
+  @media (max-width:900px){
+    .hero-split{grid-template-columns:1fr !important;gap:clamp(30px,5vw,44px) !important}
+  }
+
+  /* ================= pas wezwania (wąski) ================= */
+  .ps{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px 36px}
+  .ps h2{margin:0;max-width:640px;font-size:clamp(21px,2.6vw,30px);line-height:1.25;letter-spacing:-0.022em;font-weight:750;color:#ffffff;text-wrap:pretty}
+  .ps-akcja{display:flex;align-items:center;flex-wrap:wrap;gap:14px 22px}
+  .ps-lnk{font-size:15px;font-weight:650;color:rgba(255,255,255,0.75);transition:color .15s}
+  .ps-lnk:hover{color:#ffffff}
+</style>
+
+<!-- ============ 1 · HERO ============
+     Rysunek robi całą robotę pozycjonującą: siedem warstw o grubości równej
+     udziałowi w czasie budowy, z warstwą modelu na 6%. Nagłówek nie musi
+     przez to niczego udowadniać i mówi tylko, co rozwiązanie robi. -->
+<div aria-hidden="true" style="position:absolute;left:0;right:0;top:0;height:1080px;background:radial-gradient(900px 640px at 86% 2%, rgba(0,205,119,0.13), transparent 64%);pointer-events:none"></div>
+<section style="position:relative;overflow:hidden;background:transparent;padding:clamp(28px,4vw,52px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) clamp(56px,6.5vw,84px)">
+<div class="hero-split" style="display:grid;grid-template-columns:1fr 1.02fr;gap:clamp(32px,4.5vw,64px);align-items:center;margin-top:clamp(10px,1.5vw,20px)">
+<div>
+<h1 style="margin:0;font-size:clamp(29px,4.4vw,51px);line-height:1.06;letter-spacing:-0.032em;font-weight:800;color:#16211a;text-wrap:balance">Rozwiązanie AI, które prowadzi sprawę od zgłoszenia do zamknięcia</h1>
+<p style="margin:26px 0 0;max-width:610px;font-size:clamp(16px,2.1vw,19px);line-height:1.6;color:#33413a;text-wrap:pretty">Powstaje pod jeden Wasz proces i wpina się w systemy, w których pracujecie na co dzień. Próg jakości mierzymy na Waszych sprawach, zanim cokolwiek wejdzie na produkcję.</p>
+<div class="hero-actions" style="display:flex;align-items:center;flex-wrap:wrap;gap:16px 22px;margin-top:34px">
+<a href="#kontakt" class="btn-dark" style="display:inline-flex;align-items:center;gap:10px;background:#16211a;color:#ffffff;padding:18px 32px;border-radius:12px;font-weight:650;font-size:16.5px;box-shadow:0 14px 30px -14px rgba(16,33,26,0.45)">Umów rozmowę <span aria-hidden="true">→</span></a>
+<a href="#prog" class="btn-ghost" style="display:inline-flex;align-items:center;gap:8px;font-size:16.5px;font-weight:700;color:#16211a;background:rgba(255,255,255,0.6);padding:18px 26px;border-radius:12px;border:1px solid rgba(22,33,26,0.16)">Co, gdy model się myli →</a>
+</div>
+</div>
+
+<div>
+<div class="rd" role="img" aria-label="Przekrój rozwiązania: siedem warstw, których grubość odpowiada udziałowi w czasie budowy. Model zajmuje sześć procent, reszta to połączenie z systemami, dane, reguły, ścieżka wyjątku, miejsce pracy zespołu oraz pomiar.">
+<div class="rd-kol">
+{warstwy.map((w) => (
+  <div class="rd-poz rd-warstwa" style={`top:${w.y}%;height:${w.u}%;animation:rd-roz${w.i} ${RD_C}s cubic-bezier(.34,1.3,.5,1) infinite`}>
+    <span class={w.model ? 'rd-w rd-model' : 'rd-w'} style={`--tlo:${w.tlo};animation:rd-w${w.i} ${RD_C}s cubic-bezier(.4,0,.2,1) infinite${w.model ? `,rd-blask ${RD_C}s cubic-bezier(.4,0,.2,1) infinite` : ''}`}></span>
+  </div>
+))}
+</div>
+<div class="rd-opisy">
+{warstwy.map((w) => (
+  <div class={w.model ? 'rd-e model' : 'rd-e'} style={`top:${w.srodek}%;animation:rd-roz${w.i} ${RD_C}s cubic-bezier(.34,1.3,.5,1) infinite,rd-e${w.i} ${RD_C}s ease-out infinite`}>
+    <b>{w.n}</b><i>{w.u}%</i>
+    {w.model && <span class="rd-cal" style={`animation:rd-cal ${RD_C}s cubic-bezier(.34,1.3,.5,1) infinite`}>tyle waży sam model</span>}
+  </div>
+))}
+</div>
+</div>
+<div class="rd-leg">
+<span><i style="background:rgba(0,205,119,0.34)"></i>budujemy my — 94%</span>
+<span><i style="background:rgba(22,33,26,0.17)"></i>dostawca modelu — 6%</span>
+</div>
+<style is:inline set:html={klatkiRdzen}></style>
+</div>
+</div>
+</section>
+
+<!-- ============ 2 · CZYM TO JEST ============
+     Pierwsze zdanie zbudowane jako definicja (podmiot = nazwa usługi) —
+     po ten fragment sięgają modele językowe i wyróżnione odpowiedzi
+     w wyszukiwarce. Obok rozpisane siedem warstw z hero, żeby czytelnik
+     nie musiał się domyślać, co znaczą nazwy na rysunku. -->
+<section id="czym-jest" class="sec-pad" style="padding-top:clamp(48px,6vw,72px)">
+<div class="s2-grid" style="display:grid;grid-template-columns:minmax(300px,1fr) minmax(0,1.1fr);gap:clamp(34px,5vw,76px);align-items:start">
+<div>
+<h2 class="h-sec" style="margin:0;text-wrap:balance">Czym są indywidualne rozwiązania AI?</h2>
+<div style="margin-top:24px;font-size:17px;line-height:1.65;color:#33413a">
+<p style="margin:0;text-wrap:pretty">Indywidualne rozwiązanie AI to system zbudowany pod jeden proces w Waszej firmie i wpięty w narzędzia, z których korzysta zespół. Sprawa wchodzi do niego w tym samym miejscu, w którym dziś trafia na czyjeś biurko.</p>
+<p style="margin:18px 0 0;text-wrap:pretty">Dane bierze z systemów, w których leżą, i sprawdza je warunkami spisanymi razem z Wami. Sprawy pewne zamyka sam. Resztę przekazuje człowiekowi razem z powodem.</p>
+<p style="margin:18px 0 0;text-wrap:pretty">O tym, czy rozwiązanie zadziała, rozstrzyga siedem warstw wokół modelu. Tam idzie praca i tam leży ryzyko.</p>
+</div>
+</div>
+<div>
+{warstwy.map((w) => (
+  <div class={w.model ? 'wr model rv' : 'wr rv'}>
+    <span class="wr-n">{w.n}<i>{w.u}%</i></span>
+    <p class="wr-o">{w.o}</p>
+  </div>
+))}
+</div>
+</div>
+</section>
+
+<!-- ============ 3 · KIEDY TEGO NIE BUDOWAĆ ============
+     Dwie z trzech dróg odsyłają klienta do czegoś tańszego. To ta sama
+     figura, co „kiedy nas nie wybierać" na /dlaczego-my, tylko dotyczy
+     pieniędzy, nie terminu. Trzeci wiersz jest wcięty i ma krechę. -->
+<section id="kiedy" style="background:#f4f8f2;padding:clamp(60px,7.5vw,96px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
+<div class="sec-head">
+<h2 class="h-sec" style="margin:0;max-width:560px;text-wrap:pretty">Kiedy nie warto tego budować</h2>
+<p class="sub" style="margin:0 0 6px;max-width:430px">Część zapytań, które do nas trafiają, zamyka się tańszym sposobem. Mówimy to na pierwszej rozmowie, zanim ktokolwiek podpisze zlecenie.</p>
+</div>
+
+<div style="margin-top:clamp(30px,3.6vw,44px)">
+{DROGI.map((d) => (
+  <div class={d.nasze ? 'dr nasze rv' : 'dr rv'}>
+    <h3 class="dr-n">{d.n}</h3>
+    <p class="dr-k">{d.k}</p>
+    <p class="dr-r">{d.r}</p>
+  </div>
+))}
+</div>
+</section>
+
+<!-- ============ 4 · PRÓG PEWNOŚCI ============
+     Ciemny pas, największy ciężar na stronie. Odpowiada na pytanie, które
+     zabija najwięcej wdrożeń AI na etapie zakupu: co się dzieje, kiedy
+     model się pomyli. Dwie z pięciu spraw na rysunku idą do człowieka. -->
+<section id="prog" style="position:relative;background:radial-gradient(900px 420px at 88% 4%, rgba(0,205,119,0.16), transparent 62%), #0e2b1d;padding:clamp(60px,7.5vw,98px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
+<div class="s2-grid" style="display:grid;grid-template-columns:minmax(300px,0.86fr) minmax(0,1fr);gap:clamp(38px,5.5vw,84px);align-items:center">
+<div>
+<h2 class="h-sec" style="margin:0;color:#ffffff;text-wrap:pretty">Co się dzieje, kiedy model nie jest pewny</h2>
+<p style="margin:22px 0 0;font-size:17px;line-height:1.65;color:rgba(255,255,255,0.78);text-wrap:pretty">Każde rozwiązanie ma dwie drogi wyjścia. Sprawy pewne zamyka samo. Przy pozostałych zatrzymuje się i oddaje sprawę człowiekowi razem z tym, czego nie potrafiło rozstrzygnąć, oraz z danymi, które zdążyło zebrać.</p>
+<p style="margin:16px 0 0;font-size:17px;line-height:1.65;color:rgba(255,255,255,0.78);text-wrap:pretty">Granicę między jedną drogą a drugą ustalamy z Wami przed budową. Widzicie ją w panelu i możecie ją podnieść, kiedy zaufanie do rozwiązania rośnie.</p>
+<p style="margin:16px 0 0;font-size:15px;line-height:1.6;color:rgba(255,255,255,0.55);text-wrap:pretty">Udział spraw zamykanych bez człowieka zależy od procesu. W obiegu dokumentów bywa wysoki, przy ocenie zapisów umownych niski. Podajemy go dopiero po pomiarze.</p>
+</div>
+
+<div>
+<div class="pg" role="img" aria-label="Pięć spraw z paskiem pewności. Trzy przekraczają próg dziewięćdziesięciu dwóch procent i system zamyka je sam, dwie zostają poniżej i trafiają do człowieka razem z powodem.">
+{SPRAWY.map((s, i) => (
+  <div class={`pg-s ${s.ok ? 'tak' : 'nie'}${!s.ok && s.p === 71 ? ' stop' : ''}`} style={`animation:pg-k${i} ${PG_C}s linear infinite`}>
+    <span class="pg-t">{s.t}</span>
+    <div class="pg-tor">
+      <span class="pg-bar" style={`animation:pg-b${i} ${PG_C}s cubic-bezier(.22,1,.3,1) infinite`}></span>
+      <span class="pg-lab" style={`left:${s.p}%;animation:pg-l${i} ${PG_C}s linear infinite`}>{s.p}%</span>
+      <span class="pg-prog" style={`left:${PROG}%`}><span>próg {PROG}%</span></span>
+    </div>
+    <div class="pg-osie"><span>0</span><span>100</span></div>
+    <div class="pg-v" style={`animation:pg-v${i} ${PG_C}s cubic-bezier(.34,1.4,.5,1) infinite`}>
+      <span class="pg-ik">
+        {s.ok
+          ? <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+          : <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.4"/><path d="M5.5 20c.6-3.6 3.3-5.4 6.5-5.4s5.9 1.8 6.5 5.4"/></svg>}
+      </span>
+      <span>
+        <span class="pg-vt">{s.ok ? 'System zamyka sprawę sam' : 'Sprawa idzie do człowieka'}</span>
+        <span class="pg-vw">{s.w}</span>
+      </span>
+    </div>
+  </div>
+))}
+<style is:inline set:html={klatkiProg}></style>
+</div>
+<p class="pg-podpis">Pasek pokazuje pewność rozstrzygnięcia policzoną dla jednej sprawy. Próg stoi na wysokości ustalonej przed budową.</p>
+</div>
+</div>
+</section>
+
+<!-- ============ 5 · PRÓG USTALANY PRZED BUDOWĄ ============
+     Cicha sekcja zaraz po ciemnym pasie. Jedno duże zdanie zamiast nagłówka
+     z akapitem obok, na końcu wcięta kartka z zapisem umownym.
+     UWAGA: warunek o niepłaceniu poniżej progu jest do potwierdzenia. -->
+<section id="pomiar" class="sec-pad">
+<p class="rv" style="margin:0;max-width:960px;font-size:clamp(22px,3vw,34px);line-height:1.25;letter-spacing:-0.024em;font-weight:750;color:#16211a;text-wrap:pretty">Próg mierzymy na Waszych sprawach z ostatniego kwartału, zanim powstanie pierwszy element rozwiązania</p>
+<div class="s2-grid" style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(28px,4vw,64px);margin-top:clamp(26px,3.2vw,38px);max-width:1100px">
+<p class="sub rv" style="margin:0">Decyzje rozwiązania idą obok decyzji, które podjął przy tych sprawach Wasz zespół. Zgodność jest liczbą, a przypadki sporne rozstrzygacie Wy, bo to Wasza praca wyznacza tu wzorzec.</p>
+<p class="sub rv" style="margin:0">Ten pomiar rozstrzyga też o rzeczach, o których nie da się orzec z góry: który fragment procesu zostaje przy ludziach i czy w danych jest w ogóle to, czego decyzja wymaga.</p>
+</div>
+<div class="um rv">
+<span class="um-e">Zapis, który wchodzi do umowy</span>
+<p>Poniżej ustalonego progu rozwiązanie nie wchodzi na produkcję, a Wy nie płacicie za wdrożenie.</p>
+</div>
+</section>
+
+<!-- ============ 6 · JAK POWSTAJE ============
+     Dwa tory na jednej osi, bo drugie pytanie po „ile to trwa" brzmi
+     „ile z tego jest po naszej stronie". Wypełnienie jedzie za scrollem. -->
+<section id="przebieg" style="background:#f4f8f2;padding:clamp(60px,7.5vw,96px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
+<div class="sec-head">
+<h2 class="h-sec" style="margin:0;max-width:520px;text-wrap:pretty">Jak powstaje rozwiązanie</h2>
+<p class="sub" style="margin:0 0 6px;max-width:430px">Dziewięć tygodni od warsztatu do produkcji. Przy każdym etapie stoi to, co jest po Waszej stronie, i tego jest mniej, niż zwykle wychodzi w takich projektach.</p>
+</div>
+
+<div class="hg" data-postep aria-hidden="true">
+<span class="hg-glowica"></span>
+{TORY.map((tor, ti) => (
+  <div>
+    <span class="hg-kto">{tor.kto}</span>
+    <div class={ti === 0 ? 'hg-tor' : 'hg-tor drugi'}>
+      {tor.bloki.map((b) => (
+        <div class="hg-blok" data-s={b.s} data-d={b.d} style={`--s:${b.s};--d:${b.d}`}><span class="hg-fill"></span><b>{b.t}</b></div>
+      ))}
+    </div>
+  </div>
+))}
+<div class="hg-os">
+{Array.from({ length: TYGODNI }).map((_, i) => <span>{i + 1 === 1 || (i + 1) % 2 === 1 ? `tydz. ${i + 1}` : ''}</span>)}
+</div>
+</div>
+
+<div style="margin-top:clamp(30px,3.6vw,44px)">
+{etapy.map((e) => (
+  <div class="et-row rv">
+    <span class="et-e">{e.e}</span>
+    <span>
+      <h3 class="et-t">{e.t}</h3>
+      <p class="et-d">{e.d}</p>
+    </span>
+    <span class="et-w"><b>Po Waszej stronie</b>{e.w}</span>
+  </div>
+))}
+</div>
+</section>
+
+<!-- ============ 6b · WĄSKI PAS WEZWANIA ============
+     Formularz jest dopiero na końcu strony, więc w połowie stoi jedno
+     zdanie i przycisk. Bez zdjęcia i bez pól — pełny moduł kontaktowy
+     w środku strony robił z podstrony dwie strony sklejone. -->
+<section style="background:#16211a;padding:clamp(34px,4.4vw,52px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2))">
+<div class="ps">
+<h2>Powiedzcie, który proces boli — wrócimy z tym, czy da się go domknąć bez człowieka</h2>
+<div class="ps-akcja">
+<a href="#kontakt" class="btn-accent" style="display:inline-flex;align-items:center;gap:9px;background:var(--la-accent,#00CD77);color:#0b1a11;padding:15px 26px;border-radius:11px;font-weight:750;font-size:15.5px">Umów rozmowę <span aria-hidden="true">→</span></a>
+<a href="tel:+48571399932" class="ps-lnk">+48 571 399 932</a>
+</div>
+</div>
+</section>
+
+<!-- ============ 7 · CO ZOSTAJE U WAS ============
+     Dwie kolumny prozy zamiast wierszy — trzecia lista z rzędu robiłaby
+     z tej strony spis treści. -->
+<section id="wlasnosc" class="sec-pad">
+<h2 class="h-sec" style="margin:0;max-width:640px;text-wrap:pretty">Co zostaje u Was</h2>
+<div class="zw">
+<div class="rv">
+<h3>Wszystko, co powstaje</h3>
+<p>Repozytorium, reguły, prompty i dokumentacja są Wasze od pierwszego dnia. <strong>Klucze do dostawcy modelu też są Wasze</strong> i faktura za zapytania idzie na Was, więc realny koszt pracy rozwiązania widzicie z dokładnością do dnia.</p>
+</div>
+<div class="rv">
+<h3>Gdzie leżą dane</h3>
+<p>Rozwiązanie stoi tam, gdzie zdecydujecie: w Waszej chmurze, na Waszym serwerze albo u nas. <strong>Co konkretnie opuszcza Waszą sieć, jest wypisane w dokumentacji technicznej</strong> i zatwierdzacie to przed uruchomieniem.</p>
+</div>
+<div class="rv">
+<h3>Kto to utrzymuje</h3>
+<p>Utrzymanie może przejąć Wasz zespół, my albo dowolna inna firma — dokumentacja jest napisana pod tę trzecią możliwość.</p>
+</div>
+<div class="rv">
+<h3>Co się dzieje, kiedy proces się zmieni</h3>
+<p>Reguły i progi siedzą w jednym miejscu i zmienia się je bez przebudowy rozwiązania. Model jest za własnym interfejsem, więc wymiana na nowszy albo tańszy to jeden dzień pracy i powtórzony pomiar progu.</p>
+</div>
+</div>
+</section>
+
+<!-- ============ 8 · PRZYKŁADY ============
+     PRZYKŁADOWE wdrożenia — do podmiany na potwierdzone przypadki.
+     Pasek pokrycia nigdy nie stoi sam: obok niego lista tego, co zostało
+     u ludzi, bo bez niej liczba czyta się jak obietnica pełnej automatyki. -->
+<section id="dowody" style="background:#f4f8f2;padding:clamp(60px,7.5vw,96px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
+<div class="sec-head">
+<h2 class="h-sec" style="margin:0;max-width:560px;text-wrap:pretty">Trzy rozwiązania i to, co przy nich zostało ludziom</h2>
+<p class="sub" style="margin:0 0 6px;max-width:440px">Pokrycie liczone po pierwszym kwartale na produkcji, na tych samych sprawach, na których mierzyliśmy próg przed budową.</p>
+</div>
+
+<div style="margin-top:clamp(20px,2.4vw,30px)">
+{PRZYKLADY.map((x) => (
+  <div class="px-row rv" data-anim>
+    <div>
+      <h3 class="px-f">{x.f}</h3>
+      <span class="px-m">{x.m}</span>
+      <span class="px-p">{x.p}</span>
+    </div>
+    <div>
+      <p class="px-d">{x.d}</p>
+      <p class="px-l"><b>Zostało u ludzi</b>{x.ludzie.join(' · ')}</p>
+    </div>
+    <div>
+      <span class="px-liczba">{x.pokrycie}<span>%</span></span>
+      <span class="px-tor" style={`--w:${x.pokrycie}%`}><i></i></span>
+      <span class="px-op">spraw zamykanych bez człowieka</span>
+    </div>
+  </div>
+))}
+</div>
+</section>
+
+<!-- ============ 8b · GŁOS KLIENTA ============ -->
+<section style="padding:clamp(56px,7vw,88px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2))">
+<figure class="rv" style="margin:0;display:grid;grid-template-columns:auto 1fr;gap:clamp(20px,3vw,36px);align-items:start;max-width:1000px">
+<span aria-hidden="true" style="font-size:clamp(46px,5vw,64px);line-height:.72;font-weight:800;color:var(--la-accent,#00CD77)">„</span>
+<div>
+<blockquote style="margin:0;font-size:clamp(20px,2.6vw,29px);line-height:1.35;letter-spacing:-0.02em;font-weight:650;color:#16211a;text-wrap:pretty">Firma Let’s Automate bardzo dobrze zrozumiała potrzeby i zaprojektowała scenariusz, który w pełni spełniał cele biznesowe.</blockquote>
+<figcaption><span style="display:block;margin-top:clamp(16px,2vw,22px);font-size:15px;font-weight:750;color:#16211a">Arkadiusz Andruch</span><span style="display:block;margin-top:2px;font-size:14px;color:#8b968d">Prezes Zarządu, X2O</span></figcaption>
+</div>
+</figure>
+</section>
+
+<GcCta
+  heading="Zacznijmy od jednego procesu"
+  lead="Wskażcie jedną sprawę, która przechodzi u Was przez najwięcej rąk. Odpowiemy z pytaniem o wolumen i z terminem pierwszej rozmowy."
+  eyebrow="Z pierwszej rozmowy wychodzicie z"
+  items={[
+    { t: 'Werdyktem', d: 'czy to zadanie w ogóle warto budować pod siebie' },
+    { t: 'Kształtem progu', d: 'na jakich sprawach da się go zmierzyć u Was' },
+    { t: 'Zakresem do wyceny', d: 'systemy, wolumen i granica pierwszego etapu' },
+  ]}
+  placeholder="Np. dziennie wpada 60 zapytań ofertowych na skrzynkę i dwie osoby przepisują je do systemu…"
+  submitLabel="Umów rozmowę"
+  badges={[
+    { i: 'klodka', t: 'Wasze dane bezpieczne' },
+    { i: 'kartka', t: 'NDA przed startem' },
+    { i: 'ptaszek', t: 'Repozytorium zostaje Wasze' },
+  ]}
+/>
+
+<GcFaq
+  heading="Pytania, które padają przed podpisaniem"
+  lead="Odpowiedzi o dane i o utrzymanie są najdłuższe, bo to one najczęściej zatrzymują projekt po stronie IT."
+  ctaLabel="Zadajcie nam swoje →"
+  items={faq}
+/>
+
+<script>
+  var redukcja = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ---- Odpalanie animacji, gdy element wchodzi w kadr ----
+  (function(){
+    var els = document.querySelectorAll('[data-anim]');
+    if(!els.length) return;
+    if(redukcja || !('IntersectionObserver' in window)){
+      els.forEach(function(el){ el.classList.add('on'); });
+      return;
+    }
+    var io = new IntersectionObserver(function(wpisy){
+      wpisy.forEach(function(w){
+        if(w.isIntersecting){ w.target.classList.add('on'); io.unobserve(w.target); }
+      });
+    }, { threshold: 0.25 });
+    els.forEach(function(el){ io.observe(el); });
+  })();
+
+  // ---- Harmonogram sterowany scrollem ----
+  // Jedyna animacja na tej stronie, która nie chodzi z własnego zegara.
+  // --p to ułamek 0–1 wyliczony z położenia sekcji w kadrze; bloki liczą
+  // sobie z niego własne wypełnienie w CSS, więc tutaj nie ma pętli po nich.
+  (function(){
+    var el = document.querySelector('[data-postep]');
+    if(!el || redukcja) return;
+    var bloki = el.querySelectorAll('.hg-blok');
+    var TYG = 9;
+
+    var czeka = false;
+    function licz(){
+      czeka = false;
+      var r = el.getBoundingClientRect();
+      var wys = window.innerHeight || document.documentElement.clientHeight;
+      // Zero, kiedy pasek wjeżdża na trzy czwarte wysokości okna;
+      // jeden, kiedy dojedzie do jednej trzeciej. Krótki odcinek celowo:
+      // przy dłuższym głowica pełznie i wygląda na zepsutą.
+      var start = wys * 0.78;
+      var koniec = wys * 0.34;
+      var p = (start - r.top) / (start - koniec);
+      p = Math.max(0, Math.min(1, p));
+      el.style.setProperty('--p', p.toFixed(4));
+      for(var i = 0; i < bloki.length; i++){
+        var b = bloki[i];
+        var f = (p * TYG - parseFloat(b.dataset.s)) / parseFloat(b.dataset.d);
+        b.firstElementChild.style.width = (Math.max(0, Math.min(1, f)) * 100).toFixed(2) + '%';
+      }
+    }
+    function ruch(){
+      if(czeka) return;
+      czeka = true;
+      requestAnimationFrame(licz);
+    }
+
+    el.style.setProperty('--p', '0');
+    el.classList.add('zywy');
+    licz();
+    window.addEventListener('scroll', ruch, { passive: true });
+    window.addEventListener('resize', ruch, { passive: true });
+  })();
+</script>
+</LaBase>

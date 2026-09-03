@@ -1,0 +1,634 @@
+---
+// AUTOMATYZACJE I INTEGRACJE — /automatyzacje-integracje
+// Trzecia i ostatnia podstrona z pionu „Budujemy aplikacje". Domyka komplet.
+//
+// LEKCJA Z /systemy-dla-klientow (oceniona jako najsłabsza z pięciu):
+// tamta strona miała dwa rysunki tego samego gatunku — listę słupków w hero
+// i listę słupków w ciemnym pasie — a tezę („portal musi być szybszy od
+// telefonu") tylko wypowiadała. Tutaj: JEDNA animacja z prawdziwym ruchem
+// i JEDEN artefakt, dwa różne rejestry. Teza jest pokazana, nie opisana:
+// w hero trzecia linia po prostu przestaje pulsować.
+//
+// CZYM SIĘ RÓŻNI OD RESZTY PIONU:
+//   /systemy-procesowe    — system prowadzi proces, miarą jest czas sprawy
+//   /systemy-dla-klientow — system stoi u klienta, miarą są pytania
+//   tutaj                 — dane przechodzą między systemami, miarą jest to,
+//                           czy wiadomo, kiedy przestaną przechodzić
+// To jest podłoga tego pionu: najtańsza rzecz, jaką można kupić, i jedyna,
+// która zwraca się w tygodniach. Po niej widać, czy sensowny jest system.
+//
+// POZYCJONOWANIE — dwa argumenty:
+//   1. ROLA. Integracja kosztuje dni, nie miesiące, i widać po niej w kilka
+//      tygodni, czy warto iść dalej. Jest też warunkiem wstępnym dla dwóch
+//      pozostałych usług z pionu: zanim system poprowadzi proces, dane muszą
+//      być w jednym miejscu i aktualne.
+//   2. TEZA. Automatyzacja, która pada po cichu, jest gorsza od jej braku —
+//      bo ludzie już przestali robić to ręcznie, a system przestał robić to
+//      za nich. Kategoria sprzedaje scenariusze; my sprzedajemy to, że
+//      o awarii dowiadujecie się w minutach.
+//
+// TRZY RZECZY SPRAWDZALNE PRZED PODPISANIEM UMOWY:
+//   1. Każde połączenie ma kartę: co uruchamia, co robi, co się dzieje przy
+//      błędzie, kto jest właścicielem i na czym stoi. Karta jest w ciemnym
+//      pasie w całości, więc klient wie, co dostanie, zanim zapłaci.
+//   2. Alarm z progiem czasowym, nie „monitoring" w ogólności. Osiem minut
+//      ciszy i wiadomość idzie do imiennie wskazanej osoby.
+//   3. Odsyłamy do zrobienia samemu, kiedy chodzi o jedno połączenie
+//      i ktoś u Was umie kliknąć w Make'u.
+//
+// WARSTWA WIZUALNA — szósty osobny słownik w serwisie:
+//   /strategia-ai:         łuki, przewijany strumień, siatka stu kwadratów
+//   /rozwiazania-ai:       przekrój warstw, próg pewności, tory harmonogramu
+//   /szkolenia-ai:         jednostki do policzenia (ludzie, minuty)
+//   /systemy-procesowe:    oś czasu sprawy — praca kontra czekanie
+//   /systemy-dla-klientow: lista pytań
+//   tutaj:                 PULS. Cztery automatyzacje biją we własnym rytmie,
+//     trzecia milknie w połowie i dopiero wtedy zapala się alarm.
+//     Ruch jest tu argumentem: cisza jednej linii na tle bijących pozostałych
+//     jest dokładnie tym, czego w prawdziwej firmie nikt nie zauważa.
+//   Drugi nośnik to artefakt, nie wykres: karta automatyzacji w całości.
+//
+// DO POTWIERDZENIA PRZED PUBLIKACJĄ:
+// · Zawartość karty automatyzacji — kształt jest pewny, wartości przykładowe.
+// · Próg alarmu (osiem minut ciszy) i trzy próby co pięć minut — założenie
+//   o standardzie, do potwierdzenia jako obietnica handlowa.
+// · Zdanie o odsyłaniu do zrobienia samemu — decyzja Szymona.
+// · Trzy przykłady w sekcji DOWODY są PRZYKŁADOWE, do podmiany.
+// · Kwoty świadomie nie ma. Miejsce na nią czeka w FAQ „Ile kosztuje".
+// · /og/automatyzacje-integracje.png — strona dziedziczy /og/hub.png.
+import LaBase from '../layouts/LaBase.astro';
+import GcFaq from '../components/GcFaq.astro';
+import GcCta from '../components/GcCta.astro';
+
+const kanon = new URL('/automatyzacje-integracje', Astro.site).href;
+
+const dane = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Service',
+      '@id': `${kanon}#usluga`,
+      name: 'Automatyzacje i integracje',
+      alternateName: ['Integracje systemów', 'Automatyzacja procesów', 'Przepływ danych między systemami'],
+      serviceType: 'Łączenie systemów firmowych i automatyzacja przepływu danych między nimi',
+      url: kanon,
+      description: 'Połączenia między CRM, ERP, magazynem i pocztą, dzięki którym nikt nie przepisuje danych z systemu do systemu. Każde połączenie dostaje kartę, imiennego właściciela, opisane zachowanie przy błędzie i alarm z progiem czasowym.',
+      provider: { '@id': new URL('/#organizacja', Astro.site).href },
+      areaServed: { '@type': 'Country', name: 'Polska' },
+      audience: { '@type': 'BusinessAudience', name: 'Firmy z kilkoma systemami, które nie wymieniają danych' },
+    },
+    {
+      '@type': 'BreadcrumbList',
+      '@id': `${kanon}#okruszki`,
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Strona główna', item: new URL('/', Astro.site).href },
+        { '@type': 'ListItem', position: 2, name: 'Automatyzacje i integracje', item: kanon },
+      ],
+    },
+  ],
+};
+
+const title = "Automatyzacje i integracje systemów — z alarmem, nie na wiarę | Let's automate";
+const description = 'Łączymy CRM, ERP, magazyn i pocztę tak, żeby nikt nie przepisywał danych. Każde połączenie ma kartę, właściciela i alarm — bo automatyzacja, która pada po cichu, jest gorsza od jej braku.';
+
+
+// ---- PULS (hero) --------------------------------------------------------
+// Cztery automatyzacje, każda z własnym odstępem między przebiegami. Trzecia
+// milknie w połowie osi i dopiero po chwili ciszy zapala się alarm. Cały
+// argument strony jest tu pokazany ruchem: cisza jednej linii na tle
+// bijących pozostałych to dokładnie to, czego nikt w firmie nie zauważa.
+// Wszystkie czasy wynikają z odstępów w tej tablicy.
+const SLOTY = 30;
+const PULS = [
+  { t: 'Faktury z poczty → ERP', o: 0.55, ile: SLOTY, st: '1 240 / mies.' },
+  { t: 'Zamówienia z portalu → produkcja', o: 0.86, ile: SLOTY, st: '380 / mies.' },
+  { t: 'Nowy klient w CRM → księgowość', o: 0.62, ile: 12, st: '420 / mies.', awaria: 'stanęła 03:12', pada: true },
+  { t: 'Stany magazynowe → sklep', o: 0.41, ile: SLOTY, st: '4 / godz.' },
+];
+const PU_C = 20;
+const PU_START = 0.5;
+const IDX_PADA = PULS.findIndex((x) => x.pada);
+const OSTATNI = PU_START + (PULS[IDX_PADA].ile - 1) * PULS[IDX_PADA].o;
+const CISZA = OSTATNI + 2.1;      // kiedy widać, że kolejny przebieg nie przyszedł
+const ALARM = CISZA + 0.9;
+const PU_GASNIE = 18.2;
+const up = (s) => `${(Math.max(0, Math.min(1, s / PU_C)) * 100).toFixed(2)}%`;
+
+// Wszystkie kreski dzielą jedną klatkę i różnią się wyłącznie opóźnieniem —
+// przy równym czasie cyklu układ powtarza się co obieg, bez rozjazdu.
+const klatkiPuls = [
+  `@keyframes pu-tik{0%{opacity:0;transform:scaleY(.3)}2.2%{opacity:1;transform:scaleY(1)}${up(PU_GASNIE)}{opacity:1;transform:scaleY(1)}${up(PU_GASNIE + 0.7)}{opacity:0;transform:scaleY(.3)}100%{opacity:0;transform:scaleY(.3)}}`,
+  `@keyframes pu-brak{0%,${up(CISZA)}{opacity:0}${up(CISZA + 0.6)}{opacity:1}${up(PU_GASNIE)}{opacity:1}${up(PU_GASNIE + 0.6)}{opacity:0}100%{opacity:0}}`,
+  `@keyframes pu-cisza{0%,${up(CISZA)}{color:#8b968d}${up(CISZA + 0.5)}{color:#b07524}${up(PU_GASNIE)}{color:#b07524}100%{color:#8b968d}}`,
+  `@keyframes pu-stare{0%,${up(CISZA)}{opacity:1}${up(CISZA + 0.35)}{opacity:0}${up(PU_GASNIE)}{opacity:0}100%{opacity:1}}`,
+  `@keyframes pu-nowe{0%,${up(CISZA + 0.2)}{opacity:0}${up(CISZA + 0.6)}{opacity:1}${up(PU_GASNIE)}{opacity:1}100%{opacity:0}}`,
+  `@keyframes pu-kropka{0%,${up(CISZA)}{background:var(--la-accent,#00CD77);transform:scale(1)}${up(CISZA + 0.25)}{background:#d99a3c;transform:scale(1.5)}${up(CISZA + 0.5)}{background:#d99a3c;transform:scale(1)}${up(PU_GASNIE)}{background:#d99a3c;transform:scale(1)}100%{background:var(--la-accent,#00CD77);transform:scale(1)}}`,
+  `@keyframes pu-alarm{0%,${up(ALARM)}{opacity:0;transform:translateY(-4px)}${up(ALARM + 0.45)}{opacity:1;transform:translateY(0)}${up(PU_GASNIE)}{opacity:1;transform:translateY(0)}${up(PU_GASNIE + 0.6)}{opacity:0;transform:translateY(-4px)}100%{opacity:0;transform:translateY(-4px)}}`,
+  `@keyframes pu-pod{0%,${up(ALARM + 0.6)}{opacity:0}${up(ALARM + 1.2)}{opacity:1}${up(PU_GASNIE)}{opacity:1}${up(PU_GASNIE + 0.6)}{opacity:0}100%{opacity:0}}`,
+].join('\n');
+
+
+// ---- CO ŁĄCZYMY (kolumna przy definicji) --------------------------------
+const POLACZENIA = [
+  { t: 'Faktury kosztowe z poczty do ERP', d: 'bez przepisywania pozycji i kwot' },
+  { t: 'Zamówienia ze sklepu i portalu do produkcji', d: 'razem z terminem i rezerwacją materiału' },
+  { t: 'Nowy klient z CRM do księgowości i magazynu', d: 'jeden komplet danych, jeden raz' },
+  { t: 'Stany i ceny z ERP do sklepu i cenników', d: 'co godzinę albo przy każdej zmianie' },
+  { t: 'Dokumenty z systemu na dysk i do archiwum', d: 'nazwane tak, żeby dało się je znaleźć' },
+];
+
+
+// ---- DLACZEGO AUTOMATYZACJE CICHO UMIERAJĄ ------------------------------
+const POWODY = [
+  {
+    t: 'Nikt nie jest ich właścicielem',
+    d: 'Powstały przy okazji, w narzędziu, do którego dostęp ma jedna osoba. Ta osoba zmieniła stanowisko albo firmę, a scenariusze zostały — bez nazwy, bez opisu i bez nikogo, kto miałby je sprawdzać.',
+  },
+  {
+    t: 'Zmiana po drugiej stronie nie daje znać',
+    d: 'Dostawca dodał pole w formularzu, ktoś przemianował kolumnę w arkuszu, wygasł token dostępowy. Połączenie przestaje działać w sposób, który niczego nikomu nie wyświetla.',
+  },
+  {
+    t: 'Sukces i awaria wyglądają identycznie',
+    d: 'Jedyną różnicą między działającą a martwą automatyzacją jest to, czego nie ma w systemie docelowym. Nikt nie sprawdza codziennie, czy czegoś nie brakuje — i właśnie dlatego znajduje się to przy zamknięciu miesiąca.',
+  },
+];
+
+
+// ---- KARTA AUTOMATYZACJI (ciemny pas) -----------------------------------
+// Artefakt, nie wykres. Świadomie pokazany w całości: to jest dokładnie to,
+// co klient dostaje przy każdym połączeniu, więc może go ocenić przed wyceną.
+const KARTA = [
+  { k: 'Co ją uruchamia', v: 'Nowa wiadomość na skrzynce faktury@' },
+  { k: 'Co robi', v: 'Odczytuje dane z załącznika i tworzy w ERP dokument dopasowany do zamówienia' },
+  { k: 'Wolumen', v: 'Około 1 200 dokumentów miesięcznie' },
+  { k: 'Przy błędzie', v: 'Trzy próby co pięć minut, potem sprawa wraca do skrzynki z etykietą', wazne: true },
+  { k: 'Alarm', v: 'Wiadomość i kanał na Slacku po ośmiu minutach ciszy', wazne: true },
+  { k: 'Właściciel', v: 'Kierownik księgowości, imiennie', wazne: true },
+  { k: 'Stoi na', v: 'n8n na Waszej infrastrukturze' },
+  { k: 'Koszt utrzymania', v: 'Licencja platformy, bez naszej opłaty abonamentowej' },
+];
+
+
+// ---- DLA JAKICH FIRM ----------------------------------------------------
+const DLA_KOGO = [
+  {
+    t: 'Te same dane wpisujecie w dwóch miejscach',
+    d: 'Zamówienie w CRM i w ERP, klient w systemie i w arkuszu, dane przesyłki w panelu kuriera i w mailu do klienta. Każde przepisanie to miejsce, w którym da się pomylić cyfrę.',
+  },
+  {
+    t: 'Ktoś ma w kalendarzu stały punkt „eksport i wysyłka"',
+    d: 'Raport dla zarządu, zestawienie dla księgowej, plik z zamówieniami dla magazynu. Praca, o której nikt nie mówi, bo zajmuje tylko dwadzieścia minut dziennie.',
+  },
+  {
+    t: 'Macie systemy, które nie rozmawiają, i nie zamierzacie ich wymieniać',
+    d: 'Integracja jest tańsza od wymiany i szybsza o rok. Przy okazji pokazuje, czy wymiana w ogóle jest potrzebna.',
+  },
+  {
+    t: 'Chcecie sprawdzić, czy warto iść dalej',
+    d: 'Pierwsze połączenie idzie na produkcję w kilka dni i po miesiącu wiadomo, ile pracy naprawdę z Was zdjęło. Dopiero na tej podstawie warto decydować o systemie prowadzącym cały proces.',
+  },
+];
+const NIE_TERAZ = [
+  'Chodzi o jedno połączenie, a u Was jest ktoś, kto umie kliknąć scenariusz w Make’u. Wtedy zróbcie to sami — chętnie powiemy, na co uważać.',
+  'Rzecz dzieje się raz w miesiącu i zajmuje kwadrans. Automatyzacja kosztuje wtedy więcej niż ten kwadrans przez najbliższy rok.',
+  'Któryś z systemów po drodze wymieniacie w tym roku. Połączenie do systemu, który za kwartał wypada, jest pracą do wyrzucenia.',
+];
+
+
+// ---- PRZYKŁADY ----------------------------------------------------------
+// PRZYKŁADOWE wdrożenia — do podmiany. Druga liczba jest tu ważniejsza od
+// pierwszej: pokazuje, że rzeczy się psują i że o tym wiadomo.
+const PRZYKLADY = [
+  {
+    f: 'Dystrybutor części', m: '9 połączeń', p: 'Zamówienia, faktury i stany',
+    d: 'Zamówienia z trzech kanałów wpadają do jednego rejestru, faktury kosztowe księgują się same, a stany jadą do sklepu co godzinę.',
+    ile: '5 800 dokumentów miesięcznie', alarmy: '4 alarmy w kwartale, każdy zamknięty tego samego dnia',
+  },
+  {
+    f: 'Producent mebli', m: '4 połączenia', p: 'Od zamówienia do produkcji',
+    d: 'Zamówienie z portalu trafia do planowania razem z rezerwacją materiału, a zmiana terminu wraca do klienta bez udziału handlowca.',
+    ile: '760 zleceń miesięcznie', alarmy: '1 alarm w kwartale, przyczyną była zmiana po stronie dostawcy',
+  },
+  {
+    f: 'Sieć gabinetów', m: '6 połączeń', p: 'Rejestracja, rozliczenia i raporty',
+    d: 'Wizyty z rejestracji online lądują w grafiku i w rozliczeniach, a raport dla zarządu składa się sam w poniedziałek rano.',
+    ile: '11 400 wizyt miesięcznie', alarmy: '2 alarmy w kwartale, oba przy wygaśnięciu tokenu',
+  },
+];
+
+
+const faq = [
+  {
+    q: 'Czym to się różni od Make’a albo Zapiera, które nasz człowiek sam sklika?',
+    a: 'Niczym, jeśli chodzi o jedno połączenie i macie kogoś, kto to zrobi — wtedy zróbcie to sami, a my chętnie powiemy, na co uważać. Różnica zaczyna się przy kilku połączeniach naraz. Wtedy liczy się to, czy ktoś zauważy awarię, czy przy zmianie po drugiej stronie wiadomo, co jeszcze się posypie, i czy da się to przekazać nowej osobie. Sam scenariusz jest najprostszą częścią tej pracy.',
+  },
+  {
+    q: 'Ile kosztują automatyzacje i integracje?',
+    a: 'Wyceniamy połączenie po połączeniu, a kwota jest stała i podawana po rozmowie, na której wypisujemy, co z czym i jak często. O kwocie rozstrzyga przede wszystkim to, czy systemy mają API. Dalej idzie liczba wyjątków, które połączenie ma obsłużyć, i to, czy dane wymagają uporządkowania po drodze. Pierwsze połączenie zwykle zwraca się w kilka tygodni.',
+  },
+  {
+    q: 'Co się dzieje, kiedy automatyzacja wywali się w nocy?',
+    a: 'Najpierw trzy próby w odstępach kilku minut, bo większość awarii to chwilowa niedostępność drugiej strony. Jeśli nie pomogą, sprawa wraca tam, skąd przyszła, z etykietą, żeby człowiek mógł ją dokończyć ręcznie. Równolegle idzie alarm do imiennie wskazanej osoby po Waszej stronie i do nas. Zachowanie przy błędzie jest zapisane w karcie połączenia, więc nie jest przedmiotem domysłów.',
+  },
+  {
+    q: 'Nasze systemy nie mają API. Da się coś zrobić?',
+    a: 'Zwykle tak, tylko drożej w utrzymaniu i o tym mówimy przed wyceną. Kolejność wygląda tak: API, jeśli jest; wymiana plików w uzgodnionym formacie, jeśli system ją umie; odczyt bezpośrednio z bazy po ustaleniu z Waszym IT. Ostatnią drogą jest sterowanie interfejsem, ale wtedy uprzedzamy, że każda aktualizacja dostawcy może to zepsuć.',
+  },
+  {
+    q: 'Czy nie zrobimy sobie plątaniny, której za rok nikt nie ogarnie?',
+    a: 'Przed tym broni karta przy każdym połączeniu i jedno miejsce, w którym stoją wszystkie. Widać z niej, co skąd bierze dane i kto za to odpowiada, więc przy zmianie w jednym systemie wiadomo, co jeszcze trzeba sprawdzić. Kartę aktualizujemy przy każdej zmianie połączenia i numer wersji stoi na jej górze.',
+  },
+  {
+    q: 'Na czym to budujecie?',
+    a: 'Na platformie automatyzacji tam, gdzie liczy się to, żeby zmiana zajmowała kwadrans, i we własnym kodzie tam, gdzie połączenie dotyka reguł albo dużego wolumenu. Platformę stawiamy najczęściej na Waszej infrastrukturze, żeby dane nie wychodziły na zewnątrz i żeby licencja była Wasza. Nie mamy prowizji od żadnego dostawcy.',
+  },
+  {
+    q: 'Ile to trwa?',
+    a: 'Proste połączenie między systemami z API to zwykle kilka dni. Takie, które wymaga uporządkowania danych po drodze albo obsługi wyjątków, to dwa do czterech tygodni. Zaczynamy od jednego, uruchamiamy je na produkcji i dopiero potem bierzemy następne — także dlatego, że pierwsze zwykle zmienia listę kolejnych.',
+  },
+  {
+    q: 'Kto to utrzymuje?',
+    a: 'Scenariusze, dokumentacja i dostęp do platformy są Wasze od pierwszego dnia, więc utrzymanie może przejąć Wasz zespół. Jeśli utrzymujemy my, umowa obejmuje monitoring, reakcję na alarmy i poprawki po zmianach u dostawców — bo to one psują połączenia najczęściej. Umowa jest osobna od budowy i wypowiadalna z miesięcznym terminem.',
+  },
+  {
+    q: 'Mamy trzydzieści pomysłów. Od czego zacząć?',
+    a: 'Od tego, które przepisywanie zdarza się najczęściej i kosztuje najwięcej przy pomyłce. Na pierwszej rozmowie przechodzimy listę i wskazujemy jedną pozycję, plus te, które odradzamy jako zbyt rzadkie. Jeśli okaże się, że pomysłów jest kilkanaście i nikt nie umie ich uszeregować, właściwą usługą jest <a href="/strategia-ai" style="font-weight:700;color:#0a7a52">strategia transformacji AI</a>, a nie kolejne połączenie.',
+  },
+  {
+    q: 'Czym to się różni od systemu dla kluczowego procesu?',
+    a: 'Skalą i tym, gdzie leży stan sprawy. Integracja przenosi dane między systemami, które już macie, i nie zmienia sposobu pracy. <a href="/systemy-procesowe" style="font-weight:700;color:#0a7a52">System dla kluczowego procesu</a> prowadzi sprawę od początku do końca i sam trzyma jej stan. Automatyzacje są tańszym wejściem i często pierwszym krokiem — a bywają też ostatnim, jeśli okaże się, że wystarczą.',
+  },
+];
+dane['@graph'].push({
+  '@type': 'FAQPage',
+  '@id': `${kanon}#faq`,
+  mainEntity: faq.map((f) => ({
+    '@type': 'Question',
+    name: f.q,
+    acceptedAnswer: { '@type': 'Answer', text: f.a.replace(/<[^>]+>/g, '') },
+  })),
+});
+---
+<LaBase title={title} description={description} ctaHref="#kontakt" ctaLabel="Umów rozmowę" nav="uslugi">
+<script type="application/ld+json" is:inline set:html={JSON.stringify(dane)} slot="head"></script>
+<style is:global slot="head">
+  /* ================= puls (hero) =================
+     Cztery automatyzacje, każda z własnym odstępem między przebiegami.
+     Wszystkie kreski dzielą jedną klatkę i różnią się wyłącznie opóźnieniem,
+     więc przy równym czasie cyklu układ powtarza się bez rozjazdu.
+     Trzecia linia po prostu przestaje pulsować — i to jest cały argument
+     strony, pokazany zamiast opisany. */
+  .pu-gora{display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding-bottom:11px;border-bottom:1px solid #e7ece4}
+  .pu-gora b{font-size:13px;font-weight:700;color:#16211a}
+  .pu-gora span{font-family:ui-monospace,Menlo,monospace;font-size:11px;color:#a9b3aa}
+  .pu-row{padding:14px 0;border-bottom:1px solid #f0f3ee}
+  .pu-t{display:flex;align-items:baseline;justify-content:space-between;gap:14px}
+  .pu-t b{font-size:14px;font-weight:650;color:#16211a}
+  .pu-st{display:inline-flex;align-items:center;gap:7px;flex-shrink:0;font-family:ui-monospace,Menlo,monospace;font-size:11.5px;color:#8b968d}
+  .pu-kropka{display:block;width:7px;height:7px;border-radius:50%;background:var(--la-accent,#00CD77)}
+  /* Dwa stany statusu leżą na sobie, żeby wiersz nie skakał przy zmianie. */
+  .pu-zmiana{display:grid}
+  .pu-zmiana em{grid-area:1/1;font-style:normal;white-space:nowrap}
+  .pu-pas{display:flex;align-items:flex-end;gap:5px;height:20px;margin-top:10px}
+  .pu-tik{flex:0 0 6px;height:100%;border-radius:2px;background:#2ecf8b;opacity:0;transform-origin:bottom}
+  /* Brakujące przebiegi pojawiają się dopiero w chwili ciszy — wcześniej
+     zdradzałyby pointę, zanim linia zdąży zamilknąć. */
+  .pu-tik.pusty{flex:0 0 6px;height:6px;border-radius:2px;background:#e8c99a;opacity:0}
+  .pu-alarm{display:inline-flex;align-items:center;gap:8px;margin-top:11px;padding:7px 12px;border-radius:8px;background:#fdf3e4;font-size:12.5px;font-weight:650;color:#b07524;opacity:0}
+  .pu-alarm svg{flex-shrink:0}
+  .pu-pod{margin:clamp(16px,2vw,22px) 0 0;font-size:14.5px;line-height:1.6;color:#4c5850;max-width:540px;text-wrap:pretty;opacity:0}
+  .pu-pod strong{font-weight:700;color:#16211a}
+  @media (max-width:560px){
+    .pu-t{flex-direction:column;gap:5px}
+    .pu-t b{font-size:13px}
+    .pu-pas{height:17px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .pu-tik,.pu-alarm,.pu-pod,.pu-kropka,.pu-st,.pu-zmiana em{animation:none !important;opacity:1}
+    .pu-tik.pusty{opacity:1}
+    /* Bez ruchu zostaje stan po awarii — to on niesie argument. */
+    .pu-row.pada .pu-kropka{background:#d99a3c}
+    .pu-row.pada .pu-st{color:#b07524}
+    .pu-zmiana em{opacity:0}
+    .pu-zmiana em.nowe{opacity:1}
+  }
+
+  /* ================= co łączymy (kolumna przy definicji) ================= */
+  .pl-h{margin:0 0 4px;font-size:15.5px;font-weight:750;letter-spacing:-0.01em;color:#16211a}
+  .pl-row{padding:12px 0;border-top:1px solid #e4ebe2}
+  .pl-row:last-of-type{border-bottom:1px solid #e4ebe2}
+  .pl-t{display:block;font-size:14.5px;font-weight:700;letter-spacing:-0.01em;line-height:1.3;color:#16211a;text-wrap:balance}
+  .pl-d{display:block;margin-top:3px;font-size:12.5px;color:#8b968d}
+  .pl-nota{margin:13px 0 0;font-size:13px;line-height:1.55;color:#8b968d;text-wrap:pretty}
+
+  /* ================= powody ================= */
+  .pw-row{display:grid;grid-template-columns:minmax(0,0.95fr) minmax(0,1.15fr);gap:clamp(18px,3vw,48px);align-items:baseline;padding:clamp(20px,2.4vw,28px) 0;border-top:1px solid #e2e9e0}
+  .pw-row:last-of-type{border-bottom:1px solid #e2e9e0}
+  .pw-t{margin:0;font-size:clamp(17px,2vw,20px);font-weight:750;letter-spacing:-0.015em;line-height:1.3;color:#16211a;text-wrap:balance}
+  .pw-d{margin:0;font-size:15px;line-height:1.6;color:#4c5850;text-wrap:pretty}
+  @media (max-width:760px){ .pw-row{grid-template-columns:1fr;gap:7px} }
+
+  /* ================= karta automatyzacji (ciemny pas) =================
+     Artefakt, nie wykres — na tej stronie drugi nośnik jest celowo z innego
+     gatunku niż hero. Pokazana w całości, bo to jest dokładnie to, co klient
+     dostaje przy każdym połączeniu. Trzy wiersze niosące obietnicę
+     (zachowanie przy błędzie, alarm, właściciel) są wyróżnione. */
+  .ka{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,0.92fr);gap:clamp(30px,5vw,72px);align-items:start;margin-top:clamp(30px,3.6vw,44px)}
+  .ka-dok{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.16);border-radius:16px;overflow:hidden}
+  .ka-gora{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:15px 18px;border-bottom:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.04)}
+  .ka-gora b{font-size:12.5px;font-weight:750;letter-spacing:0.02em;color:rgba(255,255,255,0.6)}
+  .ka-gora span{font-family:ui-monospace,Menlo,monospace;font-size:11px;color:rgba(255,255,255,0.35)}
+  .ka-nazwa{padding:17px 18px 3px;font-size:clamp(17px,2vw,20px);font-weight:750;letter-spacing:-0.015em;color:#ffffff}
+  .ka-tresc{padding:10px 18px 18px}
+  .ka-w{display:grid;grid-template-columns:minmax(120px,0.42fr) minmax(0,1fr);gap:14px;align-items:baseline;padding:11px 0;border-top:1px solid rgba(255,255,255,0.1)}
+  .ka-k{font-size:12.5px;color:rgba(255,255,255,0.45)}
+  .ka-v{font-size:14px;line-height:1.5;color:rgba(255,255,255,0.86);text-wrap:pretty}
+  .ka-w.wazne .ka-k{color:var(--la-accent,#00CD77)}
+  .ka-w.wazne .ka-v{color:#ffffff;font-weight:650}
+  @media (max-width:900px){ .ka{grid-template-columns:1fr;gap:32px} }
+  @media (max-width:520px){ .ka-w{grid-template-columns:1fr;gap:3px} }
+
+  /* ================= dla jakich firm ================= */
+  .dl-row{display:grid;grid-template-columns:46px minmax(0,0.9fr) minmax(0,1.2fr);gap:clamp(16px,2.6vw,44px);align-items:start;padding:clamp(20px,2.4vw,28px) 0;border-top:1px solid #e2e9e0}
+  .dl-row:last-of-type{border-bottom:1px solid #e2e9e0}
+  .dl-n{font-size:clamp(22px,2.6vw,30px);font-weight:800;letter-spacing:-0.03em;line-height:1;color:#dbe4d8;padding-top:2px}
+  .dl-t{margin:0;font-size:clamp(17px,2vw,20px);font-weight:750;letter-spacing:-0.015em;line-height:1.3;color:#16211a;text-wrap:balance}
+  .dl-d{margin:0;font-size:15px;line-height:1.6;color:#4c5850;text-wrap:pretty}
+  .dl-nie{margin:clamp(32px,3.8vw,48px) 0 0 clamp(0px,4vw,64px);padding-left:clamp(18px,2vw,26px);border-left:2px solid #dde7db;max-width:760px}
+  .dl-nie h3{margin:0;font-size:15.5px;font-weight:750;letter-spacing:-0.01em;color:#4c5850}
+  .dl-nie p{margin:10px 0 0;font-size:14.5px;line-height:1.6;color:#8b968d;text-wrap:pretty}
+  @media (max-width:860px){
+    .dl-row{grid-template-columns:34px minmax(0,1fr);gap:12px 14px}
+    .dl-row > p:last-child{grid-column:2}
+  }
+
+  /* ================= pas wezwania ================= */
+  .ps{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:18px 40px;padding:clamp(26px,3vw,36px) 0;border-top:1px solid #e7ece4;border-bottom:1px solid #e7ece4}
+  .ps p{margin:0;max-width:640px;font-size:clamp(18px,2.2vw,24px);line-height:1.35;letter-spacing:-0.018em;font-weight:700;color:#16211a;text-wrap:pretty}
+
+  /* ================= przykłady =================
+     Druga liczba jest ważniejsza od pierwszej: pokazuje, że rzeczy się psują
+     i że o tym wiadomo. Dlatego stoi w tej samej kolumnie, nie w przypisie. */
+  .px-row{display:grid;grid-template-columns:minmax(190px,0.6fr) minmax(0,1.2fr) minmax(210px,0.8fr);gap:clamp(20px,3.2vw,52px);align-items:start;padding:clamp(26px,3.2vw,40px) 0;border-top:1px solid #dde7db}
+  .px-row:last-of-type{border-bottom:1px solid #dde7db}
+  .px-f{display:block;margin:0;font-size:clamp(18px,2.1vw,22px);font-weight:750;letter-spacing:-0.018em;color:#16211a}
+  .px-m{display:block;margin-top:4px;font-size:13.5px;color:#8b968d}
+  .px-p{display:block;margin-top:14px;font-size:14px;font-weight:700;color:#0a7a52}
+  .px-d{margin:0;font-size:15px;line-height:1.6;color:#16211a;text-wrap:pretty}
+  .px-ile{display:block;font-size:clamp(17px,2vw,20px);font-weight:750;letter-spacing:-0.015em;color:#16211a}
+  .px-cap{display:block;margin-top:4px;font-size:12.5px;color:#a0aba1}
+  .px-al{display:flex;align-items:flex-start;gap:9px;margin-top:16px;padding-top:14px;border-top:1px solid #dde7db;font-size:13.5px;line-height:1.5;color:#4c5850}
+  .px-al i{flex-shrink:0;display:block;width:7px;height:7px;margin-top:6px;border-radius:50%;background:#d99a3c}
+  @media (max-width:1000px){
+    .px-row{grid-template-columns:minmax(0,1fr) minmax(200px,0.7fr)}
+    .px-row > :first-child{grid-column:1 / -1}
+  }
+  @media (max-width:700px){
+    .px-row{grid-template-columns:1fr;gap:16px}
+    .px-row > :first-child{grid-column:auto}
+  }
+
+  @media (max-width:900px){
+    .hero-split{grid-template-columns:1fr !important;gap:clamp(30px,5vw,46px) !important}
+  }
+</style>
+
+<!-- ============ 1 · HERO ============
+     Cztery automatyzacje biją we własnym rytmie. Trzecia milknie w połowie
+     i dopiero po chwili ciszy zapala się alarm. Teza strony jest tu pokazana
+     ruchem, nie napisana — cisza jednej linii na tle bijących pozostałych
+     jest dokładnie tym, czego w firmie nikt nie zauważa. -->
+<div aria-hidden="true" style="position:absolute;left:0;right:0;top:0;height:1080px;background:radial-gradient(900px 640px at 86% 2%, rgba(0,205,119,0.13), transparent 64%);pointer-events:none"></div>
+<section style="position:relative;overflow:hidden;background:transparent;padding:clamp(28px,4vw,52px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) clamp(56px,6.5vw,84px)">
+<div class="hero-split" style="display:grid;grid-template-columns:1fr 1.04fr;gap:clamp(32px,4.5vw,64px);align-items:center;margin-top:clamp(10px,1.5vw,20px)">
+<div>
+<h1 style="margin:0;font-size:clamp(29px,4.4vw,51px);line-height:1.06;letter-spacing:-0.032em;font-weight:800;color:#16211a;text-wrap:balance">Systemy wymieniają dane same, a o awarii wiecie w kilka minut</h1>
+<p style="margin:26px 0 0;max-width:600px;font-size:clamp(16px,2.1vw,19px);line-height:1.6;color:#33413a;text-wrap:pretty">Łączymy CRM, ERP, magazyn i pocztę tak, żeby nikt niczego nie przepisywał. Każde połączenie dostaje kartę, imiennego właściciela i alarm z progiem czasowym — reszta rynku sprzedaje sam scenariusz.</p>
+<div class="hero-actions" style="display:flex;align-items:center;flex-wrap:wrap;gap:16px 22px;margin-top:34px">
+<a href="#kontakt" class="btn-dark" style="display:inline-flex;align-items:center;gap:10px;background:#16211a;color:#ffffff;padding:18px 32px;border-radius:12px;font-weight:650;font-size:16.5px;box-shadow:0 14px 30px -14px rgba(16,33,26,0.45)">Umów rozmowę <span aria-hidden="true">→</span></a>
+<a href="#karta" class="btn-ghost" style="display:inline-flex;align-items:center;gap:8px;font-size:16.5px;font-weight:700;color:#16211a;background:rgba(255,255,255,0.6);padding:18px 26px;border-radius:12px;border:1px solid rgba(22,33,26,0.16)">Co dostajecie przy każdym →</a>
+</div>
+</div>
+
+<div>
+<div role="img" aria-label="Podgląd czterech automatyzacji. Każda odbywa przebiegi we własnym rytmie, a trzecia — przekazywanie nowego klienta z CRM do księgowości — przestaje działać w połowie osi. Po chwili ciszy zapala się alarm.">
+<div class="pu-gora"><b>Monitoring połączeń</b><span>ostatnia godzina</span></div>
+{PULS.map((x, i) => (
+  <div class={x.pada ? 'pu-row pada' : 'pu-row'}>
+    <span class="pu-t">
+      <b>{x.t}</b>
+      <span class="pu-st" style={x.pada ? `animation:pu-cisza ${PU_C}s linear infinite` : ''}>
+        <i class="pu-kropka" style={x.pada ? `animation:pu-kropka ${PU_C}s cubic-bezier(.34,1.5,.5,1) infinite` : ''}></i>
+        {x.pada
+          ? <span class="pu-zmiana"><em style={`animation:pu-stare ${PU_C}s linear infinite`}>{x.st}</em><em class="nowe" style={`animation:pu-nowe ${PU_C}s linear infinite`}>{x.awaria}</em></span>
+          : x.st}
+      </span>
+    </span>
+    <span class="pu-pas">
+      {Array.from({ length: SLOTY }).map((_, k) => (
+        k < x.ile
+          ? <i class="pu-tik" style={`animation:pu-tik ${PU_C}s linear infinite;animation-delay:${(PU_START + k * x.o).toFixed(2)}s`}></i>
+          : <i class="pu-tik pusty" style={`animation:pu-brak ${PU_C}s linear infinite`}></i>
+      ))}
+    </span>
+    {x.pada && (
+      <span class="pu-alarm" style={`animation:pu-alarm ${PU_C}s cubic-bezier(.34,1.4,.5,1) infinite`}>
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 8v5"/><path d="M12 17h.01"/><circle cx="12" cy="12" r="9"/></svg>
+        Alarm do właściciela · 03:20
+      </span>
+    )}
+  </div>
+))}
+<p class="pu-pod" style={`animation:pu-pod ${PU_C}s linear infinite`}>Trzecia linia stanęła o 03:12. <strong>Alarm poszedł osiem minut później</strong> — a nie trzy tygodnie później, przy zamknięciu miesiąca.</p>
+<style is:inline set:html={klatkiPuls}></style>
+</div>
+</div>
+</div>
+</section>
+
+<!-- ============ 2 · CZYM TO JEST ============ -->
+<section id="czym-jest" class="sec-pad" style="padding-top:clamp(48px,6vw,72px)">
+<h2 class="h-sec" style="margin:0;max-width:820px;text-wrap:balance">Czym są automatyzacje i integracje?</h2>
+<div class="s2-grid" style="display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:clamp(30px,5vw,80px);margin-top:clamp(24px,3vw,34px);align-items:start">
+<div style="font-size:17px;line-height:1.65;color:#33413a">
+<p style="margin:0;text-wrap:pretty">Automatyzacje i integracje to połączenia między systemami, które już macie, dzięki którym dane przechodzą z jednego do drugiego bez człowieka pośrodku. Integracja przenosi dane, automatyzacja dokłada do tego regułę: co ma się stać i kiedy.</p>
+<p style="margin:18px 0 0;text-wrap:pretty">To najtańsza rzecz, jaką u nas kupicie, i jedyna, po której wynik widać w kilka tygodni. Bywa całą potrzebną zmianą, a bywa podłogą pod resztę — bo zanim <a href="/systemy-procesowe" class="lnk-green" style="font-weight:650;color:#0a7a52">system poprowadzi proces</a>, dane muszą być w jednym miejscu i aktualne.</p>
+<p style="margin:18px 0 0;text-wrap:pretty">Sam scenariusz jest tu najprostszą częścią pracy. Trudne jest to, co dzieje się wokół niego: co przy błędzie, kto dostaje sygnał i co zrobić, kiedy druga strona zmieni się bez uprzedzenia.</p>
+</div>
+<div>
+<h3 class="pl-h">Co najczęściej łączymy</h3>
+{POLACZENIA.map((x) => (
+  <div class="pl-row rv"><span class="pl-t">{x.t}</span><span class="pl-d">{x.d}</span></div>
+))}
+<p class="pl-nota">Kolejność bierze się z tego, które przepisywanie zdarza się u Was najczęściej.</p>
+</div>
+</div>
+</section>
+
+<!-- ============ 3 · DLACZEGO CICHO UMIERAJĄ ============
+     Teza strony jako osobna linia w dużym stopniu pisma. -->
+<section id="dlaczego" style="background:#f4f8f2;padding:clamp(60px,7.5vw,96px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
+<h2 class="h-sec" style="margin:0;max-width:640px;text-wrap:pretty">Dlaczego automatyzacje umierają po cichu</h2>
+<p class="rv" style="margin:clamp(20px,2.4vw,28px) 0 0;max-width:940px;font-size:clamp(19px,2.4vw,27px);line-height:1.3;letter-spacing:-0.02em;font-weight:700;color:#16211a;text-wrap:pretty">Automatyzacja, o której awarii nikt się nie dowiaduje, jest gorsza od jej braku</p>
+<p class="sub rv" style="margin:16px 0 0;max-width:640px">Ludzie już przestali robić to ręcznie, a system przestał robić to za nich. Między jednym a drugim nie ma nikogo — i dlatego wychodzi to przy zamknięciu miesiąca.</p>
+
+<div style="margin-top:clamp(34px,4.2vw,52px)">
+{POWODY.map((p) => (
+  <div class="pw-row rv">
+    <h3 class="pw-t">{p.t}</h3>
+    <p class="pw-d">{p.d}</p>
+  </div>
+))}
+</div>
+
+<p class="sub rv" style="margin:clamp(26px,3vw,36px) 0 0;max-width:760px">Dlatego przy każdym połączeniu, które budujemy, powstaje karta. Nie jako dokumentacja do szuflady, tylko jako miejsce, w którym stoi zachowanie przy błędzie i nazwisko osoby, do której idzie alarm.</p>
+</section>
+
+<!-- ============ 4 · KARTA AUTOMATYZACJI ============
+     Ciemny pas, najcięższy argument strony. Drugi nośnik jest tu celowo
+     z innego gatunku niż hero: artefakt, nie wykres. Pokazany w całości,
+     bo to jest dokładnie to, co klient dostaje przy każdym połączeniu. -->
+<section id="karta" style="position:relative;background:radial-gradient(900px 420px at 88% 4%, rgba(0,205,119,0.16), transparent 62%), #0e2b1d;padding:clamp(60px,7.5vw,98px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
+<div class="sec-head">
+<h2 class="h-sec" style="margin:0;max-width:560px;color:#ffffff;text-wrap:pretty">Każde połączenie dostaje kartę</h2>
+<p style="margin:0 0 6px;max-width:470px;font-size:17px;line-height:1.6;color:rgba(255,255,255,0.72);text-wrap:pretty">Jedna strona na jedno połączenie. Poniżej cała, tak jak wygląda przy odbiorze — żebyście wiedzieli, co dostajecie, zanim cokolwiek zamówicie.</p>
+</div>
+
+<div class="ka">
+<div class="ka-dok rv">
+  <div class="ka-gora"><b>KARTA POŁĄCZENIA</b><span>POL-014 · wersja 3</span></div>
+  <div class="ka-nazwa">Faktury kosztowe z poczty → ERP</div>
+  <div class="ka-tresc">
+  {KARTA.map((x) => (
+    <div class={x.wazne ? 'ka-w wazne' : 'ka-w'}>
+      <span class="ka-k">{x.k}</span>
+      <span class="ka-v">{x.v}</span>
+    </div>
+  ))}
+  </div>
+</div>
+
+<div>
+<p style="margin:0;font-size:16.5px;line-height:1.65;color:rgba(255,255,255,0.82);text-wrap:pretty">Trzy wyróżnione wiersze to cała różnica między połączeniem, które ktoś sklikał, a takim, które da się utrzymać. <strong style="color:#ffffff;font-weight:700">Zachowanie przy błędzie, próg alarmu i nazwisko właściciela</strong> — zapisane, zanim połączenie ruszy.</p>
+<p style="margin:18px 0 0;font-size:15.5px;line-height:1.65;color:rgba(255,255,255,0.6);text-wrap:pretty">Karty wszystkich połączeń stoją w jednym miejscu. Kiedy zmienia się coś w jednym systemie, widać z nich, co jeszcze trzeba sprawdzić. Plątanina bierze się z połączeń, których nikt nie opisał, a nie z ich liczby.</p>
+<p style="margin:18px 0 0;font-size:15.5px;line-height:1.65;color:rgba(255,255,255,0.6);text-wrap:pretty">Scenariusze, karty i dostęp do platformy są Wasze od pierwszego dnia. Licencja platformy idzie na Was, więc widzicie realny koszt, a my nie mamy prowizji od żadnego dostawcy.</p>
+</div>
+</div>
+</section>
+
+<!-- ============ 5 · DLA JAKICH FIRM ============ -->
+<section id="dla-kogo" class="sec-pad">
+<div class="sec-head">
+<h2 class="h-sec" style="margin:0;max-width:520px;text-wrap:pretty">Dla jakich firm to jest</h2>
+<p class="sub" style="margin:0 0 6px;max-width:460px">Wielkość firmy nie ma tu znaczenia. Znaczenie ma to, ile razy dziennie ktoś przenosi te same dane z jednego okna do drugiego.</p>
+</div>
+
+<div style="margin-top:clamp(28px,3.4vw,42px)">
+{DLA_KOGO.map((x, i) => (
+  <div class="dl-row rv">
+    <span class="dl-n">{String(i + 1).padStart(2, '0')}</span>
+    <h3 class="dl-t">{x.t}</h3>
+    <p class="dl-d">{x.d}</p>
+  </div>
+))}
+</div>
+
+<div class="dl-nie rv">
+<h3>Kiedy to nie ma sensu</h3>
+{NIE_TERAZ.map((t) => (<p>{t}</p>))}
+</div>
+</section>
+
+<!-- ============ 5b · PAS WEZWANIA ============ -->
+<section style="padding:0 max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) 0">
+<div class="ps">
+<p>Powiedzcie, co u Was ktoś przepisuje z jednego okna do drugiego — wycenimy pierwsze połączenie</p>
+<a href="#kontakt" class="btn-dark" style="display:inline-flex;align-items:center;gap:9px;background:#16211a;color:#ffffff;padding:15px 26px;border-radius:11px;font-weight:650;font-size:15.5px;white-space:nowrap">Umów rozmowę <span aria-hidden="true">→</span></a>
+</div>
+</section>
+
+<!-- ============ 6 · PRZYKŁADY ============
+     PRZYKŁADOWE wdrożenia — do podmiany. Druga liczba jest ważniejsza od
+     pierwszej i dlatego stoi w tej samej kolumnie, nie w przypisie. -->
+<section id="dowody" style="background:#f4f8f2;padding:clamp(60px,7.5vw,96px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
+<div class="sec-head">
+<h2 class="h-sec" style="margin:0;max-width:600px;text-wrap:pretty">Trzy firmy i alarmy, które się u nich odezwały</h2>
+<p class="sub" style="margin:0 0 6px;max-width:460px">Druga liczba przy każdej jest ważniejsza od pierwszej. Połączenia się psują — pytanie brzmi, czy ktoś się o tym dowiaduje tego samego dnia.</p>
+</div>
+
+<div style="margin-top:clamp(20px,2.4vw,30px)">
+{PRZYKLADY.map((x) => (
+  <div class="px-row rv">
+    <div>
+      <h3 class="px-f">{x.f}</h3>
+      <span class="px-m">{x.m}</span>
+      <span class="px-p">{x.p}</span>
+    </div>
+    <div>
+      <p class="px-d">{x.d}</p>
+    </div>
+    <div>
+      <span class="px-ile">{x.ile}</span>
+      <span class="px-cap">przechodzi bez człowieka</span>
+      <span class="px-al"><i aria-hidden="true"></i>{x.alarmy}</span>
+    </div>
+  </div>
+))}
+</div>
+</section>
+
+<!-- ============ 6b · GŁOS KLIENTA ============ -->
+<section style="padding:clamp(56px,7vw,88px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2))">
+<figure class="rv" style="margin:0;display:grid;grid-template-columns:auto 1fr;gap:clamp(20px,3vw,36px);align-items:start;max-width:1000px">
+<span aria-hidden="true" style="font-size:clamp(46px,5vw,64px);line-height:.72;font-weight:800;color:var(--la-accent,#00CD77)">„</span>
+<div>
+<blockquote style="margin:0;font-size:clamp(20px,2.6vw,29px);line-height:1.35;letter-spacing:-0.02em;font-weight:650;color:#16211a;text-wrap:pretty">Let’s automate wziął pełną odpowiedzialność za projekt i dowiózł go do końca. To dlatego powierzyliśmy im kolejny, znacznie większy.</blockquote>
+<figcaption><span style="display:block;margin-top:clamp(16px,2vw,22px);font-size:15px;font-weight:750;color:#16211a">Jakub Ciołkowski</span><span style="display:block;margin-top:2px;font-size:14px;color:#8b968d">Członek Zarządu, NARS Polska</span></figcaption>
+</div>
+</figure>
+</section>
+
+<GcCta
+  heading="Zacznijmy od jednego połączenia"
+  lead="Powiedzcie, co u Was ktoś przenosi z systemu do systemu i jak często. Odpowiemy z pytaniem o to, czy te systemy mają API, i z terminem pierwszej rozmowy."
+  eyebrow="Z pierwszej rozmowy wychodzicie z"
+  items={[
+    { t: 'Jedną wskazaną pozycją', d: 'tą, od której warto zacząć, i powodem' },
+    { t: 'Listą odradzanych', d: 'te, które zrobicie sami albo które się nie zwrócą' },
+    { t: 'Zakresem do wyceny', d: 'systemy po drodze i sposób połączenia' },
+  ]}
+  placeholder="Np. zamówienia ze sklepu przepisujemy ręcznie do ERP-a, jest ich około 40 dziennie…"
+  submitLabel="Umów rozmowę"
+  badges={[
+    { i: 'klodka', t: 'Wasze dane bezpieczne' },
+    { i: 'kartka', t: 'NDA przed startem' },
+    { i: 'ptaszek', t: 'Scenariusze zostają Wasze' },
+  ]}
+/>
+
+<GcFaq
+  heading="Pytania, które padają przed decyzją"
+
+  ctaLabel="Zadajcie nam swoje →"
+  items={faq}
+/>
+
+<script>
+  var redukcja = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  (function(){
+    var els = document.querySelectorAll('[data-anim]');
+    if(!els.length) return;
+    if(redukcja || !('IntersectionObserver' in window)){
+      els.forEach(function(el){ el.classList.add('on'); });
+      return;
+    }
+    var io = new IntersectionObserver(function(wpisy){
+      wpisy.forEach(function(w){
+        if(w.isIntersecting){ w.target.classList.add('on'); io.unobserve(w.target); }
+      });
+    }, { threshold: 0.22 });
+    els.forEach(function(el){ io.observe(el); });
+  })();
+</script>
+</LaBase>

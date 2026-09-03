@@ -1,0 +1,119 @@
+---
+// Moduł kontaktowy 1:1 z modułem finałowym strony głównej:
+// ciemna karta + formularz + zdjęcie Szymona + zaplecze Wise Group.
+//
+// UWAGA: formularz nie ma jeszcze endpointu (jak na stronie głównej).
+// Przed publikacją trzeba podpiąć POST — inaczej zgłoszenia przepadają.
+const {
+  heading,
+  lead,
+  eyebrow = 'Z przeglądu wychodzisz z',
+  items = [],
+  teamField = false,
+  submitLabel = 'Wyślij zapytanie',
+  placeholder = 'Np. mamy aplikację zbudowaną w Lovable, obsługuje klientów…',
+  // Odznaki pod formularzem zależą od usługi: „Kod zostaje Wasz" ma sens
+  // przy Guided Codingu, nie przy przeglądzie strategicznym.
+  badges = [
+    { i: 'klodka', t: 'Twoje dane bezpieczne' },
+    { i: 'kartka', t: 'NDA przed startem' },
+    { i: 'ptaszek', t: 'Kod zostaje Wasz' },
+  ],
+} = Astro.props;
+
+const IKONY = {
+  klodka: '<rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/>',
+  kartka: '<path d="M14 3v5h5"/><path d="M7 3h7l5 5v11a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/>',
+  ptaszek: '<circle cx="12" cy="12" r="9"/><path d="M8.5 12.4l2.4 2.4 4.6-5"/>',
+};
+---
+<section id="kontakt" style="padding:clamp(72px,10vw,120px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
+<div class="s9-grid" style="background:#0e2b1d;border-radius:26px;overflow:hidden;display:grid;grid-template-columns:1fr 760px;gap:0;align-items:stretch;box-shadow:0 34px 84px -44px rgba(18,38,28,0.4)">
+<div style="display:flex;flex-direction:column;padding:clamp(48px,6vw,84px) clamp(40px,5vw,64px)">
+<h2 class="h-sec" style="margin:0;color:#ffffff;text-wrap:pretty">{heading}</h2>
+<p style="margin:20px 0 0;max-width:430px;font-size:17px;line-height:1.6;color:rgba(255,255,255,0.75);text-wrap:pretty">{lead}</p>
+<div style="margin-top:30px;max-width:470px">
+<div style="font-family:ui-monospace,Menlo,monospace;font-size:11.5px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.5)">{eyebrow}</div>
+<div style="display:flex;flex-direction:column;gap:11px;margin-top:14px">
+{items.map((it) => (
+  <div style="display:flex;align-items:flex-start;gap:11px;font-size:14.5px;line-height:1.5;color:rgba(255,255,255,0.85)"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#00CD77" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:2px" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span><strong style="font-weight:700;color:#fff">{it.t}</strong> — {it.d}</span></div>
+))}
+</div>
+</div>
+<div class="final-badge-row" style="display:flex;align-items:center;gap:16px;margin-top:auto;padding-top:40px">
+<span style="font-size:11.5px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.5)">Część grupy</span>
+<img src="/uploads/wisegroup_logo_v2.webp" alt="Wise Group" style="height:19px;width:auto;display:block;filter:brightness(0) invert(1);opacity:0.9">
+</div>
+</div>
+
+<div class="cta-card" style="display:grid;grid-template-columns:1fr 262px;background:#ffffff">
+<div style="padding:clamp(28px,2.8vw,38px);display:flex;flex-direction:column;justify-content:center">
+<div style="display:flex;flex-direction:column;gap:15px">
+<div>
+<label style="display:block;font-size:12.5px;font-weight:650;color:#4c5850;margin-bottom:7px">E-mail <span style="color:#0a7a52">*</span></label>
+<input type="email" class="inp" placeholder="jan@firma.pl" style="width:100%;box-sizing:border-box;font-family:inherit;font-size:15px;color:#16211a;background:#fbfcfa;border:1px solid #e7ece4;border-radius:10px;padding:13px 15px;outline:none">
+</div>
+<div>
+<label style="display:block;font-size:12.5px;font-weight:650;color:#4c5850;margin-bottom:7px">Telefon <span style="color:#0a7a52">*</span></label>
+<div class="phone-field" style="display:flex;align-items:center;background:#f6f9f5;border:1px solid #e4ebe2;border-radius:11px">
+<div style="position:relative;display:flex;align-items:center;flex-shrink:0">
+<select aria-label="Numer kierunkowy" style="appearance:none;-webkit-appearance:none;-moz-appearance:none;border:0;background:transparent;font-family:inherit;font-size:15px;font-weight:600;color:#16211a;padding:14px 32px 14px 16px;outline:none;cursor:pointer">
+<option value="+48">+48</option>
+<option value="+49">+49</option>
+<option value="+44">+44</option>
+<option value="+380">+380</option>
+<option value="+420">+420</option>
+<option value="+1">+1</option>
+</select>
+<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#8a978c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;right:13px;top:50%;transform:translateY(-50%);pointer-events:none" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+</div>
+<span style="width:1px;height:22px;background:#e4ebe2;flex-shrink:0"></span>
+<input type="tel" aria-label="Numer telefonu" placeholder="571 000 000" style="flex:1;min-width:0;border:0;background:transparent;font-family:inherit;font-size:15px;color:#16211a;padding:14px 16px 14px 14px;outline:none">
+</div>
+</div>
+{teamField && (
+<div>
+<label style="display:block;font-size:12.5px;font-weight:650;color:#4c5850;margin-bottom:7px">Wielkość zespołu inżynieryjnego</label>
+<div style="position:relative">
+<select class="inp" aria-label="Wielkość zespołu inżynieryjnego" style="width:100%;box-sizing:border-box;appearance:none;-webkit-appearance:none;-moz-appearance:none;font-family:inherit;font-size:15px;color:#16211a;background:#fbfcfa;border:1px solid #e7ece4;border-radius:10px;padding:13px 40px 13px 15px;outline:none;cursor:pointer">
+<option>1–5 osób</option>
+<option>6–15 osób</option>
+<option>16–40 osób</option>
+<option>40+ osób</option>
+</select>
+<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#8a978c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;right:15px;top:50%;transform:translateY(-50%);pointer-events:none" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+</div>
+</div>
+)}
+<div>
+<label style="display:block;font-size:12.5px;font-weight:650;color:#4c5850;margin-bottom:7px">Co macie dzisiaj?</label>
+<textarea class="inp" rows="3" placeholder={placeholder} style="width:100%;box-sizing:border-box;font-family:inherit;font-size:15px;color:#16211a;background:#fbfcfa;border:1px solid #e7ece4;border-radius:10px;padding:13px 15px;outline:none;resize:vertical;min-height:80px"></textarea>
+</div>
+<label style="display:flex;align-items:flex-start;gap:10px;font-size:12.5px;line-height:1.5;color:#7c877e;cursor:pointer">
+<input type="checkbox" required style="margin-top:1px;width:16px;height:16px;flex-shrink:0;accent-color:#0a7a52;cursor:pointer">
+<span>Wyrażam zgodę na kontakt i przetwarzanie moich danych w celu obsługi zapytania. <a href="#" class="lnk-green" style="font-weight:600;color:#0a7a52">Polityka prywatności</a>.</span>
+</label>
+<a href="#kontakt" class="btn-cta" style="display:flex;align-items:center;justify-content:center;gap:9px;margin-top:2px;background:#0a7a52;color:#ffffff;padding:16px 24px;border-radius:12px;font-weight:700;font-size:16px">{submitLabel} <span aria-hidden="true">→</span></a>
+<div style="display:flex;flex-wrap:wrap;gap:9px 16px;margin-top:6px">
+{badges.map((b) => (
+  <span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#7c877e"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#0a7a52" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={IKONY[b.i] || IKONY.ptaszek}></svg>{b.t}</span>
+))}
+</div>
+</div>
+</div>
+<div class="cta-portrait" style="position:relative;background:#122a1e;min-height:360px">
+<img src="/szymon-kita.jpg" alt="Szymon Kita — założyciel Let's automate" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 16%;display:block">
+<div style="position:absolute;left:0;right:0;bottom:0;padding:30px 18px 14px;background:linear-gradient(to top,rgba(6,16,11,0.92),rgba(6,16,11,0.45) 55%,transparent)">
+<div style="font-size:14.5px;font-weight:800;color:#ffffff">Szymon Kita</div>
+<div style="margin-top:2px;font-size:11.5px;color:rgba(255,255,255,0.72)">założyciel, Let's automate</div>
+</div>
+</div>
+</div>
+</div>
+<div style="display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:6px 14px;margin-top:26px;font-size:15px;color:#4c5850">
+<span>Wolisz napisać lub zadzwonić?</span>
+<a href="mailto:hello@letsautomate.pl" class="lnk-green" style="font-weight:700;color:#0a7a52">hello@letsautomate.pl</a>
+<span style="color:#c3cbc2">·</span>
+<a href="tel:+48571399932" class="lnk-green" style="font-weight:700;color:#0a7a52">+48 571 399 932</a>
+</div>
+</section>

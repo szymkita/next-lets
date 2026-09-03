@@ -1,0 +1,770 @@
+---
+// DRZWI C — /guided-coding/transfer-know-how
+//
+// KIERUNEK (Szymon, 31.08): odbiorcą są OBIE grupy, a podział wobec dwóch
+// pozostałych drzwi idzie po CELU, nie po typie zespołu. Kształt usługi:
+// „one są budowane pod klienta, indywidualnie projektujemy szkolenie".
+//
+// TEZA (wyprowadzona z tego zdania): kategoria sprzedaje program, ten sam
+// u każdego. Nasz nie istnieje, dopóki nie przeczytamy Waszego kodu —
+// powstaje z tego, co w nim znaleźliśmy, i prowadzimy go na Waszej
+// aplikacji, więc po każdej sesji coś w niej jest naprawione.
+//
+// JEDNA MIARA PRZEZ CAŁĄ STRONĘ: skąd wziął się każdy temat.
+// 9 znalezisk z przeglądu → 2 naprawiamy sami → 7 sesji, z czego
+// 2 wychodzą u każdego i 5 tylko z Waszego kodu. Te same liczby wracają
+// w hero, w ciemnym pasie i w FAQ. Zmiana którejkolwiek wymaga przeliczenia
+// pozostałych.
+//
+// CZEGO NIE POWTARZAM Z RODZEŃSTWA (osobny słownik wizualny):
+// · /guided-coding — krzywa tempa, dwa pasy zbiegające się, tabela vs
+// · /bez-zespolu-it-v2 — lupa nad przewijającym się kodem, kalendarz
+//   dwudziestu dni, karty przewijane w poziomie, pary słupków na ciemnym
+// · /dla-zespolow-v2 — drabina sześciu poziomów z paskami i licznikiem
+//   „2 z 6", bramka przed merge’em jako karta sprawdzeń
+// · /szkolenia-ai — jednostki do policzenia (ludzie w kreskach, minuty)
+// Tutaj: LISTA, KTÓRA SIĘ PRZESTAWIA (znaleziska układają się w program)
+// plus agenda z uzasadnieniem jako artefakt na ciemnym pasie. Zgodnie
+// z lekcją z /systemy-dla-klientow: jedna animacja z prawdziwym ruchem
+// i jeden artefakt, nie dwa rysunki tego samego gatunku.
+//
+// DO POTWIERDZENIA PRZED PUBLIKACJĄ:
+// · wszystkie liczby w nawiasach kwadratowych są hipotezą (długość sesji,
+//   liczba sesji, liczba osób, czas przeglądu, kadencja odpowiedzi);
+// · ceny nie ma świadomie — jak na pozostałych podstronach poza /strategia-ai;
+// · agenda w ciemnym pasie jest złożona z rzeczy, które widzimy najczęściej;
+//   mówi o tym nota pod nią. Przed publikacją sprawdzić, czy nie przypomina
+//   kodu ani sytuacji konkretnego klienta;
+// · zdanie „ostatnią sesję prowadzi Wasza osoba" to zobowiązanie umowne.
+import LaBase from '../../layouts/LaBase.astro';
+import GcFaq from '../../components/GcFaq.astro';
+import GcCta from '../../components/GcCta.astro';
+
+const title = "Transfer know-how — program szkoleniowy pod Waszą aplikację | Let's automate";
+const description = 'Program powstaje po przeglądzie Waszego kodu i prowadzimy go na Waszej aplikacji. Po każdej sesji zostaje w niej zmiana, a zasady zostają w Waszym repozytorium.';
+
+
+// ---- HERO: PRZEGLĄD PRZESTAWIA SIĘ W PROGRAM ---------------------------
+// Dziewięć znalezisk stoi w kolejności, w jakiej wyszły z przeglądu.
+// Potem lista się przestawia: siedem wierszy układa się w kolejność sesji
+// i dostaje numery, dwa zjeżdżają pod kreskę.
+//
+// UCZCIWOŚĆ RYSUNKU: dwa tematy wychodzą u KAŻDEGO klienta i są tak
+// podpisane. Strona, na której wszystko jest wyjątkowe, czyta się jak
+// materiał sprzedażowy.
+const ZNALEZISKA = [
+  { t: 'klucz do API w kodzie',      poz: 2, sesja: 3 },
+  { t: 'każdy prosi model inaczej',  poz: 0, sesja: 1, wszedzie: true },
+  { t: 'trzy wersje jednej funkcji', poz: 7, sami: true },
+  { t: 'projekt odpali tylko autor', poz: 3, sesja: 4 },
+  { t: 'zmiany idą prosto do ludzi', poz: 1, sesja: 2, wszedzie: true },
+  { t: 'kopia nigdy nie odtworzona', poz: 8, sami: true },
+  { t: 'brak testu na płatnościach', poz: 4, sesja: 5 },
+  { t: 'dane klientów w arkuszu',    poz: 5, sesja: 6 },
+  { t: 'rachunek rośnie po próbach', poz: 6, sesja: 7 },
+];
+const SESJI = ZNALEZISKA.filter((z) => z.sesja).length;          // 7
+const WSZEDZIE = ZNALEZISKA.filter((z) => z.wszedzie).length;    // 2
+const Z_KODU = SESJI - WSZEDZIE;                                 // 5
+
+// Czasy pętli. Cztery akty: przegląd się odsłania, wiersze są podnoszone
+// i odkładane na swoje miejsca, program materializuje się jako blok,
+// na koniec lista schodzi od dołu i pętla zaczyna się od nowa.
+// Wszystko liczy się z tablicy RUCH — po zmianie liczby wierszy albo
+// odstępu animacja przelicza się sama.
+//
+// NIC NIE ZDRADZA POINTY Z GÓRY: dopóki program się nie złoży, wszystkie
+// dziewięć wierszy wygląda tak samo. Kropka przy wierszu zamienia się
+// w numer sesji dopiero w trzecim akcie, a dwa odrzucone bledną razem
+// z pojawieniem się kreski.
+const CYKL = 16.3;
+const RUCH = {
+  we: 0.55, weOdstep: 0.16, weTrwa: 0.5,    // akt 1 — znaleziska wchodzą
+  st: 3.1, odstep: 0.22, trwa: 0.75,         // akt 2 — wiersze idą na miejsca
+  num: 5.95, numOdstep: 0.09,                // akt 3 — numery sesji
+  tag: 6.45, tagOdstep: 0.07,                //         znaczniki
+  blok: 5.8, kres: 5.95, blak: 6.15,         //         blok programu, kreska, zblaknięcie
+  wy: 15.0, wyOdstep: 0.05, wyTrwa: 0.4,     // akt 4 — lista schodzi od dołu
+  snap: 15.85,
+};
+const pc = (t) => `${((t / CYKL) * 100).toFixed(2)}%`;
+
+// Czasy pojedynczego wiersza: wejście liczone z kolejności przeglądu,
+// reszta z pozycji docelowej — dzięki temu program układa się od góry,
+// a schodzi od dołu.
+const czasy = (z, i) => {
+  const we0 = RUCH.we + i * RUCH.weOdstep;
+  const t0 = RUCH.st + z.poz * RUCH.odstep;
+  const wy0 = RUCH.wy + (ZNALEZISKA.length - 1 - z.poz) * RUCH.wyOdstep;
+  return { we0, we1: we0 + RUCH.weTrwa, t0, t1: t0 + RUCH.trwa, wy0, wy1: wy0 + RUCH.wyTrwa,
+           n0: RUCH.num + z.poz * RUCH.numOdstep, g0: RUCH.tag + z.poz * RUCH.tagOdstep };
+};
+const CZASY = ZNALEZISKA.map(czasy);
+const WY0 = Math.min(...CZASY.map((c) => c.wy0));
+const WY1 = Math.max(...CZASY.map((c) => c.wy1));
+
+const PLASKO = 'transform:none;box-shadow:0 0 0 rgba(18,38,28,0);background:rgba(255,255,255,0)';
+const PODNIESIONY = 'transform:scale(1.014);box-shadow:0 18px 36px -20px rgba(18,38,28,0.55);background:rgba(255,255,255,1)';
+
+const klatkiHero = [
+  // Przejazd wiersza na swoje miejsce — jedyna rzecz na zewnętrznym pudełku,
+  // żeby wjazd z lewej i podniesienie mogły działać na wewnętrznym.
+  ...ZNALEZISKA.map((z, i) => {
+    const c = CZASY[i];
+    return `@keyframes tk-w${i}{0%,${pc(c.t0)}{transform:translateY(0)}${pc(c.t1)},${pc(RUCH.snap)}{transform:translateY(calc(var(--d) * var(--rh)))}${pc(RUCH.snap + 0.05)},100%{transform:translateY(0)}}`;
+  }),
+  // Wejście, podniesienie przy przeprowadzce, odłożenie, zejście.
+  ...ZNALEZISKA.map((z, i) => {
+    const c = CZASY[i];
+    return `@keyframes tk-in${i}{`
+      + `0%,${pc(c.we0)}{opacity:0;transform:translateX(-16px);box-shadow:0 0 0 rgba(18,38,28,0);background:rgba(255,255,255,0)}`
+      + `${pc(c.we1)},${pc(c.t0 - 0.12)}{opacity:1;${PLASKO}}`
+      + `${pc(c.t0)},${pc(c.t1)}{opacity:1;${PODNIESIONY}}`
+      + `${pc(c.t1 + 0.3)},${pc(c.wy0)}{opacity:1;${PLASKO}}`
+      + `${pc(c.wy1)},${pc(RUCH.snap)}{opacity:0;transform:translateX(12px);box-shadow:0 0 0 rgba(18,38,28,0);background:rgba(255,255,255,0)}`
+      + `${pc(RUCH.snap + 0.05)},100%{opacity:0;transform:translateX(-16px);box-shadow:0 0 0 rgba(18,38,28,0);background:rgba(255,255,255,0)}}`;
+  }),
+  // Numer sesji wskakuje z lekkim przestrzeleniem, kropka gaśnie pod nim.
+  ...ZNALEZISKA.filter((z) => z.sesja).map((z) => {
+    const c = CZASY[ZNALEZISKA.indexOf(z)];
+    return `@keyframes tk-n${z.sesja}{0%,${pc(c.n0)}{opacity:0;transform:scale(.45)}${pc(c.n0 + 0.3)}{opacity:1;transform:scale(1.14)}${pc(c.n0 + 0.46)},100%{opacity:1;transform:scale(1)}}`
+      + `@keyframes tk-d${z.sesja}{0%,${pc(c.n0)}{opacity:1}${pc(c.n0 + 0.2)},100%{opacity:0}}`;
+  }),
+  // Znaczniki dojeżdżają z prawej, w kolejności sesji.
+  ...ZNALEZISKA.map((z, i) => {
+    const c = CZASY[i];
+    return `@keyframes tk-g${i}{0%,${pc(c.g0)}{opacity:0;transform:translateX(10px)}${pc(c.g0 + 0.42)},100%{opacity:1;transform:translateX(0)}}`;
+  }),
+  `@keyframes tk-blok{0%,${pc(RUCH.blok)}{opacity:0}${pc(RUCH.blok + 0.55)},${pc(WY0)}{opacity:1}${pc(WY1)},100%{opacity:0}}`,
+  `@keyframes tk-rail{0%,${pc(RUCH.blok)}{transform:scaleY(0)}${pc(RUCH.blok + 0.7)},${pc(WY0)}{transform:scaleY(1)}${pc(WY1)},100%{transform:scaleY(0)}}`,
+  `@keyframes tk-kres{0%,${pc(RUCH.kres)}{opacity:0;transform:scaleX(0)}${pc(RUCH.kres + 0.55)},${pc(WY0)}{opacity:1;transform:scaleX(1)}${pc(WY1)},100%{opacity:0;transform:scaleX(1)}}`,
+  `@keyframes tk-blak{0%,${pc(RUCH.blak)}{color:#16211a}${pc(RUCH.blak + 0.45)},100%{color:#95a196}}`,
+  `@keyframes tk-tyt-a{0%,${pc(RUCH.st)}{opacity:1;transform:translateY(0)}${pc(RUCH.st + 0.42)},100%{opacity:0;transform:translateY(-7px)}}`,
+  `@keyframes tk-tyt-b{0%,${pc(RUCH.st + 0.2)}{opacity:0;transform:translateY(7px)}${pc(RUCH.st + 0.62)},${pc(WY0)}{opacity:1;transform:translateY(0)}${pc(WY1)},100%{opacity:0;transform:translateY(0)}}`,
+].join('\n');
+
+
+// ---- DLA KOGO — PODZIAŁ PO CELU, NIE PO TYPIE ZESPOŁU ------------------
+const DLA_KOGO = [
+  {
+    t: 'Zbudowaliście to bez działu IT',
+    d: 'Aplikacja powstała w marketingu albo w operacjach, działa i ktoś na niej pracuje codziennie. Chcecie, żeby dało się ją utrzymać własnymi rękami, kiedy zrobi się poważniejsza.',
+  },
+  {
+    t: 'Macie programistów i każdy pracuje po swojemu',
+    d: 'Agenty siedzą w terminalach od kilku miesięcy. Efekt zależy od tego, kto pisał — chcecie jednego sposobu pracy, spisanego tam, gdzie zajrzy następna osoba.',
+  },
+];
+
+const NIE_MUSICIE = [
+  'Nikt u Was nie musi umieć programować. Na sesjach pracujemy w tych narzędziach, w których pracujecie dziś.',
+  'Nie musicie wybierać, od czego zacząć. Listę przynosimy my, a Wy z niej wykreślacie.',
+  'Nie sprzątajcie przed nami. Bałagan jest materiałem, z którego powstaje program.',
+];
+
+
+// ---- JAK POWSTAJE PROGRAM ----------------------------------------------
+const POWSTAJE = [
+  {
+    t: 'Czytamy to, co zbudowaliście',
+    d: 'Kod, konfiguracje, historia zmian i to, co aplikacja robi z danymi. Wychodzi z tego lista konkretnych rzeczy, z miejscami w aplikacji przy każdej.',
+    k: '[3–5 dni]',
+  },
+  {
+    t: 'Pytamy ludzi, gdzie się zacinają',
+    d: 'Krótkie rozmowy z osobami, które to budują. Połowa tematów bierze się stąd, bo w kodzie nie widać, przy czym ktoś traci wieczór.',
+    k: '[2–4 rozmowy]',
+  },
+  {
+    t: 'Składamy agendę z uzasadnieniem',
+    d: 'Przy każdym temacie stoi miejsce w Waszej aplikacji, z którego się wziął. Dostajecie ją przed decyzją o programie i możecie wykreślić dowolną pozycję.',
+    k: 'przed decyzją',
+  },
+  {
+    t: 'Zmieniamy ją w trakcie',
+    d: 'Po trzeciej sesji zwykle jeden temat wypada, bo problem okazuje się gdzie indziej. Wtedy mówimy o tym wprost i podmieniamy go razem z Wami.',
+    k: 'w trakcie programu',
+  },
+];
+
+
+// ---- JAK WYGLĄDA SESJA -------------------------------------------------
+const SESJA = [
+  {
+    t: 'Przy klawiaturze siedzi Wasza osoba',
+    d: 'My siedzimy obok i mówimy, kiedy warto się zatrzymać, o co dopytać model i co sprawdzić, zanim zmiana pójdzie dalej. Pokaz z naszej strony zajmuje pierwsze [dwadzieścia minut].',
+  },
+  {
+    t: 'Pracujemy na sprawie, która i tak jest na liście',
+    d: 'Temat sesji zna każdy z góry, ale robimy na nim prawdziwą robotę z tego tygodnia. Ćwiczeń wymyślonych na potrzeby szkolenia nie ma.',
+  },
+  {
+    t: 'Sesja kończy się zmianą w aplikacji',
+    d: 'Po [dwóch godzinach] w aplikacji jest coś, czego wcześniej nie było, i widać to w historii zmian. Zadań domowych nie zadajemy.',
+  },
+  {
+    t: 'Ostatnią sesję prowadzi Wasza osoba',
+    d: 'Bierze zmianę, której nie robiliśmy wspólnie, i przechodzi ją od początku do końca. My siedzimy cicho i notujemy, co jeszcze warto dopisać do zasad.',
+  },
+];
+
+
+// ---- AGENDA Z UZASADNIENIEM (ciemny pas) -------------------------------
+// To jest ARTEFAKT, nie ilustracja: dokładnie ten dokument dostaje klient
+// po przeglądzie. Kolejność i treść wierszy muszą się zgadzać z hero —
+// pozycje 1 i 2 to te dwa tematy, które wychodzą u każdego.
+const AGENDA = [
+  {
+    n: 1,
+    t: 'Jak opisać zadanie, żeby model nie zgadywał',
+    skad: 'Trzy osoby, trzy sposoby proszenia modelu. Ten sam ekran wyszedł za każdym razem inaczej.',
+    zostaje: 'Opis zadania i warunki odbioru w repozytorium, w formacie, który narzędzie czyta samo.',
+    wszedzie: true,
+  },
+  {
+    n: 2,
+    t: 'Co sprawdzić, zanim zobaczą to ludzie',
+    skad: 'Zmiana trafia do klientów tego samego dnia, w którym powstała. Nikt jej wcześniej nie otwiera.',
+    zostaje: 'Lista sprawdzeń, którą uruchamia narzędzie, i jedno miejsce, w którym widać wynik.',
+    wszedzie: true,
+  },
+  {
+    n: 3,
+    t: 'Gdzie mają leżeć klucze i hasła',
+    skad: 'Klucz do bramki płatniczej wpisany wprost w kodzie, w [trzech miejscach]. Jeden z nich jest w pliku wysłanym kiedyś mailem.',
+    zostaje: 'Klucze przeniesione, stare unieważnione, nowe wchodzą już inną drogą.',
+  },
+  {
+    n: 4,
+    t: 'Uruchomienie projektu przez drugą osobę',
+    skad: 'Projekt od zera odpala jedna osoba. Robiła to ostatnio w maju i sama nie pamięta kolejności.',
+    zostaje: 'Instrukcja, po której druga osoba odpaliła projekt na sesji, przy nas.',
+  },
+  {
+    n: 5,
+    t: 'Test tam, gdzie są pieniądze',
+    skad: 'Ścieżka zamówienia nie ma żadnego sprawdzenia. Ostatnia awaria wyszła od klienta, po dwóch dniach.',
+    zostaje: 'Test ścieżki zamówienia, uruchamiany przy każdej zmianie.',
+  },
+  {
+    n: 6,
+    t: 'Co wolno wysłać do modelu',
+    skad: 'Arkusz z danymi klientów krąży mailem i jego fragmenty wchodzą do zapytań.',
+    zostaje: 'Zasada spisana po ludzku i dostęp do arkusza zawężony do osób, które go potrzebują.',
+  },
+  {
+    n: 7,
+    t: 'Skąd bierze się rachunek za model',
+    skad: 'Rachunek podwoił się w dwa tygodnie prób i nikt nie umie wskazać, co go podbiło.',
+    zostaje: 'Limity na projekt i podgląd, który pokazuje koszt, zanim urośnie.',
+  },
+];
+
+
+// ---- CO ZOSTAJE U WAS --------------------------------------------------
+const ZOSTAJE = [
+  {
+    t: 'Zasady w Waszym repozytorium',
+    d: 'Spisane w formacie, który czyta Wasze narzędzie AI, więc pilnuje ich samo. Zostają na miejscu, kiedy program się kończy.',
+  },
+  {
+    t: 'Nagrania sesji',
+    d: 'Pracujemy na Waszym kodzie, więc nagranie jest instrukcją do Waszej aplikacji. Nowa osoba dostaje je razem z instrukcją uruchomienia.',
+  },
+  {
+    t: 'Zmiany zrobione na sesjach',
+    d: 'Siedem sesji to siedem rzeczy naprawionych w aplikacji. Widać je w historii zmian z datą.',
+  },
+];
+
+
+// ---- KIEDY TO NIE MA SENSU ---------------------------------------------
+const GRANICE = [
+  {
+    t: 'Kiedy nikt nie ma na to czasu w kalendarzu',
+    d: 'Program potrzebuje [dwóch godzin tygodniowo przez sześć tygodni] od tych samych osób. Jeśli tego nie ma, sesje się przesuwają i wszystko traci sens. Wtedy uczciwiej jest wziąć prowadzenie, przy którym robotę bierzemy na siebie.',
+    l: { h: '/guided-coding/bez-dzialu-it', t: 'Zobacz prowadzenie →' },
+  },
+  {
+    t: 'Jeśli aplikacja i tak idzie do przepisania',
+    d: 'Nauka na kodzie, który za miesiąc zniknie, jest stratą Waszego czasu. Najpierw jest ta decyzja, program dopiero po niej — i wtedy wychodzi zupełnie inny.',
+  },
+  {
+    t: 'Gdy wolicie oddać to komuś w całości',
+    d: 'To jest sensowny wybór i nie będziemy przekonywać do przeciwnego. Powiemy wprost, która nasza usługa to jest, i ile mniej więcej kosztuje.',
+  },
+];
+
+
+// ---- FAQ — pierwsze pytanie jest najniewygodniejsze --------------------
+const faq = [
+  {
+    q: 'Czym to się różni od szkolenia z AI, które można kupić za kilka tysięcy?',
+    a: 'Tam agenda istnieje przed Wami i jest ta sama dla każdej sali. Tutaj pięć tematów z siedmiu bierze się z rzeczy, które znaleźliśmy w Waszej aplikacji, i przy każdym stoi miejsce, z którego się wziął. Dwa rzeczywiście wychodzą u wszystkich — mówimy o tym wprost, zamiast udawać, że nic się nie powtarza. Koszt też jest inny: przed programem idzie przegląd, a on kosztuje.',
+  },
+  {
+    q: 'Wstyd nam pokazywać ten kod.',
+    a: 'Czytamy takie aplikacje co tydzień i żadna nie wygląda inaczej. Klucze w kodzie, kopia bez odtworzenia i jedna osoba, która wie, jak to odpalić, to nie są Wasze wyjątki, tylko standardowy stan rzeczy zbudowanej szybko i po godzinach. Poza tym z tego bałaganu robi się program — bez niego mielibyśmy tylko ogólny kurs.',
+  },
+  {
+    q: 'Ile osób może brać udział w sesji?',
+    a: 'Sensownie [do sześciu], bo przy klawiaturze siedzi jedna i reszta musi widzieć, co robi. Przy większych zespołach robimy dwie grupy albo dokładamy drugą osobę po naszej stronie. Nagrania dostają wszyscy, także ci, których na sesji nie było.',
+  },
+  {
+    q: 'Co, jeśli po dwóch sesjach okaże się, że program powinien być o czymś innym?',
+    a: 'To się zdarza mniej więcej co drugi raz i jest wpisane w sposób pracy. Podmieniamy temat razem z Wami i mówimy, co przez to wypada. Agenda jest ustaleniem, do którego wracamy — wolno ją ruszyć w każdą stronę.',
+  },
+  {
+    q: 'Czy po programie zostaniemy z Wami na stałe?',
+    a: 'Program ma koniec i po nim można się rozstać — zasady zostają w Waszym repozytorium i działają dalej. Część zespołów zostaje na stałą opiekę, bo tak im wygodniej: <a href="/guided-coding/bez-dzialu-it" style="color:#0a7a52;font-weight:650">dla zespołów bez działu IT</a> albo <a href="/guided-coding/dla-zespolow" style="color:#0a7a52;font-weight:650">dla zespołów technicznych</a>. To osobna decyzja i osobna umowa.',
+  },
+  {
+    q: 'Czy płacimy osobno za narzędzia i za analizę kodu?',
+    a: 'Nie. Nasze narzędzia i koszt przeczytania Waszego kodu siedzą w stawce. Jeśli w trakcie polecimy coś płatnego po Waszej stronie, powiemy, ile kosztuje i co daje — prowizji od dostawców nie bierzemy.',
+  },
+];
+---
+<LaBase title={title} description={description} ogImage="/og/hub.png" ctaHref="#kontakt" ctaLabel="Umów rozmowę">
+<style is:global slot="head">
+  /* ================= lista, która się przestawia (hero) =================
+     Cztery akty: znaleziska wchodzą pojedynczo, wiersze są podnoszone
+     i odkładane na swoich miejscach, program materializuje się jako blok
+     z kreską po siódmej pozycji, na koniec lista schodzi od dołu.
+
+     Wiersze siedzą absolutnie na siatce o wysokości --rh, więc przejazd
+     to całkowita wielokrotność wiersza i rysunek skaluje się razem
+     z ekranem — bez transform:scale() na całej scenie.
+
+     PODZIAŁ RÓL: zewnętrzne .tk-w robi wyłącznie przejazd w pionie,
+     wewnętrzne .tk-in wjazd z lewej, podniesienie i zejście. Gdyby
+     siedziało to na jednym elemencie, transformy by się nadpisały. */
+  .tk-scena{position:relative}
+  .tk-gl{position:relative;height:18px;margin-bottom:18px}
+  .tk-gl span{position:absolute;left:0;top:0;white-space:nowrap;font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.13em;text-transform:uppercase;font-weight:600}
+  .tk-gl .a{color:#8b968d}
+  .tk-gl .b{color:#0a7a52}
+  .tk-lista{--rh:52px;position:relative;height:calc(9 * var(--rh));border-top:1px solid #e2e9e0}
+  .tk-linia{position:absolute;left:0;right:0;top:calc((var(--i) + 1) * var(--rh));height:1px;background:#eef2ec}
+  .tk-blok{position:absolute;left:-14px;right:-14px;top:-6px;height:calc(7 * var(--rh) + 4px);border-radius:14px;background:linear-gradient(90deg, rgba(0,205,119,0.09), rgba(0,205,119,0.02) 46%, rgba(0,205,119,0) 72%);opacity:0;pointer-events:none}
+  .tk-rail{position:absolute;left:-14px;top:-6px;width:2px;height:calc(7 * var(--rh) + 4px);border-radius:2px;background:var(--la-accent,#00CD77);transform:scaleY(0);transform-origin:top center}
+  .tk-w{position:absolute;left:0;right:0;top:calc(var(--i) * var(--rh));height:var(--rh);will-change:transform}
+  .tk-in{height:100%;display:grid;grid-template-columns:34px minmax(0,1fr) auto;align-items:center;gap:12px;padding:0 10px;margin:0 -10px;border-radius:11px;opacity:0;will-change:transform,opacity}
+  .tk-mk{position:relative;display:block;width:26px;height:26px}
+  .tk-n{position:absolute;inset:0;display:block;line-height:26px;text-align:center;border-radius:8px;background:#0e2b1d;color:#ffffff;font-family:ui-monospace,Menlo,monospace;font-size:12.5px;font-weight:700;opacity:0}
+  .tk-kropka{position:absolute;left:10px;top:10px;width:6px;height:6px;border-radius:50%;background:#c9d3c8}
+  .tk-t{font-size:15px;line-height:1.3;color:#16211a;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .tk-tag{opacity:0;white-space:nowrap;font-size:12px;font-weight:650;letter-spacing:0.01em;padding:4px 10px;border-radius:7px}
+  .tk-tag.kod{background:#e6f7ec;color:#0a5c3c}
+  .tk-tag.wsz{background:#eef1ec;color:#7c877e}
+  .tk-tag.sami{background:transparent;color:#9aa79b;border:1px dashed #d3ddd2}
+  .tk-kres{position:absolute;left:0;right:0;top:calc(7 * var(--rh));height:2px;background:#16211a;opacity:0;transform-origin:left center}
+  .tk-pod{margin:clamp(20px,2.4vw,26px) 0 0;max-width:74ch;font-size:15px;line-height:1.6;color:#4c5850;text-wrap:pretty}
+  .tk-pod strong{font-weight:700;color:#16211a}
+  @media (max-width:760px){
+    .tk-lista{--rh:46px}
+    .tk-t{font-size:13.5px}
+    .tk-tag{font-size:10.5px;padding:3px 7px}
+    .tk-in{grid-template-columns:28px minmax(0,1fr) auto;gap:8px;padding:0 8px;margin:0 -8px}
+    .tk-blok,.tk-rail{left:-8px}
+    .tk-blok{right:-8px}
+  }
+  @media (max-width:420px){
+    .tk-lista{--rh:42px}
+    .tk-t{font-size:12.5px}
+    .tk-tag{font-size:9.5px;padding:3px 6px}
+  }
+  /* Bez ruchu rysunek musi stać w stanie końcowym. Pozycje wchodzą drugą
+     drogą — przez --d i --rh — więc zdjęcie animacji ich nie zabiera.
+     Każdy element niosący stan musi być tu wymieniony z osobna. */
+  @media (prefers-reduced-motion:reduce){
+    .tk-w,.tk-in,.tk-n,.tk-kropka,.tk-tag,.tk-kres,.tk-blok,.tk-rail,.tk-gl .a,.tk-gl .b,.tk-w.poza .tk-t{animation:none !important}
+    .tk-w{transform:translateY(calc(var(--d) * var(--rh)))}
+    .tk-in{opacity:1}
+    .tk-n,.tk-tag,.tk-kres,.tk-blok{opacity:1}
+    .tk-kres{transform:scaleX(1)}
+    .tk-rail{transform:scaleY(1)}
+    .tk-w:not(.poza) .tk-kropka{opacity:0}
+    .tk-w.poza .tk-t{color:#95a196}
+    .tk-gl .a{opacity:0}
+    .tk-gl .b{opacity:1}
+  }
+
+  /* ================= definicja (sekcja 2) ============================== */
+  .tk-def{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:clamp(32px,5vw,72px);align-items:start;margin-top:clamp(30px,3.6vw,44px)}
+  .tk-def-d{font-size:clamp(19px,2.5vw,25px);line-height:1.45;color:#16211a;letter-spacing:-0.012em;text-wrap:pretty;margin:0}
+  .tk-def-d b{font-weight:800}
+  .tk-def p.m{margin:22px 0 0;font-size:16px;line-height:1.65;color:#4c5850;text-wrap:pretty}
+  .tk-def-r{border-left:2px solid #d7e3d6;padding-left:clamp(20px,2.4vw,28px)}
+  .tk-def-r h3{margin:0;font-size:15px;font-weight:750;color:#16211a}
+  .tk-def-r p{margin:10px 0 0;font-size:15px;line-height:1.62;color:#4c5850;text-wrap:pretty}
+  .tk-def-r p + h3{margin-top:24px}
+
+  /* ================= dla kogo (dwie kolumny + pas) ===================== */
+  .tk-dk{display:grid;grid-template-columns:1fr 1fr;gap:clamp(28px,4vw,56px);margin-top:clamp(32px,4vw,48px)}
+  .tk-dk h3{margin:0;font-size:clamp(19px,2.3vw,23px);font-weight:750;letter-spacing:-0.018em;color:#16211a;text-wrap:pretty}
+  .tk-dk p{margin:12px 0 0;font-size:16px;line-height:1.65;color:#4c5850;text-wrap:pretty}
+  .tk-nm{margin-top:clamp(36px,4.4vw,56px);padding-top:clamp(26px,3vw,34px);border-top:1px solid #e7ece4;display:grid;grid-template-columns:200px minmax(0,1fr);gap:clamp(20px,3vw,48px)}
+  .tk-nm > b{font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.13em;text-transform:uppercase;color:#808b83;font-weight:600}
+  .tk-nm ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:12px}
+  .tk-nm li{font-size:15.5px;line-height:1.6;color:#33413a;text-wrap:pretty}
+  @media (max-width:760px){ .tk-nm{grid-template-columns:1fr;gap:16px} }
+
+  /* ================= jak powstaje program (numerowane wiersze) ========= */
+  .tk-kr{margin-top:clamp(30px,3.6vw,44px);border-top:1px solid #dde7db}
+  .tk-kr-r{display:grid;grid-template-columns:52px minmax(0,1.05fr) minmax(0,1.25fr) 150px;gap:clamp(14px,2.4vw,32px);align-items:baseline;padding:clamp(20px,2.4vw,28px) 0;border-bottom:1px solid #e2e9e0}
+  .tk-kr-n{font-family:ui-monospace,Menlo,monospace;font-size:13px;font-weight:700;color:#0a7a52}
+  .tk-kr-t{margin:0;font-size:clamp(17px,2vw,20px);font-weight:750;letter-spacing:-0.015em;color:#16211a;text-wrap:pretty}
+  .tk-kr-d{margin:0;font-size:15px;line-height:1.6;color:#4c5850;text-wrap:pretty}
+  .tk-kr-k{font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#7c877e;text-align:right}
+  @media (max-width:900px){
+    .tk-kr-r{grid-template-columns:34px minmax(0,1fr);gap:6px 14px}
+    .tk-kr-d{grid-column:2}
+    .tk-kr-k{grid-column:2;text-align:left;margin-top:2px}
+  }
+
+  /* ================= teza — jedyny moment asymetrii ==================== */
+  .tk-teza{margin:0 auto;max-width:1440px;padding:0 max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) clamp(64px,8vw,104px)}
+  .tk-teza div{max-width:900px;margin-left:auto;border-left:3px solid var(--la-accent,#00CD77);padding-left:clamp(22px,3vw,40px)}
+  .tk-teza p{margin:0;font-size:clamp(23px,3.4vw,38px);line-height:1.25;letter-spacing:-0.024em;font-weight:750;color:#16211a;text-wrap:pretty}
+  .tk-teza small{display:block;margin-top:18px;max-width:60ch;font-size:15.5px;line-height:1.62;font-weight:400;color:#4c5850}
+
+  /* ================= sesja (proza na liniach, bez pudełek) ============= */
+  .tk-ses{margin-top:clamp(30px,3.6vw,44px);display:grid;grid-template-columns:1fr 1fr;gap:0 clamp(36px,5vw,72px)}
+  .tk-ses > div{padding:clamp(22px,2.6vw,30px) 0;border-top:1px solid #e7ece4}
+  .tk-ses h3{margin:0;font-size:17.5px;font-weight:750;letter-spacing:-0.014em;color:#16211a;text-wrap:pretty}
+  .tk-ses p{margin:10px 0 0;font-size:15.5px;line-height:1.65;color:#4c5850;text-wrap:pretty}
+  @media (max-width:820px){ .tk-ses{grid-template-columns:1fr} }
+
+  /* ================= agenda z uzasadnieniem (ciemny pas) ===============
+     Artefakt, nie ilustracja: to jest dokument, który klient dostaje po
+     przeglądzie. Trzy kolumny na szerokim ekranie, na wąskim wiersze
+     z podpisami przez data-l. */
+  .ag{margin-top:clamp(32px,4vw,48px);border:1px solid rgba(255,255,255,0.14);border-radius:20px;overflow:hidden;background:rgba(255,255,255,0.03)}
+  .ag-g{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:8px 24px;padding:clamp(18px,2.2vw,24px) clamp(20px,2.6vw,30px);border-bottom:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
+  .ag-g b{font-size:15px;font-weight:750;color:#ffffff}
+  .ag-g span{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;letter-spacing:0.08em;color:rgba(255,255,255,0.55)}
+  .ag-n{display:grid;grid-template-columns:44px minmax(0,1.05fr) minmax(0,1.15fr) minmax(0,1.15fr);gap:clamp(14px,2vw,26px);padding:12px clamp(20px,2.6vw,30px);border-bottom:1px solid rgba(255,255,255,0.1)}
+  .ag-n span{font-family:ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.42)}
+  .ag-r{display:grid;grid-template-columns:44px minmax(0,1.05fr) minmax(0,1.15fr) minmax(0,1.15fr);gap:clamp(14px,2vw,26px);padding:clamp(16px,2vw,20px) clamp(20px,2.6vw,30px);border-bottom:1px solid rgba(255,255,255,0.09)}
+  .ag-r:last-child{border-bottom:0}
+  .ag-nr{font-family:ui-monospace,Menlo,monospace;font-size:13px;font-weight:700;color:var(--la-accent,#00CD77)}
+  .ag-t{font-size:15.5px;line-height:1.4;font-weight:700;color:#ffffff;text-wrap:pretty}
+  .ag-v{font-size:14px;line-height:1.55;color:rgba(255,255,255,0.68);text-wrap:pretty}
+  .ag-v.z{color:rgba(255,255,255,0.9)}
+  .ag-w{display:inline-block;margin-top:8px;font-family:ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.5);border:1px solid rgba(255,255,255,0.22);border-radius:6px;padding:3px 7px}
+  .ag-o{margin:clamp(26px,3vw,34px) 0 0;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(20px,3vw,44px)}
+  .ag-o p{margin:0;font-size:15.5px;line-height:1.65;color:rgba(255,255,255,0.78);text-wrap:pretty}
+  .ag-o p strong{color:#ffffff;font-weight:700}
+  .ag-nota{margin:clamp(20px,2.4vw,28px) 0 0;font-size:13.5px;line-height:1.6;color:rgba(255,255,255,0.5);max-width:78ch}
+  @media (max-width:1000px){
+    .ag-n{display:none}
+    .ag-r{grid-template-columns:34px minmax(0,1fr);gap:6px 12px}
+    .ag-v{grid-column:2}
+    .ag-v::before{content:attr(data-l) ': ';color:rgba(255,255,255,0.4)}
+    .ag-o{grid-template-columns:1fr}
+  }
+
+  /* ================= co zostaje (siatka tekstowa bez pudełek) ========== */
+  .tk-zo{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(28px,4vw,56px);margin-top:clamp(30px,3.6vw,44px)}
+  .tk-zo h3{margin:0;padding-top:16px;border-top:2px solid #16211a;font-size:17px;font-weight:750;letter-spacing:-0.014em;color:#16211a;text-wrap:pretty}
+  .tk-zo p{margin:10px 0 0;font-size:15px;line-height:1.62;color:#4c5850;text-wrap:pretty}
+  .tk-zo-p{margin:clamp(30px,3.6vw,42px) 0 0;max-width:82ch;font-size:16px;line-height:1.65;color:#4c5850;text-wrap:pretty}
+  .tk-zo-p strong{font-weight:700;color:#16211a}
+  @media (max-width:820px){ .tk-zo{grid-template-columns:1fr;gap:26px} }
+
+  /* ================= kto prowadzi ====================================== */
+  .tk-kp{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(28px,4vw,64px);margin-top:clamp(30px,3.6vw,44px);align-items:start}
+  .tk-kp ul{margin:14px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:12px}
+  .tk-kp li{display:grid;grid-template-columns:18px minmax(0,1fr);gap:11px;font-size:15.5px;line-height:1.6;color:#33413a}
+  .tk-kp li b{font-weight:700;color:#16211a}
+  .tk-kp > div > b{font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.13em;text-transform:uppercase;color:#808b83;font-weight:600}
+
+  /* ================= dwie drogi wejścia (równorzędne) ================== */
+  .tk-we{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:clamp(30px,3.6vw,44px)}
+  .tk-we-k{display:flex;flex-direction:column;background:#ffffff;border:1px solid #e2e9e0;border-radius:20px;padding:clamp(26px,3vw,36px)}
+  .tk-we-k h3{margin:14px 0 0;font-size:clamp(20px,2.4vw,25px);font-weight:800;letter-spacing:-0.02em;color:#16211a}
+  .tk-we-k p{margin:12px 0 0;font-size:15.5px;line-height:1.62;color:#4c5850;text-wrap:pretty}
+  .tk-we-k .e{font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.13em;text-transform:uppercase;color:#0a7a52;font-weight:600}
+  .tk-we-k a{margin-top:auto;display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:15px 24px;border-radius:11px;background:#16211a;color:#ffffff;font-size:15.5px;font-weight:700}
+  .tk-we-k .w{margin-top:22px;padding-top:16px;border-top:1px solid #eef1ec;font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#7c877e}
+
+  /* ================= granice + cena ==================================== */
+  .tk-gr{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(26px,3.4vw,48px);margin-top:clamp(30px,3.6vw,44px)}
+  .tk-gr h3{margin:0;font-size:17px;font-weight:750;letter-spacing:-0.014em;color:#16211a;text-wrap:pretty}
+  .tk-gr p{margin:10px 0 0;font-size:15px;line-height:1.62;color:#4c5850;text-wrap:pretty}
+  .tk-gr a{display:inline-block;margin-top:12px;font-size:14.5px;font-weight:700;color:#0a7a52}
+  .tk-cena{margin-top:clamp(38px,4.6vw,60px);padding-top:clamp(26px,3vw,34px);border-top:1px solid #e7ece4;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(20px,3vw,56px)}
+  .tk-cena h3{margin:0;font-size:clamp(20px,2.4vw,26px);font-weight:800;letter-spacing:-0.02em;color:#16211a;text-wrap:pretty}
+  .tk-cena p{margin:0;font-size:15.5px;line-height:1.65;color:#4c5850;text-wrap:pretty}
+  .tk-cena p + p{margin-top:14px}
+  @media (max-width:900px){ .tk-gr{grid-template-columns:1fr;gap:26px} .tk-cena{grid-template-columns:1fr;gap:18px} }
+  @media (max-width:900px){ .tk-def,.tk-dk,.tk-we,.tk-kp{grid-template-columns:1fr !important;gap:32px !important} }
+</style>
+
+<!-- ============ 1 · HERO ============
+     Lista z przeglądu przestawia się w program. Dwa wiersze zjeżdżają pod
+     kreskę — te naprawiamy sami, bo nie ma z nich czego uczyć. -->
+<section style="position:relative;overflow:hidden;background:radial-gradient(880px 500px at 86% -6%, rgba(0,205,119,0.13), transparent 62%), #ffffff;padding:clamp(44px,6vw,76px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) clamp(52px,6.5vw,80px)">
+<div style="max-width:900px">
+<h1 style="margin:0;font-size:clamp(30px,4.6vw,52px);line-height:1.06;letter-spacing:-0.033em;font-weight:800;color:#16211a;text-wrap:balance">Najpierw czytamy to, co zbudowaliście. Program powstaje z tego, co znajdziemy</h1>
+<p style="margin:24px 0 0;max-width:660px;font-size:clamp(16px,2.1vw,19px);line-height:1.6;color:#33413a;text-wrap:pretty">Uczymy Waszych ludzi na Waszej aplikacji: pracujemy na jej kodzie i na sprawach, które i tak są w tym tygodniu na liście. Po każdej sesji zostaje w niej zmiana.</p>
+<div class="hero-actions" style="display:flex;align-items:center;flex-wrap:wrap;gap:16px 22px;margin-top:32px">
+<a href="#kontakt" class="btn-dark" style="display:inline-flex;align-items:center;gap:10px;background:#16211a;color:#ffffff;padding:18px 32px;border-radius:12px;font-weight:650;font-size:16.5px;box-shadow:0 14px 30px -14px rgba(16,33,26,0.45)">Umów rozmowę <span aria-hidden="true">→</span></a>
+<a href="#agenda" class="btn-ghost" style="display:inline-flex;align-items:center;gap:8px;font-size:16.5px;font-weight:700;color:#16211a;background:rgba(255,255,255,0.6);padding:18px 26px;border-radius:12px;border:1px solid rgba(22,33,26,0.16)">Zobacz agendę z uzasadnieniem →</a>
+</div>
+</div>
+
+<div style="margin-top:clamp(40px,5vw,64px)">
+<div class="tk-scena" role="img" aria-label={`Dziewięć rzeczy znalezionych w przeglądzie układa się w program siedmiu sesji. Dwa tematy — sposób proszenia modelu i sprawdzenie przed wypuszczeniem zmiany — wychodzą u każdego klienta. Pięć bierze się z kodu tej firmy. Dwa znaleziska zostają poza programem, bo naprawiamy je sami.`}>
+<div class="tk-gl">
+  <span class="a" style={`animation:tk-tyt-a ${CYKL}s cubic-bezier(.4,0,.2,1) infinite`}>Co znaleźliśmy w przeglądzie</span>
+  <span class="b" style={`animation:tk-tyt-b ${CYKL}s cubic-bezier(.4,0,.2,1) infinite`}>Program: {SESJI} sesji</span>
+</div>
+<div class="tk-lista">
+{ZNALEZISKA.map((z, i) => (
+  <span class="tk-linia" style={`--i:${i}`}></span>
+))}
+<span class="tk-blok" style={`animation:tk-blok ${CYKL}s ease infinite`}></span>
+<span class="tk-rail" style={`animation:tk-rail ${CYKL}s cubic-bezier(.4,0,.2,1) infinite`}></span>
+{ZNALEZISKA.map((z, i) => (
+  <div class={z.sami ? 'tk-w poza' : 'tk-w'} style={`--i:${i};--d:${z.poz - i};animation:tk-w${i} ${CYKL}s cubic-bezier(.62,0,.2,1) infinite`}>
+    <div class="tk-in" style={`animation:tk-in${i} ${CYKL}s cubic-bezier(.4,0,.2,1) infinite`}>
+      <span class="tk-mk">
+        <span class="tk-kropka" style={z.sesja ? `animation:tk-d${z.sesja} ${CYKL}s linear infinite` : ''}></span>
+        {z.sesja && <span class="tk-n" style={`animation:tk-n${z.sesja} ${CYKL}s cubic-bezier(.34,1.5,.64,1) infinite`}>{z.sesja}</span>}
+      </span>
+      <span class="tk-t" style={z.sami ? `animation:tk-blak ${CYKL}s linear infinite` : ''}>{z.t}</span>
+      <span class={z.sami ? 'tk-tag sami' : z.wszedzie ? 'tk-tag wsz' : 'tk-tag kod'} style={`animation:tk-g${i} ${CYKL}s cubic-bezier(.4,0,.2,1) infinite`}>{z.sami ? 'naprawiamy sami' : z.wszedzie ? 'u każdego tak samo' : 'z Waszego kodu'}</span>
+    </div>
+  </div>
+))}
+<span class="tk-kres" style={`animation:tk-kres ${CYKL}s cubic-bezier(.4,0,.2,1) infinite`}></span>
+</div>
+<style is:inline set:html={klatkiHero}></style>
+</div>
+<p class="tk-pod"><strong>{Z_KODU} z {SESJI} tematów</strong> bierze się z rzeczy, które znaleźliśmy tylko u tej firmy. {WSZEDZIE === 2 ? 'Dwa' : WSZEDZIE} wychodzą u każdego i mówimy o tym wprost. Dwóch rzeczy z tej listy nie ma sensu uczyć — naprawiamy je sami, w tygodniu po przeglądzie.</p>
+</div>
+</section>
+
+<!-- ============ 2 · CZYM JEST TRANSFER KNOW-HOW ============
+     Pierwsze zdanie jest definicją z podmiotem równym nazwie usługi —
+     po ten fragment sięgają modele językowe i wyróżnione odpowiedzi. -->
+<section id="czym-jest" style="background:#f4f8f2;padding:clamp(60px,7.5vw,96px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
+<h2 class="h-sec" style="margin:0;max-width:900px;text-wrap:balance">Czym jest transfer know-how</h2>
+<div class="tk-def">
+<div>
+<p class="tk-def-d"><b>Transfer know-how</b> to program szkoleniowy projektowany pod jedną firmę: prowadzimy go na Waszej aplikacji i na sprawach, które są u Was na liście w danym tygodniu.</p>
+<p class="m">Katalogu tematów nie mamy. Zanim ustalimy pierwszą sesję, czytamy kod, który u Was powstał, i rozmawiamy z osobami, które go pisały. Dopiero z tego składa się program — i dlatego dwa programy dla dwóch firm mają ze sobą wspólne dwa tematy z siedmiu.</p>
+<p class="m">Po ostatniej sesji zasady zostają w Waszym repozytorium i działają bez nas. Część zespołów zostaje potem na stałą opiekę, ale to jest osobna decyzja i osobna umowa.</p>
+</div>
+<div class="tk-def-r">
+<h3>Szkolenie z narzędzia uczy narzędzia</h3>
+<p>Kurs pokazuje, co potrafi model, na przykładach przygotowanych do pokazu. Tutaj przez dwie godziny siedzimy nad Waszym ekranem zamówień, który wczoraj się wysypał.</p>
+<h3>Wiedza zostaje w miejscu, do którego się wraca</h3>
+<p>Notatki z sali giną w trzecim tygodniu. Zasady spisane w repozytorium czyta Wasze narzędzie AI przy każdej kolejnej zmianie, także wtedy, gdy pisze ją ktoś nowy.</p>
+</div>
+</div>
+</section>
+
+<!-- ============ 3 · DLA KOGO + CZEGO NIE MUSICIE MIEĆ ============
+     Podział po CELU, nie po typie zespołu — dwie pozostałe podstrony już
+     dzielą po tym, czy jest dział IT. -->
+<section id="dla-kogo" class="sec-pad">
+<div class="sec-head">
+<h2 class="h-sec" style="margin:0;max-width:640px;text-wrap:pretty">Dla kogo to jest</h2>
+<p class="sub" style="margin:0 0 6px;max-width:430px">Obie sytuacje trafiają do tego samego programu, bo cel jest ten sam: chcecie umieć to sami.</p>
+</div>
+<div class="tk-dk">
+{DLA_KOGO.map((x) => (
+  <div class="rv">
+    <h3>{x.t}</h3>
+    <p>{x.d}</p>
+  </div>
+))}
+</div>
+<div class="tk-nm rv">
+<b>Czego nie musicie mieć</b>
+<ul>
+{NIE_MUSICIE.map((x) => (<li>{x}</li>))}
+</ul>
+</div>
+</section>
+
+<!-- ============ 4 · JAK POWSTAJE PROGRAM ============ -->
+<section id="program" style="background:#f4f8f2;padding:clamp(60px,7.5vw,96px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
+<div class="sec-head">
+<h2 class="h-sec" style="margin:0;max-width:600px;text-wrap:pretty">Jak powstaje program</h2>
+<p class="sub" style="margin:0 0 6px;max-width:450px">Cztery kroki przed pierwszą sesją i w trakcie. Po trzecim macie dokument, który da się odrzucić.</p>
+</div>
+<div class="tk-kr">
+{POWSTAJE.map((x, i) => (
+  <div class="tk-kr-r rv">
+    <span class="tk-kr-n">0{i + 1}</span>
+    <h3 class="tk-kr-t">{x.t}</h3>
+    <p class="tk-kr-d">{x.d}</p>
+    <span class="tk-kr-k">{x.k}</span>
+  </div>
+))}
+</div>
+</section>
+
+<!-- ============ 4b · TEZA ============
+     Argument, który ma zostać zapamiętany, nie może być akapitem trzecim.
+     Jedyne miejsce na stronie bez nagłówka i jedyny moment asymetrii. -->
+<div class="tk-teza" style="background:#ffffff;padding-top:clamp(64px,8vw,104px)">
+<div class="rv">
+<p>Agendę, którą można wysłać przed obejrzeniem Waszej aplikacji, dało się napisać bez Was</p>
+<small>Dlatego u nas nie ma czego wysłać przed przeglądem. Dostajecie listę tematów dopiero wtedy, kiedy przy każdym stoi miejsce w Waszym kodzie, z którego się wziął.</small>
+</div>
+</div>
+
+<!-- ============ 5 · JAK WYGLĄDA SESJA ============ -->
+<section id="sesja" style="background:#ffffff;padding:0 max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) clamp(72px,10vw,120px);scroll-margin-top:16px">
+<h2 class="h-sec" style="margin:0;max-width:760px;text-wrap:pretty">Jak wygląda jedna sesja</h2>
+<div class="tk-ses">
+{SESJA.map((x) => (
+  <div class="rv">
+    <h3>{x.t}</h3>
+    <p>{x.d}</p>
+  </div>
+))}
+</div>
+<p class="tk-zo-p">Między sesjami odpowiadamy na pytania w ciągu dnia roboczego. Pracujemy w <strong>Claude Code i Codeksie</strong> — w tych narzędziach prowadzimy sesje i w nich zostają zasady, które spisujemy.</p>
+</section>
+
+<!-- ============ 6 · AGENDA Z UZASADNIENIEM ============
+     Ciemny pas bierze najcięższy argument strony: to jest RZECZ, którą
+     klient dostaje przed decyzją, i jednocześnie dowód tezy. Pozycje 1 i 2
+     są oznaczone jako powtarzalne — bez tego rysunek byłby przechwałką. -->
+<section id="agenda" style="position:relative;background:radial-gradient(900px 420px at 88% 4%, rgba(0,205,119,0.16), transparent 62%), #0e2b1d;padding:clamp(60px,7.5vw,98px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
+<div class="sec-head">
+<h2 class="h-sec" style="margin:0;max-width:620px;color:#ffffff;text-wrap:pretty">Tak wygląda agenda, którą dostajecie po przeglądzie</h2>
+<p style="margin:0 0 6px;max-width:450px;font-size:17px;line-height:1.6;color:rgba(255,255,255,0.72);text-wrap:pretty">Przy każdej sesji stoi miejsce w aplikacji, z którego temat się wziął, i to, co po niej w tej aplikacji zostaje.</p>
+</div>
+
+<div class="ag rv">
+<div class="ag-g">
+  <b>Program dla firmy produkcyjnej · [40 osób, aplikacja do zamówień]</b>
+  <span>{SESJI} sesji · [6 tygodni] · [4 osoby]</span>
+</div>
+<div class="ag-n"><span>Nr</span><span>Temat sesji</span><span>Skąd się wziął</span><span>Co zostaje w aplikacji</span></div>
+{AGENDA.map((x) => (
+  <div class="ag-r">
+    <span class="ag-nr">{x.n}</span>
+    <span><span class="ag-t">{x.t}</span>{x.wszedzie && <span class="ag-w">wychodzi u każdego</span>}</span>
+    <span class="ag-v" data-l="Skąd">{x.skad}</span>
+    <span class="ag-v z" data-l="Zostaje">{x.zostaje}</span>
+  </div>
+))}
+</div>
+
+<div class="ag-o">
+<p>Agendę dostajecie <strong>przed decyzją o programie</strong> i możecie wykreślić dowolną pozycję. Wykreślony temat znika razem z sesją, a program robi się o tydzień krótszy i o tyle tańszy.</p>
+<p>Dwie pozycje z tej listy — pierwsza i druga — wychodzą u każdego klienta. <strong>Pozostałe {Z_KODU} wzięły się z kodu tej jednej firmy</strong> i u kolejnej wyglądają inaczej. To jest cała różnica między tym programem a kursem.</p>
+</div>
+<p class="ag-nota">Przykład złożony z rzeczy, które w przeglądach widzimy najczęściej. Nazwy i liczby są zmienione, żeby nie dało się rozpoznać firmy.</p>
+</section>
+
+<!-- ============ 7 · CO ZOSTAJE U WAS ============ -->
+<section id="zostaje" style="background:#f4f8f2;padding:clamp(60px,7.5vw,96px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
+<h2 class="h-sec" style="margin:0;max-width:700px;text-wrap:pretty">Co zostaje u Was po ostatniej sesji</h2>
+<div class="tk-zo">
+{ZOSTAJE.map((x) => (
+  <div class="rv">
+    <h3>{x.t}</h3>
+    <p>{x.d}</p>
+  </div>
+))}
+</div>
+<p class="tk-zo-p">Kod, klucze i konta są Wasze od pierwszego dnia i nic z tego nie przechodzi przez nas. <strong>Nie bierzemy prowizji od dostawców narzędzi</strong> — jeśli w trakcie polecimy coś płatnego, powiemy, ile kosztuje i co za to dostajecie.</p>
+</section>
+
+<!-- ============ 8 · KTO PROWADZI ============ -->
+<section id="kto" class="sec-pad">
+<div class="tk-kp">
+<div>
+<h2 class="h-sec" style="margin:0;max-width:460px;text-wrap:pretty">Kto prowadzi sesje</h2>
+<p class="sub" style="margin:18px 0 0;max-width:460px">Prowadzący jest jeden i ten sam przez cały program. On robi przegląd, on składa agendę i on siedzi obok przy klawiaturze — bo połowa wartości sesji siedzi w tym, że pamięta, co znalazł w Waszym kodzie trzy tygodnie wcześniej.</p>
+</div>
+<div>
+<b>Co można dołożyć</b>
+<ul>
+<li><span aria-hidden="true" style="color:#0a7a52;font-weight:800">+</span><span><b>Druga osoba przy większej grupie.</b> Powyżej [sześciu uczestników] dzielimy grupę albo dokładamy drugiego prowadzącego.</span></li>
+<li><span aria-hidden="true" style="color:#0a7a52;font-weight:800">+</span><span><b>Analityk biznesowy.</b> Kiedy pod aplikacją siedzi proces, którego nikt nigdy nie spisał, i to on jest prawdziwym tematem.</span></li>
+<li><span aria-hidden="true" style="color:#0a7a52;font-weight:800">+</span><span><b>Projektant.</b> Kiedy problem siedzi w tym, jak aplikacja wygląda i jak się jej używa.</span></li>
+<li><span aria-hidden="true" style="color:#0a7a52;font-weight:800">+</span><span><b>Zbudowanie trudniejszego kawałka po naszej stronie.</b> Jedna rzecz z listy bywa za duża na sesję. Wtedy robimy ją my, a na sesji przechodzimy przez to, co zrobiliśmy.</span></li>
+</ul>
+</div>
+</div>
+</section>
+
+<!-- ============ 9 · OD CZEGO ZACZYNAMY ============
+     Dwie drogi RÓWNORZĘDNE — te same karty, każda z własnym przyciskiem. -->
+<section id="wejscie" style="background:#f4f8f2;padding:clamp(60px,7.5vw,96px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
+<div class="sec-head">
+<h2 class="h-sec" style="margin:0;max-width:560px;text-wrap:pretty">Od czego zaczynamy</h2>
+<p class="sub" style="margin:0 0 6px;max-width:440px">Dwie drogi. Obie kończą się tym, że wiecie, czego program by dotyczył — także wtedy, gdy go nie kupicie.</p>
+</div>
+<div class="tk-we">
+<div class="tk-we-k rv">
+<span class="e">Droga pierwsza</span>
+<h3>Przegląd i agenda</h3>
+<p>Czytamy kod i rozmawiamy z Waszymi ludźmi. Wychodzicie z listą tematów, przy których stoi miejsce w aplikacji i to, co dana sesja by naprawiła. Agenda zostaje u Was niezależnie od tego, co postanowicie dalej.</p>
+<div class="w">[3–5 dni] · wyceniane osobno</div>
+<a href="#kontakt" style="margin-top:24px">Umów przegląd <span aria-hidden="true">→</span></a>
+</div>
+<div class="tk-we-k rv">
+<span class="e">Droga druga</span>
+<h3>Jedna sesja próbna</h3>
+<p>Bierzemy jedną Waszą prawdziwą sprawę i przechodzimy ją razem, tak jak wyglądałaby sesja programu. Po [dwóch godzinach] wiecie, czy taki sposób pracy ma u Was sens, i macie tę sprawę zrobioną.</p>
+<div class="w">[2 godziny] · na Waszej aplikacji</div>
+<a href="#kontakt" style="margin-top:24px">Umów sesję próbną <span aria-hidden="true">→</span></a>
+</div>
+</div>
+</section>
+
+<!-- ============ 10 · KIEDY TO NIE MA SENSU + CENA ============
+     Jedyne miejsce na stronie, które niczego nie sprzedaje. Granice są
+     prawdziwe: pierwsza odsyła do dwóch pozostałych drzwi. -->
+<section id="granice" class="sec-pad">
+<div class="sec-head">
+<h2 class="h-sec" style="margin:0;max-width:600px;text-wrap:pretty">Kiedy to nie ma sensu</h2>
+<p class="sub" style="margin:0 0 6px;max-width:420px">Trzy sytuacje, w których powiemy to na pierwszej rozmowie.</p>
+</div>
+<div class="tk-gr">
+{GRANICE.map((x) => (
+  <div class="rv">
+    <h3>{x.t}</h3>
+    <p>{x.d}</p>
+    {x.l && <a href={x.l.h} class="lnk-green">{x.l.t}</a>}
+  </div>
+))}
+</div>
+<div class="tk-cena rv">
+<h3>Ile to kosztuje</h3>
+<div>
+<p>Stawkę podajemy po przeglądzie, bo zależy od liczby sesji i od tego, ile osób bierze w nich udział. Wcześniejsza liczba byłaby zgadywaniem, a strona, która mówi o liczeniu, nie może zaczynać od zmyślonej kwoty.</p>
+<p>W stawce siedzą nasze narzędzia i koszt przeczytania Waszego kodu. Osobnego rachunku za tokeny ani za licencje nie dostajecie.</p>
+</div>
+</div>
+</section>
+
+<GcCta
+  heading="Powiedzcie, co zbudowaliście"
+  lead="Dwa zdania wystarczą: co to za aplikacja, kto ją buduje i co ostatnio poszło nie tak. Odpowiemy z terminem pierwszej rozmowy."
+  eyebrow="Z programu wychodzicie z"
+  items={[
+    { t: 'Agendą z uzasadnieniem', d: 'przy każdym temacie miejsce w Waszej aplikacji' },
+    { t: 'Zasadami w Waszym repozytorium', d: 'czyta je Wasze narzędzie AI, działają bez nas' },
+    { t: 'Siedmioma zmianami w aplikacji', d: 'zrobionymi na sesjach, widocznymi w historii' },
+  ]}
+  placeholder="Np. aplikacja do zamówień zbudowana w Lovable, buduje ją dwoje ludzi z operacji…"
+  submitLabel="Umów rozmowę"
+/>
+
+<GcFaq
+  heading="Pytania, które słyszymy najczęściej"
+  lead={'Pierwsze pada na każdej rozmowie i jest dla nas najniewygodniejsze.'}
+  items={faq}
+/>
+</LaBase>

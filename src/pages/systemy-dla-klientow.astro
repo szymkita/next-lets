@@ -1,0 +1,855 @@
+---
+// SYSTEMY DLA WASZYCH KLIENTÓW — /systemy-dla-klientow
+// Druga podstrona z pionu „Budujemy aplikacje", po /systemy-procesowe.
+// Portal klienta, platforma B2B, samoobsługa.
+//
+// CZYM SIĘ RÓŻNI OD /systemy-procesowe (najbliższy sąsiad, ten sam pion):
+// Tam system prowadzi sprawę WEWNĄTRZ firmy i miarą jest czas sprawy.
+// Tutaj system stoi PO STRONIE KLIENTA i miarą jest to, ile pytań przestaje
+// do Was przychodzić. Jeden bywa fundamentem drugiego — portal karmi się
+// danymi z procesu — i FAQ to opisuje, ale strony mierzą co innego.
+//
+// POZYCJONOWANIE — dwa argumenty, w tej kolejności:
+//   1. PRZEWAGA. Firma, u której klient sam sprawdzi wszystko o dwudziestej
+//      drugiej, jest firmą, z którą łatwiej się pracuje. To jest powód,
+//      dla którego klient zostaje, kiedy ktoś inny da dwa procent taniej.
+//      Portal nie jest oszczędnością na obsłudze, tylko argumentem przy
+//      przedłużaniu umowy.
+//   2. MECHANIZM. Portal wygrywa z telefonem tylko wtedy, kiedy jest od
+//      telefonu szybszy. Telefon ma jeden krok: wybierz numer. Wszystko,
+//      co dłuższe, przegrywa — i dlatego większość portali stoi pusta.
+//
+// TRZY RZECZY SPRAWDZALNE PRZED PODPISANIEM UMOWY:
+//   1. Zaczynamy od policzonej listy pytań z ostatniego kwartału, nie od
+//      projektu portalu. Portal obsługuje pierwsze trzy pozycje z tej listy,
+//      a nie dwadzieścia.
+//   2. Mierzymy, ile pytań przestało przychodzić — nie logowania. Punkt
+//      wyjścia mierzony przed startem.
+//   3. Numeru telefonu klientowi nie zabieramy. Portal, który zmusza,
+//      przegrywa; przy każdej sprawie stoi przycisk do opiekuna.
+//
+// WARSTWA WIZUALNA — piąty osobny słownik w serwisie:
+//   /strategia-ai:      łuki, przewijany strumień, siatka stu kwadratów
+//   /rozwiazania-ai:    przekrój warstw, próg pewności, tory harmonogramu
+//   /szkolenia-ai:      jednostki do policzenia (ludzie, minuty)
+//   /systemy-procesowe: oś czasu sprawy — praca kontra czekanie
+//   /systemy-dla-klientow: LISTA PYTAŃ. Wszystko mierzy się tu liczbą pytań,
+//     które przychodzą i które przestają przychodzić.
+//   · LISTA PYTAŃ (hero) — siedem pytań klientów uszeregowanych po liczbie,
+//     przy każdym część, którą przejmuje portal; ogon zostaje szary
+//   · WEJŚCIA (ciemny pas) — skąd bierze się pierwsze logowanie; ostatnia
+//     pozycja bursztynowa, bo to ona jest pointą
+//   · WIDOKI PORTALU — pas z przewijaniem, ten sam komponent, co na
+//     /systemy-procesowe, ale z jednym ekranem z drugiej strony lady
+// Hero chodzi w pętli, reszta odsłania się raz przy wejściu w kadr.
+//
+// DO POTWIERDZENIA PRZED PUBLIKACJĄ:
+// · Cała lista pytań i liczby (855 pytań, 631 obsłużonych) — kształt jest
+//   pewny, liczby są przykładem z jednego rozkładu. Do podmiany na pomiar.
+// · Udziały wejść (46/24/19/8/3%) — proporcja z obserwacji, nie z pomiaru.
+//   Sama pointa, czyli że prawie nikt nie wpisuje adresu z pamięci, jest pewna.
+// · Sześć tygodni do pierwszego uruchomienia — założenie o kształcie usługi.
+// · Trzy przykłady w sekcji DOWODY są PRZYKŁADOWE, do podmiany.
+// · Kwoty świadomie nie ma. Miejsce na nią czeka w FAQ „Ile kosztuje".
+// · /og/systemy-dla-klientow.png — na razie strona dziedziczy /og/hub.png.
+import LaBase from '../layouts/LaBase.astro';
+import GcFaq from '../components/GcFaq.astro';
+import GcCta from '../components/GcCta.astro';
+
+const kanon = new URL('/systemy-dla-klientow', Astro.site).href;
+
+const dane = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Service',
+      '@id': `${kanon}#usluga`,
+      name: 'Systemy dla Waszych klientów',
+      alternateName: ['Portal klienta', 'Platforma B2B', 'Samoobsługa dla klientów', 'Strefa klienta'],
+      serviceType: 'Projektowanie i budowa portali klienckich oraz platform samoobsługowych B2B',
+      url: kanon,
+      description: 'Portal, w którym klienci załatwiają sami to, o co dziś dzwonią i piszą: status zamówienia, dokumenty, kolejne zamówienie na własnych cenach. Zaczynamy od policzonej listy pytań, a mierzymy to, ile pytań przestaje przychodzić.',
+      provider: { '@id': new URL('/#organizacja', Astro.site).href },
+      areaServed: { '@type': 'Country', name: 'Polska' },
+      audience: { '@type': 'BusinessAudience', name: 'Firmy ze sprzedażą powtarzalną do stałych odbiorców' },
+    },
+    {
+      '@type': 'BreadcrumbList',
+      '@id': `${kanon}#okruszki`,
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Strona główna', item: new URL('/', Astro.site).href },
+        { '@type': 'ListItem', position: 2, name: 'Systemy dla Waszych klientów', item: kanon },
+      ],
+    },
+  ],
+};
+
+const title = "Portal klienta i platforma B2B — systemy dla Waszych klientów | Let's automate";
+const description = 'Portal, w którym klienci załatwiają sami to, o co dziś dzwonią. Zaczynamy od policzonej listy pytań, a nie od projektu portalu — i mierzymy, ile pytań przestaje przychodzić.';
+
+
+// ---- LISTA PYTAŃ (hero) -------------------------------------------------
+// Siedem pytań, które przychodzą do obsługi, uszeregowanych po liczbie.
+// Przy każdym udział, który przejmuje portal. Ogon zostaje prawie w całości
+// szary i to jest celowe: lista, na której portal bierze wszystko, wygląda
+// jak materiał sprzedażowy. Sumy liczy kod, nie ja.
+const PYTANIA = [
+  { q: 'Gdzie jest moje zamówienie?', n: 310, u: 85 },
+  { q: 'Poproszę fakturę i dokumenty do dostawy', n: 175, u: 90 },
+  { q: 'Macie to na stanie? Kiedy dojedzie?', n: 140, u: 70 },
+  { q: 'Jaka jest moja cena na tę pozycję?', n: 95, u: 60 },
+  { q: 'Chcę zamówić to samo, co ostatnio', n: 60, u: 75 },
+  { q: 'Coś przyszło uszkodzone', n: 45, u: 20 },
+  { q: 'Potrzebuję czegoś spoza katalogu', n: 30, u: 0 },
+];
+const MAX_N = Math.max(...PYTANIA.map((x) => x.n));
+const WSZYSTKIE = PYTANIA.reduce((a, x) => a + x.n, 0);
+const SAMI = PYTANIA.reduce((a, x) => a + Math.round(x.n * x.u / 100), 0);
+const ZOSTAJE = WSZYSTKIE - SAMI;
+
+const PT_C = 15;
+const PT_START = 0.4, PT_KROK = 0.16;
+const PT_ZIELEN = 2.3;
+const PT_SUMY = PT_START + PYTANIA.length * PT_KROK + 2.6;
+const PT_GASNIE = 13.1;
+const pp = (s) => `${(Math.max(0, Math.min(1, s / PT_C)) * 100).toFixed(2)}%`;
+
+const klatkiPytania = [
+  ...PYTANIA.map((x, i) => {
+    const a = PT_START + i * PT_KROK;
+    const b = PT_ZIELEN + i * PT_KROK;
+    const szer = (x.n / MAX_N * 100).toFixed(2);
+    const zielen = (x.n / MAX_N * x.u).toFixed(2);
+    return [
+      `@keyframes pt-r${i}{0%,${pp(a)}{opacity:0;transform:translateY(6px)}${pp(a + 0.45)}{opacity:1;transform:translateY(0)}${pp(PT_GASNIE)}{opacity:1;transform:translateY(0)}${pp(PT_GASNIE + 0.9)}{opacity:0;transform:translateY(0)}100%{opacity:0;transform:translateY(0)}}`,
+      `@keyframes pt-t${i}{0%,${pp(a)}{width:0%}${pp(a + 0.55)}{width:${szer}%}${pp(PT_GASNIE)}{width:${szer}%}100%{width:${szer}%}}`,
+      `@keyframes pt-s${i}{0%,${pp(b)}{width:0%}${pp(b + 0.6)}{width:${zielen}%}${pp(PT_GASNIE)}{width:${zielen}%}100%{width:${zielen}%}}`,
+    ].join('\n');
+  }),
+  `@keyframes pt-suma{0%,${pp(PT_SUMY)}{opacity:0;transform:translateY(6px)}${pp(PT_SUMY + 0.6)}{opacity:1;transform:translateY(0)}${pp(PT_GASNIE)}{opacity:1;transform:translateY(0)}${pp(PT_GASNIE + 0.8)}{opacity:0;transform:translateY(0)}100%{opacity:0;transform:translateY(0)}}`,
+].join('\n');
+
+
+// ---- CO KLIENT ROBI SAM (kolumna przy definicji) ------------------------
+// Ten sam chwyt, co lista procesów na /systemy-procesowe: czytelnik ma tu
+// rozpoznać pytania, które sam odbiera co tydzień.
+const SAMOOBSLUGA = [
+  { t: 'Sprawdza status zamówienia', d: 'z terminem dostawy i numerem przesyłki' },
+  { t: 'Pobiera faktury i dokumenty przewozowe', d: 'z całej historii, nie tylko z ostatniego miesiąca' },
+  { t: 'Składa zamówienie na swoich cenach', d: 'z pozycji, które zamawiał ostatnio' },
+  { t: 'Zgłasza reklamację', d: 'ze zdjęciem i numerem dokumentu' },
+  { t: 'Widzi saldo i limit kupiecki', d: 'oraz to, co jest po terminie' },
+];
+
+
+// ---- DLACZEGO PORTALE STOJĄ PUSTE ---------------------------------------
+const POWODY = [
+  {
+    t: 'Powstaje miejsce, a klient szuka odpowiedzi',
+    d: 'Portal z menu, zakładkami i pulpitem wygląda porządnie i nie odpowiada na nic. Klient nie chce portalu — chce wiedzieć, gdzie jest jego dostawa. Jeśli droga do tej jednej odpowiedzi ma sześć kliknięć, wybierze telefon.',
+  },
+  {
+    t: 'Klient nie pamięta, że portal istnieje',
+    d: 'Wiadomość „zapraszamy do korzystania" czyta się raz, w dniu wysyłki. Potem klient wraca do tego, co ma pod ręką: do skrzynki i do numeru opiekuna wbitego w telefon.',
+  },
+  {
+    t: 'Jedna nieaktualna dana kosztuje klienta na zawsze',
+    d: 'Status sprzed doby, brakujący dokument, cena inna niż na ofercie. Wystarczy jeden taki przypadek, żeby klient przestał sprawdzać samodzielnie — i już nie wrócił.',
+  },
+];
+
+
+// ---- WIDOKI PORTALU -----------------------------------------------------
+// Interfejs rysowany w HTML, do podmiany, gdy powstanie właściwe UI.
+// Czwarty ekran jest z drugiej strony lady — pokazuje to, co widzi zespół
+// klienta, i domyka argument o mierzeniu.
+const ZAMOWIENIA = [
+  { nr: 'ZAM/2481', d: '04.09', st: 'W drodze', cz: 'dostawa jutro', stan: 'droga' },
+  { nr: 'ZAM/2477', d: '02.09', st: 'Skompletowane', cz: 'wysyłka dziś', stan: 'praca' },
+  { nr: 'ZAM/2470', d: '28.08', st: 'Dostarczone', cz: '—', stan: 'ok' },
+  { nr: 'ZAM/2462', d: '21.08', st: 'Dostarczone', cz: '—', stan: 'ok' },
+  { nr: 'ZAM/2455', d: '14.08', st: 'Rozliczone', cz: '—', stan: 'ok' },
+];
+const POZYCJE_KLIENTA = [
+  { i: 'Profil zamknięty 40×40×2', n: '120 mb', c: '18,40 zł' },
+  { i: 'Blacha ocynkowana 1,5 mm', n: '24 ark.', c: '96,00 zł' },
+  { i: 'Łącznik montażowy typ B', n: '400 szt.', c: '2,15 zł' },
+];
+const ULUBIONE = [
+  { i: 'Profil zamknięty 40×40×2', c: '18,40 zł / mb', ost: 'ostatnio 12.08' },
+  { i: 'Łącznik montażowy typ B', c: '2,15 zł / szt.', ost: 'ostatnio 12.08' },
+  { i: 'Wkręt samowiercący 4,8×19', c: '0,31 zł / szt.', ost: 'ostatnio 28.07' },
+];
+const PANEL = [
+  { t: '„Gdzie jest moje zamówienie?"', przed: 310, po: 46 },
+  { t: '„Poproszę fakturę"', przed: 175, po: 18 },
+  { t: '„Macie na stanie?"', przed: 140, po: 42 },
+];
+
+
+// ---- DLA JAKICH FIRM ----------------------------------------------------
+const DLA_KOGO = [
+  {
+    t: 'Ten sam klient wraca do Was co miesiąc',
+    d: 'Sprzedaż powtarzalna do stałych odbiorców. Samoobsługa opłaca się tam, gdzie klient wraca — przy transakcji jednorazowej nie ma czego obsługiwać.',
+  },
+  {
+    t: 'Obsługa odbiera te same pytania po kilkaset razy w miesiącu',
+    d: 'Gdzie jest zamówienie, poproszę fakturę, macie na stanie. Jeśli potraficie wymienić trzy takie pytania bez zastanowienia, lista jest już gotowa.',
+  },
+  {
+    t: 'Każdy klient ma u Was inne warunki',
+    d: 'Własne ceny, limity kupieckie, dostępny asortyment albo indywidualne terminy. Sklep z półki tego nie unosi, bo zakłada jeden cennik dla wszystkich.',
+  },
+  {
+    t: 'Chcecie być dostawcą, u którego najłatwiej kupić',
+    d: 'To jest argument w rozmowie o przedłużeniu umowy i działa wtedy, kiedy ktoś inny schodzi z ceną. Wygoda pracy jest trudniejsza do podrobienia niż rabat.',
+  },
+];
+const NIE_TERAZ = [
+  'Klient kupuje raz i nie wraca. Samoobsługa nie ma wtedy czego obsługiwać.',
+  'Macie kilkunastu dużych odbiorców, każdy z własnym systemem. Wtedy taniej wychodzi integracja przez API albo EDI niż portal, do którego nikt się nie zaloguje.',
+  'Dane o zamówieniach nie są nigdzie na bieżąco. Portal pokaże wtedy nieaktualny stan i zrobi więcej szkody, niż gdyby go nie było.',
+];
+
+
+// ---- SKĄD KLIENT WCHODZI (ciemny pas) -----------------------------------
+// Ostatnia pozycja jest pointą całej sekcji i dlatego jest bursztynowa.
+const WEJSCIA = [
+  { t: 'Z linku w potwierdzeniu zamówienia', p: 46 },
+  { t: 'Z linku w wiadomości z fakturą', p: 24 },
+  { t: 'Pokazany przez handlowca przy rozmowie', p: 19 },
+  { t: 'Z linku w stopce wiadomości od obsługi', p: 8 },
+  { t: 'Klient wpisał adres portalu z pamięci', p: 3, pointa: true },
+];
+
+
+// ---- PRZYKŁADY ----------------------------------------------------------
+// PRZYKŁADOWE wdrożenia — do podmiany na potwierdzone przypadki.
+const PRZYKLADY = [
+  {
+    f: 'Hurtownia elektrotechniczna', m: '640 odbiorców', p: 'Portal zamówień i dokumentów',
+    d: 'Klient widzi status, pobiera dokumenty i powtarza zamówienie z ostatniej listy. Ceny i limity przychodzą z ERP-a, więc każdy widzi swoje warunki.',
+    przed: 1200, po: 380,
+    zostalo: 'ustalenia przy nietypowych zamówieniach i negocjacje przy dużych ilościach',
+  },
+  {
+    f: 'Producent opakowań', m: '90 stałych klientów', p: 'Podgląd produkcji i wysyłek',
+    d: 'Klient widzi, na którym etapie produkcji jest jego zlecenie i kiedy wyjedzie. Podgląd karmi się tym samym rejestrem, co planowanie produkcji.',
+    przed: 520, po: 210,
+    zostalo: 'zmiany terminu i przyspieszenia zleceń',
+  },
+  {
+    f: 'Firma serwisowa', m: '310 obiektów', p: 'Zgłoszenia i historia serwisu',
+    d: 'Klient zgłasza awarię ze zdjęciem, widzi termin technika i całą historię przeglądów obiektu. Protokoły pobiera sam, bez proszenia o kopię.',
+    przed: 740, po: 300,
+    zostalo: 'awarie z ryzykiem postoju, gdzie i tak wszyscy wolą telefon',
+  },
+];
+
+
+const faq = [
+  {
+    q: 'Czy nasi klienci w ogóle z tego skorzystają?',
+    a: 'Skorzystają wtedy, kiedy portal będzie szybszy od telefonu przy tych trzech sprawach, o które pytają najczęściej. Dlatego zaczynamy od policzenia pytań z ostatniego kwartału, a nie od projektu ekranów. Drugą połową odpowiedzi jest to, skąd klient trafia do środka: wejście wkładamy w wiadomości, które i tak do niego wysyłacie, bo prawie nikt nie wpisuje adresu portalu z pamięci.',
+  },
+  {
+    q: 'Ile kosztuje portal dla klientów?',
+    a: 'Wyceniamy pierwsze uruchomienie, czyli te sprawy, które wychodzą na wierzch z listy pytań. Kwota jest stała i podajemy ją po warsztacie. Najmocniej wpływa na nią to, czy dane o zamówieniach da się pobrać z Waszych systemów na bieżąco. Dalej idzie liczba spraw, które portal ma obsłużyć, i sposób logowania klientów.',
+  },
+  {
+    q: 'Czym to się różni od sklepu B2B z półki albo modułu w ERP?',
+    a: 'Sklep z półki zakłada jeden katalog i jeden cennik dla wszystkich, a moduł w ERP pokazuje to, co producent przewidział, i zwykle wygląda jak ekran dla księgowej. Jeśli Wasi klienci mają jednakowe warunki i kupują z katalogu, gotowy sklep prawie zawsze wychodzi taniej i powiemy to na pierwszej rozmowie. Budowanie ma sens tam, gdzie każdy klient widzi swoje ceny, limity i asortyment, a droga do odpowiedzi ma być krótsza niż telefon.',
+  },
+  {
+    q: 'Czy nie stracimy kontaktu z klientem?',
+    a: 'Numeru telefonu klientowi nie zabieramy i przy każdej sprawie w portalu stoi przycisk do opiekuna. Znikają rozmowy o tym, gdzie jest paczka; zostają te, w których naprawdę jesteście potrzebni. Handlowiec widzi w panelu, co jego klient sprawdzał w ostatnim tygodniu, więc na spotkanie idzie z lepszym kontekstem niż wcześniej.',
+  },
+  {
+    q: 'Co klient widzi, a czego nie?',
+    a: 'Ustalamy to przed budową, pozycja po pozycji: swoje zamówienia i dokumenty tak, cudze nigdy, stany magazynowe zwykle jako informacja o dostępności zamiast dokładnej liczby. Ceny pokazujemy w wersji indywidualnej dla zalogowanego klienta. Każdy odbiorca może mieć kilku użytkowników z różnym zakresem, bo osoba z produkcji potrzebuje czego innego niż osoba z księgowości.',
+  },
+  {
+    q: 'Co z klientami, którzy mają własne systemy?',
+    a: 'Wtedy portal jest dla nich zbędny i mówimy to wprost. Duzi odbiorcy wolą, żeby zamówienia i statusy wymieniały się między systemami przez API albo EDI, bez logowania kogokolwiek. Te dwie drogi dobrze stoją obok siebie: integracja dla kilkunastu największych, portal dla całej reszty.',
+  },
+  {
+    q: 'Ile czasu zajmie to naszym ludziom?',
+    a: 'Najwięcej na starcie: dzień warsztatu z obsługą i handlem oraz wyciąg pytań z ostatniego kwartału ze skrzynki i z rejestru rozmów. Potem godzina w tygodniu na pokaz tego, co powstało. Przed uruchomieniem dochodzi kilka dni, w których Wasi ludzie klikają portal jako klienci i wypisują wszystko, co ich uwiera.',
+  },
+  {
+    q: 'Kto to utrzyma i co, gdy klient ma problem w nocy?',
+    a: 'Repozytorium i dokumentacja są Wasze od pierwszego dnia, więc utrzymanie może przejąć Wasz zespół albo inna firma. Jeśli utrzymujemy my, umowa obejmuje czas reakcji i monitoring dostępności. Portal, którego klient nie może otworzyć, jest gorszy od jego braku, więc alarm o niedostępności idzie do Was i do nas w tej samej chwili.',
+  },
+  {
+    q: 'Skąd będziemy wiedzieć, że zadziałało?',
+    a: 'Z pomiaru sprzed startu i z drugiego po kwartale. Przed budową przechodzimy skrzynkę obsługi i rejestr rozmów za ostatnie trzy miesiące i grupujemy pytania w kilkanaście powtarzalnych. Każde dostaje swoją liczbę i to ona jest punktem wyjścia. Po kwartale liczymy je tą samą metodą, na tej samej próbce, i pokazujemy różnicę pozycja po pozycji.',
+  },
+  {
+    q: 'Czy to musi być osobny system?',
+    a: 'Nie i najczęściej nie jest. Portal karmi się tym samym rejestrem, co <a href="/systemy-procesowe" style="font-weight:700;color:#0a7a52">system dla kluczowego procesu</a> — to on wie, na jakim etapie jest zamówienie. Jeśli takiego rejestru u Was nie ma, zaczynamy od niego, bo portal podpięty do niepewnych danych pokaże klientowi nieprawdę.',
+  },
+];
+dane['@graph'].push({
+  '@type': 'FAQPage',
+  '@id': `${kanon}#faq`,
+  mainEntity: faq.map((f) => ({
+    '@type': 'Question',
+    name: f.q,
+    acceptedAnswer: { '@type': 'Answer', text: f.a.replace(/<[^>]+>/g, '') },
+  })),
+});
+---
+<LaBase title={title} description={description} ctaHref="#kontakt" ctaLabel="Umów rozmowę" nav="uslugi">
+<script type="application/ld+json" is:inline set:html={JSON.stringify(dane)} slot="head"></script>
+<style is:global slot="head">
+  /* ================= lista pytań (hero) =================
+     Siedem pytań uszeregowanych po liczbie. Zielona część paska to udział,
+     który przejmuje portal; szara zostaje przy telefonie. Ogon jest prawie
+     w całości szary i to jest sedno rysunku — lista, na której portal bierze
+     wszystko, czyta się jak materiał sprzedażowy. */
+  .pt-suma{display:flex;align-items:baseline;gap:11px;margin-bottom:clamp(18px,2.2vw,26px);opacity:0}
+  .pt-suma b{font-size:clamp(34px,4.4vw,52px);font-weight:800;letter-spacing:-0.035em;line-height:1;color:#16211a}
+  .pt-suma span{font-size:14.5px;line-height:1.4;color:#4c5850;max-width:230px}
+  .pt-row{display:grid;grid-template-columns:minmax(0,1fr) 44px;gap:12px;align-items:center;padding:7px 0;opacity:0}
+  .pt-q{display:block;font-size:14px;font-weight:600;line-height:1.3;color:#16211a;text-wrap:pretty}
+  .pt-pas{position:relative;display:block;height:9px;margin-top:7px;border-radius:5px;background:#f2f5f0}
+  .pt-tot{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:5px;background:#d7ded4}
+  .pt-sam{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:5px;background:var(--la-accent,#00CD77);z-index:2}
+  .pt-n{font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#8b968d;text-align:right}
+  .pt-leg{display:flex;flex-wrap:wrap;gap:8px 24px;margin-top:16px;font-size:12.5px;color:#7c877e}
+  .pt-leg span{display:inline-flex;align-items:center;gap:8px}
+  .pt-leg i{width:20px;height:8px;border-radius:3px;display:inline-block}
+  .pt-pod{margin:14px 0 0;font-size:14.5px;line-height:1.55;color:#4c5850;max-width:520px;text-wrap:pretty}
+  .pt-pod strong{font-weight:700;color:#16211a}
+  @media (max-width:560px){ .pt-q{font-size:13px} .pt-n{font-size:11px} }
+  @media (prefers-reduced-motion:reduce){
+    .pt-row,.pt-tot,.pt-sam,.pt-suma{animation:none !important;opacity:1}
+    .pt-row{transform:none}
+    /* Bez ruchu szerokości muszą przyjść ze zmiennych, bo klatki animacji
+       są jedynym miejscem, w którym stoją liczby. */
+    .pt-tot{width:var(--w)}
+    .pt-sam{width:var(--z)}
+  }
+
+  /* ================= co klient robi sam (kolumna przy definicji) ========= */
+  .ss-h{margin:0 0 4px;font-size:15.5px;font-weight:750;letter-spacing:-0.01em;color:#16211a}
+  .ss-row{padding:12px 0;border-top:1px solid #e4ebe2}
+  .ss-row:last-of-type{border-bottom:1px solid #e4ebe2}
+  .ss-t{display:block;font-size:14.5px;font-weight:700;letter-spacing:-0.01em;line-height:1.3;color:#16211a;text-wrap:balance}
+  .ss-d{display:block;margin-top:3px;font-size:12.5px;color:#8b968d}
+  .ss-nota{margin:13px 0 0;font-size:13px;line-height:1.55;color:#8b968d;text-wrap:pretty}
+
+  /* ================= powody ================= */
+  .pw-row{display:grid;grid-template-columns:minmax(0,0.95fr) minmax(0,1.15fr);gap:clamp(18px,3vw,48px);align-items:baseline;padding:clamp(20px,2.4vw,28px) 0;border-top:1px solid #e2e9e0}
+  .pw-row:last-of-type{border-bottom:1px solid #e2e9e0}
+  .pw-t{margin:0;font-size:clamp(17px,2vw,20px);font-weight:750;letter-spacing:-0.015em;line-height:1.3;color:#16211a;text-wrap:balance}
+  .pw-d{margin:0;font-size:15px;line-height:1.6;color:#4c5850;text-wrap:pretty}
+  @media (max-width:760px){ .pw-row{grid-template-columns:1fr;gap:7px} }
+
+  /* ================= widoki portalu =================
+     Ten sam komponent, co na /systemy-procesowe: poziomy pas z przewijaniem,
+     cztery ekrany kosztują tyle wysokości, co jeden. Czwarty jest z drugiej
+     strony lady — panel Waszego zespołu — i domyka argument o mierzeniu.
+     DO PODMIANY, gdy powstanie właściwe UI. */
+  .ui-pas{display:flex;gap:clamp(16px,2vw,26px);margin-top:clamp(26px,3.2vw,38px);overflow-x:auto;scroll-snap-type:x mandatory;
+    margin-right:calc(-1 * max(clamp(20px,5vw,56px),calc((100vw - 1440px) / 2)));
+    padding:4px max(clamp(20px,5vw,56px),calc((100vw - 1440px) / 2)) 6px 0;
+    scrollbar-width:none;-ms-overflow-style:none}
+  .ui-pas::-webkit-scrollbar{display:none}
+  .ui-poz{flex:0 0 clamp(280px,74vw,580px);scroll-snap-align:start;display:flex;flex-direction:column;margin:0}
+  .ui-okno{flex:1;display:flex;flex-direction:column;background:#ffffff;border:1px solid #dfe7dc;border-radius:14px;overflow:hidden;box-shadow:0 22px 46px -32px rgba(18,38,28,0.32)}
+  .ui-pasek{display:flex;align-items:center;gap:10px;padding:11px 14px;border-bottom:1px solid #eaefe8;background:#fbfcfa}
+  .ui-znak{width:14px;height:14px;border-radius:4px;background:var(--la-accent,#00CD77);flex-shrink:0}
+  .ui-app{font-size:12.5px;font-weight:700;color:#16211a}
+  .ui-sciezka{font-size:12px;color:#a9b3aa;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ui-kto{margin-left:auto;font-size:12px;color:#8b968d;white-space:nowrap}
+  .ui-tresc{padding:clamp(14px,1.6vw,18px)}
+  .ui-etykieta{display:block;font-size:10.5px;font-weight:650;letter-spacing:0.04em;color:#a9b3aa;margin-bottom:7px}
+  .ui-btn{display:inline-block;font-size:12px;font-weight:700;padding:8px 14px;border-radius:8px;background:#16211a;color:#ffffff}
+  .ui-btn.cichy{background:#f1f4ef;color:#4c5850}
+  .ui-akcje{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;padding-top:12px;border-top:1px solid #eef2ec}
+  /* lista zamówień klienta */
+  .ui-zam{display:grid;grid-template-columns:78px 52px minmax(0,1fr) minmax(0,92px);gap:9px;align-items:center;font-size:12px;padding:9px 0;border-bottom:1px solid #f1f4ef}
+  .ui-zam:last-of-type{border-bottom:0}
+  .ui-zam.naglowek{font-size:10.5px;font-weight:650;letter-spacing:0.04em;color:#a9b3aa;padding-top:0}
+  .ui-zam b{font-family:ui-monospace,Menlo,monospace;font-size:11px;font-weight:600;color:#4c5850}
+  .ui-zam span:nth-child(2){color:#a9b3aa}
+  .ui-zam em{font-style:normal;font-weight:650;color:#16211a}
+  .ui-zam em.droga{color:#0a7a52}
+  .ui-zam i{font-style:normal;text-align:right;font-size:11.5px;color:#8b968d}
+  /* karta zamówienia */
+  .ui-tyt{display:flex;align-items:baseline;flex-wrap:wrap;gap:7px 11px}
+  .ui-tyt h3{margin:0;font-size:16px;font-weight:750;letter-spacing:-0.015em;color:#16211a}
+  .ui-stan{font-size:11px;font-weight:700;color:#0a7a52;background:#e2f5ea;border-radius:6px;padding:3px 8px}
+  .ui-krok{display:flex;align-items:center;gap:7px;margin-top:14px}
+  .ui-krok i{flex:1;height:5px;border-radius:3px;background:#e7ede4}
+  .ui-krok i.ok{background:var(--la-accent,#00CD77)}
+  .ui-kroki-nap{display:flex;justify-content:space-between;margin-top:7px;font-size:10.5px;color:#a9b3aa}
+  .ui-poz-w{display:grid;grid-template-columns:minmax(0,1fr) 62px 74px;gap:9px;align-items:center;font-size:12px;color:#16211a;padding:7px 0;border-bottom:1px solid #f1f4ef}
+  .ui-poz-w span:nth-child(2){color:#8b968d;text-align:right}
+  .ui-poz-w i{font-style:normal;text-align:right;font-weight:650}
+  .ui-dok{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}
+  .ui-plik{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;color:#0a7a52;background:#eef7f1;border-radius:7px;padding:6px 10px}
+  /* szybkie zamówienie */
+  .ui-ulub{display:grid;grid-template-columns:minmax(0,1fr) 86px 62px;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid #f1f4ef}
+  .ui-ulub b{display:block;font-size:12.5px;font-weight:650;color:#16211a}
+  .ui-ulub span{display:block;margin-top:2px;font-size:10.5px;color:#a9b3aa}
+  .ui-ulub em{font-style:normal;font-size:12px;font-weight:700;color:#16211a;text-align:right}
+  .ui-pole-il{font-size:11.5px;color:#4c5850;background:#f6f9f5;border:1px solid #e4ebe2;border-radius:7px;padding:6px 9px;text-align:center}
+  /* panel zespołu */
+  .ui-pan{display:grid;grid-template-columns:minmax(0,1fr) 62px 62px;gap:9px;align-items:center;font-size:12px;padding:9px 0;border-bottom:1px solid #f1f4ef}
+  .ui-pan.naglowek{font-size:10.5px;font-weight:650;letter-spacing:0.04em;color:#a9b3aa;padding-top:0}
+  .ui-pan span:first-child{color:#16211a;font-weight:600}
+  .ui-pan i{font-style:normal;text-align:right;color:#a9b3aa}
+  .ui-pan i.teraz{color:#0a7a52;font-weight:700}
+  .ui-kafle{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:15px}
+  .ui-kafel{padding:11px 12px;border:1px solid #eef2ec;border-radius:10px;background:#fbfcfa}
+  .ui-kafel span{display:block;font-size:10.5px;color:#a9b3aa;line-height:1.3}
+  .ui-kafel b{display:block;margin-top:5px;font-size:19px;font-weight:800;letter-spacing:-0.02em;color:#16211a}
+  .ui-kafel em{display:block;margin-top:2px;font-style:normal;font-size:10.5px;color:#0a7a52}
+  /* podpisy i sterowanie */
+  .ui-poz figcaption{margin-top:13px;font-size:13.5px;line-height:1.5;color:#4c5850;text-wrap:pretty}
+  .ui-poz figcaption b{display:block;font-size:14.5px;font-weight:700;color:#16211a;margin-bottom:2px}
+  .ui-ster{display:flex;gap:8px;margin-left:auto}
+  .ui-strz{appearance:none;width:38px;height:38px;border-radius:50%;border:1px solid #d5e0d3;background:#ffffff;color:#16211a;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:border-color .15s,background .15s,opacity .2s}
+  .ui-strz:hover{border-color:var(--la-accent,#00CD77);background:#f4f8f2}
+  .ui-strz[disabled]{opacity:.35;cursor:default}
+  .ui-strz[hidden]{display:none}
+  .ui-nota{margin:clamp(20px,2.4vw,28px) 0 0;font-size:13.5px;line-height:1.55;color:#8b968d;max-width:760px}
+  @media (max-width:900px){ .ui-ster{display:none} }
+  @media (max-width:560px){
+    .ui-zam{grid-template-columns:74px minmax(0,1fr) 74px}
+    .ui-zam span:nth-child(2){display:none}
+    .ui-kafle{grid-template-columns:1fr}
+  }
+
+  /* ================= dla jakich firm ================= */
+  .dl-row{display:grid;grid-template-columns:46px minmax(0,0.9fr) minmax(0,1.2fr);gap:clamp(16px,2.6vw,44px);align-items:start;padding:clamp(20px,2.4vw,28px) 0;border-top:1px solid #e2e9e0}
+  .dl-row:last-of-type{border-bottom:1px solid #e2e9e0}
+  .dl-n{font-size:clamp(22px,2.6vw,30px);font-weight:800;letter-spacing:-0.03em;line-height:1;color:#dbe4d8;padding-top:2px}
+  .dl-t{margin:0;font-size:clamp(17px,2vw,20px);font-weight:750;letter-spacing:-0.015em;line-height:1.3;color:#16211a;text-wrap:balance}
+  .dl-d{margin:0;font-size:15px;line-height:1.6;color:#4c5850;text-wrap:pretty}
+  .dl-nie{margin:clamp(32px,3.8vw,48px) 0 0 clamp(0px,4vw,64px);padding-left:clamp(18px,2vw,26px);border-left:2px solid #dde7db;max-width:760px}
+  .dl-nie h3{margin:0;font-size:15.5px;font-weight:750;letter-spacing:-0.01em;color:#4c5850}
+  .dl-nie p{margin:10px 0 0;font-size:14.5px;line-height:1.6;color:#8b968d;text-wrap:pretty}
+  @media (max-width:860px){
+    .dl-row{grid-template-columns:34px minmax(0,1fr);gap:12px 14px}
+    .dl-row > p:last-child{grid-column:2}
+  }
+
+  /* ================= skąd klient wchodzi (ciemny pas) ================= */
+  .we-row{display:grid;grid-template-columns:minmax(0,1fr) 200px 56px;gap:clamp(16px,2.6vw,32px);align-items:center;padding:15px 0;border-top:1px solid rgba(255,255,255,0.14)}
+  .we-row:last-of-type{border-bottom:1px solid rgba(255,255,255,0.14)}
+  .we-t{font-size:15.5px;font-weight:650;color:rgba(255,255,255,0.86)}
+  .we-row.pointa .we-t{color:#e0a95c;font-weight:750}
+  .we-pas{position:relative;height:8px;border-radius:4px;background:rgba(255,255,255,0.1);overflow:hidden}
+  .we-pas i{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:4px;background:var(--la-accent,#00CD77);transition:width .8s cubic-bezier(.4,0,.2,1);transition-delay:var(--d)}
+  .we.on .we-pas i{width:var(--u)}
+  .we-row.pointa .we-pas i{background:#e0a95c}
+  .we-p{font-family:ui-monospace,Menlo,monospace;font-size:13px;font-weight:600;color:rgba(255,255,255,0.7);text-align:right}
+  .we-row.pointa .we-p{color:#e0a95c}
+  @media (max-width:760px){
+    .we-row{grid-template-columns:minmax(0,1fr) 56px;gap:8px 14px}
+    .we-pas{grid-column:1 / -1}
+  }
+  @media (prefers-reduced-motion:reduce){ .we-pas i{transition:none} }
+
+  /* ================= pas wezwania ================= */
+  .ps{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:18px 40px;padding:clamp(26px,3vw,36px) 0;border-top:1px solid #e7ece4;border-bottom:1px solid #e7ece4}
+  .ps p{margin:0;max-width:640px;font-size:clamp(18px,2.2vw,24px);line-height:1.35;letter-spacing:-0.018em;font-weight:700;color:#16211a;text-wrap:pretty}
+
+  /* ================= przykłady ================= */
+  .px-row{display:grid;grid-template-columns:minmax(190px,0.62fr) minmax(0,1.2fr) minmax(200px,0.72fr);gap:clamp(20px,3.2vw,52px);align-items:start;padding:clamp(26px,3.2vw,40px) 0;border-top:1px solid #dde7db}
+  .px-row:last-of-type{border-bottom:1px solid #dde7db}
+  .px-f{display:block;margin:0;font-size:clamp(18px,2.1vw,22px);font-weight:750;letter-spacing:-0.018em;color:#16211a}
+  .px-m{display:block;margin-top:4px;font-size:13.5px;color:#8b968d}
+  .px-p{display:block;margin-top:14px;font-size:14px;font-weight:700;color:#0a7a52}
+  .px-d{margin:0;font-size:15px;line-height:1.6;color:#16211a;text-wrap:pretty}
+  .px-l{margin:14px 0 0;font-size:14px;line-height:1.55;color:#8b968d}
+  .px-l b{display:block;font-size:12.5px;font-weight:600;color:#a9b3aa;margin-bottom:3px}
+  .px-cap{display:block;font-size:12.5px;color:#a0aba1}
+  .px-por{display:flex;align-items:baseline;gap:10px;margin-top:6px;font-size:clamp(24px,2.8vw,30px);font-weight:800;letter-spacing:-0.028em;line-height:1;color:#16211a}
+  .px-por s{text-decoration:none;font-size:clamp(17px,2vw,20px);font-weight:700;color:#a9b3aa;position:relative}
+  .px-por s::after{content:"";position:absolute;left:-2px;right:-2px;top:52%;height:1.5px;background:#c3ccc2}
+  .px-por em{font-style:normal;font-size:16px;font-weight:600;color:#a9b3aa}
+  .px-os{position:relative;display:block;height:9px;margin-top:14px;border-radius:5px;background:#e0e8de;overflow:hidden}
+  .px-os i{position:absolute;left:0;top:0;bottom:0;border-radius:5px;background:var(--la-accent,#00CD77);width:0;transition:width .85s cubic-bezier(.4,0,.2,1)}
+  .px-row.on .px-os i{width:var(--u)}
+  .px-op{display:block;margin-top:9px;font-size:13px;line-height:1.5;color:#8b968d}
+  @media (max-width:1000px){
+    .px-row{grid-template-columns:minmax(0,1fr) minmax(190px,0.66fr)}
+    .px-row > :first-child{grid-column:1 / -1}
+  }
+  @media (max-width:700px){
+    .px-row{grid-template-columns:1fr;gap:16px}
+    .px-row > :first-child{grid-column:auto}
+  }
+  @media (prefers-reduced-motion:reduce){ .px-os i{transition:none} }
+
+  @media (max-width:900px){
+    .hero-split{grid-template-columns:1fr !important;gap:clamp(30px,5vw,46px) !important}
+  }
+</style>
+
+<!-- ============ 1 · HERO ============
+     Rysunek robi całą robotę: siedem pytań, które przychodzą do obsługi,
+     uszeregowanych po liczbie, a przy każdym zielona część, którą przejmuje
+     portal. Ogon zostaje szary i to jest sedno — portal bierze pierwsze
+     trzy pozycje, nie wszystkie. -->
+<div aria-hidden="true" style="position:absolute;left:0;right:0;top:0;height:1080px;background:radial-gradient(900px 640px at 86% 2%, rgba(0,205,119,0.13), transparent 64%);pointer-events:none"></div>
+<section style="position:relative;overflow:hidden;background:transparent;padding:clamp(28px,4vw,52px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) clamp(56px,6.5vw,84px)">
+<div class="hero-split" style="display:grid;grid-template-columns:1fr 1.04fr;gap:clamp(32px,4.5vw,64px);align-items:center;margin-top:clamp(10px,1.5vw,20px)">
+<div>
+<h1 style="margin:0;font-size:clamp(29px,4.4vw,51px);line-height:1.06;letter-spacing:-0.032em;font-weight:800;color:#16211a;text-wrap:balance">Klient sprawdza wszystko sam, o dowolnej porze</h1>
+<p style="margin:26px 0 0;max-width:600px;font-size:clamp(16px,2.1vw,19px);line-height:1.6;color:#33413a;text-wrap:pretty">Budujemy portal wokół pytań, które Wasza obsługa odbiera najczęściej. Zakres bierze się z wyciągu ze skrzynki i z rejestru rozmów za ostatni kwartał.</p>
+<div class="hero-actions" style="display:flex;align-items:center;flex-wrap:wrap;gap:16px 22px;margin-top:34px">
+<a href="#kontakt" class="btn-dark" style="display:inline-flex;align-items:center;gap:10px;background:#16211a;color:#ffffff;padding:18px 32px;border-radius:12px;font-weight:650;font-size:16.5px;box-shadow:0 14px 30px -14px rgba(16,33,26,0.45)">Umów rozmowę <span aria-hidden="true">→</span></a>
+<a href="#jak-wyglada" class="btn-ghost" style="display:inline-flex;align-items:center;gap:8px;font-size:16.5px;font-weight:700;color:#16211a;background:rgba(255,255,255,0.6);padding:18px 26px;border-radius:12px;border:1px solid rgba(22,33,26,0.16)">Zobacz, jak to wygląda →</a>
+</div>
+</div>
+
+<div>
+<div role="img" aria-label={`Siedem pytań, które klienci zadają obsłudze, uszeregowanych po liczbie. Z ${WSZYSTKIE} pytań miesięcznie ${SAMI} klient załatwia w portalu sam, a ${ZOSTAJE} rozmów zostaje.`}>
+<div class="pt-suma" style={`animation:pt-suma ${PT_C}s cubic-bezier(.4,0,.2,1) infinite`}>
+  <b>{SAMI}</b><span>z {WSZYSTKIE} pytań miesięcznie klient załatwia sam</span>
+</div>
+{PYTANIA.map((x, i) => (
+  <div class="pt-row" style={`animation:pt-r${i} ${PT_C}s cubic-bezier(.4,0,.2,1) infinite`}>
+    <span>
+      <span class="pt-q">{x.q}</span>
+      <span class="pt-pas">
+        <i class="pt-tot" style={`--w:${(x.n / MAX_N * 100).toFixed(2)}%;animation:pt-t${i} ${PT_C}s cubic-bezier(.22,1,.3,1) infinite`}></i>
+        <i class="pt-sam" style={`--z:${(x.n / MAX_N * x.u).toFixed(2)}%;animation:pt-s${i} ${PT_C}s cubic-bezier(.22,1,.3,1) infinite`}></i>
+      </span>
+    </span>
+    <span class="pt-n">{x.n}</span>
+  </div>
+))}
+<div class="pt-leg">
+<span><i style="background:#00CD77"></i>klient załatwia w portalu</span>
+<span><i style="background:#d7ded4"></i>zostaje przy telefonie</span>
+</div>
+<p class="pt-pod">Zostaje <strong>{ZOSTAJE} rozmów miesięcznie</strong> — te, w których naprawdę jesteście potrzebni.</p>
+<style is:inline set:html={klatkiPytania}></style>
+</div>
+</div>
+</div>
+</section>
+
+<!-- ============ 2 · CZYM TO JEST ============
+     Definicja dla modeli językowych, obok lista tego, co klient robi sam —
+     ten sam chwyt, co lista procesów na /systemy-procesowe: czytelnik ma
+     rozpoznać pytania, które sam odbiera co tydzień. -->
+<section id="czym-jest" class="sec-pad" style="padding-top:clamp(48px,6vw,72px)">
+<h2 class="h-sec" style="margin:0;max-width:820px;text-wrap:balance">Czym są systemy dla Waszych klientów?</h2>
+<div class="s2-grid" style="display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:clamp(30px,5vw,80px);margin-top:clamp(24px,3vw,34px);align-items:start">
+<div style="font-size:17px;line-height:1.65;color:#33413a">
+<p style="margin:0;text-wrap:pretty">System dla Waszych klientów to miejsce, w którym klienci załatwiają sami to, o co dziś dzwonią i piszą. Działa o każdej porze i nie wymaga, żeby ktoś po Waszej stronie odebrał.</p>
+<p style="margin:18px 0 0;text-wrap:pretty">Nazwy bywają różne: portal klienta, platforma B2B, strefa klienta, samoobsługa. Różnica nie leży w nazwie, tylko w tym, czy klient dostaje odpowiedź szybciej niż przez telefon.</p>
+<p style="margin:18px 0 0;text-wrap:pretty">Dane bierze z systemów, w których leżą — z ERP-a, z magazynu, z rejestru zamówień — i pokazuje klientowi wyłącznie jego własne. Wy widzicie ten sam obraz z drugiej strony, razem z tym, czego klient szukał.</p>
+</div>
+<div>
+<h3 class="ss-h">Co klient robi sam</h3>
+{SAMOOBSLUGA.map((x) => (
+  <div class="ss-row rv"><span class="ss-t">{x.t}</span><span class="ss-d">{x.d}</span></div>
+))}
+<p class="ss-nota">Zakres bierze się z listy pytań, które do Was przychodzą. U Was będzie inny.</p>
+</div>
+</div>
+</section>
+
+<!-- ============ 3 · DLACZEGO PORTALE STOJĄ PUSTE ============
+     Teza całej strony stoi tu jako osobna linia w dużym stopniu pisma,
+     a nie jako akapit. Pod nią trzy powody i zdanie o tym, od czego
+     w takim razie zaczynamy. -->
+<section id="dlaczego" class="sec-pad">
+<h2 class="h-sec" style="margin:0;max-width:640px;text-wrap:pretty">Dlaczego większość portali stoi pusta</h2>
+<p class="rv" style="margin:clamp(20px,2.4vw,28px) 0 0;max-width:940px;font-size:clamp(19px,2.4vw,27px);line-height:1.3;letter-spacing:-0.02em;font-weight:700;color:#16211a;text-wrap:pretty">Portal wygrywa z telefonem tylko wtedy, kiedy jest od telefonu szybszy</p>
+<p class="sub rv" style="margin:16px 0 0;max-width:620px">Telefon ma jeden krok: wybierz numer. Wszystko, co w portalu jest dłuższe od tego, przegrywa — a klient próbuje zwykle raz.</p>
+
+<div style="margin-top:clamp(34px,4.2vw,52px)">
+{POWODY.map((p) => (
+  <div class="pw-row rv">
+    <h3 class="pw-t">{p.t}</h3>
+    <p class="pw-d">{p.d}</p>
+  </div>
+))}
+</div>
+
+<p class="sub rv" style="margin:clamp(26px,3vw,36px) 0 0;max-width:760px">Dlatego nie zaczynamy od projektu portalu. Zaczynamy od wyciągu pytań ze skrzynki obsługi i z rejestru rozmów za ostatni kwartał, a potem od policzenia, ile których jest.</p>
+</section>
+
+<!-- ============ 4 · JAK TO WYGLĄDA ============
+     Ten sam komponent, co na /systemy-procesowe. Czwarty ekran jest
+     z drugiej strony lady — to on domyka argument o mierzeniu.
+     DO PODMIANY, gdy powstanie właściwe UI. -->
+<section id="jak-wyglada" style="background:#f4f8f2;padding:clamp(56px,7vw,88px) 0 clamp(56px,7vw,88px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px;overflow:hidden">
+<div style="padding-right:max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2))">
+<div class="sec-head" style="align-items:flex-end">
+<div>
+<h2 class="h-sec" style="margin:0;max-width:520px;text-wrap:pretty">Jak to wygląda</h2>
+<p class="sub" style="margin:14px 0 0;max-width:540px">Trzy ekrany klienta i jeden Wasz. Widoki poglądowe z portalu hurtowni — u Was pola i nazwy będą inne.</p>
+</div>
+<div class="ui-ster">
+<button type="button" class="ui-strz" data-ui-prev aria-label="Poprzedni widok"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></button>
+<button type="button" class="ui-strz" data-ui-next aria-label="Następny widok"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
+</div>
+</div>
+</div>
+
+<div class="ui-pas" data-ui-pas tabindex="0" role="group" aria-label="Widoki portalu — przewiń w bok">
+
+<figure class="ui-poz">
+<div class="ui-okno">
+<div class="ui-pasek"><span class="ui-znak" aria-hidden="true"></span><span class="ui-app">Strefa klienta</span><span class="ui-sciezka">Moje zamówienia</span><span class="ui-kto">Zakład Konstrukcji</span></div>
+<div class="ui-tresc">
+  <span class="ui-zam naglowek"><span>Numer</span><span>Data</span><span>Status</span><i>Kiedy</i></span>
+  {ZAMOWIENIA.map((z) => (
+    <span class="ui-zam"><b>{z.nr}</b><span>{z.d}</span><em class={z.stan === 'droga' ? 'droga' : ''}>{z.st}</em><i>{z.cz}</i></span>
+  ))}
+  <div class="ui-akcje"><span class="ui-btn">Zamów ponownie</span><span class="ui-btn cichy">Pobierz dokumenty</span></div>
+</div>
+</div>
+<figcaption><b>Moje zamówienia</b>Pierwszy ekran po zalogowaniu odpowiada na pytanie, które pada najczęściej. Bez menu i bez szukania — status jest widoczny od razu.</figcaption>
+</figure>
+
+<figure class="ui-poz">
+<div class="ui-okno">
+<div class="ui-pasek"><span class="ui-znak" aria-hidden="true"></span><span class="ui-app">Strefa klienta</span><span class="ui-sciezka">ZAM/2481</span></div>
+<div class="ui-tresc">
+  <div class="ui-tyt"><h3>Zamówienie ZAM/2481</h3><span class="ui-stan">W drodze</span></div>
+  <div class="ui-krok" aria-hidden="true"><i class="ok"></i><i class="ok"></i><i class="ok"></i><i></i></div>
+  <div class="ui-kroki-nap"><span>przyjęte</span><span>skompletowane</span><span>wysłane</span><span>dostarczone</span></div>
+  <div style="margin-top:15px">
+    <span class="ui-etykieta">Pozycje · Wasze ceny</span>
+    {POZYCJE_KLIENTA.map((x) => (
+      <span class="ui-poz-w"><span>{x.i}</span><span>{x.n}</span><i>{x.c}</i></span>
+    ))}
+  </div>
+  <div class="ui-dok">
+    <span class="ui-plik">Faktura FV/8841</span><span class="ui-plik">List przewozowy</span><span class="ui-plik">Atest materiału</span>
+  </div>
+  <div class="ui-akcje"><span class="ui-btn cichy">Zadzwoń do opiekuna</span><span class="ui-btn cichy">Zgłoś problem</span></div>
+</div>
+</div>
+<figcaption><b>Jedno zamówienie</b>Dokumenty leżą przy sprawie, więc nikt o nie nie prosi. Przycisk do opiekuna zostaje na widoku, bo część spraw i tak skończy się rozmową.</figcaption>
+</figure>
+
+<figure class="ui-poz">
+<div class="ui-okno">
+<div class="ui-pasek"><span class="ui-znak" aria-hidden="true"></span><span class="ui-app">Strefa klienta</span><span class="ui-sciezka">Szybkie zamówienie</span></div>
+<div class="ui-tresc">
+  <span class="ui-etykieta">Zamawiane najczęściej · ceny obowiązujące dla Was</span>
+  {ULUBIONE.map((x) => (
+    <span class="ui-ulub"><span><b>{x.i}</b><span>{x.ost}</span></span><em>{x.c}</em><span class="ui-pole-il">ilość</span></span>
+  ))}
+  <div class="ui-akcje"><span class="ui-btn">Dodaj do zamówienia</span><span class="ui-btn cichy">Wgraj listę z pliku</span></div>
+</div>
+</div>
+<figcaption><b>Szybkie zamówienie</b>Powtórzenie ostatniego zamówienia zajmuje dwa kliknięcia. Dopiero to jest szybsze od maila do handlowca.</figcaption>
+</figure>
+
+<figure class="ui-poz">
+<div class="ui-okno">
+<div class="ui-pasek"><span class="ui-znak" aria-hidden="true"></span><span class="ui-app">Panel zespołu</span><span class="ui-sciezka">Adopcja · ostatnie 30 dni</span></div>
+<div class="ui-tresc">
+  <div class="ui-kafle">
+    <div class="ui-kafel"><span>Klienci korzystający</span><b>412 z 640</b><em>przed startem 0</em></div>
+    <div class="ui-kafel"><span>Pytań do obsługi</span><b>380</b><em>przed startem 1 200</em></div>
+  </div>
+  <span class="ui-etykieta">Pytania, które przestały przychodzić</span>
+  <span class="ui-pan naglowek"><span>Pytanie</span><i>przed</i><i>teraz</i></span>
+  {PANEL.map((x) => (
+    <span class="ui-pan"><span>{x.t}</span><i>{x.przed}</i><i class="teraz">{x.po}</i></span>
+  ))}
+</div>
+</div>
+<figcaption><b>Panel Waszego zespołu</b>Ten sam portal z drugiej strony lady. Miarą są pytania, które przestały przychodzić, a nie liczba logowań.</figcaption>
+</figure>
+
+</div>
+
+<div style="padding-right:max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2))">
+<p class="ui-nota">Widoki są poglądowe. To, co stoi na pierwszym ekranie, bierze się z listy pytań u Was — u kogoś innego pierwszy będzie podgląd produkcji, a nie lista zamówień.</p>
+</div>
+</section>
+
+<!-- ============ 5 · SKĄD KLIENT WCHODZI ============
+     Ciemny pas, najcięższy argument strony. Portal nie zaczyna działać
+     w dniu uruchomienia, tylko wtedy, gdy klient trafia do niego bez
+     szukania. Ostatnia pozycja listy jest pointą i dlatego bursztynowa. -->
+<section id="wejscia" style="position:relative;background:radial-gradient(900px 420px at 88% 4%, rgba(0,205,119,0.16), transparent 62%), #0e2b1d;padding:clamp(60px,7.5vw,98px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
+<div class="sec-head">
+<h2 class="h-sec" style="margin:0;max-width:560px;color:#ffffff;text-wrap:pretty">Jak klienci trafiają do środka</h2>
+<p style="margin:0 0 6px;max-width:470px;font-size:17px;line-height:1.6;color:rgba(255,255,255,0.72);text-wrap:pretty">Portal nie zaczyna działać w dniu uruchomienia. Zaczyna wtedy, kiedy klient trafia do niego bez szukania. Poniżej rozkład pierwszych logowań.</p>
+</div>
+
+<div class="we" data-anim style="margin-top:clamp(30px,3.6vw,44px)">
+{WEJSCIA.map((w, i) => (
+  <div class={w.pointa ? 'we-row pointa' : 'we-row'}>
+    <span class="we-t">{w.t}</span>
+    <span class="we-pas"><i style={`--u:${w.p}%;--d:${(0.15 + i * 0.13).toFixed(2)}s`}></i></span>
+    <span class="we-p">{w.p}%</span>
+  </div>
+))}
+</div>
+
+<p style="margin:clamp(24px,2.8vw,32px) 0 0;max-width:820px;font-size:clamp(17px,2vw,21px);line-height:1.4;letter-spacing:-0.015em;font-weight:700;color:#ffffff;text-wrap:pretty">Prawie nikt nie wpisuje adresu portalu z pamięci. Dlatego wejście wkładamy w wiadomości, które i tak wysyłacie.</p>
+
+<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(22px,3.4vw,56px);margin-top:clamp(26px,3vw,36px);max-width:1000px" class="grid2">
+<p style="margin:0;font-size:15.5px;line-height:1.65;color:rgba(255,255,255,0.6);text-wrap:pretty"><strong style="color:rgba(255,255,255,0.9);font-weight:700">Numeru telefonu nie zabieramy.</strong> Przy każdej sprawie w portalu stoi przycisk do opiekuna, a stary numer działa jak działał. Portal, który zmusza do samoobsługi, przegrywa z tym, do którego klient wraca sam.</p>
+<p style="margin:0;font-size:15.5px;line-height:1.65;color:rgba(255,255,255,0.6);text-wrap:pretty"><strong style="color:rgba(255,255,255,0.9);font-weight:700">Mierzymy pytania, nie logowania.</strong> Przed startem liczymy, ile razy w miesiącu padają te same pytania. Po kwartale liczymy je jeszcze raz i to jest cały wynik. Logowanie mówi tylko, że ktoś zajrzał.</p>
+</div>
+</section>
+
+<!-- ============ 6 · DLA JAKICH FIRM ============ -->
+<section id="dla-kogo" class="sec-pad">
+<div class="sec-head">
+<h2 class="h-sec" style="margin:0;max-width:520px;text-wrap:pretty">Dla jakich firm to jest</h2>
+<p class="sub" style="margin:0 0 6px;max-width:460px">Najczęściej dystrybucja, hurt, produkcja na zamówienie i serwis — wszędzie tam, gdzie ten sam klient wraca i za każdym razem pyta o to samo.</p>
+</div>
+
+<div style="margin-top:clamp(28px,3.4vw,42px)">
+{DLA_KOGO.map((x, i) => (
+  <div class="dl-row rv">
+    <span class="dl-n">{String(i + 1).padStart(2, '0')}</span>
+    <h3 class="dl-t">{x.t}</h3>
+    <p class="dl-d">{x.d}</p>
+  </div>
+))}
+</div>
+
+<div class="dl-nie rv">
+<h3>Kiedy to nie ma sensu</h3>
+{NIE_TERAZ.map((t) => (<p>{t}</p>))}
+</div>
+</section>
+
+<!-- ============ 6b · PAS WEZWANIA ============ -->
+<section style="padding:clamp(46px,5.5vw,72px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) 0">
+<div class="ps">
+<p>Wymieńcie trzy pytania, które Wasza obsługa słyszy najczęściej — policzymy je razem</p>
+<a href="#kontakt" class="btn-dark" style="display:inline-flex;align-items:center;gap:9px;background:#16211a;color:#ffffff;padding:15px 26px;border-radius:11px;font-weight:650;font-size:15.5px;white-space:nowrap">Umów rozmowę <span aria-hidden="true">→</span></a>
+</div>
+</section>
+
+<!-- ============ 7 · PRZYKŁADY ============
+     PRZYKŁADOWE wdrożenia — do podmiany na potwierdzone przypadki.
+     Miarą jest liczba pytań miesięcznie, czyli to samo, co mierzy hero. -->
+<section id="dowody" style="background:#f4f8f2;padding:clamp(60px,7.5vw,96px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
+<div class="sec-head">
+<h2 class="h-sec" style="margin:0;max-width:600px;text-wrap:pretty">Trzy portale i pytania, które przestały przychodzić</h2>
+<p class="sub" style="margin:0 0 6px;max-width:450px">Liczby z kwartału po uruchomieniu, zestawione z pomiarem sprzed startu. Wiersz „zostało przy telefonie” jest przy każdym z nich ważniejszy od liczby obok.</p>
+</div>
+
+<div style="margin-top:clamp(20px,2.4vw,30px)">
+{PRZYKLADY.map((x) => (
+  <div class="px-row rv" data-anim>
+    <div>
+      <h3 class="px-f">{x.f}</h3>
+      <span class="px-m">{x.m}</span>
+      <span class="px-p">{x.p}</span>
+    </div>
+    <div>
+      <p class="px-d">{x.d}</p>
+      <p class="px-l"><b>Zostało przy telefonie</b>{x.zostalo}</p>
+    </div>
+    <div>
+      <span class="px-cap">Pytań do obsługi miesięcznie</span>
+      <span class="px-por"><s>{x.przed}</s><em aria-hidden="true">→</em>{x.po}</span>
+      <span class="px-os"><i style={`--u:${(x.po / x.przed * 100).toFixed(1)}%`}></i></span>
+      <span class="px-op">tyle zostało z pierwotnej liczby pytań</span>
+    </div>
+  </div>
+))}
+</div>
+</section>
+
+<!-- ============ 7b · GŁOS KLIENTA ============ -->
+<section style="padding:clamp(56px,7vw,88px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2))">
+<figure class="rv" style="margin:0;display:grid;grid-template-columns:auto 1fr;gap:clamp(20px,3vw,36px);align-items:start;max-width:1000px">
+<span aria-hidden="true" style="font-size:clamp(46px,5vw,64px);line-height:.72;font-weight:800;color:var(--la-accent,#00CD77)">„</span>
+<div>
+<blockquote style="margin:0;font-size:clamp(20px,2.6vw,29px);line-height:1.35;letter-spacing:-0.02em;font-weight:650;color:#16211a;text-wrap:pretty">Firma Let’s Automate bardzo dobrze zrozumiała potrzeby i zaprojektowała scenariusz, który w pełni spełniał cele biznesowe.</blockquote>
+<figcaption><span style="display:block;margin-top:clamp(16px,2vw,22px);font-size:15px;font-weight:750;color:#16211a">Arkadiusz Andruch</span><span style="display:block;margin-top:2px;font-size:14px;color:#8b968d">Prezes Zarządu, X2O</span></figcaption>
+</div>
+</figure>
+</section>
+
+<GcCta
+  heading="Zacznijmy od listy pytań"
+  lead="Wymieńcie trzy pytania, które Wasza obsługa słyszy najczęściej, i podajcie, ilu macie stałych odbiorców. Odpowiemy z pytaniem o to, skąd da się wyciągnąć dane o zamówieniach, i z terminem pierwszej rozmowy."
+  eyebrow="Z pierwszej rozmowy wychodzicie z"
+  items={[
+    { t: 'Policzoną listą pytań', d: 'które z nich portal zdejmie, a które zostaną' },
+    { t: 'Werdyktem', d: 'czy sklep z półki albo integracja nie zamkną tego taniej' },
+    { t: 'Zakresem do wyceny', d: 'pierwsze uruchomienie i dane, których wymaga' },
+  ]}
+  placeholder="Np. mamy 600 stałych odbiorców, obsługa codziennie odbiera kilkadziesiąt telefonów o status zamówienia…"
+  submitLabel="Umów rozmowę"
+  badges={[
+    { i: 'klodka', t: 'Wasze dane bezpieczne' },
+    { i: 'kartka', t: 'NDA przed startem' },
+    { i: 'ptaszek', t: 'Kod zostaje Wasz' },
+  ]}
+/>
+
+<GcFaq
+  heading="Pytania, które padają przed decyzją"
+
+  ctaLabel="Zadajcie nam swoje →"
+  items={faq}
+/>
+
+<script>
+  var redukcja = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  (function(){
+    var els = document.querySelectorAll('[data-anim]');
+    if(!els.length) return;
+    if(redukcja || !('IntersectionObserver' in window)){
+      els.forEach(function(el){ el.classList.add('on'); });
+      return;
+    }
+    var io = new IntersectionObserver(function(wpisy){
+      wpisy.forEach(function(w){
+        if(w.isIntersecting){ w.target.classList.add('on'); io.unobserve(w.target); }
+      });
+    }, { threshold: 0.22 });
+    els.forEach(function(el){ io.observe(el); });
+  })();
+
+  // ---- Pas z widokami portalu ----
+  (function(){
+    var pas = document.querySelector('[data-ui-pas]');
+    if(!pas) return;
+    var wstecz = document.querySelector('[data-ui-prev]');
+    var dalej = document.querySelector('[data-ui-next]');
+    if(!wstecz || !dalej) return;
+
+    function krok(){
+      var karta = pas.querySelector('.ui-poz');
+      if(!karta) return pas.clientWidth;
+      var odstep = parseFloat(getComputedStyle(pas).columnGap || '0') || 0;
+      return karta.getBoundingClientRect().width + odstep;
+    }
+    function stan(){
+      var zapas = pas.scrollWidth - pas.clientWidth;
+      wstecz.disabled = pas.scrollLeft < 4;
+      dalej.disabled = pas.scrollLeft > zapas - 4;
+      var zbedne = zapas < 4;
+      wstecz.hidden = zbedne;
+      dalej.hidden = zbedne;
+    }
+    function jedz(kierunek){
+      pas.scrollBy({ left: kierunek * krok(), behavior: redukcja ? 'auto' : 'smooth' });
+    }
+    wstecz.addEventListener('click', function(){ jedz(-1); });
+    dalej.addEventListener('click', function(){ jedz(1); });
+    pas.addEventListener('scroll', stan, { passive: true });
+    window.addEventListener('resize', stan, { passive: true });
+    stan();
+  })();
+</script>
+</LaBase>

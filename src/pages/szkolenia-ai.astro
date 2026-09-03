@@ -1,0 +1,746 @@
+---
+// SZKOLENIA I ADOPCJA AI — /szkolenia-ai · trzecia podstrona usługowa
+// z pionu „Wdrażamy AI". Domyka komplet po /strategia-ai i /rozwiazania-ai.
+//
+// CZYM SIĘ RÓŻNI OD DWÓCH POPRZEDNICH:
+// Strategia sprzedaje dokument, rozwiązania — działający system. Tutaj
+// produktem jest zmiana zachowania ludzi, a to jest jedyna z trzech usług,
+// której wynik może się cofnąć. Stąd inna lista pytań zakupowych:
+//   · czym to się różni od szkolenia z ChatGPT za trzy tysiące
+//   · co zostanie po trzech miesiącach
+//   · co z ludźmi, którzy tego nie chcą
+//   · ile to zabiera czasu ludziom, którzy mają robotę
+//   · czy to nie zdezaktualizuje się przy następnym modelu
+//
+// POZYCJONOWANIE:
+// Kategoria sprzedaje DZIEŃ WARSZTATU. My sprzedajemy DWUNASTY TYDZIEŃ.
+// Znany kształt porażki: po warsztacie próbują wszyscy, w trzecim tygodniu
+// zostaje garstka. Cała strona jest zbudowana wokół tego dołka — łącznie
+// z rysunkiem w hero, który go rysuje zamiast go ukrywać.
+//
+// TRZY RZECZY SPRAWDZALNE PRZED PODPISANIEM UMOWY:
+//   1. Definicja adopcji spisana przed warsztatem — czynność wykonana
+//      na prawdziwej sprawie, a nie logowanie do narzędzia. Sekcja #pomiar.
+//   2. Punkt wyjścia mierzony przed warsztatem, więc w dwunastym tygodniu
+//      jest co porównać.
+//   3. Trzecia grupa w zespole — ludzie, którzy nie chwycą — jest w planie
+//      od początku, a nie tłumaczona po fakcie. Ciemny pas.
+//
+// WARSTWA WIZUALNA — trzeci osobny słownik w serwisie:
+//   /strategia-ai:   łuki, przewijany strumień, siatka stu kwadratów
+//   /rozwiazania-ai: przekrój warstw, próg pewności, tory harmonogramu
+//   /szkolenia-ai:   JEDNOSTKI DO POLICZENIA. Wszystko na tej stronie da się
+//                    przeliczyć wzrokiem: ludzie w kresce, minuty w kostce.
+//   · KRZYWA ADOPCJI (hero) — dwanaście tygodni, w każdym tyle kresek, ilu
+//     ludzi pracuje nowym sposobem; trzeci tydzień na bursztynowo
+//   · TRZY PODEJŚCIA (sekcja o dołku) — ta sama czynność w kostkach po pięć
+//     minut, pierwsze podejście dłuższe od starego sposobu
+//   · PODZIAŁ ZESPOŁU (ciemny pas) — trzy rzędy kresek: 5, 7 i 2 osoby
+// Hero chodzi w pętli z własnego zegara; dwa pozostałe odsłaniają się raz,
+// przy wejściu w kadr. Wszystkie mają stan końcowy bez ruchu.
+//
+// DO POTWIERDZENIA PRZED PUBLIKACJĄ:
+// · Krzywa adopcji (14 → 7 → 12 z 14) — kształt jest pewny, liczby są
+//   przykładem. Do podmiany na wynik z realnego programu, gdy taki będzie.
+// · Podział 5/7/2 — proporcja z obserwacji, nie z pomiaru.
+// · Dwanaście tygodni i cztery wejścia — założenie o kształcie usługi.
+// · Zdanie „jeśli liczba nie ruszy, wracamy na własny koszt" — decyzja
+//   handlowa Szymona. Bez niej sekcja #pomiar zostaje opisem metody.
+// · Trzy zespoły w sekcji DOWODY są PRZYKŁADOWE, do podmiany.
+// · Kwoty świadomie nie ma. Miejsce na nią czeka w FAQ „Ile kosztuje".
+// · /og/szkolenia-ai.png — na razie strona dziedziczy /og/hub.png.
+import LaBase from '../layouts/LaBase.astro';
+import GcFaq from '../components/GcFaq.astro';
+import GcCta from '../components/GcCta.astro';
+
+const kanon = new URL('/szkolenia-ai', Astro.site).href;
+
+const dane = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Service',
+      '@id': `${kanon}#usluga`,
+      name: 'Szkolenia i adopcja AI',
+      alternateName: ['Szkolenia z AI dla firm', 'Adopcja AI w zespole', 'Warsztaty AI'],
+      serviceType: 'Szkolenia z zastosowań sztucznej inteligencji i wdrożenie ich w codziennej pracy zespołu',
+      url: kanon,
+      description: 'Dwunastotygodniowy program: warsztat na procesach i danych klienta, gotowe rutyny dla ról, powrót na trudne przypadki w czwartym tygodniu i pomiar adopcji w dwunastym. Wynikiem jest liczba osób, które wykonują wskazane czynności nowym sposobem.',
+      provider: { '@id': new URL('/#organizacja', Astro.site).href },
+      areaServed: { '@type': 'Country', name: 'Polska' },
+      audience: { '@type': 'BusinessAudience', name: 'Zespoły w średnich i dużych firmach' },
+    },
+    {
+      '@type': 'BreadcrumbList',
+      '@id': `${kanon}#okruszki`,
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Strona główna', item: new URL('/', Astro.site).href },
+        { '@type': 'ListItem', position: 2, name: 'Szkolenia i adopcja AI', item: kanon },
+      ],
+    },
+  ],
+};
+
+const title = "Szkolenia z AI i adopcja w zespole — program na 12 tygodni | Let's automate";
+const description = 'Warsztat na Waszych procesach i danych, gotowe rutyny dla ról i powrót w tygodniu, w którym programy zwykle umierają. Adopcję mierzymy w dwunastym tygodniu.';
+
+
+// ---- KRZYWA ADOPCJI (hero) ---------------------------------------------
+// Dwanaście kolumn, w każdej tyle zapalonych kresek, ilu ludzi z zespołu
+// pracuje w tym tygodniu nowym sposobem. Dołek w trzecim tygodniu jest
+// narysowany, a nie schowany — to on sprzedaje resztę programu.
+const ZESPOL = 14;
+const TYGODNIE = [
+  { t: 1, n: 14 },
+  { t: 2, n: 11 },
+  { t: 3, n: 7, dolek: true },
+  { t: 4, n: 8 },
+  { t: 5, n: 10 },
+  { t: 6, n: 11 },
+  { t: 7, n: 12 },
+  { t: 8, n: 12 },
+  { t: 9, n: 12 },
+  { t: 10, n: 13 },
+  { t: 11, n: 12 },
+  { t: 12, n: 12 },
+];
+const KONCOWA = TYGODNIE[TYGODNIE.length - 1].n;
+const IDX_DOLEK = TYGODNIE.findIndex((w) => w.dolek);
+
+const KW_C = 18;               // długość cyklu
+const KW_START = 0.6;          // kiedy wchodzi pierwsza kolumna
+const KW_KROK = 0.42;          // odstęp między kolumnami
+const KW_KONIEC = KW_START + (TYGODNIE.length - 1) * KW_KROK + 0.5;
+const KW_GASNIE = 15.4;
+const kwp = (s) => `${(Math.max(0, Math.min(1, s / KW_C)) * 100).toFixed(2)}%`;
+
+const klatkiKrzywa = [
+  ...TYGODNIE.map((w, i) => {
+    const a = KW_START + i * KW_KROK;
+    return `@keyframes kw-k${i}{0%,${kwp(a)}{opacity:0;transform:translateY(10px)}${kwp(a + 0.5)}{opacity:1;transform:translateY(0)}${kwp(KW_GASNIE)}{opacity:1;transform:translateY(0)}${kwp(KW_GASNIE + 0.9)}{opacity:0;transform:translateY(0)}100%{opacity:0;transform:translateY(0)}}`;
+  }),
+  `@keyframes kw-sufit{0%,${kwp(0.15)}{opacity:0}${kwp(0.7)}{opacity:1}${kwp(KW_GASNIE)}{opacity:1}${kwp(KW_GASNIE + 0.7)}{opacity:0}100%{opacity:0}}`,
+  `@keyframes kw-dolek{0%,${kwp(KW_START + IDX_DOLEK * KW_KROK + 0.55)}{opacity:0;transform:translateY(-5px)}${kwp(KW_START + IDX_DOLEK * KW_KROK + 1)}{opacity:1;transform:translateY(0)}${kwp(KW_GASNIE)}{opacity:1;transform:translateY(0)}${kwp(KW_GASNIE + 0.7)}{opacity:0;transform:translateY(0)}100%{opacity:0;transform:translateY(0)}}`,
+  `@keyframes kw-suma{0%,${kwp(KW_KONIEC)}{opacity:0;transform:translateY(6px)}${kwp(KW_KONIEC + 0.55)}{opacity:1;transform:translateY(0)}${kwp(KW_GASNIE)}{opacity:1;transform:translateY(0)}${kwp(KW_GASNIE + 0.7)}{opacity:0;transform:translateY(0)}100%{opacity:0;transform:translateY(0)}}`,
+].join('\n');
+
+
+// ---- TRZY PODEJŚCIA (sekcja o dołku) ------------------------------------
+// Jedna kostka to pięć minut. Stary sposób zajmuje osiem kostek i stoi przy
+// nim kreska odniesienia; nowy sposób przy pierwszym podejściu ją przekracza.
+// To jest cały mechanizm porażki tej kategorii, narysowany w jednym rysunku.
+const KOSTKA = 5;
+const STARY = 8;
+const PODEJSCIA = [
+  { e: 'Pierwsze podejście', t: 'tydzień 1', n: 13, w: 'Nowy sposób zajmuje więcej, bo wynik trzeba sprawdzić i poprawić.' },
+  { e: 'Drugie podejście', t: 'tydzień 2', n: 8, w: 'Wychodzi na to samo, co po staremu. Większość ludzi odpuszcza właśnie tutaj.' },
+  { e: 'Czwarte podejście', t: 'tydzień 4', n: 3, w: 'Dopiero w tym miejscu jest różnica, o którą chodziło.' },
+];
+
+const POWODY = [
+  {
+    t: 'Nikt nie wie, co dokładnie ma robić inaczej w poniedziałek rano',
+    d: 'Z warsztatu zostaje wrażenie możliwości i kilkanaście zapisanych promptów. Zdanie „ofertę na nietypowe zapytanie przygotowujesz teraz tak" nie pada nigdy.',
+  },
+  {
+    t: 'Pytanie pojawia się w czwartek o piętnastej, przy prawdziwej sprawie',
+    d: 'Dwa tygodnie po szkoleniu, kiedy prowadzący dawno wyjechał. Człowiek robi jedną próbę, wychodzi mu gorzej niż zwykle i wraca do sposobu, który zna.',
+  },
+  {
+    t: 'Nikt tego nie mierzy, więc nikt tego nie pilnuje',
+    d: 'Bez liczby przed startem i po kwartale nie ma czego porównać. Temat schodzi z agendy zarządu bez żadnej decyzji.',
+  },
+];
+
+
+// ---- ROLE ---------------------------------------------------------------
+// Konkret zamiast obietnicy. Każda pozycja to czynność, którą ktoś wykonuje
+// co tydzień — czytelnik ma rozpoznać swoją pracę, nie kategorię narzędzia.
+const ROLE = [
+  { r: 'Handel', c: ['Wycena nietypowego zapytania na podstawie cennika i historii klienta', 'Notatka po spotkaniu razem z następnym krokiem i terminem'] },
+  { r: 'Obsługa klienta', c: ['Odpowiedź na zgłoszenie z historią tego klienta w tle', 'Przygotowanie stanowiska w reklamacji, z zapisami z umowy'] },
+  { r: 'Finanse', c: ['Opis i dekretacja faktury kosztowej', 'Komentarz do odchyleń w miesięcznym raporcie'] },
+  { r: 'Marketing', c: ['Opis produktu na podstawie specyfikacji technicznej', 'Materiał zbudowany na tym, co mówią klienci w rozmowach'] },
+  { r: 'Zarząd i dyrektorzy', c: ['Materiał na zarząd złożony z danych z trzech systemów', 'Przegląd umowy przed podpisaniem, pod kątem różnic wobec wzorca'] },
+];
+
+
+// ---- PROGRAM ------------------------------------------------------------
+const ETAPY = [
+  {
+    e: 'TYDZIEŃ 0', t: 'Wybór czynności i punkt wyjścia',
+    d: 'Z liderami wybieramy od trzech do pięciu czynności na rolę — takich, które ktoś wykonuje co tydzień i które da się policzyć. Mierzymy, ile zajmują dzisiaj i jak często wracają do poprawki.',
+    z: 'lista czynności i punkt wyjścia',
+  },
+  {
+    e: 'TYDZIEŃ 1', t: 'Warsztat na Waszych sprawach',
+    d: 'Jeden dzień, w grupach po kilkanaście osób. Każdy przechodzi swoje czynności na własnych sprawach z ostatniego tygodnia i wychodzi z opisanym sposobem pracy dla każdej z nich.',
+    z: 'zestaw rutyn dla każdej roli',
+  },
+  {
+    e: 'TYDZIEŃ 4', t: 'Powrót na trudne przypadki',
+    d: 'Tydzień po dołku wracamy z tym, co komu nie wyszło. Sprawy, przy których nowy sposób przegrał ze starym, przechodzimy razem i przepisujemy rutynę tak, żeby obsłużyła ten przypadek.',
+    z: 'poprawione rutyny i lista wyjątków',
+  },
+  {
+    e: 'TYDZIEŃ 5–11', t: 'Dyżur i krótkie przeglądy',
+    d: 'Godzina w tygodniu na pytania przy prawdziwych sprawach oraz kwadrans z liderem na przejrzenie, kto gdzie stoi. Pytania, które wracają, dopisujemy do rutyn.',
+    z: 'pytania spisane i zamknięte',
+  },
+  {
+    e: 'TYDZIEŃ 12', t: 'Pomiar i przekazanie',
+    d: 'Liczymy, ile osób wykonuje wskazane czynności nowym sposobem, i porównujemy z punktem wyjścia. Wskazujemy osobę w firmie, która prowadzi temat dalej, i przekazujemy jej komplet rutyn.',
+    z: 'liczba adopcji i właściciel tematu',
+  },
+];
+
+
+// ---- PODZIAŁ ZESPOŁU (ciemny pas) ---------------------------------------
+const GRUPY = [
+  {
+    n: 5, t: 'Pociągną sami',
+    d: 'Znajdują sposób bez nas i po dwóch tygodniach uczą kolegów przy biurku. Na nich opiera się cała reszta programu, więc szukamy ich już na warsztacie.',
+  },
+  {
+    n: 7, t: 'Ruszą, kiedy dostaną gotową ścieżkę',
+    d: 'Zaczną wtedy, kiedy ktoś opisze ich czynność krok po kroku i pokaże, co zrobić, kiedy wynik jest zły. To dla tej grupy powstaje zestaw rutyn.',
+    glowna: true,
+  },
+  {
+    n: 2, t: 'Zostaną przy starym sposobie',
+    d: 'Zdarza się w każdym zespole i nie zawsze warto z tym walczyć. Ważniejsze jest, żeby czynność miała przez cały program dwie ścieżki i żeby stara nie została wyłączona przed pomiarem.',
+  },
+];
+
+
+// ---- PRZYKŁADY ----------------------------------------------------------
+// PRZYKŁADOWE programy — do podmiany na potwierdzone przypadki.
+// Przy każdym stoi też to, co się NIE przyjęło. Lista, na której wszystko
+// wychodzi, czyta się jak materiał sprzedażowy.
+const PRZYKLADY = [
+  {
+    z: 'Dział handlowy', f: 'producent maszyn', ile: 14, po: 11,
+    c: 'Wycena nietypowego zapytania · notatka po spotkaniu',
+    nie: 'Przygotowanie prezentacji ofertowej zostało przy jednej osobie.',
+  },
+  {
+    z: 'Obsługa klienta', f: 'dystrybutor techniczny', ile: 22, po: 19,
+    c: 'Odpowiedź na zgłoszenie · stanowisko w reklamacji',
+    nie: 'Opisywanie rozwiązanych spraw do bazy wiedzy nie przyjęło się wcale.',
+  },
+  {
+    z: 'Finanse', f: 'sieć handlowa', ile: 9, po: 6,
+    c: 'Opis faktury kosztowej · komentarz do odchyleń',
+    nie: 'Wszystko wokół zamknięcia miesiąca zostało po staremu — za wysoka cena błędu.',
+  },
+];
+
+
+const faq = [
+  {
+    q: 'Czym to się różni od szkolenia z ChatGPT za trzy tysiące złotych?',
+    a: 'Długością i tym, co jest na końcu. Takie szkolenie kończy się w dniu szkolenia i sprzedaje się jako dzień. Tutaj na końcu stoi liczba: ile osób wykonuje wskazane czynności nowym sposobem, sprawdzone po dwunastu tygodniach na prawdziwych sprawach. Jeśli potrzebujecie jednorazowego wprowadzenia dla zespołu, tańsze szkolenie wystarczy i powiemy to na pierwszej rozmowie.',
+  },
+  {
+    q: 'Ile kosztuje program szkoleń i adopcji AI?',
+    a: 'Wycena jest stałą kwotą za ustalony zakres i podajemy ją po rozmowie o tym, ile ról i ile osób wchodzi do programu. Na kwotę wpływa liczba ról i liczba lokalizacji, a osobno liczymy czynności dotykające danych, które wymagają innego trybu pracy. Płatność idzie etapami, po warsztacie i po pomiarze.',
+  },
+  {
+    q: 'Co zostanie po trzech miesiącach?',
+    a: 'Zestaw opisanych rutyn dla każdej roli, razem z tym, co robić, kiedy wynik jest zły. Zapis pomiaru z punktem wyjścia i wynikiem z dwunastego tygodnia. Oraz osoba w firmie, która prowadzi temat dalej i ma komplet materiałów, żeby wprowadzić w to nową osobę bez naszego udziału.',
+  },
+  {
+    q: 'Czy to nie zdezaktualizuje się, kiedy wyjdą nowe modele?',
+    a: 'Rutyna jest opisana na poziomie czynności: co ma wyjść i co sprawdzić, zanim wynik pójdzie dalej. Ta część trzyma się latami. Warstwa narzędziowa siedzi w jednym miejscu każdej rutyny, więc podmiana modelu albo narzędzia to poprawka w jednym akapicie. Kursy zbudowane wokół konkretnych promptów starzeją się razem z modelem i dlatego ich nie prowadzimy.',
+  },
+  {
+    q: 'Kogo szkolić — cały dział czy wybrane osoby?',
+    a: 'Cały zespół przy wybranych czynnościach. Odwrotna kolejność, czyli wybrane osoby przy wszystkich czynnościach, kończy się tym, że nowy sposób pracy działa tylko wtedy, kiedy akurat jest ta jedna osoba. Zaczynamy od jednego działu i od kilku czynności, a kolejne role wchodzą po pierwszym pomiarze.',
+  },
+  {
+    q: 'Ile czasu zabiera to ludziom, którzy mają swoją robotę?',
+    a: 'Dzień warsztatu, pół dnia powrotu w czwartym tygodniu i godzina dyżuru w tygodniu, z której korzysta ten, kto akurat ma pytanie. Reszta dzieje się przy pracy, którą ci ludzie i tak wykonują, bo materiałem są ich własne sprawy z bieżącego tygodnia.',
+  },
+  {
+    q: 'Co z ludźmi, którzy nie chcą tego dotykać?',
+    a: 'Są w planie od początku. W każdym zespole część osób zostaje przy starym sposobie i program musi działać też wtedy. Praktycznie oznacza to, że czynność ma dwie ścieżki przez cały czas trwania programu, a przy pomiarze liczymy wykonane czynności. Jeśli po dwunastu tygodniach ktoś nie ruszył, wpisujemy to do wyniku razem z powodem.',
+  },
+  {
+    q: 'Czy nasze dane wychodzą na zewnątrz podczas warsztatu?',
+    a: 'Pracujemy na Waszych kontach firmowych z wyłączonym uczeniem na przesyłanych danych, a NDA podpisujemy przed pierwszym dostępem. Przy czynnościach dotykających danych osobowych albo objętych tajemnicą ustalamy przed warsztatem, co wolno wkleić, i zapisujemy to w rutynie jako warunek.',
+  },
+  {
+    q: 'Mamy wykupione licencje i nikt z nich nie korzysta. Od czego zacząć?',
+    a: 'Od wskazania czynności. Kolejne szkolenie z narzędzia niczego tu nie ruszy, bo nieużywane licencje znaczą, że ludzie dostali dostęp bez odpowiedzi na pytanie, którą swoją robotę mają zrobić inaczej. Zaczynamy od wyboru kilku czynności na rolę i od pomiaru, ile zajmują dzisiaj. Licencje, które już macie, zwykle wystarczają.',
+  },
+  {
+    q: 'Czy musimy najpierw zamówić strategię?',
+    a: 'Nie. <a href="/strategia-ai" style="font-weight:700;color:#0a7a52">Strategia transformacji AI</a> układa kolejność wdrożeń wtedy, kiedy kandydatów jest kilkanaście. Ten program dotyczy pracy, którą Wasi ludzie wykonują dzisiaj ręcznie, i można go zacząć niezależnie. Jeśli po pomiarze wyjdzie, że czynność opłaca się przenieść z ludzi na system, to jest już <a href="/rozwiazania-ai" style="font-weight:700;color:#0a7a52">indywidualne rozwiązanie AI</a>.',
+  },
+];
+dane['@graph'].push({
+  '@type': 'FAQPage',
+  '@id': `${kanon}#faq`,
+  mainEntity: faq.map((f) => ({
+    '@type': 'Question',
+    name: f.q,
+    acceptedAnswer: { '@type': 'Answer', text: f.a.replace(/<[^>]+>/g, '') },
+  })),
+});
+---
+<LaBase title={title} description={description} ctaHref="#kontakt" ctaLabel="Umów rozmowę" nav="uslugi">
+<script type="application/ld+json" is:inline set:html={JSON.stringify(dane)} slot="head"></script>
+<style is:global slot="head">
+  /* ================= krzywa adopcji (hero) =================
+     Dwanaście kolumn po czternaście kresek. Zapalone kreski to ludzie, którzy
+     w danym tygodniu pracują nowym sposobem — da się je policzyć wzrokiem
+     i to jest cały pomysł na warstwę wizualną tej strony.
+     Trzeci tydzień jest bursztynowy, bo dołek jest tu argumentem. */
+  .kw{position:relative}
+  .kw-suma{display:flex;align-items:baseline;gap:10px;margin-bottom:clamp(16px,2vw,22px);opacity:0}
+  .kw-suma b{font-size:clamp(34px,4.4vw,52px);font-weight:800;letter-spacing:-0.035em;line-height:1;color:#16211a}
+  .kw-suma span{font-size:14.5px;line-height:1.4;color:#4c5850;max-width:220px}
+  .kw-plot{position:relative;display:flex;align-items:stretch;gap:clamp(4px,0.8vw,9px);padding-top:22px}
+  .kw-sufit{position:absolute;left:0;right:0;top:16px;border-top:1px dashed #cbd6c9;opacity:0}
+  .kw-sufit i{position:absolute;right:0;bottom:5px;font-style:normal;font-size:11.5px;color:#9aa69b;white-space:nowrap}
+  .kw-kol{flex:1;display:flex;flex-direction:column-reverse;gap:3px;min-width:0}
+  .kw-t{display:block;height:9px;border-radius:2px;background:#eef2ec}
+  .kw-t.on{background:var(--la-accent,#00CD77)}
+  .kw-t.on.zly{background:#d99a3c}
+  .kw-os{display:flex;gap:clamp(4px,0.8vw,9px);margin-top:10px;padding-top:8px;border-top:1px solid #e2e9e0}
+  .kw-os span{flex:1;min-width:0;font-family:ui-monospace,Menlo,monospace;font-size:10.5px;color:#a9b3aa;text-align:center}
+  .kw-os span.zly{color:#b07524;font-weight:700}
+  /* Podpis dołka schodzi pod oś tygodni — nad nią zderzał się z numerami. */
+  .kw-dolek{position:absolute;top:calc(100% + 36px);transform:translateX(-50%);opacity:0}
+  .kw-dolek b{font-size:12.5px;font-weight:700;color:#b07524;white-space:nowrap}
+  .kw-pod{margin:64px 0 0;font-size:14.5px;line-height:1.55;color:#4c5850;max-width:520px;text-wrap:pretty}
+  .kw-pod strong{font-weight:700;color:#16211a}
+  @media (max-width:560px){
+    .kw-t{height:6px}
+    .kw-os span{font-size:9px}
+    .kw-dolek b{font-size:11.5px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .kw-kol,.kw-sufit,.kw-dolek,.kw-suma{animation:none !important;opacity:1;transform:none}
+    .kw-dolek{transform:translateX(-50%)}
+  }
+
+  /* ================= trzy podejścia =================
+     Kostka to pięć minut. Kreska odniesienia stoi tam, gdzie kończy się stary
+     sposób — przy pierwszym podejściu nowy ją przekracza i to jest miejsce,
+     w którym większość programów szkoleniowych się kończy.
+     Odsłania się raz, przy wejściu w kadr; hero ma już własny zegar. */
+  .pd{position:relative;margin-top:clamp(26px,3.2vw,38px)}
+  .pd-row{display:grid;grid-template-columns:minmax(140px,180px) minmax(0,1fr);gap:clamp(16px,2.6vw,36px);align-items:start;padding:clamp(18px,2.2vw,26px) 0;border-top:1px solid #e2e9e0}
+  .pd-row:first-of-type{padding-top:clamp(32px,3.6vw,42px)}
+  .pd-row:last-of-type{border-bottom:1px solid #e2e9e0}
+  .pd-e{display:block;font-size:15.5px;font-weight:700;letter-spacing:-0.01em;color:#16211a}
+  .pd-t{display:block;margin-top:3px;font-family:ui-monospace,Menlo,monospace;font-size:11.5px;color:#a9b3aa}
+  .pd-tor{position:relative;display:flex;align-items:center;gap:4px;height:14px}
+  .pd-u{display:block;width:14px;height:12px;border-radius:2px;background:var(--la-accent,#00CD77);opacity:0;transform:translateY(5px);transition:opacity .3s ease,transform .3s cubic-bezier(.34,1.4,.5,1);transition-delay:var(--d)}
+  .pd.on .pd-u{opacity:1;transform:none}
+  .pd-u.dluzej{background:#d99a3c}
+  /* Kreska odniesienia: koniec starego sposobu. Osiem kostek po 18 px. */
+  .pd-linia{position:absolute;left:calc(8 * 18px - 4px);top:-9px;bottom:-9px;width:1px;background:#b9c4b8}
+  .pd-linia b{position:absolute;left:9px;top:-18px;font-size:11.5px;font-weight:600;color:#8b968d;white-space:nowrap}
+  .pd-min{margin:11px 0 0;font-size:14.5px;line-height:1.55;color:#4c5850;text-wrap:pretty}
+  .pd-min b{font-weight:700;color:#16211a}
+  .pd-legenda{margin:14px 0 0;font-size:13px;color:#8b968d}
+  @media (max-width:760px){
+    .pd-row{grid-template-columns:1fr;gap:12px}
+    .pd-u{width:11px;height:11px}
+    .pd-linia{left:calc(8 * 15px - 4px)}
+  }
+  @media (prefers-reduced-motion:reduce){ .pd-u{transition:none} }
+
+  /* ================= powody ================= */
+  .pw-row{display:grid;grid-template-columns:minmax(0,0.95fr) minmax(0,1.15fr);gap:clamp(18px,3vw,48px);align-items:baseline;padding:clamp(20px,2.4vw,28px) 0;border-top:1px solid #e2e9e0}
+  .pw-row:last-of-type{border-bottom:1px solid #e2e9e0}
+  .pw-t{margin:0;font-size:clamp(17px,2vw,20px);font-weight:750;letter-spacing:-0.015em;line-height:1.3;color:#16211a;text-wrap:balance}
+  .pw-d{margin:0;font-size:15px;line-height:1.6;color:#4c5850;text-wrap:pretty}
+  @media (max-width:760px){ .pw-row{grid-template-columns:1fr;gap:7px} }
+
+  /* ================= role =================
+     Bez pojemników: nazwa roli trzyma kolumnę, pod nią czynności na liniach.
+     Piąta rola rozpina się na dwie kolumny, żeby siatka nie zamknęła się
+     równym prostokątem. */
+  .rl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 clamp(36px,6vw,88px);margin-top:clamp(28px,3.4vw,42px)}
+  .rl-b{padding:clamp(20px,2.4vw,26px) 0;border-top:1px solid #e7ece4}
+  .rl-b.szeroko{grid-column:1 / -1}
+  .rl-r{margin:0;font-size:clamp(17px,2vw,20px);font-weight:750;letter-spacing:-0.015em;color:#16211a}
+  .rl-c{display:flex;gap:10px;margin-top:11px;font-size:14.5px;line-height:1.55;color:#4c5850;text-wrap:pretty}
+  .rl-c i{flex-shrink:0;display:block;width:5px;height:5px;margin-top:8px;border-radius:50%;background:var(--la-accent,#00CD77)}
+  .rl-b.szeroko .rl-lista{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 clamp(36px,6vw,88px)}
+  @media (max-width:820px){
+    .rl{grid-template-columns:1fr}
+    .rl-b.szeroko .rl-lista{grid-template-columns:1fr}
+  }
+
+  /* ================= program ================= */
+  .pr-row{display:grid;grid-template-columns:112px minmax(0,1fr) minmax(180px,0.5fr);gap:clamp(18px,3vw,44px);align-items:start;padding:clamp(20px,2.4vw,28px) 0;border-top:1px solid #e2e9e0}
+  .pr-row:last-of-type{border-bottom:1px solid #e2e9e0}
+  .pr-e{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;letter-spacing:0.09em;color:#0a7a52;padding-top:5px}
+  .pr-t{margin:0;font-size:clamp(18px,2.1vw,22px);font-weight:750;letter-spacing:-0.015em;color:#16211a}
+  .pr-d{margin:9px 0 0;font-size:15px;line-height:1.62;color:#4c5850;text-wrap:pretty}
+  .pr-z{padding-top:5px;font-size:14.5px;line-height:1.5;color:#4c5850}
+  .pr-z b{display:block;margin-bottom:4px;font-size:12.5px;font-weight:500;color:#a0aba1}
+  @media (max-width:960px){ .pr-row{grid-template-columns:112px minmax(0,1fr)} .pr-z{grid-column:2;padding-top:10px} }
+  @media (max-width:700px){ .pr-row{grid-template-columns:1fr;gap:6px} .pr-z{grid-column:auto;padding-top:6px} }
+
+  /* ================= podział zespołu (ciemny pas) =================
+     Trzy rzędy kresek: pięć, siedem i dwie osoby. Ten sam alfabet, co w hero,
+     tylko na ciemnym tle — na tej stronie wszystko da się policzyć. */
+  .gr-row{display:grid;grid-template-columns:minmax(150px,210px) minmax(0,0.85fr) minmax(0,1.3fr);gap:clamp(20px,3.4vw,52px);align-items:start;padding:clamp(22px,2.8vw,32px) 0;border-top:1px solid rgba(255,255,255,0.14)}
+  .gr-row:last-of-type{border-bottom:1px solid rgba(255,255,255,0.14)}
+  .gr-lu{display:flex;flex-wrap:wrap;gap:5px;padding-top:4px}
+  /* Dwie pierwsze grupy na zielono, trzecia przygaszona — pięć plus siedem
+     daje dokładnie te dwanaście osób, które stoją w hero jako „12 z 14". */
+  .gr-lu i{display:block;width:13px;height:26px;border-radius:3px;background:var(--la-accent,#00CD77);opacity:0;transform:translateY(6px);transition:opacity .35s ease,transform .35s cubic-bezier(.34,1.4,.5,1);transition-delay:var(--d)}
+  .gr.on .gr-lu i{opacity:1;transform:none}
+  .gr-row.slaba .gr-lu i{background:rgba(255,255,255,0.16)}
+  .gr-ile{display:block;margin-top:11px;font-family:ui-monospace,Menlo,monospace;font-size:11.5px;color:rgba(255,255,255,0.5)}
+  .gr-t{margin:0;font-size:clamp(17px,2vw,21px);font-weight:750;letter-spacing:-0.015em;line-height:1.25;color:#ffffff;text-wrap:balance}
+  .gr-row.slaba .gr-t{color:rgba(255,255,255,0.62)}
+  .gr-d{margin:0;font-size:15px;line-height:1.6;color:rgba(255,255,255,0.72);text-wrap:pretty}
+  .gr-row.slaba .gr-d{color:rgba(255,255,255,0.5)}
+  @media (max-width:900px){ .gr-row{grid-template-columns:1fr;gap:12px} }
+  @media (prefers-reduced-motion:reduce){ .gr-lu i{transition:none} }
+
+  /* ================= definicja adopcji =================
+     Trzy warunki obok siebie, każdy z numerem. Bez pojemników i bez kartki —
+     to jest definicja, a nie artefakt. */
+  .df{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(20px,3.4vw,56px);margin-top:clamp(30px,3.6vw,44px)}
+  .df-p{padding-top:14px;border-top:2px solid var(--la-accent,#00CD77)}
+  .df-n{display:block;font-family:ui-monospace,Menlo,monospace;font-size:11.5px;color:#0a7a52}
+  .df-t{display:block;margin-top:8px;font-size:clamp(16px,1.9vw,18.5px);font-weight:700;letter-spacing:-0.012em;line-height:1.3;color:#16211a;text-wrap:balance}
+  .df-d{margin:8px 0 0;font-size:14.5px;line-height:1.55;color:#4c5850;text-wrap:pretty}
+  @media (max-width:820px){ .df{grid-template-columns:1fr;gap:26px} }
+
+  /* ================= pas wezwania (jasny, na linii) ================= */
+  .ps{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:18px 40px;padding:clamp(26px,3vw,36px) 0;border-top:1px solid #e7ece4;border-bottom:1px solid #e7ece4}
+  .ps p{margin:0;max-width:620px;font-size:clamp(18px,2.2vw,24px);line-height:1.35;letter-spacing:-0.018em;font-weight:700;color:#16211a;text-wrap:pretty}
+
+  /* ================= przykłady =================
+     Liczba osób rysowana kreskami, żeby dało się ją policzyć tak samo,
+     jak w hero. Przy każdym zespole stoi też to, co się nie przyjęło. */
+  .px-row{display:grid;grid-template-columns:minmax(190px,0.62fr) minmax(0,1.15fr) minmax(190px,0.66fr);gap:clamp(20px,3.2vw,52px);align-items:start;padding:clamp(26px,3.2vw,40px) 0;border-top:1px solid #dde7db}
+  .px-row:last-of-type{border-bottom:1px solid #dde7db}
+  .px-z{display:block;margin:0;font-size:clamp(18px,2.1vw,22px);font-weight:750;letter-spacing:-0.018em;color:#16211a}
+  .px-f{display:block;margin-top:4px;font-size:13.5px;color:#8b968d}
+  .px-c{margin:0;font-size:15px;line-height:1.6;color:#16211a;text-wrap:pretty}
+  .px-nie{margin:14px 0 0;font-size:14px;line-height:1.55;color:#8b968d}
+  .px-nie b{display:block;font-size:12.5px;font-weight:600;color:#a9b3aa;margin-bottom:3px}
+  .px-l{display:flex;align-items:baseline;gap:8px;font-size:clamp(28px,3.4vw,38px);font-weight:800;letter-spacing:-0.03em;line-height:1;color:#16211a}
+  .px-l span{font-size:14px;font-weight:650;letter-spacing:0;color:#8b968d}
+  .px-lu{display:flex;flex-wrap:wrap;gap:4px;margin-top:14px}
+  .px-lu i{display:block;width:8px;height:18px;border-radius:2px;background:#dbe3d9}
+  .px-lu i.on{background:var(--la-accent,#00CD77)}
+  .px-op{display:block;margin-top:10px;font-size:13px;line-height:1.5;color:#8b968d}
+  @media (max-width:1000px){
+    .px-row{grid-template-columns:minmax(0,1fr) minmax(180px,0.6fr)}
+    .px-row > :first-child{grid-column:1 / -1}
+  }
+  @media (max-width:700px){
+    .px-row{grid-template-columns:1fr;gap:16px}
+    .px-row > :first-child{grid-column:auto}
+  }
+
+  /* ================= responsywność wspólna dla tej strony ================= */
+  @media (max-width:900px){
+    .hero-split{grid-template-columns:1fr !important;gap:clamp(30px,5vw,46px) !important}
+  }
+</style>
+
+<!-- ============ 1 · HERO ============
+     Rysunek robi całą robotę: dwanaście tygodni, w każdym tyle kresek, ilu
+     ludzi pracuje nowym sposobem. Dołek w trzecim tygodniu jest narysowany
+     na bursztynowo, bo to on tłumaczy, po co jest reszta programu. -->
+<div aria-hidden="true" style="position:absolute;left:0;right:0;top:0;height:1080px;background:radial-gradient(900px 640px at 86% 2%, rgba(0,205,119,0.13), transparent 64%);pointer-events:none"></div>
+<section style="position:relative;overflow:hidden;background:transparent;padding:clamp(28px,4vw,52px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) clamp(56px,6.5vw,84px)">
+<div class="hero-split" style="display:grid;grid-template-columns:1fr 1.06fr;gap:clamp(32px,4.5vw,64px);align-items:center;margin-top:clamp(10px,1.5vw,20px)">
+<div>
+<h1 style="margin:0;font-size:clamp(29px,4.4vw,51px);line-height:1.06;letter-spacing:-0.032em;font-weight:800;color:#16211a;text-wrap:balance">Zespół pracuje po nowemu także w dwunastym tygodniu</h1>
+<p style="margin:26px 0 0;max-width:600px;font-size:clamp(16px,2.1vw,19px);line-height:1.6;color:#33413a;text-wrap:pretty">Warsztat prowadzimy na Waszych procesach i na Waszych sprawach. Potem wracamy w tygodniu, w którym takie programy zwykle umierają, i mierzymy, ilu ludzi zostało przy nowym sposobie.</p>
+<div class="hero-actions" style="display:flex;align-items:center;flex-wrap:wrap;gap:16px 22px;margin-top:34px">
+<a href="#kontakt" class="btn-dark" style="display:inline-flex;align-items:center;gap:10px;background:#16211a;color:#ffffff;padding:18px 32px;border-radius:12px;font-weight:650;font-size:16.5px;box-shadow:0 14px 30px -14px rgba(16,33,26,0.45)">Umów rozmowę <span aria-hidden="true">→</span></a>
+<a href="#dolek" class="btn-ghost" style="display:inline-flex;align-items:center;gap:8px;font-size:16.5px;font-weight:700;color:#16211a;background:rgba(255,255,255,0.6);padding:18px 26px;border-radius:12px;border:1px solid rgba(22,33,26,0.16)">Co się dzieje w trzecim tygodniu →</a>
+</div>
+</div>
+
+<div>
+<div class="kw" role="img" aria-label={`Dwanaście tygodni programu. W pierwszym tygodniu nowym sposobem pracuje ${TYGODNIE[0].n} osób z ${ZESPOL}, w trzecim spada do ${TYGODNIE[IDX_DOLEK].n}, a od czwartego rośnie do ${KONCOWA} i tam się utrzymuje.`}>
+<div class="kw-suma" style={`animation:kw-suma ${KW_C}s cubic-bezier(.4,0,.2,1) infinite`}>
+  <b>{KONCOWA} z {ZESPOL}</b><span>osób pracuje po nowemu w dwunastym tygodniu</span>
+</div>
+<div class="kw-plot">
+  <span class="kw-sufit" style={`animation:kw-sufit ${KW_C}s linear infinite`}><i>cały zespół — {ZESPOL} osób</i></span>
+  {TYGODNIE.map((w, i) => (
+    <div class="kw-kol" style={`animation:kw-k${i} ${KW_C}s cubic-bezier(.34,1.3,.5,1) infinite`}>
+      {Array.from({ length: ZESPOL }).map((_, j) => (
+        <span class={j < w.n ? (w.dolek ? 'kw-t on zly' : 'kw-t on') : 'kw-t'}></span>
+      ))}
+    </div>
+  ))}
+  <span class="kw-dolek" style={`left:${((IDX_DOLEK + 0.5) / TYGODNIE.length * 100).toFixed(2)}%;animation:kw-dolek ${KW_C}s cubic-bezier(.4,0,.2,1) infinite`}>
+    <b>trzeci tydzień</b>
+  </span>
+</div>
+<div class="kw-os">
+  {TYGODNIE.map((w) => <span class={w.dolek ? 'zly' : ''}>{w.t}</span>)}
+</div>
+<p class="kw-pod">W trzecim tygodniu wraca zwykły ruch i nowy sposób przegrywa z tym, który każdy zna na pamięć. <strong>Tam wracamy</strong>, i to jest różnica między programem a dniem szkolenia.</p>
+<style is:inline set:html={klatkiKrzywa}></style>
+</div>
+</div>
+</div>
+</section>
+
+<!-- ============ 2 · CZYM TO JEST ============
+     Pierwsze zdanie zbudowane jako definicja — po ten fragment sięgają
+     modele językowe i wyróżnione odpowiedzi w wyszukiwarce.
+     Nagłówek pełną szerokością, pod nim jedno zdanie w większym stopniu
+     i dwie kolumny prozy. Trzeci szkielet nagłówka w tym pionie usług. -->
+<section id="czym-jest" class="sec-pad" style="padding-top:clamp(48px,6vw,72px)">
+<h2 class="h-sec" style="margin:0;max-width:820px;text-wrap:balance">Czym są szkolenia i adopcja AI?</h2>
+<p class="rv" style="margin:clamp(22px,2.6vw,30px) 0 0;max-width:1000px;font-size:clamp(19px,2.4vw,26px);line-height:1.35;letter-spacing:-0.018em;font-weight:650;color:#16211a;text-wrap:pretty">Szkolenia i adopcja AI to dwunastotygodniowy program, który zaczyna się warsztatem na Waszych procesach, a kończy liczbą: ile osób z zespołu wykonuje wskazane czynności nowym sposobem.</p>
+<div class="grid2" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(24px,4vw,72px);margin-top:clamp(24px,3vw,34px);max-width:1160px">
+<div>
+<p class="sub rv" style="margin:0">Materiałem warsztatu są czynności, które Wasi ludzie wykonują co tydzień, przechodzone na prawdziwych sprawach z ostatnich dni. Z każdej wychodzi opisana rutyna: co ma wyjść i co sprawdzić, zanim wynik pójdzie dalej.</p>
+</div>
+<div>
+<p class="sub rv" style="margin:0">Dzień warsztatu jest jednym punktem z dwunastu tygodni. Reszta to powrót na przypadki, przy których nowy sposób przegrał, godzina dyżuru w tygodniu i dwa pomiary: przed startem i na końcu.</p>
+</div>
+</div>
+</section>
+
+<!-- ============ 3 · CO SIĘ DZIEJE W TRZECIM TYGODNIU ============
+     Rysunek trzech podejść niesie mechanizm porażki całej kategorii:
+     pierwsze podejścia nowym sposobem są DŁUŻSZE od starego. Nikt tego
+     nie mówi na sprzedaży, bo to brzmi jak wada produktu. -->
+<section id="dolek" style="background:#f4f8f2;padding:clamp(60px,7.5vw,96px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
+<div class="sec-head">
+<h2 class="h-sec" style="margin:0;max-width:520px;text-wrap:pretty">Co się dzieje w trzecim tygodniu</h2>
+<p class="sub" style="margin:0 0 6px;max-width:450px">Po warsztacie próbują wszyscy. Potem wraca zwykły ruch — terminy, spotkania, sprawy do domknięcia — i wtedy okazuje się, na czym to naprawdę stoi.</p>
+</div>
+
+<div class="pd" data-anim role="img" aria-label={`Ta sama czynność wykonywana nowym sposobem: przy pierwszym podejściu ${PODEJSCIA[0].n * KOSTKA} minut, przy drugim ${PODEJSCIA[1].n * KOSTKA}, przy czwartym ${PODEJSCIA[2].n * KOSTKA}. Po staremu zajmuje ${STARY * KOSTKA} minut.`}>
+{PODEJSCIA.map((p, i) => (
+  <div class="pd-row">
+    <span><span class="pd-e">{p.e}</span><span class="pd-t">{p.t}</span></span>
+    <span>
+      <span class="pd-tor">
+        {Array.from({ length: p.n }).map((_, j) => (
+          <span class={p.n > STARY ? 'pd-u dluzej' : 'pd-u'} style={`--d:${(i * 0.85 + j * 0.045).toFixed(3)}s`}></span>
+        ))}
+        <span class="pd-linia">{i === 0 && <b>tyle zajmuje po staremu — {STARY * KOSTKA} min</b>}</span>
+      </span>
+      <p class="pd-min"><b>{p.n * KOSTKA} minut.</b> {p.w}</p>
+    </span>
+  </div>
+))}
+<p class="pd-legenda">Jedna kostka to pięć minut tej samej czynności.</p>
+</div>
+
+<div style="margin-top:clamp(38px,4.6vw,58px)">
+{POWODY.map((p) => (
+  <div class="pw-row rv">
+    <h3 class="pw-t">{p.t}</h3>
+    <p class="pw-d">{p.d}</p>
+  </div>
+))}
+</div>
+</section>
+
+<!-- ============ 4 · ROLE ============
+     Konkret zamiast obietnicy: czytelnik ma rozpoznać swoją pracę.
+     Piąty blok rozpina się na dwie kolumny, żeby siatka nie domknęła się
+     równym prostokątem — to jedyny asymetryczny moment tej sekcji. -->
+<section id="role" class="sec-pad">
+<h2 class="h-sec" style="margin:0;max-width:720px;text-wrap:pretty">Co dokładnie zmienia się w pracy</h2>
+<p class="sub" style="margin:18px 0 0;max-width:620px">Program bierze konkretne czynności, które ktoś w firmie wykonuje co tydzień. Poniżej te, od których zwykle zaczynamy — do wymiany na Wasze po pierwszej rozmowie.</p>
+<div class="rl">
+{ROLE.map((x, i) => (
+  <div class={i === ROLE.length - 1 ? 'rl-b szeroko' : 'rl-b'}>
+    <h3 class="rl-r">{x.r}</h3>
+    <div class="rl-lista">
+      {x.c.map((c) => (<p class="rl-c"><i aria-hidden="true"></i><span>{c}</span></p>))}
+    </div>
+  </div>
+))}
+</div>
+</section>
+
+<!-- ============ 4b · PAS WEZWANIA (jasny, na linii) ============
+     Ciemny pas w tym miejscu byłby powtórką z /rozwiazania-ai, a formularz
+     w środku strony robi z podstrony dwie strony sklejone. -->
+<section style="padding:0 max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) clamp(20px,3vw,36px)">
+<div class="ps">
+<p>Powiedzcie, którą czynność Wasi ludzie wykonują najczęściej — odpowiemy, czy da się ją przestawić w dwanaście tygodni</p>
+<a href="#kontakt" class="btn-dark" style="display:inline-flex;align-items:center;gap:9px;background:#16211a;color:#ffffff;padding:15px 26px;border-radius:11px;font-weight:650;font-size:15.5px;white-space:nowrap">Umów rozmowę <span aria-hidden="true">→</span></a>
+</div>
+</section>
+
+<!-- ============ 5 · PROGRAM ============ -->
+<section id="przebieg" style="background:#f4f8f2;padding:clamp(60px,7.5vw,96px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
+<div class="sec-head">
+<h2 class="h-sec" style="margin:0;max-width:500px;text-wrap:pretty">Jak wygląda program</h2>
+<p class="sub" style="margin:0 0 6px;max-width:440px">Cztery wejścia rozłożone na dwanaście tygodni. Trzecie z nich stoi tydzień po dołku i to ono decyduje o wyniku.</p>
+</div>
+
+<div style="margin-top:clamp(30px,3.6vw,44px)">
+{ETAPY.map((e) => (
+  <div class="pr-row rv">
+    <span class="pr-e">{e.e}</span>
+    <span>
+      <h3 class="pr-t">{e.t}</h3>
+      <p class="pr-d">{e.d}</p>
+    </span>
+    <span class="pr-z"><b>Zostaje po etapie</b>{e.z}</span>
+  </div>
+))}
+</div>
+</section>
+
+<!-- ============ 6 · PODZIAŁ ZESPOŁU ============
+     Ciemny pas, największy ciężar na stronie. Trzecia grupa — ludzie, którzy
+     nie chwycą — jest tu wpisana w plan, a nie tłumaczona po fakcie.
+     To jedyne miejsce na stronie, które niczego nie sprzedaje. -->
+<section id="zespol" style="position:relative;background:radial-gradient(900px 420px at 88% 4%, rgba(0,205,119,0.16), transparent 62%), #0e2b1d;padding:clamp(60px,7.5vw,98px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
+<div class="sec-head">
+<h2 class="h-sec" style="margin:0;max-width:600px;color:#ffffff;text-wrap:pretty">Kto to pociągnie, a kto nie</h2>
+<p style="margin:0 0 6px;max-width:460px;font-size:17px;line-height:1.6;color:rgba(255,255,255,0.72);text-wrap:pretty">W każdym zespole ludzie dzielą się na trzy grupy i program musi obsłużyć wszystkie trzy. Proporcje bywają różne, kształt zwykle ten sam.</p>
+</div>
+
+<div class="gr" data-anim style="margin-top:clamp(30px,3.6vw,44px)">
+{GRUPY.map((g, i) => (
+  <div class={`gr-row ${g.glowna ? 'glowna' : ''} ${i === GRUPY.length - 1 ? 'slaba' : ''}`}>
+    <span>
+      <span class="gr-lu" role="img" aria-label={`${g.n} z ${ZESPOL} osób`}>
+        {Array.from({ length: g.n }).map((_, j) => (<i style={`--d:${(i * 0.32 + j * 0.055).toFixed(3)}s`}></i>))}
+      </span>
+      <span class="gr-ile">{g.n} z {ZESPOL} osób</span>
+    </span>
+    <h3 class="gr-t">{g.t}</h3>
+    <p class="gr-d">{g.d}</p>
+  </div>
+))}
+</div>
+
+<p style="margin:clamp(26px,3vw,36px) 0 0;max-width:760px;font-size:15.5px;line-height:1.65;color:rgba(255,255,255,0.6);text-wrap:pretty">Ostatnia grupa jest w planie od pierwszego dnia. Czynność, która działa tylko wtedy, kiedy wykonuje ją entuzjasta, zostaje przy jednej osobie i znika razem z jej urlopem.</p>
+</section>
+
+<!-- ============ 7 · CO LICZYMY JAKO ADOPCJĘ ============
+     Cicha sekcja po ciemnym pasie. Zamiast nagłówka stoi definicja
+     w większym stopniu pisma, pod nią trzy warunki.
+     UWAGA: zdanie o powrocie na własny koszt jest do potwierdzenia. -->
+<section id="pomiar" class="sec-pad">
+<p class="rv" style="margin:0;max-width:1000px;font-size:clamp(22px,3vw,34px);line-height:1.25;letter-spacing:-0.024em;font-weight:750;color:#16211a;text-wrap:pretty">Adopcja to wskazana czynność wykonana nowym sposobem, na prawdziwej sprawie, przez konkretną osobę w danym tygodniu</p>
+<div class="df">
+<div class="df-p rv">
+<span class="df-n">01</span>
+<span class="df-t">Czynność jest wybrana przed warsztatem</span>
+<p class="df-d">Z liderami wskazujemy od trzech do pięciu czynności na rolę. Wszystko poza tą listą zostaje poza pomiarem, także wtedy, kiedy ludzie robią to chętnie.</p>
+</div>
+<div class="df-p rv">
+<span class="df-n">02</span>
+<span class="df-t">Liczy się tylko prawdziwa sprawa</span>
+<p class="df-d">Sprawa klienta, faktura, zgłoszenie. Otwarcie narzędzia i przećwiczenie czegoś na przykładzie nie wchodzi do liczby.</p>
+</div>
+<div class="df-p rv">
+<span class="df-n">03</span>
+<span class="df-t">Liczbę zbieramy na przeglądzie z liderem</span>
+<p class="df-d">Kwadrans z liderem zespołu, przy każdej osobie i czynności zwykłe tak albo nie. Statystyki narzędzia mówią o logowaniach, więc do niczego się tu nie nadają.</p>
+</div>
+</div>
+<p class="sub rv" style="margin:clamp(28px,3.4vw,40px) 0 0;max-width:760px">Punkt wyjścia mierzymy przed warsztatem, więc w dwunastym tygodniu jest co porównać. Jeśli liczba nie ruszy, wracamy na własny koszt.</p>
+</section>
+
+<!-- ============ 8 · PRZYKŁADY ============
+     PRZYKŁADOWE programy — do podmiany na potwierdzone przypadki.
+     Przy każdym stoi to, co się nie przyjęło; bez tego kolumna z liczbami
+     czyta się jak obietnica stu procent. -->
+<section id="dowody" style="background:#f4f8f2;padding:clamp(60px,7.5vw,96px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
+<div class="sec-head">
+<h2 class="h-sec" style="margin:0;max-width:580px;text-wrap:pretty">Trzy zespoły i to, co się w nich nie przyjęło</h2>
+<p class="sub" style="margin:0 0 6px;max-width:440px">Liczby z dwunastego tygodnia. W żadnym z tych zespołów nie przeszły wszystkie czynności i przy żadnym nie zakładaliśmy, że przejdą.</p>
+</div>
+
+<div style="margin-top:clamp(20px,2.4vw,30px)">
+{PRZYKLADY.map((x) => (
+  <div class="px-row rv">
+    <div>
+      <h3 class="px-z">{x.z}</h3>
+      <span class="px-f">{x.f} · {x.ile} osób</span>
+    </div>
+    <div>
+      <p class="px-c">{x.c}</p>
+      <p class="px-nie"><b>Nie przyjęło się</b>{x.nie}</p>
+    </div>
+    <div>
+      <span class="px-l">{x.po}<span>z {x.ile} osób</span></span>
+      <span class="px-lu" aria-hidden="true">
+        {Array.from({ length: x.ile }).map((_, j) => (<i class={j < x.po ? 'on' : ''}></i>))}
+      </span>
+      <span class="px-op">wykonuje wskazane czynności nowym sposobem</span>
+    </div>
+  </div>
+))}
+</div>
+</section>
+
+<!-- ============ 8b · GŁOS KLIENTA ============ -->
+<section style="padding:clamp(56px,7vw,88px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2))">
+<figure class="rv" style="margin:0;display:grid;grid-template-columns:auto 1fr;gap:clamp(20px,3vw,36px);align-items:start;max-width:1000px">
+<span aria-hidden="true" style="font-size:clamp(46px,5vw,64px);line-height:.72;font-weight:800;color:var(--la-accent,#00CD77)">„</span>
+<div>
+<blockquote style="margin:0;font-size:clamp(20px,2.6vw,29px);line-height:1.35;letter-spacing:-0.02em;font-weight:650;color:#16211a;text-wrap:pretty">Let’s automate wziął pełną odpowiedzialność za projekt i dowiózł go do końca. To dlatego powierzyliśmy im kolejny, znacznie większy.</blockquote>
+<figcaption><span style="display:block;margin-top:clamp(16px,2vw,22px);font-size:15px;font-weight:750;color:#16211a">Jakub Ciołkowski</span><span style="display:block;margin-top:2px;font-size:14px;color:#8b968d">Członek Zarządu, NARS Polska</span></figcaption>
+</div>
+</figure>
+</section>
+
+<GcCta
+  heading="Zacznijmy od jednej roli"
+  lead="Nazwijcie zespół, który chcecie przestawić, i pracę, którą wykonuje najczęściej. Odpowiemy z pytaniem o wielkość zespołu i z terminem pierwszej rozmowy."
+  eyebrow="Z pierwszej rozmowy wychodzicie z"
+  items={[
+    { t: 'Listą czynności', d: 'od których warto zacząć w tym zespole' },
+    { t: 'Definicją adopcji', d: 'co dokładnie będziemy liczyć w dwunastym tygodniu' },
+    { t: 'Zakresem do wyceny', d: 'role, liczba osób i granica pierwszego etapu' },
+  ]}
+  placeholder="Np. dwudziestoosobowy dział obsługi, każdy odpowiada dziennie na kilkadziesiąt zgłoszeń…"
+  submitLabel="Umów rozmowę"
+  badges={[
+    { i: 'klodka', t: 'Wasze dane bezpieczne' },
+    { i: 'kartka', t: 'NDA przed startem' },
+    { i: 'ptaszek', t: 'Rutyny zostają Wasze' },
+  ]}
+/>
+
+<GcFaq
+  heading="Pytania, które padają przed decyzją"
+  lead="Pierwsze porównuje nas z dniem szkolenia za trzy tysiące złotych, więc zostaje otwarte."
+  ctaLabel="Zadajcie nam swoje →"
+  items={faq}
+/>
+
+<script>
+  var redukcja = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ---- Odpalanie animacji, gdy element wchodzi w kadr ----
+  (function(){
+    var els = document.querySelectorAll('[data-anim]');
+    if(!els.length) return;
+    if(redukcja || !('IntersectionObserver' in window)){
+      els.forEach(function(el){ el.classList.add('on'); });
+      return;
+    }
+    var io = new IntersectionObserver(function(wpisy){
+      wpisy.forEach(function(w){
+        if(w.isIntersecting){ w.target.classList.add('on'); io.unobserve(w.target); }
+      });
+    }, { threshold: 0.22 });
+    els.forEach(function(el){ io.observe(el); });
+  })();
+</script>
+</LaBase>

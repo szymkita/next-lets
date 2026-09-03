@@ -1,6 +1,5 @@
 ---
 // Strona Let's automate v9 — odtworzenie designu jako responsywna strona Astro
-import TopbarWiseGroup from '../components/TopbarWiseGroup.astro';
 ---
 <!DOCTYPE html>
 <html lang="pl">
@@ -162,20 +161,14 @@ import TopbarWiseGroup from '../components/TopbarWiseGroup.astro';
   .mega-d{display:block;margin-top:2px;font-size:12.5px;line-height:1.4;color:#8b968d}
   .mega-feat{display:flex;flex-direction:column;justify-content:center;background:radial-gradient(120% 120% at 100% 0%, rgba(0,205,119,0.16), transparent 55%), #0e2b1d;border-radius:14px;padding:24px 22px;color:#ffffff;transition:transform .2s,box-shadow .2s}
   .mega-feat:hover{transform:translateY(-2px);box-shadow:0 22px 44px -22px rgba(0,0,0,0.5)}
-  /* ---- Megamenu usług: triaż po sytuacji klienta ---- */
-  .usl-grid{display:grid;grid-template-columns:1fr 1fr 1fr;grid-template-rows:auto auto auto;gap:0 6px}
-  .usl-lane{display:grid;grid-template-rows:subgrid;grid-row:span 3;padding:15px 14px 11px;border-radius:14px;transition:background .2s}
-  .usl-top{align-self:start}
-  .usl-head{display:block;font-size:24px;font-weight:800;line-height:1.06;letter-spacing:-0.032em;text-wrap:balance;color:#16211a;transition:color .18s}
-  .usl-head:hover{color:#0a7a52}
-  .usl-sub{display:block;margin-top:9px;font-size:12.5px;line-height:1.45;color:#8b968d}
-  .usl-rule{display:block;width:26px;height:2px;margin:16px 0 15px;border-radius:2px;background:var(--la-accent,#00CD77);transition:width .28s cubic-bezier(.4,0,.2,1)}
-  .usl-lane:hover .usl-rule{width:78px}
-  .usl-list .mega-item{padding:7px 9px;margin-left:-9px;border-radius:10px}
-  .usl-list .mega-item:hover{background:#eef5ec}
-  .usl-list .mega-t{font-size:14px;font-weight:650}
-  .usl-list .mega-d{font-size:12px;color:#96a098}
-  @media (prefers-reduced-motion:reduce){ .usl-rule{transition:none} }
+  /* wyróżniona para: dla firm, które budują same */
+  .mega-hl-band{grid-column:1/-1;margin-top:4px;padding-top:15px;border-top:1px solid #eef1ec}
+  .mega-hl-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .mega-hl{display:flex;gap:11px;align-items:flex-start;padding:12px;border-radius:13px;background:linear-gradient(135deg,rgba(0,205,119,0.11),rgba(0,205,119,0.03));border:1px solid rgba(10,122,82,0.18);transition:background .15s,border-color .15s,transform .15s}
+  .mega-hl:hover{background:linear-gradient(135deg,rgba(0,205,119,0.18),rgba(0,205,119,0.05));border-color:rgba(10,122,82,0.36);transform:translateY(-1px)}
+  .mega-hl:hover .mega-t{color:#0a7a52}
+  .mega-hl-ico{display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,#0a7a52,#00CD77);color:#ffffff;flex-shrink:0}
+  .mega-hl-tag{display:inline-block;margin-top:6px;padding:2px 7px;border-radius:6px;background:rgba(10,122,82,0.11);color:#0a7a52;font-family:ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:0.04em;font-weight:600}
   @media (max-width:900px){ .mega-wrap{display:none !important} }
   /* ---- Skala nagłówków ---- */
   .h-sec{font-size:clamp(30px,4.6vw,52px);line-height:1.05;letter-spacing:-0.028em;font-weight:800}
@@ -200,8 +193,6 @@ import TopbarWiseGroup from '../components/TopbarWiseGroup.astro';
 
 <div class="page">
 
-<TopbarWiseGroup current="letsautomate" />
-
 <header class="site-header">
 <div class="nav-pill">
 <img src="/uploads/logo-2.svg" alt="Let's automate" style="height:26px;display:block">
@@ -210,45 +201,55 @@ import TopbarWiseGroup from '../components/TopbarWiseGroup.astro';
 <a href="#oferta" class="nav-lnk" style="display:inline-flex;align-items:center;gap:5px;color:#2c3a30">Usługi <svg class="nav-caret" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></a>
 <div class="mega-wrap">
 <div class="mega-panel" style="background:#ffffff;border:1px solid #e7ece4;border-radius:20px;box-shadow:0 40px 90px -44px rgba(18,38,28,0.45);padding:22px">
-<div class="usl-grid">
-
-<div class="usl-lane">
-<div class="usl-top"><a href="#oferta" data-krok-link="wdrazamy" class="usl-head">Wdrażamy AI</a><span class="usl-sub">Gdy AI jeszcze nie weszło w procesy</span></div>
-<span class="usl-rule" aria-hidden="true"></span>
-<div class="usl-list">
-<a href="/strategia-ai" class="mega-item"><span class="mega-t">Strategia transformacji AI</span><span class="mega-d">Plan wdrożenia z policzonym zwrotem</span></a>
-<a href="/rozwiazania-ai" class="mega-item"><span class="mega-t">Indywidualne rozwiązania AI</span><span class="mega-d">AI wpięte w Wasze systemy i dane</span></a>
-<a href="/szkolenia-ai" class="mega-item"><span class="mega-t">Szkolenia i adopcja AI</span><span class="mega-d">Zespół używa AI w codziennej pracy</span></a>
+<div style="display:grid;grid-template-columns:1fr 264px;gap:22px">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:18px 16px">
+<div>
+<div class="mega-eyebrow">Strategia</div>
+<a href="#oferta" class="mega-item"><span class="mega-t">Diagnoza i AI-Native Score</span><span class="mega-d">Tydzień z zespołem, wychodzisz z planem</span></a>
+<a href="#oferta" class="mega-item"><span class="mega-t">Strategia i mapa transformacji</span><span class="mega-d">Kolejność wdrożeń z policzonym zwrotem</span></a>
+</div>
+<div>
+<div class="mega-eyebrow">Aplikacje i integracje</div>
+<a href="#oferta" class="mega-item"><span class="mega-t">Aplikacje szyte na miarę</span><span class="mega-d">Software pod Twoje procesy</span></a>
+<a href="#oferta" class="mega-item"><span class="mega-t">Automatyzacje i integracje</span><span class="mega-d">Systemy wymieniają dane same</span></a>
+</div>
+<div>
+<div class="mega-eyebrow">AI</div>
+<a href="#oferta" class="mega-item"><span class="mega-t">Agenci i konwersacyjne AI</span><span class="mega-d">Czyta maile, decyduje i odpowiada</span></a>
+<a href="https://appto.ai" class="mega-item"><span class="mega-t">Appto.ai ↗</span><span class="mega-d">Gotowe AI z półki</span></a>
+</div>
+<div>
+<div class="mega-eyebrow">Opieka</div>
+<a href="#oferta" class="mega-item"><span class="mega-t">Adopcja i szkolenia</span><span class="mega-d">Zespół pracuje po nowemu</span></a>
+<a href="#oferta" class="mega-item"><span class="mega-t">Opieka i rozwój systemów</span><span class="mega-d">Prowadzimy, mierzymy i rozwijamy</span></a>
+</div>
+<div class="mega-hl-band">
+<div style="display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-bottom:8px">
+<div class="mega-eyebrow" style="margin-bottom:0">Kiedy budujecie sami</div>
+<a href="/guided-coding" class="lnk-green" style="font-size:12px;font-weight:700;color:#0a7a52;padding-right:11px">Guided Coding — o co chodzi →</a>
+</div>
+<div class="mega-hl-grid">
+<a href="/guided-coding/bez-zespolu-it" class="mega-hl">
+<span class="mega-hl-ico"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 18l6-6-6-6"/><path d="M8 6l-6 6 6 6"/></svg></span>
+<span><span class="mega-t">Guided Coding — bez zespołu IT</span><span class="mega-d">Przegląd gotowości i wsparcie</span><span class="mega-hl-tag">5 dni · stała cena</span></span>
+</a>
+<a href="/guided-coding/dla-zespolow" class="mega-hl">
+<span class="mega-hl-ico"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2l9 5-9 5-9-5 9-5z"/><path d="M3 12l9 5 9-5"/><path d="M3 17l9 5 9-5"/></svg></span>
+<span><span class="mega-t">Guided Coding — dla zespołów</span><span class="mega-d">Gdy kod powstaje szybciej, niż dowozicie</span><span class="mega-hl-tag">2 tyg. · diagnostic sprint</span></span>
+</a>
 </div>
 </div>
-
-<div class="usl-lane">
-<div class="usl-top"><a href="#oferta" data-krok-link="budujemy" class="usl-head">Budujemy aplikacje</a><span class="usl-sub">Gdy żadne gotowe narzędzie nie pasuje</span></div>
-<span class="usl-rule" aria-hidden="true"></span>
-<div class="usl-list">
-<a href="/systemy-procesowe" class="mega-item"><span class="mega-t">Systemy dla kluczowych procesów</span><span class="mega-d">Aplikacja pod Wasz sposób pracy</span></a>
-<a href="/systemy-dla-klientow" class="mega-item"><span class="mega-t">Systemy dla Waszych klientów</span><span class="mega-d">Portal klienta, platforma B2B, samoobsługa</span></a>
-<a href="/automatyzacje-integracje" class="mega-item"><span class="mega-t">Automatyzacje i integracje</span><span class="mega-d">Przepływ danych między systemami</span></a>
 </div>
-</div>
-
-<div class="usl-lane">
-<div class="usl-top"><a href="/guided-coding" class="usl-head">Guided Coding</a><span class="usl-sub">Gdy sami budujecie aplikacje z AI</span></div>
-<span class="usl-rule" aria-hidden="true"></span>
-<div class="usl-list">
-<a href="/guided-coding/bez-dzialu-it" class="mega-item"><span class="mega-t">Dla zespołów nietechnicznych</span><span class="mega-d">Budujecie bez działu IT, my pilnujemy</span></a>
-<a href="/guided-coding/dla-zespolow" class="mega-item"><span class="mega-t">Dla zespołów technicznych</span><span class="mega-d">Dział IT dowozi szybciej i bezpieczniej</span></a>
-<a href="/guided-coding/transfer-know-how" class="mega-item"><span class="mega-t">Szkolenia i transfer know-how</span><span class="mega-d">Program szkoleniowy pod Waszą aplikację</span></a>
-</div>
-</div>
-
+<a href="#diagnoza" class="mega-feat">
+<div style="font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.5)">Od czego zacząć</div>
+<div style="margin-top:11px;font-size:19px;font-weight:800;line-height:1.15;letter-spacing:-0.01em;color:#ffffff">Nie wiesz, od czego zacząć?</div>
+<p style="margin:9px 0 0;font-size:13px;line-height:1.5;color:rgba(255,255,255,0.72)">30 minut bezpłatnej diagnozy i masz konkretny plan — bez zobowiązań.</p>
+<span style="display:inline-flex;align-items:center;gap:7px;margin-top:18px;background:var(--la-accent,#00CD77);color:#0b1a11;font-size:13.5px;font-weight:750;padding:10px 16px;border-radius:9px;align-self:flex-start">Umów diagnozę →</span>
+</a>
 </div>
 </div>
 </div>
 </div>
-<!-- SCHOWANE 29.08.2026 — zakladka "Rozwiazania". Powod i plan powrotu: docs/nawigacja-decyzje.md
-     Zdjac ten komentarz, gdy powstana podstrony procesowe. -->
-<!--
 <div class="nav-item">
 <a href="#dowody" class="nav-lnk" style="display:inline-flex;align-items:center;gap:5px;color:#2c3a30">Rozwiązania <svg class="nav-caret" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></a>
 <div class="mega-wrap">
@@ -299,35 +300,60 @@ import TopbarWiseGroup from '../components/TopbarWiseGroup.astro';
 </div>
 </div>
 </div>
--->
-<div class="nav-item" style="position:relative">
+<div class="nav-item">
 <a href="#dlaczego-my" class="nav-lnk" style="display:inline-flex;align-items:center;gap:5px;color:#2c3a30">Know-how <svg class="nav-caret" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></a>
-<!-- Wersja sprzed uproszczenia (nagłówki Metoda/Produkty/Wiedza + karta Wise AI Score
-     po prawej) leży w docs/_kopie/nawigacja-przed-uproszczeniem-know-how.html. -->
-<div class="mega-wrap" style="width:min(340px,calc(100vw - 40px))">
+<div class="mega-wrap">
 <div class="mega-panel" style="background:#ffffff;border:1px solid #e7ece4;border-radius:20px;box-shadow:0 40px 90px -44px rgba(18,38,28,0.45);padding:22px">
+<div style="display:grid;grid-template-columns:1fr 264px;gap:22px">
+<div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+<div>
+<div class="mega-eyebrow">Metoda</div>
 <a href="#dlaczego-my" class="mega-item" style="display:flex;gap:11px;align-items:flex-start">
-<span style="display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,#0a7a52,#00CD77);flex-shrink:0"><span style="color:#ffffff;font-size:14px;font-weight:800">W</span></span>
+<span style="display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,#0a7a52,#00CD77);color:#ffffff;font-size:14px;font-weight:800;flex-shrink:0">W</span>
 <span><span class="mega-t">WiseStack</span><span class="mega-d">Framework i stack transformacji</span></span>
 </a>
 <a href="#dlaczego-my" class="mega-item" style="display:flex;gap:11px;align-items:flex-start">
 <span style="display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:9px;background:#0e2b1d;flex-shrink:0"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg></span>
-<span><span class="mega-t">AI Adoption Framework</span><span class="mega-d">Od pierwszego kroku do firmy napędzanej AI</span></span>
+<span><span class="mega-t">AI Adoption Framework</span><span class="mega-d">Od pierwszego kroku do AI-Native</span></span>
 </a>
-<a href="#diagnoza" class="mega-item" style="display:flex;gap:11px;align-items:flex-start">
-<span style="display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:9px;background:#0e2b1d;flex-shrink:0"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19a8 8 0 1 1 16 0"/><path d="M12 19l4.4-5.6"/></svg></span>
-<span><span class="mega-t">Wise AI Score</span><span class="mega-d">Test dojrzałości AI w 3 minuty</span></span>
+<div class="mega-eyebrow" style="margin-top:14px">Produkty</div>
+<a href="https://appto.ai" class="mega-item" style="display:flex;gap:11px;align-items:flex-start">
+<span style="display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:9px;background:#0e2b1d;flex-shrink:0"><svg viewBox="0 0 103.24 79.25" width="17" height="13" fill="#ffffff" fill-rule="evenodd" aria-hidden="true"><path d="M54.537,65.167L54.537,79.253L0,65.167L0,0L54.537,14.134L54.537,0L87.005,14.148L87.005,0L103.239,14.148L103.239,79.253L87.005,65.167L87.005,79.253L54.537,65.167Z"/></svg></span>
+<span><span class="mega-t">Appto.ai ↗</span><span class="mega-d">Gotowe AI z półki</span></span>
 </a>
-<a href="/baza-wiedzy" class="mega-item" style="display:flex;gap:11px;align-items:flex-start">
-<span style="display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:9px;background:#0e2b1d;flex-shrink:0"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H19v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M8 7.5h7"/><path d="M8 11h5"/></svg></span>
-<span><span class="mega-t">Baza wiedzy</span><span class="mega-d">Artykuły i analizy</span></span>
+<a href="https://deskto.ai" class="mega-item" style="display:flex;gap:11px;align-items:flex-start">
+<span style="display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:9px;background:#0e2b1d;flex-shrink:0"><svg viewBox="0 0 84 80.14" width="15" height="14.5" fill="#ffffff" fill-rule="evenodd" aria-hidden="true"><path d="M0,14L58,28.14L58,80.14L0,66Z"/><path d="M13,7L71,21.14L71,73.14L61.5,70.83L61.5,25.39L13,13.57Z"/><path d="M26,0L84,14.14L84,66.14L74.5,63.82L74.5,18.39L26,6.57Z"/></svg></span>
+<span><span class="mega-t">Deskto.ai ↗</span><span class="mega-d">Agenci AI na Twoim pulpicie</span></span>
+</a>
+</div>
+<div>
+<div class="mega-eyebrow">Wiedza</div>
+<a href="#dowody" class="mega-item"><span class="mega-t">Baza wiedzy</span><span class="mega-d">Artykuły i analizy</span></a>
+<a href="#dowody" class="mega-item"><span class="mega-t">Playbooki i guide'y</span><span class="mega-d">Gotowe do wdrożenia</span></a>
+<a href="#dowody" class="mega-item"><span class="mega-t">Webinary i nagrania</span><span class="mega-d">Rozbieramy wdrożenia na czynniki</span></a>
+<a href="#dowody" class="mega-item"><span class="mega-t">Słownik AI</span><span class="mega-d">Pojęcia bez ściemy</span></a>
+</div>
+</div>
+</div>
+<a href="#diagnoza" class="mega-feat" style="padding:20px 20px 22px">
+<div style="font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.5)">Narzędzie</div>
+<div style="margin-top:11px;font-size:19px;font-weight:800;line-height:1.15;letter-spacing:-0.01em;color:#ffffff">AI-Native Score</div>
+<p style="margin:8px 0 0;font-size:12.5px;line-height:1.5;color:rgba(255,255,255,0.72)">Sprawdź w 3 minuty, gdzie jest Twoja firma na skali AI-Native.</p>
+<div style="margin-top:18px">
+<div style="position:relative;height:8px;border-radius:6px;background:linear-gradient(90deg,rgba(255,255,255,0.16),var(--la-accent,#00CD77))">
+<span style="position:absolute;left:64%;top:50%;transform:translate(-50%,-50%);width:15px;height:15px;border-radius:50%;background:#ffffff;border:3px solid var(--la-accent,#00CD77);box-shadow:0 2px 9px rgba(0,0,0,0.45)"></span>
+</div>
+<div style="display:flex;justify-content:space-between;margin-top:8px;font-family:ui-monospace,Menlo,monospace;font-size:9px;letter-spacing:0.08em;color:rgba(255,255,255,0.5)"><span>RĘCZNIE</span><span>AI-NATIVE</span></div>
+</div>
+<span style="display:inline-flex;align-items:center;gap:7px;margin-top:18px;background:var(--la-accent,#00CD77);color:#0b1a11;font-size:13px;font-weight:750;padding:9px 15px;border-radius:9px;align-self:flex-start">Zrób test →</span>
 </a>
 </div>
 </div>
 </div>
-<a href="https://appto.ai" target="_blank" rel="noopener" class="nav-lnk" style="color:#2c3a30">Appto ↗</a>
+</div>
 <a href="#dowody" class="nav-lnk" style="color:#2c3a30">Inspiracje</a>
-<a href="/dlaczego-my" class="nav-lnk" style="color:#2c3a30">Dlaczego my</a>
+<a href="#dlaczego-my" class="nav-lnk" style="color:#2c3a30">Dlaczego my</a>
 </div>
 <a href="#diagnoza" class="btn-dark" id="navCta" style="position:relative;display:inline-flex;align-items:center;justify-content:center;background:#16211a;color:#ffffff;padding:12px 22px;border-radius:10px;font-weight:650;font-size:15px;white-space:nowrap"><span class="nav-cta-sizer" aria-hidden="true">Bezpłatna diagnoza</span><span class="nav-cta-live"><span class="nav-cta-text" data-cta-rotate>Bezpłatna diagnoza</span><span class="nav-cta-caret" aria-hidden="true"></span></span></a>
 </div>
@@ -487,7 +513,7 @@ import TopbarWiseGroup from '../components/TopbarWiseGroup.astro';
 
 <!-- ============ S1b · DROGA POD HERO (wariant A — wykres + oś czasu) ============ -->
 <section id="sciezki" class="la-droga" style="padding:clamp(64px,9vw,104px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) clamp(56px,8vw,92px);scroll-margin-top:16px">
-<div style="text-align:center;font-size:clamp(22px,4.4vw,40px);line-height:1.18;letter-spacing:-0.028em;font-weight:750;color:#16211a">Żeby stać się firmą napędzaną AI, czasem najpierw trzeba</div>
+<div style="text-align:center;font-size:clamp(22px,4.4vw,40px);line-height:1.18;letter-spacing:-0.028em;font-weight:750;color:#16211a">Żeby stać się firmą AI-native, czasem najpierw trzeba</div>
 <div class="rot-mask" style="height:60px;overflow:hidden;margin-top:-6px;-webkit-mask-image:linear-gradient(180deg,transparent 0,#000 16%,#000 84%,transparent 100%);mask-image:linear-gradient(180deg,transparent 0,#000 16%,#000 84%,transparent 100%)">
 <div id="rotator-col" style="display:flex;flex-direction:column;transition:transform 0.55s cubic-bezier(0.65,0,0.35,1);transform:translateY(0px)">
 <div class="rot-item" style="height:60px;line-height:60px;text-align:center;white-space:nowrap;font-size:clamp(13px,4vw,40px);letter-spacing:-0.028em;font-weight:750;color:#0a7a52">spisać procesy, które żyją w głowach ludzi</div>
@@ -500,7 +526,7 @@ import TopbarWiseGroup from '../components/TopbarWiseGroup.astro';
 </div>
 <p style="margin:22px auto 0;max-width:620px;text-align:center;font-size:clamp(15px,2vw,17.5px);line-height:1.6;color:#4c5850;text-wrap:pretty">Nie wielka rewolucja, tylko kolejne procesy, które przestają być ręczne — krok po kroku, przez około 12 miesięcy.</p>
 
-<!-- Wykres: Wise AI Score w czasie -->
+<!-- Wykres: AI-Native Score w czasie -->
 <div class="droga-chart" style="position:relative;margin-top:clamp(40px,5vw,56px);height:clamp(240px,26vw,380px)">
 <svg viewBox="0 0 1328 380" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%;overflow:visible">
 <defs>
@@ -516,7 +542,7 @@ import TopbarWiseGroup from '../components/TopbarWiseGroup.astro';
 <path class="dg-fill" d="M10,312 C145,312 145,271 280,271 C415,271 415,149 550,149 C685,149 685,88 820,88 C955,88 955,44 1090,44 C1190,44 1262,36 1328,30 L1328,360 L10,360 Z" fill="url(#la11a-tlfill)"></path>
 <path class="dg-line" d="M10,312 C145,312 145,271 280,271 C415,271 415,149 550,149 C685,149 685,88 820,88 C955,88 955,44 1090,44 C1190,44 1262,36 1328,30" fill="none" stroke="var(--la-accent,#00CD77)" stroke-width="3.5" stroke-linecap="round" pathLength="1"></path>
 </svg>
-<div style="position:absolute;left:0;top:-4px;font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:0.1em;color:#b6bfb6">WISE AI SCORE ↑</div>
+<div style="position:absolute;left:0;top:-4px;font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:0.1em;color:#b6bfb6">AI-NATIVE SCORE ↑</div>
 <div style="position:absolute;right:4px;top:83.4%;transform:translateY(-50%);font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:0.1em;color:#c3cbc2">ETAP 1</div>
 <div style="position:absolute;right:4px;top:61%;transform:translateY(-50%);font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:0.1em;color:#c3cbc2">ETAP 2</div>
 <div style="position:absolute;right:4px;top:38.7%;transform:translateY(-50%);font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:0.1em;color:#c3cbc2">ETAP 3</div>
@@ -530,7 +556,7 @@ import TopbarWiseGroup from '../components/TopbarWiseGroup.astro';
 <div style="position:absolute;left:21.08%;top:71.32%;width:0;height:0;z-index:3"><div class="dg-dot" style="transition-delay:.3s"><span style="position:absolute;left:0;top:0;transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;background:var(--la-accent,#00CD77);border:3px solid #ffffff;box-shadow:0 2px 10px rgba(12,28,20,0.3);display:block"></span><span style="position:absolute;left:0;top:-32px;transform:translateX(-50%);font-family:ui-monospace,Menlo,monospace;font-size:12.5px;font-weight:700;color:#16211a">26</span></div></div>
 <div style="position:absolute;left:41.42%;top:39.26%;width:0;height:0;z-index:3"><div class="dg-dot" style="transition-delay:.45s"><span style="position:absolute;left:0;top:0;transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;background:var(--la-accent,#00CD77);border:3px solid #ffffff;box-shadow:0 2px 10px rgba(12,28,20,0.3);display:block"></span><span style="position:absolute;left:0;top:-32px;transform:translateX(-50%);font-family:ui-monospace,Menlo,monospace;font-size:12.5px;font-weight:700;color:#16211a">62</span></div></div>
 <div style="position:absolute;left:61.75%;top:23.16%;width:0;height:0;z-index:3"><div class="dg-dot" style="transition-delay:.6s"><span style="position:absolute;left:0;top:0;transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;background:var(--la-accent,#00CD77);border:3px solid #ffffff;box-shadow:0 2px 10px rgba(12,28,20,0.3);display:block"></span><span style="position:absolute;left:0;top:-32px;transform:translateX(-50%);font-family:ui-monospace,Menlo,monospace;font-size:12.5px;font-weight:700;color:#16211a">80</span></div></div>
-<div style="position:absolute;left:82.08%;top:11.53%;width:0;height:0;z-index:3"><div class="dg-dot" style="transition-delay:.75s"><span style="position:absolute;left:0;top:0;transform:translate(-50%,-50%);width:16px;height:16px;border-radius:50%;background:var(--la-accent,#00CD77);border:3px solid #ffffff;box-shadow:0 0 18px rgba(0,205,119,0.65);display:block"></span><span style="position:absolute;left:0;top:-44px;transform:translateX(-50%);white-space:nowrap;display:inline-flex;align-items:center;gap:7px;background:#0e2b1d;color:#ffffff;font-size:12.5px;font-weight:700;padding:6px 13px;border-radius:8px"><span style="width:7px;height:7px;border-radius:50%;background:var(--la-accent,#00CD77);display:inline-block"></span>93 · napędzana AI</span></div></div>
+<div style="position:absolute;left:82.08%;top:11.53%;width:0;height:0;z-index:3"><div class="dg-dot" style="transition-delay:.75s"><span style="position:absolute;left:0;top:0;transform:translate(-50%,-50%);width:16px;height:16px;border-radius:50%;background:var(--la-accent,#00CD77);border:3px solid #ffffff;box-shadow:0 0 18px rgba(0,205,119,0.65);display:block"></span><span style="position:absolute;left:0;top:-44px;transform:translateX(-50%);white-space:nowrap;display:inline-flex;align-items:center;gap:7px;background:#0e2b1d;color:#ffffff;font-size:12.5px;font-weight:700;padding:6px 13px;border-radius:8px"><span style="width:7px;height:7px;border-radius:50%;background:var(--la-accent,#00CD77);display:inline-block"></span>93 · AI-native</span></div></div>
 <div style="position:absolute;left:2.4%;top:calc(82.11% + 14px);z-index:2"><div class="dg-chip" style="transition-delay:.2s"><span style="display:inline-block;background:#f9efd8;color:#8f6c1c;font-size:11.5px;font-weight:700;padding:4px 11px;border-radius:7px;white-space:nowrap">większość firm startuje tu</span></div></div>
 </div>
 
@@ -558,7 +584,7 @@ import TopbarWiseGroup from '../components/TopbarWiseGroup.astro';
 </div>
 <div class="dg-card" style="display:flex;flex-direction:column;transition-delay:.75s">
 <div style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#0a7a52">KROK 05</div>
-<div style="margin-top:10px;font-size:19px;font-weight:700;line-height:1.25;min-height:2.5em;color:#16211a">Firma napędzana AI</div>
+<div style="margin-top:10px;font-size:19px;font-weight:700;line-height:1.25;min-height:2.5em;color:#16211a">Firma jest AI-native</div>
 <p style="margin:8px 0 0;font-size:14px;line-height:1.6;color:#4c5850">AI napędza całą firmę. Konkurencja na Excelu po prostu nie nadąża.</p>
 </div>
 </div>
@@ -631,11 +657,11 @@ import TopbarWiseGroup from '../components/TopbarWiseGroup.astro';
 </div>
 </section>
 
-<!-- ============ S3 · CO ZNACZY FIRMA NAPĘDZANA AI ============ -->
-<section id="napedzana-ai" style="background:#f4f8f2;padding:clamp(72px,9vw,110px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
+<!-- ============ S3 · CO ZNACZY AI-NATIVE ============ -->
+<section id="ai-native" style="background:#f4f8f2;padding:clamp(72px,9vw,110px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
 <div class="sec-head">
-<h2 class="h-sec" style="margin:0;max-width:640px;text-wrap:pretty">Firma napędzana AI to nie zespół, który używa <span style="color:#808b83;text-decoration:line-through;text-decoration-thickness:4px;text-decoration-color:var(--la-accent,#00CD77)">ChatGPT</span>.</h2>
-<p class="sub" style="margin:0 0 6px;max-width:460px">To firma, w której AI napędza procesy od wewnątrz — od pierwszego kontaktu po rozliczenie. <strong style="color:#16211a;font-weight:700">Gdzie na tej skali jest Twoja firma?</strong></p>
+<h2 class="h-sec" style="margin:0;max-width:640px;text-wrap:pretty">AI-native nie znaczy, że zespół używa <span style="color:#808b83;text-decoration:line-through;text-decoration-thickness:4px;text-decoration-color:var(--la-accent,#00CD77)">ChatGPT</span>.</h2>
+<p class="sub" style="margin:0 0 6px;max-width:460px">Znaczy, że AI napędza procesy od wewnątrz — od pierwszego kontaktu po rozliczenie. <strong style="color:#16211a;font-weight:700">Gdzie na tej skali jest Twoja firma?</strong></p>
 </div>
 
 <div class="grid4" style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:22px;margin-top:64px">
@@ -660,7 +686,7 @@ import TopbarWiseGroup from '../components/TopbarWiseGroup.astro';
 <div class="etap-card" style="background:#0e2b1d;border:1px solid #0e2b1d;border-radius:16px;padding:26px 26px 24px">
 <span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--la-accent,#00CD77)">ETAP 4</span>
 <div style="margin-top:38px;height:4px;border-radius:2px;background:rgba(255,255,255,0.18)"><span style="display:block;width:100%;height:100%;border-radius:2px;background:var(--la-accent,#00CD77);box-shadow:0 0 14px rgba(0,205,119,0.6)"></span></div>
-<div style="margin-top:18px;font-size:20px;font-weight:800;color:#ffffff">Napędzana AI</div>
+<div style="margin-top:18px;font-size:20px;font-weight:800;color:#ffffff">AI-native</div>
 <p style="margin:8px 0 0;font-size:14px;line-height:1.55;color:rgba(255,255,255,0.75)">AI podejmuje pracę w środku procesów: czyta, decyduje, wykonuje. Ludzie prowadzą wyjątki.</p>
 </div>
 </div>
@@ -673,67 +699,67 @@ import TopbarWiseGroup from '../components/TopbarWiseGroup.astro';
 <!-- ============ S4 · OFERTA ============ -->
 <section id="oferta" style="padding:clamp(72px,10vw,120px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) clamp(72px,9vw,110px);scroll-margin-top:16px">
 <div class="sec-head">
-<h2 class="h-sec" style="margin:0;max-width:600px;text-wrap:pretty">Trzy sposoby, w jakie z nami pracujesz.</h2>
-<p class="sub" style="margin:0 0 6px;max-width:470px">Wdrażamy AI w Twojej firmie, budujemy aplikacje za Ciebie albo prowadzimy Wasz zespół, gdy budujecie sami.</p>
+<h2 class="h-sec" style="margin:0;max-width:520px;text-wrap:pretty">Od strategii po wdrożenie i opiekę.</h2>
+<p class="sub" style="margin:0 0 6px;max-width:460px">Wszystko, czego firma potrzebuje, by działać na AI — od strategii po opiekę, w czterech obszarach.</p>
 </div>
 
 <div class="s4-grid" style="display:grid;grid-template-columns:360px 1fr;gap:clamp(32px,5vw,72px);margin-top:56px;align-items:start;background:#f4f8f2;border-radius:24px;padding:clamp(28px,4vw,44px) clamp(24px,4vw,48px) 40px">
 <div style="display:flex;flex-direction:column;gap:6px">
-<button data-krok="wdrazamy" class="krok-tab" style="appearance:none;font-family:inherit;text-align:left;cursor:pointer;display:block;padding:16px 18px;border:none;border-radius:14px;background:transparent;box-shadow:none;transition:background 0.3s,box-shadow 0.3s">
-<span style="display:block;font-size:22px;font-weight:800;letter-spacing:-0.015em;color:#16211a">Wdrażamy AI</span><span style="display:block;margin-top:3px;font-size:13px;color:#7c877e">Gdy AI jeszcze nie weszło w procesy</span>
+<button data-krok="strat" class="krok-tab" style="appearance:none;font-family:inherit;text-align:left;cursor:pointer;display:block;padding:16px 18px;border:none;border-radius:14px;background:transparent;box-shadow:none;transition:background 0.3s,box-shadow 0.3s">
+<span style="display:block;font-size:22px;font-weight:800;letter-spacing:-0.015em;color:#16211a">Strategia</span><span style="display:block;margin-top:3px;font-size:13px;color:#7c877e">Diagnoza i Score · Mapa transformacji</span>
 </button>
-<button data-krok="budujemy" class="krok-tab" style="appearance:none;font-family:inherit;text-align:left;cursor:pointer;display:block;padding:16px 18px;border:none;border-radius:14px;background:transparent;box-shadow:none;transition:background 0.3s,box-shadow 0.3s">
-<span style="display:block;font-size:22px;font-weight:800;letter-spacing:-0.015em;color:#16211a">Budujemy aplikacje</span><span style="display:block;margin-top:3px;font-size:13px;color:#7c877e">Gdy żadne gotowe narzędzie nie pasuje</span>
+<button data-krok="apps" class="krok-tab" style="appearance:none;font-family:inherit;text-align:left;cursor:pointer;display:block;padding:16px 18px;border:none;border-radius:14px;background:transparent;box-shadow:none;transition:background 0.3s,box-shadow 0.3s">
+<span style="display:block;font-size:22px;font-weight:800;letter-spacing:-0.015em;color:#16211a">Aplikacje i integracje</span><span style="display:block;margin-top:3px;font-size:13px;color:#7c877e">Systemy na miarę · Automatyzacje</span>
 </button>
-<button data-krok="guided" class="krok-tab" style="appearance:none;font-family:inherit;text-align:left;cursor:pointer;display:block;padding:16px 18px;border:none;border-radius:14px;background:transparent;box-shadow:none;transition:background 0.3s,box-shadow 0.3s">
-<span style="display:block;font-size:22px;font-weight:800;letter-spacing:-0.015em;color:#16211a">Guided Coding</span><span style="display:block;margin-top:3px;font-size:13px;color:#7c877e">Gdy sami budujecie aplikacje z AI</span>
+<button data-krok="ai" class="krok-tab" style="appearance:none;font-family:inherit;text-align:left;cursor:pointer;display:block;padding:16px 18px;border:none;border-radius:14px;background:transparent;box-shadow:none;transition:background 0.3s,box-shadow 0.3s">
+<span style="display:block;font-size:22px;font-weight:800;letter-spacing:-0.015em;color:#16211a">AI</span><span style="display:block;margin-top:3px;font-size:13px;color:#7c877e">Agenci · Konwersacje · Produkty</span>
+</button>
+<button data-krok="care" class="krok-tab" style="appearance:none;font-family:inherit;text-align:left;cursor:pointer;display:block;padding:16px 18px;border:none;border-radius:14px;background:transparent;box-shadow:none;transition:background 0.3s,box-shadow 0.3s">
+<span style="display:block;font-size:22px;font-weight:800;letter-spacing:-0.015em;color:#16211a">Opieka</span><span style="display:block;margin-top:3px;font-size:13px;color:#7c877e">Adopcja i szkolenia · Rozwój</span>
 </button>
 </div>
-<div class="s4-layers" style="display:grid;align-items:start">
-<div class="krok-layer" data-layer="wdrazamy" style="grid-area:1/1;transition:opacity 0.45s cubic-bezier(0.4,0,0.2,1),transform 0.45s cubic-bezier(0.4,0,0.2,1)">
-<a href="/strategia-ai" class="row-lnk" style="display:grid;grid-template-columns:1fr 36px;gap:20px;align-items:baseline;padding:6px 4px 22px;border-bottom:1px solid #e7ece4;color:#16211a">
-<span><span style="display:block;font-size:clamp(20px,2.4vw,25px);font-weight:750;letter-spacing:-0.015em">Strategia transformacji AI</span><span style="display:block;margin-top:8px;font-size:14.5px;line-height:1.55;color:#4c5850;max-width:580px">Kolejność wdrożeń z policzonym zwrotem z każdego kroku. Plan, który obroni się przed zarządem.</span></span>
+<div class="s4-layers" style="position:relative;height:340px">
+<div class="krok-layer" data-layer="strat" style="position:absolute;inset:0;transition:opacity 0.45s cubic-bezier(0.4,0,0.2,1),transform 0.45s cubic-bezier(0.4,0,0.2,1)">
+<a href="#oferta" class="row-lnk" style="display:grid;grid-template-columns:1fr 36px;gap:20px;align-items:baseline;padding:6px 4px 22px;border-bottom:1px solid #e7ece4;color:#16211a">
+<span><span style="display:block;font-size:clamp(20px,2.4vw,25px);font-weight:750;letter-spacing:-0.015em">Diagnoza i AI-Native Score</span><span style="display:block;margin-top:8px;font-size:14.5px;line-height:1.55;color:#4c5850;max-width:580px">Tydzień z Twoim zespołem. Wychodzisz z liczbą: ile kosztuje Cię status quo i od czego zacząć.</span></span>
 <span style="font-size:22px;color:#0a7a52;justify-self:end" aria-hidden="true">→</span>
 </a>
-<a href="/rozwiazania-ai" class="row-lnk" style="display:grid;grid-template-columns:1fr 36px;gap:20px;align-items:baseline;padding:20px 4px 20px;border-bottom:1px solid #e7ece4;color:#16211a">
-<span><span style="display:block;font-size:clamp(20px,2.4vw,25px);font-weight:750;letter-spacing:-0.015em">Indywidualne rozwiązania AI</span><span style="display:block;margin-top:8px;font-size:14.5px;line-height:1.55;color:#4c5850;max-width:580px">Zbudowane pod Wasz przypadek i wpięte w systemy oraz dane, z których korzystacie na co dzień.</span></span>
-<span style="font-size:22px;color:#0a7a52;justify-self:end" aria-hidden="true">→</span>
-</a>
-<a href="/szkolenia-ai" class="row-lnk" style="display:grid;grid-template-columns:1fr 36px;gap:20px;align-items:baseline;padding:20px 4px 20px;border-bottom:1px solid #e7ece4;color:#16211a">
-<span><span style="display:block;font-size:clamp(20px,2.4vw,25px);font-weight:750;letter-spacing:-0.015em">Szkolenia i adopcja AI</span><span style="display:block;margin-top:8px;font-size:14.5px;line-height:1.55;color:#4c5850;max-width:580px">Warsztaty na Waszych procesach i danych. Zespół pracuje po nowemu — i zostaje przy tym na dłużej.</span></span>
+<a href="#oferta" class="row-lnk" style="display:grid;grid-template-columns:1fr 36px;gap:20px;align-items:baseline;padding:20px 4px 20px;border-bottom:1px solid #e7ece4;color:#16211a">
+<span><span style="display:block;font-size:clamp(20px,2.4vw,25px);font-weight:750;letter-spacing:-0.015em">Strategia i mapa transformacji</span><span style="display:block;margin-top:8px;font-size:14.5px;line-height:1.55;color:#4c5850;max-width:580px">Kolejność wdrożeń z policzonym zwrotem z każdego kroku. Plan, który obroni się przed zarządem.</span></span>
 <span style="font-size:22px;color:#0a7a52;justify-self:end" aria-hidden="true">→</span>
 </a>
 </div>
-<div class="krok-layer" data-layer="budujemy" style="grid-area:1/1;transition:opacity 0.45s cubic-bezier(0.4,0,0.2,1),transform 0.45s cubic-bezier(0.4,0,0.2,1)">
-<a href="/systemy-procesowe" class="row-lnk" style="display:grid;grid-template-columns:1fr 36px;gap:20px;align-items:baseline;padding:6px 4px 22px;border-bottom:1px solid #e7ece4;color:#16211a">
-<span><span style="display:block;font-size:clamp(20px,2.4vw,25px);font-weight:750;letter-spacing:-0.015em">Systemy dla kluczowych procesów</span><span style="display:block;margin-top:8px;font-size:14.5px;line-height:1.55;color:#4c5850;max-width:580px">Obieg faktur, ofertowanie i raportowanie prowadzi system. Ludzie zajmują się wyjątkami.</span></span>
+<div class="krok-layer" data-layer="apps" style="position:absolute;inset:0;transition:opacity 0.45s cubic-bezier(0.4,0,0.2,1),transform 0.45s cubic-bezier(0.4,0,0.2,1)">
+<a href="#oferta" class="row-lnk" style="display:grid;grid-template-columns:1fr 36px;gap:20px;align-items:baseline;padding:6px 4px 22px;border-bottom:1px solid #e7ece4;color:#16211a">
+<span><span style="display:block;font-size:clamp(20px,2.4vw,25px);font-weight:750;letter-spacing:-0.015em">Aplikacje i systemy szyte na miarę</span><span style="display:block;margin-top:8px;font-size:14.5px;line-height:1.55;color:#4c5850;max-width:580px">Software pod Twoje procesy — nie procesy naginane pod cudzy software.</span></span>
 <span style="font-size:22px;color:#0a7a52;justify-self:end" aria-hidden="true">→</span>
 </a>
-<a href="/systemy-dla-klientow" class="row-lnk" style="display:grid;grid-template-columns:1fr 36px;gap:20px;align-items:baseline;padding:20px 4px 20px;border-bottom:1px solid #e7ece4;color:#16211a">
-<span><span style="display:block;font-size:clamp(20px,2.4vw,25px);font-weight:750;letter-spacing:-0.015em">Systemy dla Waszych klientów</span><span style="display:block;margin-top:8px;font-size:14.5px;line-height:1.55;color:#4c5850;max-width:580px">Klient sprawdza status, składa zamówienie i pobiera dokumenty sam, o każdej porze.</span></span>
-<span style="font-size:22px;color:#0a7a52;justify-self:end" aria-hidden="true">→</span>
-</a>
-<a href="/automatyzacje-integracje" class="row-lnk" style="display:grid;grid-template-columns:1fr 36px;gap:20px;align-items:baseline;padding:20px 4px 20px;border-bottom:1px solid #e7ece4;color:#16211a">
+<a href="#oferta" class="row-lnk" style="display:grid;grid-template-columns:1fr 36px;gap:20px;align-items:baseline;padding:20px 4px 20px;border-bottom:1px solid #e7ece4;color:#16211a">
 <span><span style="display:block;font-size:clamp(20px,2.4vw,25px);font-weight:750;letter-spacing:-0.015em">Automatyzacje i integracje</span><span style="display:block;margin-top:8px;font-size:14.5px;line-height:1.55;color:#4c5850;max-width:580px">CRM, finanse i operacje wymieniają dane same. Nikt niczego nie przepisuje.</span></span>
 <span style="font-size:22px;color:#0a7a52;justify-self:end" aria-hidden="true">→</span>
 </a>
 </div>
-<div class="krok-layer" data-layer="guided" style="grid-area:1/1;transition:opacity 0.45s cubic-bezier(0.4,0,0.2,1),transform 0.45s cubic-bezier(0.4,0,0.2,1)">
-<a href="/guided-coding/bez-dzialu-it" class="row-lnk" style="display:grid;grid-template-columns:1fr 36px;gap:20px;align-items:baseline;padding:6px 4px 22px;border-bottom:1px solid #e7ece4;color:#16211a">
-<span><span style="display:block;font-size:clamp(20px,2.4vw,25px);font-weight:750;letter-spacing:-0.015em">Dla zespołów nietechnicznych</span><span style="display:block;margin-top:8px;font-size:14.5px;line-height:1.55;color:#4c5850;max-width:580px">Ludzie z biznesu budują sami, a my pilnujemy, żeby to, co powstaje, dało się utrzymać i rozwijać.</span></span>
+<div class="krok-layer" data-layer="ai" style="position:absolute;inset:0;transition:opacity 0.45s cubic-bezier(0.4,0,0.2,1),transform 0.45s cubic-bezier(0.4,0,0.2,1)">
+<a href="#oferta" class="row-lnk" style="display:grid;grid-template-columns:1fr 36px;gap:20px;align-items:baseline;padding:6px 4px 22px;border-bottom:1px solid #e7ece4;color:#16211a">
+<span><span style="display:block;font-size:clamp(20px,2.4vw,25px);font-weight:750;letter-spacing:-0.015em">Agenci i konwersacyjne AI</span><span style="display:block;margin-top:8px;font-size:14.5px;line-height:1.55;color:#4c5850;max-width:580px">AI, które czyta maile, decyduje i odpowiada — w środku procesu, nie obok niego.</span></span>
 <span style="font-size:22px;color:#0a7a52;justify-self:end" aria-hidden="true">→</span>
 </a>
-<a href="/guided-coding/dla-zespolow" class="row-lnk" style="display:grid;grid-template-columns:1fr 36px;gap:20px;align-items:baseline;padding:20px 4px 20px;border-bottom:1px solid #e7ece4;color:#16211a">
-<span><span style="display:block;font-size:clamp(20px,2.4vw,25px);font-weight:750;letter-spacing:-0.015em">Dla zespołów technicznych</span><span style="display:block;margin-top:8px;font-size:14.5px;line-height:1.55;color:#4c5850;max-width:580px">Wasz zespół wyciska z AI więcej: krótsza droga od napisanego kodu do działającej funkcji.</span></span>
+<a href="https://appto.ai" class="row-lnk" style="display:grid;grid-template-columns:1fr 36px;gap:20px;align-items:baseline;padding:20px 4px 20px;border-bottom:1px solid #e7ece4;color:#16211a">
+<span><span style="display:block;font-size:clamp(20px,2.4vw,25px);font-weight:750;letter-spacing:-0.015em">Appto.ai — gotowe AI z półki</span><span style="display:block;margin-top:8px;font-size:14.5px;line-height:1.55;color:#4c5850;max-width:580px">Nasz produkt AI, który wdrażasz szybciej niż budując od zera — sprawdzony w boju u nas.</span></span>
+<span style="font-size:22px;color:#0a7a52;justify-self:end" aria-hidden="true">↗</span>
+</a>
+</div>
+<div class="krok-layer" data-layer="care" style="position:absolute;inset:0;transition:opacity 0.45s cubic-bezier(0.4,0,0.2,1),transform 0.45s cubic-bezier(0.4,0,0.2,1)">
+<a href="#oferta" class="row-lnk" style="display:grid;grid-template-columns:1fr 36px;gap:20px;align-items:baseline;padding:6px 4px 22px;border-bottom:1px solid #e7ece4;color:#16211a">
+<span><span style="display:block;font-size:clamp(20px,2.4vw,25px);font-weight:750;letter-spacing:-0.015em">Adopcja i szkolenia</span><span style="display:block;margin-top:8px;font-size:14.5px;line-height:1.55;color:#4c5850;max-width:580px">Twój zespół naprawdę pracuje po nowemu — i zostaje przy tym na dłużej.</span></span>
 <span style="font-size:22px;color:#0a7a52;justify-self:end" aria-hidden="true">→</span>
 </a>
-<a href="/guided-coding/transfer-know-how" class="row-lnk" style="display:grid;grid-template-columns:1fr 36px;gap:20px;align-items:baseline;padding:20px 4px 20px;border-bottom:1px solid #e7ece4;color:#16211a">
-<span><span style="display:block;font-size:clamp(20px,2.4vw,25px);font-weight:750;letter-spacing:-0.015em">Szkolenia i transfer know-how</span><span style="display:block;margin-top:8px;font-size:14.5px;line-height:1.55;color:#4c5850;max-width:580px">Program szkoleniowy projektowany po przeglądzie Waszego kodu i prowadzony na Waszej aplikacji.</span></span>
+<a href="#oferta" class="row-lnk" style="display:grid;grid-template-columns:1fr 36px;gap:20px;align-items:baseline;padding:20px 4px 20px;border-bottom:1px solid #e7ece4;color:#16211a">
+<span><span style="display:block;font-size:clamp(20px,2.4vw,25px);font-weight:750;letter-spacing:-0.015em">Opieka i rozwój systemów</span><span style="display:block;margin-top:8px;font-size:14.5px;line-height:1.55;color:#4c5850;max-width:580px">System rośnie razem z firmą. Prowadzimy go, mierzymy i rozwijamy.</span></span>
 <span style="font-size:22px;color:#0a7a52;justify-self:end" aria-hidden="true">→</span>
 </a>
 </div>
 </div>
-
 </div>
 
 </section>
@@ -773,7 +799,6 @@ import TopbarWiseGroup from '../components/TopbarWiseGroup.astro';
 <p style="margin:5px 0 0;font-size:14px;line-height:1.55;color:rgba(255,255,255,0.62)">Znasz koszt następnego kroku, zanim go zamówisz — bez roboczogodzin w ciemno.</p>
 </div>
 </div>
-<a href="/dlaczego-my" class="lnk-accent" style="display:inline-flex;align-items:center;gap:9px;margin-top:26px;font-size:15.5px;font-weight:700;color:var(--la-accent,#00CD77)">Skład studia, zasady rozliczeń i sytuacje, w których odsyłamy gdzie indziej <span aria-hidden="true">&rarr;</span></a>
 </div>
 </div>
 
@@ -798,7 +823,7 @@ import TopbarWiseGroup from '../components/TopbarWiseGroup.astro';
 <!-- ============ S6 · DOWODY ============ -->
 <section id="dowody" style="padding:clamp(72px,9vw,110px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
 <div class="sec-head">
-<h2 class="h-sec" style="margin:0;max-width:560px;text-wrap:pretty">Tak wygląda firma napędzana AI w praktyce.</h2>
+<h2 class="h-sec" style="margin:0;max-width:560px;text-wrap:pretty">Tak wygląda AI-native w praktyce.</h2>
 <p class="sub" style="margin:0 0 6px;max-width:460px">Realne wdrożenia u naszych klientów — co robił zespół przed i jak ten sam proces działa po.</p>
 </div>
 
@@ -961,7 +986,7 @@ import TopbarWiseGroup from '../components/TopbarWiseGroup.astro';
 <div style="display:flex;flex-direction:column;gap:11px;margin-top:14px">
 <div style="display:flex;align-items:flex-start;gap:11px;font-size:14.5px;line-height:1.5;color:rgba(255,255,255,0.85)"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#00CD77" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:2px" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span><strong style="font-weight:700;color:#fff">Koszt status quo</strong> — w złotówkach i godzinach</span></div>
 <div style="display:flex;align-items:flex-start;gap:11px;font-size:14.5px;line-height:1.5;color:rgba(255,255,255,0.85)"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#00CD77" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:2px" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span><strong style="font-weight:700;color:#fff">Mapa wdrożeń</strong> — priorytety ułożone wg ROI</span></div>
-<div style="display:flex;align-items:flex-start;gap:11px;font-size:14.5px;line-height:1.5;color:rgba(255,255,255,0.85)"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#00CD77" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:2px" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span><strong style="font-weight:700;color:#fff">Wise AI Score</strong> — punkt na skali, od którego ruszamy</span></div>
+<div style="display:flex;align-items:flex-start;gap:11px;font-size:14.5px;line-height:1.5;color:rgba(255,255,255,0.85)"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#00CD77" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:2px" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span><strong style="font-weight:700;color:#fff">AI-Native Score</strong> — punkt na skali, od którego ruszamy</span></div>
 </div>
 </div>
 <div class="final-badge-row" style="display:flex;align-items:center;gap:16px;margin-top:auto;padding-top:40px;border-top:0">
@@ -1039,7 +1064,7 @@ import TopbarWiseGroup from '../components/TopbarWiseGroup.astro';
 </div>
 <div>
 <a href="#wiedza" class="row-lnk" style="display:grid;grid-template-columns:1fr auto;gap:24px;align-items:baseline;padding:20px 6px;border-bottom:1px solid #eef1ec;color:#16211a">
-<span style="font-size:19px;font-weight:650;letter-spacing:-0.01em">Czym różni się automatyzacja od pełnej transformacji AI</span>
+<span style="font-size:19px;font-weight:650;letter-spacing:-0.01em">Czym różni się automatyzacja od transformacji AI-native</span>
 <span style="font-family:ui-monospace,Menlo,monospace;font-size:11.5px;color:#8b968d;white-space:nowrap">ARTYKUŁ · 9 MIN</span>
 </a>
 <a href="#wiedza" class="row-lnk" style="display:grid;grid-template-columns:1fr auto;gap:24px;align-items:baseline;padding:20px 6px;border-bottom:1px solid #eef1ec;color:#16211a">
@@ -1096,15 +1121,12 @@ import TopbarWiseGroup from '../components/TopbarWiseGroup.astro';
 <div class="foot-grid" style="display:grid;grid-template-columns:1fr 220px 220px 220px;gap:clamp(32px,4vw,56px);align-items:start">
 <div>
 <img src="/uploads/logo-2.svg" alt="Let's automate" style="height:22px;display:block;filter:brightness(0) invert(1)">
-<p style="margin:18px 0 0;max-width:300px;font-size:14px;line-height:1.6;color:#9fb0a3">Studio transformacji AI.<br>Projektujemy i budujemy systemy,<br>na których firmy działają po nowemu.</p>
-<div style="margin-top:22px;font-size:12.5px;line-height:1.75;color:#7d9080">Let's automate sp. z o.o.<br>ul. Nowy Świat 33/13, 00-029 Warszawa<br>NIP 5252908405 · KRS 0000972542</div>
+<p style="margin:18px 0 0;max-width:300px;font-size:14px;line-height:1.6;color:#9fb0a3">Studio transformacji AI. Projektujemy i budujemy systemy, na których firmy działają po nowemu.</p>
+<div style="margin-top:20px;font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.1em;color:#7d9080">CZĘŚĆ WISE GROUP · SELLWISE · HIREWISE · ADWISE</div>
+<div style="margin-top:22px;font-size:12.5px;line-height:1.75;color:#7d9080">Let's automate sp. z o.o.<br>ul. Nowy Świat 33/13, 00-029 Warszawa<br>NIP 5252908405 · KRS [do uzupełnienia]</div>
 <div style="display:flex;gap:14px;margin-top:16px">
 <a href="https://www.linkedin.com/company/letsautomate-io" class="foot-lnk" aria-label="LinkedIn" style="display:inline-flex;align-items:center;gap:7px;color:#cfd9cf;font-size:13.5px"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 100 5 2.5 2.5 0 000-5zM3 9h4v12H3zM9 9h3.8v1.64h.05c.53-.95 1.83-1.95 3.77-1.95 4.03 0 4.78 2.5 4.78 5.75V21h-4v-4.86c0-1.16-.02-2.65-1.77-2.65-1.77 0-2.04 1.26-2.04 2.57V21H9z"/></svg>LinkedIn</a>
 </div>
-<!-- Odznaka partnerska OpenAI. Plik ma wlasne biale tlo (tylko narozniki sa
-     przezroczyste), wiec zadnego filtra nie nakladamy — na ciemnej stopce dziala
-     jak biala plakietka. Wybielenie jak przy logo zniszczyloby czarny napis. -->
-<img src="/uploads/openai-select-partner.png" alt="OpenAI Select Partner" width="1125" height="531" loading="lazy" decoding="async" style="display:block;height:84px;width:auto;margin-top:30px;border-radius:12px">
 </div>
 <div>
 <div style="font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.1em;color:#7d9080;margin-bottom:15px">USŁUGI</div>
@@ -1120,7 +1142,7 @@ import TopbarWiseGroup from '../components/TopbarWiseGroup.astro';
 <div>
 <div style="font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.1em;color:#7d9080;margin-bottom:15px">FIRMA</div>
 <div style="display:flex;flex-direction:column;gap:10px;font-size:14.5px">
-<a href="/dlaczego-my" class="foot-lnk" style="color:#cfd9cf">O nas</a>
+<a href="#dlaczego-my" class="foot-lnk" style="color:#cfd9cf">O nas</a>
 <a href="#dowody" class="foot-lnk" style="color:#cfd9cf">Transformacje</a>
 <a href="#wiedza" class="foot-lnk" style="color:#cfd9cf">Blog</a>
 <a href="#diagnoza" class="foot-lnk" style="color:#cfd9cf">Kontakt</a>
@@ -1133,7 +1155,7 @@ import TopbarWiseGroup from '../components/TopbarWiseGroup.astro';
 </div>
 </div>
 <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-top:56px;padding-top:24px;border-top:1px solid rgba(232,236,231,0.14);font-size:12.5px;color:#7d9080">
-<span>© 2026 Let's automate</span>
+<span>© 2026 Let's automate · część Wise Group</span>
 <div style="display:flex;gap:24px">
 <a href="#diagnoza" class="foot-lnk" style="color:#7d9080">Polityka prywatności</a>
 <a href="#diagnoza" class="foot-lnk" style="color:#7d9080">RODO</a>
@@ -1215,7 +1237,7 @@ import TopbarWiseGroup from '../components/TopbarWiseGroup.astro';
     });
   })();
 
-  // ---- Zakładki oferty (S4) — Wdrażamy AI / Budujemy / Guided Coding ----
+  // ---- Zakładki oferty (S4) — Strategia / Aplikacje / AI / Opieka ----
   (function(){
     var tabs = document.querySelectorAll('.krok-tab');
     var layers = document.querySelectorAll('.krok-layer');
@@ -1236,8 +1258,7 @@ import TopbarWiseGroup from '../components/TopbarWiseGroup.astro';
       });
     }
     tabs.forEach(function(t){ t.addEventListener('click', function(){ setKrok(t.dataset.krok); }); });
-    document.querySelectorAll('[data-krok-link]').forEach(function(el){ el.addEventListener('click', function(){ setKrok(el.dataset.krokLink); }); });
-    setKrok('wdrazamy');
+    setKrok('strat');
   })();
 
   // ---- Rachunek (S2) — licznik od 0 do wartości docelowej gdy widoczny ----

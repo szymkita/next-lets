@@ -1,0 +1,1128 @@
+---
+// SYSTEMY DLA KLUCZOWYCH PROCESÓW — /systemy-procesowe
+// Pierwsza podstrona z pionu „Budujemy aplikacje". Trzy poprzednie
+// (/strategia-ai, /rozwiazania-ai, /szkolenia-ai) należą do pionu
+// „Wdrażamy AI" — tutaj zmienia się nie tylko usługa, ale i pion.
+//
+// CZYM SIĘ RÓŻNI OD /rozwiazania-ai (bo to najbliższy sąsiad):
+// Tam AI przejmuje ROZSTRZYGNIĘCIE wewnątrz procesu. Tutaj budujemy
+// PRZEBIEG: rejestr, obieg, akceptacje i wpięcie w systemy, przez które
+// sprawa dziś przechodzi. Jedno rozwiązanie może w tym siedzieć jako
+// element, ale nie jest tematem strony i strona tego nie udaje.
+//
+// POZYCJONOWANIE (poprawione 30.08 — pierwsza wersja stała za nisko):
+// Dwa argumenty, w tej kolejności.
+//   1. PRZEWAGA. Kluczowe procesy to te, na których firma zarabia. Wasz
+//      sposób ich prowadzenia — reguła wyceny w głowie technologa, kolejność
+//      decyzji wypracowana latami, wyjątki, których konkurencja nie bierze —
+//      jest przewagą, której nie da się kupić w pudełku. Gotowe narzędzie
+//      zawiera średnią rynku; przewaga leży w tym, czym się od niej różnicie.
+//      System zamyka to know-how w oprogramowaniu, więc przestaje zależeć
+//      od tego, kto akurat jest w pracy, i zaczyna się skalować.
+//   2. MECHANIZM (dowód dla argumentu pierwszego). Gotowe narzędzia kupuje
+//      się per dział, a proces biegnie w poprzek nich. Przekazania zostają
+//      na ludziach i to w nich, nie w samej pracy, siedzi większość czasu
+//      sprawy — hero pokazuje tę cenę w dniach.
+// Pierwsza wersja miała tylko punkt 2, przez co strona sprzedawała
+// oszczędność czasu zamiast przewagi. Uwaga Szymona, słuszna.
+//
+// TRZY RZECZY SPRAWDZALNE PRZED PODPISANIEM UMOWY:
+//   1. Pomiar czasu sprawy przed startem — nie czasu pracy, tylko czasu
+//      od wejścia do zamknięcia. Bez niego nie ma czego porównać.
+//   2. Kolejne uruchomienia. Każde wchodzi na produkcję i skraca czas
+//      sprawy, a po każdym można się zatrzymać bez straty tego, co działa.
+//      To jest odpowiedź na jedyny realny strach przy takim projekcie.
+//   3. Reguły, słowniki i kroki obiegu w konfiguracji, nie w kodzie —
+//      razem z listą tego, co Wasz człowiek zmienia bez nas.
+//
+// WARSTWA WIZUALNA — czwarty osobny słownik w serwisie:
+//   /strategia-ai:    łuki, przewijany strumień, siatka stu kwadratów
+//   /rozwiazania-ai:  przekrój warstw, próg pewności, tory harmonogramu
+//   /szkolenia-ai:    jednostki do policzenia (ludzie, minuty)
+//   /systemy-procesowe: CZAS SPRAWY. Jedna oś czasu, ta sama w całej stronie.
+//   · OŚ CZASU SPRAWY (hero) — sześć dni, z czego godzina to praca; pod nią
+//     ta sama sprawa po przebudowie, w tej samej skali. Animacja jedzie ze
+//     STAŁĄ PRĘDKOŚCIĄ przez obie osie, więc krótszy pasek naprawdę kończy
+//     się szybciej — czas jest tu zarazem danymi i mechanizmem animacji.
+//   · SILOSY (sekcja o gotowych narzędziach) — narzędzia stoją w pionie,
+//     proces biegnie w poprzek, a przerwy między nimi są bursztynowe
+//   · ODCINKI (ciemny pas) — ten sam pasek czasu sprawy, kurczący się po
+//     każdym uruchomieniu; przy każdym to, co znika z pracy ludzi
+//   · WIDOKI SYSTEMU — trzy ekrany rysowane w HTML (karta sprawy z opisami,
+//     rejestr, ekran reguł). Dołożone 30.08 po uwadze, że na stronie pionu
+//     „Budujemy aplikacje" brakuje miejsca, w którym widać sam produkt.
+// Hero chodzi w pętli, dwa pozostałe odsłaniają się raz przy wejściu w kadr.
+//
+// DO POTWIERDZENIA PRZED PUBLIKACJĄ:
+// · Przykład procesu (od zapytania do oferty) i wszystkie czasy — sześć dni,
+//   sześćdziesiąt minut pracy, cztery godziny po przebudowie. Kształt jest
+//   pewny, liczby są przykładem. Do podmiany na pomiar u klienta.
+// · Uruchomienia 6 / +5 / +4 tygodnie — założenie o kształcie usługi.
+// · Zdanie „po każdym możecie się zatrzymać" — decyzja handlowa Szymona.
+//   Zeszło z nagłówka do zamknięcia sekcji, bo w nagłówku sprzedawało
+//   rezygnację zamiast przyrostu.
+// · Trzy systemy w sekcji DOWODY są PRZYKŁADOWE, do podmiany.
+// · Kwoty świadomie nie ma. Miejsce na nią czeka w FAQ „Ile kosztuje".
+// · /og/systemy-procesowe.png — na razie strona dziedziczy /og/hub.png.
+import LaBase from '../layouts/LaBase.astro';
+import GcFaq from '../components/GcFaq.astro';
+import GcCta from '../components/GcCta.astro';
+
+const kanon = new URL('/systemy-procesowe', Astro.site).href;
+
+const dane = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Service',
+      '@id': `${kanon}#usluga`,
+      name: 'Systemy dla kluczowych procesów',
+      alternateName: ['Dedykowany system dla firmy', 'Aplikacja pod proces', 'Oprogramowanie na zamówienie'],
+      serviceType: 'Projektowanie i budowa dedykowanych aplikacji prowadzących procesy biznesowe',
+      url: kanon,
+      description: 'Aplikacje budowane pod przebiegi pracy, na których firma zarabia. Zamykają w oprogramowaniu sposób pracy wypracowany przez firmę, prowadzą sprawę przez wszystkie działy i zdejmują przekazania między nimi. Powstają etapami — pierwsze uruchomienie wchodzi na produkcję po sześciu tygodniach.',
+      provider: { '@id': new URL('/#organizacja', Astro.site).href },
+      areaServed: { '@type': 'Country', name: 'Polska' },
+      audience: { '@type': 'BusinessAudience', name: 'Średnie i duże firmy' },
+    },
+    {
+      '@type': 'BreadcrumbList',
+      '@id': `${kanon}#okruszki`,
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Strona główna', item: new URL('/', Astro.site).href },
+        { '@type': 'ListItem', position: 2, name: 'Systemy dla kluczowych procesów', item: kanon },
+      ],
+    },
+  ],
+};
+
+const title = "Systemy dla kluczowych procesów — przewaga zamknięta w oprogramowaniu | Let's automate";
+const description = 'Systemy dla procesów, na których zarabiacie. Zamykają w oprogramowaniu Wasz sposób pracy i prowadzą sprawę przez wszystkie działy. Powstają etapami — pierwsze uruchomienie po sześciu tygodniach.';
+
+
+// ---- OŚ CZASU SPRAWY (hero) --------------------------------------------
+// Przykład: od zapytania klienta do wysłanej oferty. Kroki pracy są liczone
+// w minutach, postoje w dniach roboczych (osiem godzin). Wszystkie szerokości
+// i wszystkie czasy animacji wynikają z tej jednej tablicy.
+//
+// UWAGA techniczna: paski pracy mają min-width 3 px, więc przy tej skali
+// zabierają około trzech procent szerokości ponad swój udział. Bez tego
+// byłyby niewidoczne — a to one są pointą rysunku.
+const GODZ_DNIA = 8;
+const KROKI = [
+  { p: true, min: 12, t: 'Handlowiec zakłada sprawę', k: 'zakłada sprawę' },
+  { p: false, dni: 2, t: 'Czeka na wycenę technologa', k: 'czeka na wycenę' },
+  { p: true, min: 24, t: 'Technolog liczy koszt', k: 'liczy koszt' },
+  { p: false, dni: 1.5, t: 'Czeka na dostępność z magazynu', k: 'czeka na magazyn' },
+  { p: true, min: 18, t: 'Przepisanie do arkusza i złożenie oferty', k: 'przepisuje do arkusza' },
+  { p: false, dni: 2.5, t: 'Czeka na akceptację marży', k: 'czeka na akceptację' },
+  { p: true, min: 6, t: 'Wysyłka do klienta', k: 'wysyła' },
+];
+const kd = (x) => (x.p ? x.min / 60 / GODZ_DNIA : x.dni);   // długość kroku w dniach
+const DZIS_DNI = KROKI.reduce((a, x) => a + kd(x), 0);       // 6,125 dnia
+const PRACA_MIN = KROKI.filter((x) => x.p).reduce((a, x) => a + x.min, 0);   // 60
+const PO_GODZ = 4;
+const PO_DNI = PO_GODZ / GODZ_DNIA;
+// Odmiana po liczbie: 2-4 biora forme mnoga, ulamki i reszta pojedyncza.
+const dniOpis = (d) => (Number.isInteger(d) && d >= 2 && d <= 4 ? d + ' dni' : String(d).replace('.', ',') + ' dnia');
+const PRACA_PO_MIN = 42;   // znika przepisywanie do arkusza
+const UDZIAL_PO = PO_DNI / DZIS_DNI;
+
+// Kalendarz cyklu. Głowica jedzie przez obie osie z tą samą prędkością —
+// dlatego druga kończy się w ułamku czasu pierwszej i to jest cały dowód.
+const JAZDA = 9;                       // ile trwa przejazd przez „dziś"
+const PRZERWA = 0.8;
+const JAZDA2 = JAZDA * UDZIAL_PO;      // ~0,73 s
+const START2 = JAZDA + PRZERWA;
+const CZ_C = 17;
+const CZ_GASNIE = 15.1;
+const cp = (s) => `${(Math.max(0, Math.min(1, s / CZ_C)) * 100).toFixed(2)}%`;
+
+let biegDni = 0;
+const kroki = KROKI.map((x, i) => {
+  const od = biegDni / DZIS_DNI;
+  biegDni += kd(x);
+  return { ...x, i, od, do: biegDni / DZIS_DNI, udzial: kd(x) / DZIS_DNI };
+});
+
+const klatkiCzas = [
+  // Wypełnienie każdego kroku rośnie dokładnie wtedy, kiedy mija go głowica.
+  ...kroki.map((x) => `@keyframes cz-w${x.i}{0%,${cp(x.od * JAZDA)}{width:0%}${cp(x.do * JAZDA)}{width:100%}${cp(CZ_GASNIE)}{width:100%}100%{width:100%}}`),
+  `@keyframes cz-glowica{0%{left:0%;opacity:0}${cp(0.12)}{left:0%;opacity:1}${cp(JAZDA)}{left:100%;opacity:1}${cp(JAZDA + 0.35)}{left:100%;opacity:0}100%{left:100%;opacity:0}}`,
+  `@keyframes cz-w2{0%,${cp(START2)}{width:0%}${cp(START2 + JAZDA2)}{width:100%}${cp(CZ_GASNIE)}{width:100%}100%{width:100%}}`,
+  `@keyframes cz-glowica2{0%,${cp(START2 - 0.12)}{left:0%;opacity:0}${cp(START2)}{left:0%;opacity:1}${cp(START2 + JAZDA2)}{left:100%;opacity:1}${cp(START2 + JAZDA2 + 0.35)}{left:100%;opacity:0}100%{left:100%;opacity:0}}`,
+  `@keyframes cz-suma{0%,${cp(JAZDA + 0.1)}{opacity:0;transform:translateY(4px)}${cp(JAZDA + 0.6)}{opacity:1;transform:translateY(0)}${cp(CZ_GASNIE)}{opacity:1;transform:translateY(0)}100%{opacity:1;transform:translateY(0)}}`,
+  `@keyframes cz-suma2{0%,${cp(START2 + JAZDA2)}{opacity:0;transform:translateY(4px)}${cp(START2 + JAZDA2 + 0.5)}{opacity:1;transform:translateY(0)}${cp(CZ_GASNIE)}{opacity:1;transform:translateY(0)}100%{opacity:1;transform:translateY(0)}}`,
+  `@keyframes cz-reset{0%,${cp(CZ_GASNIE)}{opacity:1}${cp(CZ_GASNIE + 1.1)}{opacity:0}99.9%{opacity:0}100%{opacity:1}}`,
+].join('\n');
+
+
+// ---- SILOSY (sekcja o gotowych narzędziach) -----------------------------
+// Narzędzia stoją w pionie, proces biegnie w poprzek. Przerwy między nimi
+// są bursztynowe i podpisane — tam siedzi cały czas sprawy.
+const NARZEDZIA = ['CRM', 'ERP', 'Magazyn', 'Arkusz', 'Poczta'];
+const PRZERWY = ['przepisanie', 'telefon', 'kopiuj-wklej', 'e-mail'];
+
+const POWODY = [
+  {
+    t: 'Każdy dział kupuje swoje narzędzie osobno',
+    d: 'Handel dostaje CRM, finanse ERP, reszta pracuje w arkuszu. Każde z nich jest dobre w swoim pudełku. Sprawa przechodzi przez wszystkie i w każdej przerwie czeka, aż ktoś ją przeniesie dalej.',
+  },
+  {
+    t: 'Stan sprawy nie leży w żadnym z nich w całości',
+    d: 'Żeby odpowiedzieć klientowi, na czym stoi jego zapytanie, ktoś musi zajrzeć w trzy miejsca i zadzwonić w czwarte. Dlatego „sprawdzę i oddzwonię" jest w tych firmach zdaniem etatowym.',
+  },
+  {
+    t: 'Wasza przewaga zwykle nie mieści się w konfiguracji',
+    d: 'Gotowy system da się ustawić w granicach, które przewidział producent, a te granice są średnią z jego rynku. To, co robicie inaczej i na czym zarabiacie więcej, leży zwykle poza nimi i ląduje w arkuszu obok. Im mocniejsza przewaga, tym większy ten arkusz.',
+  },
+];
+
+
+// ---- ODCINKI (ciemny pas) -----------------------------------------------
+// Ten sam pasek, co w hero, kurczący się po każdym uruchomieniu. To, że
+// wartość ląduje co kilka tygodni, odróżnia to od projektu na dwa lata.
+const URUCHOMIENIA = [
+  {
+    e: 'Pierwsze uruchomienie', tyg: 'po 6 tygodniach', t: 'Rejestr zapytań i wycena w jednym miejscu',
+    d: 'Zapytanie wpada do rejestru prosto z poczty, technolog dostaje je z kompletem załączników, a stan sprawy widzi każdy, kto ma do niej dostęp.',
+    zn: 'Znika przepisywanie oferty do arkusza',
+    dni: 3,
+  },
+  {
+    e: 'Drugie uruchomienie', tyg: '5 tygodni później', t: 'Dostępność z magazynu wpięta na żywo',
+    d: 'Wycena sięga po stany i terminy dostaw bez pytania człowieka. Pozycje, których nie ma, wychodzą na wierzch od razu.',
+    zn: 'Znika telefon do magazynu przy każdej wycenie',
+    dni: 1.5,
+  },
+  {
+    e: 'Trzecie uruchomienie', tyg: '4 tygodnie później', t: 'Akceptacja marży jako reguła',
+    d: 'Oferty w widełkach idą do klienta same. Do zarządu trafiają tylko te, które z widełek wychodzą, razem z wyliczeniem, dlaczego.',
+    zn: 'Znika czekanie na akceptację przy ofertach w widełkach',
+    dni: PO_DNI,
+  },
+];
+
+
+// ---- CO ZMIENIA WASZ CZŁOWIEK -------------------------------------------
+const KONFIG = [
+  { t: 'Progi i widełki', d: 'Kwota, powyżej której wchodzi akceptacja zarządu. Terminy, po których sprawa się podświetla.' },
+  { t: 'Kroki obiegu i akceptacje', d: 'Kolejność kroków, osoby odpowiedzialne i to, które kroki da się pominąć.' },
+  { t: 'Słowniki i formularze', d: 'Typy spraw, kategorie, pola na formularzu i to, które z nich są wymagane.' },
+  { t: 'Szablony i treści', d: 'Wzory dokumentów, treść powiadomień i to, kto je dostaje.' },
+];
+
+
+// ---- PRZYKŁADY ----------------------------------------------------------
+// PRZYKŁADOWE wdrożenia — do podmiany na potwierdzone przypadki.
+// Liczba przy każdym to czas sprawy, czyli ta sama miara, co w hero.
+const PRZYKLADY = [
+  {
+    f: 'Producent konstrukcji stalowych', m: '260 osób', p: 'Od zapytania do oferty',
+    d: 'Zapytania z poczty i z portalu wpadają do jednego rejestru. Wycena sięga po cennik materiału i obłożenie produkcji, a oferta w widełkach wychodzi bez akceptacji.',
+    przed: '6 dni', po: '4 godziny', przedD: 6.1, poD: 0.5,
+    ludzie: 'nietypowe konstrukcje wyceniane ręcznie przez technologa',
+  },
+  {
+    f: 'Sieć serwisów', m: '180 osób', p: 'Obieg zlecenia serwisowego',
+    d: 'Zgłoszenie, wycena, zamówienie części i rozliczenie idą jednym obiegiem. Klient widzi status sam, a serwisant dostaje komplet danych przed wyjazdem.',
+    przed: '9 dni', po: '2 dni', przedD: 9, poD: 2,
+    ludzie: 'reklamacje i sprawy z ubezpieczycielem',
+  },
+  {
+    f: 'Dystrybutor spożywczy', m: '410 osób', p: 'Reklamacje i zwroty',
+    d: 'Zgłoszenie od klienta łączy się z dokumentem sprzedaży i partią towaru. Decyzja o uznaniu zapada na regule, a księgowanie korekty idzie do ERP-a samo.',
+    przed: '11 dni', po: '3 dni', przedD: 11, poD: 3,
+    ludzie: 'sprawy powyżej progu wartości i spory z dostawcą',
+  },
+];
+
+
+// ---- WIDOKI SYSTEMU -----------------------------------------------------
+// Interfejs zbudowany w HTML, nie zrzut ekranu: skaluje się, da się go
+// poprawić w minutę i nie udaje cudzego wdrożenia. Wszystkie trzy widoki
+// pokazują TEN SAM proces, który idzie przez całą stronę — ofertowanie
+// u producenta konstrukcji stalowych. Numer sprawy z karty (ZP-2484) stoi
+// też w pierwszym wierszu rejestru, więc dwa widoki się ze sobą trzymają.
+//
+// Każdy opis przy karcie dowodzi tezy, która pada gdzie indziej na stronie:
+// dane z systemów (sekcja o silosach), licznik czekania (hero), właściciel
+// kroku (definicja), reguła przy decyzji (sekcja o konfiguracji).
+const KARTA_POZYCJE = [
+  { i: 'BLA 2400×1200×8', n: '12 szt.', st: 'na stanie', ok: true },
+  { i: 'CEO 160 S355', n: '48 mb', st: 'na stanie', ok: true },
+  { i: 'RUR 88,9×4', n: '30 mb', st: 'brak · dostawa 22.09', ok: false },
+];
+const KARTA_OBIEG = [
+  { t: 'Rejestracja zapytania', s: 'ok', kto: 'automatycznie · 14:02' },
+  { t: 'Wycena techniczna', s: 'teraz', kto: 'Michał R. · od 4 godzin', nr: 3 },
+  { t: 'Akceptacja marży', s: 'pomin', kto: 'pominięta regułą', nr: 4 },
+  { t: 'Wysyłka do klienta', s: 'czeka', kto: '' },
+];
+const REJESTR = [
+  { nr: 'ZP-2484', kl: 'Stalprofil', kr: 'Wycena techniczna', cz: '4 godziny', zle: false },
+  { nr: 'ZP-2483', kl: 'Mostostal Wschód', kr: 'Akceptacja marży', cz: '1 dzień', zle: false },
+  { nr: 'ZP-2481', kl: 'Budimex Industrial', kr: 'Wycena techniczna', cz: '3 dni', zle: true },
+  { nr: 'ZP-2478', kl: 'Hala-Bud', kr: 'Wysyłka', cz: '2 godziny', zle: false },
+  { nr: 'ZP-2476', kl: 'Zakład Konstrukcji', kr: 'Wysyłka', cz: '3 godziny', zle: false },
+  { nr: 'ZP-2475', kl: 'Termo-Instal', kr: 'Wycena techniczna', cz: '1 dzień', zle: false },
+  { nr: 'ZP-2473', kl: 'Panattoni Park', kr: 'Akceptacja marży', cz: '4 dni', zle: true },
+  { nr: 'ZP-2470', kl: 'Stalprofil', kr: 'Zamknięte', cz: '—', zle: false },
+  { nr: 'ZP-2469', kl: 'Metalbud', kr: 'Zamknięte', cz: '—', zle: false },
+];
+const REGULY = [
+  { t: 'Akceptacja zarządu powyżej', v: '120 000 zł' },
+  { t: 'Przypomnienie, gdy krok stoi dłużej niż', v: '2 dni' },
+  { t: 'Domyślna marża w widełkach', v: '18%' },
+  { t: 'Rysunek techniczny wymagany', v: 'tak' },
+  { t: 'Ważność oferty', v: '30 dni' },
+  { t: 'Kopia oferty do opiekuna klienta', v: 'tak' },
+];
+const KOKPIT = [
+  { t: 'Wycena techniczna', v: '9 godzin', u: 100 },
+  { t: 'Akceptacja marży', v: '3 godziny', u: 33 },
+  { t: 'Potwierdzenie dostępności', v: '2 godziny', u: 22 },
+  { t: 'Wysyłka do klienta', v: '25 minut', u: 5 },
+  { t: 'Rejestracja zapytania', v: '12 minut', u: 3 },
+];
+
+
+// ---- KTÓRE PROCESY ------------------------------------------------------
+// Kolumna obok definicji. Trzecia z rzędu figura „czego nie robimy" stała
+// wcześniej w tym miejscu i była zmarnowaną przestrzenią: to samo mówi blok
+// „kiedy to nie ma sensu" w sekcji o firmach oraz odpowiedź w FAQ.
+// Zamiast tego lista nazwanych procesów z działami, przez które biegną —
+// czytelnik ma tu rozpoznać swój, a przy okazji widzi tezę o przechodzeniu
+// w poprzek działów, zanim dojdzie do rysunku silosów.
+const PROCESY = [
+  { t: 'Od zapytania do oferty', d: 'handel · technolog · magazyn' },
+  { t: 'Od zamówienia do wysyłki', d: 'sprzedaż · produkcja · logistyka' },
+  { t: 'Obieg zlecenia serwisowego', d: 'serwis · części · rozliczenia' },
+  { t: 'Reklamacje i zwroty', d: 'obsługa · jakość · finanse' },
+  { t: 'Od projektu do rozliczenia', d: 'sprzedaż · realizacja · finanse' },
+];
+
+// ---- DLA JAKICH FIRM ----------------------------------------------------
+// Kwalifikacja postawiona na przewadze, nie na wielkości firmy. Liczba osób
+// niczego tu nie rozstrzyga — rozstrzyga to, czy firma ma czym się różnić
+// i czy ta różnica siedzi dziś w kilku głowach.
+const DLA_KOGO = [
+  {
+    t: 'Zarabiacie na procesie, który przechodzi przez kilka działów',
+    d: 'Zapytanie idzie przez handel, technologa i magazyn. Zlecenie przez serwis, części i rozliczenie. Nikt nie widzi całej ścieżki od początku do końca, a klient ocenia Was po jej długości.',
+  },
+  {
+    t: 'Robicie w nim coś, czego konkurencja nie robi',
+    d: 'Nietypowe wyceny, krótsze terminy albo przypadki, których inni nie biorą. Dziś ta wiedza siedzi w kilku głowach i firma rośnie tylko tak szybko, jak te głowy zdążą.',
+  },
+  {
+    t: 'Wolumen jest na tyle duży, że dzień czekania widać w wyniku',
+    d: 'Setki spraw miesięcznie. Przy takiej skali doba stracona na akceptację przestaje być drobiazgiem operacyjnym i zaczyna być liczbą, o którą pyta zarząd.',
+  },
+  {
+    t: 'Sprzedaż rośnie szybciej niż zespół, który to obsługuje',
+    d: 'Każde kolejne kilkanaście procent obrotu wymaga kolejnych etatów w tym samym tempie. To jest moment, w którym proces przestaje się skalować, i zwykle wtedy do nas piszecie.',
+  },
+];
+const NIE_TERAZ = [
+  'Proces mieści się w jednym dziale i w jednym narzędziu — wtedy gotowe rozwiązanie wychodzi taniej.',
+  'Chodzi o księgowość, kadry albo płace. Tam liczy się zgodność z przepisami, a nie Wasz sposób pracy, więc gotowego rozwiązania nie przebijemy.',
+  'Firma jest w środku wymiany ERP-a. Proces za kwartał wygląda inaczej, więc lepiej zmierzyć go po zmianie.',
+  'Model biznesowy jeszcze się szuka i proces zmienia się co miesiąc. Utrwalanie go w systemie byłoby przedwczesne.',
+];
+
+const faq = [
+  {
+    q: 'Dlaczego nie kupić gotowego systemu?',
+    a: 'Bo gotowe systemy są kupowane po dziale, a proces biegnie w poprzek działów. Granica biegnie po przewadze: przy księgowości, kadrach czy płacach liczy się zgodność z przepisami i gotowe rozwiązanie zawsze wygra, więc powiemy to na pierwszej rozmowie. Tam, gdzie proces jest Waszą przewagą, budowanie zwykle się opłaca — i czasem oznacza to, że przejmujemy rolę CRM-a albo tę część ERP-a, która ten proces prowadzi.',
+  },
+  {
+    q: 'Ile kosztuje taki system?',
+    a: 'Wyceniamy uruchomienie po uruchomieniu. Kwota za pierwsze jest stała i podajemy ją po warsztacie, na którym proces jest rozłożony na kroki. Cenę ruszają trzy rzeczy: liczba systemów, do których trzeba się wpiąć, liczba kroków z akceptacją oraz to, ile wyjątków ma trafić do systemu, a ile zostaje przy ludziach. Następne wyceniamy osobno, kiedy przychodzi ich czas.',
+  },
+  {
+    q: 'Co, jeśli wymagania zmienią się w trakcie?',
+    a: 'Dlatego droga do uruchomienia trwa kilka tygodni. Zmiana zgłoszona po drodze wchodzi do następnego, chyba że wywraca to, co właśnie budujemy — wtedy przerywamy i przeliczamy zakres razem z Wami. Przy projekcie rozpisanym na rok zmiana wymagań jest katastrofą; przy sześciotygodniowym etapie jest zwykłą decyzją.',
+  },
+  {
+    q: 'Co, jeśli po pierwszym uruchomieniu stwierdzimy, że to nie to?',
+    a: 'Kończycie. To, co powstało, pracuje na produkcji i zostaje Wasze razem z kodem i dokumentacją. Zakres pierwszego uruchomienia jest tak wyznaczony, żeby sam z siebie miał sens — zwykle skraca czas sprawy o połowę, nawet jeśli nigdy nie powstanie drugie. Nie ma tu etapu, po którym zostaje połowa systemu i faktura.',
+  },
+  {
+    q: 'Czy nie uzależnimy się od Was?',
+    a: 'Repozytorium, dokumentacja i dostęp do infrastruktury są Wasze od pierwszego dnia. Reguły, progi, kroki obiegu i formularze siedzą w konfiguracji, więc zmienia je Wasz człowiek bez naszego udziału. Umowa utrzymaniowa jest osobna od budowy i wypowiadalna z miesięcznym terminem. Piszemy na powszechnych technologiach, żeby przejęcie przez inny zespół było zwykłą rekrutacją.',
+  },
+  {
+    q: 'Co z danymi z obecnych systemów?',
+    a: 'Sprawy w toku przenosimy razem ze stanem, historia zwykle zostaje tam, gdzie jest, i podpinamy do niej podgląd. Migracja całej historii bywa droższa od reszty uruchomienia i rzadko się zwraca, więc za każdym razem liczymy ją osobno i pokazujemy rachunek przed decyzją.',
+  },
+  {
+    q: 'Ile czasu zajmie to naszym ludziom?',
+    a: 'Najwięcej na starcie: dwa dni warsztatu z osobami, które prowadzą proces dzisiaj, i dostęp do systemów. Potem godzina w tygodniu na pokaz tego, co powstało, i decyzje przy wyjątkach. Przed uruchomieniem dochodzi kilka dni testów na prawdziwych sprawach po Waszej stronie — to jedyny moment, w którym potrzebujemy więcej niż jednej osoby naraz.',
+  },
+  {
+    q: 'Czy taki system ma w środku AI?',
+    a: 'Tylko tam, gdzie zarabia na siebie. Większość tego, co skraca czas sprawy, to rejestr, obieg i integracje — bez modelu. Jeśli w procesie jest krok, który wymaga odczytania treści albo oceny, wchodzi <a href="/rozwiazania-ai" style="font-weight:700;color:#0a7a52">indywidualne rozwiązanie AI</a> jako element systemu, z własnym progiem pewności i ścieżką wyjątku.',
+  },
+  {
+    q: 'Na czym budujecie?',
+    a: 'Na powszechnych technologiach webowych i na bazie, którą utrzyma każdy zespół. Połączenia z Waszymi systemami idą przez ich API, a tam gdzie API nie ma — przez wymianę plików albo bezpośrednio przez bazę, po ustaleniu tego z Waszym IT. Przy każdym elemencie zapisujemy, na czym stoi i ile kosztuje jego utrzymanie przez rok.',
+  },
+  {
+    q: 'Kto to utrzymuje po uruchomieniu?',
+    a: 'Wasz zespół, my albo inna firma. Jeśli utrzymujemy my, umowa obejmuje czas reakcji, poprawki i aktualizacje zależności, a rozliczenie idzie miesięcznie. Zmiany w konfiguracji nie wchodzą do tej umowy, bo robi je Wasz człowiek — dlatego przy odbiorze pokazujemy dokładnie, co da się zmienić bez nas.',
+  },
+];
+dane['@graph'].push({
+  '@type': 'FAQPage',
+  '@id': `${kanon}#faq`,
+  mainEntity: faq.map((f) => ({
+    '@type': 'Question',
+    name: f.q,
+    acceptedAnswer: { '@type': 'Answer', text: f.a.replace(/<[^>]+>/g, '') },
+  })),
+});
+---
+<LaBase title={title} description={description} ctaHref="#kontakt" ctaLabel="Umów rozmowę" nav="uslugi">
+<script type="application/ld+json" is:inline set:html={JSON.stringify(dane)} slot="head"></script>
+<style is:global slot="head">
+  /* ================= oś czasu sprawy (hero) =================
+     Dwie osie w jednej skali. Głowica jedzie przez obie z tą samą prędkością,
+     więc druga naprawdę kończy się w ułamku czasu pierwszej — czas jest tu
+     jednocześnie daną i mechanizmem animacji. Szerokości kroków wynikają
+     z tablicy w nagłówku pliku. */
+  .cz{position:relative}
+  .cz-wiersz{display:grid;grid-template-columns:clamp(74px,8vw,104px) minmax(0,1fr);gap:clamp(12px,1.6vw,20px);align-items:center}
+  .cz-wiersz + .cz-wiersz{margin-top:clamp(26px,3.2vw,38px)}
+  .cz-kto{font-size:13.5px;font-weight:700;color:#16211a;line-height:1.25}
+  .cz-kto span{display:block;margin-top:2px;font-size:12px;font-weight:500;color:#9aa69b}
+  .cz-os{position:relative;display:flex;height:clamp(34px,3.6vw,44px);border-radius:8px;overflow:hidden;background:#eef2ec}
+  .cz-os.krotka{width:var(--u);border-radius:8px}
+  /* Kroki pracy maja 7 px minimum, bo przy tej skali zajmowalyby ulamek
+     piksela - a to one sa pointa rysunku. Kosztuje to okolo czterech
+     procent szerokosci ponad ich prawdziwy udzial. */
+  .cz-seg{position:relative;min-width:7px;overflow:hidden}
+  .cz-seg + .cz-seg{box-shadow:inset 1px 0 0 #ffffff}
+  .cz-seg i{position:absolute;left:0;top:0;bottom:0;width:0;background:#ccd5c9}
+  .cz-seg.praca{background:#dceee3}
+  .cz-seg.praca i{background:var(--la-accent,#00CD77)}
+  .cz-seg b{position:absolute;left:11px;right:8px;top:50%;transform:translateY(-50%);font-size:12px;font-weight:600;color:#5b665e;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;z-index:2}
+  .cz-seg .krotko{display:none}
+  .cz-glowica{position:absolute;top:-7px;bottom:-7px;width:2px;background:#16211a;z-index:3;opacity:0}
+  .cz-glowica::before{content:"";position:absolute;left:50%;top:-4px;width:8px;height:8px;border-radius:50%;background:#16211a;transform:translateX(-50%)}
+  .cz-rzad{display:flex;align-items:center;gap:clamp(10px,1.4vw,16px)}
+  .cz-skala{position:relative;display:block;height:22px;margin-top:7px}
+  .cz-skala i{position:absolute;top:0;width:1px;height:5px;background:#d5ded3}
+  .cz-skala i b{position:absolute;left:50%;top:7px;transform:translateX(-50%);font-family:ui-monospace,Menlo,monospace;font-size:10.5px;font-weight:400;color:#a9b3aa}
+  .cz-skala em{position:absolute;left:0;top:7px;font-style:normal;font-size:10.5px;color:#b6bfb6}
+  .cz-suma{margin:8px 0 0;font-size:14px;line-height:1.45;color:#4c5850;opacity:0}
+  .cz-suma b{font-weight:750;color:#16211a}
+  .cz-suma.obok{margin:0;flex-shrink:0}
+  .cz-pod{margin:clamp(26px,3.2vw,36px) 0 0;font-size:14.5px;line-height:1.6;color:#4c5850;max-width:560px;text-wrap:pretty}
+  .cz-pod strong{font-weight:700;color:#16211a}
+  @media (max-width:820px){
+    .cz-seg b{font-size:11px;left:8px}
+    .cz-seg .dlugo{display:none}
+    .cz-seg .krotko{display:inline}
+  }
+  @media (max-width:640px){
+    .cz-wiersz{grid-template-columns:1fr;gap:9px}
+    .cz-kto span{display:inline;margin-left:7px}
+    .cz-skala em{display:none}
+    .cz-os{height:30px}
+    .cz-rzad{flex-wrap:wrap}
+    .cz-suma.obok{margin-top:8px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .cz-seg i,.cz-suma,.cz-os{animation:none !important}
+    .cz-seg i{width:100%}
+    .cz-suma{opacity:1}
+    .cz-glowica{display:none}
+  }
+
+  /* ================= silosy =================
+     Narzędzia stoją w pionie jak słupki, proces biegnie w poprzek nich.
+     Przerwy między słupkami są bursztynowe i podpisane — tam czeka sprawa. */
+  .sl{margin-top:clamp(30px,3.6vw,44px)}
+  .sl-rzad{display:flex;align-items:stretch;gap:0}
+  .sl-n{flex:1;min-width:0;position:relative;height:clamp(118px,12.5vw,156px);padding:16px 12px 48px;border:1px solid #dde7db;background:#fbfcfa;border-radius:12px;background:#ffffff;display:flex;flex-direction:column;align-items:center;gap:9px;opacity:0;transform:translateY(10px);transition:opacity .45s ease,transform .45s cubic-bezier(.34,1.3,.5,1);transition-delay:var(--d)}
+  .sl.on .sl-n{opacity:1;transform:none}
+  .sl-n b{font-size:14px;font-weight:700;color:#16211a;margin-bottom:3px}
+  .sl-n em{display:block;width:var(--w);height:4px;border-radius:2px;background:#e4ebe0;font-style:normal}
+  .sl-p{position:relative;flex:0 0 clamp(52px,7vw,96px)}
+  .sl-p i{position:absolute;left:0;right:0;bottom:30px;height:3px;background:repeating-linear-gradient(90deg,#d99a3c 0 6px,transparent 6px 12px);opacity:0;transition:opacity .4s ease;transition-delay:var(--d)}
+  .sl.on .sl-p i{opacity:1}
+  .sl-p b{position:absolute;left:50%;bottom:9px;transform:translateX(-50%) translateY(-4px);font-size:11.5px;font-weight:650;color:#b07524;white-space:nowrap;opacity:0;transition:opacity .4s ease,transform .4s ease;transition-delay:var(--d)}
+  .sl.on .sl-p b{opacity:1;transform:translateX(-50%)}
+  /* Linia procesu przechodzi przez słupki na tej samej wysokości. */
+  .sl-n::after{content:"";position:absolute;left:-1px;right:-1px;bottom:30px;height:3px;background:var(--la-accent,#00CD77);transform:scaleX(0);transform-origin:left;transition:transform .5s cubic-bezier(.4,0,.2,1);transition-delay:var(--d)}
+  .sl.on .sl-n::after{transform:none}
+  .sl-legenda{display:flex;flex-wrap:wrap;gap:8px 26px;margin-top:18px;font-size:13px;color:#7c877e}
+  .sl-legenda span{display:inline-flex;align-items:center;gap:8px}
+  .sl-legenda i{width:22px;height:3px;border-radius:2px;display:inline-block}
+  @media (max-width:820px){
+    .sl{overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:6px}
+    .sl-rzad{min-width:660px}
+    .sl-n{height:126px;padding-bottom:44px}
+    .sl-legenda{min-width:0}
+  }
+  @media (prefers-reduced-motion:reduce){ .sl-n,.sl-n::after,.sl-p i,.sl-p b{transition:none} }
+
+
+  /* ================= widoki systemu =================
+     Poziomy pas z przewijaniem zamiast dwóch pięter ekranów — cztery widoki
+     zajmują tyle wysokości, co jeden. Interfejs jest rysowany w HTML, nie
+     wklejony jako obrazek: skaluje się, poprawia się go w minutę i nie udaje
+     cudzego wdrożenia. Docelowo do podmiany na widoki z prawdziwego UI.
+     Pas wychodzi poza prawą krawędź kolumny treści, żeby było widać, że
+     jest dalej. Przewijanie działa bez JS; strzałki są dodatkiem. */
+  .ui-pas{display:flex;gap:clamp(16px,2vw,26px);margin-top:clamp(26px,3.2vw,38px);overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-left:0;
+    margin-right:calc(-1 * max(clamp(20px,5vw,56px),calc((100vw - 1440px) / 2)));
+    padding:4px max(clamp(20px,5vw,56px),calc((100vw - 1440px) / 2)) 6px 0;
+    scrollbar-width:none;-ms-overflow-style:none}
+  .ui-pas::-webkit-scrollbar{display:none}
+  .ui-poz{flex:0 0 clamp(280px,74vw,600px);scroll-snap-align:start;display:flex;flex-direction:column;margin:0}
+  .ui-okno{flex:1;display:flex;flex-direction:column;background:#ffffff;border:1px solid #dfe7dc;border-radius:14px;overflow:hidden;box-shadow:0 22px 46px -32px rgba(18,38,28,0.32)}
+  .ui-pasek{display:flex;align-items:center;gap:10px;padding:11px 14px;border-bottom:1px solid #eaefe8;background:#fbfcfa}
+  .ui-znak{width:14px;height:14px;border-radius:4px;background:var(--la-accent,#00CD77);flex-shrink:0}
+  .ui-app{font-size:12.5px;font-weight:700;color:#16211a}
+  .ui-sciezka{font-size:12px;color:#a9b3aa;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ui-kto{margin-left:auto;font-size:12px;color:#8b968d;white-space:nowrap}
+  .ui-tresc{padding:clamp(14px,1.6vw,18px)}
+  .ui-tyt{display:flex;align-items:baseline;flex-wrap:wrap;gap:7px 11px}
+  .ui-tyt h3{margin:0;font-size:16px;font-weight:750;letter-spacing:-0.015em;color:#16211a}
+  .ui-stan{font-size:11px;font-weight:700;color:#0a7a52;background:#e2f5ea;border-radius:6px;padding:3px 8px}
+  .ui-czeka{display:inline-flex;align-items:center;gap:6px;margin-left:auto;font-size:12px;font-weight:650;color:#b07524}
+  .ui-czeka i{display:block;width:6px;height:6px;border-radius:50%;background:#d99a3c}
+  .ui-kolumny{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:clamp(14px,1.8vw,22px);margin-top:13px}
+  .ui-blok + .ui-blok{margin-top:13px}
+  .ui-etykieta{display:block;font-size:10.5px;font-weight:650;letter-spacing:0.04em;color:#a9b3aa;margin-bottom:6px}
+  .ui-pole{display:flex;align-items:baseline;gap:7px;font-size:12.5px;color:#16211a;padding:6px 0;border-bottom:1px solid #f1f4ef}
+  .ui-pole b{font-weight:650}
+  .ui-zrodlo{font-size:10px;font-weight:600;color:#0a7a52;background:#eef7f1;border-radius:4px;padding:2px 5px;white-space:nowrap}
+  .ui-wiersz{display:grid;grid-template-columns:minmax(0,1fr) 54px minmax(0,96px);gap:8px;align-items:center;font-size:12px;color:#16211a;padding:6px 0;border-bottom:1px solid #f1f4ef}
+  .ui-wiersz span:nth-child(2){color:#8b968d;text-align:right}
+  .ui-wiersz em{font-style:normal;font-size:11px;color:#0a7a52}
+  .ui-wiersz em.brak{color:#b07524}
+  .ui-krok{display:grid;grid-template-columns:14px minmax(0,1fr);gap:9px;align-items:start;padding:7px 0}
+  .ui-krok + .ui-krok{border-top:1px solid #f1f4ef}
+  .ui-pkt{margin-top:2px;width:13px;height:13px;border-radius:50%;border:2px solid #dfe7dc;background:#ffffff}
+  .ui-krok.ok .ui-pkt{border-color:var(--la-accent,#00CD77);background:var(--la-accent,#00CD77)}
+  .ui-krok.teraz .ui-pkt{border-color:var(--la-accent,#00CD77);box-shadow:0 0 0 3px rgba(0,205,119,0.18)}
+  .ui-krok b{display:block;font-size:12px;font-weight:650;color:#16211a}
+  .ui-krok.czeka b{color:#a9b3aa}
+  .ui-krok span{display:block;margin-top:2px;font-size:11px;color:#8b968d}
+  .ui-akcje{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;padding-top:12px;border-top:1px solid #eef2ec}
+  .ui-btn{font-size:12px;font-weight:700;padding:8px 14px;border-radius:8px;background:#16211a;color:#ffffff}
+  .ui-btn.cichy{background:#f1f4ef;color:#4c5850}
+  .ui-rej{display:grid;grid-template-columns:66px minmax(0,1fr) minmax(0,1fr) 70px;gap:9px;align-items:center;font-size:12px;padding:8px 0;border-bottom:1px solid #f1f4ef}
+  .ui-rej:last-of-type{border-bottom:0}
+  .ui-rej.naglowek{font-size:10.5px;font-weight:650;letter-spacing:0.04em;color:#a9b3aa;padding-top:0}
+  .ui-rej b{font-family:ui-monospace,Menlo,monospace;font-size:11px;font-weight:600;color:#4c5850}
+  .ui-rej span:nth-child(2){font-weight:650;color:#16211a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ui-rej span:nth-child(3){color:#4c5850;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ui-rej i{font-style:normal;text-align:right;color:#8b968d}
+  .ui-rej i.zle{color:#b07524;font-weight:700}
+  .ui-reg{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px solid #f1f4ef}
+  .ui-reg:last-of-type{border-bottom:0}
+  .ui-reg span{font-size:12px;color:#4c5850}
+  .ui-reg b{flex-shrink:0;font-size:12px;font-weight:700;color:#16211a;background:#f4f8f2;border:1px solid #e2e9e0;border-radius:7px;padding:6px 10px}
+  .ui-zapisz{display:flex;justify-content:flex-end;margin-top:13px}
+  /* kokpit */
+  .ui-kafle{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+  .ui-kafel{padding:11px 12px;border:1px solid #eef2ec;border-radius:10px;background:#fbfcfa}
+  .ui-kafel span{display:block;font-size:10.5px;color:#a9b3aa;line-height:1.3}
+  .ui-kafel b{display:block;margin-top:5px;font-size:19px;font-weight:800;letter-spacing:-0.02em;color:#16211a}
+  .ui-kafel em{display:block;margin-top:2px;font-style:normal;font-size:10.5px;color:#0a7a52}
+  .ui-kafel.uwaga b{color:#b07524}
+  .ui-stoi{display:grid;grid-template-columns:minmax(0,1fr) 62px;gap:9px 12px;align-items:center;font-size:12px;color:#16211a;padding:8px 0;border-bottom:1px solid #f1f4ef}
+  .ui-stoi:last-of-type{border-bottom:0}
+  .ui-stoi i{grid-column:1 / -1;display:block;height:5px;margin-top:-4px;border-radius:3px;background:#e4ebe1}
+  .ui-stoi i b{display:block;height:100%;width:var(--u);border-radius:3px;background:var(--la-accent,#00CD77)}
+  .ui-stoi span:last-of-type{text-align:right;color:#8b968d}
+  /* podpisy i sterowanie */
+  .ui-poz figcaption{margin-top:13px;font-size:13.5px;line-height:1.5;color:#4c5850;text-wrap:pretty}
+  .ui-poz figcaption b{display:block;font-size:14.5px;font-weight:700;color:#16211a;margin-bottom:2px}
+  .ui-ster{display:flex;gap:8px;margin-left:auto}
+  .ui-strz{appearance:none;width:38px;height:38px;border-radius:50%;border:1px solid #d5e0d3;background:#ffffff;color:#16211a;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:border-color .15s,background .15s,opacity .2s}
+  .ui-strz:hover{border-color:var(--la-accent,#00CD77);background:#f4f8f2}
+  .ui-strz[disabled]{opacity:.35;cursor:default}
+  .ui-strz[hidden]{display:none}
+  .ui-nota{margin:clamp(20px,2.4vw,28px) 0 0;font-size:13.5px;line-height:1.55;color:#8b968d;max-width:760px}
+  @media (max-width:900px){
+    .ui-kolumny{grid-template-columns:1fr}
+    .ui-ster{display:none}
+  }
+  @media (max-width:560px){
+    .ui-rej{grid-template-columns:60px minmax(0,1fr) 58px}
+    .ui-rej span:nth-child(3){display:none}
+    .ui-kafle{grid-template-columns:1fr 1fr}
+    .ui-kafel:first-child{grid-column:1 / -1}
+  }
+  @media (prefers-reduced-motion:reduce){ .ui-pas{scroll-behavior:auto} }
+
+  /* ================= powody ================= */
+  .pw-row{display:grid;grid-template-columns:minmax(0,0.95fr) minmax(0,1.15fr);gap:clamp(18px,3vw,48px);align-items:baseline;padding:clamp(20px,2.4vw,28px) 0;border-top:1px solid #e2e9e0}
+  .pw-row:last-of-type{border-bottom:1px solid #e2e9e0}
+  .pw-t{margin:0;font-size:clamp(17px,2vw,20px);font-weight:750;letter-spacing:-0.015em;line-height:1.3;color:#16211a;text-wrap:balance}
+  .pw-d{margin:0;font-size:15px;line-height:1.6;color:#4c5850;text-wrap:pretty}
+  @media (max-width:760px){ .pw-row{grid-template-columns:1fr;gap:7px} }
+
+  /* ================= które procesy (kolumna przy definicji) ================= */
+  .pc-h{margin:0 0 4px;font-size:15.5px;font-weight:750;letter-spacing:-0.01em;color:#16211a}
+  .pc-row{padding:12px 0;border-top:1px solid #e4ebe2}
+  .pc-row:last-of-type{border-bottom:1px solid #e4ebe2}
+  .pc-t{display:block;font-size:14.5px;font-weight:700;letter-spacing:-0.01em;line-height:1.3;color:#16211a;text-wrap:balance}
+  .pc-d{display:block;margin-top:3px;font-size:12.5px;color:#8b968d}
+  .pc-nota{margin:13px 0 0;font-size:13px;line-height:1.55;color:#8b968d;text-wrap:pretty}
+
+  /* ================= dla jakich firm =================
+     Duży numer w lewej kolumnie zamiast kolejnego wiersza dwukolumnowego —
+     to jedyna lista warunków na stronie i ma się czytać jako lista.
+     Blok „kiedy to nie ma sensu" jest wcięty i przygaszony: niczego nie
+     sprzedaje i dlatego uwiarygodnia cztery punkty nad sobą. */
+  .dl-row{display:grid;grid-template-columns:46px minmax(0,0.9fr) minmax(0,1.2fr);gap:clamp(16px,2.6vw,44px);align-items:start;padding:clamp(20px,2.4vw,28px) 0;border-top:1px solid #e2e9e0}
+  .dl-row:last-of-type{border-bottom:1px solid #e2e9e0}
+  .dl-n{font-size:clamp(22px,2.6vw,30px);font-weight:800;letter-spacing:-0.03em;line-height:1;color:#dbe4d8;padding-top:2px}
+  .dl-t{margin:0;font-size:clamp(17px,2vw,20px);font-weight:750;letter-spacing:-0.015em;line-height:1.3;color:#16211a;text-wrap:balance}
+  .dl-d{margin:0;font-size:15px;line-height:1.6;color:#4c5850;text-wrap:pretty}
+  .dl-nie{margin:clamp(32px,3.8vw,48px) 0 0 clamp(0px,4vw,64px);padding-left:clamp(18px,2vw,26px);border-left:2px solid #dde7db;max-width:760px}
+  .dl-nie h3{margin:0;font-size:15.5px;font-weight:750;letter-spacing:-0.01em;color:#4c5850}
+  .dl-nie p{margin:10px 0 0;font-size:14.5px;line-height:1.6;color:#8b968d;text-wrap:pretty}
+  @media (max-width:860px){
+    .dl-row{grid-template-columns:34px minmax(0,1fr);gap:12px 14px}
+    .dl-row > p:last-child{grid-column:2}
+  }
+
+  /* ================= uruchomienia (ciemny pas) =================
+     Ten sam pasek czasu sprawy, co w hero, kurczący się po każdym
+     uruchomieniu. Przy każdym wierszu stoi to, co znika z pracy ludzi. */
+  .od-row{display:grid;grid-template-columns:minmax(130px,170px) minmax(0,1.35fr) minmax(200px,0.9fr);gap:clamp(20px,3.2vw,52px);align-items:start;padding:clamp(24px,3vw,34px) 0;border-top:1px solid rgba(255,255,255,0.14)}
+  .od-row:last-of-type{border-bottom:1px solid rgba(255,255,255,0.14)}
+  .od-e{display:block;font-size:15.5px;font-weight:750;color:#ffffff}
+  .od-tyg{display:block;margin-top:3px;font-family:ui-monospace,Menlo,monospace;font-size:11.5px;color:rgba(255,255,255,0.5)}
+  .od-t{margin:0;font-size:clamp(17px,2vw,21px);font-weight:750;letter-spacing:-0.015em;line-height:1.25;color:#ffffff;text-wrap:balance}
+  .od-d{margin:9px 0 0;font-size:15px;line-height:1.6;color:rgba(255,255,255,0.72);text-wrap:pretty}
+  .od-znika{display:inline-flex;align-items:center;gap:8px;margin-top:14px;font-size:13.5px;font-weight:650;color:var(--la-accent,#00CD77)}
+  .od-os{position:relative;display:block;height:16px;border-radius:5px;background:rgba(255,255,255,0.1);overflow:hidden}
+  .od-os i{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:5px;background:var(--la-accent,#00CD77);transition:width .8s cubic-bezier(.4,0,.2,1);transition-delay:var(--d)}
+  .odc.on .od-os i{width:var(--u)}
+  .od-l{display:block;margin-top:10px;font-size:14px;color:rgba(255,255,255,0.72)}
+  .od-l b{font-weight:750;color:#ffffff}
+  .od-cap{display:block;margin-bottom:9px;font-size:12.5px;color:rgba(255,255,255,0.42)}
+  @media (max-width:900px){ .od-row{grid-template-columns:1fr;gap:14px} }
+  @media (prefers-reduced-motion:reduce){ .od-os i{transition:none} }
+
+  /* ================= konfiguracja ================= */
+  .kf{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 clamp(36px,6vw,80px);margin-top:clamp(26px,3.2vw,38px)}
+  .kf-b{padding:clamp(16px,2vw,22px) 0;border-top:1px solid #e7ece4}
+  .kf-t{display:flex;align-items:baseline;gap:10px;margin:0;font-size:16px;font-weight:700;letter-spacing:-0.012em;color:#16211a}
+  .kf-t i{flex-shrink:0;display:block;width:6px;height:6px;border-radius:50%;background:var(--la-accent,#00CD77)}
+  .kf-d{margin:7px 0 0 16px;font-size:14.5px;line-height:1.55;color:#4c5850;text-wrap:pretty}
+  @media (max-width:760px){ .kf{grid-template-columns:1fr} }
+
+  /* ================= pas wezwania ================= */
+  .ps{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:18px 40px;padding:clamp(26px,3vw,36px) 0;border-top:1px solid #e7ece4;border-bottom:1px solid #e7ece4}
+  .ps p{margin:0;max-width:640px;font-size:clamp(18px,2.2vw,24px);line-height:1.35;letter-spacing:-0.018em;font-weight:700;color:#16211a;text-wrap:pretty}
+
+  /* ================= przykłady ================= */
+  .px-row{display:grid;grid-template-columns:minmax(190px,0.62fr) minmax(0,1.2fr) minmax(200px,0.72fr);gap:clamp(20px,3.2vw,52px);align-items:start;padding:clamp(26px,3.2vw,40px) 0;border-top:1px solid #dde7db}
+  .px-row:last-of-type{border-bottom:1px solid #dde7db}
+  .px-f{display:block;margin:0;font-size:clamp(18px,2.1vw,22px);font-weight:750;letter-spacing:-0.018em;color:#16211a}
+  .px-m{display:block;margin-top:4px;font-size:13.5px;color:#8b968d}
+  .px-p{display:block;margin-top:14px;font-size:14px;font-weight:700;color:#0a7a52}
+  .px-d{margin:0;font-size:15px;line-height:1.6;color:#16211a;text-wrap:pretty}
+  .px-l{margin:14px 0 0;font-size:14px;line-height:1.55;color:#8b968d}
+  .px-l b{display:block;font-size:12.5px;font-weight:600;color:#a9b3aa;margin-bottom:3px}
+  .px-cap{display:block;font-size:12.5px;color:#a0aba1}
+  .px-por{display:flex;align-items:baseline;gap:10px;margin-top:6px;font-size:clamp(24px,2.8vw,30px);font-weight:800;letter-spacing:-0.028em;line-height:1;color:#16211a}
+  .px-por s{text-decoration:none;font-size:clamp(17px,2vw,20px);font-weight:700;color:#a9b3aa;position:relative}
+  .px-por s::after{content:"";position:absolute;left:-2px;right:-2px;top:52%;height:1.5px;background:#c3ccc2}
+  .px-por em{font-style:normal;font-size:16px;font-weight:600;color:#a9b3aa}
+  .px-os{position:relative;display:block;height:9px;margin-top:14px;border-radius:5px;background:#e0e8de;overflow:hidden}
+  .px-os i{position:absolute;left:0;top:0;bottom:0;border-radius:5px;background:var(--la-accent,#00CD77);width:0;transition:width .85s cubic-bezier(.4,0,.2,1)}
+  .px-row.on .px-os i{width:var(--u)}
+  .px-op{display:block;margin-top:9px;font-size:13px;line-height:1.5;color:#8b968d}
+  @media (max-width:1000px){
+    .px-row{grid-template-columns:minmax(0,1fr) minmax(190px,0.66fr)}
+    .px-row > :first-child{grid-column:1 / -1}
+  }
+  @media (max-width:700px){
+    .px-row{grid-template-columns:1fr;gap:16px}
+    .px-row > :first-child{grid-column:auto}
+  }
+  @media (prefers-reduced-motion:reduce){ .px-os i{transition:none} }
+
+  /* ================= responsywność wspólna dla tej strony ================= */
+  @media (max-width:900px){
+    .hero-split{grid-template-columns:1fr !important;gap:clamp(30px,5vw,46px) !important}
+  }
+</style>
+
+<!-- ============ 1 · HERO ============
+     Rysunek pokazuje jedną sprawę na osi czasu: sześć dni, z czego godzina
+     to praca. Pod spodem ta sama sprawa po przebudowie, w tej samej skali.
+     Głowica jedzie przez obie osie ze stałą prędkością, więc różnicy nie
+     trzeba nazywać — widać ją na zegarku. -->
+<div aria-hidden="true" style="position:absolute;left:0;right:0;top:0;height:1080px;background:radial-gradient(900px 640px at 86% 2%, rgba(0,205,119,0.13), transparent 64%);pointer-events:none"></div>
+<section style="position:relative;overflow:hidden;background:transparent;padding:clamp(28px,4vw,52px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) clamp(56px,6.5vw,84px)">
+<div class="hero-split" style="display:grid;grid-template-columns:1fr 1.08fr;gap:clamp(32px,4.5vw,64px);align-items:center;margin-top:clamp(10px,1.5vw,20px)">
+<div>
+<h1 style="margin:0;font-size:clamp(29px,4.4vw,51px);line-height:1.06;letter-spacing:-0.032em;font-weight:800;color:#16211a;text-wrap:balance">Procesy, na których zarabiacie, prowadzi system zbudowany pod Wasz sposób pracy</h1>
+<p style="margin:26px 0 0;max-width:600px;font-size:clamp(16px,2.1vw,19px);line-height:1.6;color:#33413a;text-wrap:pretty">Kluczowe procesy biegną przez kilka działów i kilka narzędzi, a większość ich czasu to czekanie na przekazanie. Budujemy system, który prowadzi je od początku do końca i zamyka w sobie to, co Wasza firma robi inaczej niż reszta rynku.</p>
+<div class="hero-actions" style="display:flex;align-items:center;flex-wrap:wrap;gap:16px 22px;margin-top:34px">
+<a href="#kontakt" class="btn-dark" style="display:inline-flex;align-items:center;gap:10px;background:#16211a;color:#ffffff;padding:18px 32px;border-radius:12px;font-weight:650;font-size:16.5px;box-shadow:0 14px 30px -14px rgba(16,33,26,0.45)">Umów rozmowę <span aria-hidden="true">→</span></a>
+<a href="#jak-wyglada" class="btn-ghost" style="display:inline-flex;align-items:center;gap:8px;font-size:16.5px;font-weight:700;color:#16211a;background:rgba(255,255,255,0.6);padding:18px 26px;border-radius:12px;border:1px solid rgba(22,33,26,0.16)">Zobacz, jak to wygląda →</a>
+</div>
+</div>
+
+<div>
+<div class="cz" role="img" aria-label={`Jedna oferta na osi czasu. Dziś od zapytania do wysyłki mija ponad sześć dni roboczych, z czego pracy jest ${PRACA_MIN} minut; reszta to trzy postoje. Po przebudowie ta sama sprawa zamyka się w cztery godziny, a pracy jest ${PRACA_PO_MIN} minut.`}>
+<div style={`animation:cz-reset ${CZ_C}s linear infinite`}>
+
+<div class="cz-wiersz">
+<span class="cz-kto">Dziś<span>od zapytania do oferty</span></span>
+<span>
+  <span class="cz-os">
+    {kroki.map((x) => (
+      <span class={x.p ? 'cz-seg praca' : 'cz-seg'} style={`flex:${(x.udzial * 1000).toFixed(3)}`}>
+        <i style={`animation:cz-w${x.i} ${CZ_C}s linear infinite`}></i>
+        {!x.p && <b><span class="dlugo">{x.t}</span><span class="krotko">{x.k}</span></b>}
+      </span>
+    ))}
+    <span class="cz-glowica" style={`animation:cz-glowica ${CZ_C}s linear infinite`}></span>
+  </span>
+  <span class="cz-skala" aria-hidden="true">
+    {Array.from({ length: 5 }).map((_, d) => (
+      <i style={`left:${((d + 1) / DZIS_DNI * 100).toFixed(2)}%`}><b>{d + 1}</b></i>
+    ))}
+    <em>dni robocze</em>
+  </span>
+  <p class="cz-suma" style={`animation:cz-suma ${CZ_C}s ease-out infinite`}><b>Sześć dni roboczych.</b> Pracy w tym {PRACA_MIN} minut — cztery zielone paski.</p>
+</span>
+</div>
+
+<div class="cz-wiersz">
+<span class="cz-kto">Po przebudowie<span>ta sama sprawa</span></span>
+<span class="cz-rzad">
+  <span class="cz-os krotka" style={`--u:${(UDZIAL_PO * 100).toFixed(2)}%`}>
+    <span class="cz-seg praca" style="flex:1">
+      <i style={`animation:cz-w2 ${CZ_C}s linear infinite`}></i>
+    </span>
+    <span class="cz-glowica" style={`animation:cz-glowica2 ${CZ_C}s linear infinite`}></span>
+  </span>
+  <p class="cz-suma obok" style={`animation:cz-suma2 ${CZ_C}s ease-out infinite`}><b>Cztery godziny.</b> Pracy {PRACA_PO_MIN} minut.</p>
+</span>
+</div>
+
+</div>
+<p class="cz-pod">Praca skraca się o osiemnaście minut, bo znika przepisywanie do arkusza. <strong>Cała reszta różnicy to czekanie</strong>, którego nikt nigdy nie policzył.</p>
+<style is:inline set:html={klatkiCzas}></style>
+</div>
+</div>
+</div>
+</section>
+
+<!-- ============ 2 · CZYM TO JEST ============
+     Definicja dla modeli językowych i wyróżnionych odpowiedzi.
+     Obok, w węższej kolumnie i przygaszonym kolorze, granica usługi —
+     tego, czego ten system nie zastępuje. -->
+<section id="czym-jest" class="sec-pad" style="padding-top:clamp(48px,6vw,72px)">
+<h2 class="h-sec" style="margin:0;max-width:820px;text-wrap:balance">Czym są systemy dla kluczowych procesów?</h2>
+<div class="s2-grid" style="display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:clamp(30px,5vw,80px);margin-top:clamp(24px,3vw,34px);align-items:start">
+<div style="font-size:17px;line-height:1.65;color:#33413a">
+<p style="margin:0;text-wrap:pretty">Systemy dla kluczowych procesów to aplikacje budowane pod te przebiegi pracy, na których firma zarabia — takie, które dziś biegną przez kilka działów i kilka narzędzi. Taki system prowadzi sprawę od wejścia do zamknięcia i trzyma jej stan w jednym miejscu.</p>
+<p style="margin:18px 0 0;text-wrap:pretty">Dane bierze z systemów, w których leżą, a kolejny krok podaje sam: właściwej osobie, we właściwej chwili, z kompletem tego, co jest jej potrzebne do decyzji. Przekazanie z działu do działu przestaje być czyjąś robotą.</p>
+<p style="margin:18px 0 0;text-wrap:pretty">Kluczowe procesy to te, po których klient ocenia firmę i na których stoi marża.</p>
+</div>
+<div>
+<h3 class="pc-h">Procesy, o których mówimy</h3>
+{PROCESY.map((x) => (
+  <div class="pc-row rv"><span class="pc-t">{x.t}</span><span class="pc-d">{x.d}</span></div>
+))}
+<p class="pc-nota">Przy każdym z nich sprawa przechodzi przez kilka działów, zanim klient dostanie odpowiedź. Wasz nazywa się pewnie inaczej.</p>
+</div>
+</div>
+</section>
+
+<!-- ============ 3 · DLACZEGO GOTOWE NARZĘDZIA TEGO NIE DOMYKAJĄ ============
+     Rysunek robi cały argument: narzędzia stoją w pionie, proces biegnie
+     w poprzek, a przerwy między nimi są bursztynowe. -->
+<section id="dlaczego" class="sec-pad">
+<h2 class="h-sec" style="margin:0;max-width:640px;text-wrap:pretty">Dlaczego gotowe narzędzia tego nie domykają</h2>
+<p class="rv" style="margin:clamp(20px,2.4vw,28px) 0 0;max-width:940px;font-size:clamp(19px,2.4vw,27px);line-height:1.3;letter-spacing:-0.02em;font-weight:700;color:#16211a;text-wrap:pretty">Gotowe narzędzie zawiera średnią rynku. Wasza przewaga leży dokładnie w tym, czym się od tej średniej różnicie</p>
+<p class="sub rv" style="margin:16px 0 0;max-width:620px">Nie chodzi o to, że są słabe. Chodzi o to, że są kupowane wzdłuż innej osi niż ta, po której biegnie sprawa, a ich producent nie zna Waszych wyjątków.</p>
+
+<div class="sl" data-anim role="img" aria-label="Pięć narzędzi ustawionych obok siebie jak słupki: CRM, ERP, magazyn, arkusz i poczta. Proces biegnie poziomo przez wszystkie, a w czterech przerwach między nimi sprawę przenosi człowiek: przepisaniem, telefonem, kopiuj-wklej i e-mailem.">
+<div class="sl-rzad">
+{NARZEDZIA.map((n, i) => (
+  <>
+    <div class="sl-n" style={`--d:${(i * 0.11).toFixed(2)}s`}>
+      <b>{n}</b>
+      <em aria-hidden="true" style="--w:72%"></em>
+      <em aria-hidden="true" style="--w:48%"></em>
+      <em aria-hidden="true" style="--w:62%"></em>
+    </div>
+    {i < PRZERWY.length && (
+      <div class="sl-p" style={`--d:${(0.55 + i * 0.13).toFixed(2)}s`}>
+        <i></i><b>{PRZERWY[i]}</b>
+      </div>
+    )}
+  </>
+))}
+</div>
+<div class="sl-legenda">
+<span><i style="background:#00CD77"></i>proces, którym idzie sprawa</span>
+<span><i style="background:repeating-linear-gradient(90deg,#d99a3c 0 5px,transparent 5px 10px)"></i>przerwa, w której przenosi ją człowiek</span>
+</div>
+</div>
+
+<div style="margin-top:clamp(34px,4.2vw,52px)">
+{POWODY.map((p) => (
+  <div class="pw-row rv">
+    <h3 class="pw-t">{p.t}</h3>
+    <p class="pw-d">{p.d}</p>
+  </div>
+))}
+</div>
+
+
+</section>
+
+<!-- ============ 3b · JAK TO WYGLĄDA ============
+     Poziomy pas: cztery widoki zajmują tyle wysokości, co jeden. Interfejs
+     rysowany w HTML, nie wklejony jako obrazek — nie udaje cudzego wdrożenia
+     i poprawia się go edycją tablicy w nagłówku pliku.
+     DO PODMIANY, gdy powstanie właściwe UI systemów.
+     Wszystkie cztery widoki pokazują ten sam proces, który idzie przez całą
+     stronę, a sprawa z karty (ZP-2484) stoi też w pierwszym wierszu rejestru. -->
+<section id="jak-wyglada" style="background:#f4f8f2;padding:clamp(56px,7vw,88px) 0 clamp(56px,7vw,88px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px;overflow:hidden">
+<div style="padding-right:max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2))">
+<div class="sec-head" style="align-items:flex-end">
+<div>
+<h2 class="h-sec" style="margin:0;max-width:520px;text-wrap:pretty">Jak taki system wygląda</h2>
+<p class="sub" style="margin:14px 0 0;max-width:520px">Cztery widoki poglądowe z systemu ofertowania — tego samego procesu, który idzie przez całą tę stronę.</p>
+</div>
+<div class="ui-ster">
+<button type="button" class="ui-strz" data-ui-prev aria-label="Poprzedni widok"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></button>
+<button type="button" class="ui-strz" data-ui-next aria-label="Następny widok"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
+</div>
+</div>
+</div>
+
+<div class="ui-pas" data-ui-pas tabindex="0" role="group" aria-label="Widoki systemu — przewiń w bok">
+
+<figure class="ui-poz">
+<div class="ui-okno">
+<div class="ui-pasek">
+  <span class="ui-znak" aria-hidden="true"></span><span class="ui-app">Ofertowanie</span>
+  <span class="ui-sciezka">Zapytania · ZP-2484</span><span class="ui-kto">Michał Rutkowski</span>
+</div>
+<div class="ui-tresc">
+  <div class="ui-tyt">
+    <h3>Stalprofil · hala 42 × 18 m</h3>
+    <span class="ui-stan">Wycena techniczna</span>
+    <span class="ui-czeka"><i aria-hidden="true"></i>czeka 4 godziny</span>
+  </div>
+  <div class="ui-kolumny">
+  <div>
+    <div class="ui-blok">
+      <span class="ui-etykieta">Sprawa</span>
+      <span class="ui-pole"><b>Stalprofil sp. z o.o.</b><span class="ui-zrodlo">z CRM</span></span>
+      <span class="ui-pole">Termin oczekiwany <b style="margin-left:auto">14.09</b></span>
+      <span class="ui-pole">Wartość wyceny <b style="margin-left:auto">86 400 zł</b></span>
+    </div>
+    <div class="ui-blok">
+      <span class="ui-etykieta">Pozycje · ceny z ERP, stany z magazynu</span>
+      {KARTA_POZYCJE.map((x) => (
+        <span class="ui-wiersz"><span>{x.i}</span><span>{x.n}</span><em class={x.ok ? '' : 'brak'}>{x.st}</em></span>
+      ))}
+    </div>
+  </div>
+  <div>
+    <span class="ui-etykieta">Obieg sprawy</span>
+    {KARTA_OBIEG.map((k) => (
+      <div class={`ui-krok ${k.s === 'ok' ? 'ok' : ''} ${k.s === 'teraz' ? 'teraz' : ''} ${k.s === 'czeka' ? 'czeka' : ''}`}>
+        <span class="ui-pkt" aria-hidden="true"></span>
+        <span><b>{k.t}</b>{k.kto && <span>{k.kto}</span>}</span>
+      </div>
+    ))}
+  </div>
+  </div>
+  <div class="ui-akcje"><span class="ui-btn">Zatwierdź wycenę</span><span class="ui-btn cichy">Zwróć do handlu</span></div>
+</div>
+</div>
+<figcaption><b>Karta sprawy</b>Komplet danych do decyzji w jednym miejscu, wciągnięty z CRM-a, ERP-a i magazynu. Widać, kto trzyma sprawę teraz i od ilu godzin.</figcaption>
+</figure>
+
+<figure class="ui-poz">
+<div class="ui-okno">
+<div class="ui-pasek"><span class="ui-znak" aria-hidden="true"></span><span class="ui-app">Ofertowanie</span><span class="ui-sciezka">Zapytania w toku</span></div>
+<div class="ui-tresc">
+  <span class="ui-rej naglowek"><span>Numer</span><span>Klient</span><span>Krok</span><i>Czeka</i></span>
+  {REJESTR.map((r) => (
+    <span class="ui-rej"><b>{r.nr}</b><span>{r.kl}</span><span>{r.kr}</span><i class={r.zle ? 'zle' : ''}>{r.cz}</i></span>
+  ))}
+</div>
+</div>
+<figcaption><b>Rejestr spraw</b>Stan wszystkich zapytań z czasem oczekiwania przy każdym. Sprawa, która stoi za długo, sama wychodzi na wierzch.</figcaption>
+</figure>
+
+<figure class="ui-poz">
+<div class="ui-okno">
+<div class="ui-pasek"><span class="ui-znak" aria-hidden="true"></span><span class="ui-app">Ofertowanie</span><span class="ui-sciezka">Kokpit · ostatnie 30 dni</span></div>
+<div class="ui-tresc">
+  <div class="ui-kafle">
+    <div class="ui-kafel"><span>Czas sprawy</span><b>1,5 dnia</b><em>z 6 dni przed startem</em></div>
+    <div class="ui-kafel"><span>Sprawy w toku</span><b>34</b></div>
+    <div class="ui-kafel uwaga"><span>Stoją dłużej niż 2 dni</span><b>3</b></div>
+  </div>
+  <div style="margin-top:15px">
+    <span class="ui-etykieta">Gdzie sprawy stoją najdłużej · średnia</span>
+    {KOKPIT.map((k) => (
+      <span class="ui-stoi"><span>{k.t}</span><span>{k.v}</span><i><b style={`--u:${k.u}%`}></b></i></span>
+    ))}
+  </div>
+</div>
+</div>
+<figcaption><b>Kokpit</b>Czas sprawy liczony na żywo, razem z krokiem, na którym sprawy stoją najdłużej. To on wskazuje następne uruchomienie do zbudowania.</figcaption>
+</figure>
+
+<figure class="ui-poz">
+<div class="ui-okno">
+<div class="ui-pasek"><span class="ui-znak" aria-hidden="true"></span><span class="ui-app">Ofertowanie</span><span class="ui-sciezka">Ustawienia · reguły</span></div>
+<div class="ui-tresc">
+  {REGULY.map((r) => (<span class="ui-reg"><span>{r.t}</span><b>{r.v}</b></span>))}
+  <span class="ui-zapisz"><span class="ui-btn">Zapisz</span></span>
+</div>
+</div>
+<figcaption><b>Reguły</b>Ekran, na którym Wasz człowiek przesuwa próg akceptacji albo termin przypomnienia. Zmiana wchodzi od razu, bez wdrożenia.</figcaption>
+</figure>
+
+</div>
+
+<div style="padding-right:max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2))">
+<p class="ui-nota">Widoki są poglądowe. U Was będą wyglądać inaczej, bo nazwy pól, kroki obiegu i to, co widać na pierwszym ekranie, biorą się z Waszego procesu — projektujemy je na warsztacie przed pierwszym uruchomieniem.</p>
+</div>
+</section>
+
+<!-- ============ 3c · DLA JAKICH FIRM ============
+     Kwalifikacja postawiona na przewadze, nie na wielkości firmy. Czytelnik
+     właśnie zobaczył, czym to jest i jak wygląda — tu sprawdza, czy to o nim.
+     Blok „kiedy to nie ma sensu" niczego nie sprzedaje i dlatego trzyma
+     wiarygodność czterech punktów nad sobą. -->
+<section id="dla-kogo" class="sec-pad">
+<div class="sec-head">
+<h2 class="h-sec" style="margin:0;max-width:520px;text-wrap:pretty">Dla jakich firm to jest</h2>
+<p class="sub" style="margin:0 0 6px;max-width:460px">Najczęściej produkcja, dystrybucja i usługi — wszędzie tam, gdzie sprawa przechodzi przez kilka działów, zanim klient dostanie odpowiedź. Wielkość firmy rozstrzyga tu mniej niż cztery rzeczy poniżej.</p>
+</div>
+
+<div style="margin-top:clamp(28px,3.4vw,42px)">
+{DLA_KOGO.map((x, i) => (
+  <div class="dl-row rv">
+    <span class="dl-n">{String(i + 1).padStart(2, '0')}</span>
+    <h3 class="dl-t">{x.t}</h3>
+    <p class="dl-d">{x.d}</p>
+  </div>
+))}
+</div>
+
+<div class="dl-nie rv">
+<h3>Kiedy to nie ma sensu</h3>
+{NIE_TERAZ.map((t) => (<p>{t}</p>))}
+</div>
+</section>
+
+<!-- ============ 4 · ODCINKI ============
+     Ciemny pas, największy ciężar na stronie. Odpowiada na jedyny realny
+     strach przy dedykowanym systemie: projekt na dwa lata, po którym nic
+     nie działa. Pasek czasu sprawy jest ten sam, co w hero, i kurczy się
+     po każdym uruchomieniu. Narracja stoi na tym, co przybywa; gwarancja
+     zatrzymania się jest podana raz, na końcu, jako fakt handlowy —
+     w nagłówku brzmiała defensywnie i sprzedawała rezygnację. -->
+<section id="uruchomienia" style="position:relative;background:radial-gradient(900px 420px at 88% 4%, rgba(0,205,119,0.16), transparent 62%), #0e2b1d;padding:clamp(60px,7.5vw,98px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
+<div class="sec-head">
+<h2 class="h-sec" style="margin:0;max-width:600px;color:#ffffff;text-wrap:pretty">Każde uruchomienie skraca czas sprawy</h2>
+<p style="margin:0 0 6px;max-width:480px;font-size:17px;line-height:1.6;color:rgba(255,255,255,0.72);text-wrap:pretty">Nie budujemy całego procesu naraz. Pierwsze uruchomienie wchodzi na produkcję po sześciu tygodniach i od tego dnia sprawa idzie szybciej. Kolejne dokładają następny kawałek.</p>
+</div>
+
+<div class="odc" data-anim style="margin-top:clamp(30px,3.6vw,44px)">
+{URUCHOMIENIA.map((o, i) => (
+  <div class="od-row">
+    <span><span class="od-e">{o.e}</span><span class="od-tyg">{o.tyg}</span></span>
+    <span>
+      <h3 class="od-t">{o.t}</h3>
+      <p class="od-d">{o.d}</p>
+      <span class="od-znika">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14"/></svg>
+        {o.zn}
+      </span>
+    </span>
+    <span>
+      <span class="od-cap">Czas sprawy po tym uruchomieniu</span>
+      <span class="od-os"><i style={`--u:${(o.dni / DZIS_DNI * 100).toFixed(1)}%;--d:${(0.2 + i * 0.22).toFixed(2)}s`}></i></span>
+      <span class="od-l"><b>{o.dni >= 1 ? dniOpis(o.dni) : `${PO_GODZ} godziny`}</b> zamiast sześciu dni</span>
+    </span>
+  </div>
+))}
+</div>
+
+<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(22px,3.4vw,56px);margin-top:clamp(28px,3.2vw,40px);max-width:1000px" class="grid2">
+<p style="margin:0;font-size:15.5px;line-height:1.65;color:rgba(255,255,255,0.6);text-wrap:pretty">Wyceniamy jedno uruchomienie naraz, a następne dopiero wtedy, kiedy poprzednie pracuje i wiadomo, co pokazało. Po każdym możecie się zatrzymać — to, co działa, zostaje Wasze razem z kodem. Nie ma tu etapu, po którym zostaje połowa systemu i faktura.</p>
+<p style="margin:0;font-size:15.5px;line-height:1.65;color:rgba(255,255,255,0.6);text-wrap:pretty">Kiedy szkielet procesu już stoi, wokół niego domykamy procesy wspierające — raporty, powiadomienia, wystawianie dokumentów, przekazywanie danych do księgowości — <a href="/#oferta" style="color:rgba(255,255,255,0.9);font-weight:650;text-decoration:underline;text-underline-offset:3px">automatyzacjami i integracjami</a>, które wpinają się w ten sam rejestr.</p>
+</div>
+</section>
+
+<!-- ============ 4b · PAS WEZWANIA ============ -->
+<section style="padding:clamp(46px,5.5vw,72px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) 0">
+<div class="ps">
+<p>Opowiedzcie o jednej sprawie, która przechodzi u Was przez najwięcej rąk — policzymy jej czas razem</p>
+<a href="#kontakt" class="btn-dark" style="display:inline-flex;align-items:center;gap:9px;background:#16211a;color:#ffffff;padding:15px 26px;border-radius:11px;font-weight:650;font-size:15.5px;white-space:nowrap">Umów rozmowę <span aria-hidden="true">→</span></a>
+</div>
+</section>
+
+<!-- ============ 5 · CO ZMIENIA WASZ CZŁOWIEK ============
+     Druga obawa po „projekcie na dwa lata": że system zamieni się w klatkę,
+     do której przy każdej zmianie trzeba wołać wykonawcę. -->
+<section id="zmiany" class="sec-pad">
+<div class="s2-grid" style="display:grid;grid-template-columns:minmax(280px,1fr) minmax(0,1.15fr);gap:clamp(32px,5vw,76px);align-items:start">
+<div>
+<h2 class="h-sec" style="margin:0;text-wrap:pretty">Co zmienia Wasz człowiek bez nas</h2>
+<p class="sub" style="margin:20px 0 0;max-width:520px">Firma zmienia się szybciej niż jej oprogramowanie. Dlatego to, co zmienia się najczęściej, siedzi w konfiguracji i ma własny ekran — kod zmieniamy dopiero wtedy, kiedy zmienia się kształt procesu.</p>
+<p class="sub" style="margin:16px 0 0;max-width:520px">Przy odbiorze przechodzimy tę listę na żywo, na Waszym systemie, i zostaje z niej instrukcja. Jeśli po pół roku okaże się, że po każdą drobną zmianę trzeba dzwonić do nas, znaczy to, że granica została postawiona źle.</p>
+</div>
+<div class="kf">
+{KONFIG.map((k) => (
+  <div class="kf-b rv">
+    <h3 class="kf-t"><i aria-hidden="true"></i>{k.t}</h3>
+    <p class="kf-d">{k.d}</p>
+  </div>
+))}
+</div>
+</div>
+</section>
+
+<!-- ============ 6 · PRZYKŁADY ============
+     PRZYKŁADOWE wdrożenia — do podmiany na potwierdzone przypadki.
+     Miarą jest czas sprawy, czyli dokładnie to, co mierzy hero. Przy każdym
+     stoi też to, co zostało u ludzi. -->
+<section id="dowody" style="background:#f4f8f2;padding:clamp(60px,7.5vw,96px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
+<div class="sec-head">
+<h2 class="h-sec" style="margin:0;max-width:600px;text-wrap:pretty">Trzy procesy i ich czas sprawy</h2>
+<p class="sub" style="margin:0 0 6px;max-width:450px">Czas liczony od wejścia sprawy do jej zamknięcia, razem z całym czekaniem po drodze. Pierwsza liczba przy każdym to pomiar sprzed pierwszego uruchomienia.</p>
+</div>
+
+<div style="margin-top:clamp(20px,2.4vw,30px)">
+{PRZYKLADY.map((x) => (
+  <div class="px-row rv" data-anim>
+    <div>
+      <h3 class="px-f">{x.f}</h3>
+      <span class="px-m">{x.m}</span>
+      <span class="px-p">{x.p}</span>
+    </div>
+    <div>
+      <p class="px-d">{x.d}</p>
+      <p class="px-l"><b>Zostało u ludzi</b>{x.ludzie}</p>
+    </div>
+    <div>
+      <span class="px-cap">Czas sprawy</span>
+      <span class="px-por"><s>{x.przed}</s><em aria-hidden="true">→</em>{x.po}</span>
+      <span class="px-os"><i style={`--u:${(x.poD / x.przedD * 100).toFixed(1)}%`}></i></span>
+      <span class="px-op">tyle zostało z pierwotnego czasu sprawy</span>
+    </div>
+  </div>
+))}
+</div>
+</section>
+
+<!-- ============ 6b · GŁOS KLIENTA ============ -->
+<section style="padding:clamp(56px,7vw,88px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2))">
+<figure class="rv" style="margin:0;display:grid;grid-template-columns:auto 1fr;gap:clamp(20px,3vw,36px);align-items:start;max-width:1000px">
+<span aria-hidden="true" style="font-size:clamp(46px,5vw,64px);line-height:.72;font-weight:800;color:var(--la-accent,#00CD77)">„</span>
+<div>
+<blockquote style="margin:0;font-size:clamp(20px,2.6vw,29px);line-height:1.35;letter-spacing:-0.02em;font-weight:650;color:#16211a;text-wrap:pretty">Let’s automate wziął pełną odpowiedzialność za projekt i dowiózł go do końca. To dlatego powierzyliśmy im kolejny, znacznie większy.</blockquote>
+<figcaption><span style="display:block;margin-top:clamp(16px,2vw,22px);font-size:15px;font-weight:750;color:#16211a">Jakub Ciołkowski</span><span style="display:block;margin-top:2px;font-size:14px;color:#8b968d">Członek Zarządu, NARS Polska</span></figcaption>
+</div>
+</figure>
+</section>
+
+<GcCta
+  heading="Zacznijmy od jednego procesu"
+  lead="Napiszcie w dwóch zdaniach, która sprawa przechodzi u Was przez najwięcej rąk i ile jej się zdarza w miesiącu. Odpowiemy z pytaniem o systemy po drodze i z terminem pierwszej rozmowy."
+  eyebrow="Z pierwszej rozmowy wychodzicie z"
+  items={[
+    { t: 'Policzonym czasem sprawy', d: 'ile trwa dzisiaj i ile z tego jest pracą' },
+    { t: 'Granicą pierwszego uruchomienia', d: 'co ma pracować na produkcji po kilku tygodniach' },
+    { t: 'Werdyktem', d: 'czy gotowe narzędzie nie zamknie tego taniej' },
+  ]}
+  placeholder="Np. zapytanie ofertowe przechodzi przez handel, technologa i magazyn, miesięcznie jest ich około 300…"
+  submitLabel="Umów rozmowę"
+  badges={[
+    { i: 'klodka', t: 'Wasze dane bezpieczne' },
+    { i: 'kartka', t: 'NDA przed startem' },
+    { i: 'ptaszek', t: 'Kod zostaje Wasz' },
+  ]}
+/>
+
+<GcFaq
+  heading="Pytania, które padają przed decyzją"
+
+  ctaLabel="Zadajcie nam swoje →"
+  items={faq}
+/>
+
+<script>
+  var redukcja = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ---- Odpalanie animacji, gdy element wchodzi w kadr ----
+  (function(){
+    var els = document.querySelectorAll('[data-anim]');
+    if(!els.length) return;
+    if(redukcja || !('IntersectionObserver' in window)){
+      els.forEach(function(el){ el.classList.add('on'); });
+      return;
+    }
+    var io = new IntersectionObserver(function(wpisy){
+      wpisy.forEach(function(w){
+        if(w.isIntersecting){ w.target.classList.add('on'); io.unobserve(w.target); }
+      });
+    }, { threshold: 0.22 });
+    els.forEach(function(el){ io.observe(el); });
+  })();
+
+  // ---- Pas z widokami systemu ----
+  // Przewijanie działa samo, bez JS. Strzałki tylko dokładają wygodę na
+  // myszy i gasną na krańcach, żeby nie udawały, że jest dalej.
+  (function(){
+    var pas = document.querySelector('[data-ui-pas]');
+    if(!pas) return;
+    var wstecz = document.querySelector('[data-ui-prev]');
+    var dalej = document.querySelector('[data-ui-next]');
+    if(!wstecz || !dalej) return;
+
+    function krok(){
+      var karta = pas.querySelector('.ui-poz');
+      if(!karta) return pas.clientWidth;
+      var odstep = parseFloat(getComputedStyle(pas).columnGap || '0') || 0;
+      return karta.getBoundingClientRect().width + odstep;
+    }
+    function stan(){
+      var zapas = pas.scrollWidth - pas.clientWidth;
+      wstecz.disabled = pas.scrollLeft < 4;
+      dalej.disabled = pas.scrollLeft > zapas - 4;
+      // Przy szerokim oknie cały pas mieści się w kadrze i strzałki są zbędne.
+      var zbedne = zapas < 4;
+      wstecz.hidden = zbedne;
+      dalej.hidden = zbedne;
+    }
+    function jedz(kierunek){
+      pas.scrollBy({ left: kierunek * krok(), behavior: redukcja ? 'auto' : 'smooth' });
+    }
+    wstecz.addEventListener('click', function(){ jedz(-1); });
+    dalej.addEventListener('click', function(){ jedz(1); });
+    pas.addEventListener('scroll', stan, { passive: true });
+    window.addEventListener('resize', stan, { passive: true });
+    stan();
+  })();
+</script>
+</LaBase>
