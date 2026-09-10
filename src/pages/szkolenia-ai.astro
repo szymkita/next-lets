@@ -347,9 +347,14 @@ dane['@graph'].push({
   .pd-min b{font-weight:700;color:#16211a}
   .pd-legenda{margin:14px 0 0;font-size:13px;color:#8b968d}
   @media (max-width:760px){
-    .pd-row{grid-template-columns:1fr;gap:12px}
+    .pd-row{grid-template-columns:minmax(0,1fr);gap:12px}
     .pd-u{width:11px;height:11px}
     .pd-linia{left:calc(8 * 15px - 4px)}
+  }
+  /* Podpis kreski stoi w jednej linii obok niej — na najwęższych ekranach
+     nie starczało na niego miejsca po prawej, więc łamie się na dwie linie. */
+  @media (max-width:420px){
+    .pd-linia b{white-space:normal;max-width:150px;line-height:1.3;top:auto;bottom:calc(100% + 4px)}
   }
   @media (prefers-reduced-motion:reduce){ .pd-u{transition:none} }
 

@@ -1,0 +1,316 @@
+---
+// FORMULARZ ZGŁOSZENIOWY — jedno pudło, dwa warianty tła.
+//
+// Pola są dokładnie te, które przyjmuje /api/kontakt (email, telefon,
+// wiadomosc, zrodlo + pułapka firma_www). Dokładanie pól bez zmiany funkcji
+// nic nie da — endpoint je wyrzuci.
+//
+// Obsługę wysyłki trzyma strona, nie komponent: na jednej stronie stoją dwa
+// formularze i jeden skrypt wiąże oba przez [data-lead]. Dzięki temu nie ma
+// duplikatu skryptu ani zduplikowanych identyfikatorów.
+const {
+  id = 'lead',
+  zrodlo = 'strona',
+  wariant = 'ciemny',            // ciemny | jasny
+  submitLabel = 'Umów bezpłatną konsultację',
+  portret = false,               // prawa kolumna ze zdjęciem
+  // Opis sprawy bywa wymagany (wtedy strona musi też dołożyć regułę
+  // walidacji dla pola `wiadomosc`) albo nie — domyślnie nie jest.
+  opisWymagany = false,
+  podpis = 'Bezpłatnie i bez zobowiązań. Odpowiadamy w jeden dzień roboczy.',
+  // Kroki na ekranie po wysłaniu. Domyślne zostają dla stron, które ich nie
+  // podają; strona z innym przebiegiem zgłoszenia podstawia własne.
+  kroki = [
+    'Piszemy albo dzwonimy — <strong>w jeden dzień roboczy</strong>, na podany kontakt.',
+    'Rozmawiamy <strong>30 minut</strong> — online albo telefonicznie.',
+    'Dostajesz <strong>mail z pierwszym krokiem</strong> — w kilka dni roboczych po rozmowie.',
+  ],
+} = Astro.props;
+
+const F = (n) => `${id}-${n}`;
+---
+
+<div class={`fk fk--${wariant}${portret ? ' fk--portret' : ''}`}>
+
+<div class="fk-kolumny">
+<div class="fk-glowna">
+
+<form class="fk-form" id={F('form')} data-lead data-zrodlo={zrodlo} novalidate>
+<div class="fk-body">
+
+<div class="fk-para">
+<div class="f-field">
+<label class="f-lab" for={F('email')}>E-mail <span class="f-req">*</span></label>
+<input class="fk-inp" id={F('email')} name="email" type="email" inputmode="email" autocomplete="email" placeholder="jan@firma.pl" aria-describedby={F('err-email')}>
+<div class="f-err" id={F('err-email')}>Sprawdź adres e-mail.</div>
+</div>
+
+<div class="f-field">
+<label class="f-lab" for={F('tel')}>Telefon <span class="f-req">*</span></label>
+<div class="fk-tel">
+<div class="fk-prefix">
+<select id={F('prefix')} name="kierunkowy" aria-label="Numer kierunkowy">
+<option value="+48">+48</option>
+<option value="+49">+49</option>
+<option value="+44">+44</option>
+<option value="+380">+380</option>
+<option value="+420">+420</option>
+<option value="+1">+1</option>
+</select>
+<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#8a978c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+</div>
+<span class="fk-kreska"></span>
+<input id={F('tel')} name="telefon" type="tel" inputmode="tel" autocomplete="tel-national" placeholder="571 000 000" aria-describedby={F('err-tel')}>
+</div>
+<div class="f-err" id={F('err-tel')}>Sprawdź numer telefonu.</div>
+</div>
+</div>
+
+<div class="f-field">
+<label class="f-lab" for={F('msg')}>Czego dotyczy sprawa? {opisWymagany ? <span class="f-req">*</span> : <span class="f-opt">nieobowiązkowe</span>}</label>
+<textarea class="fk-inp" id={F('msg')} name="wiadomosc" rows="3" placeholder="Np. zapytania ofertowe przychodzą mailem, a potem przepisujemy je do Excela i do systemu." aria-describedby={F('err-msg')}></textarea>
+<div class="f-err" id={F('err-msg')}>Napisz kilka słów o sprawie.</div>
+</div>
+
+<label class="f-consent" data-consent-row for={F('zgoda')}>
+<input type="checkbox" id={F('zgoda')} name="zgoda" data-consent>
+<span class="f-cb"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="#06170e" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg></span>
+<span>Wyrażam zgodę na kontakt i przetwarzanie moich danych w celu obsługi zapytania. <a href="/polityka-prywatnosci" class="fk-lnk">Polityka prywatności</a>.</span>
+</label>
+
+{/* Pułapka na boty — /api/kontakt odrzuca zgłoszenie, jeśli to pole jest wypełnione. */}
+<div class="fk-hp" aria-hidden="true">
+<label for={F('www')}>Nie wypełniaj tego pola</label>
+<input id={F('www')} name="firma_www" type="text" tabindex="-1" autocomplete="off">
+</div>
+
+<button type="submit" class="btn-submit" data-submit><span data-label>{submitLabel}</span> <span aria-hidden="true">→</span></button>
+
+<p class="fk-podpis">{podpis}</p>
+
+<div class="f-note" data-fallback hidden>
+<strong>Formularz nie doszedł.</strong><br>
+Napisz na <a href="mailto:hello@letsautomate.pl" data-mailto class="fk-lnk">hello@letsautomate.pl</a> albo zadzwoń: <a href="tel:+48571399932" class="fk-lnk">+48 571 399 932</a>. Zgłoszenie nie przepadnie.
+</div>
+
+</div>
+</form>
+
+<div class="fk-ok" data-ok role="status" tabindex="-1" hidden>
+<div class="fk-ok-in">
+
+<div class="fk-ok-ico">
+<svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#00CD77" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+</div>
+
+<div class="fk-ok-t">Mamy Twoje zgłoszenie</div>
+<p class="fk-ok-p">Odzywamy się w jeden dzień roboczy, żeby dobrać termin rozmowy.</p>
+
+<div class="fk-ok-echo" data-echo hidden>
+<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3.5 6.5L12 13l8.5-6.5"/></svg>
+<span data-echo-text></span>
+</div>
+
+<div class="fk-ok-next">
+{kroki.map((k, i) => (
+  <div class="fk-ok-krok"><span class="fk-ok-n">{i + 1}</span><span set:html={k}></span></div>
+))}
+</div>
+
+<p class="fk-ok-note">Do rozmowy nie musisz się przygotowywać. Wystarczy, że opowiesz, jak wygląda dziś ten jeden proces.</p>
+
+</div>
+
+<div class="fk-ok-foot">
+Sprawa pilna? Zadzwoń: <a href="tel:+48571399932" class="fk-lnk">+48 571 399 932</a>
+</div>
+</div>
+
+</div>
+
+{portret && (
+<div class="fk-portret">
+<img src="/szymon-kita.jpg" alt="Szymon Kita — założyciel Let's automate" width="524" height="720">
+<div class="fk-portret-opis">
+<div class="fk-portret-nm">Szymon Kita</div>
+<div class="fk-portret-rl">założyciel — prowadzi te rozmowy</div>
+</div>
+</div>
+)}
+</div>
+
+</div>
+
+<style>
+  /* Reset lokalny: strony trzymają własny `a{text-decoration:none}`
+     w scope'owanym <style>, a ten do komponentu nie dociera. */
+  a{color:inherit;text-decoration:none}
+  .fk,.fk *{box-sizing:border-box}
+  [hidden]{display:none !important}
+
+  .fk{position:relative;border-radius:22px;overflow:hidden}
+  .fk-kolumny{display:grid;grid-template-columns:1fr}
+  .fk--portret .fk-kolumny{grid-template-columns:1fr 288px}
+  .fk-glowna{position:relative}
+
+  /* ---- wariant ciemny: pudło stoi na jasnej stronie i musi się od niej odciąć ---- */
+  .fk--ciemny{background:radial-gradient(120% 130% at 100% 0%, rgba(0,205,119,0.18), transparent 58%), #0e2b1d;box-shadow:0 44px 96px -46px rgba(8,26,17,0.72)}
+  .fk--ciemny::before{content:"";position:absolute;inset:0;border-radius:inherit;border:1px solid rgba(255,255,255,0.10);pointer-events:none;z-index:2}
+  .fk--ciemny::after{content:"";position:absolute;top:0;left:10%;right:10%;height:1px;background:linear-gradient(90deg,transparent,rgba(0,205,119,0.7),transparent);pointer-events:none;z-index:2}
+
+  /* ---- wariant jasny: to samo pudło na końcu strony, bez drugiej ciemnej plamy ---- */
+  .fk--jasny{background:#ffffff;border:1px solid #e2e9df;box-shadow:0 30px 70px -46px rgba(18,38,28,0.4)}
+
+  .fk-body{padding:clamp(26px,2.9vw,36px);display:flex;flex-direction:column;gap:15px}
+  .fk-para{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+
+  .f-field{display:block;min-width:0}
+  .f-lab{display:block;font-size:12px;font-weight:600;margin-bottom:8px}
+  .fk--ciemny .f-lab{color:rgba(255,255,255,0.62)}
+  .fk--jasny .f-lab{color:#4c5850}
+  .f-req{color:#00CD77;font-weight:700}
+  .f-opt{font-weight:500;opacity:.75}
+  .fk--jasny .f-req{color:#0a7a52}
+
+  /* Pola jasne w obu wariantach. Na ciemnym pudle cień sadza je na karcie —
+     bez niego biały prostokąt czyta się jak dziura wycięta w tle. */
+  .fk-inp{width:100%;font-family:inherit;font-size:15.5px;color:#16211a;background:#ffffff;border:1px solid transparent;border-radius:11px;padding:14px 16px;outline:none;transition:border-color .16s,box-shadow .16s}
+  .fk--ciemny .fk-inp{box-shadow:0 1px 2px rgba(0,0,0,0.24)}
+  .fk--jasny .fk-inp,.fk--jasny .fk-tel{background:#fbfcfa;border-color:#e2e9df}
+  .fk-inp::placeholder{color:#9aa69c}
+  .fk-inp:focus{border-color:#00CD77;box-shadow:0 0 0 3px rgba(0,205,119,0.42)}
+  textarea.fk-inp{resize:vertical;min-height:88px;line-height:1.5}
+
+  .fk-tel{display:flex;align-items:center;background:#ffffff;border:1px solid transparent;border-radius:11px;transition:border-color .16s,box-shadow .16s}
+  .fk--ciemny .fk-tel{box-shadow:0 1px 2px rgba(0,0,0,0.24)}
+  .fk-tel:focus-within{border-color:#00CD77;box-shadow:0 0 0 3px rgba(0,205,119,0.42)}
+  .fk-prefix{position:relative;display:flex;align-items:center;flex-shrink:0}
+  .fk-prefix select{appearance:none;-webkit-appearance:none;-moz-appearance:none;border:0;background:transparent;font-family:inherit;font-size:15px;font-weight:600;color:#16211a;padding:14px 30px 14px 15px;outline:none;cursor:pointer}
+  .fk-prefix svg{position:absolute;right:12px;top:50%;transform:translateY(-50%);pointer-events:none}
+  .fk-kreska{width:1px;height:22px;background:#e4ebe2;flex-shrink:0}
+  .fk-tel input{flex:1;min-width:0;border:0;background:transparent;font-family:inherit;font-size:15px;color:#16211a;padding:14px 15px 14px 13px;outline:none}
+  .fk-tel input::placeholder{color:#9aa69c}
+
+  .f-err{display:none;margin-top:7px;font-size:12.5px;font-weight:600;color:#ff9c8d}
+  .fk--jasny .f-err{color:#c2402f}
+  .f-field.err .fk-inp,.f-field.err .fk-tel{border-color:#e0574a;box-shadow:0 0 0 3px rgba(224,87,74,0.3)}
+  .f-field.err .f-err{display:block}
+
+  /* Natywny checkbox rysuje się chromem systemu — na ciemnym pudle wygląda jak wada. */
+  .f-consent{display:flex;align-items:flex-start;gap:11px;font-size:12.5px;line-height:1.55;cursor:pointer}
+  .fk--ciemny .f-consent{color:rgba(255,255,255,0.56)}
+  .fk--jasny .f-consent{color:#7c877e}
+  .f-consent input{position:absolute;width:1px;height:1px;opacity:0}
+  .f-cb{position:relative;width:18px;height:18px;border-radius:5px;border:1.5px solid rgba(255,255,255,0.32);flex-shrink:0;margin-top:1px;transition:background .16s,border-color .16s,box-shadow .16s}
+  .fk--jasny .f-cb{border-color:#c8d3c6}
+  .f-cb svg{position:absolute;inset:0;margin:auto;opacity:0;transform:scale(.6);transition:opacity .16s,transform .16s}
+  .f-consent input:checked + .f-cb{background:#00CD77;border-color:#00CD77}
+  .fk--jasny .f-consent input:checked + .f-cb{background:#0a7a52;border-color:#0a7a52}
+  .fk--jasny .f-consent input:checked + .f-cb svg{stroke:#ffffff}
+  .f-consent input:checked + .f-cb svg{opacity:1;transform:scale(1)}
+  .f-consent input:focus-visible + .f-cb{box-shadow:0 0 0 3px rgba(0,205,119,0.45)}
+  .f-consent.err{color:#ff9c8d}
+  .fk--jasny .f-consent.err{color:#c2402f}
+  .f-consent.err .f-cb{border-color:#ff9c8d}
+
+  .fk-lnk{font-weight:700;color:#00CD77;transition:color .15s}
+  .fk--jasny .fk-lnk{color:#0a7a52}
+  .fk-lnk:hover{color:#ffffff}
+  .fk--jasny .fk-lnk:hover{color:#16211a}
+
+  /* Pułapka na boty — poza kadrem, poza tabulacją, poza czytnikiem ekranu. */
+  .fk-hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+
+  .btn-submit{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;margin-top:3px;font-family:inherit;background:#00CD77;color:#06170e;border:0;padding:18px 24px;border-radius:12px;font-weight:800;font-size:17px;letter-spacing:-0.01em;cursor:pointer;box-shadow:0 14px 32px -16px rgba(0,205,119,0.75);transition:background .2s,box-shadow .2s,transform .12s}
+  .fk--jasny .btn-submit{background:#0a7a52;color:#ffffff;box-shadow:0 14px 32px -18px rgba(10,122,82,0.8)}
+  .btn-submit:hover{background:#2ce08f}
+  .fk--jasny .btn-submit:hover{background:#0e6a4a}
+  .btn-submit:active{transform:translateY(1px)}
+  .btn-submit:focus-visible{outline:3px solid #ffffff;outline-offset:3px}
+  .fk--jasny .btn-submit:focus-visible{outline-color:#0a7a52}
+  .btn-submit:disabled{opacity:.6;cursor:progress;box-shadow:none}
+  .btn-submit [aria-hidden]{transition:transform .18s}
+  .btn-submit:hover [aria-hidden]{transform:translateX(4px)}
+
+  .fk-podpis{margin:0;font-size:12.5px;line-height:1.5;text-align:center}
+  .fk--ciemny .fk-podpis{color:rgba(255,255,255,0.45)}
+  .fk--jasny .fk-podpis{color:#8b968d}
+
+  .f-note{padding:14px 15px;border-radius:12px;background:rgba(255,196,120,0.12);border:1px solid rgba(255,196,120,0.32);font-size:13.5px;line-height:1.55;color:#ffd9a6}
+  .fk--jasny .f-note{background:#fff6e8;border-color:#f0d9b3;color:#7a5a1e}
+  .f-note strong{color:#ffe9c9}
+  .fk--jasny .f-note strong{color:#513c11}
+
+  /* ---- stan po wysłaniu ---- */
+  .fk-ok{text-align:center}
+  /* Fokus wchodzi tu z kodu, po wysłaniu — obwódka przeglądarki rysowałaby
+     ramkę wokół całej karty, choć nikt nie tabuluje po tym elemencie. */
+  .fk-ok:focus{outline:none}
+  .fk-ok-in{padding:clamp(38px,4vw,50px) clamp(24px,3vw,32px) clamp(24px,3vw,30px)}
+  .fk-ok-ico{position:relative;display:flex;align-items:center;justify-content:center;width:64px;height:64px;margin:0 auto;border-radius:50%;background:rgba(0,205,119,0.15)}
+  .fk-ok-ico::before{content:"";position:absolute;inset:-9px;border-radius:50%;border:1px solid rgba(0,205,119,0.24)}
+  .fk-ok-t{margin-top:22px;font-size:clamp(22px,2.2vw,26px);font-weight:800;letter-spacing:-0.025em}
+  .fk--ciemny .fk-ok-t{color:#ffffff}
+  .fk--jasny .fk-ok-t{color:#16211a}
+  .fk-ok-p{margin:10px auto 0;max-width:340px;font-size:15px;line-height:1.6}
+  .fk--ciemny .fk-ok-p{color:rgba(255,255,255,0.68)}
+  .fk--jasny .fk-ok-p{color:#4c5850}
+  .fk-ok-echo{display:inline-flex;align-items:center;gap:8px;margin-top:16px;padding:8px 14px;border-radius:999px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);font-size:13px;font-weight:600;color:rgba(255,255,255,0.72)}
+  .fk--jasny .fk-ok-echo{background:#f4f8f2;border-color:#e2e9df;color:#4c5850}
+  .fk-ok-echo svg{color:#00CD77;flex-shrink:0}
+  .fk--jasny .fk-ok-echo svg{color:#0a7a52}
+  .fk-ok-next{margin-top:clamp(22px,2.4vw,28px);text-align:left;background:rgba(255,255,255,0.045);border:1px solid rgba(255,255,255,0.12);border-radius:14px;padding:16px 18px 18px}
+  .fk--jasny .fk-ok-next{background:#f7faf6;border-color:#e2e9df}
+  .fk-ok-krok{display:flex;align-items:flex-start;gap:11px;font-size:13.5px;line-height:1.5;color:rgba(255,255,255,0.7)}
+  .fk--jasny .fk-ok-krok{color:#4c5850}
+  .fk-ok-krok + .fk-ok-krok{margin-top:12px}
+  .fk-ok-krok strong{font-weight:700;color:#ffffff}
+  .fk--jasny .fk-ok-krok strong{color:#16211a}
+  .fk-ok-n{display:inline-block;width:21px;height:21px;line-height:21px;text-align:center;border-radius:7px;background:rgba(0,205,119,0.16);color:#00CD77;font-family:ui-monospace,Menlo,monospace;font-size:11px;font-weight:800;flex-shrink:0;margin-top:1px}
+  .fk--jasny .fk-ok-n{background:#e4f3ea;color:#0a7a52}
+  .fk-ok-note{margin:18px 0 0;font-size:13px;line-height:1.55;color:rgba(255,255,255,0.45)}
+  .fk--jasny .fk-ok-note{color:#8b968d}
+  .fk-ok-foot{padding:15px 20px;border-top:1px solid rgba(255,255,255,0.10);background:rgba(255,255,255,0.035);font-size:13px;color:rgba(255,255,255,0.58)}
+  .fk--jasny .fk-ok-foot{border-top-color:#e9efe6;background:#f7faf6;color:#7c877e}
+
+  /* Jedna zaaranżowana chwila: fajka się rysuje, treść wjeżdża pod nią kaskadą. */
+  .fk-ok-ico svg path{stroke-dasharray:28;stroke-dashoffset:28;animation:ok-draw .5s cubic-bezier(.65,0,.35,1) .2s forwards}
+  .fk-ok-ico{animation:ok-pop .4s cubic-bezier(.34,1.4,.64,1) both}
+  .fk-ok-t{animation:ok-up .45s cubic-bezier(.4,0,.2,1) .22s both}
+  .fk-ok-p{animation:ok-up .45s cubic-bezier(.4,0,.2,1) .29s both}
+  .fk-ok-echo{animation:ok-up .45s cubic-bezier(.4,0,.2,1) .35s both}
+  .fk-ok-next{animation:ok-up .45s cubic-bezier(.4,0,.2,1) .41s both}
+  .fk-ok-note{animation:ok-up .45s cubic-bezier(.4,0,.2,1) .47s both}
+  @keyframes ok-draw{to{stroke-dashoffset:0}}
+  @keyframes ok-pop{from{opacity:0;transform:scale(.72)}to{opacity:1;transform:scale(1)}}
+  @keyframes ok-up{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:none}}
+
+  /* ---- prawa kolumna ze zdjęciem ---- */
+  .fk-portret{position:relative;background:#122a1e;min-width:0}
+  .fk-portret img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 14%;display:block}
+  .fk-portret-opis{position:absolute;left:0;right:0;bottom:0;padding:36px 20px 16px;background:linear-gradient(to top,rgba(6,16,11,0.94),rgba(6,16,11,0.4) 60%,transparent)}
+  .fk-portret-nm{font-size:15px;font-weight:800;color:#ffffff}
+  .fk-portret-rl{margin-top:2px;font-size:12px;line-height:1.4;color:rgba(255,255,255,0.72)}
+
+  @media (max-width:900px){
+    .fk--portret .fk-kolumny{grid-template-columns:1fr}
+    /* Zdjęcie schodzi pod formularz i przestaje być kolumną — pas 190 px
+       wystarczy, żeby twarz była widoczna, i nie odsuwa pól poniżej ekranu. */
+    .fk-portret{order:2;height:190px}
+  }
+  @media (max-width:560px){
+    .fk-para{grid-template-columns:1fr}
+    .fk-body{padding-left:20px;padding-right:20px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .fk-inp,.fk-tel,.btn-submit,.btn-submit [aria-hidden],.f-cb,.f-cb svg{transition:none}
+    .fk-ok-ico,.fk-ok-ico svg path,.fk-ok-t,.fk-ok-p,.fk-ok-echo,.fk-ok-next,.fk-ok-note{animation:none;stroke-dashoffset:0;opacity:1;transform:none}
+  }
+
+  /* iOS Safari powiększa całą stronę, gdy kursor wchodzi w pole z krojem
+     mniejszym niż 16px — po wyjściu z pola układ zostaje przesunięty.
+     Na telefonie pola dostają więc równe 16px. */
+  @media (max-width:900px){
+    input,select,textarea{font-size:16px !important}
+  }
+</style>

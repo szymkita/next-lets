@@ -1,0 +1,1325 @@
+---
+// INSPIRACJE — /inspiracje  (wersja 5)
+//
+// CZTERY POPRZEDNIE WERSJE W docs/_kopie/ (v1 katalog, v2 galeria,
+// v3 przemiany, v4 showreel). Uwagi do v4:
+//   · „design tych przykładów musi być dużo bardziej dopracowany,
+//      bo to teraz wygląda jak wygenerowane przez AI"
+//   · „trzeba zupełnie poprawić sekcję hero (…) playlistę daj do drugiej
+//      sekcji, a hero niech będzie hero"
+//   · „dodaj więcej przykładów (…) żeby spełniały rolę takiego jakby systemu
+//      operacyjnego dla firm, ale nie zawsze (…) różnego pokroju"
+//
+// CO SIĘ ZMIENIŁO W WARSTWIE INTERFEJSU (najważniejsza część tej wersji):
+//   1. ZERO kropek „traffic lights" i centrowanych monospace'owych tytułów —
+//      to najbardziej rozpoznawalny znak makiety zrobionej na skróty.
+//      Zamiast tego prawdziwy pasek produktu: okruszki, wyszukiwarka ze
+//      skrótem klawiszowym, dzwonek z licznikiem, awatar.
+//   2. MNIEJ ZIELENI. Poprzednio wszystko było w jednym odcieniu i to właśnie
+//      dawało wrażenie generowanego obrazka. Teraz baza jest neutralnie szara
+//      (--n0…--n6), a zieleń pojawia się wyłącznie tam, gdzie coś jest aktywne
+//      albo pozytywne. Bursztyn oznacza rzecz wymagającą decyzji.
+//   3. PRAWDZIWE KONTROLKI: przełącznik segmentowy, filtry z licznikami,
+//      sortowanie na aktywnej kolumnie, zaznaczony wiersz z akcentową krechą,
+//      paginacja, awatary z inicjałami, menu kebab, iskierki (SVG polyline).
+//   4. RÓŻNY POKRÓJ POWŁOKI: pełna aplikacja z bocznym paskiem (rdzeń „systemu
+//      operacyjnego firmy"), karta sprawy z zakładkami, kreator dokumentu,
+//      skrzynka akceptacji, TABLICA NA HALI w ciemnym motywie, aplikacja
+//      mobilna technika, widok dla klienta bez powłoki, kokpit i asystent.
+//   5. Skala typografii wewnątrz makiet: 10,5 / 11,5 / 12,5 / 15 / 17 / 22 px
+//      z prawdziwą hierarchią, zamiast wszystkiego w jednym stopniu.
+//
+// UKŁAD:
+//   1. HERO — jeden duży ekran pulpitu firmy, bez playlisty
+//   2. Showreel — dwanaście aplikacji, playlista przeniesiona tutaj
+//   3. Rok w jednej firmie — ciemny pas
+//   4. „Nie wszystko jest aplikacją" — sześć umiejętności
+//   5. Czego nie budujemy · FAQ · kontakt
+//
+// ===================================================================
+// !! DO PODMIANY PRZED PUBLIKACJĄ — WSZYSTKIE LICZBY !!
+// Pola `a`, `b`, `c` w APLIKACJE, pola `a`, `b` w UMIEJETNOSCI i cała tablica
+// SCHODY są ROBOCZE. Mają pochodzić z prawdziwych, zanonimizowanych wdrożeń.
+// Dane widoczne na ekranach (nazwy firm, kwoty, numery, nazwiska) są
+// przykładowe — i tak jest napisane na stronie.
+// ===================================================================
+import LaBase from '../layouts/LaBase.astro';
+import GcFaq from '../components/GcFaq.astro';
+import GcCta from '../components/GcCta.astro';
+
+const kanon = new URL('/inspiracje', Astro.site).href;
+
+// ---- IKONY --------------------------------------------------------------
+// Jeden komplet kresek 24×24 na całą stronę. Bez wypełnień, grubość 1,7 —
+// tak wyglądają ikony w prawdziwych panelach, nie jak piktogramy ze stocka.
+const IK = {
+  pulpit: '<rect x="3.5" y="3.5" width="7" height="7" rx="1.6"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.6"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.6"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.6"/>',
+  zlecenia: '<path d="M8 4h8a1 1 0 0 1 1 1v15l-5-2.5L7 20V5a1 1 0 0 1 1-1z"/>',
+  oferty: '<path d="M14 3v5h5"/><path d="M7 3h7l5 5v11a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M9 13h6M9 16.5h4"/>',
+  klienci: '<circle cx="9" cy="8" r="3.2"/><path d="M3.5 19.5a5.5 5.5 0 0 1 11 0"/><path d="M16 6.2a3 3 0 0 1 0 5.6"/><path d="M17.5 19.5a5 5 0 0 0-2.2-4"/>',
+  koszty: '<rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18"/><path d="M7 14.5h3"/>',
+  zespol: '<circle cx="12" cy="7.5" r="3"/><path d="M5.5 20a6.5 6.5 0 0 1 13 0"/>',
+  magazyn: '<path d="M3.5 9.5 12 5l8.5 4.5V19a1 1 0 0 1-1 1h-15a1 1 0 0 1-1-1z"/><path d="M9.5 20v-6h5v6"/>',
+  raporty: '<path d="M4 20V4"/><path d="M4 20h16"/><path d="M8 16.5V12M12.5 16.5V8M17 16.5v-6"/>',
+  wiedza: '<path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H10a2 2 0 0 1 2 2v13a1.7 1.7 0 0 0-1.7-1.7H4z"/><path d="M20 5.5A1.5 1.5 0 0 0 18.5 4H14a2 2 0 0 0-2 2v13a1.7 1.7 0 0 1 1.7-1.7H20z"/>',
+  plan: '<rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 9.5h17M8 3.5v3M16 3.5v3"/>',
+  lupa: '<circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.6-4.6"/>',
+  dzwonek: '<path d="M18 8.5a6 6 0 1 0-12 0c0 6-2 7-2 7h16s-2-1-2-7z"/><path d="M13.7 20a2 2 0 0 1-3.4 0"/>',
+  kebab: '<circle cx="12" cy="5.5" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="12" cy="18.5" r="1.2"/>',
+  strzalka: '<path d="M6 9l6 6 6-6"/>',
+  ptaszek: '<path d="M20 6L9 17l-5-5"/>',
+  zegar: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7v5.2l3.2 2"/>',
+  filtr: '<path d="M4 5.5h16l-6.2 7.3V19l-3.6-2v-4.2z"/>',
+  sort: '<path d="M8 5v14M8 19l-3-3M8 19l3-3"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  zdjecie: '<rect x="3.5" y="5.5" width="17" height="13" rx="2"/><circle cx="9" cy="10.5" r="1.8"/><path d="M4 16.5l4.5-4 3.5 3 3-2.5 5 4.5"/>',
+};
+
+// ---- APLIKACJE ----------------------------------------------------------
+// `pokroj` mówi, jakiego rodzaju jest ekran — od tego zależy powłoka.
+const APLIKACJE = [
+  { k: 'zlecenia', n: '01', t: 'Rejestr zleceń', pokroj: 'panel · rdzeń systemu', z: 'Stan każdej sprawy stoi w jednym miejscu, razem z tym, kto ją prowadzi i co ją blokuje.', a: '10 dni', b: '1 dzień', c: 'zanim ktoś zauważy, że sprawa stoi' },
+  { k: 'karta', n: '02', t: 'Karta sprawy', pokroj: 'panel · widok szczegółu', z: 'Ustalenia, pliki i decyzje przestają być rozsypane po skrzynkach i dyskach.', a: '4 miejsca', b: '1', c: 'w których szuka się historii sprawy' },
+  { k: 'oferta', n: '03', t: 'Generator ofert', pokroj: 'kreator dokumentu', z: 'Oferta składa się z cennika, w jednym wzorze, z rabatem pilnowanym przez limit.', a: '3 dni', b: '25 minut', c: 'od zapytania do wysłanej oferty' },
+  { k: 'koszty', n: '04', t: 'Akceptacja kosztów', pokroj: 'skrzynka decyzji', z: 'Zgoda przestaje wisieć w mailu, a przy każdej stoi limit i ślad, kto ją podjął.', a: '5 dni', b: '4 godziny', c: 'od wniosku do księgowania' },
+  { k: 'planer', n: '05', t: 'Planer obłożenia', pokroj: 'tablica planowania', z: 'Kolizja sprzętu wychodzi przy układaniu planu, dwa tygodnie przed robotą.', a: '6 kolizji', b: '0', c: 'w miesiącu' },
+  { k: 'hala', n: '06', t: 'Tablica na hali', pokroj: 'ekran na ścianie', z: 'Zmiana widzi swój wynik na bieżąco, bez pytania kierownika i bez raportu.', a: 'raz dziennie', b: 'na żywo', c: 'aktualizuje się wynik zmiany' },
+  { k: 'technik', n: '07', t: 'Aplikacja technika', pokroj: 'aplikacja mobilna', z: 'Protokół powstaje na miejscu, ze zdjęciem, i nie czeka na powrót do biura.', a: 'następny dzień', b: '10 minut', c: 'od zakończenia usługi do protokołu' },
+  { k: 'portal', n: '08', t: 'Portal klienta', pokroj: 'widok dla klienta', z: 'Klient sam sprawdza etap sprawy i pobiera dokumenty, bez logowania i telefonu.', a: '855 pytań', b: '224', c: 'telefonów o status w miesiącu' },
+  { k: 'grafik', n: '09', t: 'Grafik zmian', pokroj: 'kalendarz zespołu', z: 'Dziura w obsadzie pokazuje się w chwili, w której powstaje, razem z zastępstwem.', a: 'w piątek', b: 'od razu', c: 'widać brak osoby z uprawnieniem' },
+  { k: 'reklamacje', n: '10', t: 'Rejestr reklamacji', pokroj: 'panel · terminy', z: 'Termin ustawowy odlicza się sam przy każdej sprawie i przypomina zawczasu.', a: '4 dni', b: '1 dzień', c: 'do decyzji w sprawie' },
+  { k: 'wiedza', n: '11', t: 'Baza wiedzy', pokroj: 'wyszukiwarka z AI', z: 'Odpowiedź przychodzi zdaniem, ze wskazaniem akapitu, z którego pochodzi.', a: '20 minut', b: '15 sekund', c: 'na znalezienie procedury' },
+  { k: 'kokpit', n: '12', t: 'Kokpit zarządu', pokroj: 'panel · liczby', z: 'Liczba na zarząd liczy się sama, z jednej definicji obowiązującej całą firmę.', a: 'rok', b: '1 dzień', c: 'zanim widać, który klient zarabia' },
+];
+const REEL_MS = 5600;
+
+const SCHODY = [
+  { m: 'miesiąc 1', t: 'Pilnowanie ofert, które ucichły', d: 'Tydzień roboty. Pierwsza rzecz, po której ktokolwiek uwierzył, że to działa.', v: '3 dni' },
+  { m: 'miesiąc 3', t: 'Rejestr ofert z historią ustaleń', d: 'Koniec z szukaniem w czyjejś skrzynce, co ustalono z klientem.', v: '2 dni' },
+  { m: 'miesiąc 6', t: 'Wycena z rysunku technicznego', d: 'Rzecz, dla której cała reszta była rozbiegiem.', v: '6 godzin' },
+  { m: 'miesiąc 8', t: 'Portal ze statusem sprawy', d: 'Klient przestał dzwonić z pytaniem, na jakim to etapie.', v: '25 minut' },
+  { m: 'miesiąc 11', t: 'Rentowność zlecenia', d: 'Dopiero teraz było z czego ją policzyć.', v: '25 minut', nota: 'bez zmiany — ta rzecz mierzy się czym innym' },
+];
+
+const UMIEJETNOSCI = [
+  { t: 'Czyta dokumenty', d: 'Wszędzie tam, gdzie ktoś przepisuje dane z pliku do systemu.', p: [
+    { t: 'Faktura kosztowa z poczty do systemu', a: '3 dni', b: '2 godziny' },
+    { t: 'Wycena z rysunku i specyfikacji', a: '3 dni', b: '25 minut' },
+    { t: 'Wymagania z dokumentacji przetargowej', a: '1 dzień', b: '15 minut' },
+    { t: 'Kary i terminy z czterystu umów', a: 'nikt nie czytał', b: '3 dni' },
+  ] },
+  { t: 'Przewiduje', d: 'Model liczy szansę z Waszej historii, zamiast czekać, aż wyjdzie w raporcie.', p: [
+    { t: 'Który klient zapłaci po terminie', a: '41 dni', b: '29 dni' },
+    { t: 'Prognoza z lejka zamiast sumy deklaracji', a: '±40%', b: '±12%' },
+    { t: 'Które zapytania warto wyceniać', a: '410 wycen', b: '180 wycen' },
+    { t: 'Które zlecenie zejdzie pod kreskę', a: 'po zamknięciu', b: 'w trakcie' },
+  ] },
+  { t: 'Słucha i mówi', d: 'Rozmowa przestaje być rzeczą, którą trzeba potem przepisać.', p: [
+    { t: 'Notatka ze spotkania trafia do systemu sama', a: '2 h tygodniowo', b: '0' },
+    { t: 'Agent głosowy odbiera telefon po godzinach', a: '9 nagrań', b: '0' },
+    { t: 'Podsumowanie rozmowy serwisowej w karcie klienta', a: 'jedno zdanie', b: 'komplet' },
+  ] },
+  { t: 'Patrzy', d: 'Zdjęcie albo obraz z kamery zamiast formularza i obchodu.', p: [
+    { t: 'Przestój na linii wykryty z obrazu kamery', a: 'następny dzień', b: '4 minuty' },
+    { t: 'Dokument przewozowy ze zdjęcia telefonem', a: 'następny dzień', b: '2 minuty' },
+    { t: 'Reklamacja ze zdjęciem uszkodzenia', a: '4 dni', b: '1 dzień' },
+  ] },
+  { t: 'Pilnuje', d: 'Rzeczy, o których zapomina się dokładnie wtedy, kiedy kosztuje to najwięcej.', p: [
+    { t: 'Oferta, która ucichła, wraca do handlowca', a: '0 odzyskanych', b: '1 z 6 wraca' },
+    { t: 'Umowa przedłużająca się bez decyzji', a: '11 sztuk', b: '0' },
+    { t: 'Wygasające uprawnienie na zmianie', a: 'przy kontroli', b: '30 dni wcześniej' },
+    { t: 'Sprawa bez ruchu od tygodnia', a: 'przy telefonie', b: 'codziennie rano' },
+  ] },
+  { t: 'Odpowiada z Waszych dokumentów', d: 'Asystent, który zna Wasze procedury i pokazuje, skąd wziął odpowiedź.', p: [
+    { t: 'Pytanie o procedurę zamiast pytania do kolegi', a: '20 minut', b: '15 sekund' },
+    { t: 'Odpowiedzi do formularza przetargowego', a: '2 dni', b: '2 godziny' },
+    { t: 'Co druga strona zmieniła w umowie', a: '2 godziny', b: '5 minut' },
+  ] },
+];
+
+const GRANICE = [
+  { t: 'Czatu, który odpowiada na wszystko', d: 'Odpowiada również wtedy, kiedy nie wie. Koszt jednej złej odpowiedzi przy cenie albo terminie bywa większy niż oszczędność na stu dobrych.' },
+  { t: 'Przepisania ERP-a od zera', d: 'To projekt na dwa lata, który zwykle kończy się w połowie. Taniej wychodzi zbudować obok to, czego ERP nie umie, i zostawić w nim księgowość.' },
+  { t: 'Agenta, który sam pisze do klientów', d: 'Bez akceptacji człowieka pierwsza pomyłka kosztuje więcej niż rok zaoszczędzonego czasu. Projekt odpowiedzi tak, wysyłka po zatwierdzeniu.' },
+  { t: 'Aplikacji zamiast decyzji', d: 'Kiedy w firmie nie ustalono, kto zatwierdza rabat, system tego nie rozstrzygnie. Wtedy zaczynamy od reguły, a narzędzie przychodzi po niej.' },
+];
+
+// Iskierka: prawdziwa łamana SVG zamiast rzędu <div>-ów.
+const iskra = (v, w, h) => {
+  const mx = Math.max(...v);
+  const mn = Math.min(...v);
+  const r = mx - mn || 1;
+  return v.map((x, i) => `${((i / (v.length - 1)) * w).toFixed(1)},${(h - ((x - mn) / r) * h).toFixed(1)}`).join(' ');
+};
+
+const title = "Inspiracje: aplikacje i systemy, które budujemy firmom | Let's automate";
+const description = `Dwanaście ekranów z wdrożeń: rejestr zleceń, karta sprawy, tablica na hali, aplikacja technika, portal klienta, kokpit zarządu. Przy każdym zadanie, które znika z dnia pracy, i liczba mówiąca o ile.`;
+
+const dane = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    { '@type': 'CollectionPage', '@id': `${kanon}#strona`, url: kanon, name: 'Inspiracje — aplikacje i systemy, które budujemy firmom', description, about: { '@id': new URL('/#organizacja', Astro.site).href } },
+    { '@type': 'ItemList', '@id': `${kanon}#aplikacje`, name: 'Aplikacje firmowe, które budujemy', numberOfItems: APLIKACJE.length,
+      itemListElement: APLIKACJE.map((p, i) => ({ '@type': 'ListItem', position: i + 1, name: p.t, description: `${p.pokroj}. ${p.z} Efekt: ${p.a} → ${p.b} ${p.c}.` })) },
+    { '@type': 'BreadcrumbList', '@id': `${kanon}#okruszki`, itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Strona główna', item: new URL('/', Astro.site).href },
+      { '@type': 'ListItem', position: 2, name: 'Inspiracje', item: kanon },
+    ] },
+  ],
+};
+
+const faq = [
+  { q: 'Czy te ekrany są z prawdziwych wdrożeń?', a: 'Kształt tak, dane nie. Ekrany rysujemy od zera pod tę stronę, a nazwy firm, kwoty i numery są przykładowe — prawdziwych zrzutów nie publikujemy, bo idą razem z danymi klientów. Na rozmowie pokazujemy działające wdrożenia po podpisaniu NDA.' },
+  { q: 'Czy dostaniemy dokładnie taką aplikację?', a: 'Nie. Każda z nich powstała pod inny proces i Wasza też będzie inna. Te same są elementy, z których się składa: rejestr, karta sprawy, kolejka zatwierdzeń, powiadomienie, widok dla klienta. Dlatego druga i trzecia rzecz w tym samym miejscu kosztują wyraźnie mniej niż pierwsza.' },
+  { q: 'Czy to jeden system, czy dwanaście osobnych aplikacji?', a: 'Zwykle jeden system, do którego dokładamy kolejne moduły — dlatego większość ekranów wyżej ma ten sam boczny pasek. Ale nie zawsze: tablica na hali, aplikacja technika i portal klienta są osobnymi widokami, bo używa ich ktoś inny i w innych warunkach. Zaczynamy od jednego modułu i rozbudowujemy go, kiedy pierwszy działa.' },
+  { q: 'Skąd biorą się liczby przy ekranach?', a: 'Z naszych wdrożeń, mierzone przed przebudową i po niej na tej samej sprawie. Firmy opisujemy branżą i wielkością, bez nazw, bo taki jest warunek większości umów. U Was mogą wyjść inne — dlatego stan wyjściowy mierzymy przed budową i zapisujemy próg w umowie. Bez pomiaru „przed" żadna z tych liczb nic nie znaczy.' },
+  { q: 'Ile trwa zbudowanie takiej aplikacji?', a: 'Od trzech tygodni do trzech miesięcy, zależnie od tego, ile systemów trzeba dotknąć i ile przypadków szczególnych ma Wasz proces. Zaczynamy od jednej rzeczy, uruchamiamy ją na produkcji i dopiero potem bierzemy następną. Ciemny pas wyżej pokazuje, jak wyglądał taki rok w jednej firmie.' },
+  { q: 'Czy do wszystkiego potrzebny jest model AI?', a: 'Nie. Aplikacje z showreelu to w większości zwykłe oprogramowanie: rejestry, karty spraw, obiegi, kokpity. Model dokładamy tam, gdzie wąskim gardłem jest czytanie albo słuchanie — i to są rzeczy z sekcji pod spodem. Jedno i drugie budujemy tak samo często.' },
+  { q: 'Ile to kosztuje?', a: 'Cena idzie za wielkością rzeczy i za liczbą wyjątków w Waszym procesie. Największy wpływ mają trzy sprawy: ile systemów trzeba dotknąć, ile przypadków szczególnych obsługujecie i czy dane są już w jednym miejscu. Widełki podajemy po pierwszej rozmowie, na której przechodzimy jedną pozycję do końca. Nie mamy prowizji od żadnego dostawcy, więc wybór narzędzia nie zmienia naszego przychodu.' },
+  { q: 'Czyja jest ta aplikacja po odbiorze?', a: 'Wasza. Repozytorium, klucze i dostępy są Wasze od pierwszego dnia, więc utrzymanie może przejąć Wasz zespół albo inny dostawca. Kiedy utrzymujemy my, umowa jest osobna od budowy i wypowiadalna z miesięcznym terminem. Jeśli chcecie budować sami, tym zajmuje się <a href="/guided-coding" style="font-weight:700;color:#0a7a52">Guided Coding</a> — kod pisze Wasz zespół, my pilnujemy jakości.' },
+];
+dane['@graph'].push({ '@type': 'FAQPage', '@id': `${kanon}#faq`, mainEntity: faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a.replace(/<[^>]+>/g, '') } })) });
+---
+<LaBase title={title} description={description} ctaHref="#kontakt" ctaLabel="Umów rozmowę" nav="inspiracje">
+<script type="application/ld+json" is:inline set:html={JSON.stringify(dane)} slot="head"></script>
+<style is:global slot="head">
+  /* =====================================================================
+     SYSTEM MAKIET
+     Baza jest neutralnie szara. Zieleń wchodzi tylko tam, gdzie coś jest
+     aktywne albo pozytywne, bursztyn — gdzie czegoś się wymaga od człowieka.
+     To jest cała różnica między makietą, która wygląda jak produkt,
+     a taką, która wygląda jak wygenerowany obrazek.
+     ===================================================================== */
+  .ap{
+    --n0:#ffffff; --n1:#f7f9f7; --n2:#ecefec; --n3:#dfe4df;
+    --n4:#9ba49d; --n5:#5f6a62; --n6:#18211c;
+    --ac:#0a7a52; --ac2:#00CD77; --am:#b5761d;
+    display:grid;grid-template-columns:196px minmax(0,1fr);width:100%;min-width:0;
+    background:var(--n0);border-radius:13px;overflow:hidden;color:var(--n6);
+    font-size:12.5px;line-height:1.45;
+    box-shadow:0 0 0 1px rgba(20,32,25,0.07),0 2px 4px -2px rgba(20,32,25,0.10),0 14px 26px -14px rgba(20,32,25,0.18),0 40px 72px -40px rgba(20,32,25,0.38);
+  }
+  .ap.solo{grid-template-columns:minmax(0,1fr)}
+  .ap.ciemny{--n0:#0f1613;--n1:#141c17;--n2:#232d27;--n3:#2c382f;--n4:#7d8a82;--n5:#a9b5ae;--n6:#f4f7f4;--ac:#3ddc95;background:var(--n0);box-shadow:0 0 0 1px rgba(255,255,255,0.09),0 40px 72px -36px rgba(0,0,0,0.65)}
+
+  /* ---------- boczny pasek ---------- */
+  .nv{display:flex;flex-direction:column;gap:1px;padding:11px 9px;background:var(--n1);border-right:1px solid var(--n2)}
+  .nv-ws{display:flex;align-items:center;gap:9px;padding:7px 8px;margin-bottom:11px;border-radius:9px;background:var(--n0);box-shadow:0 1px 2px rgba(20,32,25,0.07),0 0 0 1px rgba(20,32,25,0.06)}
+  .nv-ws i{flex:0 0 21px;height:21px;border-radius:6px;background:#16211a;color:#fff;font-size:9.5px;font-weight:800;display:grid;place-items:center;font-style:normal}
+  .nv-ws b{font-size:12px;font-weight:700;letter-spacing:-0.01em;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .nv-ws svg{margin-left:auto;flex-shrink:0;color:var(--n4)}
+  .nv-g{margin:13px 0 4px;padding:0 8px;font-size:9.5px;font-weight:650;letter-spacing:0.07em;text-transform:uppercase;color:var(--n4)}
+  .nv-i{display:flex;align-items:center;gap:9px;padding:6px 8px;border-radius:8px;font-size:12.5px;color:var(--n5);white-space:nowrap;overflow:hidden}
+  .nv-i > svg{flex:0 0 15px}
+  .nv-i em{margin-left:auto;font-style:normal;font-size:10.5px;font-weight:650;color:var(--n4)}
+  .nv-i em.tag{padding:1px 6px;border-radius:20px;background:#fdf1df;color:var(--am);font-weight:700}
+  .nv-i.on{background:var(--n0);color:var(--n6);font-weight:650;box-shadow:0 1px 2px rgba(20,32,25,0.07),0 0 0 1px rgba(20,32,25,0.06)}
+  .nv-i.on > svg{color:var(--ac)}
+  .ap.ciemny .nv-i.on{background:rgba(255,255,255,0.07);box-shadow:none}
+  .nv-b{margin-top:auto;display:flex;align-items:center;gap:8px;padding:8px;border-radius:9px;background:var(--n0);box-shadow:0 0 0 1px rgba(20,32,25,0.06)}
+
+  /* ---------- pasek górny ---------- */
+  .tp{display:flex;align-items:center;gap:12px;padding:10px 15px;border-bottom:1px solid var(--n2);background:var(--n0)}
+  .bc{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--n4);min-width:0}
+  .bc b{font-weight:650;color:var(--n6)}
+  .bc svg{flex-shrink:0;transform:rotate(-90deg);color:var(--n3)}
+  .sr{margin-left:auto;display:flex;align-items:center;gap:8px;width:clamp(140px,17vw,216px);padding:5px 9px;border-radius:8px;background:var(--n1);box-shadow:inset 0 0 0 1px var(--n2);font-size:11.5px;color:var(--n4)}
+  .sr kbd{margin-left:auto;font-family:ui-monospace,Menlo,monospace;font-size:9px;padding:1.5px 5px;border-radius:4px;background:var(--n0);box-shadow:0 0 0 1px var(--n3);color:var(--n4)}
+  .ico{display:grid;place-items:center;width:26px;height:26px;border-radius:7px;color:var(--n5);flex-shrink:0}
+  .ico.dot{position:relative}
+  .ico.dot::after{content:"";position:absolute;top:5px;right:6px;width:6px;height:6px;border-radius:50%;background:var(--ac2);box-shadow:0 0 0 2px var(--n0)}
+  .av{flex-shrink:0;display:grid;place-items:center;width:25px;height:25px;border-radius:50%;background:#e3e9e4;color:#4f5b53;font-size:9.5px;font-weight:750;letter-spacing:0.01em}
+  .av.s{width:20px;height:20px;font-size:8.5px}
+
+  /* ---------- nagłówek strony i pasek narzędzi ---------- */
+  .hd{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding:15px 15px 0}
+  .hd h4{margin:0;font-size:16.5px;font-weight:750;letter-spacing:-0.022em;line-height:1.2}
+  .hd p{margin:3px 0 0;font-size:11.5px;color:var(--n4)}
+  .hd-a{display:flex;align-items:center;gap:7px;flex-shrink:0}
+  .tl{display:flex;align-items:center;gap:7px;flex-wrap:wrap;padding:12px 15px 11px}
+  .sg{display:flex;gap:2px;padding:2px;border-radius:8px;background:var(--n1);box-shadow:inset 0 0 0 1px var(--n2)}
+  .sg span{padding:4px 10px;border-radius:6px;font-size:11.5px;color:var(--n5);white-space:nowrap}
+  .sg span.on{background:var(--n0);color:var(--n6);font-weight:650;box-shadow:0 1px 2px rgba(20,32,25,0.09)}
+  .fc{display:inline-flex;align-items:center;gap:6px;padding:4px 9px;border-radius:7px;font-size:11.5px;color:var(--n5);box-shadow:inset 0 0 0 1px var(--n3)}
+  .fc b{font-weight:650;color:var(--n6)}
+  .fc svg{color:var(--n4)}
+  .bn{display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:8px;font-size:11.5px;font-weight:650;white-space:nowrap}
+  .bn.p{background:#16211a;color:#fff}
+  .bn.g{color:var(--n5);box-shadow:inset 0 0 0 1px var(--n3)}
+  .bn.a{background:var(--ac2);color:#0b1a11}
+
+  /* ---------- tabela ---------- */
+  .tb{width:100%}
+  .th{display:grid;gap:0 12px;padding:0 15px 8px;font-size:10.5px;font-weight:600;color:var(--n4);border-bottom:1px solid var(--n2)}
+  .th .srt{display:inline-flex;align-items:center;gap:4px;color:var(--n5)}
+  .tr{display:grid;gap:0 12px;padding:9px 15px;border-bottom:1px solid var(--n2);align-items:center}
+  .tr:last-of-type{border-bottom:0}
+  .tr.sel{background:#f3faf6;box-shadow:inset 2px 0 0 var(--ac2)}
+  .ap.ciemny .tr.sel{background:rgba(61,220,149,0.08)}
+  .id{font-family:ui-monospace,Menlo,monospace;font-size:10.5px;color:var(--n4)}
+  .ttl{display:block;font-weight:600;letter-spacing:-0.005em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  /* Nazwa `sub` zderzała się z globalnym akapitem wiodącym .sub z LaBase:
+     ten <style> jest is:global, więc podpis w makiecie (11px, jedna linia,
+     wielokropek) przykrywał lead każdej sekcji na tej stronie. */
+  .mk-sub{display:block;font-size:11px;color:var(--n4);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .cel{display:flex;align-items:center;gap:8px;min-width:0}
+  .tg{display:inline-flex;align-items:center;gap:5px;padding:2.5px 8px;border-radius:6px;font-size:10.5px;font-weight:650;white-space:nowrap}
+  .tg::before{content:"";width:5px;height:5px;border-radius:50%;background:currentColor}
+  .tg.g{background:#e7f6ee;color:#0a7a52}
+  .tg.a{background:#fdf1df;color:var(--am)}
+  .tg.n{background:var(--n2);color:var(--n5)}
+  .tg.plain::before{display:none}
+  .ap.ciemny .tg.g{background:rgba(61,220,149,0.14);color:#5fe6ab}
+  .ap.ciemny .tg.a{background:rgba(224,168,84,0.16);color:#e8bf80}
+  .ap.ciemny .tg.n{background:rgba(255,255,255,0.08);color:var(--n5)}
+  .pg{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 15px;border-top:1px solid var(--n2);font-size:11px;color:var(--n4)}
+  .pg-n{display:flex;gap:4px}
+  .pg-n span{display:grid;place-items:center;min-width:21px;height:21px;padding:0 5px;border-radius:6px;font-size:10.5px;color:var(--n5)}
+  .pg-n span.on{background:var(--n1);color:var(--n6);font-weight:650;box-shadow:inset 0 0 0 1px var(--n2)}
+
+  /* ---------- pasek postępu / miernik ---------- */
+  .mr{position:relative;height:5px;border-radius:3px;background:var(--n2);overflow:hidden}
+  .mr i{display:block;height:100%;border-radius:3px;background:var(--ac2)}
+  .mr i.am{background:#e0a854}
+  .mr i.n{background:#c2ccc4}
+
+  /* ---------- kafel z liczbą ---------- */
+  .mt{padding:12px 13px;border-radius:10px;background:var(--n0);box-shadow:inset 0 0 0 1px var(--n2)}
+  .mt-l{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:11px;color:var(--n4)}
+  .mt-v{margin-top:5px;font-size:21px;font-weight:750;letter-spacing:-0.032em;line-height:1}
+  .mt-d{margin-top:5px;font-size:11px;font-weight:650;color:var(--ac)}
+  .mt-d.am{color:var(--am)}
+  .mt-d.n{color:var(--n4);font-weight:500}
+  .spark{display:block;width:100%;height:26px;margin-top:9px;overflow:visible}
+
+  /* ---------- karta sprawy: zakładki i oś ---------- */
+  .tabs{display:flex;gap:2px;padding:0 15px;border-bottom:1px solid var(--n2)}
+  .tabs span{padding:8px 10px 9px;font-size:12px;color:var(--n5);border-bottom:2px solid transparent;margin-bottom:-1px}
+  .tabs span.on{color:var(--n6);font-weight:650;border-bottom-color:#16211a}
+  .os{position:relative;padding-left:19px}
+  .os::before{content:"";position:absolute;left:5px;top:6px;bottom:10px;width:1px;background:var(--n2)}
+  .os-i{position:relative;padding:0 0 13px}
+  .os-i::before{content:"";position:absolute;left:-18px;top:4px;width:9px;height:9px;border-radius:50%;background:var(--n0);box-shadow:0 0 0 1.5px var(--n3)}
+  .os-i.ac::before{background:var(--ac2);box-shadow:0 0 0 3px rgba(0,205,119,0.16)}
+  .os-t{font-size:12px;font-weight:600}
+  .os-d{margin-top:2px;font-size:11px;color:var(--n4)}
+  .pnl{padding:13px 14px;border-radius:10px;background:var(--n1);box-shadow:inset 0 0 0 1px var(--n2)}
+  .kv{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 12px;font-size:11.5px}
+  .kv dt{color:var(--n4)}
+  .kv dd{margin:0;font-weight:600;text-align:right}
+  .plik{display:flex;align-items:center;gap:8px;padding:7px 9px;border-radius:8px;background:var(--n0);box-shadow:0 0 0 1px var(--n2);font-size:11.5px}
+  .plik em{margin-left:auto;font-style:normal;font-size:10px;color:var(--n4)}
+
+  /* ---------- dokument ---------- */
+  .dk{padding:14px 15px;border-radius:9px;background:var(--n0);box-shadow:0 1px 2px rgba(20,32,25,0.06),0 10px 22px -14px rgba(20,32,25,0.3),0 0 0 1px var(--n2)}
+  .ln{display:block;height:4px;border-radius:3px;background:var(--n2);margin-bottom:6px}
+  .ln.hl{background:#cdeddd}
+
+  /* ---------- telefon ---------- */
+  .fn{flex:0 0 auto;width:clamp(178px,15.5vw,208px);border-radius:30px;padding:7px;background:#141d18;box-shadow:0 0 0 1px rgba(255,255,255,0.10) inset,0 2px 4px rgba(20,32,25,0.2),0 34px 60px -30px rgba(20,32,25,0.62)}
+  .fn-e{position:relative;border-radius:24px;background:#fff;overflow:hidden}
+  .fn-s{display:flex;align-items:center;justify-content:space-between;padding:8px 14px 4px;font-size:9.5px;font-weight:650;color:#16211a}
+  .fn-s em{font-style:normal;display:inline-flex;gap:3px;align-items:center}
+  .fn-b{padding:6px 13px 12px}
+  .fn-t{display:flex;justify-content:space-around;padding:8px 0 10px;border-top:1px solid var(--n2);background:var(--n1)}
+  .fn-t i{display:grid;place-items:center;gap:3px;color:#a9b2aa;font-size:8px;font-style:normal}
+  .fn-t i.on{color:#0a7a52}
+
+  /* ---------- tablica na hali ---------- */
+  .hl-g{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+  .hl-k{padding:14px 15px;border-radius:11px;background:rgba(255,255,255,0.045);box-shadow:inset 0 0 0 1px rgba(255,255,255,0.08)}
+  .hl-l{font-size:10.5px;letter-spacing:0.05em;text-transform:uppercase;color:#7d8a82}
+  .hl-v{margin-top:6px;font-size:clamp(24px,3vw,36px);font-weight:800;letter-spacing:-0.035em;line-height:1;color:#f4f7f4}
+  .hl-v.ok{color:#3ddc95}
+  .hl-v.am{color:#e8bf80}
+  .hl-d{margin-top:6px;font-size:11px;color:#7d8a82}
+
+  /* ---------- kalendarz / planer ---------- */
+  .gd{display:grid;gap:3px;align-items:center}
+  .gd-d{font-size:9.5px;color:var(--n4);text-align:center;padding-bottom:2px}
+  .gd-n{font-size:11.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:8px}
+  .gd-c{height:24px;border-radius:5px;background:var(--n1);box-shadow:inset 0 0 0 1px var(--n2)}
+  .gd-c.a{background:#d6f0e2;box-shadow:none}
+  .gd-c.b{background:#00CD77;box-shadow:none}
+  .gd-c.c{background:#ebf5ee;box-shadow:none}
+  .gd-c.x{background:#fdf1df;box-shadow:inset 0 0 0 1.5px #e0a854}
+  .gd-t{display:grid;place-items:center;height:28px;border-radius:6px;background:var(--n1);box-shadow:inset 0 0 0 1px var(--n2);font-size:10px;color:var(--n5)}
+  .gd-t.r{background:#e7f6ee;color:#0a7a52;box-shadow:none;font-weight:650}
+  .gd-t.p{background:#d2eee0;color:#08633f;box-shadow:none;font-weight:650}
+  .gd-t.luka{background:#fdf1df;color:var(--am);box-shadow:inset 0 0 0 1.5px #e0a854;font-weight:700}
+
+  /* ---------- asystent ---------- */
+  .as-q{display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:9px;background:var(--n1);box-shadow:inset 0 0 0 1px var(--n2);font-size:13px;font-weight:600}
+  .as-a{margin-top:11px;padding:13px 14px;border-radius:10px;background:#f3faf6;box-shadow:inset 0 0 0 1px rgba(0,205,119,0.22)}
+  .as-a p{margin:0;font-size:12.5px;line-height:1.55}
+  .zr{display:inline-flex;align-items:center;gap:7px;margin-top:10px;padding:4px 9px;border-radius:7px;background:var(--n0);box-shadow:0 0 0 1px rgba(0,205,119,0.28);font-size:10.5px;font-weight:650;color:var(--ac)}
+
+  /* ---------- makiety na telefonie ----------
+     Boczny pasek i wyszukiwarka wypadają, zostaje sama treść modułu.
+     Reguły muszą stać w tym samym bloku co bazowe, bo Astro potrafi
+     odwrócić kolejność dwóch osobnych bloków is:global. */
+  @media (max-width:660px){
+    .ap{grid-template-columns:minmax(0,1fr)}
+    .nv,.sr{display:none}
+    .hd{padding:12px 12px 0}
+    .hd h4{font-size:15px}
+    .tp{padding:9px 12px;gap:8px}
+    .th,.tr,.pg{padding-left:12px;padding-right:12px}
+    .tl{padding:10px 12px;gap:6px}
+    .sg span{padding:4px 8px;font-size:11px}
+    .hl-g{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .fn{width:100%;max-width:280px;margin:0 auto}
+    .e2 .tabs{overflow-x:auto}
+    .hr-dwa{grid-template-columns:1fr !important;gap:16px !important}
+    .mst{grid-template-columns:1fr !important;gap:14px !important}
+    /* 01 rejestr: wypadają kolumny „prowadzi", „termin" i menu */
+    .e1 .th,.e1 .tr{grid-template-columns:58px minmax(0,1fr) 82px !important}
+    .e1 .th > :nth-child(3),.e1 .tr > :nth-child(3),
+    .e1 .th > :nth-child(4),.e1 .tr > :nth-child(4),
+    .e1 .th > :nth-child(6),.e1 .tr > :nth-child(6){display:none !important}
+    /* 03 oferta: wypada kolumna z ilością */
+    .e3 .th,.e3 .tr{grid-template-columns:minmax(0,1fr) 66px !important}
+    .e3 .th > :nth-child(2),.e3 .tr > :nth-child(2){display:none !important}
+    /* 05 planer i 09 grafik: gęstsza siatka */
+    .e5 .gd{grid-template-columns:56px repeat(10,minmax(0,1fr)) !important;gap:2px}
+    .e5 .gd-c{height:14px}
+    .e9 .gd{grid-template-columns:48px repeat(7,minmax(0,1fr)) !important;gap:2px}
+    .e9 .gd-t{height:22px;font-size:8px}
+    .e9 .gd-n{font-size:9.5px}
+    /* 06 hala: wypada pasek postępu przy zleceniu */
+    .e6 .hl-k > div[style*="grid-template-columns:64px"]{grid-template-columns:56px minmax(0,1fr) 62px !important}
+    .e6 .hl-k > div[style*="grid-template-columns:64px"] > :nth-child(3){display:none !important}
+    /* 10 reklamacje: zostaje numer, klient i termin */
+    .e10 .th,.e10 .tr{grid-template-columns:62px minmax(0,1fr) 68px !important}
+    .e10 .th > :nth-child(3),.e10 .tr > :nth-child(3),
+    .e10 .th > :nth-child(4),.e10 .tr > :nth-child(4){display:none !important}
+    /* 12 kokpit: dwa kafle w rzędzie, marża bez kolumny z kwotą */
+    .e12 .mst:first-of-type{grid-template-columns:repeat(2,minmax(0,1fr)) !important}
+    .e12 .tr{grid-template-columns:minmax(0,1fr) 72px 46px !important}
+    .e12 .tr > :nth-child(4){display:none !important}
+    .e7 .ap{max-width:none !important}
+  }
+<style is:global slot="head">
+  /* =====================================================================
+     HERO
+     Jeden duży ekran pulpitu, bez playlisty. Scena jest neutralna —
+     zieleń zostaje w poświacie za oknem, nie pod nim.
+     ===================================================================== */
+  .hr{display:grid;grid-template-columns:minmax(0,0.8fr) minmax(0,1.34fr);gap:clamp(30px,4.5vw,72px);align-items:center;margin-top:clamp(24px,3.2vw,44px)}
+  .hr-sc{position:relative}
+  .hr-sc::before{content:"";position:absolute;left:-6%;right:-10%;top:-14%;bottom:-16%;border-radius:50%;background:radial-gradient(closest-side, rgba(0,205,119,0.26), transparent 72%);filter:blur(6px);pointer-events:none}
+  .hr-okno{position:relative;animation:hr-in .9s cubic-bezier(.22,1,.36,1) both}
+  .hr-kar{position:absolute;left:clamp(-38px,-2.8vw,-18px);bottom:clamp(-64px,-4.6vw,-40px);width:min(268px,58%);padding:13px 15px;border-radius:12px;background:#fff;box-shadow:0 0 0 1px rgba(20,32,25,0.07),0 3px 6px -3px rgba(20,32,25,0.16),0 28px 50px -26px rgba(20,32,25,0.42);animation:hr-in .9s cubic-bezier(.22,1,.36,1) .35s both;z-index:3}
+  .hr-kar-t{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:#18211c}
+  .hr-kar-t i{display:grid;place-items:center;width:20px;height:20px;border-radius:6px;background:#e7f6ee;color:#0a7a52;font-style:normal;flex-shrink:0}
+  .hr-kar p{margin:7px 0 0;font-size:11.5px;line-height:1.5;color:#7c877e}
+  .hr-kar .mr{margin-top:10px}
+  @keyframes hr-in{from{opacity:0;transform:translateY(16px) scale(.985)}to{opacity:1;transform:none}}
+  .hr-pas{display:flex;align-items:center;flex-wrap:wrap;gap:10px 26px;margin-top:clamp(26px,3vw,36px);padding-top:clamp(20px,2.4vw,28px);border-top:1px solid #e2e9e0}
+  .hr-pas div{display:flex;flex-direction:column;gap:2px}
+  .hr-pas b{font-size:clamp(19px,2.2vw,25px);font-weight:800;letter-spacing:-0.03em;line-height:1;color:#16211a}
+  .hr-pas span{font-size:12.5px;color:#8b968d}
+  @media (max-width:1040px){ .hr{grid-template-columns:1fr;gap:clamp(28px,5vw,44px)} }
+  @media (max-width:660px){
+    .hr-sc::before{display:none}
+    .hr-kar{position:static;width:auto;margin-top:14px}
+  }
+  @media (prefers-reduced-motion:reduce){ .hr-okno,.hr-kar{animation:none} }
+
+  /* =====================================================================
+     SHOWREEL
+     ===================================================================== */
+  .rl{display:grid;grid-template-columns:clamp(232px,22vw,300px) minmax(0,1fr);gap:clamp(20px,3vw,44px);align-items:start;margin-top:clamp(26px,3.4vw,42px)}
+  .rl > *{min-width:0}
+  .rl-l{border-top:1px solid #dde7db}
+  .rl-i{position:relative;display:grid;grid-template-columns:auto minmax(0,1fr);gap:0 11px;width:100%;padding:9px 0;border:0;border-bottom:1px solid #dde7db;background:none;font-family:inherit;text-align:left;cursor:pointer;transition:padding-left .2s}
+  .rl-i:hover{padding-left:5px}
+  .rl-n{font-family:ui-monospace,Menlo,monospace;font-size:10.5px;color:#b6c6b4;padding-top:3px;transition:color .18s}
+  .rl-t{font-size:15px;font-weight:700;letter-spacing:-0.015em;line-height:1.25;color:#7c877e;transition:color .18s}
+  .rl-p{display:block;margin-top:2px;font-size:11px;color:#a9b3aa}
+  .rl-i:hover .rl-t,.rl-i.on .rl-t{color:#16211a}
+  .rl-i.on .rl-n{color:var(--la-accent,#00CD77)}
+  .rl-pr{position:absolute;left:0;bottom:-1px;height:2px;width:0;background:var(--la-accent,#00CD77)}
+  .rl-i.on .rl-pr{animation:rl-pr var(--rl) linear forwards}
+  .rl-i.on.stop .rl-pr{animation:none;width:100%}
+  @keyframes rl-pr{from{width:0}to{width:100%}}
+  .rl-sc{position:relative;display:grid;min-width:0;padding:clamp(16px,2vw,30px);border-radius:clamp(16px,1.8vw,22px);background:linear-gradient(168deg,#f6f8f6 0%,#eef2ee 100%);box-shadow:inset 0 0 0 1px rgba(20,32,25,0.05);overflow:hidden}
+  .rl-sc::before{content:"";position:absolute;inset:0;background:radial-gradient(54% 58% at 84% -8%, rgba(0,205,119,0.16), transparent 66%);pointer-events:none}
+  .rl-e{grid-area:1/1;z-index:1;display:flex;align-items:center;justify-content:center;gap:clamp(12px,1.8vw,24px);opacity:0;transform:translateY(9px);transition:opacity .4s cubic-bezier(.4,0,.2,1),transform .4s cubic-bezier(.4,0,.2,1);pointer-events:none}
+  .rl-e.on{opacity:1;transform:none;pointer-events:auto}
+  .rl-pod{display:grid;margin-top:clamp(16px,2vw,24px)}
+  .rl-c{grid-area:1/1;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px clamp(24px,3vw,52px);align-items:start;opacity:0;transform:translateY(8px);transition:opacity .4s,transform .4s;pointer-events:none}
+  .rl-c.on{opacity:1;transform:none;pointer-events:auto}
+  .rl-z{margin:0;font-size:clamp(16px,1.85vw,19.5px);line-height:1.45;font-weight:650;letter-spacing:-0.014em;color:#16211a;text-wrap:pretty;max-width:640px}
+  .rl-dl{display:flex;flex-direction:column;align-items:flex-end;gap:3px;text-align:right}
+  .rl-a{font-size:14px;color:#9aa69c;white-space:nowrap}
+  .rl-k{display:block;width:9px;height:9px;border-right:2px solid var(--la-accent,#00CD77);border-bottom:2px solid var(--la-accent,#00CD77);transform:rotate(45deg);margin:3px 3px 6px 0}
+  .rl-b{font-size:clamp(22px,2.5vw,30px);font-weight:800;letter-spacing:-0.034em;line-height:1;color:#16211a;white-space:nowrap}
+  .rl-cap{margin:5px 0 0;font-size:12px;color:#8b968d;max-width:210px}
+  .rl-nt{margin:clamp(18px,2.2vw,26px) 0 0;font-size:13px;color:#a3aea4}
+  @media (max-width:1040px){
+    .rl{grid-template-columns:1fr}
+    .rl-l{order:2;border-top:0}
+    .rl-i:first-child{border-top:1px solid #dde7db}
+    .rl-sc{order:1}
+    .rl-pod{order:1}
+  }
+  @media (max-width:660px){
+    .rl-sc{padding:12px}
+    .rl-e{display:none;flex-direction:column;align-items:stretch;gap:10px}
+    .rl-e.on{display:flex}
+    .rl-c{grid-template-columns:1fr}
+    .rl-dl{flex-direction:row;align-items:baseline;justify-content:flex-start;gap:10px;text-align:left}
+    .rl-k{transform:rotate(-45deg);margin:0 3px}
+    .rl-cap{max-width:none}
+  }
+  @media (prefers-reduced-motion:reduce){ .rl-e,.rl-c{transition:none} .rl-i.on .rl-pr{animation:none;width:100%} }
+
+  /* =====================================================================
+     CIEMNY PAS · UMIEJĘTNOŚCI · GRANICE
+     ===================================================================== */
+  .sh{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:clamp(10px,1.4vw,18px);margin-top:clamp(28px,3.4vw,44px);align-items:end}
+  .sh-k{display:flex;flex-direction:column;justify-content:flex-end;padding:clamp(15px,1.8vw,21px);border-radius:13px;background:rgba(255,255,255,0.055);box-shadow:inset 0 0 0 1px rgba(255,255,255,0.09)}
+  .sh-m{font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.42)}
+  .sh-t{margin:9px 0 0;font-size:14.5px;font-weight:750;letter-spacing:-0.014em;line-height:1.3;color:#ffffff;text-wrap:balance}
+  .sh-d{margin:7px 0 0;font-size:12.5px;line-height:1.5;color:rgba(255,255,255,0.6);text-wrap:pretty}
+  .sh-os{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:clamp(10px,1.4vw,18px);margin-top:14px}
+  .sh-v{display:flex;flex-direction:column;gap:7px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.16)}
+  .sh-v b{font-size:clamp(17px,2.1vw,25px);font-weight:800;letter-spacing:-0.03em;line-height:1;color:#ffffff}
+  .sh-v.ost b{color:var(--la-accent,#00CD77)}
+  .sh-v span{font-size:11px;color:rgba(255,255,255,0.42)}
+  @media (max-width:960px){ .sh,.sh-os{grid-template-columns:repeat(2,minmax(0,1fr))} .sh-k{justify-content:flex-start} }
+  @media (max-width:540px){ .sh,.sh-os{grid-template-columns:1fr} }
+
+  .um{margin-top:clamp(28px,3.4vw,44px)}
+  .um-r{display:grid;grid-template-columns:minmax(0,0.72fr) minmax(0,1.5fr);gap:clamp(16px,3vw,56px);align-items:start;padding:clamp(24px,2.8vw,34px) 0;border-top:1px solid #dde7db}
+  .um-r:last-of-type{border-bottom:1px solid #dde7db}
+  .um-t{margin:0;font-size:clamp(20px,2.4vw,27px);font-weight:800;letter-spacing:-0.028em;line-height:1.1;color:#16211a;text-wrap:balance}
+  .um-d{margin:11px 0 0;font-size:14.5px;line-height:1.55;color:#6d7a71;text-wrap:pretty}
+  .um-p{display:grid;grid-template-columns:minmax(0,1fr) 104px 14px 124px;gap:0 clamp(10px,1.6vw,20px);align-items:baseline;padding:9px 0;border-top:1px solid #eaefe7}
+  .um-p:first-child{border-top:0;padding-top:0}
+  .um-p b{font-size:14.5px;font-weight:600;letter-spacing:-0.01em;line-height:1.4;color:#16211a;text-wrap:pretty}
+  .um-a{font-size:13px;color:#9aa69c;text-align:right;white-space:nowrap}
+  .um-s{display:block;width:7px;height:7px;border-right:1.8px solid var(--la-accent,#00CD77);border-bottom:1.8px solid var(--la-accent,#00CD77);transform:rotate(-45deg)}
+  .um-b{font-size:15px;font-weight:750;letter-spacing:-0.015em;color:#16211a;white-space:nowrap}
+  @media (max-width:900px){ .um-r{grid-template-columns:1fr;gap:16px} }
+  @media (max-width:520px){
+    .um-p{grid-template-columns:minmax(0,1fr) auto;gap:4px 12px}
+    .um-a{grid-column:1;text-align:left;font-size:12.5px}
+    .um-s{display:none}
+    .um-b{grid-column:2;grid-row:2}
+  }
+
+  .gr2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 clamp(28px,4vw,64px);margin-top:clamp(24px,3vw,36px)}
+  .gr2 > div{padding:clamp(18px,2.2vw,26px) 0;border-top:1px solid #e2e9e0}
+  .gr2 h3{margin:0;font-size:clamp(16px,1.9vw,19px);font-weight:750;letter-spacing:-0.016em;line-height:1.3;color:#16211a;text-wrap:balance}
+  .gr2 p{margin:8px 0 0;font-size:14.5px;line-height:1.6;color:#4c5850;text-wrap:pretty}
+  @media (max-width:820px){ .gr2{grid-template-columns:1fr} }
+</style>
+
+<!-- ============ HERO ============
+     Jeden ekran: pulpit firmy. Boczny pasek pokazuje, że to system, a nie
+     pojedyncze narzędzie — reszta modułów wraca w showreelu niżej. -->
+<div aria-hidden="true" style="position:absolute;left:0;right:0;top:0;height:900px;background:radial-gradient(980px 560px at 78% -8%, rgba(0,205,119,0.13), transparent 62%);pointer-events:none"></div>
+<section style="position:relative;overflow:hidden;padding:clamp(22px,3.2vw,44px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) clamp(44px,5.5vw,74px)">
+<div class="hr">
+
+<div>
+<h1 style="margin:0;max-width:600px;font-size:clamp(32px,4.4vw,56px);line-height:1.02;letter-spacing:-0.036em;font-weight:800;color:#16211a;text-wrap:balance">Własny system, zbudowany pod Waszą firmę</h1>
+<p style="margin:clamp(20px,2.4vw,28px) 0 0;max-width:490px;font-size:clamp(16px,2vw,18.5px);line-height:1.6;color:#33413a;text-wrap:pretty">Jedno miejsce, w którym mieszka zlecenie, oferta, koszt i klient — plus moduły, których nie ma w żadnym gotowym narzędziu, bo dotyczą tylko Was.</p>
+<div class="hero-actions" style="display:flex;align-items:center;flex-wrap:wrap;gap:14px 18px;margin-top:clamp(24px,3vw,34px)">
+<a href="#showreel" class="btn-dark" style="display:inline-flex;align-items:center;gap:10px;background:#16211a;color:#ffffff;padding:17px 30px;border-radius:12px;font-weight:650;font-size:16.5px;box-shadow:0 14px 30px -14px rgba(16,33,26,0.45)">Zobacz dwanaście ekranów <span aria-hidden="true">↓</span></a>
+<a href="#kontakt" class="btn-ghost" style="display:inline-flex;align-items:center;gap:8px;font-size:16.5px;font-weight:700;color:#16211a;background:rgba(255,255,255,0.65);padding:17px 24px;border-radius:12px;border:1px solid rgba(22,33,26,0.16)">Umów rozmowę</a>
+</div>
+<div class="hr-pas">
+<div><b>{APLIKACJE.length}</b><span>ekranów z wdrożeń</span></div>
+<div><b>3–12</b><span>tygodni do uruchomienia</span></div>
+<div><b>0</b><span>prowizji od dostawców</span></div>
+</div>
+</div>
+
+<div class="hr-sc">
+<div class="hr-okno">
+<div class="ap" role="img" aria-label="Pulpit systemu firmowego: boczny pasek z modułami, cztery liczby z iskierkami, lista spraw wymagających decyzji i strumień ostatnich zdarzeń.">
+
+<div class="nv">
+<div class="nv-ws"><i>W</i><b>Weldon</b><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={IK.strzalka}></svg></div>
+<div class="nv-i on"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" set:html={IK.pulpit}></svg>Pulpit</div>
+<div class="nv-i"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" set:html={IK.zlecenia}></svg>Zlecenia<em>18</em></div>
+<div class="nv-i"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" set:html={IK.oferty}></svg>Oferty<em>7</em></div>
+<div class="nv-i"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" set:html={IK.klienci}></svg>Klienci</div>
+<div class="nv-g">Operacje</div>
+<div class="nv-i"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" set:html={IK.plan}></svg>Planer</div>
+<div class="nv-i"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" set:html={IK.zespol}></svg>Zespół</div>
+<div class="nv-i"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" set:html={IK.magazyn}></svg>Magazyn</div>
+<div class="nv-g">Finanse</div>
+<div class="nv-i"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" set:html={IK.koszty}></svg>Koszty<em class="tag">4</em></div>
+<div class="nv-i"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" set:html={IK.raporty}></svg>Raporty</div>
+<div class="nv-b"><span class="av s">MW</span><span style="font-size:11.5px;font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Marta Wrona</span></div>
+</div>
+
+<div>
+<div class="tp">
+<div class="bc"><b>Pulpit</b></div>
+<div class="sr"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" set:html={IK.lupa}></svg>Szukaj<kbd>⌘K</kbd></div>
+<span class="ico dot"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" set:html={IK.dzwonek}></svg></span>
+<span class="av">MW</span>
+</div>
+
+<div class="hd"><div><h4>Wtorek, 8 września</h4><p>Trzy sprawy czekają na Twoją decyzję</p></div><span class="bn p"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" set:html={IK.plus}></svg>Nowe zlecenie</span></div>
+
+<div style="padding:13px 15px 0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px">
+<div class="mt">
+<div class="mt-l">Zlecenia w toku</div>
+<div class="mt-v">18</div>
+<svg class="spark" viewBox="0 0 120 26" preserveAspectRatio="none" aria-hidden="true"><polyline points={iskra([9,11,10,13,12,15,14,17,16,18], 120, 22)} fill="none" stroke="#00CD77" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/></svg>
+</div>
+<div class="mt">
+<div class="mt-l">Czas sprawy</div>
+<div class="mt-v">1,5 dnia</div>
+<svg class="spark" viewBox="0 0 120 26" preserveAspectRatio="none" aria-hidden="true"><polyline points={iskra([6,5.4,5,4.2,3.6,3,2.4,2,1.7,1.5], 120, 22)} fill="none" stroke="#00CD77" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/></svg>
+</div>
+<div class="mt">
+<div class="mt-l">Po terminie</div>
+<div class="mt-v">2</div>
+<svg class="spark" viewBox="0 0 120 26" preserveAspectRatio="none" aria-hidden="true"><polyline points={iskra([7,6,8,5,4,5,3,4,2,2], 120, 22)} fill="none" stroke="#e0a854" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/></svg>
+</div>
+</div>
+
+<div class="hr-dwa" style="padding:12px 15px 15px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,0.94fr);gap:12px">
+<div>
+<div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:8px"><b style="font-size:12.5px;font-weight:700">Wymaga decyzji</b><span style="font-size:10.5px;color:var(--n4)">3</span></div>
+<div style="display:flex;flex-direction:column;gap:6px">
+<div class="pnl" style="padding:9px 11px;display:flex;align-items:center;gap:9px">
+<span class="tg a">rabat</span><span class="ttl" style="font-size:11.5px;flex:1">Oferta 0147 · 12%</span><span class="bn a" style="padding:4px 9px;font-size:10.5px">Zatwierdź</span>
+</div>
+<div class="pnl" style="padding:9px 11px;display:flex;align-items:center;gap:9px">
+<span class="tg a">koszt</span><span class="ttl" style="font-size:11.5px;flex:1">Licencje CAD · 8 400 zł</span><span class="bn a" style="padding:4px 9px;font-size:10.5px">Zatwierdź</span>
+</div>
+<div class="pnl" style="padding:9px 11px;display:flex;align-items:center;gap:9px">
+<span class="tg n">termin</span><span class="ttl" style="font-size:11.5px;flex:1">ZLC-119 · zmiana o 3 dni</span><span class="bn g" style="padding:4px 9px;font-size:10.5px">Otwórz</span>
+</div>
+</div>
+</div>
+<div>
+<div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:8px"><b style="font-size:12.5px;font-weight:700">Ostatnie zdarzenia</b><span class="tg g plain" style="font-size:9.5px">na żywo</span></div>
+<div class="os">
+<div class="os-i ac"><div class="os-t">Agent odczytał fakturę FV/2026/0418</div><div class="os-d">14:02 · czeka na akceptację</div></div>
+<div class="os-i"><div class="os-t">Klient Weldon pobrał protokół</div><div class="os-d">13:47 · portal</div></div>
+<div class="os-i" style="padding-bottom:0"><div class="os-t">ZLC-118 przeszło do montażu</div><div class="os-d">13:20 · Marta W.</div></div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+</div>
+
+<div class="hr-kar" aria-hidden="true">
+<div class="hr-kar-t"><i><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" set:html={IK.ptaszek}></svg></i>Zatwierdzone · 14:06</div>
+<p>Licencje CAD, 8 400 zł. Ślad decyzji zapisany razem z limitem, który obowiązywał w tej chwili.</p>
+<div style="display:flex;align-items:center;gap:9px;margin-top:11px;font-size:10.5px;color:#9aa69c">72% limitu kwartalnego<span class="mr" style="flex:1"><i style="width:72%;background:#e0a854"></i></span></div>
+</div>
+</div>
+
+</div>
+</section>
+
+<!-- ============ SHOWREEL ============
+     Playlista przeniesiona z hero. Pięć ekranów ma ten sam boczny pasek
+     z podświetlonym innym modułem — to ten sam system widziany z różnych
+     miejsc. Pozostałe siedem to inne pokroje: tablica na hali, telefon
+     technika, widok dla klienta, kreator dokumentu, kalendarz, asystent. -->
+<section id="showreel" class="sec-pad" style="background:#f4f8f2;padding-top:clamp(56px,7vw,92px);scroll-margin-top:74px">
+<div class="sec-head">
+<h2 class="h-sec" style="margin:0;max-width:600px;text-wrap:balance">Dwanaście ekranów z wdrożeń</h2>
+<p style="margin:0 0 6px;max-width:480px;font-size:17px;line-height:1.6;color:#4c5850;text-wrap:pretty">Przy każdym zadanie, które znika z dnia pracy, i liczba mówiąca o ile. Kliknijcie pozycję z listy, żeby zatrzymać się dłużej.</p>
+</div>
+
+<div class="rl" style={`--rl:${REEL_MS}ms`} data-ms={String(REEL_MS)}>
+
+<div class="rl-l" role="tablist" aria-label="Aplikacje">
+{APLIKACJE.map((p, i) => (
+  <button type="button" class={i === 0 ? 'rl-i on' : 'rl-i'} role="tab" aria-selected={i === 0 ? 'true' : 'false'}>
+    <span class="rl-n">{p.n}</span>
+    <span><span class="rl-t">{p.t}</span><span class="rl-p">{p.pokroj}</span></span>
+    <span class="rl-pr" aria-hidden="true"></span>
+  </button>
+))}
+</div>
+
+<div>
+<div class="rl-sc">
+
+<!-- 01 · rejestr zleceń -->
+<div class="rl-e on e1">
+<div class="ap">
+<div class="nv">
+<div class="nv-ws"><i>W</i><b>Weldon</b><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={IK.strzalka}></svg></div>
+<div class="nv-i"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" set:html={IK.pulpit}></svg>Pulpit</div>
+<div class="nv-i on"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" set:html={IK.zlecenia}></svg>Zlecenia<em>18</em></div>
+<div class="nv-i"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" set:html={IK.oferty}></svg>Oferty<em>7</em></div>
+<div class="nv-i"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" set:html={IK.klienci}></svg>Klienci</div>
+<div class="nv-g">Operacje</div>
+<div class="nv-i"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" set:html={IK.plan}></svg>Planer</div>
+<div class="nv-i"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" set:html={IK.magazyn}></svg>Magazyn</div>
+<div class="nv-g">Finanse</div>
+<div class="nv-i"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" set:html={IK.koszty}></svg>Koszty<em class="tag">4</em></div>
+</div>
+<div>
+<div class="tp"><div class="bc"><b>Zlecenia</b></div><div class="sr"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" set:html={IK.lupa}></svg>Szukaj<kbd>⌘K</kbd></div><span class="ico dot"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" set:html={IK.dzwonek}></svg></span><span class="av">MW</span></div>
+<div class="hd"><div><h4>Zlecenia</h4><p>47 spraw · 18 w toku · 2 po terminie</p></div><div class="hd-a"><span class="bn g"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={IK.filtr}></svg>Filtry</span><span class="bn p"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" set:html={IK.plus}></svg>Nowe</span></div></div>
+<div class="tl"><div class="sg"><span class="on">Aktywne</span><span>Wszystkie</span><span>Moje</span></div><span class="fc">Typ <b>Montaż</b></span><span class="fc">Termin <b>ten miesiąc</b></span><span class="fc" style="color:var(--am);box-shadow:inset 0 0 0 1px #f0d9b3">Zablokowane <b>1</b></span></div>
+<div class="tb">
+<div class="th" style="grid-template-columns:66px minmax(0,1.5fr) minmax(0,1fr) 86px 92px 22px"><span>NUMER</span><span class="srt">SPRAWA <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={IK.sort}></svg></span><span>PROWADZI</span><span>TERMIN</span><span>STAN</span><span></span></div>
+{[
+  { i: 'ZLC-118', t: 'Montaż konstrukcji', k: 'Weldon sp. z o.o.', o: 'MW', p: 'Marta Wrona', d: '24 wrz', s: 'w toku', c: 'g', sel: true },
+  { i: 'ZLC-119', t: 'Serwis gwarancyjny', k: 'Prima Logistics', o: 'KL', p: 'Kasia Lis', d: '26 wrz', s: 'czeka 3 dni', c: 'a' },
+  { i: 'ZLC-120', t: 'Montaż hali', k: 'Zakład Kowalski', o: 'MW', p: 'Marta Wrona', d: '27 wrz', s: 'gotowe', c: 'n' },
+  { i: 'ZLC-121', t: 'Przegląd roczny', k: 'Nordis Sp. z o.o.', o: 'TB', p: 'Tomek Bąk', d: '02 paź', s: 'w toku', c: 'g' },
+  { i: 'ZLC-122', t: 'Wymiana sterownika', k: 'Fabryka Wschód', o: 'KL', p: 'Kasia Lis', d: '04 paź', s: 'w toku', c: 'g' },
+].map((r) => (
+  <div class={r.sel ? 'tr sel' : 'tr'} style="grid-template-columns:66px minmax(0,1.5fr) minmax(0,1fr) 86px 92px 22px">
+    <span class="id">{r.i}</span>
+    <span style="min-width:0"><span class="ttl">{r.t}</span><span class="mk-sub">{r.k}</span></span>
+    <span class="cel"><span class="av s">{r.o}</span><span class="mk-sub" style="color:var(--n5)">{r.p}</span></span>
+    <span class="id">{r.d}</span>
+    <span><span class={`tg ${r.c}`}>{r.s}</span></span>
+    <span class="ico" style="width:20px;height:20px"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" stroke="none" set:html={IK.kebab}></svg></span>
+  </div>
+))}
+</div>
+<div class="pg"><span>1–5 z 47</span><span class="pg-n"><span class="on">1</span><span>2</span><span>3</span><span>…</span><span>10</span></span></div>
+</div>
+</div>
+</div>
+
+<!-- 02 · karta sprawy -->
+<div class="rl-e e2">
+<div class="ap">
+<div class="nv">
+<div class="nv-ws"><i>W</i><b>Weldon</b><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={IK.strzalka}></svg></div>
+<div class="nv-i"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" set:html={IK.pulpit}></svg>Pulpit</div>
+<div class="nv-i on"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" set:html={IK.zlecenia}></svg>Zlecenia<em>18</em></div>
+<div class="nv-i"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" set:html={IK.oferty}></svg>Oferty<em>7</em></div>
+<div class="nv-i"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" set:html={IK.klienci}></svg>Klienci</div>
+<div class="nv-g">Operacje</div>
+<div class="nv-i"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" set:html={IK.plan}></svg>Planer</div>
+<div class="nv-i"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" set:html={IK.magazyn}></svg>Magazyn</div>
+</div>
+<div>
+<div class="tp"><div class="bc">Zlecenia <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" set:html={IK.strzalka}></svg> <b>ZLC-118</b></div><div class="sr"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" set:html={IK.lupa}></svg>Szukaj<kbd>⌘K</kbd></div><span class="av">MW</span></div>
+<div class="hd"><div><h4>Montaż konstrukcji — Weldon sp. z o.o.</h4><p>Utworzone 2 września · zmienione 8 minut temu</p></div><div class="hd-a"><span class="tg g">w toku</span><span class="bn g">Zmień stan</span></div></div>
+<div class="tabs" style="margin-top:13px"><span class="on">Przebieg</span><span>Pozycje</span><span>Pliki <em style="font-style:normal;color:var(--n4)">6</em></span><span>Rozliczenie</span></div>
+<div class="mst" style="padding:15px;display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:clamp(12px,1.6vw,20px)">
+<div>
+<div class="os">
+<div class="os-i ac"><div class="os-t">Montaż rozpoczęty</div><div class="os-d">dziś 13:20 · Marta Wrona</div></div>
+<div class="os-i"><div class="os-t">Materiał wydany z magazynu</div><div class="os-d">wczoraj 08:05 · automatycznie z WZ/2026/318</div></div>
+<div class="os-i"><div class="os-t">Wycena zatwierdzona przez klienta</div><div class="os-d">3 września · podpis elektroniczny</div></div>
+<div class="os-i" style="padding-bottom:0"><div class="os-t">Zapytanie wpłynęło mailem</div><div class="os-d">2 września · odczytane przez agenta</div></div>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px">
+<div class="pnl">
+<dl class="kv"><dt>Termin odbioru</dt><dd>24 września</dd><dt>Wartość</dt><dd>48 200 zł</dd><dt>Marża</dt><dd style="color:var(--ac)">31%</dd><dt>Brygada</dt><dd>A · 4 osoby</dd></dl>
+</div>
+<div class="plik"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--n4)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" set:html={IK.oferty}></svg>oferta-0147.pdf<em>184 kB</em></div>
+<div class="plik"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--n4)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" set:html={IK.zdjecie}></svg>rysunek-MX4.dwg<em>2,1 MB</em></div>
+<div class="pnl" style="background:#fdf7ee;box-shadow:inset 0 0 0 1px #f0dfc2">
+<div style="display:flex;align-items:center;gap:8px;font-size:11.5px;font-weight:650;color:var(--am)"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={IK.zegar}></svg>Następny krok</div>
+<div style="margin-top:5px;font-size:11.5px;color:var(--n5)">Protokół odbioru do wypełnienia przez technika, 24 września</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- 03 · generator ofert -->
+<div class="rl-e e3">
+<div class="ap solo">
+<div class="tp"><div class="bc">Oferty <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" set:html={IK.strzalka}></svg> <b>Nowa oferta</b></div><span class="tg n plain" style="margin-left:auto">Zapisano 14:02</span><span class="bn g">Podgląd PDF</span><span class="bn p">Wyślij</span></div>
+<div class="mst" style="display:grid;grid-template-columns:minmax(0,0.82fr) minmax(0,1.18fr);min-height:0">
+<div style="padding:14px 15px;border-right:1px solid var(--n2);background:var(--n1)">
+<div class="sr" style="width:100%;background:var(--n0);margin:0 0 11px"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" set:html={IK.lupa}></svg>Szukaj w cenniku</div>
+{[
+  { t: 'Moduł montażowy MX-4', s: 'MX-4-230-S · 3 900 zł', on: true, q: '4' },
+  { t: 'Sterownik serii S', s: 'STR-S-02 · 8 200 zł', on: true, q: '1' },
+  { t: 'Montaż i uruchomienie', s: 'USL-M01 · 14 400 zł', on: true, q: '1' },
+  { t: 'Przegląd roczny', s: 'USL-P01 · 2 400 zł', on: false },
+  { t: 'Szkolenie obsługi', s: 'USL-S01 · 1 800 zł', on: false },
+].map((r) => (
+  <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--n2)">
+    <span style={`flex:0 0 15px;height:15px;border-radius:4px;display:grid;place-items:center;${r.on ? 'background:#00CD77' : 'box-shadow:inset 0 0 0 1.5px var(--n3)'}`}>
+      {r.on && <svg viewBox="0 0 24 24" width="9" height="9" fill="none" stroke="#0b1a11" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" set:html={IK.ptaszek}></svg>}
+    </span>
+    <span style="min-width:0"><span class="ttl" style="font-size:12px">{r.t}</span><span class="mk-sub">{r.s}</span></span>
+    {r.q && <span class="id" style="margin-left:auto;padding:2px 7px;border-radius:5px;background:var(--n0);box-shadow:inset 0 0 0 1px var(--n2)">× {r.q}</span>}
+  </div>
+))}
+</div>
+<div style="padding:15px">
+<div class="dk">
+<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding-bottom:11px;border-bottom:1px solid var(--n2)">
+<div><div style="font-size:14px;font-weight:750;letter-spacing:-0.02em">Oferta 0147/2026</div><div class="mk-sub" style="margin-top:2px">Weldon sp. z o.o. · Marta Wrona</div></div>
+<span class="tg n">ważna 21 dni</span>
+</div>
+<div class="tb" style="margin-top:4px">
+<div class="th" style="grid-template-columns:minmax(0,1fr) 30px 74px;padding-left:0;padding-right:0"><span>POZYCJA</span><span>IL.</span><span style="text-align:right">WARTOŚĆ</span></div>
+<div class="tr" style="grid-template-columns:minmax(0,1fr) 30px 74px;padding-left:0;padding-right:0"><span class="ttl" style="font-size:12px">Moduł montażowy MX-4</span><span class="id">4</span><span class="id" style="text-align:right;color:var(--n6)">15 600</span></div>
+<div class="tr" style="grid-template-columns:minmax(0,1fr) 30px 74px;padding-left:0;padding-right:0"><span class="ttl" style="font-size:12px">Sterownik serii S</span><span class="id">1</span><span class="id" style="text-align:right;color:var(--n6)">8 200</span></div>
+<div class="tr" style="grid-template-columns:minmax(0,1fr) 30px 74px;padding-left:0;padding-right:0"><span class="ttl" style="font-size:12px">Montaż i uruchomienie</span><span class="id">1</span><span class="id" style="text-align:right;color:var(--n6)">14 400</span></div>
+</div>
+<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:12px;padding-top:11px;border-top:1px solid var(--n2)">
+<span class="tg g">rabat 8% w limicie</span>
+<div style="text-align:right"><div class="mk-sub">Razem netto</div><div style="font-size:19px;font-weight:800;letter-spacing:-0.028em">48 200 zł</div></div>
+</div>
+</div>
+<div class="pnl" style="margin-top:12px;display:flex;align-items:center;gap:9px;background:#fdf7ee;box-shadow:inset 0 0 0 1px #f0dfc2">
+<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--am)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={IK.zegar}></svg>
+<span style="font-size:11.5px;color:var(--n5);flex:1">Rabat powyżej 10% wymaga zgody kierownika sprzedaży</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- 04 · akceptacja kosztów -->
+<div class="rl-e e4">
+<div class="ap">
+<div class="nv">
+<div class="nv-ws"><i>W</i><b>Weldon</b><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={IK.strzalka}></svg></div>
+<div class="nv-i"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" set:html={IK.pulpit}></svg>Pulpit</div>
+<div class="nv-i"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" set:html={IK.zlecenia}></svg>Zlecenia<em>18</em></div>
+<div class="nv-i"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" set:html={IK.oferty}></svg>Oferty<em>7</em></div>
+<div class="nv-g">Finanse</div>
+<div class="nv-i on"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" set:html={IK.koszty}></svg>Koszty<em class="tag">4</em></div>
+<div class="nv-i"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" set:html={IK.raporty}></svg>Raporty</div>
+</div>
+<div>
+<div class="tp"><div class="bc">Koszty <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" set:html={IK.strzalka}></svg> <b>Do akceptacji</b></div><div class="sr"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" set:html={IK.lupa}></svg>Szukaj<kbd>⌘K</kbd></div><span class="av">AS</span></div>
+<div class="mst" style="display:grid;grid-template-columns:minmax(0,0.78fr) minmax(0,1.22fr);min-height:0">
+<div style="border-right:1px solid var(--n2)">
+<div style="padding:12px 14px 9px;display:flex;align-items:baseline;justify-content:space-between"><b style="font-size:12.5px;font-weight:700">Skrzynka</b><span class="tg a">4</span></div>
+{[
+  { t: 'Licencje CAD', s: '8 400 zł · konstrukcja', d: 'dziś 09:12', sel: true },
+  { t: 'Delegacja Gdańsk', s: '1 240 zł · serwis', d: 'dziś 08:40' },
+  { t: 'Materiał — profile', s: '22 800 zł · produkcja', d: 'wczoraj' },
+  { t: 'Naprawa wózka', s: '3 100 zł · magazyn', d: 'wczoraj' },
+].map((r) => (
+  <div style={`padding:10px 14px;border-top:1px solid var(--n2);${r.sel ? 'background:#f3faf6;box-shadow:inset 2px 0 0 var(--ac2)' : ''}`}>
+    <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px"><span class="ttl" style="font-size:12px">{r.t}</span><span class="id">{r.d}</span></div>
+    <div class="mk-sub" style="margin-top:2px">{r.s}</div>
+  </div>
+))}
+</div>
+<div style="padding:14px 15px">
+<div class="mst" style="display:grid;grid-template-columns:96px minmax(0,1fr);gap:14px;align-items:start">
+<div class="dk" style="padding:9px 10px">
+<div style="font-size:10px;font-weight:700;color:var(--n5)">FV/2026/0418</div>
+<div style="margin-top:8px"><span class="ln" style="width:70%"></span><span class="ln hl" style="width:92%"></span><span class="ln" style="width:54%"></span><span class="ln" style="width:80%"></span><span class="ln hl" style="width:62%;margin-bottom:0"></span></div>
+</div>
+<div>
+<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px"><div><div style="font-size:15px;font-weight:750;letter-spacing:-0.02em">Licencje CAD · 8 400 zł</div><div class="mk-sub" style="margin-top:2px">Marta Wrona · dział konstrukcji · dziś 09:12</div></div><span class="tg a">czeka</span></div>
+<div style="margin-top:12px;display:flex;flex-direction:column;gap:0">
+{[
+  { r: 'Kierownik działu', o: 'Marta W.', s: '09:14', ok: true },
+  { r: 'Kontroling', o: 'Anna S.', s: '09:41', ok: true },
+  { r: 'Zarząd', o: 'próg 10 000 zł', s: 'czeka', ok: false },
+].map((x) => (
+  <div style="display:grid;grid-template-columns:18px minmax(0,1fr) auto;gap:9px;align-items:center;padding:8px 0;border-top:1px solid var(--n2)">
+    {x.ok
+      ? <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#00CD77" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" set:html={IK.ptaszek}></svg>
+      : <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#e0a854" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" set:html={IK.zegar}></svg>}
+    <span style="min-width:0"><span class="ttl" style="font-size:12px">{x.r}</span><span class="mk-sub">{x.o}</span></span>
+    <span class="id" style={x.ok ? '' : 'color:var(--am);font-weight:650'}>{x.s}</span>
+  </div>
+))}
+</div>
+<div style="display:flex;align-items:center;gap:9px;margin:12px 0 12px;font-size:10.5px;color:var(--n4)">64% budżetu Q3<span class="mr" style="flex:1"><i style="width:64%"></i></span><span style="color:var(--n5);font-weight:650">128 400 / 200 000</span></div>
+<div class="pnl">
+<dl class="kv"><dt>Księgowanie</dt><dd>5-01-2 · usługi obce</dd><dt>Projekt</dt><dd>Hala W — etap 2</dd></dl>
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:13px"><span class="bn p">Zatwierdź</span><span class="bn g">Odeślij z uwagą</span><span class="bn g">Przekaż dalej</span></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- 05 · planer obłożenia -->
+<div class="rl-e e5">
+<div class="ap solo">
+<div class="tp"><div class="bc"><b>Planer obłożenia</b></div><div class="sg" style="margin-left:auto"><span>Dzień</span><span class="on">2 tygodnie</span><span>Miesiąc</span></div><span class="fc">Zasób <b>wszystkie</b></span><span class="av">TB</span></div>
+<div class="hd" style="padding-bottom:0"><div><h4>15–26 września</h4><p>6 zasobów · 34 zaplanowane zlecenia</p></div><span class="bn g">Eksport</span></div>
+<div style="padding:14px 15px 15px">
+<div class="gd" style="grid-template-columns:112px repeat(10,minmax(0,1fr));margin-bottom:6px">
+<span></span>
+{['pn 15','wt 16','śr 17','cz 18','pt 19','pn 22','wt 23','śr 24','cz 25','pt 26'].map((d) => <span class="gd-d">{d}</span>)}
+</div>
+{[
+  { n: 'Brygada A', c: 'aabbb..ccc' },
+  { n: 'Brygada B', c: '.ccaaabb..' },
+  { n: 'Brygada C', c: 'bb..ccaaaa' },
+  { n: 'Serwis', c: 'c.aa..cc.b' },
+  { n: 'Podnośnik', c: '..bbxx..cc' },
+  { n: 'Spawalnia', c: 'aa.ccc..bb' },
+].map((r) => (
+  <div class="gd" style="grid-template-columns:112px repeat(10,minmax(0,1fr));margin-bottom:4px">
+    <span class="gd-n">{r.n}</span>
+    {r.c.split('').map((z) => <span class={z === '.' ? 'gd-c' : `gd-c ${z}`}></span>)}
+  </div>
+))}
+<div style="display:flex;align-items:center;flex-wrap:wrap;gap:9px 16px;margin-top:15px;padding-top:13px;border-top:1px solid var(--n2)">
+<span class="tg a">Podnośnik zajęty w dwóch zleceniach · 18 i 19 września</span>
+<span class="bn g">Pokaż konflikt</span>
+<span style="margin-left:auto;display:flex;gap:14px">
+<span style="display:inline-flex;align-items:center;gap:6px;font-size:10.5px;color:var(--n4)"><i style="width:11px;height:11px;border-radius:3px;background:#00CD77;display:block"></i>montaż</span>
+<span style="display:inline-flex;align-items:center;gap:6px;font-size:10.5px;color:var(--n4)"><i style="width:11px;height:11px;border-radius:3px;background:#d6f0e2;display:block"></i>serwis</span>
+<span style="display:inline-flex;align-items:center;gap:6px;font-size:10.5px;color:var(--n4)"><i style="width:11px;height:11px;border-radius:3px;background:#ebf5ee;display:block"></i>przegląd</span>
+</span>
+</div>
+</div>
+</div>
+</div>
+
+<!-- 06 · tablica na hali (ciemna) -->
+<div class="rl-e e6">
+<div class="ap solo ciemny">
+<div class="tp" style="border-color:var(--n2)">
+<div class="bc" style="color:var(--n5)"><b style="color:var(--n6)">Hala 2 · zmiana I</b></div>
+<span class="tg g plain" style="margin-left:auto">na żywo</span>
+<span style="font-family:ui-monospace,Menlo,monospace;font-size:13px;font-weight:650;color:var(--n6)">13:42</span>
+</div>
+<div style="padding:clamp(14px,1.8vw,22px)">
+<div class="hl-g">
+<div class="hl-k"><div class="hl-l">Wykonano</div><div class="hl-v ok">184</div><div class="hl-d">plan na zmianę: 210</div><div class="mr" style="margin-top:9px;background:rgba(255,255,255,0.12)"><i style="width:87%;background:#3ddc95"></i></div></div>
+<div class="hl-k"><div class="hl-l">Tempo</div><div class="hl-v">26 / h</div><div class="hl-d">wymagane 24 / h</div><svg class="spark" viewBox="0 0 120 26" preserveAspectRatio="none" aria-hidden="true"><polyline points={iskra([22,24,23,26,25,27,26,28,27,26], 120, 22)} fill="none" stroke="#3ddc95" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/></svg></div>
+<div class="hl-k"><div class="hl-l">Przestój</div><div class="hl-v am">12 min</div><div class="hl-d">2 zdarzenia od 6:00</div><svg class="spark" viewBox="0 0 120 26" preserveAspectRatio="none" aria-hidden="true"><polyline points={iskra([0,0,4,0,0,0,8,0,0,0], 120, 22)} fill="none" stroke="#e0a854" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/></svg></div>
+<div class="hl-k"><div class="hl-l">Braki</div><div class="hl-v">0</div><div class="hl-d">materiał na 4 godziny</div></div>
+</div>
+<div class="mst" style="display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:12px;margin-top:12px">
+<div class="hl-k" style="padding:13px 15px">
+<div class="hl-l" style="margin-bottom:9px">Zlecenia na zmianie</div>
+{[
+  { i: 'ZLC-118', t: 'Montaż konstrukcji', p: 74, s: 'w toku', c: 'g' },
+  { i: 'ZLC-124', t: 'Spawanie ram', p: 100, s: 'gotowe', c: 'n' },
+  { i: 'ZLC-127', t: 'Cięcie profili', p: 31, s: 'w toku', c: 'g' },
+].map((r) => (
+  <div style="display:grid;grid-template-columns:64px minmax(0,1fr) 84px 70px;gap:10px;align-items:center;padding:8px 0;border-top:1px solid rgba(255,255,255,0.08)">
+    <span class="id" style="color:var(--n5)">{r.i}</span>
+    <span class="ttl" style="font-size:12px;color:var(--n6)">{r.t}</span>
+    <span class="mr" style="background:rgba(255,255,255,0.12)"><i style={`width:${r.p}%;background:${r.c === 'g' ? '#3ddc95' : '#7d8a82'}`}></i></span>
+    <span class={`tg ${r.c}`}>{r.s}</span>
+  </div>
+))}
+</div>
+<div class="hl-k" style="padding:13px 15px">
+<div class="hl-l" style="margin-bottom:9px">Ostatni przestój</div>
+<div style="font-size:15px;font-weight:750;color:var(--n6)">Podajnik — zator</div>
+<div class="hl-d" style="margin-top:4px">11:04 · 8 minut · zgłosił M. Ciesielski</div>
+<div style="margin-top:11px;padding-top:11px;border-top:1px solid rgba(255,255,255,0.08);font-size:11.5px;color:var(--n5)">Wykryte z obrazu kamery po czterech minutach postoju, bez zgłoszenia od operatora.</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- 07 · aplikacja technika -->
+<div class="rl-e e7">
+<div class="fn">
+<div class="fn-e">
+<div class="fn-s"><span>9:41</span><em><svg viewBox="0 0 24 24" width="10" height="10" fill="currentColor" stroke="none"><circle cx="12" cy="12" r="9"/></svg>Offline</em></div>
+<div class="fn-b">
+<div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px"><div style="font-size:13px;font-weight:800;letter-spacing:-0.02em;color:#18211c">Protokół odbioru</div><span class="id" style="font-size:9.5px">ZLC-118</span></div>
+<div class="mk-sub" style="font-size:10px;margin-top:1px">Weldon sp. z o.o. · hala 2</div>
+<div style="margin-top:12px;display:flex;flex-direction:column;gap:6px">
+{[
+  { t: 'Kompletność dostawy', ok: true },
+  { t: 'Montaż zgodny z rysunkiem', ok: true },
+  { t: 'Próba pod obciążeniem', ok: true },
+  { t: 'Szkolenie obsługi', ok: false },
+].map((r) => (
+  <div style="display:flex;align-items:center;gap:8px;padding:7px 9px;border-radius:8px;background:#f7f9f7;box-shadow:inset 0 0 0 1px #ecefec">
+    <span style={`flex:0 0 15px;height:15px;border-radius:5px;display:grid;place-items:center;${r.ok ? 'background:#00CD77' : 'box-shadow:inset 0 0 0 1.5px #dfe4df'}`}>
+      {r.ok && <svg viewBox="0 0 24 24" width="9" height="9" fill="none" stroke="#0b1a11" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" set:html={IK.ptaszek}></svg>}
+    </span>
+    <span style="font-size:11px;font-weight:600;color:#18211c">{r.t}</span>
+  </div>
+))}
+</div>
+<div style="margin-top:10px;padding:9px;border-radius:9px;background:#f7f9f7;box-shadow:inset 0 0 0 1px #ecefec">
+<div style="display:flex;align-items:center;gap:7px;font-size:10px;font-weight:650;color:#5f6a62"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" set:html={IK.zdjecie}></svg>Zdjęcia · 3</div>
+<div style="display:flex;gap:5px;margin-top:7px">
+<span style="flex:1;height:32px;border-radius:6px;background:linear-gradient(140deg,#dde5df,#c9d4cc)"></span>
+<span style="flex:1;height:32px;border-radius:6px;background:linear-gradient(140deg,#d5ded8,#bfcbc3)"></span>
+<span style="flex:1;height:32px;border-radius:6px;background:linear-gradient(140deg,#e2e8e3,#cfd8d1)"></span>
+</div>
+</div>
+<div style="margin-top:10px;padding:10px;border-radius:9px;background:#fdf7ee;box-shadow:inset 0 0 0 1px #f0dfc2;font-size:10.5px;line-height:1.45;color:#b5761d">Zapisano lokalnie. Wyśle się, kiedy wróci zasięg.</div>
+<div style="margin-top:10px;display:flex;flex-direction:column;gap:6px"><span class="bn a" style="justify-content:center;padding:9px">Podpis klienta</span></div>
+</div>
+<div class="fn-t">
+<i class="on"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" set:html={IK.zlecenia}></svg>Zlecenia</i>
+<i><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" set:html={IK.plan}></svg>Grafik</i>
+<i><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" set:html={IK.magazyn}></svg>Magazyn</i>
+</div>
+</div>
+</div>
+<div class="ap solo" style="max-width:400px">
+<div class="tp"><div class="bc"><b>Biuro · ta sama sprawa</b></div><span class="tg g plain" style="margin-left:auto">2 min temu</span></div>
+<div style="padding:14px 15px">
+<div class="os">
+<div class="os-i ac"><div class="os-t">Protokół wypełniony na miejscu</div><div class="os-d">9:41 · Tomek Bąk · 3 zdjęcia</div></div>
+<div class="os-i"><div class="os-t">Szkolenie obsługi przeniesione</div><div class="os-d">powód: brak operatora, termin 26 września</div></div>
+<div class="os-i" style="padding-bottom:0"><div class="os-t">Faktura gotowa do wystawienia</div><div class="os-d">48 200 zł · czeka na akceptację</div></div>
+</div>
+<div class="pnl" style="margin-top:12px"><dl class="kv"><dt>Czas od zakończenia do protokołu</dt><dd style="color:var(--ac)">10 minut</dd><dt>Wcześniej</dt><dd>następny dzień</dd></dl></div>
+</div>
+</div>
+</div>
+
+<!-- 08 · portal klienta -->
+<div class="rl-e e8">
+<div style="width:100%;max-width:620px;border-radius:14px;overflow:hidden;background:#fff;box-shadow:0 0 0 1px rgba(20,32,25,0.07),0 2px 4px -2px rgba(20,32,25,0.1),0 32px 60px -34px rgba(20,32,25,0.35)">
+<div style="display:flex;align-items:center;gap:10px;padding:13px 18px;background:#0e2b1d;color:#fff">
+<span style="display:grid;place-items:center;width:22px;height:22px;border-radius:6px;background:#00CD77;color:#0b1a11;font-size:10px;font-weight:800">W</span>
+<b style="font-size:13px;font-weight:700">Weldon · status zlecenia</b>
+<span style="margin-left:auto;font-size:11px;color:rgba(255,255,255,0.6)">bez logowania</span>
+</div>
+<div style="padding:18px 20px 20px">
+<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+<div><div style="font-size:17px;font-weight:750;letter-spacing:-0.022em;color:#18211c">Montaż konstrukcji</div><div style="margin-top:3px;font-size:12px;color:#9ba49d">ZLC-118 · zamówienie 4471/2026</div></div>
+<span class="tg g" style="font-size:11px">w toku</span>
+</div>
+<div style="display:flex;align-items:flex-start;margin:22px 4px 20px">
+{[
+  { t: 'Przyjęte', d: '2 wrz', s: 'go' },
+  { t: 'Wycena', d: '3 wrz', s: 'go' },
+  { t: 'Montaż', d: 'w toku', s: 'tu' },
+  { t: 'Odbiór', d: '24 wrz', s: 'pu' },
+].map((k) => (
+  <span style="flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;position:relative">
+    <span style={`position:absolute;top:6px;left:-50%;width:100%;height:2px;background:${k.s === 'pu' ? '#e9eee6' : '#00CD77'}`}></span>
+    <span style={`position:relative;width:13px;height:13px;border-radius:50%;${k.s === 'tu' ? 'background:#fff;box-shadow:0 0 0 3px #00CD77' : k.s === 'go' ? 'background:#00CD77' : 'background:#e9eee6'}`}></span>
+    <span style="text-align:center"><b style="display:block;font-size:11px;font-weight:650;color:#18211c">{k.t}</b><span style="display:block;font-size:10px;color:#9ba49d">{k.d}</span></span>
+  </span>
+))}
+</div>
+<div class="mst" style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px">
+<div class="pnl"><dl class="kv"><dt>Planowany odbiór</dt><dd>24 września, 10:00</dd><dt>Opiekun</dt><dd>Marta Wrona</dd><dt>Telefon</dt><dd>571 000 000</dd></dl></div>
+<div style="display:flex;flex-direction:column;gap:7px">
+<div class="plik"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--n4)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" set:html={IK.oferty}></svg>Oferta 0147.pdf<em>pobierz</em></div>
+<div class="plik"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--n4)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" set:html={IK.oferty}></svg>Harmonogram.pdf<em>pobierz</em></div>
+<span class="bn g" style="justify-content:center;padding:8px">Zgłoś uwagę</span>
+</div>
+</div>
+<div style="margin-top:14px;padding-top:13px;border-top:1px solid #ecefec;font-size:11.5px;color:#9ba49d">Link jest w każdej wiadomości, którą od nas dostajecie. Zmiana terminu przychodzi mailem i SMS-em.</div>
+</div>
+</div>
+</div>
+
+<!-- 09 · grafik zmian -->
+<div class="rl-e e9">
+<div class="ap solo">
+<div class="tp"><div class="bc"><b>Grafik zmian</b></div><div class="sg" style="margin-left:auto"><span class="on">Tydzień</span><span>Miesiąc</span></div><span class="fc">Dział <b>Serwis</b></span><span class="av">AS</span></div>
+<div class="hd" style="padding-bottom:0"><div><h4>14–20 września</h4><p>5 osób · 1 luka w obsadzie</p></div><span class="bn g">Zaproponuj obsadę</span></div>
+<div style="padding:14px 15px 15px">
+<div class="gd" style="grid-template-columns:104px repeat(7,minmax(0,1fr));margin-bottom:5px">
+<span></span>
+{['pn 14','wt 15','śr 16','cz 17','pt 18','sb 19','nd 20'].map((d) => <span class="gd-d">{d}</span>)}
+</div>
+{[
+  { n: 'Anna S.', c: ['r','r','r','p','p','', ''] },
+  { n: 'Marek W.', c: ['p','p','','r','r','r',''] },
+  { n: 'Kasia L.', c: ['','r','r','r','','p','p'] },
+  { n: 'Tomek B.', c: ['r','','p','p','r','','r'] },
+  { n: 'Ewa K.', c: ['p','p','r','','luka','r','r'] },
+].map((w) => (
+  <div class="gd" style="grid-template-columns:104px repeat(7,minmax(0,1fr));margin-bottom:4px">
+    <span class="gd-n">{w.n}</span>
+    {w.c.map((z) => (
+      z === '' ? <span class="gd-t" style="color:var(--n4)">—</span>
+        : z === 'luka' ? <span class="gd-t luka">brak</span>
+        : <span class={`gd-t ${z}`}>{z === 'r' ? '6–14' : '14–22'}</span>
+    ))}
+  </div>
+))}
+<div class="pnl" style="margin-top:14px;background:#fdf7ee;box-shadow:inset 0 0 0 1px #f0dfc2;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+<span class="tg a">Piątek 14–22 · brakuje osoby z uprawnieniem SEP</span>
+<span style="font-size:11.5px;color:var(--n5);flex:1;min-width:160px">Marek W. ma wolne, uprawnienie ważne do marca 2027</span>
+<span class="bn p">Przydziel</span>
+</div>
+</div>
+</div>
+</div>
+
+<!-- 10 · rejestr reklamacji -->
+<div class="rl-e e10">
+<div class="ap">
+<div class="nv">
+<div class="nv-ws"><i>W</i><b>Weldon</b><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={IK.strzalka}></svg></div>
+<div class="nv-i"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" set:html={IK.pulpit}></svg>Pulpit</div>
+<div class="nv-i"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" set:html={IK.zlecenia}></svg>Zlecenia<em>18</em></div>
+<div class="nv-i"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" set:html={IK.klienci}></svg>Klienci</div>
+<div class="nv-g">Obsługa</div>
+<div class="nv-i on"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" set:html={IK.zegar}></svg>Reklamacje<em class="tag">2</em></div>
+<div class="nv-i"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" set:html={IK.wiedza}></svg>Baza wiedzy</div>
+</div>
+<div>
+<div class="tp"><div class="bc"><b>Reklamacje</b></div><div class="sr"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" set:html={IK.lupa}></svg>Szukaj<kbd>⌘K</kbd></div><span class="ico dot"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" set:html={IK.dzwonek}></svg></span><span class="av">KL</span></div>
+<div class="hd"><div><h4>Sprawy otwarte</h4><p>Termin ustawowy 14 dni · liczony od zgłoszenia</p></div><span class="tg a">2 na dziś</span></div>
+<div class="tl"><div class="sg"><span class="on">Otwarte</span><span>Zamknięte</span></div><span class="fc" style="color:var(--am);box-shadow:inset 0 0 0 1px #f0d9b3">Termin <b>≤ 3 dni</b></span></div>
+<div class="tb">
+<div class="th" style="grid-template-columns:70px minmax(0,1.4fr) 118px minmax(0,0.9fr) 76px"><span>NUMER</span><span>KLIENT I PRZEDMIOT</span><span class="srt">TERMIN <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={IK.sort}></svg></span><span>ETAP</span><span>ZOSTAŁO</span></div>
+{[
+  { n: 'REK-0231', k: 'Weldon sp. z o.o.', p: 'moduł MX-4 · pęknięta obudowa', w: 92, e: 'oględziny', s: 'dziś', am: true },
+  { n: 'REK-0234', k: 'Zakład Kowalski', p: 'przegląd · brak protokołu', w: 84, e: 'oględziny', s: 'jutro', am: true },
+  { n: 'REK-0232', k: 'Nordis Sp. z o.o.', p: 'sterownik S · restart pod obciążeniem', w: 42, e: 'ekspertyza', s: '4 dni', am: false },
+  { n: 'REK-0233', k: 'Prima Logistics', p: 'montaż hali · nierówność posadzki', w: 28, e: 'wycena naprawy', s: '9 dni', am: false },
+  { n: 'REK-0235', k: 'Fabryka Wschód', p: 'wymiana · opóźniona dostawa', w: 14, e: 'przyjęta', s: '12 dni', am: false },
+].map((r) => (
+  <div class={r.am ? 'tr sel' : 'tr'} style="grid-template-columns:70px minmax(0,1.4fr) 118px minmax(0,0.9fr) 76px">
+    <span class="id">{r.n}</span>
+    <span style="min-width:0"><span class="ttl">{r.k}</span><span class="mk-sub">{r.p}</span></span>
+    <span class="mr"><i class={r.am ? 'am' : 'n'} style={`width:${r.w}%`}></i></span>
+    <span class="mk-sub" style="color:var(--n5)">{r.e}</span>
+    <span><span class={r.am ? 'tg a' : 'tg n'}>{r.s}</span></span>
+  </div>
+))}
+</div>
+<div class="pg"><span>1–5 z 12</span><span style="display:flex;align-items:center;gap:8px;color:var(--am)"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={IK.zegar}></svg>REK-0231 — termin mija dziś o 23:59, przypomnienie poszło wczoraj</span></div>
+</div>
+</div>
+</div>
+
+<!-- 11 · baza wiedzy -->
+<div class="rl-e e11">
+<div class="ap solo">
+<div class="tp"><div class="bc"><b>Baza wiedzy</b></div><span class="tg n plain" style="margin-left:auto">4 210 dokumentów · zindeksowane dziś</span><span class="av">TB</span></div>
+<div class="mst" style="display:grid;grid-template-columns:minmax(0,1.06fr) minmax(0,0.94fr);min-height:0">
+<div style="padding:15px">
+<div class="as-q"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="var(--n4)" stroke-width="2" stroke-linecap="round" set:html={IK.lupa}></svg>ile dni na reklamację po odbiorze<kbd style="margin-left:auto;font-family:ui-monospace,Menlo,monospace;font-size:9px;padding:1.5px 5px;border-radius:4px;background:#fff;box-shadow:0 0 0 1px var(--n3);color:var(--n4)">⏎</kbd></div>
+<div class="as-a">
+<p>Czternaście dni roboczych od podpisania protokołu odbioru przez obie strony. Przy montażach powyżej 50 kW termin wydłuża się do trzydziestu dni.</p>
+<span class="zr"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" set:html={IK.oferty}></svg>Regulamin usług 2026 · §7 ust. 3</span>
+</div>
+<div style="margin-top:14px">
+<div style="font-size:10.5px;font-weight:650;letter-spacing:0.06em;text-transform:uppercase;color:var(--n4);margin-bottom:4px">Pozostałe miejsca</div>
+{[
+  { t: 'Umowa ramowa Weldon', s: '§11 terminy zgłoszeń', d: '2024' },
+  { t: 'Procedura reklamacyjna', s: 'krok 2 — oględziny', d: '2025' },
+  { t: 'Regulamin usług 2023', s: 'zastąpiony wersją 2026', d: 'archiwum', am: true },
+].map((r) => (
+  <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--n2)">
+    <span style="min-width:0"><span class="ttl" style="font-size:12px">{r.t}</span><span class="mk-sub">{r.s}</span></span>
+    <span class={r.am ? 'tg a' : 'id'}>{r.d}</span>
+  </div>
+))}
+</div>
+</div>
+<div style="padding:15px;background:var(--n1);border-left:1px solid var(--n2)">
+<div class="dk">
+<div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding-bottom:10px;border-bottom:1px solid var(--n2)"><b style="font-size:12px;font-weight:700">Regulamin świadczenia usług 2026</b><span class="id">str. 12</span></div>
+<div style="margin-top:12px">
+<div style="font-size:10px;font-weight:700;letter-spacing:0.05em;color:var(--n4);margin-bottom:8px">§7 · REKLAMACJE</div>
+<span class="ln" style="width:94%"></span><span class="ln" style="width:88%"></span><span class="ln" style="width:64%"></span>
+<div style="margin:12px 0;padding:11px 12px;border-radius:8px;background:#f0f9f4;box-shadow:inset 0 0 0 1.5px rgba(0,205,119,0.32)">
+<div style="font-size:11.5px;line-height:1.6;color:#18211c">3. Zgłoszenie reklamacyjne składa się w terminie <b style="background:rgba(0,205,119,0.3);padding:0 3px;border-radius:3px">czternastu dni roboczych</b> od dnia podpisania protokołu odbioru przez obie strony.</div>
+</div>
+<span class="ln" style="width:91%"></span><span class="ln" style="width:78%"></span><span class="ln" style="width:96%"></span><span class="ln" style="width:52%"></span><span class="ln" style="width:84%;margin-bottom:0"></span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- 12 · kokpit zarządu -->
+<div class="rl-e e12">
+<div class="ap solo">
+<div class="tp"><div class="bc"><b>Kokpit zarządu</b></div><div class="sg" style="margin-left:auto"><span>Miesiąc</span><span class="on">Kwartał</span><span>Rok</span></div><span class="fc">Definicja marży <b>jedna</b></span><span class="av">SK</span></div>
+<div class="mst" style="padding:14px 15px 0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px">
+<div class="mt"><div class="mt-l">Przychód</div><div class="mt-v">4,2 mln</div><div class="mt-d">↑ 11% r/r</div></div>
+<div class="mt"><div class="mt-l">Marża</div><div class="mt-v">21%</div><div class="mt-d am">↓ z 24%</div></div>
+<div class="mt"><div class="mt-l">Zleceń zamkniętych</div><div class="mt-v">126</div><div class="mt-d">↑ 12%</div></div>
+<div class="mt"><div class="mt-l">Czas sprawy</div><div class="mt-v">1,5 dnia</div><div class="mt-d">↓ z 6 dni</div></div>
+</div>
+<div class="mst" style="padding:12px 15px 15px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.08fr);gap:12px">
+<div class="mt" style="display:flex;flex-direction:column">
+<div class="mt-l">Przychód tygodniami<span class="id">13 tyg.</span></div>
+<div style="flex:1;display:flex;align-items:flex-end;gap:4px;height:96px;margin-top:12px">
+{[36,48,41,57,50,64,59,72,66,83,77,91,100].map((h, i) => (
+  <span style={`flex:1;height:${h}%;border-radius:3px 3px 0 0;background:${i === 12 ? '#00CD77' : '#dfe9e1'}`}></span>
+))}
+</div>
+<div style="display:flex;justify-content:space-between;margin-top:7px;font-size:9.5px;color:var(--n4)"><span>cze</span><span>lip</span><span>sie</span><span>wrz</span></div>
+</div>
+<div>
+<div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:8px"><b style="font-size:12.5px;font-weight:700">Marża po kliencie</b><span class="id">udział w przychodzie</span></div>
+{[
+  { n: 'Weldon sp. z o.o.', p: 31, v: '31%', s: '412 tys.' },
+  { n: 'Nordis Sp. z o.o.', p: 24, v: '24%', s: '286 tys.' },
+  { n: 'Prima Logistics', p: 18, v: '18%', s: '198 tys.' },
+  { n: 'Zakład Kowalski', p: 9, v: '9%', s: '141 tys.', sr: true },
+  { n: 'Fabryka Wschód', p: -4, v: '−4%', s: '96 tys.', am: true },
+].map((r) => (
+  <div class="tr" style="grid-template-columns:minmax(0,1fr) 104px 46px 62px;padding-left:0;padding-right:0;gap:0 10px">
+    <span class="ttl" style="font-size:12px">{r.n}</span>
+    <span style="position:relative;display:block;height:6px;border-radius:3px;background:var(--n2);overflow:hidden">
+      <i style="position:absolute;left:18%;top:0;bottom:0;width:1px;background:#c3cec2;z-index:2"></i>
+      {r.p >= 0
+        ? <i style={`position:absolute;left:18%;top:0;bottom:0;border-radius:3px;width:${((r.p / 31) * 82).toFixed(1)}%;background:${r.sr ? '#9fdcbe' : '#00CD77'}`}></i>
+        : <i style={`position:absolute;right:82%;top:0;bottom:0;border-radius:3px;width:${((-r.p / 8) * 18).toFixed(1)}%;background:#e0a854`}></i>}
+    </span>
+    <span class="id" style={r.am ? 'color:var(--am);font-weight:700' : 'color:var(--n6)'}>{r.v}</span>
+    <span class="id" style="text-align:right">{r.s}</span>
+  </div>
+))}
+<div style="display:flex;align-items:center;gap:9px;margin-top:11px;padding-top:10px;border-top:1px solid var(--n2)"><span class="tg a">Fabryka Wschód pod kreską trzeci kwartał</span><span class="bn g">Otwórz analizę</span></div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+
+<div class="rl-pod">
+{APLIKACJE.map((p, i) => (
+  <div class={i === 0 ? 'rl-c on' : 'rl-c'}>
+    <p class="rl-z">{p.z}</p>
+    <div class="rl-dl">
+      <span class="rl-a">{p.a}</span>
+      <span class="rl-k"></span>
+      <span class="rl-b">{p.b}</span>
+      <span class="rl-cap">{p.c}</span>
+    </div>
+  </div>
+))}
+</div>
+</div>
+</div>
+
+<p class="rl-nt">Ekrany rysujemy pod tę stronę — kształt jest prawdziwy, nazwy firm, kwoty i numery są przykładowe.</p>
+</section>
+
+<!-- ============ CIEMNY PAS — rok w jednej firmie ============ -->
+<section id="rok" style="position:relative;background:radial-gradient(1000px 460px at 84% 0%, rgba(0,205,119,0.16), transparent 62%), #0e2b1d;padding:clamp(58px,7vw,100px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:74px">
+<div class="sec-head">
+<h2 class="h-sec" style="margin:0;max-width:620px;color:#ffffff;text-wrap:balance">Żadna z nich nie stoi sama</h2>
+<p style="margin:0 0 6px;max-width:480px;font-size:17px;line-height:1.6;color:rgba(255,255,255,0.72);text-wrap:pretty">Jeden rok u producenta konstrukcji stalowych, 120 osób. Pod spodem ta sama miara pięć razy: ile mija od zapytania do oferty.</p>
+</div>
+<div class="sh">
+{SCHODY.map((s) => (
+  <div class="sh-k rv"><div class="sh-m">{s.m}</div><h3 class="sh-t">{s.t}</h3><p class="sh-d">{s.d}</p></div>
+))}
+</div>
+<div class="sh-os">
+{SCHODY.map((s, i) => (
+  <div class={i === 3 ? 'sh-v ost' : 'sh-v'}>
+    <b style={s.nota ? 'color:rgba(255,255,255,0.42)' : ''}>{s.v}</b>
+    <span>{s.nota || 'od zapytania do oferty'}</span>
+  </div>
+))}
+</div>
+<p style="margin:clamp(24px,2.8vw,34px) 0 0;max-width:840px;font-size:16.5px;line-height:1.65;color:rgba(255,255,255,0.72);text-wrap:pretty">Pierwsza rzecz zajęła tydzień i nie zmieniła prawie nic. Zmieniła natomiast to, że przy szóstym miesiącu nikt już nie pytał, czy warto. Rzecz, dla której cała reszta była rozbiegiem, weszła jako trzecia — i weszła w gotowe, bo dane i zgody były już na miejscu.</p>
+</section>
+
+<!-- ============ NIE WSZYSTKO JEST APLIKACJĄ ============ -->
+<section id="poza" class="sec-pad" style="padding-top:clamp(58px,7vw,96px)">
+<div class="sec-head">
+<h2 class="h-sec" style="margin:0;max-width:640px;text-wrap:balance">Nie wszystko jest aplikacją</h2>
+<p style="margin:0 0 6px;max-width:500px;font-size:17px;line-height:1.6;color:#4c5850;text-wrap:pretty">Część rzeczy nie ma własnego ekranu — siedzą w systemach, które już macie, albo chodzą w tle. Widać po nich tylko efekt.</p>
+</div>
+<div class="um">
+{UMIEJETNOSCI.map((u) => (
+  <div class="um-r rv">
+    <div><h3 class="um-t">{u.t}</h3><p class="um-d">{u.d}</p></div>
+    <div>
+    {u.p.map((x) => (
+      <div class="um-p"><b>{x.t}</b><span class="um-a">{x.a}</span><span class="um-s" aria-hidden="true"></span><span class="um-b">{x.b}</span></div>
+    ))}
+    </div>
+  </div>
+))}
+</div>
+<p class="sub rv" style="margin:clamp(28px,3.4vw,42px) 0 0;max-width:780px">Liczby są z naszych wdrożeń, mierzone przed przebudową i po niej na tej samej sprawie. Firmy opisujemy branżą i wielkością, bez nazw — tak stoi w umowach. U Was mogą wyjść inne i dlatego stan wyjściowy mierzymy przed budową, a próg zapisujemy w umowie.</p>
+</section>
+
+<!-- ============ CZEGO NIE BUDUJEMY ============ -->
+<section id="granice" class="sec-pad" style="background:#f4f8f2;padding-top:clamp(56px,7vw,92px)">
+<h2 class="h-mod" style="margin:0;max-width:620px;text-wrap:balance">Czego nie budujemy</h2>
+<p class="sub rv" style="margin:16px 0 0;max-width:700px">Cztery rzeczy, o które pytają najczęściej. Powód przy każdej jest ten sam: łatwiej sprzedać, trudniej obronić po roku.</p>
+<div class="gr2">
+{GRANICE.map((g) => (<div class="rv"><h3>{g.t}</h3><p>{g.d}</p></div>))}
+</div>
+</section>
+
+<GcFaq
+  heading="Pytania, które padają<br>przy tych ekranach"
+  lead="Najczęściej o to, czy dostaniecie dokładnie taką aplikację i czy to jeden system, czy dwanaście."
+  ctaLabel="Zadajcie swoje wprost →"
+  items={faq}
+/>
+
+<GcCta
+  heading="Który ekran jest Wasz?"
+  lead="Na pierwszej rozmowie przechodzimy to, na czym schodzi u Was czas, i wskazujemy jedną rzecz do zrobienia najpierw — razem z tymi, które odradzamy."
+  eyebrow="Z rozmowy wychodzicie z"
+  items={[
+    { t: 'Jedną rzeczą na start', d: 'wybraną z Waszej listy, z powodem takiego wyboru' },
+    { t: 'Szkicem ekranu pod Wasz proces', d: 'takim jak te wyżej, tylko z Waszymi sprawami' },
+    { t: 'Punktem odniesienia', d: 'co i jak zmierzyć przed startem, żeby dało się porównać' },
+  ]}
+  submitLabel="Umów rozmowę"
+  fieldLabel="Na czym schodzi u Was czas?"
+  placeholder="Np. stan zlecenia trzeba składać z trzech miejsc…"
+  badges={[
+    { i: 'klodka', t: 'Twoje dane bezpieczne' },
+    { i: 'kartka', t: 'NDA przed startem' },
+    { i: 'ptaszek', t: 'Aplikacja zostaje Wasza' },
+  ]}
+/>
+
+<script>
+  // ---- SHOWREEL -----------------------------------------------------------
+  // Playlista steruje sceną. Obieg leci sam, kliknięcie zatrzymuje go na dobre.
+  (function(){
+    var wrap = document.querySelector('.rl');
+    if(!wrap) return;
+    var lista = [].slice.call(wrap.querySelectorAll('.rl-i'));
+    var ekrany = [].slice.call(wrap.querySelectorAll('.rl-e'));
+    var podpisy = [].slice.call(wrap.querySelectorAll('.rl-c'));
+    if(!lista.length || lista.length !== ekrany.length) return;
+
+    var ms = parseInt(wrap.getAttribute('data-ms'), 10) || 5600;
+    var bezRuchu = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var i = 0, zegar = null, zatrzymany = bezRuchu;
+
+    function pokaz(n){
+      i = n;
+      lista.forEach(function(el, k){
+        el.classList.toggle('on', k === n);
+        el.classList.toggle('stop', zatrzymany && k === n);
+        el.setAttribute('aria-selected', k === n ? 'true' : 'false');
+      });
+      ekrany.forEach(function(el, k){ el.classList.toggle('on', k === n); });
+      podpisy.forEach(function(el, k){ el.classList.toggle('on', k === n); });
+    }
+
+    lista.forEach(function(el, k){
+      el.addEventListener('click', function(){
+        zatrzymany = true;
+        if(zegar){ clearInterval(zegar); zegar = null; }
+        pokaz(k);
+      });
+    });
+
+    pokaz(0);
+    if(!zatrzymany){ zegar = setInterval(function(){ pokaz((i + 1) % lista.length); }, ms); }
+  })();
+</script>
+</LaBase>

@@ -1,0 +1,340 @@
+---
+// BAZA WIEDZY — /baza-wiedzy
+//
+// CZYM SIĘ RÓŻNI OD RODZEŃSTWA
+// Podstrony usługowe sprzedają usługę i każda ma własny rysunek niosący
+// argument. Ta strona niczego nie sprzedaje — jest spisem. Dlatego zamiast
+// mechanizmu wizualnego ma jedną rzecz do zrobienia: pokazać, co w środku
+// jest warte czterech minut czytania, i pozwolić to znaleźć.
+//
+// UKŁAD
+//   1. hero — zdanie o tym, co tu jest, i dwie liczby
+//   2. wyróżniony artykuł — jedyne miejsce z dużym stopniem pisma; obok
+//      kartka ze spisem treści, żeby było widać, co w środku, przed kliknięciem
+//   3. lista — wiersze na liniach, filtr po kategorii w jednej linii nad nimi
+//   4. nagrania — ciemny pas, klatki 16:9 (jedyne miejsce z kaflami; przy
+//      wideo miniatura jest treścią, nie ozdobą)
+//   5. kontakt — wspólny moduł
+//
+// CZEGO TU NIE MA
+//   · wyszukiwarki — filtr po kategorii plus rozwijana lista wystarczają;
+//     pole wyszukiwania dokładać, gdy wpisów będzie ponad sto
+//   · paginacji z osobnymi adresami — lista rośnie na miejscu, przyciskiem
+//   · siatki równych kafli z artykułami — spis czyta się wierszami
+//   · miniatur przy wierszach — połowa wpisów nie ma obrazu, a druga połowa
+//     ma grafiki z czterech różnych okresów; rząd niedobranych miniatur
+//     wygląda gorzej niż sam tekst
+//
+// DO POTWIERDZENIA PRZED PUBLIKACJĄ
+//   · /og/baza-wiedzy.png — strona dziedziczy /og/hub.png
+//   · identyfikatory filmów w src/data/filmy.js (patrz komentarz w tym pliku)
+import { getCollection } from 'astro:content';
+import { KATEGORIE } from '../../content/config';
+import { FILMY, KANAL_YT, jestId, miniatura, adresFilmu } from '../../data/filmy.js';
+import LaBase from '../../layouts/LaBase.astro';
+import GcCta from '../../components/GcCta.astro';
+
+const kanon = new URL('/baza-wiedzy', Astro.site).href;
+
+// Szkice zostają poza listą, ale renderują się pod własnym adresem — dzięki
+// temu da się wysłać link do przeczytania przed publikacją.
+const wszystkie = (await getCollection('artykuly', (a) => !a.data.szkic))
+  .sort((a, b) => b.data.data - a.data.data);
+
+// Czas czytania liczy się z tekstu, nie z pola we froncie — inaczej po
+// dopisaniu dwóch akapitów zostawałby nieaktualny. 180 słów na minutę to
+// tempo czytania tekstu fachowego po polsku, zaokrąglone w dół dla ostrożności.
+const czasCzytania = (tresc) => Math.max(3, Math.round(tresc.trim().split(/\s+/).length / 180));
+
+// Spis treści wyróżnionego artykułu bierzemy z nagłówków drugiego stopnia.
+const spisTresci = (tresc) => (tresc.match(/^##\s+(.+)$/gm) || []).map((h) => h.replace(/^##\s+/, ''));
+
+// Polszczyzna ma trzy formy przy liczebniku (1 artykuł / 3 artykuły /
+// 6 artykułów), a licznik w hero zmienia się z każdym nowym tekstem.
+const odmiana = (n, [jeden, kilka, wiele]) => {
+  const d = n % 10, s = n % 100;
+  if (n === 1) return jeden;
+  if (d >= 2 && d <= 4 && (s < 10 || s >= 20)) return kilka;
+  return wiele;
+};
+
+const dl = new Intl.DateTimeFormat('pl-PL', { day: 'numeric', month: 'long', year: 'numeric' });
+const kr = new Intl.DateTimeFormat('pl-PL', { day: '2-digit', month: '2-digit', year: 'numeric' });
+
+const wyrozniony = wszystkie.find((a) => a.data.wyrozniony) || wszystkie[0];
+const reszta = wszystkie.filter((a) => a.slug !== wyrozniony.slug);
+
+// Filtr pokazuje tylko te kategorie, w których coś jest — pusta zakładka
+// wygląda jak błąd.
+const licznik = Object.fromEntries(
+  Object.keys(KATEGORIE).map((k) => [k, wszystkie.filter((a) => a.data.kategoria === k).length])
+);
+const filtry = Object.entries(KATEGORIE).filter(([k]) => licznik[k] > 0);
+
+const title = "Baza wiedzy — wdrożenia AI i aplikacje firmowe | Let's automate";
+const description = `${wszystkie.length} artykułów o automatyzacji procesów i wdrażaniu AI: jak liczyć koszt procesu, co zapisać w umowie, dlaczego pilot nie wchodzi na produkcję, czym budować. Baza wiedzy studia Let's automate.`;
+
+const dane = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'CollectionPage', '@id': `${kanon}#strona`, url: kanon,
+      name: 'Baza wiedzy', description,
+      isPartOf: { '@id': new URL('/#organizacja', Astro.site).href },
+    },
+    {
+      '@type': 'ItemList', '@id': `${kanon}#artykuly`, numberOfItems: wszystkie.length,
+      itemListElement: wszystkie.map((a, i) => ({
+        '@type': 'ListItem', position: i + 1, name: a.data.tytul,
+        url: new URL(`/baza-wiedzy/${a.slug}`, Astro.site).href,
+      })),
+    },
+    {
+      '@type': 'BreadcrumbList', '@id': `${kanon}#okruszki`,
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Strona główna', item: new URL('/', Astro.site).href },
+        { '@type': 'ListItem', position: 2, name: 'Baza wiedzy', item: kanon },
+      ],
+    },
+  ],
+};
+---
+<LaBase title={title} description={description} ctaHref="#kontakt" ctaLabel="Umów rozmowę" nav="dlaczego-my">
+<script type="application/ld+json" is:inline set:html={JSON.stringify(dane)} slot="head"></script>
+<style is:global slot="head">
+  /* ================= HERO ================= */
+  .bw-h1{font-size:clamp(38px,6.4vw,74px);line-height:0.98;letter-spacing:-0.042em;font-weight:800;color:#16211a;text-wrap:balance;margin:0;max-width:16ch}
+  .bw-lead{margin:clamp(20px,2.4vw,28px) 0 0;max-width:640px;font-size:clamp(16.5px,2vw,20px);line-height:1.55;color:#33413a;text-wrap:pretty}
+  /* Bez kropek między pozycjami: przy zawijaniu na telefonie separator
+     zostawał na końcu linii i wyglądał jak literówka. */
+  .bw-licz{display:flex;flex-wrap:wrap;gap:6px 26px;margin-top:clamp(24px,3vw,34px);font-size:14px;color:#8b968d}
+  .bw-licz b{font-weight:750;color:#16211a}
+
+  /* ================= WYRÓŻNIONY =================
+     Jedyne miejsce na stronie z dużym stopniem pisma i jedyne wcięcie.
+     Kartka po prawej pokazuje spis treści — po to, żeby dało się ocenić,
+     czy tekst jest o czymś, przed wejściem w niego. */
+  .bw-w{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:clamp(32px,5vw,72px);align-items:start;padding:clamp(30px,3.6vw,44px) 0 clamp(34px,4vw,50px);border-top:2px solid #16211a}
+  .bw-w-meta{display:flex;flex-wrap:wrap;align-items:center;gap:4px 18px;font-size:13px;color:#8b968d}
+  .bw-w-kat{font-weight:750;color:#0a7a52}
+  .bw-w-t{display:block;margin:14px 0 0;font-size:clamp(28px,4.4vw,50px);line-height:1.04;letter-spacing:-0.034em;font-weight:800;color:#16211a;text-wrap:balance;transition:color .18s}
+  a:hover .bw-w-t{color:#0a7a52}
+  .bw-w-l{margin:16px 0 0;max-width:56ch;font-size:clamp(15.5px,1.8vw,17.5px);line-height:1.62;color:#4c5850;text-wrap:pretty}
+  .bw-w-go{display:inline-flex;align-items:center;gap:8px;margin-top:20px;font-size:16px;font-weight:700;color:#0a7a52}
+  .bw-w-go i{font-style:normal;transition:transform .18s}
+  a:hover .bw-w-go i{transform:translateX(4px)}
+
+  .bw-kartka{background:#fbfcfa;border:1px solid #e7ece4;border-radius:14px;padding:22px 22px 18px}
+  .bw-kartka-h{font-size:12px;font-weight:700;letter-spacing:0.04em;color:#8b968d;padding-bottom:12px;border-bottom:1px solid #e7ece4}
+  .bw-kartka ol{list-style:none;margin:0;padding:12px 0 0;counter-reset:sp}
+  .bw-kartka li{counter-increment:sp;display:grid;grid-template-columns:26px minmax(0,1fr);gap:8px;padding:7px 0;font-size:13.5px;line-height:1.45;color:#33413a}
+  .bw-kartka li::before{content:counter(sp,decimal-leading-zero);font-family:ui-monospace,Menlo,monospace;font-size:11px;color:#b3bcb3}
+  @media (max-width:900px){ .bw-w{grid-template-columns:1fr;gap:28px} .bw-kartka{display:none} }
+
+  /* ================= FILTR ================= */
+  .bw-pasek{display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:18px 40px}
+  .bw-filtry{display:flex;flex-wrap:wrap;gap:4px 6px}
+  .bw-f{appearance:none;background:none;border:0;font-family:inherit;cursor:pointer;padding:8px 2px;margin:0 12px 0 0;font-size:14.5px;font-weight:600;color:#8b968d;border-bottom:2px solid transparent;transition:color .15s,border-color .15s}
+  .bw-f:hover{color:#16211a}
+  .bw-f[aria-pressed="true"]{color:#16211a;border-bottom-color:var(--la-accent,#00CD77)}
+  .bw-f em{font-style:normal;font-size:12px;color:#b3bcb3;margin-left:5px}
+
+  /* ================= LISTA =================
+     Wiersze na liniach. Data w monospace, bo to klucz porządkujący,
+     nie ozdoba. */
+  .bw-lista{margin-top:clamp(18px,2.4vw,28px)}
+  .bw-r{display:grid;grid-template-columns:96px minmax(0,1fr) 180px;gap:clamp(16px,2.6vw,40px);align-items:baseline;padding:clamp(22px,2.6vw,30px) clamp(10px,1.4vw,18px);margin:0 clamp(-10px,-1.4vw,-18px);border-top:1px solid #dfe7dd;border-radius:12px;transition:background .18s}
+  .bw-r:last-of-type{border-bottom:1px solid #dfe7dd}
+  .bw-r:hover{background:#ffffff}
+  .bw-data{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;letter-spacing:0.01em;color:#a0aba1;white-space:nowrap}
+  .bw-t{display:block;font-size:clamp(19px,2.3vw,25px);line-height:1.2;letter-spacing:-0.024em;font-weight:750;color:#16211a;text-wrap:balance;transition:color .18s}
+  .bw-r:hover .bw-t{color:#0a7a52}
+  .bw-l{display:block;margin-top:8px;max-width:62ch;font-size:14.5px;line-height:1.6;color:#6b766e;text-wrap:pretty}
+  .bw-meta{text-align:right;font-size:13px;line-height:1.5;color:#8b968d;white-space:nowrap}
+  .bw-meta b{display:block;font-weight:650;color:#4c5850}
+  .bw-pusto{padding:44px 0;font-size:15.5px;color:#8b968d}
+  /* Lista rośnie na miejscu zamiast rozbijać się na strony: adres zostaje
+     jeden, a wyszukiwarki widzą w źródle wszystkie wiersze naraz. */
+  .bw-wiecej{appearance:none;display:inline-flex;align-items:center;gap:9px;margin-top:clamp(26px,3vw,36px);padding:14px 24px;border:1px solid #d3ded1;border-radius:11px;background:#ffffff;font-family:inherit;font-size:15px;font-weight:650;color:#16211a;cursor:pointer;transition:border-color .16s,color .16s,background .16s}
+  .bw-wiecej:hover{border-color:#0a7a52;color:#0a7a52}
+  .bw-wiecej em{font-style:normal;color:#8b968d}
+  @media (max-width:820px){
+    .bw-r{grid-template-columns:minmax(0,1fr);gap:0;padding:22px 12px}
+    .bw-meta{text-align:left;margin-top:10px}
+    .bw-meta b{display:inline;font-weight:650}
+    .bw-meta b::after{content:" · ";color:#c3cbc2}
+  }
+
+  /* ================= NAGRANIA (ciemny pas) ================= */
+  .bw-fg{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(20px,2.6vw,34px);margin-top:clamp(30px,3.8vw,44px)}
+  .bw-fi{display:block}
+  .bw-klatka{position:relative;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:linear-gradient(150deg,#15412c,#0b2318);box-shadow:0 24px 48px -26px rgba(0,0,0,0.7)}
+  .bw-klatka img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s cubic-bezier(.4,0,.2,1)}
+  .bw-fi:hover .bw-klatka img{transform:scale(1.04)}
+  .bw-play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;width:52px;height:52px;border-radius:50%;background:rgba(0,205,119,0.92);box-shadow:0 10px 26px -8px rgba(0,0,0,0.6);transition:transform .22s,background .22s}
+  .bw-fi:hover .bw-play{transform:translate(-50%,-50%) scale(1.08)}
+  .bw-czas{position:absolute;right:9px;bottom:9px;padding:3px 7px;border-radius:6px;background:rgba(6,16,11,0.82);font-family:ui-monospace,Menlo,monospace;font-size:11px;color:#e8ece7}
+  .bw-ft{display:block;margin-top:14px;font-size:16px;font-weight:700;line-height:1.3;letter-spacing:-0.015em;color:#ffffff;text-wrap:pretty;transition:color .18s}
+  .bw-fi:hover .bw-ft{color:var(--la-accent,#00CD77)}
+  .bw-fd{display:block;margin-top:7px;font-size:13.5px;line-height:1.55;color:rgba(255,255,255,0.6);text-wrap:pretty}
+  @media (max-width:1000px){ .bw-fg{grid-template-columns:1fr 1fr} }
+  @media (max-width:560px){ .bw-fg{grid-template-columns:1fr} }
+</style>
+
+<!-- ============ 1 · HERO ============ -->
+<div aria-hidden="true" style="position:absolute;left:0;right:0;top:0;height:640px;background:radial-gradient(900px 520px at 12% -10%, rgba(0,205,119,0.14), transparent 62%);pointer-events:none"></div>
+<section style="position:relative;padding:clamp(46px,6.4vw,92px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) clamp(34px,4.4vw,58px)">
+<h1 class="bw-h1">Zapisujemy to, czego uczą nas wdrożenia</h1>
+<p class="bw-lead">Artykuły o automatyzacji procesów i wdrażaniu AI w firmach: od podstaw po rzeczy, które wychodzą dopiero przy wdrożeniu. Skąd biorą się liczby przed projektem, co zatrzymuje pilota przed produkcją i co powinno stać w umowie.</p>
+<div class="bw-licz">
+<span><b>{wszystkie.length}</b> {odmiana(wszystkie.length, ['artykuł', 'artykuły', 'artykułów'])}</span>
+<span><b>{FILMY.length}</b> {odmiana(FILMY.length, ['nagranie', 'nagrania', 'nagrań'])}</span>
+<span>ostatni wpis {dl.format(wszystkie[0].data.data)}</span>
+</div>
+</section>
+
+<!-- ============ 2 · WYRÓŻNIONY ============ -->
+<section style="padding:0 max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) clamp(48px,6vw,76px)">
+<div class="bw-w">
+<a href={`/baza-wiedzy/${wyrozniony.slug}`}>
+<div class="bw-w-meta">
+<span class="bw-w-kat">{KATEGORIE[wyrozniony.data.kategoria].nazwa}</span>
+<span>{dl.format(wyrozniony.data.data)}</span>
+<span>{czasCzytania(wyrozniony.body)} min czytania</span>
+</div>
+<span class="bw-w-t">{wyrozniony.data.tytul}</span>
+<p class="bw-w-l">{wyrozniony.data.lead}</p>
+<span class="bw-w-go">Czytaj <i aria-hidden="true">→</i></span>
+</a>
+<div class="bw-kartka">
+<div class="bw-kartka-h">W tekście</div>
+<ol>{spisTresci(wyrozniony.body).map((h) => <li><span>{h}</span></li>)}</ol>
+</div>
+</div>
+</section>
+
+<!-- ============ 3 · LISTA ============ -->
+<section id="artykuly" class="sec-pad" style="background:#f4f8f2;padding-top:clamp(52px,6.6vw,84px)">
+<div class="bw-pasek">
+<h2 class="h-mod" style="margin:0">Wszystkie artykuły</h2>
+<div class="bw-filtry" role="group" aria-label="Filtr kategorii">
+<button class="bw-f" data-kat="wszystkie" aria-pressed="true">Wszystkie <em>{wszystkie.length}</em></button>
+{filtry.map(([k, v]) => (
+  <button class="bw-f" data-kat={k} aria-pressed="false">{v.nazwa} <em>{licznik[k]}</em></button>
+))}
+</div>
+</div>
+
+<div class="bw-lista">
+{wszystkie.map((a) => (
+  <a class="bw-r" href={`/baza-wiedzy/${a.slug}`} data-kat={a.data.kategoria}>
+    <span class="bw-data">{kr.format(a.data.data)}</span>
+    <span><span class="bw-t">{a.data.tytul}</span><span class="bw-l">{a.data.lead}</span></span>
+    <span class="bw-meta"><b>{KATEGORIE[a.data.kategoria].nazwa}</b>{czasCzytania(a.body)} min czytania</span>
+  </a>
+))}
+<p class="bw-pusto" hidden>W tej kategorii nie ma jeszcze żadnego tekstu.</p>
+</div>
+<button class="bw-wiecej" data-wiecej hidden>Pokaż starsze wpisy <em data-wiecej-ile></em></button>
+</section>
+
+<!-- ============ 4 · NAGRANIA ============
+     Jedyne kafle na stronie. Przy wideo klatka jest treścią: po miniaturze
+     poznaje się nagranie szybciej niż po tytule. Dopóki w src/data/filmy.js
+     nie ma prawdziwych identyfikatorów, klatka rysuje się sama i kafel nie
+     jest linkiem. -->
+<section id="nagrania" style="background:radial-gradient(900px 480px at 88% 0%, rgba(0,205,119,0.16), transparent 62%), #0e2b1d;padding:clamp(64px,8vw,104px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
+<div class="sec-head">
+<div>
+<h2 class="h-sec" style="margin:0;color:#ffffff;max-width:20ch;text-wrap:balance">Nagrania z pracy na prawdziwych sprawach</h2>
+<p style="margin:18px 0 0;max-width:540px;font-size:16.5px;line-height:1.6;color:rgba(255,255,255,0.7);text-wrap:pretty">Przejścia przez arkusze, przeglądy aplikacji i całe budowy od pustego repozytorium. Bez slajdów.</p>
+</div>
+<a href={KANAL_YT} target="_blank" rel="noopener" class="btn-accent" style="display:inline-flex;align-items:center;gap:9px;background:var(--la-accent,#00CD77);color:#0b1a11;padding:14px 22px;border-radius:11px;font-weight:750;font-size:15px;white-space:nowrap">Kanał na YouTube ↗</a>
+</div>
+
+<div class="bw-fg">
+{FILMY.map((f) => {
+  const gotowy = jestId(f.yt);
+  const Kafel = gotowy ? 'a' : 'div';
+  return (
+    <Kafel class="bw-fi" href={gotowy ? adresFilmu(f.yt) : undefined} target={gotowy ? '_blank' : undefined} rel={gotowy ? 'noopener' : undefined}>
+      <div class="bw-klatka">
+        {gotowy && <img src={miniatura(f.yt)} alt="" loading="lazy" decoding="async" />}
+        <span class="bw-play" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="#0b1a11"><path d="M9 6.5l9 5.5-9 5.5z"/></svg></span>
+        <span class="bw-czas">{f.czas}</span>
+      </div>
+      <span class="bw-ft">{f.t}</span>
+      <span class="bw-fd">{f.d}</span>
+    </Kafel>
+  );
+})}
+</div>
+</section>
+
+<!-- ============ 5 · KONTAKT ============ -->
+<GcCta
+  heading="Macie proces, o którym nie ma tu jeszcze tekstu?"
+  lead="Napiszcie, jak wygląda dzisiaj. Odpowiadamy tym samym, co w artykułach: liczbą, kolejnością i tym, czego nie warto budować."
+  eyebrow="Z pierwszej rozmowy wychodzicie z"
+  items={[
+    { t: 'Miarą stanu wyjściowego', d: 'czas sprawy w Waszym procesie, policzony na dwudziestu przypadkach' },
+    { t: 'Kolejnością', d: 'która rzecz pierwsza i dlaczego akurat ta' },
+    { t: 'Granicą', d: 'co w tym procesie nie zwróci się z automatyzacji' },
+  ]}
+  fieldLabel="Jak ten proces wygląda dzisiaj?"
+  placeholder="Np. oferty składamy z cennika w Excelu, trwa to trzy dni…"
+  submitLabel="Wyślij zapytanie"
+  badges={[
+    { i: 'klodka', t: 'Wasze dane bezpieczne' },
+    { i: 'kartka', t: 'NDA przed startem' },
+    { i: 'ptaszek', t: 'Bez prowizji od dostawców' },
+  ]}
+/>
+
+<script>
+  // ---- Filtr kategorii + rozwijanie listy ----
+  // Wiersze zostają w DOM-ie i tylko chowają się atrybutem `hidden`, żeby
+  // przełączanie nie kasowało pozycji scrolla i żeby wyszukiwarki widziały
+  // pełną listę w źródle. Na start pokazuje się PIERWSZE_N najnowszych;
+  // reszta wchodzi przyciskiem i zostaje odsłonięta do końca sesji.
+  (function(){
+    var PIERWSZE_N = 12;
+    var przyciski = document.querySelectorAll('.bw-f');
+    var wiersze = [].slice.call(document.querySelectorAll('.bw-r'));
+    var pusto = document.querySelector('.bw-pusto');
+    var wiecej = document.querySelector('[data-wiecej]');
+    var ile = document.querySelector('[data-wiecej-ile]');
+    if(!przyciski.length) return;
+
+    var kat = 'wszystkie';
+    var rozwiniete = false;
+
+    function odswiez(){
+      var pasujace = wiersze.filter(function(w){
+        return kat === 'wszystkie' || w.dataset.kat === kat;
+      });
+      wiersze.forEach(function(w){ w.hidden = true; });
+      var limit = rozwiniete ? pasujace.length : Math.min(PIERWSZE_N, pasujace.length);
+      pasujace.slice(0, limit).forEach(function(w){ w.hidden = false; });
+      if(pusto) pusto.hidden = pasujace.length > 0;
+      var zostalo = pasujace.length - limit;
+      if(wiecej){
+        wiecej.hidden = zostalo <= 0;
+        if(ile) ile.textContent = zostalo > 0 ? '(' + zostalo + ')' : '';
+      }
+    }
+
+    przyciski.forEach(function(b){
+      b.addEventListener('click', function(){
+        kat = b.dataset.kat;
+        przyciski.forEach(function(x){ x.setAttribute('aria-pressed', String(x === b)); });
+        odswiez();
+      });
+    });
+
+    if(wiecej) wiecej.addEventListener('click', function(){ rozwiniete = true; odswiez(); });
+
+    odswiez();
+  })();
+</script>
+</LaBase>

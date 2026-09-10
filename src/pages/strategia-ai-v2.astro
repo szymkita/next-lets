@@ -1,0 +1,1116 @@
+---
+// STRATEGIA AI — WERSJA 2 · /strategia-ai-v2
+//
+// Stoi obok /strategia-ai do porównania. Ta sama oferta i te same mechanizmy
+// wiarygodności; różnica jest w tym, czego v1 nie miała, a co u Sellwise'u
+// (siostrzana spółka, sellwise.pl/wdrozenie-ai) robi robotę:
+//
+//  1. NISKI PRÓG WEJŚCIA. Główne wezwanie to 30 bezpłatnych minut, nie faktura
+//     na [29 000] zł. Cena zostaje widoczna w pasku faktów — to nadal nasza
+//     przewaga nad rynkiem, który jej nie podaje.
+//  2. KONWERSJA ROZŁOŻONA PO STRONIE. Sellwise ma trzy formularze i siedem
+//     przycisków. v1 miała jeden formularz na samym dole 12 000 pikseli.
+//     Tutaj formularz z twarzą wchodzi w jednej trzeciej strony.
+//  3. „CO AI ZMIENIA W WASZYM DZIALE". Ich najmocniejsza sekcja: czytelnik
+//     znajduje swój dział i swój ból dosłownie. v1 mówiła o procesach
+//     abstrakcyjnie, w środku wykresu.
+//  4. NAZWANE NARZĘDZIA. Konkret zamiast kropek na wykresie. Przy okazji
+//     wchodzi tu Appto — produkt z naszej grupy.
+//  5. BEZPIECZEŃSTWO DANYCH JAKO OSOBNY BLOK. W v1 leżało w jednej odpowiedzi
+//     FAQ, a dla zarządu to jedna z trzech pierwszych obiekcji.
+//  6. TWARZE I NAZWISKA. Ludzie z rejestru studia i trzy opinie z imienia,
+//     nazwiska i firmy. v1 nie miała ani jednej twarzy poza stopką kontaktową.
+//  7. MITY osobno od FAQ — obiekcje emocjonalne odklejone od operacyjnych.
+//
+// CZEGO ŚWIADOMIE NIE PRZEPISUJEMY OD SELLWISE'U:
+//  · Copy na antytezach („nie na uniwersalnym szablonie", „nie dopiero na
+//    końcu") — u nich jest tego kilkadziesiąt, u nas to odrzucona figura.
+//  · Pożyczonego benchmarku jako dowodu („11 godzin tygodniowo, badanie LSE").
+//    Cała nasza strona stoi na tym, że liczby biorą się z pomiaru u klienta.
+//  · Ukrytej ceny.
+//  · Ilustracji dekoracyjnych. Nasze rysunki niosą dane; ich rysunki są ładne
+//    i nie mówią nic, czego nie ma w akapicie obok.
+//
+// DO POTWIERDZENIA: [29 000] zł, kształt usługi z pilotem, logotypy narzędzi
+// (dziś wordmarki tekstowe — podmiana na oficjalne pliki to jedna linia),
+// /og/strategia-ai.png.
+import LaBase from '../layouts/LaBase.astro';
+import GcFaq from '../components/GcFaq.astro';
+import GcCta from '../components/GcCta.astro';
+import TeamAvatar from '../components/TeamAvatar.astro';
+import { zespol } from '../data/zespol.js';
+
+const title = "Strategia transformacji AI — plan wdrożeń z policzonym zwrotem | Let's automate";
+const description = 'Trzy tygodnie na Waszych procesach i danych. Kolejność wdrożeń z kwotą przy każdej pozycji, arkusz wyliczeń do sprawdzenia i pierwszy proces z listy uruchomiony jeszcze w trakcie projektu.';
+
+const godz = (h) => String(h).replace('.', ',');
+
+// ---- Macierz w hero ----
+const punkty = [
+  { id: '01', t: 'Obieg faktur kosztowych', o: '1 240 dokumentów mies. · 134 h pracy', s: 'start: tydzień 1', x: 82, y: 74, r: 17, typ: 'pierwsza' },
+  { id: '02', t: 'Ofertowanie w dziale handlowym', o: '320 ofert mies. · 96 h pracy', s: 'start: miesiąc 2', x: 68, y: 55, r: 14, typ: 'wchodzi' },
+  { id: '03', t: 'Zapytania serwisowe', o: '2 100 wiadomości mies. · 71 h pracy', s: 'zwraca w drugim roku', x: 55, y: 38, r: 12, typ: 'wchodzi' },
+  { id: '—', t: 'Planowanie produkcji', o: 'dane w trzech arkuszach, poza systemem', s: 'najpierw integracja', x: 18, y: 80, r: 13, typ: 'odpada', bezId: true },
+  { id: null, t: 'Rejestr reklamacji', o: '40 spraw mies. · 9 h pracy', s: 'poza progiem', x: 35, y: 25, r: 7, typ: 'reszta' },
+  { id: null, t: 'Wnioski urlopowe', o: 'proces już w systemie kadrowym', s: 'poza progiem', x: 48, y: 18, r: 6, typ: 'reszta' },
+  { id: null, t: 'Raport zarządczy', o: 'jeden raz w miesiącu', s: 'poza progiem', x: 25, y: 45, r: 7, typ: 'reszta' },
+  { id: null, t: 'Zamówienia do dostawców', o: '110 zamówień mies. · 14 h pracy', s: 'poza progiem', x: 70, y: 28, r: 8, typ: 'reszta' },
+];
+
+const kolejnosc = [
+  { n: '01', t: 'Obieg faktur kosztowych', z: '1,4×', s: 'start: tydzień 1', tag: null },
+  { n: '02', t: 'Ofertowanie w dziale handlowym', z: '1,2×', s: 'start: miesiąc 2', tag: null },
+  { n: '03', t: 'Zapytania serwisowe', z: '0,5×', s: 'zwraca w drugim roku', tag: null },
+  { n: '—', t: 'Planowanie produkcji', z: null, s: 'najpierw integracja', tag: 'odradzamy teraz' },
+];
+
+const powody = [
+  { n: '01', t: 'Pilot stoi obok procesu', d: 'Model odpowiada w oknie czatu, dane zostają w systemach. Praca zespołu wygląda tak samo jak przed pilotem.' },
+  { n: '02', t: 'Nikt nie policzył punktu wyjścia', d: 'Bez godzin i kosztów sprzed wdrożenia nie ma z czym porównać wyniku. Po pół roku efekt zostaje kwestią opinii.' },
+  { n: '03', t: 'Zakup wyprzedza proces', d: 'Firma kupuje licencje dla całego zespołu, a dopiero potem szuka miejsca, w którym się przydadzą.' },
+];
+
+// ---- Co AI zmienia w Waszym dziale ----
+// Najmocniejsza sekcja u Sellwise'u, przepisana na nasz język: zdania nazywają
+// aktora i czynność, bez antytez „nie tak, tylko tak".
+const dzialy = [
+  {
+    k: 'sprzedaz',
+    t: 'Sprzedaż',
+    p: 'Gdzie handlowcy tracą godziny na pisanie',
+    i: [
+      'Notatka ze spotkania trafia do CRM kilka minut po rozmowie, razem z ustaleniami i terminem następnego kroku.',
+      'Oferta powstaje z danych z CRM i cennika. Handlowiec dopina szczegóły i wysyła.',
+      'System pilnuje follow-upów i zgłasza deale, które stoją dłużej niż zwykle na tym etapie.',
+    ],
+  },
+  {
+    k: 'obsluga',
+    t: 'Obsługa klienta',
+    p: 'Gdzie te same pytania wracają codziennie',
+    i: [
+      'Pytanie o status zamówienia dostaje odpowiedź z danymi z systemu, o każdej porze.',
+      'Zgłoszenie trafia do właściwej osoby ze streszczeniem historii klienta.',
+      'Powtarzalne sprawy zamyka agent. Konsultant wchodzi tam, gdzie sprawa odbiega od schematu.',
+    ],
+  },
+  {
+    k: 'finanse',
+    t: 'Finanse',
+    p: 'Gdzie dokumenty przepisuje się ręcznie',
+    i: [
+      'Faktura kosztowa z maila zostaje odczytana, zdekretowana i zaksięgowana.',
+      'Pozycje z faktury schodzą się z zamówieniem i dostawą. Rozbieżności lądują na osobnej liście do decyzji.',
+      'Raport kosztów czeka gotowy pierwszego roboczego dnia miesiąca.',
+    ],
+  },
+  {
+    k: 'operacje',
+    t: 'Operacje',
+    p: 'Gdzie dane wędrują między systemami',
+    i: [
+      'Zamówienie przechodzi przez magazyn i logistykę bez przepisywania między systemami.',
+      'Dokumenty przewozowe i specyfikacje trafiają do właściwych rekordów same.',
+      'Harmonogram uwzględnia dostępność ludzi i maszyn, a zmiana rozchodzi się do wszystkich w tej samej minucie.',
+    ],
+  },
+  {
+    k: 'hr',
+    t: 'HR i rekrutacja',
+    p: 'Gdzie czas idzie na czytanie i tłumaczenie',
+    i: [
+      'CV przechodzi przez porównanie z wymaganiami stanowiska. Rekruter dostaje krótką listę z uzasadnieniem.',
+      'Nowa osoba pyta o procedurę i dostaje odpowiedź z firmowej bazy wiedzy, z linkiem do źródła.',
+      'Wnioski urlopowe i delegacje krążą według ustalonej ścieżki, bez maili do przełożonego.',
+    ],
+  },
+  {
+    k: 'zarzad',
+    t: 'Zarząd',
+    p: 'Gdzie odpowiedź przychodzi za późno',
+    i: [
+      'Pytanie o wynik miesiąca dostaje odpowiedź z danych, bez kolejki do analityka.',
+      'Widok kosztu AI: kto z czego korzysta, ile to kosztuje i co z tego wróciło.',
+      'Sygnał przychodzi, gdy proces zaczyna odstawać od normy — zanim zobaczy to klient.',
+    ],
+  },
+];
+
+const sytuacje = [
+  { t: 'Budżet na AI jest, kolejności nie ma', d: 'Każdy dział przyszedł z własnym pomysłem. Jest ich kilkanaście, żaden nie ma policzonego zwrotu, a zarząd ma wybrać.' },
+  { t: 'Pierwsze narzędzie nie weszło do codziennej pracy', d: 'Licencje wykupione, kilka osób z nich korzysta, w procesie nie zmieniło się nic. Pytanie brzmi, czy problem leży w narzędziu.' },
+  { t: 'Na biurku leżą trzy oferty i brakuje kryteriów', d: 'Każdy dostawca rekomenduje co innego i każdy ma rację po swojemu. Potrzebny jest dokument, który porówna je na Waszych liczbach.' },
+];
+
+const niepotrzebne = [
+  { t: 'Wiecie, który proces boli najbardziej', d: 'Jeden oczywisty kandydat nie potrzebuje trzytygodniowego przeglądu. Wyceniamy wdrożenie od razu.' },
+  { t: 'Dane leżą poza systemami', d: 'Gdy kluczowe informacje żyją w arkuszach i skrzynkach, pierwszym krokiem jest integracja. Strategia policzy to samo, co widać gołym okiem.' },
+  { t: 'Dokument ma trafić do wniosku o dotację', d: 'Piszemy dokumenty do wdrażania, nie do rozliczania. Odsyłamy do firm, które robią to na co dzień.' },
+];
+
+const zostaje = [
+  { n: '01', t: 'Kolejność wdrożeń z kwotami', d: 'Procesy ułożone od najkrótszego zwrotu. Przy każdym: co zmienia się w pracy zespołu, ile kosztuje wdrożenie, ile wraca w rok i od kiedy zaczynać.' },
+  { n: '02', t: 'Arkusz wyliczeń', d: 'Otwarty plik z założeniami. Podmieniacie stawkę godzinową albo liczbę dokumentów i widzicie nowy wynik. Żadna liczba nie jest zaszyta w slajdzie.' },
+  { n: '03', t: 'Zasady kwalifikacji procesów', d: 'Sześć kryteriów, po których proces trafia do AI, i imienna lista procesów, przy których model odradzamy — razem z powodem.' },
+  { n: '04', t: 'Specyfikacja dwóch pierwszych wdrożeń', d: 'Opisana na tyle dokładnie, że wycenę zrobi też inna firma. Dokument zostaje Wasz razem z prawem do niego.' },
+  { n: '05', t: 'Dziewięćdziesiąt minut z zarządem', d: 'Omówienie na żywo, pytanie po pytaniu. Dokument dostajecie dwa dni wcześniej, więc na spotkanie wchodzicie z gotowymi uwagami.' },
+];
+
+const arkuszWejscie = [
+  { k: 'Faktury kosztowe miesięcznie', id: 'o-faktur', v: '1 240', z: 'eksport z systemu księgowego', live: true },
+  { k: 'Czas na jednym dokumencie', id: null, v: '6,5 min', z: 'pomiar na 40 dokumentach, tydzień 1', live: false },
+  { k: 'Koszt godziny zespołu', id: 'o-stawka', v: '68 zł', z: 'stawka od działu HR klienta', live: true },
+  { k: 'Udział spraw wymagających człowieka', id: null, v: '12%', z: 'przegląd 3 miesięcy historii', live: false },
+];
+
+const kryteria = [
+  { n: '1', t: 'Powtarzalność', q: 'Ile razy w miesiącu ktoś wykonuje dokładnie ten sam krok?' },
+  { n: '2', t: 'Dane pod ręką', q: 'Czy to, czego potrzebuje model, leży w systemie, do którego da się dostać?' },
+  { n: '3', t: 'Sprawdzalny wynik', q: 'Czy o pojedynczej odpowiedzi da się powiedzieć, że jest dobra?' },
+  { n: '4', t: 'Koszt pomyłki', q: 'Co dzieje się przy błędzie i kto go zauważa, zanim wyjdzie na zewnątrz?' },
+  { n: '5', t: 'Prostsze rozwiązanie', q: 'Czy regułą albo integracją załatwia się to taniej i pewniej?' },
+  { n: '6', t: 'Właściciel po Waszej stronie', q: 'Kto odpowiada za ten proces trzy miesiące po wdrożeniu?' },
+];
+
+const sito = [
+  { x: 24, dx: 7, dy: 58, los: 'odpada' },
+  { x: 46, dx: 15, dy: 126, los: 'odpada' },
+  { x: 68, dx: 61, dy: 280, los: 'wchodzi' },
+  { x: 90, dx: 0, dy: 92, los: 'odpada' },
+  { x: 112, dx: 0, dy: 160, los: 'odpada' },
+  { x: 134, dx: 9, dy: 280, los: 'wchodzi' },
+  { x: 156, dx: 0, dy: 58, los: 'odpada' },
+  { x: 178, dx: 0, dy: 228, los: 'odpada' },
+  { x: 200, dx: 130, dy: 194, los: 'odbija' },
+  { x: 222, dx: 0, dy: 126, los: 'odpada' },
+  { x: 244, dx: -87, dy: 280, los: 'wchodzi' },
+  { x: 266, dx: -26, dy: 92, los: 'odpada' },
+];
+const bramki = [
+  { y: 78, l: 23, r: 263 }, { y: 112, l: 38, r: 248 }, { y: 146, l: 53, r: 233 },
+  { y: 180, l: 68, r: 218 }, { y: 214, l: 83, r: 203 }, { y: 248, l: 98, r: 188 },
+];
+
+// ---- Czym pracujemy ----
+// Wordmarki tekstowe. Podmiana na oficjalne pliki logo to jedna linia przy `logo`.
+const narzedzia = [
+  { n: 'ChatGPT', d: 'OpenAI', r: 'praca z tekstem i dokumentami' },
+  { n: 'Claude', d: 'Anthropic', r: 'długie dokumenty, praca z kodem' },
+  { n: 'Gemini', d: 'Google', r: 'obieg dokumentów w Workspace' },
+  { n: 'Appto', d: 'nasz produkt', r: 'agenci wpięci w Wasze procesy', logo: '/uploads/appto-sygnet.svg' },
+  { n: 'n8n', d: 'open source', r: 'przepływy między systemami' },
+  { n: 'Make', d: 'Celonis', r: 'automatyzacje bez kodu' },
+];
+
+const etapy = [
+  { e: 'PRZED STARTEM', t: 'Dostępy i NDA', d: 'Podpisujemy NDA, dostajemy dostęp do systemów i listę procesów do przejrzenia. Nie musicie niczego wcześniej opisywać.', h: 1, pct: 12, s: 'PRZED' },
+  { e: 'TYDZIEŃ 1', t: 'Mapowanie i pomiar', d: 'Warsztat z zarządem, a po nim rozmowy z ludźmi, którzy wykonują pracę — po 45 minut, zwykle sześć. Na wybranych krokach mierzymy czas, zamiast pytać o szacunki.', h: 4, pct: 27, s: 'TYDZIEŃ 1' },
+  { e: 'TYDZIEŃ 2', t: 'Liczenie i wybór', d: 'Powstaje arkusz i kolejność. Założenia potwierdzamy z Wami na krótkim spotkaniu, zanim cokolwiek pójdzie dalej. Wybieramy proces do uruchomienia.', h: 1, pct: 25, s: 'TYDZIEŃ 2' },
+  { e: 'TYDZIEŃ 3', t: 'Uruchomienie pierwszego procesu', d: 'Pierwsza pozycja z listy rusza na Waszych danych. Obsługują ją Wasi ludzie, my siedzimy obok i poprawiamy w locie.', h: 2, pct: 27, s: 'TYDZIEŃ 3' },
+  { e: 'DZIEŃ 15', t: 'Omówienie z zarządem', d: 'Dziewięćdziesiąt minut na dokument i pytania. Po nim decyzja należy do Was i nie ma w tym spotkaniu ani jednego slajdu sprzedażowego.', h: 1.5, pct: 9, s: 'DZIEŃ 15' },
+];
+
+// Ludzie z rejestru studia — prawdziwe tytuły stanowisk, bez przypisywania ról
+// projektowych. Kto wejdzie na konkretny projekt, ustala się na pierwszej rozmowie.
+const wybor = ['Szymon Kita', 'Krzysztof Radej', 'Damian Trzciński', 'Michał Langowski', 'Aleksander Żaboklicki'];
+const ludzie = wybor.map((n) => zespol.find((o) => o.name === n)).filter(Boolean);
+
+const dowody = [
+  { dzial: 'Finanse', n: 99.7, dec: 1, j: '%', o: 'skuteczności księgowania w obiegu faktur', p: 'Trzy osoby przepisywały faktury z maili.' },
+  { dzial: 'Sprzedaż', n: -80, dec: 0, j: '%', o: 'czasu przygotowania oferty', p: 'Oferta sklejana z CRM, cenników i maili — pół dnia pracy.' },
+  { dzial: 'Operacje', n: 65, dec: 0, j: 'h', o: 'odzyskane miesięcznie w operacjach', p: 'Raporty klejone z czterech arkuszy, decyzje na danych sprzed miesiąca.' },
+  { dzial: 'Obsługa klienta', n: -90, dec: 0, j: '%', o: 'zapytań obsługiwanych ręcznie', p: 'Zespół odpisywał na te same pytania kilkanaście razy dziennie.' },
+];
+
+const opinie = [
+  { c: 'Wprowadzenie danych trwało godzinę. Dziś przesłanie oferty to 10 minut — oszczędności liczymy w etatach.', a: 'Mateusz Chinczewski', r: 'Prezes Zarządu, Finerto' },
+  { c: 'Let’s automate wziął pełną odpowiedzialność za projekt i dowiózł go do końca. To dlatego powierzyliśmy im kolejny, znacznie większy.', a: 'Jakub Ciołkowski', r: 'Członek Zarządu, NARS Polska' },
+  { c: 'Bardzo dobrze zrozumieli nasze potrzeby i zaprojektowali scenariusz, który w pełni spełnił cele biznesowe.', a: 'Arkadiusz Andruch', r: 'Prezes Zarządu, X2O' },
+];
+
+// Obiekcje emocjonalne — odklejone od FAQ, które odpowiada na operacyjne.
+const mity = [
+  { m: 'Strategia transformacji AI to prezentacja, która ląduje w szufladzie.', r: 'Dlatego trzeci tydzień kończy się procesem, który pracuje na Waszych danych. Dokument opisuje to, co już działa, i to, co idzie po tym.' },
+  { m: 'Najpierw musimy uporządkować dane, potem przyjdziemy.', r: 'Porządkowanie danych bez wskazanego procesu trwa latami. Przegląd pokazuje, który proces potrzebuje jakich danych, więc porządek robi się na tym wycinku, który zwraca najszybciej.' },
+  { m: 'Jesteśmy za mali na taki projekt.', r: 'Próg nie leży w wielkości firmy, tylko w liczbie powtórzeń. Czterdzieści dokumentów miesięcznie zwykle nie przechodzi progu, tysiąc dwieście przechodzi w firmie każdej wielkości.' },
+  { m: 'AI zabierze pracę naszym ludziom.', r: 'W procesach, które przechodzą kryteria, model zdejmuje przepisywanie i szukanie. Zespół zostaje przy wyjątkach i decyzjach, których w tych procesach jest kilkanaście procent.' },
+  { m: 'Mamy już ChatGPT dla całego zespołu, to wystarczy.', r: 'Licencja daje dostęp do modelu. Wynik finansowy pojawia się wtedy, gdy model siedzi w środku procesu i ma dane z systemu — i właśnie to liczy przegląd.' },
+];
+
+const faq = [
+  { q: 'Czym to się różni od audytu AI za trzy tysiące złotych?', a: 'Zakresem i tym, co zostaje na końcu. Audyt w tej cenie to zwykle warsztat i lista pomysłów uszeregowana na podstawie rozmowy. Tutaj mierzymy czas na realnych dokumentach, liczby biorą się z Waszych systemów, a trzeci tydzień kończy się procesem, który już pracuje. Jeśli szukacie samej listy okazji, taki audyt wystarczy i powiemy to wprost.' },
+  { q: 'Co, jeśli wyjdzie, że żaden proces się nie opłaca?', a: 'To zdarza się najczęściej w firmach, które mają dane rozsypane poza systemami — i wtedy dokument mówi, że pierwszym krokiem jest integracja, a nie AI. Dostajecie wyliczenie, które to pokazuje, i rekomendację, żeby wstrzymać budżet na modele. Za taki wynik płacicie tyle samo. Jest wart tyle, co roczne wdrożenie zatrzymane w porę.' },
+  { q: 'Czy do dokumentu dołączycie ofertę na wdrożenie?', a: 'Nie w komplecie. Specyfikacja dwóch pierwszych wdrożeń jest opisana tak, żeby wycenę zrobiła też inna firma, i to jest świadoma decyzja. Naszą wycenę dostaniecie, jeśli o nią poprosicie — kwota za strategię schodzi wtedy z pierwszego wdrożenia.' },
+  { q: 'Ile czasu zajmie to naszemu zespołowi?', a: 'Około ośmiu i pół godziny łącznie po Waszej stronie: godzina na dostępy, cztery godziny warsztatu i rozmów w pierwszym tygodniu, godzina na potwierdzenie założeń, dwie godziny przy uruchomieniu i półtorej na omówienie. Rozmowy z osobami wykonującymi pracę umawiamy pojedynczo, żeby nie zatrzymywać całego działu.' },
+  { q: 'Co dzieje się na tych bezpłatnych trzydziestu minutach?', a: 'Pytamy o trzy rzeczy: jakie procesy są dziś na stole, ile spraw przez nie przechodzi miesięcznie i w jakich systemach leżą dane. Na tej podstawie mówimy, czy przegląd ma u Was sens, i jeśli nie ma — mówimy to od razu. Nie ma prezentacji ani nagrywania.' },
+  { q: 'Mamy już listę pomysłów od zespołu. Czy to nie to samo?', a: 'Lista pomysłów mówi, co ludzi uwiera. Kolejność mówi, ile każda pozycja kosztuje i ile wraca, więc zwykle wygląda inaczej niż lista wyjściowa. Waszą listę bierzemy na wejściu i przepuszczamy przez sześć kryteriów oraz arkusz — część pozycji spada, część awansuje, a jedna albo dwie dochodzą z rozmów z ludźmi przy procesie.' },
+];
+---
+<LaBase noindex title={title} description={description} ctaHref="#rozmowa" ctaLabel="Umów 30 minut" nav="uslugi">
+<style is:global slot="head">
+  /* ---------- podkreślenie w H1 ---------- */
+  .h1-mark{position:relative;display:inline-block}
+  .h1-mark svg{position:absolute;left:-1.5%;bottom:-0.15em;width:103%;height:0.34em;overflow:visible;pointer-events:none}
+  .h1-mark path{fill:none;stroke:rgba(0,205,119,.92);stroke-width:6;vector-effect:non-scaling-stroke;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;animation:h1draw 1s .5s cubic-bezier(.5,0,.2,1) forwards}
+  @keyframes h1draw{to{stroke-dashoffset:0}}
+
+  /* ---------- macierz ---------- */
+  .mx{width:100%;height:auto;display:block;overflow:visible}
+  .mx-ax{stroke:#cfdacd;stroke-width:1.2;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset .9s cubic-bezier(.4,0,.2,1)}
+  .mx-grid{stroke:#eef2ec;stroke-width:1;opacity:0;transition:opacity .5s .3s}
+  .mx-band{opacity:0;transition:opacity .6s .5s}
+  .mx-lead{fill:none;stroke:#0a7a52;stroke-width:1.3;stroke-dasharray:3 5;opacity:0;transition:opacity .5s .9s}
+  .mx-node{transform-box:fill-box;transform-origin:center;transform:scale(.2);opacity:0;transition:transform .55s cubic-bezier(.34,1.5,.5,1),opacity .3s;transition-delay:calc(var(--i)*80ms + .35s)}
+  .mx-lbl{opacity:0;transition:opacity .4s;transition-delay:calc(var(--i)*80ms + .6s)}
+  .mx-hit{cursor:pointer}
+  .mx.on .mx-ax{stroke-dashoffset:0}
+  .mx.on .mx-grid,.mx.on .mx-band,.mx.on .mx-lead,.mx.on .mx-lbl{opacity:1}
+  .mx.on .mx-node{transform:scale(1);opacity:1}
+  .mx.on .mx-g:hover .mx-node{transform:scale(1.14)}
+  .mx-cap{min-height:38px}
+
+  /* ---------- siatka stu pilotaży ---------- */
+  .wf{display:grid;grid-template-columns:repeat(20,1fr);gap:5px}
+  .wf i{display:block;aspect-ratio:1;border-radius:2px;background:#ccd8ca;opacity:0;transform:translateY(6px);transition:opacity .34s,transform .34s;transition-delay:calc(var(--i)*10ms)}
+  .wf.on i{opacity:1;transform:none}
+  .wf i.hit{background:var(--la-accent,#00CD77)}
+  .wf.on i.hit{transition-delay:calc(1.2s + var(--j)*90ms);box-shadow:0 0 0 3px rgba(0,205,119,.22)}
+  .bar{height:9px;border-radius:5px;background:#e2e9e0;overflow:hidden}
+  .bar span{display:block;height:100%;width:0;border-radius:5px;background:linear-gradient(90deg,#0a7a52,#00CD77);transition:width 1.1s cubic-bezier(.4,0,.2,1) .25s}
+  .on .bar span{width:var(--w)}
+
+  /* ---------- przełącznik działów ---------- */
+  .dz-tab{appearance:none;border:0;background:none;font-family:inherit;cursor:pointer;display:block;width:100%;text-align:left;padding:15px 0 15px 20px;border-left:2px solid #e2e9e0;color:#7c877e;transition:color .2s,border-color .2s,padding-left .25s}
+  .dz-tab strong{display:block;font-size:clamp(19px,2.2vw,24px);font-weight:750;letter-spacing:-0.018em;line-height:1.15;color:inherit}
+  .dz-tab span{display:block;margin-top:4px;font-size:13px;line-height:1.45;opacity:0;max-height:0;overflow:hidden;transition:opacity .25s,max-height .3s}
+  .dz-tab:hover{color:#16211a}
+  .dz-tab[aria-selected="true"]{color:#16211a;border-left-color:var(--la-accent,#00CD77);padding-left:26px}
+  .dz-tab[aria-selected="true"] span{opacity:1;max-height:60px;color:#7c877e}
+  .dz-panel{display:none}
+  .dz-panel[data-open="true"]{display:block;animation:dzin .4s cubic-bezier(.4,0,.2,1)}
+  @keyframes dzin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .dz-item{display:grid;grid-template-columns:30px 1fr;gap:16px;align-items:start;padding:20px 0;border-top:1px solid #e7ece4}
+  .dz-item:first-child{border-top:0;padding-top:4px}
+  .dz-num{font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:700;color:#0a7a52;padding-top:3px}
+
+  /* ---------- arkusz z suwakami ---------- */
+  .sl{-webkit-appearance:none;appearance:none;width:100%;height:3px;border-radius:3px;background:#dde5db;outline:none;margin:0}
+  .sl::-webkit-slider-thumb{-webkit-appearance:none;width:19px;height:19px;border-radius:50%;background:#0a7a52;border:3px solid #fff;box-shadow:0 3px 10px -2px rgba(10,122,82,.55);cursor:pointer;transition:transform .15s}
+  .sl::-webkit-slider-thumb:hover{transform:scale(1.12)}
+  .sl::-moz-range-thumb{width:15px;height:15px;border-radius:50%;background:#0a7a52;border:3px solid #fff;cursor:pointer}
+  .ark-in{display:grid;grid-template-columns:1fr auto 200px;gap:16px;align-items:baseline;padding:10px 0;border-top:1px solid #edf0ea}
+  .ark-out{display:flex;align-items:baseline;justify-content:space-between;gap:18px;padding:9px 0;border-top:1px solid #edf0ea}
+  .ark-live{background:#eaf6ee;box-shadow:0 0 0 3px #eaf6ee;border-radius:2px}
+
+  /* ---------- sito ---------- */
+  .sito{width:100%;height:auto;display:block}
+  .st-wall{stroke:#aebcac;stroke-width:1.5;fill:none}
+  .st-gate{stroke:#ccd8ca;stroke-width:1;stroke-dasharray:2 4}
+  .st-num{fill:#8e9c8d;font-family:ui-monospace,Menlo,monospace;font-size:10px}
+  .st-dot{transform:translate(0,0);transition:transform 1.5s cubic-bezier(.42,0,.3,1),opacity .5s;transition-delay:calc(var(--i)*90ms)}
+  .st-dot circle{transition:fill .4s;transition-delay:calc(var(--i)*90ms + 1.1s)}
+  .sito.on .st-dot{transform:translate(var(--dx),var(--dy))}
+  .sito.on .st-dot.odpada{opacity:.3;transition-delay:calc(var(--i)*90ms),calc(var(--i)*90ms + .9s)}
+  .sito.on .st-dot.wchodzi circle{fill:var(--la-accent,#00CD77)}
+  .sito.on .st-dot.odbija circle{fill:#a3391f}
+  .st-out{opacity:0;transition:opacity .5s 2.2s}
+  .sito.on .st-out{opacity:1}
+
+  /* ---------- narzędzia ---------- */
+  .nrz{display:grid;grid-template-columns:repeat(6,1fr);gap:14px}
+  .nrz-t{background:#ffffff;border:1px solid #e7ece4;border-radius:14px;padding:22px 18px;transition:transform .25s,box-shadow .25s,border-color .25s}
+  .nrz-t:hover{transform:translateY(-3px);border-color:var(--la-accent,#00CD77);box-shadow:0 20px 40px -26px rgba(18,38,28,.28)}
+  .nrz-n{display:block;font-size:17px;font-weight:750;letter-spacing:-0.02em;color:#16211a}
+  .nrz-d{display:block;margin-top:2px;font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:0.06em;color:#9aa69b}
+  .nrz-r{display:block;margin-top:12px;font-size:13px;line-height:1.5;color:#4c5850}
+
+  /* ---------- bezpieczeństwo ---------- */
+  .bez{width:100%;height:auto;display:block}
+  .bez-box{opacity:0;transform:translateY(8px);transition:opacity .5s,transform .5s;transition-delay:calc(var(--i)*140ms)}
+  .bez.on .bez-box{opacity:1;transform:none}
+  .bez-flow{stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset .8s ease .5s}
+  .bez.on .bez-flow{stroke-dashoffset:0}
+  .bez-pkt{opacity:0;transition:transform 1.6s cubic-bezier(.4,0,.4,1) 1s,opacity .3s 1s}
+  .bez.on .bez-pkt{opacity:1;transform:translateX(238px)}
+
+  /* ---------- pasek tygodni ---------- */
+  .gt{display:flex;gap:7px;align-items:flex-end}
+  .gt-seg{display:flex;flex-direction:column;gap:9px;min-width:0}
+  .gt-bar{display:block;height:11px;border-radius:6px;background:var(--la-accent,#00CD77);opacity:var(--o);transform:scaleX(0);transform-origin:left;transition:transform .65s cubic-bezier(.4,0,.2,1);transition-delay:calc(var(--i)*130ms)}
+  .gt.on .gt-bar{transform:none}
+  .gt-lab{font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:0.1em;color:#8b968d;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .gt-h{font-size:14px;font-weight:750;color:#16211a;letter-spacing:-0.01em}
+  .czas-bar{display:block;height:6px;border-radius:3px;background:#e7ece4;overflow:hidden;width:88px}
+  .czas-bar span{display:block;height:100%;width:0;border-radius:3px;background:#0a7a52;transition:width .8s cubic-bezier(.4,0,.2,1) .2s}
+  .etp-row.on .czas-bar span{width:var(--w)}
+
+  /* ---------- wiersze ---------- */
+  .hero-split > *,.s2-grid > *,.kry-grid > *,.cena-grid > *,.grid2 > *,.dz-grid > *,.rozm-grid > *{min-width:0}
+  .mx,.sito,.bez{max-width:100%}
+  .pow-row{display:grid;grid-template-columns:56px 320px 1fr;gap:clamp(20px,3vw,44px);align-items:start;padding:clamp(22px,2.6vw,30px) 4px;border-top:1px solid #e7ece4}
+  .pow-row:last-child{border-bottom:1px solid #e7ece4}
+  .syt-row{display:grid;grid-template-columns:1fr 1.35fr;gap:clamp(16px,3vw,44px);align-items:baseline;padding:26px 0;border-top:1px solid #e7ece4}
+  .syt-row:last-of-type{border-bottom:1px solid #e7ece4}
+  .zos-row{display:grid;grid-template-columns:44px 300px 1fr;gap:clamp(18px,3vw,40px);align-items:baseline;padding:22px 4px;border-top:1px solid #e7ece4}
+  .zos-row:last-child{border-bottom:1px solid #e7ece4}
+  .kry-row{display:grid;grid-template-columns:26px 1fr;gap:clamp(12px,2vw,20px);align-items:baseline;padding:17px 0;border-top:1px solid #e7ece4}
+  .kry-row:last-of-type{border-bottom:1px solid #e7ece4}
+  .etp-row{display:grid;grid-template-columns:132px 1fr 130px;gap:clamp(18px,3vw,40px);align-items:start;padding:clamp(20px,2.4vw,28px) 0;border-top:1px solid #e2e9e0}
+  .etp-row:last-of-type{border-bottom:1px solid #e2e9e0}
+  .dow-row{display:grid;grid-template-columns:150px 190px 1fr;gap:clamp(16px,3vw,40px);align-items:baseline;padding:clamp(20px,2.4vw,28px) 0;border-top:1px solid rgba(255,255,255,0.14)}
+  .dow-row:last-of-type{border-bottom:1px solid rgba(255,255,255,0.14)}
+  .dal-row{display:grid;grid-template-columns:1fr 300px;gap:clamp(18px,3vw,40px);align-items:baseline;padding:26px 0;border-top:1px solid #e7ece4}
+  .dal-row:last-of-type{border-bottom:1px solid #e7ece4}
+  .kol-row{display:grid;grid-template-columns:24px 1fr auto;gap:12px;align-items:baseline;padding:9px 0;border-top:1px solid #f0f3ee}
+  .mit-row{display:grid;grid-template-columns:340px 1fr;gap:clamp(20px,4vw,56px);align-items:start;padding:clamp(22px,2.6vw,30px) 0;border-top:1px solid #e7ece4}
+  .mit-row:last-of-type{border-bottom:1px solid #e7ece4}
+
+  @media (max-width:1180px){
+    .kry-grid{grid-template-columns:1fr !important;gap:clamp(32px,5vw,48px) !important}
+    .nrz{grid-template-columns:repeat(3,1fr)}
+  }
+  @media (max-width:1100px){
+    .pow-row{grid-template-columns:44px 1fr;gap:14px}
+    .pow-row > p{grid-column:2}
+    .zos-row{grid-template-columns:36px 1fr;gap:12px}
+    .zos-row > p{grid-column:2}
+  }
+  @media (max-width:900px){
+    .hero-split{grid-template-columns:1fr !important;gap:36px !important}
+    .syt-row,.dal-row,.mit-row{grid-template-columns:1fr !important;gap:10px !important}
+    .etp-row{grid-template-columns:1fr !important;gap:6px !important}
+    .etp-czas{justify-self:start !important}
+    .dow-row{grid-template-columns:1fr !important;gap:6px !important}
+    .ark-in{grid-template-columns:1fr auto !important}
+    .ark-zrodlo{grid-column:1 / -1;padding-top:2px}
+    .cena-grid,.dz-grid,.rozm-grid{grid-template-columns:1fr !important;gap:28px !important}
+    .wciete{margin-left:0 !important}
+    .zbd-row{grid-template-columns:1fr !important;gap:6px !important}
+    .nrz{grid-template-columns:repeat(2,1fr)}
+    .wf{gap:4px}
+    .gt{display:none}
+    .rozm-foto{display:none !important}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .h1-mark path{animation:none;stroke-dashoffset:0}
+    .mx-ax,.mx-grid,.mx-band,.mx-lead,.mx-node,.mx-lbl,.wf i,.bar span,.st-dot,.st-dot circle,.st-out,.gt-bar,.czas-bar span,.bez-box,.bez-flow,.bez-pkt{transition:none !important}
+    .dz-panel[data-open="true"]{animation:none}
+  }
+</style>
+
+<!-- ============ 1 · HERO ============ -->
+<section style="position:relative;overflow:hidden;background:radial-gradient(880px 520px at 88% -6%, rgba(0,205,119,0.13), transparent 62%), #ffffff;padding:clamp(28px,4vw,52px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) clamp(36px,4vw,52px)">
+<div style="display:flex;align-items:center;gap:8px;font-size:13.5px;color:#8b968d">
+<a href="/#oferta" class="lnk-green" style="color:#0a7a52;font-weight:650">Wdrażamy AI</a>
+<span aria-hidden="true">/</span><span>Strategia transformacji AI</span>
+</div>
+
+<div class="hero-split" style="display:grid;grid-template-columns:1fr 540px;gap:clamp(40px,5vw,72px);align-items:center;margin-top:clamp(26px,3vw,40px)">
+<div>
+<h1 style="margin:0;font-size:clamp(30px,4.8vw,55px);line-height:1.05;letter-spacing:-0.034em;font-weight:800;color:#16211a;text-wrap:balance">Strategia transformacji AI kończy się procesem, który <span class="h1-mark">już działa<svg viewBox="0 0 300 12" preserveAspectRatio="none" aria-hidden="true"><path pathLength="1" d="M3,8.4 C62,2.6 118,11.4 178,5.4 C230,1.4 266,9.6 297,4.2"/></svg></span>.</h1>
+<p style="margin:26px 0 0;max-width:600px;font-size:clamp(16px,2.1vw,19px);line-height:1.6;color:#33413a;text-wrap:pretty">Trzy tygodnie na Waszych procesach i Waszych danych. Zostaje z tego kolejność wdrożeń z kwotą przy każdej pozycji oraz arkusz, w którym da się sprawdzić każde wyliczenie. Pierwszą pozycję z listy uruchamiamy jeszcze w trakcie projektu.</p>
+<div class="hero-actions" style="display:flex;align-items:center;flex-wrap:wrap;gap:16px 22px;margin-top:34px">
+<a href="#rozmowa" class="btn-dark" style="display:inline-flex;align-items:center;gap:10px;background:#16211a;color:#ffffff;padding:18px 32px;border-radius:12px;font-weight:650;font-size:16.5px;box-shadow:0 14px 30px -14px rgba(16,33,26,0.45)">Umów 30 minut <span aria-hidden="true">→</span></a>
+<a href="#arkusz" class="btn-ghost" style="display:inline-flex;align-items:center;gap:8px;font-size:16.5px;font-weight:700;color:#16211a;background:rgba(255,255,255,0.6);padding:18px 26px;border-radius:12px;border:1px solid rgba(22,33,26,0.16)">Policzcie na suwakach →</a>
+</div>
+<p style="margin:22px 0 0;font-size:14.5px;color:#7c877e">Rozmowa bez zobowiązań &nbsp;·&nbsp; przegląd trwa 3 tygodnie &nbsp;·&nbsp; stała cena [29 000] zł netto &nbsp;·&nbsp; 8,5 godziny po Waszej stronie</p>
+</div>
+
+<div style="background:#ffffff;border-radius:18px;padding:clamp(20px,2.4vw,26px);box-shadow:0 40px 90px -46px rgba(18,38,28,0.42), 0 2px 10px -4px rgba(18,38,28,0.08)">
+<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:14px">
+<div>
+<div style="font-size:15.5px;font-weight:750;color:#16211a">Osiem procesów, jedna kolejność</div>
+<div style="margin-top:3px;font-size:12px;color:#8b968d">producent mebli, 140 osób · wynik po trzech tygodniach</div>
+</div>
+<span style="flex-shrink:0;background:#f1f4ee;color:#7c877e;font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:0.1em;font-weight:650;padding:5px 9px;border-radius:6px">PRZYKŁAD</span>
+</div>
+
+<svg class="mx" data-anim viewBox="0 0 480 292" role="img" aria-label="Macierz procesów: roczny zwrot wobec gotowości danych">
+  <rect class="mx-band" x="297" y="14" width="169" height="133" rx="8" fill="rgba(0,205,119,0.09)"></rect>
+  <text class="mx-band" x="308" y="32" font-family="ui-monospace,Menlo,monospace" font-size="9.5" letter-spacing="0.08em" fill="#0a7a52">ZACZYNAMY TU</text>
+  <line class="mx-grid" x1="44" y1="147" x2="466" y2="147"></line>
+  <line class="mx-grid" x1="255" y1="14" x2="255" y2="256"></line>
+  <line class="mx-ax" pathLength="1" x1="44" y1="256" x2="466" y2="256"></line>
+  <line class="mx-ax" pathLength="1" x1="44" y1="256" x2="44" y2="14"></line>
+  <path class="mx-lead" d="M390,77 L331,123 L276,164"></path>
+  <text x="466" y="276" text-anchor="end" font-size="10.5" fill="#9aa69b">gotowość danych i procesu →</text>
+  <text x="30" y="140" text-anchor="middle" font-size="10.5" fill="#9aa69b" transform="rotate(-90 30 140)">roczny zwrot →</text>
+  {punkty.map((p, i) => {
+    const cx = 44 + p.x * 4.22;
+    const cy = 256 - p.y * 2.42;
+    const styl = p.typ === 'pierwsza'
+      ? 'fill:#00CD77;stroke:#0a7a52;stroke-width:1.5'
+      : p.typ === 'wchodzi'
+        ? 'fill:#bfe9d3;stroke:#0a7a52;stroke-width:1.3'
+        : p.typ === 'odpada'
+          ? 'fill:#fdf1ec;stroke:#a3391f;stroke-width:1.6;stroke-dasharray:3 3'
+          : 'fill:#dbe4d9;stroke:#bccbba;stroke-width:1';
+    return (
+      <g class="mx-g" data-t={p.t} data-o={p.o} data-s={p.s} style={`--i:${i}`}>
+        <circle class="mx-node" cx={cx} cy={cy} r={p.r} style={styl}></circle>
+        {p.id && !p.bezId && <text class="mx-lbl" x={cx} y={cy + 4} text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="10.5" font-weight="700" fill={p.typ === 'pierwsza' ? '#0b2b1c' : '#0a7a52'}>{p.id}</text>}
+        {p.typ === 'odpada' && <line class="mx-lbl" x1={cx - 6} y1={cy + 6} x2={cx + 6} y2={cy - 6} stroke="#a3391f" stroke-width="1.8" stroke-linecap="round"></line>}
+        <circle class="mx-hit" cx={cx} cy={cy} r={p.r + 8} fill="transparent"></circle>
+      </g>
+    );
+  })}
+</svg>
+
+<div class="mx-cap" id="mx-cap" style="margin-top:2px;padding:10px 12px;background:#f6f9f5;border-radius:10px;font-size:12.5px;line-height:1.45;color:#4c5850">
+<strong style="color:#16211a;font-weight:700">Bąbel to proces.</strong> Wielkość odpowiada godzinom odzyskanym miesięcznie, kolor — decyzji z dokumentu.
+</div>
+
+<div style="margin-top:14px">
+{kolejnosc.map((k) => (
+  <div class="kol-row">
+    <span style={`font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:700;color:${k.tag ? '#c0a99f' : '#0a7a52'}`}>{k.n}</span>
+    <span style={`font-size:14px;font-weight:700;line-height:1.3;color:${k.tag ? '#8b968d' : '#16211a'}`}>{k.t}{k.tag && <span style="margin-left:8px;font-size:10.5px;font-weight:750;color:#a3391f;background:#fbeee9;padding:2.5px 7px;border-radius:5px;white-space:nowrap">{k.tag}</span>}</span>
+    <span style="text-align:right;white-space:nowrap">
+      {k.z && <span style="font-size:16px;font-weight:800;letter-spacing:-0.02em;color:#16211a">{k.z}</span>}
+      <span style="display:block;font-family:ui-monospace,Menlo,monospace;font-size:10.5px;color:#8b968d">{k.s}</span>
+    </span>
+  </div>
+))}
+</div>
+</div>
+</div>
+
+<!-- Pasek zaufania pod hero — nazwiska i firmy zamiast ściany logotypów,
+     bo mamy prawdziwe opinie, a nie mamy zgód na znaki graficzne. -->
+<div style="display:flex;align-items:center;flex-wrap:wrap;gap:12px 34px;margin-top:clamp(34px,4vw,48px);padding-top:26px;border-top:1px solid #eef1ec">
+<span style="font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:#9aa69b">Pracowaliśmy z</span>
+<span style="font-size:16px;font-weight:700;color:#4c5850">Finerto</span>
+<span style="font-size:16px;font-weight:700;color:#4c5850">NARS Polska</span>
+<span style="font-size:16px;font-weight:700;color:#4c5850">X2O</span>
+<span style="font-size:16px;font-weight:700;color:#4c5850">X3D</span>
+<span style="font-size:14px;color:#9aa69b">i kilkudziesięcioma innymi</span>
+</div>
+</section>
+
+<!-- ============ 2 · NA CZYM TO SIĘ WYKŁADA ============ -->
+<section id="dlaczego" style="background:#f4f8f2;padding:clamp(64px,8vw,100px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
+<div class="s2-grid" style="display:grid;grid-template-columns:1fr 520px;gap:clamp(40px,6vw,80px);align-items:center">
+<div>
+<h2 class="h-sec" style="margin:0;max-width:600px;text-wrap:pretty">Dziewięćdziesiąt pięć procent wdrożeń AI nie zmienia wyniku finansowego firmy.</h2>
+<p style="margin:18px 0 0;font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:0.06em;color:#808b83">MIT NANDA, 2025 · 300 wdrożeń, 52 wywiady z zarządami</p>
+</div>
+<div>
+<div class="wf" data-anim aria-hidden="true">
+{Array.from({ length: 100 }).map((_, i) => {
+  const hit = [3, 17, 44, 61, 88].indexOf(i);
+  return <i class={hit > -1 ? 'hit' : ''} style={`--i:${i};--j:${hit > -1 ? hit : 0}`}></i>;
+})}
+</div>
+<p style="margin:16px 0 0;font-size:13.5px;line-height:1.55;color:#4c5850">Sto pilotaży. <strong style="color:#16211a;font-weight:700">Pięć zmienia wynik finansowy.</strong> Powodem nie są modele — pilot powstaje obok procesu i nikt nie zmienia sposobu pracy.</p>
+</div>
+</div>
+
+<div style="margin-top:clamp(36px,4.4vw,56px)">
+{powody.map((p) => (
+  <div class="pow-row rv">
+    <span style="font-family:ui-monospace,Menlo,monospace;font-size:13px;font-weight:700;color:#0a7a52">{p.n}</span>
+    <span style="font-size:clamp(19px,2.2vw,23px);font-weight:750;letter-spacing:-0.015em;line-height:1.2;color:#16211a">{p.t}</span>
+    <p style="margin:0;max-width:620px;font-size:15px;line-height:1.6;color:#4c5850;text-wrap:pretty">{p.d}</p>
+  </div>
+))}
+</div>
+
+<div data-anim style="margin-top:clamp(40px,5vw,60px);display:grid;grid-template-columns:1fr 340px;gap:clamp(28px,4vw,56px);align-items:center" class="grid2">
+<p style="margin:0;font-size:clamp(21px,2.8vw,31px);line-height:1.28;letter-spacing:-0.02em;font-weight:700;color:#16211a;text-wrap:pretty">Wdrożenia prowadzone razem z zewnętrznym zespołem kończą się powodzeniem w 67% przypadków. Te robione wyłącznie siłami wewnętrznego IT — w 22%.</p>
+<div>
+<div style="display:flex;align-items:baseline;justify-content:space-between;font-size:13px;color:#4c5850"><span>z partnerem</span><strong style="font-size:17px;color:#16211a">67%</strong></div>
+<div class="bar" style="margin-top:7px"><span style="--w:67%"></span></div>
+<div style="display:flex;align-items:baseline;justify-content:space-between;font-size:13px;color:#4c5850;margin-top:18px"><span>samo wewnętrzne IT</span><strong style="font-size:17px;color:#16211a">22%</strong></div>
+<div class="bar" style="margin-top:7px"><span style="--w:22%"></span></div>
+<p style="margin:14px 0 0;font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.06em;color:#808b83">to samo badanie</p>
+</div>
+</div>
+</section>
+
+<!-- ============ 3 · ROZMOWA (konwersja w jednej trzeciej strony) ============
+     Lekcja z sellwise.pl/wdrozenie-ai: formularz z twarzą stoi zaraz po bloku
+     problemowym, a nie dopiero po 12 000 pikselach argumentów. Dwa pola. -->
+<section id="rozmowa" style="padding:clamp(56px,7vw,88px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
+<div class="rozm-grid" style="display:grid;grid-template-columns:1fr 300px 380px;gap:0;align-items:stretch;background:#0e2b1d;border-radius:26px;overflow:hidden;box-shadow:0 34px 84px -44px rgba(18,38,28,0.4)">
+<div style="padding:clamp(36px,4.4vw,56px) clamp(30px,3.6vw,48px);display:flex;flex-direction:column;justify-content:center">
+<h2 style="margin:0;font-size:clamp(24px,3.2vw,36px);line-height:1.12;letter-spacing:-0.024em;font-weight:800;color:#ffffff;text-wrap:balance">Trzydzieści minut wystarczy, żeby powiedzieć, czy przegląd ma u Was sens.</h2>
+<p style="margin:18px 0 0;max-width:460px;font-size:15.5px;line-height:1.6;color:rgba(255,255,255,0.78);text-wrap:pretty">Pytamy o trzy rzeczy: jakie procesy są dziś na stole, ile spraw przez nie przechodzi miesięcznie i gdzie leżą dane. Jeśli odpowiedź brzmi „jeszcze nie teraz", mówimy to na tej rozmowie.</p>
+<div style="display:flex;flex-direction:column;gap:10px;margin-top:26px">
+<span style="display:flex;align-items:center;gap:10px;font-size:14px;color:rgba(255,255,255,0.85)"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#00CD77" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>Bez zobowiązań i bez prezentacji</span>
+<span style="display:flex;align-items:center;gap:10px;font-size:14px;color:rgba(255,255,255,0.85)"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#00CD77" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>NDA podpisujemy przed rozmową, jeśli chcecie</span>
+<span style="display:flex;align-items:center;gap:10px;font-size:14px;color:rgba(255,255,255,0.85)"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#00CD77" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>Odpowiadamy tego samego dnia roboczego</span>
+</div>
+</div>
+<div class="rozm-foto" style="position:relative;background:#122a1e">
+<img src="/szymon-kita.jpg" alt="Szymon Kita — założyciel Let's automate" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 16%;display:block">
+<div style="position:absolute;left:0;right:0;bottom:0;padding:36px 18px 16px;background:linear-gradient(to top,rgba(6,16,11,0.92),rgba(6,16,11,0.4) 60%,transparent)">
+<div style="font-size:14.5px;font-weight:800;color:#ffffff">Szymon Kita</div>
+<div style="margin-top:2px;font-size:11.5px;color:rgba(255,255,255,0.72)">rozmowę prowadzi założyciel</div>
+</div>
+</div>
+<div style="background:#ffffff;padding:clamp(28px,3vw,36px);display:flex;flex-direction:column;justify-content:center">
+<div style="display:flex;flex-direction:column;gap:14px">
+<div>
+<label style="display:block;font-size:12.5px;font-weight:650;color:#4c5850;margin-bottom:7px">E-mail <span style="color:#0a7a52">*</span></label>
+<input type="email" class="inp" placeholder="jan@firma.pl" style="width:100%;box-sizing:border-box;font-family:inherit;font-size:15px;color:#16211a;background:#fbfcfa;border:1px solid #e7ece4;border-radius:10px;padding:13px 15px;outline:none">
+</div>
+<div>
+<label style="display:block;font-size:12.5px;font-weight:650;color:#4c5850;margin-bottom:7px">Telefon <span style="color:#0a7a52">*</span></label>
+<input type="tel" class="inp" placeholder="571 000 000" style="width:100%;box-sizing:border-box;font-family:inherit;font-size:15px;color:#16211a;background:#fbfcfa;border:1px solid #e7ece4;border-radius:10px;padding:13px 15px;outline:none">
+</div>
+<label style="display:flex;align-items:flex-start;gap:10px;font-size:12px;line-height:1.5;color:#7c877e;cursor:pointer">
+<input type="checkbox" required style="margin-top:1px;width:16px;height:16px;flex-shrink:0;accent-color:#0a7a52;cursor:pointer">
+<span>Wyrażam zgodę na kontakt i przetwarzanie danych w celu obsługi zapytania. <a href="#" class="lnk-green" style="font-weight:600;color:#0a7a52">Polityka prywatności</a>.</span>
+</label>
+<a href="#rozmowa" class="btn-cta" style="display:flex;align-items:center;justify-content:center;gap:9px;background:#0a7a52;color:#ffffff;padding:16px 24px;border-radius:12px;font-weight:700;font-size:16px">Umów 30 minut <span aria-hidden="true">→</span></a>
+<div style="font-size:12px;line-height:1.5;color:#9aa69b;text-align:center">Albo napiszcie: <a href="mailto:hello@letsautomate.pl" class="lnk-green" style="font-weight:650;color:#0a7a52">hello@letsautomate.pl</a></div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- ============ 4 · CO AI ZMIENIA W WASZYM DZIALE ============
+     Najmocniejsza sekcja u Sellwise'u. Czytelnik szuka swojego działu
+     i swojego zdania. Przełącznik zamiast sześciu list pod sobą. -->
+<section id="dzialy" style="background:#f4f8f2;padding:clamp(64px,8vw,100px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
+<h2 class="h-sec" style="margin:0;max-width:700px;text-wrap:pretty">Co AI zmienia w Waszym dziale.</h2>
+<p class="sub" style="margin:20px 0 0;max-width:560px">Osiemnaście rzeczy, które policzyliśmy u klientów. Wybierzcie dział i sprawdźcie, ile z tego dzieje się dziś ręcznie.</p>
+
+<div class="dz-grid" style="display:grid;grid-template-columns:340px 1fr;gap:clamp(32px,5vw,72px);margin-top:clamp(34px,4vw,50px);align-items:start">
+<div role="tablist" aria-label="Działy">
+{dzialy.map((d, i) => (
+  <button class="dz-tab" role="tab" data-dzial={d.k} aria-selected={i === 0 ? 'true' : 'false'}>
+    <strong>{d.t}</strong>
+    <span>{d.p}</span>
+  </button>
+))}
+</div>
+<div>
+{dzialy.map((d, i) => (
+  <div class="dz-panel" data-panel={d.k} data-open={i === 0 ? 'true' : 'false'} role="tabpanel">
+    {d.i.map((it, j) => (
+      <div class="dz-item">
+        <span class="dz-num">{String(j + 1).padStart(2, '0')}</span>
+        <p style="margin:0;max-width:640px;font-size:clamp(16px,1.9vw,18px);line-height:1.55;color:#16211a;text-wrap:pretty">{it}</p>
+      </div>
+    ))}
+  </div>
+))}
+<p style="margin:26px 0 0;padding-top:20px;border-top:1px solid #e2e9e0;font-size:14.5px;line-height:1.6;color:#7c877e">Która z tych pozycji ma u Was najwyższy zwrot, wychodzi dopiero z pomiaru. Do tego służy przegląd. <a href="#rozmowa" class="lnk-green" style="font-weight:700;color:#0a7a52">Umówcie 30 minut →</a></p>
+</div>
+</div>
+</section>
+
+<!-- ============ 5 · KIEDY TO MA SENS ============ -->
+<section id="dla-kogo" class="sec-pad">
+<div class="sec-head">
+<h2 class="h-sec" style="margin:0;max-width:520px;text-wrap:pretty">Trzy sytuacje, w których strategia się zwraca.</h2>
+<p class="sub" style="margin:0 0 6px;max-width:430px">Poniżej opisy, z których zwykle jedna pasuje słowo w słowo. Pod nimi trzy, przy których odradzamy ten projekt.</p>
+</div>
+<div style="margin-top:clamp(36px,4.4vw,52px)">
+{sytuacje.map((s) => (
+  <div class="syt-row rv">
+    <span style="font-size:clamp(19px,2.3vw,25px);font-weight:750;letter-spacing:-0.018em;line-height:1.2;color:#16211a;text-wrap:balance">{s.t}</span>
+    <p style="margin:0;max-width:620px;font-size:15px;line-height:1.6;color:#4c5850;text-wrap:pretty">{s.d}</p>
+  </div>
+))}
+</div>
+<div class="wciete rv" style="margin:clamp(36px,4.5vw,56px) 0 0 clamp(0px,18vw,300px);background:#fdf7f4;border:1px solid #f0e0d8;border-radius:18px;padding:clamp(26px,3.2vw,34px) clamp(24px,3.4vw,38px)">
+<div style="font-size:clamp(19px,2.2vw,23px);font-weight:750;letter-spacing:-0.015em;color:#16211a">Kiedy strategia jest zbędna</div>
+<div style="display:flex;flex-direction:column;gap:16px;margin-top:20px">
+{niepotrzebne.map((n) => (
+  <div class="zbd-row" style="display:grid;grid-template-columns:230px 1fr;gap:clamp(12px,2vw,28px);align-items:baseline">
+    <span style="font-size:15.5px;font-weight:700;line-height:1.35;color:#a3391f">{n.t}</span>
+    <p style="margin:0;font-size:14.5px;line-height:1.6;color:#4c5850;text-wrap:pretty">{n.d}</p>
+  </div>
+))}
+</div>
+<p style="margin:22px 0 0;padding-top:18px;border-top:1px solid #f0e0d8;font-size:14.5px;line-height:1.6;color:#4c5850">Każdą z tych trzech rzeczy poznajemy na bezpłatnej rozmowie. Wtedy mówimy o tym wprost i nie wystawiamy oferty na strategię.</p>
+</div>
+</section>
+
+<!-- ============ 6 · CO ZOSTAJE ============ -->
+<section id="co-dostajecie" style="background:#f4f8f2;padding:clamp(72px,9vw,110px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
+<h2 class="h-sec" style="margin:0;max-width:640px;text-wrap:pretty">Co zostaje u Was po trzecim tygodniu.</h2>
+<div class="rv" style="margin-top:clamp(36px,4.4vw,52px);background:radial-gradient(120% 140% at 100% 0%, rgba(0,205,119,0.18), transparent 58%), #0e2b1d;border-radius:22px;padding:clamp(32px,4vw,48px) clamp(28px,4vw,52px)">
+<div style="display:grid;grid-template-columns:1fr 340px;gap:clamp(24px,4vw,56px);align-items:center" class="grid2">
+<div>
+<div style="font-family:ui-monospace,Menlo,monospace;font-size:11.5px;letter-spacing:0.14em;text-transform:uppercase;color:var(--la-accent,#00CD77)">Rzecz, której nie ma w dokumencie</div>
+<div style="margin-top:16px;font-size:clamp(24px,3.2vw,36px);font-weight:800;line-height:1.12;letter-spacing:-0.022em;color:#ffffff;text-wrap:balance">Pierwszy proces z listy pracuje, zanim skończymy projekt.</div>
+<p style="margin:16px 0 0;max-width:620px;font-size:16px;line-height:1.62;color:rgba(255,255,255,0.78);text-wrap:pretty">Działa na Waszych danych i obsługują go Wasi ludzie. Przez trzeci tydzień przechodzi przez niego tyle spraw, żeby wynik dało się zmierzyć i porównać z punktem wyjścia z tygodnia pierwszego.</p>
+</div>
+<div data-anim style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.14);border-radius:14px;padding:24px 22px">
+<div style="font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:0.12em;color:rgba(255,255,255,0.5)">POMIAR PO 5 DNIACH PRACY</div>
+<div style="display:flex;align-items:baseline;gap:10px;margin-top:14px">
+<span class="cnt" data-n="312" style="font-size:40px;font-weight:800;letter-spacing:-0.03em;color:#ffffff;line-height:1">0</span>
+<span style="font-size:13.5px;color:rgba(255,255,255,0.7)">dokumentów przeszło<br>przez nowy obieg</span>
+</div>
+<div style="margin-top:16px;display:flex;height:8px;border-radius:4px;overflow:hidden;background:rgba(255,255,255,0.12)">
+<span style="width:86.9%;background:var(--la-accent,#00CD77)"></span><span style="width:13.1%;background:rgba(255,255,255,0.5)"></span>
+</div>
+<div style="margin-top:12px;font-size:13.5px;line-height:1.6;color:rgba(255,255,255,0.78)">Ręcznie dotknięto 41 z nich. Reszta poszła bez człowieka.</div>
+</div>
+</div>
+</div>
+<div style="margin-top:clamp(32px,4vw,44px)">
+{zostaje.map((z) => (
+  <div class="zos-row rv">
+    <span style="font-family:ui-monospace,Menlo,monospace;font-size:12.5px;font-weight:700;color:#0a7a52">{z.n}</span>
+    <span style="font-size:clamp(17px,2vw,20px);font-weight:750;letter-spacing:-0.012em;line-height:1.25;color:#16211a">{z.t}</span>
+    <p style="margin:0;max-width:640px;font-size:14.5px;line-height:1.6;color:#4c5850;text-wrap:pretty">{z.d}</p>
+  </div>
+))}
+</div>
+</section>
+
+<!-- ============ 7 · ARKUSZ Z SUWAKAMI ============ -->
+<section id="arkusz" class="sec-pad">
+<div class="s2-grid" style="display:grid;grid-template-columns:1fr 620px;gap:clamp(40px,6vw,80px);align-items:center">
+<div>
+<h2 class="h-sec" style="margin:0;text-wrap:pretty">Każda liczba ma podpis.</h2>
+<p class="sub" style="margin:20px 0 0;max-width:480px">Jedna pozycja z kolejności, rozłożona na czynniki. Wartości wejściowe pochodzą z systemów klienta albo z pomiaru zrobionego w pierwszym tygodniu — kolumna „skąd" stoi przy każdej z nich.</p>
+<p style="margin:22px 0 0;max-width:480px;font-size:15px;line-height:1.62;color:#4c5850;text-wrap:pretty"><strong style="color:#16211a;font-weight:700">Przesuńcie suwaki.</strong> Tak samo działa plik, który zostaje u Was: zmieniacie stawkę albo wolumen i cała kolumna przelicza się w tej samej sekundzie. Benchmarków z internetu w tym pliku nie ma, bo nie da się ich obronić przed zarządem.</p>
+<div style="display:flex;align-items:center;flex-wrap:wrap;gap:18px 24px;margin-top:32px">
+<a href="#rozmowa" class="btn-dark" style="display:inline-flex;align-items:center;gap:10px;background:#16211a;color:#ffffff;padding:17px 30px;border-radius:12px;font-weight:650;font-size:16px">Policzmy to na Waszych danych <span aria-hidden="true">→</span></a>
+</div>
+</div>
+<div style="background:linear-gradient(160deg,#eef5ee 0%,#e6f0e8 55%,#eaf2ea 100%);border-radius:24px;padding:clamp(24px,3.4vw,40px)">
+<div id="ark" style="background:#ffffff;border-radius:8px;padding:clamp(22px,3vw,32px);box-shadow:0 30px 70px -34px rgba(15,30,22,0.34);font-family:ui-monospace,Menlo,monospace">
+<div style="display:flex;align-items:baseline;justify-content:space-between;gap:14px">
+<span style="font-size:13px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#16211a">Obieg faktur kosztowych</span>
+<span style="font-size:11px;color:#8b968d">arkusz · pozycja 01</span>
+</div>
+<div style="margin-top:18px;display:grid;grid-template-columns:1fr 1fr;gap:18px 24px;background:#f6f9f5;border-radius:8px;padding:16px 18px" class="grid2">
+<label style="display:block">
+<span style="display:flex;align-items:baseline;justify-content:space-between;gap:10px;font-size:11px;letter-spacing:0.06em;color:#7c877e">KOSZT GODZINY <strong id="v-stawka" style="font-size:14px;color:#0a7a52">68 zł</strong></span>
+<input id="sl-stawka" class="sl" type="range" min="40" max="160" step="2" value="68" style="margin-top:10px" aria-label="Koszt godziny zespołu">
+</label>
+<label style="display:block">
+<span style="display:flex;align-items:baseline;justify-content:space-between;gap:10px;font-size:11px;letter-spacing:0.06em;color:#7c877e">FAKTUR MIESIĘCZNIE <strong id="v-faktur" style="font-size:14px;color:#0a7a52">1 240</strong></span>
+<input id="sl-faktur" class="sl" type="range" min="300" max="3000" step="20" value="1240" style="margin-top:10px" aria-label="Liczba faktur miesięcznie">
+</label>
+</div>
+<div style="margin-top:18px">
+<div style="display:flex;align-items:baseline;justify-content:space-between;font-size:10.5px;letter-spacing:0.1em;color:#a3aca4;padding-bottom:8px"><span>WEJŚCIE</span><span>SKĄD</span></div>
+{arkuszWejscie.map((a) => (
+  <div class="ark-in">
+    <span style="font-size:12.5px;color:#3f4b44">{a.k}</span>
+    <span id={a.id} class={a.live ? 'ark-live' : ''} style="font-size:14px;font-weight:700;color:#16211a;white-space:nowrap">{a.v}</span>
+    <span class="ark-zrodlo" style="font-size:11px;line-height:1.4;color:#8b968d">{a.z}</span>
+  </div>
+))}
+</div>
+<div style="margin-top:20px;border-top:1.5px solid #16211a;padding-top:6px">
+<div class="ark-out"><span style="font-size:12.5px;color:#3f4b44">Praca dzisiaj</span><span id="o-dzis" style="font-size:14px;font-weight:700;color:#16211a">134 h / mies.</span></div>
+<div class="ark-out"><span style="font-size:12.5px;color:#3f4b44">Po wdrożeniu — same wyjątki</span><span id="o-po" style="font-size:14px;font-weight:700;color:#16211a">16 h / mies.</span></div>
+<div class="ark-out"><span style="font-size:12.5px;color:#3f4b44">Odzyskany czas</span><span id="o-odz" style="font-size:14px;font-weight:700;color:#16211a">118 h / mies.</span></div>
+<div class="ark-out"><span style="font-size:12.5px;font-weight:700;color:#16211a">Oszczędność w skali roku</span><span id="o-rok" style="font-size:17px;font-weight:800;color:#16211a">96 500 zł</span></div>
+<div class="ark-out"><span style="font-size:12.5px;color:#3f4b44">Nakład na wdrożenie</span><span style="font-size:14px;font-weight:700;color:#16211a">68 000 zł</span></div>
+</div>
+<div style="margin-top:20px;background:#0e2b1d;border-radius:6px;padding:16px 18px;display:flex;align-items:center;justify-content:space-between;gap:14px">
+<span style="font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.62)">Zwrot w pierwszym roku</span>
+<span id="o-zwrot" style="font-size:26px;font-weight:800;letter-spacing:-0.02em;color:var(--la-accent,#00CD77);line-height:1">1,4×</span>
+</div>
+<div style="margin-top:10px;font-size:11px;line-height:1.6;color:#8b968d;text-align:center">próg rentowności w <span id="o-prog" style="color:#4c5850;font-weight:700">9.</span> miesiącu · nakład przykładowy, u Was liczony od zera</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- ============ 8 · KRYTERIA I SITO ============ -->
+<section id="kryteria" style="background:#f4f8f2;padding:clamp(64px,8vw,100px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
+<h2 class="h-sec" style="margin:0;max-width:820px;text-wrap:pretty">Który proces dostaje AI, a który zostaje tak, jak jest.</h2>
+<p class="sub" style="margin:20px 0 0;max-width:620px">Sześć kryteriów, przez które przechodzi każdy kandydat z Waszej listy. Kryteria dostajecie na piśmie razem z dokumentem, więc następny proces ocenicie już bez nas.</p>
+<div class="kry-grid" style="display:grid;grid-template-columns:1fr 460px;gap:clamp(40px,6vw,80px);align-items:center;margin-top:clamp(34px,4vw,48px)">
+<div>
+{kryteria.map((k) => (
+  <div class="kry-row rv">
+    <span style="font-family:ui-monospace,Menlo,monospace;font-size:13px;font-weight:700;color:#0a7a52">{k.n}</span>
+    <span>
+      <span style="display:block;font-size:clamp(17px,2vw,21px);font-weight:750;letter-spacing:-0.012em;color:#16211a">{k.t}</span>
+      <p style="margin:5px 0 0;max-width:520px;font-size:14.5px;line-height:1.55;color:#4c5850;text-wrap:pretty">{k.q}</p>
+    </span>
+  </div>
+))}
+</div>
+<div>
+<div style="font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.1em;color:#808b83;text-align:center">12 PROCESÓW Z WASZEJ LISTY</div>
+<svg class="sito" data-anim viewBox="0 0 420 330" role="img" aria-label="Sito kryteriów: dwanaście procesów wchodzi, trzy przechodzą do kolejności, jeden trafia do integracji">
+  <path class="st-wall" d="M8,44 L115,286"></path>
+  <path class="st-wall" d="M278,44 L171,286"></path>
+  {bramki.map((b, i) => (
+    <g>
+      <line class="st-gate" x1={b.l} y1={b.y} x2={b.r} y2={b.y}></line>
+      <text class="st-num" x={b.r + 10} y={b.y + 3.5}>{i + 1}</text>
+    </g>
+  ))}
+  <path class="st-wall" style="stroke-dasharray:3 4;stroke:#e0cfc8" d="M203,214 L340,214"></path>
+  <text class="st-out" x="346" y="205" font-size="10.5" fill="#a3391f">integracja</text>
+  <text class="st-out" x="346" y="219" font-size="10" fill="#c2a79e">zamiast modelu</text>
+  {sito.map((s, i) => (
+    <g class={`st-dot ${s.los}`} style={`--i:${i};--dx:${s.dx}px;--dy:${s.dy}px`}>
+      <circle cx={s.x} cy={20} r="6" fill="#b3c1b1"></circle>
+    </g>
+  ))}
+  <text class="st-out" x="143" y="322" text-anchor="middle" font-size="11" font-weight="700" fill="#0a7a52">3 wchodzą do kolejności</text>
+</svg>
+</div>
+</div>
+<div class="rv" style="margin-top:clamp(28px,3.4vw,40px);display:grid;grid-template-columns:auto 1fr;gap:clamp(18px,3vw,32px);align-items:start;max-width:920px">
+<span style="width:3px;align-self:stretch;border-radius:2px;background:var(--la-accent,#00CD77)"></span>
+<p style="margin:0;font-size:clamp(16px,1.9vw,18.5px);line-height:1.6;color:#16211a;text-wrap:pretty">Proces, który przechodzi cztery pierwsze kryteria i wykłada się na piątym, dostaje od nas integrację zamiast modelu. Taki wniosek trafia do dokumentu na tych samych prawach co każdy inny — w zeszłym roku wypadło tak przy co czwartym kandydacie z list, które dostawaliśmy na wejściu.</p>
+</div>
+</section>
+
+<!-- ============ 9 · CZYM PRACUJEMY ============
+     U Sellwise'u nazwane narzędzia z logotypami robią połowę konkretu strony.
+     UWAGA: wordmarki są dziś tekstowe. Podmiana na oficjalne pliki logo to
+     dopisanie `logo:` w tablicy `narzedzia` — Appto już tak działa. -->
+<section id="narzedzia" class="sec-pad">
+<div class="sec-head">
+<h2 class="h-sec" style="margin:0;max-width:520px;text-wrap:pretty">Czym pracujemy.</h2>
+<p class="sub" style="margin:0 0 6px;max-width:460px">Narzędzie wybieramy po tym, jak wygląda proces. Ta sama lista bez procesu jest tylko zestawieniem cenników licencji.</p>
+</div>
+<div class="nrz" style="margin-top:clamp(32px,4vw,48px)">
+{narzedzia.map((n) => (
+  <div class="nrz-t">
+    {n.logo
+      ? <img src={n.logo} alt={n.n} style="height:22px;width:auto;display:block;margin-bottom:12px" />
+      : <span style="display:block;width:26px;height:2px;margin-bottom:18px;border-radius:2px;background:var(--la-accent,#00CD77)"></span>}
+    <span class="nrz-n">{n.n}</span>
+    <span class="nrz-d">{n.d}</span>
+    <span class="nrz-r">{n.r}</span>
+  </div>
+))}
+</div>
+<p style="margin:26px 0 0;max-width:760px;font-size:15px;line-height:1.6;color:#4c5850;text-wrap:pretty">Do tego systemy, w których już pracujecie: CRM, ERP, poczta, dysk i magazyn. Wdrożenie polega na wpięciu modelu w ten zestaw. Siódme okno do przełączania zostaje niezałożone. <a href="https://appto.ai" class="lnk-green" style="font-weight:700;color:#0a7a52">Appto to nasz własny produkt ↗</a> — stąd wiemy, ile kosztuje utrzymanie takiego rozwiązania po roku.</p>
+</section>
+
+<!-- ============ 10 · BEZPIECZEŃSTWO DANYCH ============
+     U Sellwise'u osobny blok, i słusznie: dla zarządu to jedna z trzech
+     pierwszych obiekcji. W v1 leżało schowane w jednej odpowiedzi FAQ. -->
+<section id="bezpieczenstwo" style="background:#f4f8f2;padding:clamp(64px,8vw,100px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
+<div class="s2-grid" style="display:grid;grid-template-columns:1fr 620px;gap:clamp(40px,6vw,80px);align-items:center">
+<div>
+<h2 class="h-sec" style="margin:0;max-width:520px;text-wrap:pretty">Co wychodzi z Waszej firmy, a co zostaje.</h2>
+<p class="sub" style="margin:20px 0 0;max-width:470px">To pierwsze pytanie działu prawnego i zwykle drugie pytanie zarządu. Odpowiedź jest częścią dokumentu, spisana procesem po procesie.</p>
+<div style="display:flex;flex-direction:column;gap:14px;margin-top:28px;max-width:480px">
+<div style="display:flex;align-items:flex-start;gap:12px;font-size:15px;line-height:1.55;color:#4c5850"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#0a7a52" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:3px" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span><strong style="color:#16211a;font-weight:700">Modele nie trenują na Waszych danych.</strong> Umowy z dostawcami mają to wpisane, a przy wątpliwościach stawiamy model na Waszej infrastrukturze.</span></div>
+<div style="display:flex;align-items:flex-start;gap:12px;font-size:15px;line-height:1.55;color:#4c5850"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#0a7a52" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:3px" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span><strong style="color:#16211a;font-weight:700">Do modelu idzie fragment zapytania.</strong> Warstwa pośrednia wycina to, czego zapytanie nie potrzebuje — dane osobowe i załączniki zostają po Waszej stronie.</span></div>
+<div style="display:flex;align-items:flex-start;gap:12px;font-size:15px;line-height:1.55;color:#4c5850"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#0a7a52" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:3px" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span><strong style="color:#16211a;font-weight:700">Każde zapytanie zostawia log.</strong> Audyt pokazuje, kto pytał, o co i kiedy. Hosting w Unii Europejskiej, dostęp na role.</span></div>
+</div>
+</div>
+
+<div>
+<svg class="bez" data-anim viewBox="0 0 620 250" role="img" aria-label="Diagram: co zostaje w infrastrukturze klienta, a co trafia do modelu">
+  <rect x="4" y="26" width="410" height="176" rx="14" fill="none" stroke="#b9c9b7" stroke-width="1.4" stroke-dasharray="5 5"></rect>
+  <text x="18" y="18" font-family="ui-monospace,Menlo,monospace" font-size="10" letter-spacing="0.1em" fill="#7f8d80">WASZA INFRASTRUKTURA · HOSTING W UE</text>
+
+  <g class="bez-box" style="--i:0">
+    <rect x="24" y="58" width="170" height="118" rx="12" fill="#ffffff" stroke="#dbe4d9"></rect>
+    <text x="42" y="86" font-size="14" font-weight="700" fill="#16211a">Wasze systemy</text>
+    <text x="42" y="110" font-size="12" fill="#7c877e">CRM · poczta · dysk</text>
+    <text x="42" y="130" font-size="12" fill="#7c877e">ERP · magazyn</text>
+    <text x="42" y="156" font-family="ui-monospace,Menlo,monospace" font-size="10" fill="#0a7a52">dane zostają tutaj</text>
+  </g>
+
+  <g class="bez-box" style="--i:1">
+    <rect x="224" y="58" width="170" height="118" rx="12" fill="#0e2b1d"></rect>
+    <text x="242" y="86" font-size="14" font-weight="700" fill="#ffffff">Warstwa, którą</text>
+    <text x="242" y="104" font-size="14" font-weight="700" fill="#ffffff">stawiamy</text>
+    <text x="242" y="128" font-size="12" fill="rgba(255,255,255,0.72)">maskowanie · kolejka</text>
+    <text x="242" y="146" font-size="12" fill="rgba(255,255,255,0.72)">log · kontrola dostępu</text>
+  </g>
+
+  <g class="bez-box" style="--i:2">
+    <rect x="452" y="58" width="152" height="118" rx="12" fill="#ffffff" stroke="#dbe4d9"></rect>
+    <text x="470" y="86" font-size="14" font-weight="700" fill="#16211a">Model</text>
+    <text x="470" y="110" font-size="12" fill="#7c877e">chmura dostawcy</text>
+    <text x="470" y="130" font-size="12" fill="#7c877e">albo Wasz serwer</text>
+    <text x="470" y="156" font-family="ui-monospace,Menlo,monospace" font-size="10" fill="#0a7a52">bez uczenia na danych</text>
+  </g>
+
+  <line class="bez-flow" pathLength="1" x1="194" y1="117" x2="222" y2="117" stroke="#9fb0a3" stroke-width="1.6"></line>
+  <line class="bez-flow" pathLength="1" x1="394" y1="117" x2="448" y2="117" stroke="#9fb0a3" stroke-width="1.6" stroke-dasharray="4 4"></line>
+  <circle class="bez-pkt" cx="240" cy="117" r="5" fill="var(--la-accent,#00CD77)"></circle>
+
+  <text x="310" y="226" text-anchor="middle" font-size="11.5" fill="#4c5850">Do modelu wychodzi tylko fragment potrzebny do jednego zapytania.</text>
+  <text x="310" y="243" text-anchor="middle" font-size="11.5" fill="#8b968d">Granicę ustalamy proces po procesie i zapisujemy w dokumencie.</text>
+</svg>
+</div>
+</div>
+</section>
+
+<!-- ============ 11 · PRZEBIEG ============ -->
+<section id="przebieg" class="sec-pad">
+<div class="sec-head">
+<h2 class="h-sec" style="margin:0;max-width:480px;text-wrap:pretty">Trzy tygodnie, dzień po dniu.</h2>
+<p class="sub" style="margin:0 0 6px;max-width:430px">Kreska po prawej to czas po Waszej stronie. Osiem i pół godziny łącznie, rozłożone tak, żeby nie zatrzymywać działu na cały dzień.</p>
+</div>
+<div class="gt" data-anim style="margin-top:clamp(32px,4vw,44px)">
+{etapy.map((e, i) => (
+  <div class="gt-seg" style={`flex:${e.pct};--i:${i}`}>
+    <span class="gt-h">{godz(e.h)} h</span>
+    <span class="gt-bar" style={`--o:${(0.3 + e.h * 0.16).toFixed(2)}`}></span>
+    <span class="gt-lab">{e.s}</span>
+  </div>
+))}
+</div>
+<p style="margin:14px 0 0;font-size:13.5px;color:#7c877e">Szerokość odcinka to długość etapu, nasycenie — czas po Waszej stronie. Najdroższy jest tydzień pierwszy.</p>
+<div style="margin-top:clamp(20px,2.4vw,28px)">
+{etapy.map((e) => (
+  <div class="etp-row rv" data-anim>
+    <span style="font-family:ui-monospace,Menlo,monospace;font-size:11.5px;letter-spacing:0.1em;color:#0a7a52;padding-top:5px">{e.e}</span>
+    <span>
+      <span style="display:block;font-size:clamp(19px,2.2vw,23px);font-weight:750;letter-spacing:-0.015em;color:#16211a">{e.t}</span>
+      <p style="margin:9px 0 0;max-width:680px;font-size:15px;line-height:1.62;color:#4c5850;text-wrap:pretty">{e.d}</p>
+    </span>
+    <span class="etp-czas" style="justify-self:end">
+      <span style="display:block;font-size:19px;font-weight:800;letter-spacing:-0.02em;color:#16211a;text-align:right">{godz(e.h)} h</span>
+      <span class="czas-bar" style={`margin-top:8px;--w:${(e.h / 4) * 100}%`}><span></span></span>
+      <span style="display:block;margin-top:7px;font-size:11.5px;color:#8b968d;text-align:right">Wasz czas</span>
+    </span>
+  </div>
+))}
+</div>
+</section>
+
+<!-- ============ 12 · KTO TO ROBI ============
+     Prawdziwe tytuły z rejestru studia. Świadomie nie przypisujemy ról
+     projektowych — obsada zapada na pierwszej rozmowie. -->
+<section id="zespol" style="background:#f4f8f2;padding:clamp(56px,7vw,88px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
+<div class="sec-head">
+<h2 class="h-sec" style="margin:0;max-width:520px;text-wrap:pretty">Kto siada do przeglądu.</h2>
+<p class="sub" style="margin:0 0 6px;max-width:440px">Przegląd prowadzi analityk, który zostaje z Wami do końca projektu. Nazwiska ustalamy na pierwszej rozmowie.</p>
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:clamp(20px,3vw,40px);margin-top:clamp(30px,3.6vw,44px)">
+{ludzie.map((o) => (
+  <div style="display:flex;align-items:center;gap:13px">
+    <TeamAvatar person={o} size={54} />
+    <span>
+      <span style="display:block;font-size:15px;font-weight:700;color:#16211a">{o.name}</span>
+      <span style="display:block;margin-top:2px;font-size:12.5px;color:#7c877e">{o.role}</span>
+    </span>
+  </div>
+))}
+</div>
+<p style="margin:clamp(26px,3vw,34px) 0 0;font-size:15px;line-height:1.6;color:#4c5850">Studio liczy 22 osoby. <a href="/dlaczego-my" class="lnk-green" style="font-weight:700;color:#0a7a52">Pełny skład i sposób pracy →</a></p>
+</section>
+
+<!-- ============ 13 · DOWODY I OPINIE ============ -->
+<section id="dowody" style="background:#0e2b1d;padding:clamp(64px,8vw,100px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
+<h2 class="h-sec" style="margin:0;max-width:760px;color:#ffffff;text-wrap:pretty">Wdrożenia, które u innych klientów wyszły z takiej listy.</h2>
+<div style="margin-top:clamp(34px,4vw,50px)">
+{dowody.map((d) => (
+  <div class="dow-row rv" data-anim>
+    <span style="font-family:ui-monospace,Menlo,monospace;font-size:11.5px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.5);padding-top:14px">{d.dzial}</span>
+    <span style="font-size:clamp(38px,5vw,58px);font-weight:800;letter-spacing:-0.035em;line-height:1;color:#ffffff"><span class="cnt" data-n={d.n} data-dec={d.dec}>0</span><span style="color:var(--la-accent,#00CD77)">{d.j}</span></span>
+    <span style="padding-top:6px">
+      <span style="display:block;font-size:16px;font-weight:650;color:#ffffff">{d.o}</span>
+      <span style="display:block;margin-top:6px;font-size:14.5px;line-height:1.6;color:rgba(255,255,255,0.62)">Przed: {d.p}</span>
+    </span>
+  </div>
+))}
+</div>
+
+<div class="grid3" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:clamp(24px,3vw,40px);margin-top:clamp(44px,5vw,64px)">
+{opinie.map((o) => (
+  <figure class="rv" style="margin:0;padding-top:22px;border-top:2px solid rgba(0,205,119,0.55)">
+    <blockquote style="margin:0;font-size:15.5px;line-height:1.6;color:rgba(255,255,255,0.9);text-wrap:pretty">„{o.c}”</blockquote>
+    <figcaption style="margin-top:16px;font-size:13.5px;color:rgba(255,255,255,0.6)"><strong style="display:block;color:#ffffff;font-weight:700;font-size:14.5px">{o.a}</strong>{o.r}</figcaption>
+  </figure>
+))}
+</div>
+</section>
+
+<!-- ============ 14 · MITY ============
+     Obiekcje emocjonalne, odklejone od FAQ, które odpowiada na operacyjne. -->
+<section id="mity" class="sec-pad">
+<h2 class="h-sec" style="margin:0;max-width:700px;text-wrap:pretty">Pięć zdań, które słyszymy, zanim ktokolwiek policzy pierwszą godzinę.</h2>
+<div style="margin-top:clamp(34px,4vw,48px)">
+{mity.map((m) => (
+  <div class="mit-row rv">
+    <span style="font-size:clamp(17px,2vw,20px);font-weight:700;line-height:1.35;color:#a8b2a8;text-wrap:pretty">„{m.m}”</span>
+    <p style="margin:0;max-width:680px;font-size:15.5px;line-height:1.62;color:#16211a;text-wrap:pretty">{m.r}</p>
+  </div>
+))}
+</div>
+</section>
+
+<!-- ============ 15 · CENA ============ -->
+<section id="cena" style="background:#f4f8f2;padding:clamp(64px,8vw,100px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
+<div class="cena-grid" style="display:grid;grid-template-columns:380px 1fr;gap:clamp(32px,5vw,64px);align-items:center;background:#ffffff;border:1px solid #e4ebe2;border-radius:24px;padding:clamp(32px,4vw,52px)">
+<div style="background:#0e2b1d;border-radius:20px;padding:34px 30px">
+<div style="font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.5)">Stała cena, podana z góry</div>
+<div style="margin-top:14px;font-size:clamp(30px,3.4vw,40px);font-weight:800;letter-spacing:-0.025em;line-height:1.05;color:#ffffff">[29 000] zł</div>
+<div style="margin-top:6px;font-size:12.5px;color:rgba(255,255,255,0.55)">netto · trzy tygodnie · zakres jak obok</div>
+<a href="#rozmowa" class="btn-accent" style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:24px;background:var(--la-accent,#00CD77);color:#0b1a11;padding:15px 24px;border-radius:11px;font-weight:750;font-size:15.5px">Umów 30 minut →</a>
+<div style="margin-top:12px;font-size:12px;line-height:1.5;color:rgba(255,255,255,0.5)">Decyzję o przeglądzie podejmujecie po rozmowie</div>
+</div>
+<div>
+<h2 class="h-mod" style="margin:0;text-wrap:pretty">Kwota schodzi z pierwszego wdrożenia.</h2>
+<p class="sub" style="margin:16px 0 0;max-width:560px">Jeśli wdrażamy razem, cała opłata za strategię pomniejsza fakturę za pierwszy projekt z listy. Jeśli wdraża kto inny, dokument i tak zostaje Wasz. Konkurencja z tej półki ceny nie podaje — my podajemy ją przed rozmową.</p>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px 32px;margin-top:26px" class="grid2">
+<div style="font-size:14.5px;line-height:1.55;color:#4c5850;padding-top:12px;border-top:1px solid #dfe7dd">Do ośmiu procesów przejrzanych i policzonych</div>
+<div style="font-size:14.5px;line-height:1.55;color:#4c5850;padding-top:12px;border-top:1px solid #dfe7dd">Jeden proces uruchomiony na Waszych danych</div>
+<div style="font-size:14.5px;line-height:1.55;color:#4c5850;padding-top:12px;border-top:1px solid #dfe7dd">Arkusz, kolejność i specyfikacja dwóch wdrożeń</div>
+<div style="font-size:14.5px;line-height:1.55;color:#4c5850;padding-top:12px;border-top:1px solid #dfe7dd">Cena rośnie przy kilku lokalizacjach z osobnymi systemami</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- ============ 16 · CO DALEJ ============ -->
+<section id="co-dalej" class="sec-pad">
+<div class="sec-head">
+<h2 class="h-sec" style="margin:0;max-width:520px;text-wrap:pretty">Co dzieje się po trzecim tygodniu.</h2>
+<p class="sub" style="margin:0 0 6px;max-width:430px">Trzy drogi, wszystkie równorzędne. Wyboru dokonujecie po przeczytaniu dokumentu, nie przed podpisaniem umowy.</p>
+</div>
+<div style="margin-top:clamp(34px,4vw,48px)">
+<div class="dal-row rv">
+<span>
+<span style="display:block;font-size:clamp(19px,2.3vw,25px);font-weight:750;letter-spacing:-0.018em;color:#16211a">Wdrażamy my</span>
+<p style="margin:9px 0 0;max-width:620px;font-size:15px;line-height:1.6;color:#4c5850;text-wrap:pretty">Wycena powstaje na specyfikacji, którą już macie w ręku, więc porównacie ją z każdą inną. Zaczynamy od pozycji, która pracuje od trzeciego tygodnia.</p>
+</span>
+<span style="font-size:14px;line-height:1.5;color:#7c877e">wycena w tydzień<br>opłata za strategię odliczona</span>
+</div>
+<div class="dal-row rv">
+<span>
+<span style="display:block;font-size:clamp(19px,2.3vw,25px);font-weight:750;letter-spacing:-0.018em;color:#16211a">Budujecie sami, my pilnujemy</span>
+<p style="margin:9px 0 0;max-width:620px;font-size:15px;line-height:1.6;color:#4c5850;text-wrap:pretty">Wasz zespół bierze kolejne pozycje z listy, a my prowadzimy zasady, przeglądy i bramkę przed produkcją. To jest <a href="/guided-coding" class="lnk-green" style="font-weight:700;color:#0a7a52">Guided Coding</a>.</p>
+</span>
+<span style="font-size:14px;line-height:1.5;color:#7c877e">stały abonament<br>Wasz zespół dowozi</span>
+</div>
+<div class="dal-row rv">
+<span>
+<span style="display:block;font-size:clamp(19px,2.3vw,25px);font-weight:750;letter-spacing:-0.018em;color:#16211a">Bierzecie dokument gdzie indziej</span>
+<p style="margin:9px 0 0;max-width:620px;font-size:15px;line-height:1.6;color:#4c5850;text-wrap:pretty">Specyfikacja jest opisana tak, żeby wycenił ją też inny dostawca. Możecie wziąć dokument, wdrożyć wszystko z kimś innym i nie odezwać się więcej — <strong style="color:#16211a;font-weight:700">to jest w pełni akceptowalny scenariusz.</strong></p>
+</span>
+<span style="font-size:14px;line-height:1.5;color:#7c877e">dokument i prawa<br>zostają u Was</span>
+</div>
+</div>
+</section>
+
+<GcFaq
+  heading="Pytania, które padają na pierwszej rozmowie."
+  lead="Pierwsze z nich zadaje prawie każdy zarząd, więc zostaje otwarte."
+  ctaLabel="Zadajcie nam swoje →"
+  ctaHref="#rozmowa"
+  items={faq}
+/>
+
+<GcCta
+  heading="Zacznijmy od Waszej listy."
+  lead="Napiszcie w dwóch zdaniach, jakie procesy są dziś na stole i co próbowaliście już z AI. Odpowiemy z najbliższym wolnym terminem i pierwszym pytaniem kontrolnym."
+  eyebrow="Ze strategii wychodzicie z"
+  items={[
+    { t: 'Kolejnością wdrożeń', d: 'z kwotą i terminem przy każdej pozycji' },
+    { t: 'Arkuszem wyliczeń', d: 'otwartym, z podpisem przy każdej liczbie' },
+    { t: 'Działającym procesem', d: 'pierwsza pozycja z listy pracuje na Waszych danych' },
+  ]}
+  placeholder="Np. mamy 1 200 faktur kosztowych miesięcznie i dwie osoby, które je przepisują…"
+  submitLabel="Umów 30 minut"
+/>
+
+<script>
+  var redukcja = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  (function(){
+    var els = document.querySelectorAll('[data-anim]');
+    if(!els.length) return;
+    if(redukcja || !('IntersectionObserver' in window)){
+      els.forEach(function(el){ el.classList.add('on'); });
+      return;
+    }
+    var io = new IntersectionObserver(function(w){
+      w.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('on'); io.unobserve(e.target); } });
+    }, { threshold: 0.22 });
+    els.forEach(function(el){ io.observe(el); });
+  })();
+
+  (function(){
+    var els = document.querySelectorAll('.cnt');
+    if(!els.length) return;
+    function pisz(el, v, dec){
+      var znak = v < 0 ? '−' : '';
+      var abs = Math.abs(v);
+      el.textContent = znak + (dec ? abs.toFixed(dec).replace('.', ',') : Math.round(abs).toString());
+    }
+    function licz(el){
+      var cel = parseFloat(el.dataset.n), dec = parseInt(el.dataset.dec || '0', 10), start = 0;
+      if(redukcja){ pisz(el, cel, dec); return; }
+      function krok(teraz){
+        if(!start) start = teraz;
+        var p = Math.min(1, (teraz - start) / 1000);
+        pisz(el, cel * (1 - Math.pow(1 - p, 3)), dec);
+        if(p < 1) requestAnimationFrame(krok);
+      }
+      requestAnimationFrame(krok);
+    }
+    if(!('IntersectionObserver' in window)){ els.forEach(licz); return; }
+    var io = new IntersectionObserver(function(w){
+      w.forEach(function(e){ if(e.isIntersecting){ licz(e.target); io.unobserve(e.target); } });
+    }, { threshold: 0.5 });
+    els.forEach(function(el){ io.observe(el); });
+  })();
+
+  // ---- Macierz: podpis reaguje na bąbel ----
+  (function(){
+    var cap = document.getElementById('mx-cap');
+    if(!cap) return;
+    var domyslny = cap.innerHTML;
+    document.querySelectorAll('.mx-g').forEach(function(g){
+      function pokaz(){
+        cap.innerHTML = '<strong style="color:#16211a;font-weight:700">' + g.dataset.t + '</strong> — ' + g.dataset.o + ' · ' + g.dataset.s;
+      }
+      g.addEventListener('mouseenter', pokaz);
+      g.addEventListener('mouseleave', function(){ cap.innerHTML = domyslny; });
+    });
+  })();
+
+  // ---- Przełącznik działów ----
+  (function(){
+    var taby = document.querySelectorAll('.dz-tab');
+    if(!taby.length) return;
+    function wybierz(klucz){
+      taby.forEach(function(t){ t.setAttribute('aria-selected', t.dataset.dzial === klucz ? 'true' : 'false'); });
+      document.querySelectorAll('.dz-panel').forEach(function(p){
+        p.setAttribute('data-open', p.dataset.panel === klucz ? 'true' : 'false');
+      });
+    }
+    taby.forEach(function(t){
+      t.addEventListener('click', function(){ wybierz(t.dataset.dzial); });
+      t.addEventListener('mouseenter', function(){ wybierz(t.dataset.dzial); });
+    });
+  })();
+
+  // ---- Arkusz: suwaki przeliczają kolumnę ----
+  (function(){
+    var box = document.getElementById('ark');
+    if(!box) return;
+    var slStawka = document.getElementById('sl-stawka');
+    var slFaktur = document.getElementById('sl-faktur');
+    var MINUTY = 6.5, WYJATKI = 0.12, NAKLAD = 68000;
+    function spacja(n){ return Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' '); }
+    function przelicz(){
+      var stawka = parseInt(slStawka.value, 10), faktur = parseInt(slFaktur.value, 10);
+      var dzis = faktur * MINUTY / 60, po = dzis * WYJATKI, odz = dzis - po;
+      var rok = odz * stawka * 12, zwrot = rok / NAKLAD;
+      var prog = Math.max(1, Math.ceil(NAKLAD / (rok / 12)));
+      document.getElementById('v-stawka').textContent = stawka + ' zł';
+      document.getElementById('v-faktur').textContent = spacja(faktur);
+      document.getElementById('o-stawka').textContent = stawka + ' zł';
+      document.getElementById('o-faktur').textContent = spacja(faktur);
+      document.getElementById('o-dzis').textContent = Math.round(dzis) + ' h / mies.';
+      document.getElementById('o-po').textContent = Math.round(po) + ' h / mies.';
+      document.getElementById('o-odz').textContent = Math.round(odz) + ' h / mies.';
+      document.getElementById('o-rok').textContent = spacja(Math.round(rok / 100) * 100) + ' zł';
+      document.getElementById('o-zwrot').textContent = zwrot.toFixed(1).replace('.', ',') + '×';
+      document.getElementById('o-prog').textContent = prog + '.';
+    }
+    slStawka.addEventListener('input', przelicz);
+    slFaktur.addEventListener('input', przelicz);
+    przelicz();
+  })();
+</script>
+</LaBase>

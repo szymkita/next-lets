@@ -1,0 +1,708 @@
+---
+// STRONA „DLACZEGO MY" — WERSJA 3 · /dlaczego-my-v3
+//
+// TA SAMA TREŚĆ CO /dlaczego-my, INNA WARSTWA WIZUALNA.
+// Przegląd z 29.08.2026: v1 miała pięć razy ten sam szkielet sekcji,
+// dwanaście zaokrąglonych kafli i wersaliki przy każdym module.
+// v3 rozbija to na wiersze na liniach, arkusz stykowy zamiast siatki
+// awatarów, numery zamiast kółek z inicjałami, jedno wcięcie i jeden
+// kontrast skali. Pełna lista zmian: docs/dlaczego-my-koncepcja.md.
+//
+// Obie wersje stoją równolegle do porównania — treść jest identyczna,
+// więc różnica, którą widać, jest wyłącznie różnicą projektu.
+//
+//
+// KOMU TO SIĘ WYŚWIETLA
+// Człowiek, który wie już, co robimy, i zbiera argumenty przed decyzją.
+// Ma na biurku 2–4 oferty i pytanie, którego nie zada wprost:
+// „czym oni się różnią od tamtych i co się stanie, jak to pójdzie źle".
+//
+// KLUCZOWA DECYZJA
+// Sekcja „dlaczego my" na stronie głównej to cztery zalety. Rozciągnięcie
+// jej do całej strony dałoby dziesięć zalet i zero wiarygodności — bo
+// każdy konkurent napisze u siebie to samo zdanie.
+// Ta strona stoi więc na czymś, czego konkurencja nie skopiuje:
+//   1. nazywa alternatywy z imienia i mówi, kiedy tamci są lepsi,
+//   2. pokazuje własny zgrzyt w tym samym miejscu, co cudze,
+//   3. kończy się listą sytuacji, w których odsyłamy klienta gdzie indziej.
+// Każdy blok da się sprawdzić przed podpisaniem umowy — to jest obietnica
+// całej strony i dlatego hero jest metryczką firmy, a nie makietą produktu.
+//
+// CZEGO TU NIE MA I DLACZEGO
+// — Historii firmy na osi czasu. Kupujący nie kupuje naszej przeszłości.
+// — Wartości („rzetelność, partnerstwo"). Nieweryfikowalne, więc puste.
+// — Galerii zdjęć zespołu. Do czasu prawdziwej sesji zdjęciowej lepiej
+//   wygląda uczciwy skład ról niż stockowe twarze (patrz TeamAvatar).
+//
+// LICZBY
+// 140+ firm, 200+ wdrożeń, 30+ ekspertów — za stroną główną.
+// Wszystko, czego nie mam u źródła, jest oznaczone [do uzupełnienia],
+// zgodnie z konwencją z pozostałych podstron.
+
+import LaBase from '../layouts/LaBase.astro';
+import GcFaq from '../components/GcFaq.astro';
+import GcCta from '../components/GcCta.astro';
+import TeamAvatar from '../components/TeamAvatar.astro';
+import { zespol } from '../data/zespol.js';
+
+const title = "Dlaczego my (v3 — wariant wizualny) | Let's automate";
+const description =
+  'Skład studia, zasady rozliczeń, lista rzeczy przekazywanych na koniec projektu i sytuacje, w których odsyłamy do kogoś innego. Wszystko sprawdzalne przed podpisaniem umowy.';
+
+// ── Metryczka firmy (hero, prawa kolumna) ────────────────────────────────
+// Świadomie sucha tabela zamiast makiety produktu: pierwsze, co ta strona
+// robi, to podanie faktów do weryfikacji.
+const metryczka = [
+  { k: 'Spółka', v: "Let's automate sp. z o.o.", m: 'NIP 5252908405' },
+  { k: 'Grupa', v: 'Wise Group', m: 'Sellwise · HireWise · AdWise' },
+  { k: 'Zespół', v: '30+ osób', m: 'w jednym studiu, bez podwykonawców' },
+  { k: 'Zrealizowane', v: '200+ wdrożeń', m: 'dla ponad 140 firm' },
+  { k: 'Własny produkt', v: 'appto.ai', m: 'budowany tą samą metodą' },
+  { k: 'Rozliczenie', v: 'stała cena za etap', m: 'bez roboczogodzin' },
+  { k: 'Siedziba', v: 'Warszawa', m: 'Nowy Świat 33/13' },
+];
+
+// ── Sekcja 1 · Krajobraz alternatyw ──────────────────────────────────────
+// Najważniejszy blok strony. Każdy profil dostaje uczciwe „najlepszy wybór,
+// gdy" — łącznie z nami, którzy dostajemy własny zgrzyt w tym samym polu.
+// To jedyna konstrukcja, której konkurencja nie przepisze, bo nie może
+// sobie pozwolić na napisanie u siebie „tu wygrywa ktoś inny".
+const alternatywy = [
+  {
+    n: 'Software house',
+    gdy: 'Zakres jest spisany i domknięty, a brakuje rąk do jego wykonania.',
+    zgrzyt:
+      'Specyfikację przygotowuje klient, więc pytanie, czy ten proces w ogóle powinien tak wyglądać, zostaje bez właściciela. Kod powstaje zgodnie z zamówieniem, także wtedy, gdy zamówienie było błędem.',
+  },
+  {
+    n: 'Agencja od AI · integrator no-code',
+    gdy: 'Chodzi o jeden scenariusz na już, w budżecie kilku tysięcy złotych.',
+    zgrzyt:
+      'Po roku scenariuszy jest czternaście, każdy żyje osobno i nikt nie umie powiedzieć, co się stanie, gdy jeden przestanie działać w piątek wieczorem.',
+  },
+  {
+    n: 'Duże doradztwo',
+    gdy: 'Zarząd potrzebuje strategii sygnowanej marką, którą rada nadzorcza zna z rynku.',
+    zgrzyt:
+      'Dokument kończy się w miejscu, w którym zaczyna się wdrożenie. Kod pisze potem inna firma, na podstawie slajdów, których autorzy już nie odbierają telefonu.',
+  },
+  {
+    n: 'Wewnętrzny dział IT',
+    gdy: 'Zespół ma wolne moce, a pierwsza automatyzacja działa u Was w produkcji od kilku miesięcy.',
+    zgrzyt:
+      'Backlog utrzymaniowy zjada każdą nową inicjatywę. Projekt transformacyjny przegrywa z awarią w systemie, który działa od ośmiu lat — i słusznie, bo awaria jest pilniejsza.',
+  },
+];
+
+// ── Sekcja 2 · Skład projektowy ──────────────────────────────────────────
+// TeamAvatar bez zdjęć renderuje inicjały — to celowe. Rola i zakres
+// odpowiedzialności są prawdziwe, twarze pojawią się po sesji zdjęciowej.
+const sklad = [
+  {
+    p: { name: 'Partner prowadzący' },
+    kiedy: 'od pierwszej rozmowy',
+    d: 'Odpowiada za wynik i za budżet. Rozmowę handlową i projekt prowadzi ta sama osoba, więc obietnice ze sprzedaży nie giną po drodze.',
+  },
+  {
+    p: { name: 'Analityk procesu' },
+    kiedy: 'diagnoza',
+    d: 'Spisuje, jak proces działa dzisiaj, przy biurkach osób, które go wykonują. Schemat z prezentacji zarządu zwykle różni się od tego, co widać na miejscu.',
+  },
+  {
+    p: { name: 'Lead developer' },
+    kiedy: 'budowa',
+    d: 'Projektuje rozwiązanie i pisze najtrudniejsze fragmenty. Ta sama osoba odbiera telefon, gdy pół roku później coś zacznie się zachowywać dziwnie.',
+  },
+  {
+    p: { name: 'QA' },
+    kiedy: 'budowa i wydanie',
+    d: 'Sprawdza system na Waszych danych przed każdym wydaniem. Ma prawo wstrzymać wydanie i z tego prawa korzysta.',
+  },
+  {
+    p: { name: 'Opiekun wdrożenia' },
+    kiedy: 'po starcie',
+    d: 'Prowadzi system po uruchomieniu i co miesiąc pokazuje metryki procesu: ile przeszło automatycznie, ile trafiło do ludzi.',
+  },
+];
+
+// ── Sekcja 3 · Wise Group ────────────────────────────────────────────────
+const grupa = [
+  { n: 'Sellwise', d: 'doradztwo sprzedażowe', s: false },
+  { n: 'HireWise', d: 'rekrutacja i zespoły', s: false },
+  { n: 'AdWise', d: 'marketing B2B', s: false },
+  { n: "Let's automate", d: 'transformacja AI', s: true },
+];
+
+// Konkretne sytuacje projektowe zamiast ogólnika „mamy zaplecze".
+const zaplecze = [
+  {
+    t: 'Proces sprzedaży opisuje ktoś, kto go przebudowywał',
+    d: 'Zanim zautomatyzujemy ofertowanie, ktoś sprawdza, czy ten sposób ofertowania ma sens. W większości projektów zmienia się najpierw proces, a dopiero potem powstaje system.',
+  },
+  {
+    t: 'Po wdrożeniu zmieniają się role w zespole',
+    d: 'Część pracy znika, a część stanowisk wygląda inaczej niż w dniu podpisania umowy. HireWise pracuje przy tym na co dzień, więc rozmowa o nowych rolach nie zaczyna się od zera.',
+  },
+  {
+    t: 'Zarząd dostaje argument w swoim języku',
+    d: 'Materiał na radę nadzorczą pisze ktoś, kto pisze takie materiały zawodowo. Wdrożenia AI zatrzymują się w firmach najczęściej na etapie obrony budżetu.',
+  },
+];
+
+// ── Sekcja 4 · Zasady ────────────────────────────────────────────────────
+const zasady = [
+  {
+    n: '01',
+    t: 'Stała cena za etap',
+    d: 'Cena kolejnego etapu jest ustalona przed jego zamówieniem. Rozliczeń godzinowych nie prowadzimy w żadnym projekcie.',
+  },
+  {
+    n: '02',
+    t: 'Działająca wersja co tydzień',
+    d: 'Raz w tygodniu pokazujemy system na Waszych danych. Status po e-mailu zastępuje demo tylko w tygodniach świątecznych.',
+  },
+  {
+    n: '03',
+    t: 'Repozytorium i konta na Waszej firmie',
+    d: 'Zakładamy je pierwszego dnia projektu, na Wasze dane. Dostęp można nam odebrać jednym kliknięciem, w dowolnym momencie.',
+  },
+  {
+    n: '04',
+    t: 'Skład znany przed umową',
+    d: 'Nazwiska osób prowadzących projekt podajemy przed podpisaniem umowy. Zmianę w składzie zgłaszamy z wyprzedzeniem.',
+  },
+  {
+    n: '05',
+    t: 'NDA przed pierwszymi danymi',
+    d: 'Umowę o poufności podpisujemy zanim zobaczymy cokolwiek z Waszych systemów, także na etapie bezpłatnej diagnozy.',
+  },
+  {
+    n: '06',
+    t: 'Eskalacja idzie do partnera',
+    d: 'Za projekt odpowiada jedna osoba i to jej numer macie w telefonie. Zgłoszenie trafia do kogoś, kto zna projekt od pierwszego dnia.',
+  },
+];
+
+// ── Sekcja 4b · Drabinka etapów ──────────────────────────────────────────
+// Wizualne potwierdzenie zasady 01: widać, że cena jest ustalana etapami.
+const etapy = [
+  { n: '01', t: 'Diagnoza', d: 'Koszt status quo w godzinach i złotówkach, mapa wdrożeń wg zwrotu.', h: 26 },
+  { n: '02', t: 'Pilot', d: 'Jeden proces do produkcji. Tu weryfikujecie nas na prawdziwej pracy.', h: 48 },
+  { n: '03', t: 'Wdrożenie', d: 'Kolejne procesy w kolejności z mapy, etap po etapie.', h: 76 },
+  { n: '04', t: 'Opieka i rozwój', d: 'Utrzymanie, metryki procesu i kolejne usprawnienia.', h: 100 },
+];
+
+// ── Sekcja 5 · Protokół przekazania ──────────────────────────────────────
+// Nawiązanie do „rachunku za status quo" ze strony głównej: ten sam
+// papierowy motyw, odwrócone znaczenie. Tam kartka pokazywała, ile kosztuje
+// nicnierobienie, tutaj — co zostaje po zakończeniu współpracy.
+const protokol = [
+  { t: 'Repozytorium z pełną historią', d: 'na Waszej organizacji, z dostępami dla Waszych ludzi' },
+  { t: 'Dokumentacja procesu i decyzji', d: 'zapis decyzji projektowych wraz z uzasadnieniem' },
+  { t: 'Konta i licencje', d: 'założone na Waszą firmę, opłacane z Waszej karty' },
+  { t: 'Runbook awaryjny', d: 'co zrobić, gdy proces stanie o drugiej w nocy' },
+  { t: 'Nagrania szkoleń', d: 'dla osób, które dołączą do zespołu za rok' },
+  { t: 'Panel metryk procesu', d: 'ile przeszło automatycznie, ile trafiło do ludzi' },
+  { t: 'Definicja gotowości produkcyjnej', d: 'warunki, jakie musi spełnić kolejna zmiana' },
+];
+
+// ── Sekcja 7 · Kiedy nie my ──────────────────────────────────────────────
+// Blok, który sprzedaje najwięcej, bo jako jedyny na stronie nie sprzedaje.
+const nieMy = [
+  {
+    t: 'Potrzebna jest jedna prosta automatyzacja',
+    d: 'Przy budżecie kilku tysięcy złotych i jednym scenariuszu integrator no-code zrobi to szybciej i taniej. Podajemy nazwiska, jeśli poprosicie.',
+  },
+  {
+    t: 'Decyduje najniższa stawka godzinowa',
+    d: 'Pracujemy na stałej cenie za etap. W licytacji stawką zawsze znajdzie się ktoś, kto zejdzie niżej, i takiej licytacji nie wygrywamy.',
+  },
+  {
+    t: 'Proces zmieni się w ciągu kwartału',
+    d: 'Automatyzacja procesu, który za chwilę przestanie obowiązywać, to koszt bez zwrotu. Wracamy do rozmowy po zmianie.',
+  },
+  {
+    t: 'Po Waszej stronie nikt nie odpowiada za wynik',
+    d: 'Wdrożenie bez właściciela wewnątrz firmy zatrzymuje się na etapie pilota. Widzieliśmy to kilka razy i nie chcemy tego powtarzać za Wasze pieniądze.',
+  },
+];
+
+// ── FAQ ──────────────────────────────────────────────────────────────────
+// Pierwsze pytanie otwarte domyślnie (GcFaq) — celowo najtwardsze.
+const faq = [
+  {
+    q: 'Czym różnicie się od software house’u?',
+    a: 'Zakresem odpowiedzialności. Software house dostaje specyfikację i buduje to, co w niej jest — pytanie, czy proces powinien tak wyglądać, zostaje po Waszej stronie. My zaczynamy etap wcześniej: analityk siada przy biurkach ludzi, którzy proces wykonują, i dopiero z tego powstaje zakres. W praktyce w pierwszym tygodniu najczęściej wypada część rzeczy, które były w pierwotnym zamówieniu, i to jest tania zmiana. Ta sama zmiana po trzech miesiącach budowy jest droga.',
+  },
+  {
+    q: 'Czy nie taniej zbudować to wewnętrznie?',
+    a: 'Czasem tak i mówimy to wprost. Jeśli macie zespół z wolnymi mocami i pierwszą automatyzację, która działa w produkcji od kilku miesięcy, kolejne procesy zwykle opłaca się robić u siebie. Rachunek zmienia się, kiedy zespół ma pełny backlog utrzymaniowy — wtedy projekt transformacyjny przegrywa z każdą awarią, a przez rok nie powstaje nic. W takiej sytuacji koszt zewnętrznego studia jest niższy niż koszt roku bez zmian.',
+  },
+  {
+    q: 'Co się stanie, jeśli przestaniecie istnieć?',
+    a: 'System działa dalej. Repozytorium, konta i licencje są od pierwszego dnia na Waszej firmie, dokumentacja i runbook leżą w tym samym repozytorium, a stack dobieramy tak, żeby utrzymanie mógł przejąć dowolny zespół z rynku. Na koniec projektu podpisujemy protokół przekazania z listą tego, co dostajecie — jest wyżej na tej stronie. Bez tej listy nie zamykamy projektu.',
+  },
+  {
+    q: 'Ile to kosztuje?',
+    a: 'Diagnoza jest bezpłatna i kończy się liczbą: kosztem status quo w godzinach i złotówkach. Każdy kolejny etap ma stałą cenę, ustaloną przed jego rozpoczęciem, więc w dowolnym momencie znacie koszt następnego kroku i możecie się zatrzymać. Rozliczeń godzinowych nie prowadzimy — przy nich ryzyko przekroczenia budżetu przechodzi na klienta, a to my mamy wpływ na tempo, więc ryzyko zostaje u nas.',
+  },
+  {
+    q: 'Za rok modele będą lepsze. Czy to nie zestarzeje się w pół roku?',
+    a: 'Model jest w takim systemie wymienialnym elementem. Wartość zostaje w tym, co jest wokół niego: w opisanym procesie, w integracjach z Waszymi systemami, w danych doprowadzonych do stanu używalności i w regułach, kiedy decyzję podejmuje człowiek. Ta warstwa nie starzeje się razem z modelem, a podmiana modelu na nowszy jest u nas zmianą konfiguracji, nie przepisywaniem systemu.',
+  },
+  {
+    q: 'Kto ma prawa do kodu i do danych?',
+    a: 'Wy, od pierwszego dnia. Kod powstaje w repozytorium na Waszej organizacji, a prawa majątkowe przechodzą na Was wraz z odbiorem etapu. Waszych danych nie używamy do trenowania modeli. Umowę o poufności podpisujemy przed pierwszym spojrzeniem na Wasze systemy, także w trakcie bezpłatnej diagnozy.',
+  },
+];
+---
+<LaBase noindex
+  title={title}
+  description={description}
+  ogImage="/og/hub.png"
+  nav="dlaczego-my"
+  ctaHref="#kontakt"
+  ctaLabel="Umów bezpłatną diagnozę"
+>
+<style is:global slot="head">
+  /* ---------- metryczka firmy (hero) ---------- */
+  .mtx{width:100%;border-collapse:collapse}
+  .mtx td{padding:11px 0;border-top:1px solid rgba(255,255,255,0.1);vertical-align:baseline}
+  .mtx tr:first-child td{border-top:0}
+  .mtx .k{font-family:ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.45);white-space:nowrap;padding-right:18px}
+  .mtx .v{font-size:14.5px;font-weight:700;color:#ffffff;line-height:1.3}
+  .mtx .m{display:block;margin-top:2px;font-size:12px;font-weight:400;color:rgba(255,255,255,0.55)}
+
+  /* ---------- porównanie: wiersze, nie kafle ----------
+     Pięć jednakowych kart obok siebie to najczytelniejszy podpis szablonu.
+     Cztery alternatywy schodzą do cichych wierszy na liniach, a nasz wiersz
+     dostaje akcentową krechę i większy stopień — hierarchia zamiast siatki. */
+  .cmp{display:grid;grid-template-columns:250px 1fr 1fr;gap:clamp(18px,3vw,56px);padding:clamp(22px,2.4vw,30px) 0;border-top:1px solid rgba(255,255,255,0.15)}
+  .cmp-n{font-size:clamp(19px,2.1vw,23px);font-weight:750;letter-spacing:-0.022em;line-height:1.18;color:#ffffff;text-wrap:balance}
+  .cmp-lab{font-size:12.5px;font-weight:600;letter-spacing:0.005em;color:rgba(255,255,255,0.4)}
+  .cmp-p{margin:7px 0 0;font-size:14.5px;line-height:1.6;color:rgba(255,255,255,0.72);text-wrap:pretty}
+  .cmp-us{margin-top:clamp(26px,3vw,38px);border-top:2px solid var(--la-accent,#00CD77);padding-top:clamp(28px,3vw,38px)}
+  .cmp-us .cmp-lab{color:var(--la-accent,#00CD77)}
+  .cmp-us .cmp-p{font-size:15.5px;color:rgba(255,255,255,0.92)}
+  .cmp-note{margin:16px 0 0;font-size:14px;line-height:1.55;color:rgba(255,255,255,0.6);text-wrap:pretty}
+
+  /* ---------- skład projektowy ---------- */
+  .cast{border-top:1px solid #e7ece4}
+  .cast-row{display:grid;grid-template-columns:30px 1fr 190px;gap:clamp(14px,2vw,26px);align-items:baseline;padding:22px 4px;border-bottom:1px solid #e7ece4}
+  .cast-when{font-size:13px;color:#98a29a;justify-self:end;text-align:right;white-space:nowrap}
+
+  /* ---------- pełny skład studia ---------- */
+  /* ---------- skład studia: arkusz stykowy, nie „poznaj zespół" ----------
+     Kwadraty w gęstej siatce po jedenaście czytają się jak spis, okrągłe
+     awatary wyśrodkowane po sześć — jak sekcja z szablonu. */
+  .roster{display:grid;grid-template-columns:repeat(11,1fr);gap:clamp(18px,2vw,24px) clamp(8px,1vw,13px);margin-top:clamp(26px,3vw,36px)}
+  .roster-p{display:block}
+  .roster-ph{display:block;width:100%;aspect-ratio:1;border-radius:50%;overflow:hidden}
+  .roster-ph img{width:100%;height:100%;object-fit:cover;display:block;filter:grayscale(1);transition:filter .3s,transform .3s cubic-bezier(.4,0,.2,1)}
+  .roster-p:hover .roster-ph img{transform:scale(1.05)}
+  .roster-n{display:block;margin-top:9px;font-size:12px;font-weight:700;line-height:1.2;letter-spacing:-0.004em;color:#16211a}
+  .roster-r{display:block;margin-top:2px;font-size:10.5px;line-height:1.3;color:#98a29a;text-wrap:pretty}
+  @media (prefers-reduced-motion:reduce){ .roster-ph img{transition:none} .roster-p:hover .roster-ph img{transform:none} }
+
+  /* numer etapu zamiast zielonego kółka z inicjałami — „Q" samo wyglądało źle */
+  .cast-i{font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:700;color:#0a7a52;padding-top:5px}
+
+  /* ---------- Wise Group ---------- */
+  .wg{margin-top:clamp(36px,4.5vw,52px)}
+  .wg-stem{position:relative;height:30px}
+  .wg-stem::after{content:'';position:absolute;left:50%;top:0;bottom:0;width:1.5px;background:#c9d4c9}
+  .wg-brace{height:24px;border-top:1.5px solid #c9d4c9;border-left:1.5px solid #c9d4c9;border-right:1.5px solid #c9d4c9;border-radius:16px 16px 0 0}
+  .wg-tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  .wg-tile{padding:20px 18px;text-align:center;border-radius:12px;transition:background .25s}
+  .wg-tile:hover{background:rgba(255,255,255,0.6)}
+  .wg-tile.is-us{background:#0e2b1d}
+  .wg-tile.is-us:hover{background:#123522}
+  .wg-name{font-size:16.5px;font-weight:800;letter-spacing:-0.015em;color:#16211a}
+  .wg-tile.is-us .wg-name{color:#ffffff}
+  .wg-dom{margin-top:4px;font-size:12.5px;color:#7c877e}
+  .wg-tile.is-us .wg-dom{color:rgba(255,255,255,0.6)}
+  .wg-badge{display:inline-block;margin-top:11px;background:var(--la-accent,#00CD77);color:#0b1a11;font-family:ui-monospace,Menlo,monospace;font-size:9.5px;letter-spacing:0.11em;font-weight:700;padding:3px 8px;border-radius:6px}
+
+  .zap-c{padding-left:clamp(18px,2vw,28px);border-left:1px solid #dbe4d9}
+  .zap-c:first-child{padding-left:0;border-left:0}
+  @media (max-width:900px){ .zap-c{padding-left:0;border-left:0;padding-top:22px;border-top:1px solid #dbe4d9} .zap-c:first-child{padding-top:0;border-top:0} }
+
+  /* ---------- zasady + drabinka etapów ---------- */
+  .zas-row{display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:baseline;padding:17px 0;border-top:1px solid #eef1ec}
+  .zas-row:first-child{border-top:0;padding-top:0}
+  .zas-n{font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:700;color:#0a7a52}
+  .lad{position:relative;display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(12px,1.6vw,20px);align-items:stretch;margin-top:clamp(44px,5vw,64px)}
+  .lad::before{content:'';position:absolute;left:0;right:0;top:112px;height:2px;background:#16211a}
+  .lad-col{display:flex;flex-direction:column}
+  .lad-top{display:flex;align-items:flex-end;height:112px}
+  .lad-bar{width:100%;border-radius:10px 10px 0 0;background:linear-gradient(180deg,rgba(0,205,119,0.55),rgba(0,205,119,0.12));height:0;transition:height .9s cubic-bezier(.4,0,.2,1)}
+  .rv.in .lad-bar{height:var(--h)}
+  .lad-body{padding-top:18px}
+  .lad-chip{display:inline-block;margin-top:10px;background:#eef5ec;color:#0a7a52;font-family:ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:0.08em;font-weight:700;padding:4px 9px;border-radius:6px}
+  @media (prefers-reduced-motion:reduce){ .lad-bar{transition:none;height:var(--h)} }
+
+  /* ---------- protokół przekazania ---------- */
+  .prot-wrap{background:linear-gradient(160deg,#eef5ee 0%,#e6f0e8 55%,#eaf2ea 100%);border-radius:26px;padding:clamp(28px,5vw,52px) clamp(22px,5vw,56px)}
+  .prot{background:#ffffff;border-radius:6px;padding:clamp(26px,4vw,40px) clamp(22px,4vw,40px) 30px;box-shadow:0 30px 70px -32px rgba(15,30,22,0.35);transform:rotate(0.9deg);font-family:ui-monospace,Menlo,monospace}
+  .prot-row{display:grid;grid-template-columns:22px 1fr;gap:12px;align-items:baseline;padding:13px 0;border-bottom:1px dashed #e7ece4}
+  .prot-t{font-size:13.5px;font-weight:700;color:#16211a;line-height:1.4}
+  .prot-d{display:block;margin-top:2px;font-size:11.5px;font-weight:400;color:#8b968d}
+  .prot-sign{display:grid;grid-template-columns:1fr 1fr;gap:26px;margin-top:26px;padding-top:20px;border-top:1.5px dashed #d8dcd4}
+  .prot-line{border-bottom:1px solid #c9d0c6;height:26px}
+  .prot-cap{margin-top:6px;font-size:10.5px;letter-spacing:0.06em;color:#8b968d}
+  .prot-stamp{display:inline-flex;align-items:center;gap:8px;transform:rotate(-4deg);border:2px solid rgba(10,122,82,0.5);color:#0a7a52;border-radius:8px;padding:7px 13px;font-size:11px;letter-spacing:0.12em;font-weight:700}
+
+  /* ---------- liczby: wiersze na liniach zamiast trzech kafli ---------- */
+  .stats{display:flex;flex-direction:column;justify-content:center;height:100%}
+  .stat{padding:clamp(18px,2vw,26px) 0;border-top:1px solid #e7ece4}
+  .stat:last-child{border-bottom:1px solid #e7ece4}
+  .stat-n{font-size:clamp(40px,5vw,58px);font-weight:800;letter-spacing:-0.04em;line-height:1;color:#16211a}
+  .stat-n span{color:var(--la-accent,#00CD77)}
+  .stat.is-hi .stat-n{color:#0a7a52}
+  .stat-k{margin-top:8px;font-size:15px;font-weight:700;color:#16211a}
+  .stat-d{margin-top:2px;font-size:13.5px;line-height:1.5;color:#7c877e}
+
+  /* ---------- kiedy nie my ---------- */
+  .nie-wrap{margin-left:clamp(0px,14vw,240px)}
+  .nie-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:clamp(36px,4vw,48px)}
+  .nie-card{background:#fbf7f4;border:1px solid rgba(163,57,31,0.18);border-radius:16px;padding:24px 24px 22px}
+  .nie-t{display:flex;gap:11px;align-items:flex-start;font-size:16.5px;font-weight:750;letter-spacing:-0.012em;color:#16211a;line-height:1.3}
+  .nie-ico{flex-shrink:0;margin-top:2px;color:var(--la-risk,#a3391f)}
+
+  /* ---------- responsywność ---------- */
+  @media (max-width:1024px){
+    .cmp{grid-template-columns:200px 1fr 1fr;gap:16px 28px}
+    .roster{grid-template-columns:repeat(6,1fr)}
+    .hero-split{grid-template-columns:1fr !important;gap:clamp(36px,5vw,48px) !important}
+  }
+  @media (max-width:900px){
+    .cmp{grid-template-columns:1fr;gap:4px 0}
+    .cmp-n{margin-bottom:10px}
+    .nie-wrap{margin-left:0}
+    .cast-row{grid-template-columns:30px 1fr;gap:14px}
+    .cast-when{grid-column:2;justify-self:start;text-align:left;padding-top:2px}
+    .wg-tiles{grid-template-columns:1fr 1fr;gap:12px}
+    .wg-brace,.wg-stem{display:none}
+    .zas-grid{grid-template-columns:1fr !important;gap:32px !important}
+    .nie-grid{grid-template-columns:1fr}
+    .prot-sign{grid-template-columns:1fr;gap:18px}
+  }
+  @media (max-width:700px){
+    .roster{grid-template-columns:repeat(4,1fr)}
+    .lad{grid-template-columns:1fr;gap:22px}
+    .lad::before{display:none}
+    .lad-top{display:none}
+    .lad-body{border-top:2px solid #16211a}
+    .prot{transform:none}
+  }
+</style>
+
+<!-- ============ 1 · HERO ============ -->
+<!-- Prawa kolumna to metryczka, nie makieta produktu: strona od pierwszego
+     ekranu deklaruje, że podaje fakty do sprawdzenia. -->
+<section style="position:relative;overflow:hidden;background:radial-gradient(880px 520px at 84% -8%, rgba(0,205,119,0.13), transparent 62%), #ffffff;padding:clamp(28px,4vw,52px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) clamp(56px,7vw,88px)">
+<div class="hero-split" style="display:grid;grid-template-columns:1.15fr 430px;gap:clamp(40px,5vw,92px);align-items:center;margin-top:clamp(28px,4vw,52px)">
+
+<div>
+<h1 style="margin:0;font-size:clamp(30px,4.6vw,52px);line-height:1.06;letter-spacing:-0.033em;font-weight:800;color:#16211a;text-wrap:balance">Każda firma od AI mówi o sobie to samo. Tu są różnice, które da się sprawdzić.</h1>
+<p style="margin:24px 0 0;max-width:600px;font-size:clamp(16px,2.1vw,19px);line-height:1.6;color:#33413a;text-wrap:pretty">Skład studia, nazwiska ludzi, którzy usiądą przy Waszym projekcie, sposób rozliczania etapów i lista rzeczy przekazywanych na koniec współpracy. Każdą pozycję z tej strony można zweryfikować przed podpisaniem umowy.</p>
+<div class="hero-actions" style="display:flex;align-items:center;flex-wrap:wrap;gap:16px 22px;margin-top:32px">
+<a href="#porownanie" class="btn-dark" style="display:inline-flex;align-items:center;gap:10px;background:#16211a;color:#ffffff;padding:18px 32px;border-radius:12px;font-weight:650;font-size:16.5px;box-shadow:0 14px 30px -14px rgba(16,33,26,0.45)">Z kim nas porównujecie <span aria-hidden="true">→</span></a>
+<a href="#kiedy-nie-my" class="btn-ghost" style="display:inline-flex;align-items:center;gap:8px;font-size:16.5px;font-weight:700;color:#16211a;background:rgba(255,255,255,0.6);padding:18px 26px;border-radius:12px;border:1px solid rgba(22,33,26,0.16)">Kiedy nas nie wybierać →</a>
+</div>
+<p style="margin:26px 0 0;font-size:14.5px;color:#8b968d">Stała cena za etap&nbsp;&nbsp;·&nbsp;&nbsp;skład znany przed umową&nbsp;&nbsp;·&nbsp;&nbsp;kod zostaje Wasz</p>
+</div>
+
+<div style="background:#0e2b1d;background-image:radial-gradient(600px 340px at 100% 0%, rgba(0,205,119,0.16), transparent 60%);border-radius:5px;padding:clamp(24px,3vw,34px)">
+<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding-bottom:18px;border-bottom:1px solid rgba(255,255,255,0.14)">
+<div>
+<div style="font-size:15.5px;font-weight:750;color:#ffffff">Metryczka</div>
+<div style="margin-top:2px;font-size:12px;color:rgba(255,255,255,0.55)">stan na sierpień 2026</div>
+</div>
+<img src="/uploads/logo-2.svg" alt="" aria-hidden="true" style="height:18px;width:auto;display:block;filter:brightness(0) invert(1);opacity:0.75">
+</div>
+<table class="mtx" style="margin-top:8px">
+<tbody>
+{metryczka.map((r) => (
+  <tr>
+    <td class="k">{r.k}</td>
+    <td class="v">{r.v}<span class="m">{r.m}</span></td>
+  </tr>
+))}
+</tbody>
+</table>
+</div>
+
+</div>
+</section>
+
+<!-- ============ 2 · Z KIM NAS PORÓWNUJECIE ============ -->
+<!-- Sekcja nośna całej strony. Nasz kafel ma to samo pole „typowy zgrzyt",
+     co pozostałe — bez tego cała reszta czyta się jak ulotka. -->
+<section id="porownanie" style="position:relative;overflow:hidden;background:radial-gradient(900px 520px at 12% -2%, rgba(0,205,119,0.14), transparent 60%), #0e2b1d;padding:clamp(72px,10vw,120px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) clamp(72px,9vw,110px);scroll-margin-top:16px">
+<h2 class="h-sec" style="margin:0;max-width:900px;color:#ffffff;text-wrap:pretty">Z kim nas porównujecie i gdzie tamci wygrywają.</h2>
+<p style="margin:22px 0 0;max-width:600px;font-size:clamp(16px,2vw,18.5px);line-height:1.6;color:rgba(255,255,255,0.72);text-wrap:pretty">Cztery typy dostawców, do których trafia dokładnie to samo zapytanie. Przy każdym stoi sytuacja, w której to on jest lepszym wyborem — łącznie z nami.</p>
+
+<div class="rv" style="margin-top:clamp(44px,5vw,64px)">
+{alternatywy.map((a) => (
+  <div class="cmp">
+    <div class="cmp-n">{a.n}</div>
+    <div><div class="cmp-lab">Najlepszy wybór, gdy</div><p class="cmp-p">{a.gdy}</p></div>
+    <div><div class="cmp-lab">Typowy zgrzyt</div><p class="cmp-p">{a.zgrzyt}</p></div>
+  </div>
+))}
+
+<div class="cmp cmp-us">
+<div>
+<img src="/uploads/logo-2.svg" alt="Let's automate" style="height:25px;width:auto;display:block;filter:brightness(0) invert(1)">
+<p class="cmp-note">Od opisu procesu po opiekę nad działającym systemem odpowiada jeden zespół, na jednej umowie.</p>
+</div>
+<div><div class="cmp-lab">Najlepszy wybór, gdy</div><p class="cmp-p">Proces wymaga przebudowy, a za jego wynik ma odpowiadać ktoś także pół roku po uruchomieniu. Kolejność wdrożeń układa się wtedy według policzonego zwrotu.</p></div>
+<div><div class="cmp-lab">Typowy zgrzyt</div><p class="cmp-p">Przy jednym prostym scenariuszu jesteśmy za drodzy i za wolni — diagnoza, projekt i testy kosztują więcej niż sam scenariusz. Do takich zleceń odsyłamy do integratorów no-code i robimy to kilka razy w miesiącu.</p></div>
+</div>
+</div>
+</section>
+
+<!-- ============ 3 · SKŁAD PROJEKTOWY ============ -->
+<section id="zespol" style="padding:clamp(72px,10vw,120px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) clamp(72px,9vw,110px);scroll-margin-top:16px">
+<h2 class="h-sec" style="margin:0;max-width:760px;text-wrap:pretty">Kto siada do Waszego projektu.</h2>
+<p style="margin:20px 0 0;max-width:560px;font-size:clamp(16px,2vw,18.5px);line-height:1.6;color:#4c5850;text-wrap:pretty">Pięć ról i jeden numer telefonu do eskalacji. Skład podajemy z nazwiskami przed podpisaniem umowy.</p>
+
+<div class="cast rv" style="margin-top:clamp(40px,5vw,56px)">
+{sklad.map((s, i) => (
+  <div class="cast-row">
+    <span class="cast-i">{String(i + 1).padStart(2, '0')}</span>
+    <div>
+      <div style="font-size:clamp(18px,2.2vw,21px);font-weight:750;letter-spacing:-0.015em;color:#16211a">{s.p.name}</div>
+      <p style="margin:7px 0 0;max-width:660px;font-size:14.5px;line-height:1.6;color:#4c5850;text-wrap:pretty">{s.d}</p>
+    </div>
+    <div class="cast-when">{s.kiedy}</div>
+  </div>
+))}
+</div>
+
+<div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:12px 28px;margin-top:30px">
+<p style="margin:0;max-width:720px;font-size:15px;line-height:1.65;color:#4c5850;text-wrap:pretty">Kodu nie oddajemy podwykonawcom. Jeśli projekt wymaga kompetencji spoza studia — na przykład prawnika od przetwarzania danych — mówimy o tym przed startem i pokazujemy, kto to jest.</p>
+</div>
+
+<!-- Twarze zamiast deklaracji: „jedno studio" da się sprawdzić wzrokiem. -->
+<div style="margin-top:clamp(48px,5vw,72px);padding-top:clamp(36px,4vw,48px);border-top:1px solid #eef1ec">
+<h3 class="h-mod" style="margin:0;max-width:640px;text-wrap:pretty">Dwadzieścia dwie osoby, jedna spółka.</h3>
+<p style="margin:14px 0 0;max-width:600px;font-size:16px;line-height:1.6;color:#4c5850;text-wrap:pretty">Kogokolwiek z tej listy możecie poprosić na rozmowę przed podpisaniem umowy.</p>
+<div class="roster rv">
+{zespol.map((os) => (
+  <div class="roster-p">
+    <span class="roster-ph"><img src={os.photo} alt={os.name} width="140" height="140" loading="lazy" decoding="async" /></span>
+    <span class="roster-n">{os.name}</span>
+    <span class="roster-r">{os.role}</span>
+  </div>
+))}
+</div>
+</div>
+</section>
+
+<!-- ============ 4 · WISE GROUP ============ -->
+<!-- Zamiast hasła „mamy zaplecze" — struktura grupy jako klamra org-chartu
+     i trzy sytuacje z projektów, w których to zaplecze coś zmieniło. -->
+<section id="grupa" style="background:#f4f8f2;padding:clamp(72px,9vw,110px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
+<h2 class="h-sec" style="margin:0;max-width:820px;text-wrap:pretty">Za studiem stoi grupa doradcza.</h2>
+<p style="margin:20px 0 0;max-width:620px;font-size:clamp(16px,2vw,18.5px);line-height:1.6;color:#4c5850;text-wrap:pretty">Wdrożenie AI zaczyna się od procesu, który ktoś musi rozumieć wcześniej niż kod. W Wise Group ludzie od tych procesów pracują obok nas na co dzień.</p>
+
+<div class="wg rv">
+<div style="text-align:center">
+<img src="/uploads/wisegroup_logo_v2.webp" alt="Wise Group" style="height:22px;width:auto;display:inline-block;opacity:0.75">
+</div>
+<div class="wg-stem" aria-hidden="true"></div>
+<div class="wg-brace" aria-hidden="true"></div>
+<div class="wg-tiles" style="margin-top:14px">
+{grupa.map((g) => (
+  <div class={g.s ? 'wg-tile is-us' : 'wg-tile'}>
+    <div class="wg-name">{g.n}</div>
+    <div class="wg-dom">{g.d}</div>
+  </div>
+))}
+</div>
+</div>
+
+<div class="grid3 zap" style="display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(24px,3vw,48px);margin-top:clamp(48px,5vw,68px)">
+{zaplecze.map((z) => (
+  <div class="zap-c">
+    <div style="font-size:17px;font-weight:750;letter-spacing:-0.012em;line-height:1.3;color:#16211a;text-wrap:pretty">{z.t}</div>
+    <p style="margin:10px 0 0;font-size:14.5px;line-height:1.6;color:#4c5850;text-wrap:pretty">{z.d}</p>
+  </div>
+))}
+</div>
+
+<p style="margin:clamp(48px,5vw,68px) 0 0;max-width:900px;font-size:clamp(22px,3vw,31px);line-height:1.24;letter-spacing:-0.022em;font-weight:750;color:#16211a;text-wrap:balance">Jedyna w Polsce firma wdrażająca AI, za którą stoi grupa doradcza.</p>
+</section>
+
+<!-- ============ 5 · ZASADY + DRABINKA ETAPÓW ============ -->
+<section id="zasady" style="padding:clamp(72px,10vw,120px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) clamp(72px,9vw,110px);scroll-margin-top:16px">
+<div class="zas-grid" style="display:grid;grid-template-columns:1fr 720px;gap:clamp(40px,6vw,88px);align-items:start">
+<div>
+<h2 class="h-sec" style="margin:0;text-wrap:pretty">Zasady, które obowiązują w każdym projekcie.</h2>
+<p class="sub" style="margin:20px 0 0;max-width:400px">Sześć punktów wpisanych do umowy. Żaden z nich nie zależy od tego, jak duży jest projekt ani jak dobrze idzie współpraca.</p>
+<a href="#kontakt" class="lnk-green" style="display:inline-block;margin-top:18px;font-size:16px;font-weight:700;color:#0a7a52">Zapytaj o wzór umowy →</a>
+</div>
+<div class="rv">
+{zasady.map((z) => (
+  <div class="zas-row">
+    <span class="zas-n">{z.n}</span>
+    <div>
+      <div style="font-size:17px;font-weight:750;letter-spacing:-0.012em;color:#16211a">{z.t}</div>
+      <p style="margin:6px 0 0;font-size:14.5px;line-height:1.6;color:#4c5850;text-wrap:pretty">{z.d}</p>
+    </div>
+  </div>
+))}
+</div>
+</div>
+
+<!-- Drabinka: wizualny dowód zasady 01 — koszt rośnie etapami, które
+     zamawia się pojedynczo, więc w każdym punkcie można się zatrzymać. -->
+<div style="margin-top:clamp(56px,6vw,84px);padding-top:clamp(40px,4vw,52px);border-top:1px solid #eef1ec">
+<div style="display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:12px 32px">
+<div class="eyebrow">Cztery etapy, cztery decyzje</div>
+<span style="font-size:14px;color:#7c877e">Po każdym etapie możecie się zatrzymać i nic nie przestaje działać.</span>
+</div>
+<div class="lad rv">
+{etapy.map((e) => (
+  <div class="lad-col">
+    <div class="lad-top"><div class="lad-bar" style={`--h:${e.h}px`}></div></div>
+    <div class="lad-body">
+      <div style="font-family:ui-monospace,Menlo,monospace;font-size:11.5px;color:#0a7a52">ETAP {e.n}</div>
+      <div style="margin-top:8px;font-size:19px;font-weight:750;letter-spacing:-0.015em;color:#16211a">{e.t}</div>
+      <p style="margin:8px 0 0;font-size:13.5px;line-height:1.6;color:#4c5850;text-wrap:pretty">{e.d}</p>
+      <span class="lad-chip">{e.n === '01' ? 'BEZPŁATNIE' : 'STAŁA CENA'}</span>
+    </div>
+  </div>
+))}
+</div>
+</div>
+</section>
+
+<!-- ============ 6 · PROTOKÓŁ PRZEKAZANIA ============ -->
+<!-- Papierowy motyw z „rachunku za status quo" ze strony głównej, odwrócony:
+     tam kartka liczyła koszt nicnierobienia, tutaj wylicza, co zostaje. -->
+<section id="co-zostaje" style="background:#f4f8f2;padding:clamp(72px,9vw,110px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
+<div class="s2-grid" style="display:grid;grid-template-columns:1fr 560px;gap:clamp(40px,6vw,88px);align-items:center">
+<div>
+<h2 class="h-sec" style="margin:0;text-wrap:pretty">Co zostaje u Was, kiedy kończymy.</h2>
+<p class="sub" style="margin:20px 0 0;max-width:520px">Lista przekazywana przy zamknięciu każdego wdrożenia. Podpisujemy ją razem z osobą, która przejmuje system po Waszej stronie — bez tego podpisu projekt zostaje otwarty.</p>
+<div style="margin-top:32px;padding-top:26px;border-top:1px solid #dde6dc">
+<p style="margin:0;max-width:480px;font-size:15px;line-height:1.65;color:#4c5850;text-wrap:pretty">Utrzymanie po nas może przejąć Wasz zespół albo dowolna firma z rynku. Stack dobieramy pod ten warunek, więc na tej liście nie ma niczego, co działa wyłącznie u nas.</p>
+<a href="#kontakt" class="lnk-green" style="display:inline-block;margin-top:16px;font-size:16px;font-weight:700;color:#0a7a52">Poproś o pełny protokół →</a>
+</div>
+</div>
+
+<div class="prot-wrap">
+<div class="prot">
+<div style="text-align:center;font-size:13px;letter-spacing:0.14em;text-transform:uppercase;color:#16211a;font-weight:700">Protokół przekazania</div>
+<div style="text-align:center;margin-top:5px;font-size:11.5px;color:#8b968d">wdrożenie zamknięte · egzemplarz dla klienta</div>
+<div style="margin-top:22px;border-top:1.5px dashed #d8dcd4"></div>
+{protokol.map((p) => (
+  <div class="prot-row">
+    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#0a7a52" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="margin-top:1px"><path d="M20 6L9 17l-5-5"/></svg>
+    <span class="prot-t">{p.t}<span class="prot-d">{p.d}</span></span>
+  </div>
+))}
+<div class="prot-sign">
+<div><div class="prot-line"></div><div class="prot-cap">właściciel systemu po stronie klienta</div></div>
+<div><div class="prot-line"></div><div class="prot-cap">partner prowadzący, Let's automate</div></div>
+</div>
+<div style="display:flex;justify-content:center;margin-top:24px">
+<span class="prot-stamp">PRZEKAZANE W CAŁOŚCI</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- ============ 7 · DOWÓD: DRUGI PROJEKT ============ -->
+<section id="dowody" style="padding:clamp(72px,10vw,120px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) clamp(72px,9vw,110px);scroll-margin-top:16px">
+<div class="sec-head">
+<h2 class="h-sec" style="margin:0;max-width:520px;text-wrap:pretty">Najmocniejszy dowód to drugi projekt.</h2>
+<p class="sub" style="margin:0 0 6px;max-width:450px">Opinia po wdrożeniu kosztuje klienta pięć minut. Kolejne zlecenie kosztuje go budżet i reputację wewnątrz firmy — dlatego liczy się bardziej.</p>
+</div>
+
+<div class="s2-grid" style="display:grid;grid-template-columns:1fr 400px;gap:clamp(40px,5vw,72px);align-items:stretch;margin-top:clamp(44px,5vw,60px)">
+<figure class="rv" style="margin:0;display:flex;flex-direction:column;justify-content:center;background:#f4f8f2;border:1px solid #e7ece4;border-radius:22px;padding:clamp(32px,4vw,52px)">
+<div aria-hidden="true" style="font-size:14px;letter-spacing:2px;color:#0a7a52">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+<blockquote style="margin:18px 0 0;font-size:clamp(20px,2.6vw,27px);line-height:1.35;letter-spacing:-0.015em;font-weight:700;color:#16211a;text-wrap:pretty">„Let's automate wziął pełną odpowiedzialność za projekt i dowiózł go do końca. To dlatego powierzyliśmy im <span style="color:#0a7a52">kolejny, znacznie większy</span>."</blockquote>
+<figcaption style="display:flex;align-items:center;gap:12px;margin-top:26px;padding-top:22px;border-top:1px solid #dde6dc">
+<TeamAvatar person={{ name: 'Jakub Ciołkowski' }} size={42} />
+<span>
+<span style="display:block;font-size:14.5px;font-weight:700;color:#16211a">Jakub Ciołkowski</span>
+<span style="display:block;margin-top:1px;font-size:12.5px;color:#7c877e">Członek Zarządu, NARS Polska</span>
+</span>
+</figcaption>
+</figure>
+
+<div class="stats">
+<div class="stat">
+<div class="stat-n">140<span>+</span></div>
+<div class="stat-k">firm</div>
+<div class="stat-d">zmienia z nami sposób działania</div>
+</div>
+<div class="stat">
+<div class="stat-n">200<span>+</span></div>
+<div class="stat-k">wdrożeń</div>
+<div class="stat-d">doprowadzonych do produkcji</div>
+</div>
+<div class="stat is-hi">
+<div class="stat-n">[·]<span>%</span></div>
+<div class="stat-k">wraca po drugi projekt</div>
+<div class="stat-d">klientów zamawia kolejne wdrożenie <span style="color:#b3bdb4">[do uzupełnienia]</span></div>
+</div>
+</div>
+</div>
+
+<div style="display:flex;justify-content:flex-end;margin-top:36px">
+<a href="/#dowody" class="lnk-green" style="font-size:16px;font-weight:700;color:#0a7a52">Zobacz liczby z wdrożeń →</a>
+</div>
+</section>
+
+<!-- ============ 8 · KIEDY NAS NIE WYBIERAĆ ============ -->
+<!-- Jedyny blok na stronie, który nic nie sprzedaje, i dlatego sprzedaje
+     najwięcej. Ton spokojny — bez dramatyzowania kolorem. -->
+<section id="kiedy-nie-my" style="padding:clamp(72px,9vw,110px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) clamp(72px,10vw,120px);scroll-margin-top:16px">
+<div class="nie-wrap">
+<h2 class="h-sec" style="margin:0;max-width:620px;text-wrap:pretty">Kiedy nie jesteśmy dobrym wyborem.</h2>
+<p style="margin:20px 0 0;max-width:560px;font-size:clamp(16px,2vw,18.5px);line-height:1.6;color:#4c5850;text-wrap:pretty">Cztery sytuacje, w których odsyłamy do kogoś innego albo proponujemy wrócić do rozmowy później. Każda z nich zdarzyła się w tym roku.</p>
+
+<div class="nie-grid rv">
+{nieMy.map((n) => (
+  <div class="nie-card">
+    <div class="nie-t">
+      <svg class="nie-ico" viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M15 9l-6 6M9 9l6 6"/></svg>
+      <span style="text-wrap:pretty">{n.t}</span>
+    </div>
+    <p style="margin:12px 0 0 30px;font-size:14.5px;line-height:1.6;color:#4c5850;text-wrap:pretty">{n.d}</p>
+  </div>
+))}
+</div>
+</div>
+</section>
+
+<!-- ============ 9 · FAQ ============ -->
+<GcFaq
+  heading="Pytania, które padają przy stole."
+  lead="Zebrane z rozmów handlowych z ostatnich miesięcy. Pierwsze jest najczęstsze."
+  ctaLabel="Zadaj swoje wprost →"
+  items={faq}
+/>
+
+<!-- ============ 10 · KONTAKT ============ -->
+<GcCta
+  heading="Sprawdźcie nas na jednym procesie."
+  lead="Bezpłatna diagnoza trwa 30 minut i kończy się policzonym kosztem status quo. Decyzja o kolejnym kroku należy do Was."
+  eyebrow="Z diagnozy wychodzicie z"
+  items={[
+    { t: 'Kosztem status quo', d: 'w godzinach i złotówkach, policzonym na Waszych danych' },
+    { t: 'Mapą wdrożeń', d: 'procesy ustawione w kolejności wg zwrotu' },
+    { t: 'Wise AI Score', d: 'punkt na skali, od którego ruszamy' },
+  ]}
+  submitLabel="Umów bezpłatną diagnozę"
+  placeholder="Np. obieg faktur robimy ręcznie, trzy osoby, kilkaset dokumentów miesięcznie…"
+/>
+
+</LaBase>

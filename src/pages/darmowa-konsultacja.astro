@@ -1,4 +1,6 @@
 ---
+import Nawigacja from '../components/Nawigacja.astro';
+import Stopka from '../components/Stopka.astro';
 // Landing konwersyjny: bezpłatna konsultacja.
 // Bez klasycznego hero — formularz stoi nad zgięciem, w prawej kolumnie splitu.
 //
@@ -259,7 +261,11 @@ const CONTACT_PHONE = '+48 571 399 932';
     .faq-grid{grid-template-columns:1fr !important;gap:clamp(32px,5vw,48px) !important}
   }
   @media (max-width:900px){
-    .grid3{grid-template-columns:1fr !important;gap:20px !important}
+    /* Palec potrzebuje więcej niż wysokość linijki tekstu: linki-odnośniki
+       dostają zapas w pionie bez zmiany odstępów (ujemny margines go znosi). */
+    .lnk-green,.row-lnk{padding-block:10px;margin-block:-10px}
+    .sub{text-wrap:wrap}
+    .grid3{grid-template-columns:minmax(0,1fr) !important;gap:20px !important}
     .foot-grid{grid-template-columns:1fr 1fr !important;gap:40px !important}
     .nav-menu{display:none !important}
   }
@@ -268,65 +274,20 @@ const CONTACT_PHONE = '+48 571 399 932';
     .fold-proof{flex-direction:column !important;align-items:flex-start !important;gap:18px !important}
     .form-body{padding-left:20px !important;padding-right:20px !important}
   }
+
+  /* iOS Safari powiększa całą stronę, gdy kursor wchodzi w pole z krojem
+     mniejszym niż 16px — po wyjściu z pola układ zostaje przesunięty.
+     Na telefonie pola dostają więc równe 16px. */
+  @media (max-width:900px){
+    input,select,textarea{font-size:16px !important}
+  }
 </style>
 </head>
 <body>
 
 <div class="page">
 
-<header class="site-header">
-<div class="nav-pill">
-<a href="/" aria-label="Let's automate — strona główna" style="display:block"><img src="/uploads/logo-2.svg" alt="Let's automate" style="height:26px;display:block"></a>
-<div class="nav-menu" style="display:flex;align-items:center;gap:clamp(2px,0.6vw,8px);font-size:15px;font-weight:550;color:#2c3a30">
-<div class="nav-item">
-<a href="/#oferta" class="nav-lnk" style="display:inline-flex;align-items:center;gap:5px;color:#2c3a30">Usługi <svg class="nav-caret" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></a>
-<div class="mega-wrap">
-<div class="mega-panel" style="background:#ffffff;border:1px solid #e7ece4;border-radius:20px;box-shadow:0 40px 90px -44px rgba(18,38,28,0.45);padding:22px">
-<div class="usl-grid">
-
-<div class="usl-lane">
-<div class="usl-top"><a href="/#oferta" class="usl-head">Wdrażamy AI</a><span class="usl-sub">Gdy AI jeszcze nie weszło w procesy</span></div>
-<span class="usl-rule" aria-hidden="true"></span>
-<div class="usl-list">
-<a href="/#oferta" class="mega-item"><span class="mega-t">Strategia transformacji AI</span><span class="mega-d">Plan wdrożenia z policzonym zwrotem</span></a>
-<a href="/#oferta" class="mega-item"><span class="mega-t">Indywidualne rozwiązania AI</span><span class="mega-d">AI wpięte w Wasze systemy i dane</span></a>
-<a href="/#oferta" class="mega-item"><span class="mega-t">Szkolenia i adopcja AI</span><span class="mega-d">Zespół używa AI w codziennej pracy</span></a>
-</div>
-</div>
-
-<div class="usl-lane">
-<div class="usl-top"><a href="/#oferta" class="usl-head">Budujemy aplikacje</a><span class="usl-sub">Gdy żadne gotowe narzędzie nie pasuje</span></div>
-<span class="usl-rule" aria-hidden="true"></span>
-<div class="usl-list">
-<a href="/#oferta" class="mega-item"><span class="mega-t">Systemy dla kluczowych procesów</span><span class="mega-d">Aplikacja pod Wasz sposób pracy</span></a>
-<a href="/#oferta" class="mega-item"><span class="mega-t">Systemy dla Waszych klientów</span><span class="mega-d">Portal klienta, platforma B2B, samoobsługa</span></a>
-<a href="/#oferta" class="mega-item"><span class="mega-t">Automatyzacje i integracje</span><span class="mega-d">Przepływ danych między systemami</span></a>
-</div>
-</div>
-
-<div class="usl-lane">
-<div class="usl-top"><a href="/guided-coding" class="usl-head">Guided Coding</a><span class="usl-sub">Gdy sami budujecie aplikacje z AI</span></div>
-<span class="usl-rule" aria-hidden="true"></span>
-<div class="usl-list">
-<a href="/guided-coding/bez-dzialu-it" class="mega-item"><span class="mega-t">Dla zespołów nietechnicznych</span><span class="mega-d">Budujecie bez działu IT, my pilnujemy</span></a>
-<a href="/guided-coding/dla-zespolow" class="mega-item"><span class="mega-t">Dla zespołów technicznych</span><span class="mega-d">Dział IT dowozi szybciej i bezpieczniej</span></a>
-<a href="/guided-coding" class="mega-item"><span class="mega-t">Szkolenia i transfer know-how</span><span class="mega-d">Wasi ludzie budują według naszych zasad</span></a>
-</div>
-</div>
-
-</div>
-</div>
-</div>
-</div>
-<!-- SCHOWANE 29.08.2026 — "Rozwiązania", patrz docs/nawigacja-decyzje.md
-<a href="/#dowody" class="nav-lnk" style="color:#2c3a30">Rozwiązania</a> -->
-<a href="https://appto.ai" class="nav-lnk" style="color:#2c3a30">Appto.ai ↗</a>
-<a href="/#dlaczego-my" class="nav-lnk" style="color:#2c3a30">Dlaczego my</a>
-<a href="#faq" class="nav-lnk" style="color:#2c3a30">FAQ</a>
-</div>
-<a href="#formularz" class="btn-dark" id="navCta" style="position:relative;display:inline-flex;align-items:center;justify-content:center;background:#16211a;color:#ffffff;padding:12px 22px;border-radius:10px;font-weight:650;font-size:15px;white-space:nowrap"><span class="nav-cta-sizer" aria-hidden="true">Bezpłatna konsultacja</span><span class="nav-cta-live"><span class="nav-cta-text" data-cta-rotate>Bezpłatna konsultacja</span><span class="nav-cta-caret" aria-hidden="true"></span></span></a>
-</div>
-</header>
+<Nawigacja />
 
 <!-- ============ FOLD · OFERTA + FORMULARZ ============ -->
 <section id="formularz" class="fold" style="position:relative;padding:clamp(26px,3.4vw,44px) clamp(20px,5vw,56px) clamp(56px,7vw,88px);scroll-margin-top:80px">
@@ -634,51 +595,7 @@ Sprawa pilna? Zadzwoń: <a href="tel:+48571399932" class="lnk-green">{CONTACT_PH
 </section>
 
 <!-- ============ STOPKA ============ -->
-<footer style="background:#16211a;color:#e8ece7;padding:64px max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) 36px">
-<div class="foot-grid" style="display:grid;grid-template-columns:1fr 220px 220px 220px;gap:clamp(32px,4vw,56px);align-items:start">
-<div>
-<img src="/uploads/logo-2.svg" alt="Let's automate" style="height:22px;display:block;filter:brightness(0) invert(1)">
-<p style="margin:18px 0 0;max-width:300px;font-size:14px;line-height:1.6;color:#9fb0a3">Studio transformacji AI.<br>Projektujemy i budujemy systemy,<br>na których firmy działają po nowemu.</p>
-<div style="margin-top:20px;font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.1em;color:#7d9080">CZĘŚĆ WISE GROUP · SELLWISE · HIREWISE · ADWISE</div>
-<div style="margin-top:22px;font-size:12.5px;line-height:1.75;color:#7d9080">Let's automate sp. z o.o.<br>ul. Nowy Świat 33/13, 00-029 Warszawa<br>NIP 5252908405 · KRS 0000972542</div>
-<div style="display:flex;gap:14px;margin-top:16px">
-<a href="https://www.linkedin.com/company/letsautomate-io" class="foot-lnk" aria-label="LinkedIn" style="display:inline-flex;align-items:center;gap:7px;color:#cfd9cf;font-size:13.5px"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 100 5 2.5 2.5 0 000-5zM3 9h4v12H3zM9 9h3.8v1.64h.05c.53-.95 1.83-1.95 3.77-1.95 4.03 0 4.78 2.5 4.78 5.75V21h-4v-4.86c0-1.16-.02-2.65-1.77-2.65-1.77 0-2.04 1.26-2.04 2.57V21H9z"/></svg>LinkedIn</a>
-</div>
-</div>
-<div>
-<div style="font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.1em;color:#7d9080;margin-bottom:15px">USŁUGI</div>
-<div style="display:flex;flex-direction:column;gap:10px;font-size:14.5px">
-<a href="/#oferta" class="foot-lnk" style="color:#cfd9cf">Automatyzacja procesów</a>
-<a href="/#oferta" class="foot-lnk" style="color:#cfd9cf">Integracje systemów</a>
-<a href="/#oferta" class="foot-lnk" style="color:#cfd9cf">Wdrożenia AI</a>
-<a href="/#oferta" class="foot-lnk" style="color:#cfd9cf">Systemy szyte na miarę</a>
-<a href="/guided-coding" class="foot-lnk" style="color:#cfd9cf">Guided Coding</a>
-<a href="https://appto.ai" class="foot-lnk" style="color:#cfd9cf">appto.ai ↗</a>
-</div>
-</div>
-<div>
-<div style="font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.1em;color:#7d9080;margin-bottom:15px">FIRMA</div>
-<div style="display:flex;flex-direction:column;gap:10px;font-size:14.5px">
-<a href="/#dlaczego-my" class="foot-lnk" style="color:#cfd9cf">O nas</a>
-<a href="/#dowody" class="foot-lnk" style="color:#cfd9cf">Transformacje</a>
-<a href="/#wiedza" class="foot-lnk" style="color:#cfd9cf">Blog</a>
-<a href="#formularz" class="foot-lnk" style="color:#cfd9cf">Kontakt</a>
-</div>
-</div>
-<div>
-<div style="font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.1em;color:#7d9080;margin-bottom:15px">ZACZNIJ</div>
-<p style="margin:0;font-size:14.5px;line-height:1.6;color:#cfd9cf">30 minut z założycielem. Wychodzisz z pierwszym krokiem.</p>
-<a href="#formularz" class="btn-accent" style="display:inline-flex;align-items:center;gap:8px;margin-top:15px;background:var(--la-accent,#00CD77);color:#0b1a11;padding:12px 20px;border-radius:10px;font-weight:750;font-size:14px">Umów rozmowę →</a>
-</div>
-</div>
-<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-top:56px;padding-top:24px;border-top:1px solid rgba(232,236,231,0.14);font-size:12.5px;color:#7d9080">
-<span>© 2026 Let's automate · część Wise Group</span>
-<div style="display:flex;gap:24px">
-<a href="#" class="foot-lnk" style="color:#7d9080">Polityka prywatności</a>
-<a href="#" class="foot-lnk" style="color:#7d9080">RODO</a>
-</div>
-</div>
-</footer>
+<Stopka />
 
 </div>
 
@@ -720,39 +637,10 @@ Sprawa pilna? Zadzwoń: <a href="tel:+48571399932" class="lnk-green">{CONTACT_PH
     });
   })();
 
-  // ---- Nav CTA — rotujący typing ----
-  (function(){
-    var el = document.querySelector('[data-cta-rotate]');
-    if(!el) return;
-    // UWAGA: szerokość przycisku trzyma ukryty .nav-cta-sizer w HTML —
-    // musi zawierać NAJDŁUŻSZĄ z fraz poniżej.
-    var phrases = ['Bezpłatna konsultacja', 'Wyceń projekt', 'Umów rozmowę'];
-
-    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion:reduce)').matches;
-    var i = 0;
-    if(reduce){
-      el.textContent = phrases[0];
-      setInterval(function(){ i = (i + 1) % phrases.length; el.textContent = phrases[i]; }, 3200);
-      return;
-    }
-
-    var ci = 0, deleting = false;
-    function tick(){
-      var full = phrases[i];
-      if(!deleting){
-        ci++;
-        el.textContent = full.slice(0, ci);
-        if(ci >= full.length){ deleting = true; return setTimeout(tick, 1800); }
-        return setTimeout(tick, 60 + Math.random() * 45);
-      }
-      ci--;
-      el.textContent = full.slice(0, ci);
-      if(ci <= 0){ deleting = false; i = (i + 1) % phrases.length; return setTimeout(tick, 300); }
-      return setTimeout(tick, 32);
-    }
-    el.textContent = '';
-    setTimeout(tick, 800);
-  })();
+  // Rotujące CTA prowadzi teraz komponent Nawigacja.astro. Kopia z tej strony
+  // pisała do tego samego elementu równolegle z komponentem (bezpiecznik
+  // `navInit` chroni tylko skrypt komponentu), więc napis migotał i gubił
+  // wersję skróconą na telefonie.
 
   // ---- Pasek CTA na mobile: tylko gdy formularz jest poza ekranem ----
   (function(){

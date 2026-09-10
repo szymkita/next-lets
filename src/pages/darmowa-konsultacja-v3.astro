@@ -1,0 +1,948 @@
+---
+import LaBase from '../layouts/LaBase.astro';
+import GcFaq from '../components/GcFaq.astro';
+import FormularzLead from '../components/FormularzLead.astro';
+
+// ============================================================================
+// BEZPŁATNA KONSULTACJA — wersja trzecia (09.09.2026).
+//
+// TREŚĆ z dzisiejszej /darmowa-konsultacja na letsautomate.pl: co klient
+// zyskuje z rozmowy, „jak działamy", „jak przygotować się do konsultacji"
+// z twarzą osoby, która dzwoni, opinie z nazwiskami i FAQ.
+// DESIGN nasz, ten sam co na /dlaczego-my i pozostałych nowych podstronach:
+// biel z poświatą, wiersze na włoskowych liniach, tło `#f4f8f2`, ciemnozielony
+// pas `#0e2b1d`, portret z cytatem przy zielonej kresce. Ze starej strony nie
+// przenosimy jej słownika wizualnego (czarne karty, mięta, gwiazdki, szewrony).
+//
+// PRZEBIEG USŁUGI (ustalenia z 09.09.2026):
+//   1. po formularzu telefon albo mail — czy wstępnie umiemy pomóc; kiedy nie,
+//      spotkania nie umawiamy,
+//   2. do 45 minut bezpłatnej konsultacji,
+//   3. plan działania: pomysł na rozwiązanie, kolejne kroki i CENA KOLEJNEGO
+//      ETAPU. Plan zostaje u klienta niezależnie od dalszej współpracy.
+//
+// LICZBY W REZULTATACH pochodzą z sekcji `#dowody` na stronie głównej.
+//
+// CZEGO ŚWIADOMIE NIE MA: przykładowego maila po rozmowie z v2, paska
+// 5/15/7/3 minuty, listy pytań, które padną, i zdjęć z banku obrazów przy
+// opiniach (v1 stawiała Pexels przy prawdziwych nazwiskach klientów).
+//
+// DO POTWIERDZENIA PRZED PUBLIKACJĄ
+//   1. Czas konsultacji: tu „do 45 minut", produkcja obiecuje „pełną godzinę",
+//      strona główna 30 minut. Jedna liczba na cały serwis.
+//   2. Cztery rezultaty — czy liczby ze strony głównej są aktualne.
+//   3. Zdania z ciemnego pasa — decyzja handlowa.
+//   4. Skład paska twarzy (dziś sześć osób z /public/team).
+//   5. Adres /polityka-prywatnosci i druga zgoda, marketingowa.
+//
+// PODGLĄD EKRANU PO WYSŁANIU: /darmowa-konsultacja-v3?sukces=1
+// ============================================================================
+
+const KONTAKT_MAIL = 'hello@letsautomate.pl';
+const KONTAKT_TEL = '+48 571 399 932';
+const TEL_HREF = 'tel:+48571399932';
+
+// Pasek pod formularzem. Każda pozycja ma własną ikonę — trzy te same
+// fajki obok siebie czytają się jak wypełniacz.
+const GWARANCJE = [
+  { t: 'Bez zobowiązań', ico: '<rect x="4.2" y="10.8" width="15.6" height="9.7" rx="2.2"/><path d="M8 10.8V7.2a4 4 0 0 1 7.6-1.7"/>' },
+  { t: 'Odpowiedź w 1 dzień roboczy', ico: '<circle cx="12" cy="12" r="8.6"/><path d="M12 7.2v5.1l3.2 1.9"/>' },
+  { t: 'Zgodnie z RODO', ico: '<path d="M12 3.4l6.8 2.8v4.7c0 4.3-2.8 8-6.8 9.2-4-1.2-6.8-4.9-6.8-9.2V6.2z"/><path d="M9.4 12.2l1.9 1.9 3.4-3.7"/>' },
+];
+
+// Zdania, od których zaczynają się pierwsze rozmowy. Te same, które stoją
+// na /dlaczego-my — to prawdziwy materiał z rozmów, nie wymyślone pytania.
+const ZDANIA = [
+  'Mamy siedem narzędzi i żadne nie rozmawia z pozostałymi.',
+  'Zespół zbudował sobie aplikację w AI. Działa, tylko nikt nie wie, czy jest bezpieczna.',
+  'Rok temu kupiliśmy strategię AI. Leży w PDF-ie.',
+  'Ludzie proszą o AI, a ja nie chcę kolejnego pilota, z którego nic nie wynika.',
+  'Mam na biurku trzy oferty i każda mówi dokładnie to samo.',
+];
+
+// Twarze zespołu pod formularzem — pliki z /public/team.
+const ZESPOL = [
+  { f: 'szymon-kita.png', n: 'Szymon Kita' },
+  { f: 'michal-langowski.png', n: 'Michał Langowski' },
+  { f: 'marcel-bilski.png', n: 'Marcel Bilski' },
+  { f: 'piotr-borowski.png', n: 'Piotr Borowski' },
+  { f: 'dawid-kita.png', n: 'Dawid Kita' },
+  { f: 'kamil-gorski.png', n: 'Kamil Górski' },
+];
+
+// Przebieg zgłoszenia — od formularza do planu. Akcent dostaje etap,
+// w którym powstaje wynik, po który klient przychodzi.
+const KROKI = [
+  {
+    kiedy: 'minuta',
+    t: 'Wypełniasz formularz',
+    d: 'Dwa pola kontaktowe i jedno zdanie o tym, co Was uwiera.',
+  },
+  {
+    kiedy: '1 dzień roboczy',
+    t: 'Dzwonimy albo piszemy',
+    d: 'Pytamy, o czym jest sprawa i czy umiemy w niej pomóc. Kiedy nie umiemy, mówimy to od razu.',
+  },
+  {
+    kiedy: 'do 45 minut',
+    t: 'Bezpłatna konsultacja',
+    d: 'Jak ten proces wygląda dziś, gdzie się zacina i co ma się zmienić, żeby było warto. Online albo przez telefon.',
+  },
+  {
+    kiedy: 'po konsultacji',
+    t: 'Plan działania i cena',
+    d: 'Pomysł na rozwiązanie, kolejne kroki i koszt najbliższego etapu. Plan zostaje u Ciebie, cokolwiek zdecydujesz.',
+    mocny: true,
+  },
+];
+
+// Co klient wynosi z konsultacji. Trzy wiersze po lewej, jeden artefakt po
+// prawej — zamiast trzech równych kafli z ozdobnikami w środku.
+const KORZYSCI = [
+  { t: 'Plan działania', d: 'Kolejne kroki w kolejności, w jakiej mają sens, z rezultatem przy każdym.' },
+  { t: 'Cena kolejnego etapu', d: 'Znana, zanim cokolwiek zaczniemy. Bez wyceny „po analizie".' },
+  { t: 'Decyzja po Twojej stronie', d: 'Plan zostaje u Ciebie, także wtedy, gdy nie zaczniemy współpracy.' },
+];
+
+// Wiersze przykładowego planu. Nazwy kroków są poglądowe — pod spodem stoi
+// zdanie, że układ jest stały, a treść zależy od procesu.
+const PLAN = [
+  { t: 'Jedno miejsce, w którym powstaje oferta', r: 'krótszy czas oferty' },
+  { t: 'Akceptacja powiadomieniem z terminem', r: 'koniec czekania w skrzynce' },
+  { t: 'Raport, który zbiera się sam', r: 'decyzje na świeżych danych' },
+];
+
+// O co pytamy na konsultacji — treść z dzisiejszej strony.
+const PRZYGOTOWANIE = [
+  'Wielkość firmy i strukturę działów',
+  'Branżę, w której działasz',
+  'Największe bolączki operacyjne',
+  'Oczekiwania wobec rezultatu i współpracy',
+];
+
+// Rezultaty wdrożeń — ta sama czwórka co w `#dowody` na stronie głównej.
+const REZULTATY = [
+  {
+    n: '99,7%', l: 'skuteczności księgowania', dziedzina: 'Finanse',
+    przed: 'Trzy osoby przepisują faktury z maili, zaległości rosną.',
+    po: 'Obieg księguje sam, a zespół zajmuje się wyjątkami.',
+  },
+  {
+    n: '−80%', l: 'czasu przygotowania oferty', dziedzina: 'Sprzedaż',
+    przed: 'Oferta sklejana z CRM, cenników i maili — pół dnia pracy.',
+    po: 'Szkic powstaje z danych CRM w minuty, handlowiec dopina i wysyła.',
+  },
+  {
+    n: '65 h', l: 'odzyskane miesięcznie w operacjach', dziedzina: 'Operacje',
+    przed: 'Raporty klejone z czterech arkuszy, decyzje na danych sprzed miesiąca.',
+    po: 'Dane spływają same, raport czeka w poniedziałek o 7:00.',
+  },
+  {
+    n: '−90%', l: 'zapytań obsługiwanych ręcznie', dziedzina: 'Obsługa klienta',
+    przed: 'Zespół odpisuje na te same pytania kilkanaście razy dziennie.',
+    po: 'Agent odpowiada w minutach, z danymi zamówienia pod ręką.',
+  },
+];
+
+const NIE_BEDZIE = [
+  {
+    t: 'Spotkania na siłę',
+    d: 'Kiedy po pierwszym telefonie widzimy, że to nie nasz temat, nie umawiamy 45 minut po to, żeby coś sprzedać.',
+  },
+  {
+    t: 'Prezentacji o nas',
+    d: 'Nie mamy przygotowanego deka. Cała rozmowa idzie po Twoim procesie.',
+  },
+  {
+    t: 'Namawiania na AI',
+    d: 'Część spraw tanio załatwia zmiana w procesie albo narzędzie, które już macie. Kiedy tak jest, słyszysz to na spotkaniu.',
+  },
+  {
+    // Piotr jest z new businessu, więc „bez handlowca" byłoby nieprawdą.
+    // Sedno jest inne: obietnice składa ten, kto potem za nie odpowiada.
+    t: 'Obietnic bez pokrycia',
+    d: 'Pierwszy telefon odbiera Piotr z new businessu — od tego jest. Na samej konsultacji siedzi już osoba, która potem odpowiada za wdrożenie, więc zna koszt tego, co obiecuje.',
+  },
+];
+
+const OPINIE = [
+  {
+    q: 'Wprowadzenie danych trwało godzinę. Dziś przesłanie oferty to 10 minut — oszczędności liczymy w etatach.',
+    kto: 'Mateusz Chinczewski',
+    rola: 'Prezes Zarządu, Finerto',
+  },
+  {
+    q: 'Let’s automate wziął pełną odpowiedzialność za projekt i dowiózł go do końca. To dlatego powierzyliśmy im kolejny, znacznie większy.',
+    kto: 'Jakub Ciołkowski',
+    rola: 'Członek Zarządu, NARS Polska',
+  },
+  {
+    q: 'Bardzo dobrze zrozumieli nasze potrzeby i zaprojektowali scenariusz, który spełnił cele biznesowe. Otwartość i komunikacja to ich DNA.',
+    kto: 'Arkadiusz Andruch',
+    rola: 'Prezes Zarządu, X2O',
+  },
+];
+
+const FAQ = [
+  {
+    q: 'Czym dokładnie jest ta bezpłatna konsultacja?',
+    a: 'Dwa kontakty. Najpierw krótki telefon: o czym jest sprawa i czy w tym akurat umiemy pomóc. Potem do 45 minut z osobą, która buduje takie systemy na co dzień — o tym, jak wygląda dziś Wasz proces i co da się z nim zrobić. Na koniec dostajesz plan działania z ceną kolejnego etapu.',
+  },
+  {
+    q: 'Czy jestem zobowiązany do dalszej współpracy?',
+    a: 'Nie. Konsultacja jest bezpłatna, a plan, z którym z niej wychodzisz, zostaje u Ciebie. Możesz go zrealizować z zespołem, który już macie, albo z inną firmą.',
+  },
+  {
+    q: 'Nie mam sprecyzowanego pomysłu. Ma to sens?',
+    a: 'Wtedy ma największy. Wystarczy jeden proces, który Was uwiera — reszta to nasze pytania. Nazwanie, co da się usprawnić i w jakiej kolejności, jest częścią tej konsultacji.',
+  },
+  {
+    q: 'Mam gotowy projekt. Możecie od razu wycenić?',
+    a: 'Tak. Wtedy pomijamy diagnozę i rozmawiamy o zakresie i terminie. Opisz projekt w formularzu, a na konsultację przyjdziemy z pytaniami do wyceny.',
+  },
+  {
+    q: 'W jakiej formie odbywa się konsultacja?',
+    a: 'Online przez Google Meet albo Zoom, link dostajesz w zaproszeniu na spotkanie. Rezerwujemy 45 minut, choć część spraw domykamy szybciej. Jeśli wolisz telefon, dzwonimy.',
+  },
+  {
+    q: 'Co z naszymi danymi?',
+    a: 'Pracujemy zgodnie z RODO, a przed projektem podpisujemy NDA — także przed samą konsultacją, jeśli tego potrzebujecie. Do rozmowy nie potrzebujemy dostępu do żadnego z Waszych systemów.',
+  },
+];
+
+const KROKI_PO_WYSLANIU = [
+  'Dzwonimy albo piszemy — <strong>w jeden dzień roboczy</strong>, na podany kontakt.',
+  'Sprawdzamy, czy umiemy pomóc — i wtedy umawiamy <strong>do 45 minut</strong> konsultacji.',
+  'Wychodzisz z <strong>planem działania i ceną</strong> kolejnego etapu.',
+];
+---
+<LaBase
+  title="Bezpłatna konsultacja — Let's automate"
+  description="Krótki telefon, potem do 45 minut o Waszym procesie. Z konsultacji wychodzisz z pomysłem na rozwiązanie, planem działania i ceną kolejnego etapu. Bezpłatnie i bez zobowiązań."
+  ctaHref="#formularz"
+  nav={null}
+  noindex={true}
+>
+
+<style is:global slot="head">
+
+  /* Poświata jak na pozostałych podstronach — biegnie od góry .page, więc pod
+     przyklejoną nawigacją nie ma krawędzi koloru. */
+  .page{background:radial-gradient(900px 560px at 86% -40px, rgba(0,205,119,0.13), transparent 62%) no-repeat, #ffffff}
+
+  .sek{padding:clamp(60px,7.5vw,100px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:80px}
+  .sek-tlo{background:#f4f8f2}
+  .h-sec{text-wrap:pretty}
+  .lead-sek{margin:18px 0 0;max-width:46ch;font-size:17px;line-height:1.6;color:#4c5850;text-wrap:pretty}
+
+  /* ---------- S0 · ZGIĘCIE: argument po lewej, formularz po prawej ---------- */
+  .zg{position:relative;z-index:1;scroll-margin-top:90px;padding:clamp(18px,2.6vw,34px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) clamp(52px,6.4vw,84px)}
+  /* Dwie kolumny kończą się mniej więcej na tej samej wysokości: po lewej
+     argument i karta „kto dzwoni", po prawej formularz. Pasek zaufania jest
+     wspólny i biegnie pod obiema kolumnami. */
+  /* Dwie kolumny bez sztuczek: po lewej argument i „kto dzwoni", po prawej
+     formularz. Lewa kolumna płynie naturalnie — rozciąganie wierszy siatki
+     robiło pod akapitem puste pole. */
+  .zg-grid{display:grid;grid-template-columns:minmax(0,1fr) 560px;gap:clamp(30px,3.6vw,44px) clamp(40px,6vw,96px);align-items:start}
+  .zg-nag{max-width:640px}
+  .zg-h1{margin:0;max-width:18ch;font-size:clamp(34px,4.8vw,58px);line-height:1.02;letter-spacing:-0.034em;font-weight:800;color:#16211a;text-wrap:balance}
+  /* Akcent pada na to, co strona sprzedaje — nie na całe zdanie. */
+  .zg-h1 em{font-style:normal;background:linear-gradient(transparent 64%, rgba(0,205,119,0.38) 64%)}
+  .zg-lead{margin:20px 0 0;max-width:52ch;font-size:clamp(16px,1.5vw,18.5px);line-height:1.6;color:#3d4a42;text-wrap:pretty}
+
+  /* Kto oddzwania — wiersz na linii, nie kolejna karta z cieniem. */
+  .kto{display:flex;align-items:center;gap:14px;max-width:520px;margin-top:clamp(26px,3vw,34px);padding-top:clamp(22px,2.6vw,28px);border-top:1px solid #e4ebe0}
+  .kto img{width:48px;height:48px;border-radius:50%;object-fit:cover;flex-shrink:0;background:#e7ece4}
+  .kto-t{font-size:15.5px;font-weight:750;letter-spacing:-0.015em;color:#16211a}
+  .kto-d{margin-top:3px;font-size:13.5px;line-height:1.45;color:#6d786f}
+
+  /* Pasek zaufania pod obiema kolumnami. */
+  .pasek-z{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:18px 32px;margin-top:clamp(32px,3.8vw,46px);padding-top:clamp(24px,2.8vw,30px);border-top:1px solid #e4ebe0}
+  .zespol{display:flex;align-items:center;gap:14px}
+  .zespol-twarze{display:flex}
+  .zespol-twarze img{width:36px;height:36px;border-radius:50%;object-fit:cover;background:#e7ece4;border:2px solid #ffffff}
+  .zespol-twarze img + img{margin-left:-12px}
+  .zespol-txt{font-size:14px;color:#6d786f}
+  /* Odznaka OpenAI ma własną ramkę w pliku, więc nie dokładamy jej promienia
+     ani obrysu. Przy 44 px napis w środku był nieczytelny — stąd 62 px. */
+  .odznaki{display:flex;align-items:center;gap:clamp(14px,1.8vw,22px)}
+  .oai{height:62px;width:auto;display:block}
+  .odznaki-n{font-size:14.5px;font-weight:750;color:#16211a}
+  .odznaki-d{margin-top:2px;font-size:13px;color:#6d786f}
+  .odznaki-kreska{width:1px;height:30px;background:#e4ebe0}
+  .grupa{display:flex;align-items:center;gap:11px;font-size:13px;color:#8b968d}
+  .grupa img{height:18px;width:auto;display:block;opacity:0.72}
+
+  /* Karta formularza: nagłówek i pola w jednym pudle, nie dwa osobne bloki. */
+  /* Karta formularza — lekka: cienki obrys, miękki cień, pola bez ramek.
+     Ramka pojawia się dopiero na focusie, więc pudło nie jest siatką kresek. */
+  .karta{background:#ffffff;border:1px solid #ebefe9;border-radius:24px;box-shadow:0 24px 56px -46px rgba(18,38,28,0.35);overflow:hidden}
+  /* Nagłówka „wypełnij formularz" nie ma: pola i przycisk mówią to same,
+     a koszt („minuta") stoi w pierwszym kroku ścieżki niżej. */
+  .karta:has([data-ok]:not([hidden])) .gwarancje{display:none}
+
+  #formularz .fk--jasny{background:transparent;border:0;box-shadow:none;border-radius:0}
+  #formularz .fk-body{padding:clamp(24px,2.6vw,30px) clamp(22px,2.4vw,30px) clamp(20px,2.2vw,26px);gap:16px}
+  #formularz .f-lab{font-size:12.5px;font-weight:600;color:#7c877e;margin-bottom:7px}
+  #formularz .f-req{color:#a9bda4}
+  #formularz .f-opt{font-size:11.5px;font-weight:500;color:#a2ada4;opacity:1}
+  #formularz .fk-inp,#formularz .fk-tel{background:#f7faf6;border-color:#eef2ec;border-radius:12px}
+  #formularz .fk-inp{padding:15px 16px;font-size:16px}
+  #formularz .fk-inp:focus,#formularz .fk-tel:focus-within{background:#ffffff;border-color:#0a7a52;box-shadow:0 0 0 3px rgba(10,122,82,0.12)}
+  #formularz textarea.fk-inp{min-height:96px}
+  #formularz .f-consent{font-size:12px;line-height:1.5;color:#8b968d}
+  #formularz .btn-submit{padding:18px 24px;border-radius:12px;box-shadow:0 12px 26px -18px rgba(10,122,82,0.7)}
+
+  /* Pasek gwarancji — stopka karty, każda pozycja z własną ikoną. */
+  .gwarancje{display:grid;grid-template-columns:repeat(3,auto);justify-content:space-between;gap:10px 16px;padding:13px clamp(22px,2.4vw,30px);border-top:1px solid #eff3ed;background:#fbfdfa}
+  .gw{display:flex;align-items:center;gap:8px;font-size:12.5px;line-height:1.3;color:#5b675e}
+  .gw svg{flex-shrink:0;color:#0a7a52}
+  .zg-alt{margin:14px 0 0;text-align:center;font-size:14px;line-height:1.6;color:#6d786f}
+  .zg-alt a{font-weight:700;color:#0a7a52}
+
+  /* ---------- S1 · ZDANIA Z PIERWSZYCH ROZMÓW ----------
+     Wątek rozmowy: pięć zdań klienta jedno pod drugim i nasza odpowiedź na
+     końcu. Nagłówek stoi w węższej kolumnie obok — dymki rozstrzelone na
+     całą szerokość 1440 zostawiały puste przekątne. */
+  .sek-zdania{padding-top:clamp(40px,4.6vw,62px);padding-bottom:clamp(40px,4.6vw,62px)}
+  .zdania-grid{display:grid;grid-template-columns:minmax(0,320px) minmax(0,1fr);gap:clamp(26px,4vw,80px);align-items:start}
+  .watek{display:flex;flex-direction:column;align-items:flex-start;gap:10px;max-width:780px}
+  .dymek{position:relative;padding:14px 20px;border-radius:18px 18px 18px 6px;font-size:clamp(15.5px,1.5vw,17px);line-height:1.45;letter-spacing:-0.012em;text-wrap:pretty;background:#ffffff;border:1px solid #e4ebe0;color:#22302a;box-shadow:0 10px 24px -22px rgba(18,38,28,0.5)}
+  /* Nasza odpowiedź domyka wątek: druga strona, ciemne tło, znak zamiast twarzy. */
+  .dymek-nasz{display:flex;align-items:center;gap:12px;align-self:flex-end;margin-top:6px;padding:15px 22px;border-radius:18px 18px 6px 18px;background:#0e2b1d;color:#ffffff;font-size:clamp(15.5px,1.5vw,17px);line-height:1.45;letter-spacing:-0.012em}
+  .dymek-nasz b{font-weight:750}
+  .dymek-znak{display:flex;align-items:center;justify-content:center;width:30px;height:30px;flex-shrink:0;border-radius:50%;background:rgba(0,205,119,0.16)}
+
+  /* ---------- S2 · ŚCIEŻKA OD FORMULARZA DO PLANU ---------- */
+  .sciezka{--g:clamp(18px,2.4vw,34px);position:relative;margin-top:clamp(38px,4.6vw,58px);display:grid;grid-template-columns:repeat(4,1fr);gap:var(--g);align-items:stretch}
+  /* Kropkowana linia biegnie od pierwszego kółka do ostatniego — nie dalej.
+     Prawy odstęp to szerokość ostatniej kolumny minus promień kółka. */
+  .sciezka::before{content:"";position:absolute;left:18px;right:calc((100% - 3 * var(--g)) / 4 - 17px);top:17px;height:1px;background:repeating-linear-gradient(90deg,#c8d5c4 0 5px,transparent 5px 11px)}
+  .kro{position:relative;display:flex;flex-direction:column;height:100%}
+  .kro-n{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:#16211a;color:#ffffff;font-size:14px;font-weight:800;letter-spacing:-0.02em;box-shadow:0 0 0 6px #ffffff}
+  .kro.mocny .kro-n{background:var(--la-accent,#00CD77);color:#06170e}
+  .kro-t{margin-top:20px;font-size:clamp(17px,1.75vw,20px);line-height:1.15;font-weight:750;letter-spacing:-0.02em;color:#16211a;text-wrap:balance}
+  .kro-d{margin:10px 0 0;font-size:14.5px;line-height:1.6;color:#4c5850}
+  /* Czas jako podpis z ikoną, nie plakietka w maszynopisie. */
+  .kro-czas{display:inline-flex;align-self:flex-start;align-items:center;gap:7px;margin-top:auto;padding-top:16px;font-size:13.5px;font-weight:650;color:#0a7a52}
+  .kro-czas svg{flex-shrink:0;opacity:.85}
+  .kro-tel{display:flex;align-items:center;gap:9px;margin-top:clamp(30px,3.4vw,40px);padding-top:clamp(22px,2.6vw,28px);border-top:1px solid #e4ebe0;font-size:15px;color:#4c5850}
+  .kro-tel svg{flex-shrink:0;color:#0a7a52}
+  .kro-tel a{font-weight:700;color:#0a7a52;white-space:nowrap}
+
+  /* ---------- S3 · CO ZYSKUJESZ ----------
+     Wiersze po lewej, jeden artefakt po prawej: kartka planu, którą klient
+     dostaje po konsultacji. Trzy równe kafle z ozdobnikami w środku poszły. */
+  /* Dwie kolumny czytają się jak jedna tabela: tytuł planu siedzi w wierszu
+     nagłówka, a obie kolumny zaczynają się tą samą grubą kreską na tej samej
+     wysokości. Wcześniej prawa kolumna miała własny rytm linii. */
+  .kor-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,540px);grid-template-areas:"naglowek podpis" "lista plan";gap:0 clamp(32px,4.6vw,80px);align-items:start}
+  .kor-naglowek{grid-area:naglowek}
+  .kor-podpis{grid-area:podpis;align-self:end;display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding-bottom:clamp(18px,2vw,24px)}
+  .kor-lista{grid-area:lista}
+  .kor-plan{grid-area:plan}
+  .kor-lista .kor-w:first-of-type{margin-top:0;border-top:2px solid #16211a}
+  .kor-w{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 16px;padding:20px 0;border-top:1px solid #dfe8db}
+  .kor-w:last-of-type{border-bottom:1px solid #dfe8db}
+  .kor-w:first-of-type{margin-top:clamp(26px,3vw,34px)}
+  .kor-ico{grid-row:span 2;display:flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:11px;background:#e9f2ea;color:#0a7a52}
+  .kor-t{font-size:clamp(17px,1.75vw,20px);font-weight:750;letter-spacing:-0.02em;color:#16211a}
+  .kor-d{margin:0;font-size:15px;line-height:1.6;color:#4c5850;max-width:52ch}
+
+  /* Plan działania — kartka pisma, nie makieta interfejsu. Żadnego pudła
+     z cieniem i kółek z numerami: gruba kreska pod tytułem, wiersze na
+     włoskowych liniach, akcent tylko na cenie. */
+  .plan-tyt{font-size:clamp(21px,2.3vw,27px);font-weight:800;letter-spacing:-0.028em;color:#16211a}
+  .plan-kiedy{font-size:13px;color:#6d786f;white-space:nowrap}
+  .plan-w{display:grid;grid-template-columns:32px minmax(0,1fr);gap:6px 14px;padding:17px 0;border-bottom:1px solid #dfe8db}
+  .plan-w:first-of-type{border-top:2px solid #16211a}
+  .plan-n{grid-row:span 2;font-size:13px;font-weight:800;color:#a9bda4;padding-top:2px}
+  .plan-t{font-size:16.5px;line-height:1.4;font-weight:700;letter-spacing:-0.015em;color:#16211a}
+  .plan-r{grid-column:2;font-size:14px;line-height:1.5;color:#4c5850}
+  .plan-cena{display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding-top:18px}
+  .plan-cena span{font-size:15px;color:#4c5850}
+  .plan-cena b{font-size:16.5px;font-weight:800;letter-spacing:-0.015em;color:#16211a;background:linear-gradient(transparent 62%, rgba(0,205,119,0.38) 62%)}
+  .plan-rys{margin:18px 0 0;font-size:13px;line-height:1.55;color:#8b968d}
+
+  /* ---------- S4 · PRZED KONSULTACJĄ ---------- */
+  .przyg{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,410px);gap:clamp(36px,6vw,88px);align-items:center}
+  .przyg-w{display:grid;grid-template-columns:20px 1fr;gap:13px;align-items:baseline;padding:13px 0;border-top:1px solid #e4ebe0;font-size:16px;line-height:1.5;color:#22302a}
+  .przyg-w:first-of-type{margin-top:clamp(20px,2.4vw,28px)}
+  .przyg-w:last-of-type{border-bottom:1px solid #e4ebe0}
+  .przyg-str{color:#0a7a52;font-weight:800}
+
+  /* Zdjęcie z cytatem zachodzącym na dolny róg — kolumna „zdjęcie, a pod nim
+     akapit" ciągnęła sekcję w dół i zostawiała pustą prawą stronę. */
+  .foto{position:relative;padding-bottom:clamp(44px,4.6vw,60px)}
+  .foto img{display:block;width:100%;height:auto;aspect-ratio:4/4.3;object-fit:cover;object-position:50% 12%;border-radius:20px}
+  .slowo{position:absolute;left:clamp(14px,2vw,26px);right:0;bottom:0;background:#ffffff;border:1px solid #e7ece4;border-radius:16px;padding:16px 18px;box-shadow:0 26px 60px -44px rgba(18,38,28,0.55)}
+  .slowo p{margin:0;font-size:14.5px;line-height:1.55;color:#243329;text-wrap:pretty}
+  .slowo-kto{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 8px;margin-top:10px;font-size:12.5px;color:#8b968d}
+  .slowo-kto b{font-size:13.5px;font-weight:750;color:#16211a}
+
+  /* ---------- S4 · REZULTATY ----------
+     Tabela, nie cztery rozstrzelone bloki: wiersz mieści liczbę, to, czego
+     dotyczy, i parę „przed / po" w jednej linii. */
+  .rez-head{display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:12px 56px}
+  .rez{margin-top:clamp(26px,3vw,36px)}
+  .rez-legenda{display:grid;grid-template-columns:112px minmax(0,1.05fr) minmax(0,1fr) minmax(0,1fr);gap:clamp(16px,2.2vw,32px);padding-bottom:9px;font-size:11.5px;font-weight:650;letter-spacing:0.04em;color:#9aa69c}
+  .rez-w{display:grid;grid-template-columns:112px minmax(0,1.05fr) minmax(0,1fr) minmax(0,1fr);gap:6px clamp(16px,2.2vw,32px);padding:15px 0;border-top:1px solid #dfe8db;align-items:baseline}
+  .rez-w:last-child{border-bottom:1px solid #dfe8db}
+  .rez-n{font-size:clamp(24px,2.4vw,30px);line-height:1;font-weight:800;letter-spacing:-0.035em;color:#16211a}
+  .rez-l{font-size:14px;line-height:1.45;color:#4c5850}
+  .rez-l b{display:block;font-size:12px;font-weight:700;color:#8b968d;margin-bottom:2px}
+  .rez-przed{margin:0;font-size:14.5px;line-height:1.5;color:#7c877e}
+  .rez-po{position:relative;margin:0;padding-left:17px;font-size:14.5px;line-height:1.5;color:#22302a}
+  .rez-po::before{content:"";position:absolute;left:0;top:8px;width:7px;height:7px;border-radius:50%;background:var(--la-accent,#00CD77)}
+
+  /* ---------- S5 · CIEMNY PAS ----------
+     Cztery rzeczy skreślone akcentem — ten sam zabieg, co przekreślony
+     „ChatGPT" na stronie głównej. Wcześniej była tu płaska lista w dwóch
+     kolumnach, przez co pas czytał się jak ściana tekstu. */
+  .ciemny{position:relative;overflow:hidden;background:radial-gradient(820px 460px at 88% 0%, rgba(0,205,119,0.14), transparent 58%), #0e2b1d;border-radius:26px;padding:clamp(44px,5.4vw,72px) clamp(28px,4.2vw,60px)}
+  .nb-grid{display:grid;grid-template-columns:minmax(0,360px) minmax(0,1fr);gap:clamp(30px,4.4vw,80px);align-items:start}
+  .ciemny .h-sec{color:#ffffff;max-width:15ch}
+  .ciemny-lead{margin:18px 0 0;font-size:16.5px;line-height:1.6;color:rgba(255,255,255,0.72);text-wrap:pretty}
+  .nb-w{padding:18px 0;border-top:1px solid rgba(255,255,255,0.14)}
+  .nb-w:first-child{padding-top:0;border-top:0}
+  .nb-t{font-size:clamp(20px,2.1vw,25px);font-weight:750;letter-spacing:-0.024em;color:#ffffff;text-wrap:balance;text-decoration:line-through;text-decoration-color:var(--la-accent,#00CD77);text-decoration-thickness:3px}
+  .nb-d{margin:8px 0 0;font-size:15.5px;line-height:1.6;color:rgba(255,255,255,0.66);max-width:56ch}
+  .wroc{display:inline-flex;align-items:center;gap:9px;margin-top:clamp(28px,3.2vw,38px);background:var(--la-accent,#00CD77);color:#06170e;padding:16px 28px;border-radius:12px;font-weight:750;font-size:16px}
+
+  /* ---------- S5 · OPINIE ---------- */
+  .dow{display:grid;grid-template-columns:300px minmax(0,1fr);gap:clamp(30px,4vw,64px);align-items:start}
+  .licz{display:flex;gap:34px;margin-top:24px}
+  .licz-n{font-size:29px;font-weight:800;letter-spacing:-0.03em;color:#16211a}
+  .licz-l{margin-top:2px;font-size:13px;color:#6d786f}
+  .op-w{padding:22px 0;border-top:1px solid #e4ebe0}
+  .op-w:last-child{border-bottom:1px solid #e4ebe0}
+  .op-q{margin:0;font-size:clamp(16px,1.7vw,18.5px);line-height:1.55;color:#22302a;text-wrap:pretty}
+  .op-kto{margin-top:11px;font-size:13.5px;color:#6d786f}
+  .op-kto strong{font-weight:700;color:#16211a}
+
+  /* ---------- S8 · DOMKNIĘCIE ----------
+     Pas nad FAQ: zdanie po lewej, akcja po prawej. Wyśrodkowany blok
+     z dwoma przyciskami wyglądał jak domyślna stopka szablonu. */
+  /* ---------- S8 · DOMKNIĘCIE ----------
+     Pełna szerokość i ciemne tło: to ostatnie miejsce, w którym można kliknąć,
+     więc dostaje wagę. Po lewej wezwanie i akcje, po prawej trzy rzeczy,
+     które klient chce mieć potwierdzone tuż przed decyzją. */
+  .konc{position:relative;overflow:hidden;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,320px);gap:clamp(30px,4.4vw,80px);align-items:center;background:radial-gradient(760px 420px at 86% 0%, rgba(0,205,119,0.17), transparent 60%), #0e2b1d;border-radius:26px;padding:clamp(38px,4.6vw,64px) clamp(28px,4vw,60px)}
+  .konc .h-sec{color:#ffffff;max-width:14ch}
+  .konc-lead{margin:16px 0 0;max-width:46ch;font-size:16.5px;line-height:1.6;color:rgba(255,255,255,0.72)}
+  .konc-akcje{display:flex;align-items:center;flex-wrap:wrap;gap:14px 24px;margin-top:clamp(26px,3vw,34px)}
+  .btn-glowny{display:inline-flex;align-items:center;gap:9px;background:var(--la-accent,#00CD77);color:#06170e;padding:18px 32px;border-radius:12px;font-weight:750;font-size:16.5px;white-space:nowrap}
+  .konc-tel{display:inline-flex;align-items:center;gap:9px;font-size:16px;font-weight:700;color:#ffffff}
+  .konc-tel svg{flex-shrink:0;color:var(--la-accent,#00CD77)}
+  .konc-gwar{display:flex;flex-direction:column;gap:0}
+  .konc-g{display:flex;align-items:center;gap:12px;padding:14px 0;border-top:1px solid rgba(255,255,255,0.14);font-size:14.5px;color:rgba(255,255,255,0.78)}
+  .konc-g:last-child{border-bottom:1px solid rgba(255,255,255,0.14)}
+  .konc-g svg{flex-shrink:0;color:var(--la-accent,#00CD77)}
+
+  /* ---------- pasek CTA na mobile ---------- */
+  .mob-cta{display:none}
+
+  /* ---------- RESPONSYWNOŚĆ ---------- */
+  @media (max-width:1120px){
+    .zg-grid{grid-template-columns:minmax(0,1fr) 460px}
+    .zdania-grid{grid-template-columns:1fr;gap:22px}
+    .sciezka{grid-template-columns:1fr 1fr;gap:30px}
+    .sciezka::before{display:none}
+    .kor-grid{grid-template-columns:1fr;grid-template-areas:"naglowek" "lista" "podpis" "plan";gap:0}
+    .kor-podpis{align-self:start;padding-top:clamp(28px,4vw,40px)}
+  }
+  @media (max-width:980px){
+    /* Formularz wchodzi tuż pod nagłówek, reszta argumentu schodzi pod niego. */
+    .gwarancje{grid-template-columns:1fr;justify-content:start;gap:9px}
+    .zg-grid{grid-template-columns:minmax(0,1fr);gap:clamp(26px,3.6vw,34px) 0}
+    .zg-nag,.kto{max-width:none}
+    .pasek-z{gap:16px 24px}
+    .oai{height:54px}
+    .przyg{grid-template-columns:1fr;gap:36px}
+    .foto{max-width:420px}
+    .slowo{left:14px}
+    .nb-grid{grid-template-columns:1fr;gap:30px}
+    .dow{grid-template-columns:1fr;gap:10px}
+    .dow{gap:28px}
+    .rez-legenda{display:none}
+    .rez-w{grid-template-columns:1fr;gap:8px}
+    .rez-przed{position:relative;padding-left:18px;color:#7c877e}
+    .rez-przed::before,.rez-po::before{content:"";position:absolute;left:0;top:9px;width:8px;height:8px;border-radius:50%;background:#c8d5c4}
+    .rez-przed::after,.rez-po::after{display:block;margin-bottom:2px;font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:0.08em;color:#9aa69c}
+    .rez-przed::after{content:"przed"}
+    .rez-po::after{content:"po"}
+  }
+  @media (max-width:900px){
+    .konc{grid-template-columns:1fr;gap:30px}
+  }
+  @media (max-width:760px){
+    .sciezka{grid-template-columns:1fr;gap:26px}
+    .mob-cta{display:flex;align-items:center;gap:12px;position:fixed;left:0;right:0;bottom:0;z-index:70;padding:11px clamp(14px,4vw,20px) calc(11px + env(safe-area-inset-bottom));background:rgba(255,255,255,0.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid #e2eade;box-shadow:0 -10px 30px -18px rgba(18,38,28,0.4)}
+    .mob-cta.hide{display:none}
+    body{padding-bottom:74px}
+  }
+</style>
+
+<!-- ============ S0 · ZGIĘCIE ============ -->
+<section id="formularz" class="zg">
+<div class="zg-grid">
+
+<div class="zg-nag">
+<h1 class="zg-h1">Bezpłatna konsultacja kończy się <em>planem działania i ceną</em></h1>
+<p class="zg-lead">Zaczynamy od krótkiego telefonu: sprawdzamy, czy w tej sprawie umiemy pomóc. Kiedy tak, umawiamy do 45 minut o Twoim procesie — i z tej konsultacji wychodzisz z gotowym planem.</p>
+
+<div class="kto">
+<img src="/piotr-avatar.jpg" alt="Piotr Wojciuk, New Business Lead w Let's automate" width="48" height="48" loading="lazy" decoding="async">
+<div>
+<div class="kto-t">Po wysłaniu formularza dzwoni Piotr</div>
+<div class="kto-d">Piotr Wojciuk · New Business Lead</div>
+</div>
+</div>
+</div>
+
+<div class="zg-form">
+<div class="karta">
+<FormularzLead
+  id="gora"
+  zrodlo="darmowa-konsultacja-v3 · formularz"
+  wariant="jasny"
+  submitLabel="Umów bezpłatną konsultację"
+  podpis=""
+  opisWymagany={true}
+  kroki={KROKI_PO_WYSLANIU}
+/>
+
+<div class="gwarancje">
+{GWARANCJE.map((g) => (
+  <div class="gw">
+    <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={g.ico}></svg>
+    <span>{g.t}</span>
+  </div>
+))}
+</div>
+</div>
+
+<p class="zg-alt">Wolisz napisać? <a href={`mailto:${KONTAKT_MAIL}`} class="lnk-green">{KONTAKT_MAIL}</a> · <a href={TEL_HREF} class="lnk-green" style="white-space:nowrap">{KONTAKT_TEL}</a></p>
+</div>
+
+</div>
+
+<div class="pasek-z">
+<div class="zespol">
+<div class="zespol-twarze">
+{ZESPOL.map((o) => (<img src={`/team/${o.f}`} alt={o.n} width="36" height="36" loading="lazy" decoding="async">))}
+</div>
+<span class="zespol-txt">Jesteśmy, by pomóc Ci pracować mądrzej</span>
+</div>
+
+<div class="odznaki">
+<img class="oai" src="/uploads/openai-select-partner.png" alt="OpenAI Select Partner" width="1125" height="531" loading="lazy" decoding="async">
+<span class="odznaki-kreska" aria-hidden="true"></span>
+<div>
+<div class="odznaki-n">140+ firm · 200+ wdrożeń</div>
+<div class="odznaki-d">Zmieniają z nami sposób działania</div>
+</div>
+<span class="odznaki-kreska" aria-hidden="true"></span>
+<div class="grupa">
+<span>Część grupy</span>
+<img src="/uploads/wisegroup_logo_v2.webp" alt="Wise Group" height="18">
+</div>
+</div>
+</div>
+</section>
+
+<!-- ============ S1 · ZDANIA Z PIERWSZYCH ROZMÓW ============ -->
+<section id="zdania" class="sek sek-tlo sek-zdania">
+<div class="zdania-grid">
+<div>
+<h2 class="h-mod" style="margin:0;max-width:20ch">Nie wiesz, od czego zacząć rozmowę?</h2>
+<p class="lead-sek" style="font-size:15.5px;max-width:38ch">Pięć zdań, które słyszymy na pierwszych konsultacjach najczęściej. Wystarczy jedno z nich, żeby było o czym rozmawiać.</p>
+</div>
+
+<div class="watek">
+{ZDANIA.map((z) => (<div class="dymek">{z}</div>))}
+<div class="dymek-nasz">
+<span class="dymek-znak" aria-hidden="true"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#00CD77" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4l7 8-7 8M13 4l7 8-7 8"/></svg></span>
+<span>Zaczynamy od <b>tego jednego procesu</b> — i mówimy, co da się z nim zrobić.</span>
+</div>
+</div>
+</div>
+</section>
+
+<!-- ============ S2 · CO SIĘ DZIEJE PO WYSŁANIU ============ -->
+<section id="co-dalej" class="sek">
+<h2 class="h-sec" style="margin:0;max-width:18ch">Co się dzieje po wysłaniu formularza</h2>
+<p class="lead-sek">Zgłoszenie trafia prosto do nas — nie ma kolejki ani systemu ticketowego.</p>
+
+<div class="sciezka">
+{KROKI.map((k, i) => (
+  <div class={k.mocny ? 'kro mocny' : 'kro'}>
+    <div class="kro-n">{String(i + 1).padStart(2, '0')}</div>
+    <div class="kro-t">{k.t}</div>
+    <p class="kro-d">{k.d}</p>
+    <div class="kro-czas">
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.6"/><path d="M12 7.4v4.8l3 1.8"/></svg>
+      {k.kiedy}
+    </div>
+  </div>
+))}
+</div>
+
+<div class="kro-tel">
+<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .3 1.9.6 2.8a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.2-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.5 2.8.6a2 2 0 0 1 1.7 2z"/></svg>
+<span>Sprawa pilna? Zadzwoń: <a href={TEL_HREF} class="lnk-green">{KONTAKT_TEL}</a></span>
+</div>
+</section>
+
+<!-- ============ S3 · CO ZYSKUJESZ ============ -->
+<section id="co-zyskujesz" class="sek sek-tlo">
+<div class="kor-grid">
+<div class="kor-naglowek">
+<h2 class="h-sec" style="margin:0;max-width:16ch">Co zostaje u Ciebie po konsultacji</h2>
+<p class="lead-sek" style="margin-bottom:clamp(26px,3vw,34px)">Trzy rzeczy — także wtedy, gdy nie zaczniemy współpracy.</p>
+</div>
+
+<div class="kor-lista">
+{KORZYSCI.map((k, i) => (
+  <div class="kor-w">
+    <span class="kor-ico" aria-hidden="true">
+      {i === 0 && <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 6.5h10M9.5 12h10M9.5 17.5h6"/><path d="M4.2 6.4l1.2 1.2 2.1-2.4M4.2 11.9l1.2 1.2 2.1-2.4M4.4 17.4h.01"/></svg>}
+      {i === 1 && <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11.2 3.6H5.4A1.8 1.8 0 0 0 3.6 5.4v5.8l9.2 9.2a1.6 1.6 0 0 0 2.3 0l5.3-5.3a1.6 1.6 0 0 0 0-2.3z"/><circle cx="7.9" cy="7.9" r="1.1"/></svg>}
+      {i === 2 && <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.6"/><path d="M8.4 12.3l2.4 2.4 4.6-5.2"/></svg>}
+    </span>
+    <span class="kor-t">{k.t}</span>
+    <p class="kor-d">{k.d}</p>
+  </div>
+))}
+</div>
+
+<div class="kor-podpis">
+<span class="plan-tyt">Plan działania</span>
+<span class="plan-kiedy">dostajesz po konsultacji</span>
+</div>
+
+<div class="kor-plan">
+<div class="plan">
+{PLAN.map((k, i) => (
+  <div class="plan-w">
+    <span class="plan-n">{String(i + 1).padStart(2, '0')}</span>
+    <span class="plan-t">{k.t}</span>
+    <span class="plan-r">{k.r}</span>
+  </div>
+))}
+<div class="plan-cena"><span>Cena etapu 1</span><b>znana przed startem</b></div>
+</div>
+<p class="plan-rys">Układ jest stały, treść zależy od procesu, o którym rozmawiamy — powyżej przykład dla ofertowania.</p>
+</div>
+</div>
+</section>
+
+<!-- ============ S4 · PRZED KONSULTACJĄ ============ -->
+<section class="sek">
+<div class="przyg">
+<div>
+<div class="eyebrow">Przed konsultacją</div>
+<h2 class="h-sec" style="margin:14px 0 0;max-width:14ch">Jak się przygotować</h2>
+<p class="lead-sek" style="max-width:56ch">Nie musisz mieć gotowej dokumentacji ani planu. Wystarczy, że zastanowisz się nad jednym: które procesy w firmie są ręczne, czasochłonne albo stale się sypią. Resztą zajmiemy się my. Zapytamy Cię o:</p>
+
+{PRZYGOTOWANIE.map((p) => (
+  <div class="przyg-w"><span class="przyg-str" aria-hidden="true">→</span><span>{p}</span></div>
+))}
+</div>
+
+<div class="foto">
+<img src="/piotr-wojciuk.jpg" alt="Piotr Wojciuk, New Business Lead w Let's automate" width="1002" height="1100" loading="lazy" decoding="async">
+<figure class="slowo" style="margin:0">
+<p>Zaczynam od pytań o proces i o to, co się w nim psuje. Jeśli okaże się, że nie jesteśmy dla Ciebie dobrym wyborem, usłyszysz to w tej samej rozmowie.</p>
+<figcaption class="slowo-kto"><b>Piotr Wojciuk</b><span>New Business Lead</span></figcaption>
+</figure>
+</div>
+</div>
+</section>
+
+<!-- ============ S5 · REZULTATY ============ -->
+<section id="rezultaty" class="sek sek-tlo">
+<div class="rez-head">
+<h2 class="h-sec" style="margin:0;max-width:16ch">Po czym poznać, że to miało sens</h2>
+<p class="lead-sek" style="margin:0 0 4px;max-width:44ch">Cztery wdrożenia u naszych klientów. Konsultacja jest po to, żeby ustalić, który z tych wyników jest u Was do wzięcia najszybciej.</p>
+</div>
+
+<div class="rez">
+<div class="rez-legenda" aria-hidden="true">
+<span>wynik</span>
+<span>czego dotyczy</span>
+<span>przed</span>
+<span>po</span>
+</div>
+{REZULTATY.map((r) => (
+  <div class="rez-w">
+    <div class="rez-n">{r.n}</div>
+    <div class="rez-l"><b>{r.dziedzina}</b>{r.l}</div>
+    <p class="rez-przed">{r.przed}</p>
+    <p class="rez-po">{r.po}</p>
+  </div>
+))}
+</div>
+</section>
+
+<!-- ============ S6 · CZEGO NIE BĘDZIE ============ -->
+<section class="sek">
+<div class="ciemny">
+<div class="nb-grid">
+
+<div>
+<h2 class="h-sec" style="margin:0">Czego na tej konsultacji nie będzie</h2>
+<p class="ciemny-lead">Najczęstszy powód, dla którego firmy zwlekają z takim spotkaniem, to poczucie „najpierw musimy to sobie poukładać". Nie musicie — od tego jest ta konsultacja.</p>
+<a href="#formularz" class="wroc btn-accent">Wróć do formularza <span aria-hidden="true">↑</span></a>
+</div>
+
+<div>
+{NIE_BEDZIE.map((n) => (
+  <div class="nb-w">
+    <div class="nb-t">{n.t}</div>
+    <p class="nb-d">{n.d}</p>
+  </div>
+))}
+</div>
+
+</div>
+</div>
+</section>
+
+<!-- ============ S7 · OPINIE ============ -->
+<section id="opinie" class="sek">
+<div class="dow">
+<div>
+<h2 class="h-sec" style="margin:0">Zgłosili się przed Tobą</h2>
+<div class="licz">
+<div>
+<div class="licz-n">140+</div>
+<div class="licz-l">firm</div>
+</div>
+<div>
+<div class="licz-n">200+</div>
+<div class="licz-l">wdrożeń</div>
+</div>
+</div>
+</div>
+
+<div>
+{OPINIE.map((o) => (
+  <figure class="op-w" style="margin:0">
+    <blockquote class="op-q" style="margin:0">&bdquo;{o.q}&rdquo;</blockquote>
+    <figcaption class="op-kto"><strong>{o.kto}</strong> · {o.rola}</figcaption>
+  </figure>
+))}
+</div>
+</div>
+</section>
+
+<!-- ============ S8 · DOMKNIĘCIE ============ -->
+<section id="kontakt" class="sek" style="padding-bottom:clamp(20px,2.4vw,32px)">
+<div class="konc">
+
+<div>
+<h2 class="h-sec" style="margin:0">Zacznijmy od jednego telefonu</h2>
+<p class="konc-lead">Zostaw kontakt, a odezwiemy się w jeden dzień roboczy, żeby sprawdzić, czy umiemy pomóc.</p>
+<div class="konc-akcje">
+<a href="#formularz" class="btn-glowny btn-accent">Wypełnij formularz <span aria-hidden="true">↑</span></a>
+<a href={TEL_HREF} class="konc-tel">
+<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .3 1.9.6 2.8a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.2-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.5 2.8.6a2 2 0 0 1 1.7 2z"/></svg>
+{KONTAKT_TEL}
+</a>
+</div>
+</div>
+
+<div class="konc-gwar">
+{GWARANCJE.map((g) => (
+  <div class="konc-g">
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={g.ico}></svg>
+    <span>{g.t}</span>
+  </div>
+))}
+</div>
+
+</div>
+</section>
+
+<!-- ============ S9 · FAQ ============ -->
+<GcFaq
+  heading="Zanim wypełnisz formularz"
+  lead="Pytania, które słyszymy przed pierwszym telefonem. Nie ma tu Twojego?"
+  ctaLabel="Zadaj je nam wprost →"
+  ctaHref="#formularz"
+  items={FAQ}
+/>
+
+<!-- pasek CTA na mobile — znika, gdy formularz jest w kadrze -->
+<div class="mob-cta hide" id="mobCta">
+<a href={TEL_HREF} aria-label="Zadzwoń" style="display:flex;align-items:center;justify-content:center;width:48px;height:48px;flex-shrink:0;border:1px solid #e2eade;border-radius:11px;color:#0a7a52"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .3 1.9.6 2.8a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.2-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.5 2.8.6a2 2 0 0 1 1.7 2z"/></svg></a>
+<a href="#formularz" style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;background:#0a7a52;color:#fff;padding:15px 20px;border-radius:11px;font-weight:750;font-size:16px">Umów konsultację <span aria-hidden="true">→</span></a>
+</div>
+
+<script>
+  // ---- Formularz: walidacja, wysyłka, stan po wysłaniu ----
+  (function(){
+    var ENDPOINT = '/api/kontakt';
+    var MAIL = 'hello@letsautomate.pl';
+    var formy = document.querySelectorAll('[data-lead]');
+    if(!formy.length) return;
+
+    var REGULY = [
+      { pole: 'email',   msg: 'Sprawdź adres e-mail.',   ok: function(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v); } },
+      { pole: 'telefon', msg: 'Sprawdź numer telefonu.', ok: function(v){ return v.replace(/\D/g, '').length >= 9; } },
+      // Opis sprawy jest wymagany: bez niego pierwszy telefon zaczyna się od
+      // pytania „a w jakiej sprawie?", zamiast od rzeczy, która uwiera.
+      { pole: 'wiadomosc', msg: 'Napisz kilka słów o sprawie.', ok: function(v){ return v.length >= 10; } }
+    ];
+
+    function pole(el){ return el.closest ? el.closest('.f-field') : null; }
+
+    function bladWl(el, msg){
+      var f = pole(el); if(!f) return;
+      f.classList.add('err');
+      el.setAttribute('aria-invalid', 'true');
+      var box = f.querySelector('.f-err');
+      if(box && msg) box.textContent = msg;
+    }
+    function bladWyl(el){
+      var f = pole(el); if(!f) return;
+      f.classList.remove('err');
+      el.removeAttribute('aria-invalid');
+    }
+
+    formy.forEach(function(form){
+      var karta = form.closest('.fk');
+      var btn = form.querySelector('[data-submit]');
+      var etykieta = btn.querySelector('[data-label]');
+      var zgoda = form.querySelector('[data-consent]');
+      var wierszZgody = form.querySelector('[data-consent-row]');
+      var awaria = form.querySelector('[data-fallback]');
+      var okBox = karta ? karta.querySelector('[data-ok]') : null;
+
+      function sprawdz(){
+        var pierwszy = null;
+        REGULY.forEach(function(r){
+          var el = form.elements[r.pole];
+          var v = (el.value || '').trim();
+          if(v && r.ok(v)){ bladWyl(el); }
+          else { bladWl(el, v || r.pole === 'wiadomosc' ? r.msg : 'To pole jest wymagane.'); if(!pierwszy) pierwszy = el; }
+        });
+        wierszZgody.classList.toggle('err', !zgoda.checked);
+        if(!zgoda.checked && !pierwszy) pierwszy = zgoda;
+        return pierwszy;
+      }
+
+      form.addEventListener('input', function(e){ if(pole(e.target)) bladWyl(e.target); });
+      zgoda.addEventListener('change', function(){ wierszZgody.classList.toggle('err', !zgoda.checked); });
+
+      function telefonPelny(){
+        return (form.elements.kierunkowy.value + ' ' + (form.elements.telefon.value || '').trim()).trim();
+      }
+
+      function pokazOk(){
+        // Echo adresu — literówkę widać od razu, zanim zaczniemy czekać na odpowiedź.
+        var echo = okBox.querySelector('[data-echo]');
+        var echoTxt = okBox.querySelector('[data-echo-text]');
+        var mail = (form.elements.email.value || '').trim();
+        if(echo && echoTxt && mail){
+          echoTxt.textContent = mail;
+          echo.hidden = false;
+        }
+        form.hidden = true;
+        okBox.hidden = false;
+        okBox.scrollIntoView({ block: 'nearest' });
+        okBox.focus();
+      }
+
+      function pokazAwarie(){
+        // Nie udajemy wysyłki — dajemy drogę, którą zgłoszenie naprawdę dojdzie.
+        var mailto = awaria.querySelector('[data-mailto]');
+        if(mailto){
+          mailto.href = 'mailto:' + MAIL
+            + '?subject=' + encodeURIComponent('Bezpłatna konsultacja — zgłoszenie')
+            + '&body=' + encodeURIComponent(
+                'E-mail: ' + (form.elements.email.value || '').trim()
+                + '\nTelefon: ' + telefonPelny()
+                + '\n\n' + (form.elements.wiadomosc.value || '').trim()
+              );
+        }
+        awaria.hidden = false;
+        awaria.scrollIntoView({ block: 'nearest' });
+      }
+
+      // Podgląd ekranu po wysłaniu (?sukces=1) omija wysyłkę.
+      form.podgladSukcesu = pokazOk;
+
+      form.addEventListener('submit', function(e){
+        e.preventDefault();
+        var zly = sprawdz();
+        if(zly){ zly.focus(); return; }
+
+        btn.disabled = true;
+        var napis = etykieta.textContent;
+        etykieta.textContent = 'Wysyłam…';
+        awaria.hidden = true;
+
+        fetch(ENDPOINT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({
+            email: (form.elements.email.value || '').trim(),
+            telefon: telefonPelny(),
+            wiadomosc: (form.elements.wiadomosc.value || '').trim(),
+            firma_www: form.elements.firma_www.value || '',
+            zrodlo: form.dataset.zrodlo || 'darmowa-konsultacja'
+          })
+        })
+          .then(function(r){
+            if(!r.ok) throw new Error('HTTP ' + r.status);
+            pokazOk();
+          })
+          .catch(function(){
+            btn.disabled = false;
+            etykieta.textContent = napis;
+            pokazAwarie();
+          });
+      });
+    });
+
+    // Podgląd ekranu po wysłaniu bez wysyłki: ?sukces=1
+    if(location.search.indexOf('sukces=1') > -1){
+      var pierwsza = formy[0];
+      pierwsza.elements.email.value = 'jan@firma.pl';
+      if(pierwsza.podgladSukcesu) pierwsza.podgladSukcesu();
+    }
+  })();
+
+  // ---- Odnośniki do formularza ustawiają kursor w pierwszym polu ----
+  // Bez tego po kliknięciu „Wróć do formularza" trzeba jeszcze celować myszą,
+  // a osoba na klawiaturze zaczyna tabulowanie od początku strony.
+  (function(){
+    var pole = document.querySelector('[data-lead] input[name="email"]');
+    if(!pole) return;
+    document.querySelectorAll('a[href="#formularz"]').forEach(function(a){
+      a.addEventListener('click', function(){
+        setTimeout(function(){
+          if(!pole.closest('form').hidden) pole.focus({ preventScroll: true });
+        }, 420);
+      });
+    });
+  })();
+
+  // ---- Pasek CTA na mobile: tylko gdy formularz jest poza kadrem ----
+  (function(){
+    var bar = document.getElementById('mobCta');
+    var cele = document.querySelectorAll('.fk');
+    if(!bar || !cele.length || !('IntersectionObserver' in window)) return;
+    var widoczne = 0;
+    var io = new IntersectionObserver(function(wpisy){
+      wpisy.forEach(function(w){ widoczne += w.isIntersecting ? 1 : -1; });
+      if(widoczne < 0) widoczne = 0;
+      bar.classList.toggle('hide', widoczne > 0);
+    }, { threshold: 0.12 });
+    cele.forEach(function(el){ io.observe(el); });
+  })();
+</script>
+
+</LaBase>

@@ -1,409 +1,1038 @@
 ---
-// DRZWI B — /guided-coding/dla-zespolow
-// Ton: rzeczowy, techniczny, bez protekcjonalności. Czytelnik to CTO albo lead.
+// DRZWI B · /guided-coding/dla-zespolow
+// Wersja żywa od 08.09.2026. Zastąpiła poprzednią stronę, która leży
+// w docs/_kopie/dla-zespolow-przed-v3.astro; pierwsze podejście do tej
+// przebudowy (nadzór, bramka, review) — w docs/_kopie/dla-zespolow-v2-przed-know-how.astro.
+// Koncepcja: docs/dla-zespolow-koncepcja.md.
 //
-// KLUCZOWA DECYZJA POZYCJONUJĄCA (spec v2):
-// Wejściem NIE jest audyt kodu — to ocena kompetencji zespołu, którą CTO
-// zablokuje albo zespół storpeduje z urazy.
-// Wejściem NIE jest też governance ani compliance — nikt ich nie pragnie,
-// a strona otwierająca się kontrolą czyta się jak oferta dostawcy compliance
-// (a takiego przekierowuje się do zakupów i wycenia najniżej).
+// POWÓD PRZEBUDOWY (Szymon, 08.09): poprzednia wersja sprzedawała nadzór.
+// Hero pokazywało nasz komentarz pod cudzym pull requestem, sekcja
+// „co naprawiamy" była listą rzeczy, które u klienta nie działają,
+// a produktem była bramka przed merge'em i review zmian. Klient czytał
+// z tego: „przyjdą sprawdzić, jak pracujemy".
 //
-// v1 mówiła „wasze wąskie gardło się przesunęło" — to wciąż diagnoza problemu.
-// v2 pyta: ILE Z TEGO, ZA CO PŁACICIE, REALNIE DO WAS DOCIERA.
-// To pytanie ten człowiek już sobie zadaje, jest o ambicji zamiast o usterce
-// i nie konkuruje z narzędziem, za które klient już płaci.
+// CO SPRZEDAJEMY NAPRAWDĘ: know-how. Zespół inżynierski, który ma agenty
+// od kilku miesięcy, oddaje im ułamek roboty, którą mogłyby wykonać.
+// Powód nie leży w kompetencjach ludzi ani w modelu — leży w tym, że
+// nikt nie zapisał tego, co agent musi wiedzieć, a sposób planowania
+// i rozliczania pracy został z czasów, kiedy kod pisała ręka. My przenosimy do
+// repozytorium klienta WiseStack i prowadzimy zespół, aż zacznie
+// pracować w tym rytmie.
 //
-// CRA WYPADŁO W CAŁOŚCI (spec v2): argument na piątą rozmowę,
-// nie na wystawę sklepową.
-
+// CZEGO NA TEJ STRONIE NIE MA I NIE POWINNO WRÓCIĆ:
+// · review zmiany po zmianie jako produkt (to jest drzwi A),
+// · bramka opisana jako coś, co my trzymamy — bramka należy do zespołu
+//   i istnieje po to, żeby dało się oddać agentowi większy kawałek,
+// · nasze narzędzie skanujące cudzy kod w sekcji o składzie,
+// · lista „co u Was nie działa" bez podania powodu.
+//
+// TEZA (własna linia w dużym stopniu pisma, sekcja #petla):
+//   „Nikt nie odda agentowi większego kawałka roboty, dopóki po każdym
+//    trzeba poprawiać."
+//
+// MIARA PRZEZ CAŁĄ STRONĘ: para liczb, zawsze razem — ile roboty trafia
+// do agenta i ile z tego wchodzi bez rundy poprawek. Druga ciągnie
+// pierwszą. Liczą ją: dwa koła w hero, kolumna „co trafia do agenta"
+// w pętli, cztery pary w #efekt i krzywa sześciu kwartałów w #u-nas.
+//
+// SŁOWNIK WIZUALNY — inny niż na drzwiach A (tam: panel narzędzia
+// klienta, kursor, kolejka zgłoszeń, paski dni). Tutaj:
+//   1. dwa łuki na wspólnym środku: ile kodu powstaje z agentem,
+//      bez spisanych zasad i w WiseStacku,
+//   2. pętla poprawek jako spis z krechą wracającą do góry,
+//   3. drzewo plików, które pojawia się w repozytorium klienta,
+//   4. cztery pary przed/po,
+//   5. krzywa sześciu kwartałów z naszych własnych projektów.
+// Każdy z pięciu jest innym gatunkiem rysunku.
+//
+// NADTYTUŁÓW SEKCJI NIE MA. Monospace'owe wersaliki nad każdym
+// nagłówkiem były tikiem generatora. Jedyny nadtytuł stoi w hero
+// i jest złożony tym samym krojem co reszta serwisu — obcy krój
+// (próbowane: Instrument Serif, Bricolage Grotesque) za każdym razem
+// odstawał od składu. Wyróżnia go skala, waga i kolor.
+//
+// RYTM TŁA: biel, biel, zieleń, biel, CIEMNY, biel, zieleń, biel,
+// zieleń, biel, zieleń, biel, zieleń. Ciemny pas pada raz i bierze
+// najcięższy argument strony, czyli WiseStack w repozytorium klienta.
+//
+// SKŁAD BEZ ROZSZERZEŃ: zespół inżynierski ma własnego architekta
+// i własny platform engineering, więc dokładanie ich w abonamencie
+// (jak na drzwiach A) tutaj nie ma sensu.
+//
+// ADRESAT: „Ty", tak jak strona główna i drzwi A w wersji 2. Żadnego
+// czasu przeszłego w drugiej osobie („zbudowałeś"), bo jest rodzajowy.
+//
+// DO POTWIERDZENIA PRZED PUBLIKACJĄ:
+// · tablica CYKL — udziały „ile tego etapu robi dziś AI" są proporcją
+//   z obserwacji, nie z pomiaru. Kształt jest pewny (kod wysoko, reszta
+//   przy zerze), konkretne liczby do podmiany. Pod rysunkiem stoi zdanie
+//   mówiące, skąd są;
+// · tablica EFEKT — cztery pary przed/po, to samo zastrzeżenie;
+// · „ponad dwieście wdrożeń" przy WiseStacku — powtórzone z drzwi A
+//   i huba; /wisestack mówi o czterdziestu projektach w tym stosie.
+//   Obie liczby mogą być prawdziwe, ale wymagają jednej decyzji;
+// · kadencja (sesja co tydzień, odpowiedź tego samego dnia roboczego,
+//   godzina liczb w miesiącu) to zobowiązanie umowne;
+// · ceny nie podajemy — hub obiecuje przy tych drzwiach „diagnostic
+//   sprint od [25 000] zł". Do uzgodnienia razem z hubem;
+// · formularz nie ma endpointu, jak wszędzie w serwisie.
 import LaBase from '../../layouts/LaBase.astro';
 import GcFaq from '../../components/GcFaq.astro';
 import GcCta from '../../components/GcCta.astro';
+import TeamAvatar from '../../components/TeamAvatar.astro';
+import { zespol } from '../../data/zespol.js';
 
-const title = "Guided Coding dla zespołów — ile z AI realnie do Was dociera | Let's automate";
-const description = 'Diagnostic sprint: baseline metryk przepływu, wąskie gardło między napisanym kodem a działającą funkcją, roadmapa i porównanie z zespołami podobnej wielkości.';
+const kanon = new URL('/guided-coding/dla-zespolow', Astro.site).href;
 
-// Sekcja 2 · Gdzie ucieka prędkość — cztery wąskie gardła, konkretnie.
-// Wina leży w procesie, którego nikt nie zaktualizował — nie w ludziach.
-const gardla = [
+const title = "Guided coding dla zespołów technicznych — więcej roboty oddanej agentom | Let's automate";
+const description = 'Twój zespół oddaje agentom ułamek pracy, którą mogłyby wykonać, bo pierwsze podejście wraca do przeróbki. Przenosimy do Twojego repozytorium WiseStack: reguły domeny, format opisu zadania, testy granic i sprawdzenia w CI.';
+
+
+// ---- HERO: UDZIAŁ AI W POWSTAWANIU KODU --------------------------------
+// Jeden rysunek, dwa łuki na wspólnym środku: ile kodu powstaje z agentem
+// w zespole, który ma narzędzia i nie ma spisanych zasad, i ile powstaje
+// u zespołu pracującego w WiseStacku. Bez karty i bez cienia — rysunek
+// leży na poświacie hero, więc nie odcina się od tła jak wklejony widget.
+const KOLA = [
+  { t: 'Zespół w WiseStacku', o: 'reguły i szablony w repozytorium', v: 100, r: 104, my: true },
+  { t: 'Zespół z agentami', o: 'narzędzia są, zasad nie ma', v: 31, r: 66 },
+];
+const obwod = (r) => +(2 * Math.PI * r).toFixed(2);
+const luk = (r, v) => (obwod(r) * (1 - v / 100)).toFixed(2);
+
+const KO = { c: 10, start: 0.5, krok: 0.75, rysuje: 1.6, trzyma: 4.6, wyjscie: 0.6 };
+const kp = (t) => `${((t / KO.c) * 100).toFixed(2)}%`;
+const KO_KRES = KO.start + (KOLA.length - 1) * KO.krok + KO.rysuje + KO.trzyma;
+const klatkiKol = [
+  ...KOLA.map((k, i) => {
+    const t = KO.start + i * KO.krok;
+    const pusty = obwod(k.r);
+    return `@keyframes ko-luk${i}{0%,${kp(t)}{stroke-dashoffset:${pusty}}${kp(t + KO.rysuje)}{stroke-dashoffset:${luk(k.r, k.v)}}${kp(KO_KRES)}{stroke-dashoffset:${luk(k.r, k.v)}}${kp(KO_KRES + KO.wyjscie)}{stroke-dashoffset:${pusty}}100%{stroke-dashoffset:${pusty}}}`;
+  }),
+  ...KOLA.map((_, i) => {
+    const t = KO.start + i * KO.krok + KO.rysuje;
+    return `@keyframes ko-licz${i}{0%,${kp(t - 0.55)}{opacity:0;transform:translateY(5px)}${kp(t)}{opacity:1;transform:none}${kp(KO_KRES)}{opacity:1;transform:none}${kp(KO_KRES + KO.wyjscie)}{opacity:0;transform:translateY(5px)}100%{opacity:0;transform:translateY(5px)}}`;
+  }),
+].join('\n');
+
+
+// ---- PĘTLA POPRAWEK ----------------------------------------------------
+// Cztery obroty tej samej pętli. Kolumna po prawej maleje z wiersza na
+// wiersz i to ona jest liczbą, której nie ma w tekście obok.
+const PETLA = [
   {
-    n: '01',
-    t: 'Review nie nadąża za tempem generowania',
-    d: 'Diff rośnie szybciej, niż ktokolwiek jest w stanie go przeczytać. Review zamienia się w formalność, a formalność nie wyłapuje niczego poza literówkami. Zmiana czeka, mimo że kod był gotowy w środę.',
+    t: 'Agent dostaje porządny kawałek roboty',
+    d: 'Zadanie opisane tak, jak opisuje się je człowiekowi, który siedzi w projekcie od roku. Wynik jest w połowie dobry i wraca do przeróbki.',
+    k: 'cała warstwa',
   },
   {
-    n: '02',
-    t: 'Testy nie pokrywają tego, co model dopisał',
-    d: 'Agent generuje kod razem z testami, które sprawdzają, że kod robi to, co robi. Pokrycie rośnie, zaufanie nie. Przed wydaniem i tak ktoś klika ręcznie — i to jest prawdziwy koszt.',
+    t: 'Poprawianie kosztuje więcej niż napisanie',
+    d: 'Przeczytanie cudzego kodu i wytłumaczenie, co jest nie tak, zajmuje więcej czasu niż zrobienie tego samemu. Każdy w zespole liczy to sobie po cichu.',
+    k: 'jedna funkcja',
   },
   {
-    n: '03',
-    t: 'Sześciu developerów, sześć sposobów pracy z agentem',
-    d: 'Jeden pisze specyfikację, drugi wkleja ticket, trzeci improwizuje. Efekt jest nieprzewidywalny, więc każdą zmianę trzeba czytać od zera — nie da się zaufać, że została zrobiona tak jak poprzednia.',
+    t: 'Kawałek robi się mniejszy',
+    d: 'Agent dostaje funkcję zamiast warstwy, potem metodę zamiast funkcji. Do zadań, przy których naprawdę by się opłacił, przestaje trafiać.',
+    k: 'jedna metoda',
   },
   {
-    n: '04',
-    t: 'Nikt nie mierzy, więc nie wiadomo, czy jest lepiej',
-    d: 'Nie da się wtedy obronić budżetu na kolejny rok ani pokazać, że narzędzia, za które już płacicie, cokolwiek zmieniły. Pierwsza rzecz, o którą pyta zarząd, to liczba sprzed zakupu — i zwykle jej nie ma.',
+    t: 'Zespół uznaje, że tyle da się z tego wycisnąć',
+    d: 'Licencje zostają na fakturze, tempo zostaje takie jak przed nimi. Nikt tego nie ogłasza, bo nikt tego nie mierzy.',
+    k: 'poprawka w gotowym kodzie',
   },
 ];
 
-// Sekcja 3 · Zakres diagnostic sprintu.
-const zakres = [
-  { t: 'Historia PR i czasy przejścia', d: 'Rozmiary diffów, czas od otwarcia do merge’a, czas od merge’a do produkcji, rozkład na repozytoria i etapy. Tu widać, gdzie zmiana stoi najdłużej.' },
-  { t: 'Konfiguracje agentów i reguły', d: 'Co siedzi w plikach reguł, na ile jest wspólne między repozytoriami i czy ktokolwiek to wersjonuje.' },
-  { t: 'CI', d: 'Co faktycznie blokuje merge, a co jest tylko zielonym haczykiem. Czas przebiegu, flaky testy, pokrycie ścieżek krytycznych.' },
-  { t: 'Praktyka review', d: 'Nie polityka na Confluence, tylko to, co widać w danych: kto komu review’uje, jak długo, z jakim skutkiem.' },
-  { t: 'Obsługa sekretów', d: 'Skanowanie historii, rotacja, miejsce przechowywania, dostęp z lokalnych środowisk i z pipeline’u.' },
-  { t: 'Ścieżka na produkcję', d: 'Od commita do klienta: bramki, akceptacje, rollback, obserwowalność i to, co się dzieje, gdy trzeba szybko.' },
+
+// ---- STARY SPOSÓB PLANOWANIA I ODBIORU PRACY ---------------------------
+// Druga połowa problemu. Nawet zespół, który dobrze pracuje z agentem,
+// dowozi tyle, na ile pozwala mu sposób krojenia i rozliczania zadań.
+const STARY = [
+  {
+    a: 'Estymata w dniach człowieka',
+    b: 'Zadanie zrobione w dwie godziny i tak stoi w planie na trzy dni. Nikt nie oddaje wcześniej, bo wcześniej nie było umówione.',
+  },
+  {
+    a: 'Zadanie wielkości dwóch dni pracy jednej osoby',
+    b: 'Agent dostaje kawałek warstwy, chociaż zrobiłby całą. Rozmiar zadania jest dopasowany do tego, ile człowiek napisze ręcznie.',
+  },
+  {
+    a: '„Gotowe" znaczy „ktoś przeczytał"',
+    b: 'Tempo zespołu nie przekroczy tego, ile jedna osoba przeczyta w tygodniu. Przy pięciu razach więcej kodu to jest sufit twardy jak ściana.',
+  },
+  {
+    a: 'Zakres ustalany na dwa tygodnie do przodu',
+    b: 'Plan powstaje w poniedziałek, zanim ktokolwiek sprawdzi, ile z tego da się oddać agentowi. W piątek nikt go już nie otwiera.',
+  },
+  {
+    a: 'Rozliczenie i awans za czas przy klawiaturze',
+    b: 'Opłaca się pisać samemu. Godzina spędzona na opisaniu zadania tak, żeby zrobił je agent, nie liczy się nigdzie.',
+  },
 ];
 
-// Sekcja 9 · FAQ. Pierwsze pytanie to najtwardszy zarzut — narzędzie,
-// za które już płacą. Odpowiedź nie walczy z Cursorem, tylko pokazuje,
-// że to on przesunął wąskie gardło.
+
+// ---- CZYM TO JEST ------------------------------------------------------
+const KROKI = [
+  {
+    n: 'Mierzymy',
+    t: 'Ile roboty da się dziś oddać agentowi',
+    d: 'Historia zadań, repozytorium i sposób, w jaki zespół dziś opisuje pracę. Wychodzi z tego lista miejsc, w których agent zrobiłby całość, gdyby wiedział to, co wie zespół.',
+  },
+  {
+    n: 'Przenosimy',
+    t: 'WiseStack do Twojego repozytorium',
+    d: 'Reguły domeny, format opisu zadania, testy na granicach procesu i sprawdzenia w CI. To samo, czym budujemy u siebie, dopisane do Twojej domeny.',
+  },
+  {
+    n: 'Prowadzimy',
+    t: 'Zespół, aż wejdzie w ten rytm',
+    d: 'Wspólne sesje na zadaniach z Twojego backlogu, nie na przykładach. Zespół uczy się tego przy robocie, którą i tak ma do wykonania.',
+  },
+];
+
+
+// ---- CO POJAWIA SIĘ W REPOZYTORIUM (ciemny pas) ------------------------
+// Know-how pokazane jako rzecz, nie jako obietnica. Katalogi na zielono,
+// pliki na biało, opis obok.
+const REPO = [
+  { k: true, t: '.agents/' },
+  { t: 'domena.md', d: 'język domeny — jedna nazwa na jedną rzecz, w kodzie i w opisie zadania' },
+  { t: 'architektura.md', d: 'granice modułów i miejsca, których agent nie rusza bez pytania' },
+  { t: 'gotowe.md', d: 'kiedy zadanie jest skończone — zapisane tak, żeby dało się to sprawdzić' },
+  { k: true, t: 'zadania/' },
+  { t: 'szablon.md', d: 'format opisu, z którego agent robi całość za pierwszym podejściem' },
+  { t: 'decyzje/', d: 'rozstrzygnięcia zapisane razem z powodem, żeby nie wracały co kwartał' },
+  { k: true, t: 'testy/' },
+  { t: 'granice/', d: 'przebieg całej sprawy w systemie, od wejścia użytkownika do zapisu' },
+  { t: 'evals/', d: 'progi tam, gdzie model decyduje o pieniądzach albo danych osobowych' },
+  { k: true, t: '.github/workflows/' },
+  { t: 'bramka.yml', d: 'sprawdzenia, dzięki którym większa zmiana idzie dalej bez czytania wszystkiego' },
+];
+
+
+// ---- CZTERY LICZBY, PRZED I PO ----------------------------------------
+// Pierwsza i druga to miara całej strony. Trzecia mówi, po co to komu.
+// Czwarta pilnuje, żeby „więcej" nie znaczyło „gorzej".
+const EFEKT = [
+  { t: 'Zadania prowadzone przez agenta', o: 'udział w zadaniach miesiąca', p: 22, po: 78, pT: '22%', poT: '78%' },
+  { t: 'Wchodzi bez rundy poprawek', o: 'pierwsze podejście', p: 34, po: 81, pT: '34%', poT: '81%' },
+  { t: 'Zmiany dowożone przez jedną osobę', o: 'tygodniowo, mediana', p: 3.1, po: 9.4, pT: '3,1', poT: '9,4' },
+  { t: 'Zmiany wracające z produkcji', o: 'udział wydań', p: 9, po: 3, pT: '9%', poT: '3%' },
+];
+
+
+// ---- KADENCJA (wiersz pod definicją) -----------------------------------
+// Cztery rzeczy, które dzieją się w miesiącu. Wcześniej były osobną
+// sekcją z czterema wierszami; zajmowała ekran, a mówi się to czterema
+// zwrotami. Miejsce po niej wzięła sekcja dowodowa.
+const KADENCJA = [
+  { k: 'co tydzień', t: 'sesja na prawdziwym zadaniu z Twojego backlogu' },
+  { k: 'na bieżąco', t: 'kanał na zadania, które agentowi nie wyszły' },
+  { k: 'co dwa tygodnie', t: 'kolejny moduł dostaje reguły i testy granic' },
+  { k: 'raz w miesiącu', t: 'godzina z leadami przy czterech liczbach' },
+];
+
+
+// ---- DOWÓD: JAK TO POSZŁO U NAS ----------------------------------------
+// Udział kodu powstającego z agentem w naszych projektach, kwartał po
+// kwartale. Kończy się tam, gdzie stoi prawe koło w hero — czytelnik
+// ogląda jedną drogę, nie dwie różne liczby.
+// WSZYSTKIE WARTOŚCI DO POTWIERDZENIA.
+const NASZ = [
+  { e: 'I 2025', v: 5 },
+  { e: 'II 2025', v: 10 },
+  { e: 'III 2025', v: 20 },
+  { e: 'IV 2025', v: 40 },
+  { e: 'I 2026', v: 90 },
+  { e: 'II 2026', v: 100 },
+];
+const NA_W = 1200, NA_H = 190;          // układ współrzędnych krzywej
+const nx = (i) => +((i / (NASZ.length - 1)) * NA_W).toFixed(1);
+const ny = (v) => +(NA_H - (v / 100) * NA_H).toFixed(1);
+const NA_LINIA = NASZ.map((p, i) => `${nx(i)},${ny(p.v)}`).join(' ');
+const NA_POLE = `0,${NA_H} ${NA_LINIA} ${NA_W},${NA_H}`;
+const NASZ_LICZBY = [
+  { v: '3×', t: 'tyle zmian dowozi u nas jeden inżynier w tygodniu' },
+  { v: '5 tyg.', t: 'zamiast piętnastu na tę samą aplikację' },
+  { v: '0', t: 'decyzji podjętych przez model bez człowieka' },
+];
+
+
+// ---- CZEGO NIE ROBIMY --------------------------------------------------
+const GRANICA = [
+  {
+    t: 'Nie czytamy Twojego kodu zmiana po zmianie',
+    d: 'Nie stoimy między zespołem a produkcją i nie mamy zdania o każdym pull requeście. Sprawdzenia, które ustawiamy, siedzą w Twoim CI i należą do zespołu.',
+  },
+  {
+    t: 'Nie oceniamy ludzi',
+    d: 'W niczym, co piszemy, nie ma nazwisk. Liczby opisują zadania i to, ile z nich wraca do przeróbki.',
+  },
+  {
+    t: 'Nie odpowiadamy za Twoje wydania',
+    d: 'Merguje i wypuszcza Twój zespół, według swojej definicji gotowości. Odpowiadamy za to, co wnosimy: stos, sposób pracy i liczby liczone tak samo co miesiąc.',
+  },
+];
+
+
+// ---- KTO PO NASZEJ STRONIE ---------------------------------------------
+const os = (n) => zespol.find((x) => x.name === n);
+const PROWADZACY = ['Krzysztof Radej', 'Michał Langowski', 'Michał Kita', 'Kamil Olejek'].map(os);
+const KANAL = ['Mikołaj Michalski', 'Rafał Opielowski', 'Marcel Bilski', 'Daniel Angielczyk'].map(os);
+
+
+// ---- OD CZEGO ZACZYNASZ ------------------------------------------------
+const WEJSCIE = [
+  {
+    e: 'Kiedy nie masz liczb',
+    t: 'Zaczynamy od pomiaru',
+    d: 'Dwa tygodnie na stan wyjściowy: historia zadań, repozytorium, konfiguracje agentów i pół godziny z każdym z leadów.',
+    kroki: ['Bezpłatna diagnoza — 30 minut', 'Dwa tygodnie pomiaru i rozmów', 'Lista miejsc, w których agent zrobiłby całość'],
+  },
+  {
+    e: 'Kiedy wiesz, gdzie stoisz',
+    t: 'Zaczynamy od pierwszego modułu',
+    d: 'Jeśli wiesz, które zadania wracają do przeróbki, pomijamy pomiar i spisujemy domenę tego modułu w pierwszym tygodniu.',
+    kroki: ['Bezpłatna diagnoza — 30 minut', 'Reguły i format zadania dla jednego modułu', 'Wspólne sesje od pierwszego tygodnia'],
+  },
+];
+
+const ALTERNATYWY = [
+  {
+    t: 'Zatrudnić kogoś, kto to ogarnie',
+    d: 'Jedna osoba, którą trzeba znaleźć i wdrożyć, na rynku, który pracuje z agentami dopiero od dwóch lat.',
+    kiedy: 'za 3–6 miesięcy rekrutacji',
+    kto: 'Twoja, jeśli go znajdziesz',
+  },
+  {
+    t: 'Szkolenie z pracy z agentami',
+    d: 'Zespół wraca do biurek z notatkami. Repozytorium wygląda tak samo jak w poniedziałek rano.',
+    kiedy: 'przez dwa tygodnie po warsztacie',
+    kto: 'u Ciebie',
+  },
+  {
+    t: 'Dojść do tego samemu',
+    d: 'Da się i część zespołów tak robi. Kosztuje kilka kwartałów i te same pomyłki, które my mamy już policzone.',
+    kiedy: 'za rok, może dwa',
+    kto: 'u Ciebie',
+  },
+  {
+    t: 'Prowadzenie z nami',
+    d: 'WiseStack w Twoim repozytorium, sesje na prawdziwych zadaniach i cztery liczby przechodzone co miesiąc tak samo.',
+    kiedy: 'od pierwszego tygodnia',
+    kto: 'zostaje u Ciebie',
+    my: true,
+  },
+];
+
+
+// ---- PYTANIA -----------------------------------------------------------
+// Pierwsze jest najbardziej niewygodne i dlatego stoi otwarte.
 const faq = [
   {
-    q: 'Mamy już Cursora dla całego zespołu.',
-    a: 'I dlatego właśnie ta rozmowa ma sens. Cursor i Claude Code sprzedają prędkość pisania — i naprawdę ją dowożą. Tyle że prędkość pisania nigdy nie była Waszym wąskim gardłem, a teraz, kiedy urosła kilkukrotnie, wąskie gardło zrobiło się boleśnie widoczne gdzie indziej: w review, w testach i w bramce wydawniczej. Tego żadne narzędzie do generowania kodu nie rozwiąże, bo to nie jest problem generowania. My nie sprzedajemy Wam kolejnego narzędzia — pokazujemy, gdzie prędkość, za którą już płacicie, zatrzymuje się w drodze na produkcję.',
+    q: 'Mamy seniorów. Czego mielibyście ich nauczyć?',
+    a: 'Nie pracy inżynierskiej. Tego, jak opisać zadanie, żeby agent zrobił je do końca, i co musi stać w repozytorium, żeby nie tłumaczyć mu kontekstu w każdej sesji. To jest osobna umiejętność, kilkuletnia w skali rynku, i seniorzy uczą się jej najszybciej — najlepiej widzą, czego zabrakło w opisie.',
   },
   {
-    q: 'Mamy seniorów. Po co im to?',
-    a: 'Właśnie im najbardziej. Problem rzadko polega na tym, że ktoś nie umie kodować — polega na tym, że sześciu dobrych developerów pracuje z agentami na sześć różnych sposobów i nikt nie ustalił, co znaczy „gotowe”. Seniorzy zwykle wychodzą z tego sprintu najbardziej zadowoleni, bo dostają liczby na rzeczy, o które i tak walczyli od dawna — na rozmiar diffa, na kolejkę w review i na to, że zielone CI niczego nie gwarantuje.',
+    q: 'Czy będziecie czytać nasz kod i oceniać zespół?',
+    a: 'Nie. Nie sprawdzamy zmiany po zmianie i nie stoimy między zespołem a produkcją. Sprawdzenia, które ustawiamy, siedzą w Twoim CI i należą do zespołu — istnieją po to, żeby dało się oddać agentowi większy kawałek roboty bez czytania wszystkiego. W niczym, co piszemy, nie ma nazwisk.',
   },
   {
-    q: 'Czy to nie jest kolejny framework?',
-    a: 'Nie, bo nic Wam nie instalujemy. Zostaje Wasz stack: reguły, bramki i definicja gotowości produkcyjnej zapisane w Waszych repozytoriach, w Waszej terminologii. Jeśli jutro przestaniemy istnieć, nic z tego nie przestaje działać. Nie ma tu żadnej licencji, żadnego SaaS-a i żadnej zależności od nas.',
+    q: 'Pracujemy w Claude Code i Codexie. Co dokładnie się zmienia?',
+    a: 'Narzędzia zostają. Zmienia się to, co czytają: reguły domeny podzielone na moduły, format opisu zadania, testy na granicach procesu i progi tam, gdzie model o czymś decyduje. Do tego wielkość zadań, bo dziś są planowane pod dwa dni pracy jednej osoby.',
   },
   {
-    q: 'Czym to się różni od spec-driven development?',
-    a: 'W warstwie idei — niczym, i nie udajemy inaczej. Branża doszła do tego konsensusu równolegle w kilku miejscach: zanim model zacznie pisać, musi mieć spisany zakres i kryteria akceptacji. Guided coding to nasza implementacja tego konsensusu — z pomiarem przepływu i bramkami jakości na wierzchu, czyli z odpowiedzią na pytanie, co się dzieje, gdy ktoś specyfikacji nie napisze, a kod i tak chce zmergować.',
+    q: 'Nasza domena jest za specyficzna, żeby AI sobie z nią poradziło.',
+    a: 'To najczęstszy powód, dla którego pierwsze podejście wraca do przeróbki, i jednocześnie rzecz, którą da się zapisać. Pierwszy miesiąc idzie w dużej części na spisanie tego, co zespół ma w głowach: nazw, granic modułów i reguł, których u Ciebie nikt nie podważa. Agent przestaje wtedy zgadywać domenę, bo ją czyta.',
   },
   {
-    q: 'Ile to kosztuje?',
-    a: 'Diagnostic sprint ma stałą, opublikowaną cenę — stoi niżej na tej stronie. Program adopcji wyceniamy po sprincie, bo dopiero wtedy znamy zakres. Bez roboczogodzin w ciemno, jak w każdej innej naszej usłudze.',
+    q: 'Kto jest właścicielem tego, co powstaje?',
+    a: 'Ty, od pierwszego dnia. Reguły, szablony, testy i konfiguracje siedzą w Twoim repozytorium. Jeśli jutro przestaniemy istnieć, wszystko pracuje dalej, bo czyta to AI, którego używasz.',
+  },
+  {
+    q: 'Ile czasu zajmuje to zespołowi?',
+    a: 'Około sześciu godzin w miesiącu na osobę, która bierze w tym udział: cotygodniowa sesja i godzina przeglądu liczb u leadów. Reszta dzieje się przy zadaniach, które zespół i tak wykonuje.',
+  },
+  {
+    q: 'Co, jeśli chcemy przestać?',
+    a: 'Miesięczny okres wypowiedzenia. Zostaje wszystko, co jest w repozytorium, i cztery liczby liczone tym samym sposobem. Po roku większość zespołów schodzi na mniejszy zakres i to jest dobry znak.',
   },
 ];
+
+const dane = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Service',
+      '@id': `${kanon}#usluga`,
+      name: 'Guided coding dla zespołu technicznego',
+      serviceType: 'Przeniesienie sposobu pracy z AI do zespołu inżynierskiego',
+      url: kanon,
+      description: 'Stała współpraca, w której przenosimy do repozytorium klienta WiseStack — reguły domeny, format opisu zadania, testy na granicach procesu i sprawdzenia w CI — i prowadzimy zespół inżynierski, aż zacznie oddawać agentom większość roboty.',
+      provider: { '@id': new URL('/#organizacja', Astro.site).href },
+      areaServed: { '@type': 'Country', name: 'Polska' },
+      audience: { '@type': 'BusinessAudience', name: 'Zespoły inżynierskie od pięciu do dwudziestu osób' },
+    },
+    {
+      '@type': 'BreadcrumbList',
+      '@id': `${kanon}#okruszki`,
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Strona główna', item: new URL('/', Astro.site).href },
+        { '@type': 'ListItem', position: 2, name: 'Guided Coding', item: new URL('/guided-coding', Astro.site).href },
+        { '@type': 'ListItem', position: 3, name: 'Dla zespołów technicznych', item: kanon },
+      ],
+    },
+    {
+      '@type': 'FAQPage',
+      '@id': `${kanon}#faq`,
+      mainEntity: faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+    },
+  ],
+};
+
+const LOGA = [
+  ['682b89c78adefdc7985c534c_sports%20med_black.svg', 'Sports Med'],
+  ['682b89c78adefdc7985c5353_nars_black.svg', 'NARS'],
+  ['682b89c78adefdc7985c534e_sevium_black.svg', 'Sevium'],
+  ['682b89c78adefdc7985c5352_odo%2024_black.svg', 'ODO 24'],
+  ['682b89c78adefdc7985c534f_x3d_black.svg', 'X3D'],
+];
+const CDN = 'https://cdn.prod.website-files.com/625be9db7e9f071ffb58618a/';
 ---
-<LaBase title={title} description={description} ogImage="/og/dla-zespolow.png" ctaHref="#kontakt" ctaLabel="Umów diagnostic sprint">
+<LaBase title={title} description={description} ctaHref="#kontakt" ctaLabel="Bezpłatna diagnoza">
+<script type="application/ld+json" is:inline set:html={JSON.stringify(dane)} slot="head"></script>
 <style is:global slot="head">
-  .mtr{width:100%;border-collapse:collapse;font-size:13.5px}
-  .mtr th{font-family:ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.45);font-weight:500;text-align:left;padding:0 0 10px}
-  .mtr td{padding:10px 0;border-top:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.88);vertical-align:middle}
-  .mtr .num{font-family:ui-monospace,Menlo,monospace;font-size:13px;color:#ffffff}
-  .mtr .goal{font-family:ui-monospace,Menlo,monospace;font-size:13px;color:rgba(255,255,255,0.5)}
-  .gap{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:0.04em;padding:3px 8px;border-radius:6px}
-  .gap-hi{background:rgba(216,120,94,0.2);color:#f0a68e}
-  .gap-md{background:rgba(240,192,74,0.18);color:#f0c04a}
+  /* Tło wchodzi pod pasek nawigacji — na samej sekcji hero zaczynałoby
+     się dopiero pod nim i było widać odcięcie. */
+  .page{background:radial-gradient(880px 520px at 88% 40px, rgba(0,205,119,0.13), transparent 62%) top left / 100% 760px no-repeat, #ffffff}
 
-  /* ---------- wykres przepustowości: gdzie zwęża się rura ---------- */
-  .pipe{position:relative;display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(10px,1.6vw,20px);height:clamp(190px,20vw,250px);margin-top:34px;padding-top:26px}
-  .pipe-ref{position:absolute;left:0;right:0;top:26px;border-top:1px dashed #c3cbc2}
-  .pipe-ref span{position:absolute;right:0;top:-22px;font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:0.1em;color:#8b968d}
-  .pipe-col{display:flex;flex-direction:column;justify-content:flex-end;height:100%}
-  .pipe-bar{border-radius:12px 12px 0 0;transition:height 1s cubic-bezier(.4,0,.2,1);height:0}
-  .lanes-in .pipe-bar{height:var(--h)}
-  @media (prefers-reduced-motion:reduce){ .pipe-bar{transition:none;height:var(--h)} }
-  .pipe-lab{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(10px,1.6vw,20px);margin-top:14px}
+  /* Jedna miara odstępów dla wszystkich sekcji. */
+  .b-sec{padding:clamp(60px,7.5vw,100px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px}
+  .b-zielona{background:#f4f8f2}
+  .b-h{margin:0;max-width:22ch;font-size:clamp(28px,4.3vw,50px);line-height:1.05;letter-spacing:-0.032em;font-weight:800;color:#16211a;text-wrap:balance}
+  .b-p{margin:18px 0 0;max-width:56ch;font-size:17px;line-height:1.6;color:#4c5850;text-wrap:pretty}
+  .b-head{display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:20px 56px}
 
-  .zak-row{display:grid;grid-template-columns:250px 1fr;gap:clamp(16px,3vw,40px);align-items:baseline;padding:20px 4px;border-top:1px solid #e7ece4}
-  .zak-row:last-child{border-bottom:1px solid #e7ece4}
-  .cra-rail{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:clamp(24px,4vw,48px);margin-top:36px}
-  .cra-rail::before{content:'';position:absolute;left:0;right:0;top:9px;height:2px;background:linear-gradient(90deg,var(--la-accent,#00CD77),rgba(0,205,119,0.25))}
-  .cra-mark{position:relative;padding-top:34px}
-  .cra-mark::before{content:'';position:absolute;left:0;top:2px;width:16px;height:16px;border-radius:50%;background:#0e2b1d;border:3px solid var(--la-accent,#00CD77)}
+  /* ================= 1 · HERO: UDZIAŁ AI W KODZIE =====================
+     Treść po lewej, rysunek po prawej. Rysunek leży wprost na poświacie
+     hero — biała karta z cieniem odcinała się od tła jak wklejony widget.
+     Dwa łuki na wspólnym środku, a nie dwa osobne kółka obok siebie:
+     porównanie jest jednym obiektem. */
+  .hero-split{display:grid;grid-template-columns:minmax(0,0.95fr) minmax(0,1.05fr);gap:clamp(32px,4.5vw,68px);align-items:center;margin-top:clamp(20px,2.6vw,30px)}
+  @media (max-width:960px){ .hero-split{grid-template-columns:1fr;gap:38px} }
+
+  /* Nadtytuł hero — jedyny na stronie. Ten sam krój co reszta serwisu,
+     wyróżniony samą skalą, wagą i kolorem. */
+  .oko-hero{display:block;font-size:clamp(18px,2.1vw,25px);font-weight:600;letter-spacing:-0.022em;line-height:1.2;color:#0a7a52}
+
+  .ko{display:grid;grid-template-columns:minmax(0,0.94fr) minmax(0,1.06fr);gap:clamp(20px,3.4vw,46px);align-items:center}
+  .ko-r{position:relative;width:100%;max-width:290px;margin:0 auto}
+  .ko-r svg{display:block;width:100%;height:auto}
+  .ko-tlo{fill:none;stroke:#eef3ec}
+  .ko-l{fill:none;stroke-linecap:round;transform:rotate(-90deg);transform-origin:120px 120px}
+  .ko-l.my{stroke:url(#ko-akcent)}
+  .ko-l.zwykly{stroke:#7f9587}
+  .ko-leg{display:grid;gap:clamp(20px,2.6vw,32px)}
+  .ko-i b{display:block;font-size:clamp(34px,4.4vw,50px);font-weight:800;letter-spacing:-0.04em;line-height:1;color:#0a7a52}
+  .ko-i.zwykly b{color:#7f9587}
+  .ko-t{display:block;margin-top:9px;font-size:15.5px;font-weight:750;letter-spacing:-0.015em;line-height:1.3;color:#16211a;text-wrap:pretty}
+  .ko-i.zwykly .ko-t{color:#4c5850}
+  .ko-o{display:block;margin-top:3px;font-size:13.5px;line-height:1.5;color:#8b968d;text-wrap:pretty}
+  @media (max-width:960px){
+    .ko{grid-template-columns:minmax(0,0.9fr) minmax(0,1.1fr)}
+  }
+  @media (max-width:520px){
+    .ko{grid-template-columns:1fr;gap:26px}
+    .ko-r{max-width:210px}
+    .ko-leg{grid-template-columns:1fr 1fr;gap:20px}
+  }
+  /* Wartości docelowe stoją też jako style elementu, więc zdjęcie
+     animacji nie zabiera razem z nią danych z wykresu. */
+  @media (prefers-reduced-motion:reduce){
+    .ko-l,.ko-i b{animation:none !important}
+    .ko-i b{opacity:1;transform:none}
+  }
+
+  /* ================= pas dowodu ======================================= */
+  .tr{display:flex;align-items:center;gap:36px;padding:30px max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));border-top:1px solid #eef1ec;border-bottom:1px solid #eef1ec;background:#ffffff}
+  .tr-n{position:relative;z-index:2;background:#ffffff;padding-right:12px;flex-shrink:0;max-width:210px;font-size:14px;line-height:1.45;color:#4c5850}
+  .tr-n strong{color:#16211a;font-weight:700}
+  .tr-o{overflow:hidden;position:relative;z-index:1;margin-left:-76px;flex:1;filter:grayscale(1);opacity:0.55}
+  .tr-t{display:flex;align-items:center;gap:56px;width:max-content;animation:tr-jazda 30s linear infinite}
+  .tr-o:hover .tr-t{animation-play-state:paused}
+  .tr-t img{width:114px;height:28px;object-fit:contain}
+  @keyframes tr-jazda{from{transform:translateX(0)}to{transform:translateX(calc(-50% - 28px))}}
+  @media (prefers-reduced-motion:reduce){ .tr-t{animation:none} }
+  @media (max-width:820px){
+    .tr{flex-wrap:wrap;justify-content:center;text-align:center;gap:18px}
+    .tr-n{max-width:none;padding-right:0}
+    .tr-o{margin-left:0;width:100%;flex:none}
+  }
+
+  /* ================= 2 · PĘTLA POPRAWEK ===============================
+     Cztery obroty jednej pętli. Numery siedzą na pionowej krechę, a na
+     lewo od nich krecha wraca z ostatniego wiersza do pierwszego. */
+  .pt{position:relative;margin:clamp(34px,4.2vw,54px) 0 0 clamp(38px,5vw,66px)}
+  .pt::before{content:'';position:absolute;left:13px;top:38px;bottom:38px;width:2px;background:#e2e9e0}
+  .pt-n{display:grid;grid-template-columns:28px minmax(0,1fr) 210px;gap:clamp(14px,2.6vw,38px);padding-bottom:11px;border-bottom:1px solid #dde7db}
+  .pt-n span{grid-column:3;font-family:ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:#a3ada4}
+  .pt-r{display:grid;grid-template-columns:28px minmax(0,1fr) 210px;gap:clamp(14px,2.6vw,38px);align-items:start;padding:clamp(18px,2.3vw,26px) 0;border-bottom:1px solid #e7ece4}
+  .pt-i{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;border:2px solid #cfe0d3;background:#ffffff;font-family:ui-monospace,Menlo,monospace;font-size:11px;font-weight:700;color:#0a7a52;font-style:normal}
+  .pt-t{margin:3px 0 0;font-size:clamp(16.5px,1.95vw,19.5px);font-weight:750;letter-spacing:-0.018em;line-height:1.28;color:#16211a;text-wrap:pretty}
+  .pt-d{margin:9px 0 0;max-width:62ch;font-size:14.5px;line-height:1.6;color:#4c5850;text-wrap:pretty}
+  .pt-k{margin-top:6px;font-family:ui-monospace,Menlo,monospace;font-size:12.5px;line-height:1.5;color:#0a7a52}
+  .pt-w{position:absolute;left:-32px;top:24px;bottom:24px;width:34px;border:2px solid #cfe0d3;border-right:0;border-radius:17px 0 0 17px}
+  .pt-w::after{content:'';position:absolute;right:-5px;top:-5px;width:10px;height:10px;border-top:2px solid #cfe0d3;border-right:2px solid #cfe0d3;transform:rotate(45deg)}
+  .pt-w span{position:absolute;left:-8px;top:50%;transform:translateY(-50%);padding:8px 0;background:#ffffff;writing-mode:vertical-rl;rotate:180deg;font-family:ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:#a3ada4}
+  .pt-z{margin:clamp(32px,3.8vw,46px) 0 0;max-width:44ch;font-size:clamp(18.5px,2.1vw,25px);line-height:1.32;letter-spacing:-0.02em;font-weight:750;color:#16211a;text-wrap:pretty}
+  .pt-p{margin:clamp(12px,1.5vw,16px) 0 0;max-width:60ch;font-size:15.5px;line-height:1.62;color:#4c5850;text-wrap:pretty}
   @media (max-width:900px){
-    .hero-split{grid-template-columns:1fr !important;gap:40px !important}
-    .zak-row{grid-template-columns:1fr;gap:6px}
-    .price-grid{grid-template-columns:1fr !important;gap:32px !important}
-    .cra-rail{grid-template-columns:1fr;gap:28px}
-    .cra-rail::before{display:none}
-    .pipe,.pipe-lab{grid-template-columns:repeat(4,1fr);gap:8px}
-    .pipe{height:170px}
+    .pt-n{display:none}
+    .pt-r{grid-template-columns:28px minmax(0,1fr);gap:16px}
+    /* trzecie dziecko spadłoby pod numer, do pierwszej kolumny */
+    .pt-k{grid-column:2;margin-top:12px}
   }
-  @media (max-width:600px){
-    .mtr th:nth-child(3),.mtr td:nth-child(3){display:none}
-    .pipe-lab{font-size:11px}
+  @media (max-width:640px){
+    .pt{margin-left:0}
+    .pt-w,.pt::before{display:none}
   }
+
+  /* ================= 3 · STARY SPOSÓB PLANOWANIA ====================== */
+  .sp{margin-top:clamp(30px,3.6vw,46px)}
+  .sp-n{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:clamp(18px,4vw,66px);padding-bottom:11px;border-bottom:1px solid #dde7db}
+  .sp-n span{font-family:ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:#a3ada4}
+  .sp-r{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:clamp(18px,4vw,66px);align-items:baseline;padding:clamp(17px,2.1vw,24px) 0;border-bottom:1px solid #e2e9e0}
+  .sp-a{margin:0;font-size:clamp(16px,1.85vw,18.5px);font-weight:700;letter-spacing:-0.015em;line-height:1.32;color:#16211a;text-wrap:pretty}
+  .sp-b{margin:0;font-size:15px;line-height:1.6;color:#4c5850;text-wrap:pretty}
+  .sp-k{margin:clamp(34px,4vw,52px) 0 0;padding-left:clamp(18px,2.4vw,28px);border-left:3px solid var(--la-accent,#00CD77);max-width:68ch}
+  .sp-k h3{margin:0;font-size:clamp(18px,2.1vw,22px);font-weight:750;letter-spacing:-0.018em;color:#16211a}
+  .sp-k p{margin:12px 0 0;font-size:16px;line-height:1.62;color:#4c5850;text-wrap:pretty}
+  @media (max-width:900px){
+    .sp-n{display:none}
+    .sp-r{grid-template-columns:1fr;gap:8px}
+  }
+
+  /* ================= 4 · CZYM TO JEST ================================ */
+  .kr{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(24px,4vw,56px);margin-top:clamp(34px,4vw,50px)}
+  .kr-k{padding-top:20px;border-top:2px solid #16211a}
+  .kr-n{font-size:13.5px;font-weight:700;letter-spacing:-0.008em;color:#0a7a52}
+  .kr-t{margin:11px 0 0;min-height:calc(2 * 1.26em);font-size:clamp(17.5px,2vw,20.5px);font-weight:750;letter-spacing:-0.018em;line-height:1.26;color:#16211a;text-wrap:balance}
+  .kr-d{margin:10px 0 0;font-size:15px;line-height:1.6;color:#4c5850;text-wrap:pretty}
+  @media (max-width:860px){ .kr{grid-template-columns:1fr;gap:26px} .kr-t{min-height:0} }
+
+  /* ================= 5 · REPOZYTORIUM (ciemny pas) ==================== */
+  .rp-sec{background:radial-gradient(900px 420px at 88% 4%, rgba(0,205,119,0.16), transparent 62%), #0e2b1d;padding:clamp(60px,7.5vw,100px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px}
+  .rp-g{display:grid;grid-template-columns:minmax(0,0.92fr) minmax(0,1.08fr);gap:clamp(32px,5vw,76px);align-items:start}
+  .rp-h{margin:0;max-width:20ch;font-size:clamp(28px,4.3vw,48px);line-height:1.06;letter-spacing:-0.032em;font-weight:800;color:#ffffff;text-wrap:balance}
+  .rp-p{margin:20px 0 0;max-width:50ch;font-size:17px;line-height:1.62;color:rgba(255,255,255,0.72);text-wrap:pretty}
+  .rp-p strong{color:#ffffff;font-weight:700}
+  .rp-u{margin:clamp(24px,3vw,34px) 0 0;padding-top:clamp(20px,2.4vw,26px);border-top:1px solid rgba(255,255,255,0.14);max-width:50ch;font-size:15px;line-height:1.62;color:rgba(255,255,255,0.55);text-wrap:pretty}
+  .rp-a{display:inline-block;margin-top:18px;font-size:15.5px;font-weight:700;color:var(--la-accent,#00CD77);transition:color .15s}
+  .rp-a:hover{color:#ffffff}
+  .rp-w{border-radius:16px;overflow:hidden;background:#0a1f15;border:1px solid rgba(255,255,255,0.11);box-shadow:0 34px 88px -44px rgba(0,0,0,0.7)}
+  .rp-b{display:flex;align-items:center;gap:13px;padding:12px 17px;background:rgba(255,255,255,0.045);border-bottom:1px solid rgba(255,255,255,0.08)}
+  .rp-b i{display:block;width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,0.17)}
+  .rp-b em{margin-left:6px;font-style:normal;font-family:ui-monospace,Menlo,monospace;font-size:11.5px;color:rgba(255,255,255,0.45)}
+  .rp-l{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px clamp(16px,2.4vw,32px);padding:clamp(18px,2.2vw,24px) clamp(16px,2vw,24px) clamp(20px,2.4vw,26px)}
+  .rp-l b{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;font-weight:600;color:#ffffff;white-space:nowrap}
+  .rp-l b.kat{color:var(--la-accent,#00CD77)}
+  .rp-l b.plik{padding-left:20px}
+  .rp-l span{font-size:12.5px;line-height:1.5;color:rgba(255,255,255,0.48);text-wrap:pretty}
+  @media (max-width:980px){ .rp-g{grid-template-columns:1fr;gap:36px} }
+  @media (max-width:560px){
+    .rp-l{grid-template-columns:1fr;gap:2px}
+    .rp-l span{padding:0 0 10px 20px}
+    .rp-l b.kat{padding-top:10px}
+  }
+
+  /* ================= 7 · CZTERY LICZBY, PRZED I PO ==================== */
+  .ef{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(20px,3vw,44px);margin-top:clamp(34px,4.4vw,56px)}
+  .ef-k{min-width:0}
+  .ef-t{margin:0;font-size:15px;font-weight:700;letter-spacing:-0.012em;line-height:1.3;color:#16211a;text-wrap:balance}
+  .ef-o{display:block;margin-top:6px;min-height:calc(2 * 1.45em);font-family:ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:0.09em;text-transform:uppercase;color:#a3ada4;line-height:1.45}
+  .ef-r{display:grid;grid-template-columns:44px minmax(0,1fr);gap:10px;align-items:center;margin-top:12px}
+  .ef-r b{font-family:ui-monospace,Menlo,monospace;font-size:9.5px;letter-spacing:0.07em;text-transform:uppercase;color:#a3ada4;font-weight:500}
+  .ef-s{position:relative;display:flex;align-items:center;height:26px}
+  .ef-s i{display:block;height:100%;width:0;min-width:22px;border-radius:5px;background:#dde7dc;transition:width 1s cubic-bezier(.22,.85,.3,1);transition-delay:var(--d)}
+  .ef-r.po .ef-s i{background:linear-gradient(90deg,#22a06b,#0a7a52)}
+  .rv.in .ef-s i{width:var(--w)}
+  .ef-s em{position:absolute;left:calc(var(--w) + 10px);font-style:normal;font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:700;color:#8b968d;white-space:nowrap;opacity:0;transition:opacity .5s ease;transition-delay:calc(var(--d) + .55s)}
+  .ef-r.po .ef-s em{color:#16211a}
+  .rv.in .ef-s em{opacity:1}
+  .ef-w{margin:clamp(30px,3.6vw,42px) 0 0;max-width:66ch;font-size:15px;line-height:1.62;color:#4c5850;text-wrap:pretty}
+  .ef-w strong{font-weight:700;color:#16211a}
+  @media (max-width:1000px){ .ef{grid-template-columns:repeat(2,minmax(0,1fr));gap:30px} }
+  @media (max-width:560px){ .ef{grid-template-columns:1fr} .ef-o{min-height:0} }
+  @media (prefers-reduced-motion:reduce){ .ef-s i,.ef-s em{transition:none} }
+
+  /* ================= 4b · WIERSZ KADENCJI ============================= */
+  .kd{display:grid;grid-template-columns:170px minmax(0,1fr);gap:clamp(16px,3vw,44px);align-items:start;margin-top:clamp(34px,4vw,50px);padding-top:clamp(22px,2.6vw,30px);border-top:1px solid #dbe4da}
+  .kd > b{font-size:13.5px;font-weight:700;letter-spacing:-0.008em;color:#0a7a52}
+  .kd > div{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px clamp(20px,3vw,48px)}
+  .kd span{display:block;font-size:14.5px;line-height:1.5;color:#33413a;text-wrap:pretty}
+  .kd i{display:block;font-style:normal;font-size:12.5px;font-weight:700;color:#16211a}
+  @media (max-width:900px){ .kd{grid-template-columns:1fr;gap:16px} .kd > div{grid-template-columns:1fr} }
+
+  /* ================= 8 · DOWÓD: JAK TO POSZŁO U NAS ===================
+     Krzywa udziału AI w naszym kodzie. Rysuje się raz, przy wejściu
+     w kadr; wartości procentowe stoją osobno jako tekst, więc zdjęcie
+     animacji nie zabiera razem z nią danych. */
+  .na{margin-top:clamp(30px,3.6vw,46px)}
+  /* SVG rozciąga się nieproporcjonalnie, więc punkty i etykiety siedzą
+     w warstwie HTML — inaczej kropki robią się elipsami. */
+  .na-pl{position:relative;height:clamp(180px,21vw,242px);margin:26px 0 0}
+  .na-pl svg{position:absolute;inset:0;width:100%;height:100%;clip-path:inset(0 100% 0 0);transition:clip-path 1.6s cubic-bezier(.4,0,.2,1) .1s}
+  .rv.in .na-pl svg{clip-path:inset(0 0 0 0)}
+  .na-pole{fill:rgba(0,205,119,0.1)}
+  .na-linia{fill:none;stroke:#0a7a52;stroke-width:2.5;vector-effect:non-scaling-stroke;stroke-linejoin:round;stroke-linecap:round}
+  .na-pl::after{content:'';position:absolute;left:0;right:0;bottom:0;height:1px;background:#dbe4da}
+  .na-p{position:absolute;left:var(--x);bottom:var(--y);width:11px;height:11px;border-radius:50%;background:#ffffff;border:2.5px solid #0a7a52;transform:translate(-50%,50%);opacity:0;transition:opacity .5s ease 1.25s}
+  .na-p.ostatni{width:15px;height:15px;background:var(--la-accent,#00CD77)}
+  .rv.in .na-p{opacity:1}
+  .na-p em{position:absolute;left:50%;bottom:calc(100% + 8px);transform:translateX(-50%);font-style:normal;font-size:12.5px;font-weight:700;color:#8b968d;white-space:nowrap}
+  .na-p.pierwszy em{left:0;transform:none}
+  .na-p.ostatni em{left:auto;right:0;transform:none}
+  .na-p.ostatni em{font-size:16px;color:#16211a}
+  .na-e{position:relative;height:16px;margin-top:11px}
+  .na-e span{position:absolute;left:var(--x);transform:translateX(-50%);white-space:nowrap;font-family:ui-monospace,Menlo,monospace;font-size:10.5px;color:#a3ada4}
+  .na-e span.pierwszy{transform:none}
+  .na-e span.ostatni{transform:translateX(-100%)}
+  .na-pod{margin:clamp(18px,2.2vw,24px) 0 0;max-width:72ch;font-size:14px;line-height:1.6;color:#7c877e;text-wrap:pretty}
+  .na-l{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(22px,4vw,60px);margin-top:clamp(36px,4.4vw,56px);padding-top:clamp(24px,2.8vw,32px);border-top:1px solid #dbe4da}
+  .na-l b{display:block;font-size:clamp(30px,4vw,46px);font-weight:800;letter-spacing:-0.038em;line-height:1;color:#16211a}
+  .na-l span{display:block;margin-top:10px;max-width:30ch;font-size:14.5px;line-height:1.5;color:#4c5850;text-wrap:pretty}
+  @media (max-width:760px){
+    .na-l{grid-template-columns:1fr;gap:24px}
+    .na-e span{font-size:9.5px}
+    .na-p em{font-size:11px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .na-pl svg{transition:none;clip-path:none}
+    .na-p{transition:none;opacity:1}
+  }
+
+  /* ================= 9 · KTO PO NASZEJ STRONIE ======================= */
+  .os-s{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(20px,3vw,44px);margin-top:clamp(30px,3.6vw,44px)}
+  .os-i{display:grid;grid-template-columns:auto minmax(0,1fr);gap:16px;align-items:center}
+  .os-a{display:flex;align-items:center}
+  .os-a > *{margin-left:-11px}
+  .os-a > *:first-child{margin-left:0}
+  .os-t{display:block;font-size:clamp(16.5px,1.9vw,19px);font-weight:750;letter-spacing:-0.015em;color:#16211a}
+  .os-d{display:block;margin-top:5px;max-width:42ch;font-size:14.5px;line-height:1.5;color:#4c5850;text-wrap:pretty}
+  @media (max-width:900px){ .os-s{grid-template-columns:1fr;gap:22px} }
+
+  /* ================= 10 · GRANICA ==================================== */
+  .gr{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,0.85fr);gap:clamp(30px,5vw,76px);align-items:start;margin-top:clamp(30px,3.6vw,44px)}
+  .gr-r{display:grid;grid-template-columns:22px minmax(0,1fr);gap:16px;align-items:start;padding:clamp(16px,2vw,22px) 0;border-bottom:1px solid #e7ece4}
+  .gr-r:first-child{border-top:1px solid #dbe4da}
+  .gr-r i{display:block;width:22px;height:22px;margin-top:3px;border-radius:50%;background:#f1f4ee;position:relative}
+  .gr-r i::after{content:'';position:absolute;left:6px;right:6px;top:10px;height:2px;border-radius:2px;background:#a3ada4}
+  .gr-t{margin:0;font-size:clamp(16.5px,1.9vw,19px);font-weight:750;letter-spacing:-0.016em;line-height:1.3;color:#16211a;text-wrap:pretty}
+  .gr-d{margin:8px 0 0;max-width:56ch;font-size:14.5px;line-height:1.6;color:#4c5850;text-wrap:pretty}
+  .gr-b{padding:clamp(26px,3.2vw,36px);border-radius:20px;background:#ffffff;border:1px solid #e2e9e0}
+  .gr-b h3{margin:0;font-size:clamp(19px,2.2vw,23px);font-weight:800;letter-spacing:-0.022em;line-height:1.2;color:#16211a;text-wrap:balance}
+  .gr-b p{margin:14px 0 0;font-size:15.5px;line-height:1.62;color:#4c5850;text-wrap:pretty}
+  @media (max-width:920px){ .gr{grid-template-columns:1fr;gap:34px} }
+
+  /* ================= 11 · START + WYBÓR + ROZLICZENIE ================= */
+  .we{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(20px,2.4vw,28px);align-items:stretch;margin-top:clamp(30px,3.6vw,46px)}
+  .we-k{display:flex;flex-direction:column;padding:clamp(28px,3.2vw,40px);border:1px solid #e2e9e0;border-radius:20px;background:#ffffff;transition:border-color .25s,box-shadow .25s}
+  .we-k:hover{border-color:#cfe0d3;box-shadow:0 26px 60px -44px rgba(18,38,28,0.32)}
+  .we-e{align-self:flex-start;font-size:13.5px;font-weight:700;letter-spacing:-0.008em;color:#0a7a52}
+  .we-t{margin:clamp(16px,2vw,20px) 0 0;font-size:clamp(20px,2.3vw,25px);font-weight:800;letter-spacing:-0.024em;line-height:1.2;color:#16211a;text-wrap:balance}
+  .we-d{margin:12px 0 0;min-height:calc(3 * 1.62em);font-size:15px;line-height:1.62;color:#4c5850;text-wrap:pretty}
+  .we-l{margin:clamp(20px,2.4vw,26px) 0 0;padding:clamp(18px,2.2vw,22px) 0 0;list-style:none;border-top:1px solid #eef2ec;counter-reset:we}
+  .we-l li{counter-increment:we;position:relative;padding:9px 0 9px 32px;font-size:14.5px;line-height:1.5;color:#33413a}
+  .we-l li::before{content:counter(we);position:absolute;left:0;top:9px;width:20px;height:20px;border-radius:50%;background:#f1f6f1;color:#0a7a52;font-family:ui-monospace,Menlo,monospace;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center}
+  @media (max-width:860px){ .we{grid-template-columns:1fr} .we-d{min-height:0} }
+
+  .al{margin-top:clamp(44px,5vw,68px)}
+  .al-n{display:grid;grid-template-columns:minmax(0,1.6fr) 200px 200px;gap:clamp(14px,2.4vw,30px);padding-bottom:11px;border-bottom:1px solid #dde7db}
+  .al-n span{font-family:ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:#a3ada4}
+  .al-r{display:grid;grid-template-columns:minmax(0,1.6fr) 200px 200px;gap:clamp(14px,2.4vw,30px);align-items:baseline;padding:clamp(16px,2vw,22px) 0;border-bottom:1px solid #e7ece4}
+  .al-r.my{background:#ffffff;border-radius:14px;padding-left:clamp(14px,1.8vw,20px);padding-right:clamp(14px,1.8vw,20px);margin:0 calc(-1 * clamp(14px,1.8vw,20px));border-bottom-color:transparent}
+  .al-t{margin:0;font-size:clamp(16.5px,1.9vw,19px);font-weight:750;letter-spacing:-0.015em;color:#16211a}
+  .al-r.my .al-t{color:#0a5c3c}
+  .al-d{margin:6px 0 0;max-width:58ch;font-size:14px;line-height:1.55;color:#7c877e;text-wrap:pretty}
+  .al-v{font-size:14.5px;line-height:1.45;color:#33413a}
+  .al-r.my .al-v{font-weight:650;color:#16211a}
+  @media (max-width:920px){
+    .al-n{display:none}
+    .al-r{grid-template-columns:1fr;gap:5px}
+    .al-v::before{content:attr(data-l) ': ';color:#a3ada4}
+  }
+  .rz{display:flex;align-items:baseline;flex-wrap:wrap;gap:8px 18px;margin-top:clamp(26px,3vw,36px);padding-top:clamp(20px,2.4vw,26px);border-top:1px solid #dbe4da}
+  .rz-n{flex-shrink:0;font-family:ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:0.13em;text-transform:uppercase;color:#a3ada4}
+  .rz-t{margin:0;max-width:74ch;font-size:15px;line-height:1.6;color:#4c5850;text-wrap:pretty}
+  .rz-t b{font-weight:700;color:#16211a}
 </style>
 
-<!-- ============ 1 · HERO ============ -->
-<section style="position:relative;overflow:hidden;background:radial-gradient(880px 520px at 86% -6%, rgba(0,205,119,0.12), transparent 62%), #ffffff;padding:clamp(28px,4vw,52px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) clamp(56px,7vw,88px)">
-<div style="display:flex;align-items:center;gap:8px;font-size:13.5px;color:#8b968d">
-<a href="/guided-coding" class="lnk-green" style="color:#0a7a52;font-weight:650">Guided Coding</a>
-<span aria-hidden="true">/</span>
-<span>Dla zespołów</span>
-</div>
-<div class="hero-split" style="display:grid;grid-template-columns:1fr 540px;gap:clamp(40px,5vw,72px);align-items:center;margin-top:clamp(24px,3vw,36px)">
+<!-- =====================================================================
+     1 · HERO — ile kodu powstaje z agentem
+     Jedno porównanie: typowy zespół, który ma narzędzia i nie ma
+     spisanych zasad, obok zespołu pracującego w WiseStacku. Łuki
+     dorysowują się po kolei, więc różnicę widać jako ruch.
+     ===================================================================== -->
+<section style="position:relative;overflow:hidden;background:transparent;padding:clamp(28px,4vw,50px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) clamp(52px,6.5vw,84px)">
+<div class="hero-split">
 <div>
-<div class="eyebrow" style="color:#0a7a52;font-weight:650">Diagnostic sprint dla zespołów inżynieryjnych</div>
-<h1 style="margin:18px 0 0;font-size:clamp(30px,4.6vw,52px);line-height:1.06;letter-spacing:-0.033em;font-weight:800;color:#16211a;text-wrap:balance">Płacicie za AI dla całego zespołu. Ile z tego realnie wyciągacie?</h1>
-<p style="margin:24px 0 0;max-width:600px;font-size:clamp(16px,2.1vw,19px);line-height:1.6;color:#33413a;text-wrap:pretty">Narzędzia dowożą prędkość pisania — to akurat działa. Ale między napisanym kodem a działającą funkcją u klienta jest droga, której nikt nie przyspieszył. Mierzymy, ile prędkości zostaje po drodze, i pokazujemy, co robią zespoły, u których zostaje mniej.</p>
-<div class="hero-actions" style="display:flex;align-items:center;flex-wrap:wrap;gap:16px 22px;margin-top:32px">
-<a href="#kontakt" class="btn-dark" style="display:inline-flex;align-items:center;gap:10px;background:#16211a;color:#ffffff;padding:18px 32px;border-radius:12px;font-weight:650;font-size:16.5px;box-shadow:0 14px 30px -14px rgba(16,33,26,0.45)">Umów diagnostic sprint <span aria-hidden="true">→</span></a>
-<a href="#gdzie-ucieka" class="btn-ghost" style="display:inline-flex;align-items:center;gap:8px;font-size:16.5px;font-weight:700;color:#16211a;background:rgba(255,255,255,0.6);padding:18px 26px;border-radius:12px;border:1px solid rgba(22,33,26,0.16)">Gdzie ucieka prędkość →</a>
-</div>
-<div style="display:flex;flex-wrap:wrap;gap:10px 22px;margin-top:26px;font-size:14px;color:#7c877e">
-<span style="display:inline-flex;align-items:center;gap:7px"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#0a7a52" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>2 tygodnie</span>
-<span style="display:inline-flex;align-items:center;gap:7px"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#0a7a52" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>mierzymy przepływ, nie ludzi</span>
-<span style="display:inline-flex;align-items:center;gap:7px"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#0a7a52" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>baseline do porównania za kwartał</span>
+<span class="oko-hero">Guided coding dla zespołów technicznych</span>
+<h1 style="margin:18px 0 0;font-size:clamp(30px,4.6vw,52px);line-height:1.05;letter-spacing:-0.034em;font-weight:800;color:#16211a;text-wrap:balance">AI robi u Ciebie ułamek tego, co już potrafi</h1>
+<p style="margin:22px 0 0;max-width:520px;font-size:clamp(16px,2vw,18.5px);line-height:1.6;color:#33413a;text-wrap:pretty">Nie dlatego, że zespół czegoś nie umie. Pierwsze podejście wraca do przeróbki, więc kawałki oddawane agentowi robią się coraz mniejsze. Przenosimy do Twojego repozytorium sposób pracy, którym sami budujemy, i prowadzimy zespół, aż to się odwróci.</p>
+<div style="display:flex;align-items:center;flex-wrap:wrap;gap:14px 20px;margin-top:clamp(26px,3.2vw,36px)">
+<a href="#kontakt" class="btn-dark" style="display:inline-flex;align-items:center;gap:10px;background:#16211a;color:#ffffff;padding:17px 30px;border-radius:12px;font-weight:650;font-size:16px;box-shadow:0 14px 30px -14px rgba(16,33,26,0.45)">Umów bezpłatną diagnozę <span aria-hidden="true">→</span></a>
+<a href="#czym-jest" class="btn-ghost" style="display:inline-flex;align-items:center;gap:8px;font-size:16px;font-weight:700;color:#16211a;background:rgba(255,255,255,0.6);padding:17px 24px;border-radius:12px;border:1px solid rgba(22,33,26,0.16)">Czym to jest <span aria-hidden="true">↓</span></a>
 </div>
 </div>
 
-<div style="background:#0e2b1d;background-image:radial-gradient(600px 340px at 100% 0%, rgba(0,205,119,0.16), transparent 60%);border-radius:20px;padding:clamp(24px,3vw,32px);box-shadow:0 34px 74px -40px rgba(18,38,28,0.55)">
-<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px">
-<div><div style="font-size:15.5px;font-weight:750;color:#ffffff">Baseline metryk przepływu</div><div style="margin-top:2px;font-size:12px;color:rgba(255,255,255,0.55)">tak wygląda wyjście z diagnostic sprintu</div></div>
-<span style="flex-shrink:0;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.28);color:#ffffff;font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.1em;font-weight:650;padding:5px 10px;border-radius:7px">PRZYKŁAD</span>
+<div>
+<div class="ko" role="img" aria-label={`Udział kodu powstającego z agentem: ${KOLA.map((k) => `${k.t} — ${k.v} procent`).join('; ')}.`}>
+<div class="ko-r">
+<svg viewBox="0 0 240 240" aria-hidden="true">
+<defs><linearGradient id="ko-akcent" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#00CD77" /><stop offset="1" stop-color="#0a7a52" /></linearGradient></defs>
+{KOLA.map((k) => <circle class="ko-tlo" cx="120" cy="120" r={k.r} stroke-width="14" />)}
+{KOLA.map((k, i) => (
+  <circle
+    class={k.my ? 'ko-l my' : 'ko-l zwykly'} cx="120" cy="120" r={k.r} stroke-width="14"
+    style={`stroke-dasharray:${obwod(k.r)};stroke-dashoffset:${luk(k.r, k.v)};animation:ko-luk${i} ${KO.c}s cubic-bezier(.35,0,.2,1) infinite`} />
+))}
+</svg>
 </div>
-
-<!-- Rozjazd w jednym spojrzeniu: to jest teza całej strony -->
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px">
-<div style="background:rgba(0,205,119,0.12);border:1px solid rgba(0,205,119,0.3);border-radius:12px;padding:14px 16px">
-<div style="font-family:ui-monospace,Menlo,monospace;font-size:9.5px;letter-spacing:0.11em;color:rgba(255,255,255,0.55)">TEMPO GENEROWANIA</div>
-<div style="margin-top:7px;font-size:24px;font-weight:800;letter-spacing:-0.02em;color:var(--la-accent,#00CD77)">↑ 3,1×</div>
-<div style="margin-top:2px;font-size:11px;color:rgba(255,255,255,0.6)">rok do roku</div>
+<div class="ko-leg">
+{KOLA.map((k, i) => (
+  <div class={k.my ? 'ko-i my' : 'ko-i zwykly'}>
+    <b style={`animation:ko-licz${i} ${KO.c}s cubic-bezier(.2,.7,.3,1) infinite`}>{k.v}%</b>
+    <span class="ko-t">{k.t}</span>
+    <span class="ko-o">{k.o}</span>
+  </div>
+))}
 </div>
-<div style="background:rgba(216,120,94,0.12);border:1px solid rgba(216,120,94,0.3);border-radius:12px;padding:14px 16px">
-<div style="font-family:ui-monospace,Menlo,monospace;font-size:9.5px;letter-spacing:0.11em;color:rgba(255,255,255,0.55)">TEMPO DOWOŻENIA</div>
-<div style="margin-top:7px;font-size:24px;font-weight:800;letter-spacing:-0.02em;color:#f0a68e">bez zmian</div>
-<div style="margin-top:2px;font-size:11px;color:rgba(255,255,255,0.6)">rok do roku</div>
+<style is:inline set:html={klatkiKol}></style>
 </div>
-</div>
-
-<table class="mtr" style="margin-top:20px">
-<thead><tr><th>Metryka</th><th style="text-align:right">Teraz</th><th style="text-align:right">Próg DORA</th><th style="text-align:right">Luka</th></tr></thead>
-<tbody>
-<tr><td>Lead time: commit → produkcja</td><td class="num" style="text-align:right">9 dni</td><td class="goal" style="text-align:right">&lt;1 dzień</td><td style="text-align:right"><span class="gap gap-hi">wysoka</span></td></tr>
-<tr><td>Mediana czasu w review</td><td class="num" style="text-align:right">19 h</td><td class="goal" style="text-align:right">&lt;4 h</td><td style="text-align:right"><span class="gap gap-hi">wysoka</span></td></tr>
-<tr><td>Zmiany wymagające poprawki po review</td><td class="num" style="text-align:right">34%</td><td class="goal" style="text-align:right">&lt;15%*</td><td style="text-align:right"><span class="gap gap-hi">wysoka</span></td></tr>
-<tr><td>Change failure rate</td><td class="num" style="text-align:right">21%</td><td class="goal" style="text-align:right">&lt;15%</td><td style="text-align:right"><span class="gap gap-md">średnia</span></td></tr>
-<tr><td>Spisana definicja gotowości</td><td class="num" style="text-align:right">brak</td><td class="goal" style="text-align:right">jedna, wspólna*</td><td style="text-align:right"><span class="gap gap-hi">wysoka</span></td></tr>
-</tbody>
-</table>
-<div style="margin-top:18px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.1);font-size:12.5px;line-height:1.55;color:rgba(255,255,255,0.6)">Metryki zagregowane po zespole, <strong style="color:#ffffff;font-weight:650">bez rozbicia na osoby</strong>.<br>Progi wg raportu DORA [rok — do uzupełnienia]. <span style="color:rgba(255,255,255,0.5)">* pozycje bez odpowiednika w DORA — nasza własna ocena.</span></div>
 </div>
 </div>
 </section>
 
-<!-- ============ 2 · GDZIE UCIEKA PRĘDKOŚĆ ============ -->
-<section id="gdzie-ucieka" class="lanes" style="background:#f4f8f2;padding:clamp(72px,9vw,110px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
-<div class="sec-head">
-<h2 class="h-sec" style="margin:0;max-width:600px;text-wrap:pretty">Ile prędkości zostaje na każdym etapie</h2>
-<p class="sub" style="margin:0 0 6px;max-width:450px">Wina nie leży po stronie ludzi ani narzędzi. Leży w procesie, którego nikt nie zaktualizował, kiedy zmieniło się tempo.</p>
+<!-- ============ 1b · PAS DOWODU ============ -->
+<div class="tr">
+<span class="tr-n"><strong>140+ firm</strong> zmienia z nami sposób działania</span>
+<div class="tr-o">
+<div class="tr-t">
+{LOGA.map(([u, a]) => <img src={CDN + u} alt={a}>)}
+{[0, 1, 2].map(() => LOGA.map(([u]) => <img aria-hidden="true" src={CDN + u} alt="">))}
+</div>
+</div>
 </div>
 
-<!-- Wykres: ile z tempa pisania faktycznie przechodzi przez kolejne etapy -->
-<div class="pipe">
-<div class="pipe-ref"><span>TEMPO PISANIA KODU</span></div>
-<div class="pipe-col"><div class="pipe-bar" style="--h:100%;background:linear-gradient(180deg,#00CD77,#0a7a52)"></div></div>
-<div class="pipe-col"><div class="pipe-bar" style="--h:34%;background:#dfa62a"></div></div>
-<div class="pipe-col"><div class="pipe-bar" style="--h:29%;background:#dfa62a"></div></div>
-<div class="pipe-col"><div class="pipe-bar" style="--h:26%;background:#c8503a"></div></div>
+<!-- =====================================================================
+     2 · PĘTLA POPRAWEK — dlaczego udział AI nie rośnie
+     Cztery obroty tej samej pętli, kolumna po prawej maleje z wiersza
+     na wiersz. Teza strony stoi na końcu, w dużym stopniu pisma.
+     ===================================================================== -->
+<section id="petla" class="b-sec">
+<div class="b-head">
+<div>
+<h2 class="b-h" style="max-width:26ch">Jak z całej warstwy robi się poprawka w gotowym kodzie</h2>
 </div>
-<div class="pipe-lab">
-<div><div style="font-size:14.5px;font-weight:750;color:#16211a">Pisanie</div><div style="margin-top:3px;font-size:12.5px;color:#7c877e">z agentami · ↑ 3,1×</div></div>
-<div><div style="font-size:14.5px;font-weight:750;color:#16211a">Review</div><div style="margin-top:3px;font-size:12.5px;color:#7c877e">bez zmian</div></div>
-<div><div style="font-size:14.5px;font-weight:750;color:#16211a">Testy</div><div style="margin-top:3px;font-size:12.5px;color:#7c877e">bez zmian</div></div>
-<div><div style="font-size:14.5px;font-weight:750;color:#16211a">Wydanie</div><div style="margin-top:3px;font-size:12.5px;color:#7c877e">bez zmian</div></div>
+<p class="b-p" style="margin:0 0 6px;max-width:400px">Cztery obroty tej samej pętli. Żaden nie jest decyzją podjętą na spotkaniu — każdy zapada po kolejnej przeróbce, w głowie jednej osoby.</p>
 </div>
-<p style="margin:22px 0 0;max-width:720px;font-size:14.5px;line-height:1.6;color:#7c877e;text-wrap:pretty">Wykres przykładowy. U Was policzymy prawdziwy — na historii PR-ów, a nie na deklaracjach.</p>
 
-<div class="grid2" style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:clamp(40px,5vw,56px)">
-{gardla.map((g) => (
-  <div class="lift rv" style="background:#ffffff;border:1px solid #e4ebe2;border-radius:18px;padding:30px 28px">
-    <div style="font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:700;color:#0a7a52">{g.n}</div>
-    <div style="margin-top:14px;font-size:20px;font-weight:750;line-height:1.28;letter-spacing:-0.012em;color:#16211a">{g.t}</div>
-    <p style="margin:10px 0 0;font-size:14.5px;line-height:1.6;color:#4c5850;text-wrap:pretty">{g.d}</p>
+<div class="pt">
+<span class="pt-w" aria-hidden="true"><span>pętla</span></span>
+<div class="pt-n"><span>co trafia do agenta</span></div>
+{PETLA.map((x, i) => (
+  <div class="pt-r rv">
+    <i class="pt-i">{String(i + 1).padStart(2, '0')}</i>
+    <div>
+      <h3 class="pt-t">{x.t}</h3>
+      <p class="pt-d">{x.d}</p>
+    </div>
+    <span class="pt-k">{x.k}</span>
+  </div>
+))}
+</div>
+
+<p class="pt-z rv">Nikt nie odda agentowi większego kawałka roboty, dopóki po każdym trzeba poprawiać.</p>
+<p class="pt-p rv">Agent poprawia się dokładnie o tyle, o ile więcej wie o Twoim systemie. To, czego nikt nie zapisał, znika razem z sesją i wraca jako ta sama poprawka w przyszłym tygodniu.</p>
+</section>
+
+<!-- =====================================================================
+     3 · STARY SPOSÓB PLANOWANIA I ODBIORU PRACY
+     Druga połowa problemu. Nawet zespół, który dobrze pisze prompty,
+     dowozi tyle, na ile pozwala mu sposób planowania i rozliczania pracy.
+     ===================================================================== -->
+<section id="rozliczenie" class="b-sec b-zielona">
+<h2 class="b-h" style="max-width:26ch">Sposób planowania pracy został z czasów, kiedy kod pisała ręka</h2>
+<p class="b-p">Pięć rzeczy, które w zespole z agentami działają jak sufit. Wszystkie były rozsądne, kiedy je ustalano.</p>
+
+<div class="sp">
+<div class="sp-n"><span>jak dziś planujecie i rozliczacie pracę</span><span>co to ustawia jako sufit</span></div>
+{STARY.map((x) => (
+  <div class="sp-r rv">
+    <h3 class="sp-a">{x.a}</h3>
+    <p class="sp-b">{x.b}</p>
+  </div>
+))}
+</div>
+
+<div class="sp-k rv">
+<h3>Co z tym robimy</h3>
+<p>Przestawiamy to razem z zespołem, na Twoich zadaniach: format opisu, z którego agent robi całość za pierwszym podejściem, i definicja gotowości, którą da się sprawdzić maszynowo. Zadania przestają być wtedy cięte na porcje wielkości człowieka, a estymata mierzy czas opisania zadania zamiast czasu pisania kodu.</p>
+</div>
+</section>
+
+<!-- ============ 4 · CZYM TO JEST ============ -->
+<section id="czym-jest" class="b-sec">
+<div class="b-head">
+<div>
+<h2 class="b-h" style="max-width:20ch">Przenosimy do Twojego zespołu sposób, w jaki sami budujemy z AI</h2>
+</div>
+<p class="b-p" style="margin:0 0 6px;max-width:400px">Guided coding dla zespołu technicznego to stała współpraca, w której nasz sposób pracy z AI ląduje w Twoim repozytorium jako pliki, a zespół wchodzi w niego przy prawdziwych zadaniach. Klawiatury nikomu nie zabieramy.</p>
+</div>
+
+<div class="kr">
+{KROKI.map((k) => (
+  <div class="kr-k rv">
+    <span class="kr-n">{k.n}</span>
+    <h3 class="kr-t">{k.t}</h3>
+    <p class="kr-d">{k.d}</p>
+  </div>
+))}
+</div>
+
+<div class="kd rv">
+<b>W stałym rytmie</b>
+<div>{KADENCJA.map((x) => <span><i>{x.k}</i>{x.t}</span>)}</div>
+</div>
+</section>
+
+<!-- =====================================================================
+     5 · WISESTACK W TWOIM REPOZYTORIUM — ciemny pas, pada raz
+     Najcięższy argument strony: know-how przychodzi gotowe i zostaje
+     jako rzecz, nie jako prezentacja. Dlatego jest pokazane jako drzewo
+     plików, a nie opisane zdaniem.
+     ===================================================================== -->
+<section id="wisestack" class="rp-sec">
+<div class="rp-g">
+<div>
+<h2 class="rp-h">Dwanaście decyzji, których nie musisz podejmować drugi raz</h2>
+<p class="rp-p">Nazywa się <strong>WiseStack</strong>. To sposób, w jaki sami budujemy oprogramowanie z AI — rozwijany od ponad dwustu wdrożeń. U Ciebie ląduje jako pliki w repozytorium, dopisane do Twojej domeny i Twoich granic modułów.</p>
+<p class="rp-u">Plik z regułami ściągnięty z internetu nie zmniejsza liczby poprawek, bo nie zna Twoich nazw ani tego, czego u Ciebie nie wolno ruszać. Dlatego pierwszy miesiąc idzie w dużej części na spisanie tego, co zespół ma w głowach.</p>
+<a href="/wisestack" class="rp-a">Zobacz, z czego składa się WiseStack <span aria-hidden="true">→</span></a>
+</div>
+
+<div class="rp-w rv" role="img" aria-label={`Drzewo plików, które pojawia się w repozytorium klienta: ${REPO.map((x) => (x.k ? x.t : `${x.t} — ${x.d}`)).join('; ')}.`}>
+<div class="rp-b">
+<i aria-hidden="true"></i><i aria-hidden="true"></i><i aria-hidden="true"></i>
+<em>twoje-repozytorium</em>
+</div>
+<div class="rp-l">
+{REPO.map((x) => [
+  <b class={x.k ? 'kat' : 'plik'}>{x.t}</b>,
+  <span>{x.d || ''}</span>,
+])}
+</div>
+</div>
+</div>
+</section>
+
+<!-- ============ 6 · GŁOS KLIENTA ============ -->
+<section class="b-sec" style="padding-top:clamp(52px,6.5vw,84px);padding-bottom:clamp(52px,6.5vw,84px)">
+<figure class="rv" style="margin:0;display:grid;grid-template-columns:auto 1fr;gap:clamp(20px,3vw,40px);align-items:start">
+<span aria-hidden="true" style="font-size:clamp(46px,5vw,64px);line-height:.72;font-weight:800;color:var(--la-accent,#00CD77)">„</span>
+<div>
+<blockquote style="margin:0;font-size:clamp(21px,3vw,36px);line-height:1.3;letter-spacing:-0.025em;font-weight:650;color:#16211a;text-wrap:balance">Let’s automate wziął pełną odpowiedzialność za projekt i dowiózł go do końca. To dlatego powierzyliśmy im kolejny, znacznie większy.</blockquote>
+<figcaption><span style="display:block;margin-top:clamp(16px,2vw,22px);font-size:15px;font-weight:750;color:#16211a">Jakub Ciołkowski</span><span style="display:block;margin-top:2px;font-size:14px;color:#8b968d">Członek Zarządu, NARS Polska</span></figcaption>
+</div>
+</figure>
+</section>
+
+<!-- =====================================================================
+     7 · CZTERY LICZBY, PRZED I PO
+     Pierwsza i druga to miara całej strony. Sufit przy pierwszej stoi
+     w tekście pod rysunkiem, bo bez niego wykres czyta się jak materiał
+     sprzedażowy.
+     ===================================================================== -->
+<section id="efekt" class="b-sec b-zielona">
+<div class="b-head">
+<div>
+<h2 class="b-h">Cztery liczby, które przechodzimy co miesiąc</h2>
+</div>
+<p class="b-p" style="margin:0 0 6px;max-width:400px">Stan wyjściowy mierzymy, zanim cokolwiek ustawimy. Sposób liczenia jest jawny i nie zmienia się między miesiącami.</p>
+</div>
+
+<div class="ef rv">
+{EFEKT.map((m, i) => {
+  const max = Math.max(m.p, m.po);
+  return (
+    <div class="ef-k">
+      <h3 class="ef-t">{m.t}<span class="ef-o">{m.o}</span></h3>
+      <div role="img" aria-label={`${m.t}: przed ${m.pT}, po ${m.poT}.`}>
+        <div class="ef-r"><b>przed</b><span class="ef-s" style={`--w:${((m.p / max) * 74).toFixed(1)}%;--d:${(i * 0.09).toFixed(2)}s`}><i></i><em>{m.pT}</em></span></div>
+        <div class="ef-r po"><b>po</b><span class="ef-s" style={`--w:${((m.po / max) * 74).toFixed(1)}%;--d:${(i * 0.09 + 0.12).toFixed(2)}s`}><i></i><em>{m.poT}</em></span></div>
+      </div>
+    </div>
+  );
+})}
+</div>
+<p class="ef-w"><strong>Druga liczba ciągnie pierwszą.</strong> Udział zadań oddawanych agentowi rośnie sam, kiedy pierwsze podejście przestaje wracać — i zatrzymuje się w okolicach czterech na pięć. Reszta zostaje przy człowieku: decyzje, których opisanie zajęłoby więcej niż zrobienie ich ręcznie.</p>
+</section>
+
+<!-- =====================================================================
+     8 · DOWÓD — jak to poszło u nas
+     Sekcja o nas, nie o kliencie. Krzywa kończy się tam, gdzie stoi
+     prawe koło w hero, więc obie liczby opisują to samo wdrożenie.
+     ===================================================================== -->
+<section id="u-nas" class="b-sec">
+<h2 class="b-h">Zaczęliśmy od pięciu procent</h2>
+
+<div class="na">
+<div class="na-w rv" role="img" aria-label={`Udział kodu powstającego z agentem w naszych projektach: ${NASZ.map((x) => `${x.e} — ${x.v} procent`).join(', ')}.`}>
+<div class="na-pl">
+<svg viewBox={`0 0 ${NA_W} ${NA_H}`} preserveAspectRatio="none" aria-hidden="true">
+<polygon class="na-pole" points={NA_POLE} />
+<polyline class="na-linia" points={NA_LINIA} />
+</svg>
+{NASZ.map((x, i) => (
+  <span
+    class={`na-p${i === 0 ? ' pierwszy' : ''}${i === NASZ.length - 1 ? ' ostatni' : ''}`}
+    style={`--x:${((i / (NASZ.length - 1)) * 100).toFixed(2)}%;--y:${x.v}%`}
+    aria-hidden="true"><em>{x.v}%</em></span>
+))}
+</div>
+<div class="na-e" aria-hidden="true">
+{NASZ.map((x, i) => (
+  <span
+    class={i === 0 ? 'pierwszy' : i === NASZ.length - 1 ? 'ostatni' : ''}
+    style={`--x:${((i / (NASZ.length - 1)) * 100).toFixed(2)}%`}>{x.e}</span>
+))}
+</div>
+</div>
+<p class="na-pod">Udział kodu, który powstaje z agentem, w projektach prowadzonych na naszym stosie. Ostatni kwartał to sto procent, a przy każdej decyzji stoi człowiek.</p>
+</div>
+
+<div class="na-l">
+{NASZ_LICZBY.map((x) => (
+  <div class="rv">
+    <b>{x.v}</b>
+    <span>{x.t}</span>
   </div>
 ))}
 </div>
 </section>
 
-<!-- ============ 3 · DIAGNOSTIC SPRINT ============ -->
-<section id="zakres" class="sec-pad">
-<div class="sec-head">
-<h2 class="h-sec" style="margin:0;max-width:560px;text-wrap:pretty">Diagnostic sprint — dwa tygodnie i mierzalne wyjście</h2>
-<p class="sub" style="margin:0 0 6px;max-width:450px">Patrzymy na to, co zostawiają po sobie dane, a nie na to, co jest napisane w politykach. Poniżej dokładny zakres.</p>
+<!-- =====================================================================
+     9 · KTO PO NASZEJ STRONIE
+     Krótko i bez rozszerzeń składu. Zespół inżynierski ma własnego
+     architekta i własny platform engineering — dokładanie ich tutaj
+     było ofertą przeniesioną z drzwi A i nie pasowało do tych drzwi.
+     ===================================================================== -->
+<section id="sklad" class="b-sec b-zielona">
+<div class="b-head">
+<div>
+<h2 class="b-h" style="max-width:24ch">Prowadzi inżynier, który sam tak buduje</h2>
 </div>
-<div style="margin-top:48px">
-{zakres.map((z) => (
-  <div class="zak-row rv">
-    <div style="font-size:clamp(18px,2vw,21px);font-weight:750;letter-spacing:-0.012em;color:#16211a">{z.t}</div>
-    <p style="margin:0;max-width:760px;font-size:15px;line-height:1.62;color:#4c5850;text-wrap:pretty">{z.d}</p>
+<p class="b-p" style="margin:0 0 6px;max-width:400px">Nie doradca od AI. Ktoś, kto w tym tygodniu wypuścił coś na produkcję w tym samym stosie.</p>
+</div>
+<div class="os-s rv">
+<div class="os-i">
+<span class="os-a">{PROWADZACY.map((o) => <TeamAvatar person={o} size={44} ring="#f4f8f2" />)}</span>
+<span><b class="os-t">Ten sam człowiek przez całą współpracę</b><span class="os-d">Prowadzi cotygodniowe sesje i pisze reguły razem z Twoim zespołem. Zna Twoją domenę po pierwszym miesiącu.</span></span>
+</div>
+<div class="os-i">
+<span class="os-a">{KANAL.map((o) => <TeamAvatar person={o} size={44} ring="#f4f8f2" />)}</span>
+<span><b class="os-t">Kanał do reszty zespołu</b><span class="os-d">Zadanie, które agentowi nie wyszło, trafia tam, gdzie siedzą wszyscy pracujący w WiseStacku. Odpowiedź tego samego dnia roboczego.</span></span>
+</div>
+</div>
+</section>
+
+<!-- =====================================================================
+     10 · GRANICA — sekcja, która niczego nie sprzedaje
+     Trzy rzeczy, których nie robimy, i jeden powód, dla którego czasem
+     odradzamy start. Pada raz na stronie.
+     ===================================================================== -->
+<section id="granica" class="b-sec">
+<h2 class="b-h" style="max-width:24ch">Czego w tej współpracy nie robimy</h2>
+
+<div class="gr">
+<div>
+{GRANICA.map((x) => (
+  <div class="gr-r rv">
+    <i aria-hidden="true"></i>
+    <div>
+      <h3 class="gr-t">{x.t}</h3>
+      <p class="gr-d">{x.d}</p>
+    </div>
   </div>
 ))}
 </div>
-<div class="rv" style="display:flex;flex-wrap:wrap;align-items:center;gap:16px 28px;margin-top:28px;padding:22px clamp(22px,3vw,30px);background:#f4f8f2;border:1px solid #e4ebe2;border-radius:16px">
-<span style="font-size:15px;line-height:1.6;color:#4c5850;flex:1;min-width:280px;text-wrap:pretty">Dostęp read-only do repozytoriów i CI wystarcza. Nie potrzebujemy środowisk produkcyjnych ani danych klientów.</span>
-<a href="#kontakt" class="lnk-green" style="font-size:15px;font-weight:700;color:#0a7a52;white-space:nowrap">Zapytaj o szczegóły dostępu →</a>
-</div>
-</section>
 
-<!-- ============ 4 · CO DOSTAJESZ ============ -->
-<!-- Sedno: CTO nie kupi szkolenia. Kupi zmierzoną zmianę — baseline,
-     do którego można wrócić za kwartał i pokazać różnicę. -->
-<section id="wynik" style="background:#0e2b1d;background-image:radial-gradient(900px 520px at 12% -2%, rgba(0,205,119,0.14), transparent 60%);padding:clamp(72px,10vw,120px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
-<div class="sec-head">
-<h2 class="h-sec" style="margin:0;max-width:560px;color:#ffffff;text-wrap:pretty">Cztery rzeczy na wyjściu, z czego jedna niesie resztę</h2>
-<p style="margin:0 0 6px;max-width:450px;font-size:17px;line-height:1.6;color:rgba(255,255,255,0.72);text-wrap:pretty">Bez stanu wyjściowego każda zmiana procesu jest kwestią wiary. Z baseline’em jest kwestią pomiaru — i da się ją pokazać zarządowi w liczbach, których nie trzeba tłumaczyć.</p>
-</div>
-<div class="grid2" style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:clamp(40px,5vw,56px)">
-<div class="rv" style="grid-column:span 2;background:rgba(0,205,119,0.09);border:1px solid rgba(0,205,119,0.34);border-radius:20px;padding:clamp(28px,3.4vw,38px)">
-<div style="display:flex;align-items:center;gap:11px">
-<span style="display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:9px;background:var(--la-accent,#00CD77);color:#0b1a11"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg></span>
-<span style="font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--la-accent,#00CD77)">Sedno</span>
-</div>
-<div style="margin-top:18px;font-size:clamp(21px,2.5vw,27px);font-weight:800;line-height:1.22;letter-spacing:-0.018em;color:#ffffff">Baseline metryk przepływu</div>
-<p style="margin:12px 0 0;max-width:800px;font-size:15.5px;line-height:1.62;color:rgba(255,255,255,0.78);text-wrap:pretty">Zmierzony na Waszych danych: <strong style="color:#ffffff;font-weight:700">lead time</strong> od commita do produkcji, <strong style="color:#ffffff;font-weight:700">czas w review</strong>, <strong style="color:#ffffff;font-weight:700">odsetek zmian wymagających poprawki</strong> i <strong style="color:#ffffff;font-weight:700">change failure rate</strong>. Ten sam pomiar powtarzamy po programie adopcji — i dopiero to jest dowód, że coś się zmieniło, a nie wrażenie, że chyba idzie sprawniej.</p>
-</div>
-<div class="rv" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.14);border-radius:18px;padding:28px 26px">
-<div style="font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.1em;color:rgba(255,255,255,0.45)">02</div>
-<div style="margin-top:14px;font-size:19px;font-weight:750;color:#ffffff">Gdzie dokładnie jest wąskie gardło</div>
-<p style="margin:10px 0 0;font-size:14.5px;line-height:1.6;color:rgba(255,255,255,0.7)">Etap po etapie, z czasem, jaki zmiana spędza w każdym z nich. Zwykle okazuje się, że nie tam, gdzie zespół zakładał.</p>
-</div>
-<div class="rv" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.14);border-radius:18px;padding:28px 26px">
-<div style="font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.1em;color:rgba(255,255,255,0.45)">03</div>
-<div style="margin-top:14px;font-size:19px;font-weight:750;color:#ffffff">Roadmapa</div>
-<p style="margin:10px 0 0;font-size:14.5px;line-height:1.6;color:rgba(255,255,255,0.7)">Kolejność zmian ułożona po stosunku odzyskanego czasu do kosztu wdrożenia, z rozdziałem na to, co robicie sami, i to, przy czym pomagamy.</p>
-</div>
-<div class="rv" style="grid-column:span 2;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.14);border-radius:18px;padding:28px 26px">
-<div style="font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.1em;color:rgba(255,255,255,0.45)">04</div>
-<div style="margin-top:14px;font-size:19px;font-weight:750;color:#ffffff">Porównanie z zespołami podobnej wielkości</div>
-<p style="margin:10px 0 0;max-width:800px;font-size:14.5px;line-height:1.6;color:rgba(255,255,255,0.7)">Gdzie na tle innych zespołów o zbliżonej skali wypadacie dobrze, a gdzie odstajecie — z podaniem, ile zespołów składa się na porównanie. Tam, gdzie próbka jest jeszcze za mała, mówimy to wprost zamiast dorabiać liczbę.</p>
+<div class="gr-b rv">
+<h3>Kiedy nie warto zaczynać</h3>
+<p>Jeśli po Twojej stronie nie ma nikogo z prawem decyzji o tym, jak planuje się i rozlicza pracę, reguły wylądują w repozytorium i nic się nie zmieni. Zespół dalej dostanie zadania wielkości dwóch dni człowieka, a agent dalej dostanie z nich kawałek.</p>
+<p>Pytamy o to na pierwszej rozmowie. Kiedy odpowiedź brzmi „na razie nikt", mówimy wprost, żeby wrócić do tego później.</p>
 </div>
 </div>
 </section>
 
-<!-- ============ 5 · CENA ============ -->
-<!-- UWAGA: widełki ze spec'u to hipoteza startowa, nie zbadana stawka.
-     Przed publikacją podmienić [25 000–45 000 zł] na potwierdzoną cenę katalogową. -->
-<section id="cena" class="sec-pad">
-<div class="price-grid" style="display:grid;grid-template-columns:1fr 380px;gap:clamp(32px,5vw,64px);align-items:center;background:#f4f8f2;border:1px solid #e4ebe2;border-radius:24px;padding:clamp(32px,4vw,52px)">
-<div>
-<div class="eyebrow" style="font-size:11px">Cena wejścia</div>
-<h2 class="h-mod" style="margin:14px 0 0;text-wrap:pretty">Diagnostic sprint</h2>
-<p class="sub" style="margin:14px 0 0;max-width:520px">Stała cena, opublikowana na stronie. Zakres jest zamknięty, więc nie ma miejsca na „wyszło więcej, niż zakładaliśmy”.</p>
-<div style="display:flex;flex-wrap:wrap;gap:10px 22px;margin-top:24px;font-size:14.5px;color:#4c5850">
-<span style="display:inline-flex;align-items:center;gap:8px"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#0a7a52" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>2 tygodnie</span>
-<span style="display:inline-flex;align-items:center;gap:8px"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#0a7a52" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>baseline + roadmapa + porównanie</span>
-<span style="display:inline-flex;align-items:center;gap:8px"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#0a7a52" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>NDA przed startem</span>
+<!-- ============ 11 · OD CZEGO ZACZYNASZ + WYBÓR + ROZLICZENIE ============ -->
+<section id="start" class="b-sec b-zielona">
+<h2 class="b-h">Każda współpraca zaczyna się od tej samej bezpłatnej diagnozy</h2>
+<p class="b-p">Trzydzieści minut rozmowy. Dalej idzie jedna z dwóch dróg, zależnie od tego, czy wiesz już, które zadania wracają.</p>
+
+<div class="we">
+{WEJSCIE.map((x) => (
+  <div class="we-k rv">
+    <span class="we-e">{x.e}</span>
+    <h3 class="we-t">{x.t}</h3>
+    <p class="we-d">{x.d}</p>
+    <ul class="we-l">{x.kroki.map((k) => <li>{k}</li>)}</ul>
+  </div>
+))}
 </div>
+
+<div class="al">
+<h3 class="b-h" style="font-size:clamp(24px,3.2vw,34px);max-width:520px">Co masz do wyboru</h3>
+<div class="al-n" style="margin-top:clamp(20px,2.4vw,28px)"><span>Droga</span><span>Kiedy działa</span><span>Odpowiedzialność</span></div>
+{ALTERNATYWY.map((x) => (
+  <div class={x.my ? 'al-r my rv' : 'al-r rv'}>
+    <div>
+      <h4 class="al-t">{x.t}</h4>
+      <p class="al-d">{x.d}</p>
+    </div>
+    <span class="al-v" data-l="Kiedy działa">{x.kiedy}</span>
+    <span class="al-v" data-l="Odpowiedzialność">{x.kto}</span>
+  </div>
+))}
 </div>
-<div style="background:#0e2b1d;border-radius:20px;padding:32px 30px;text-align:center">
-<div style="font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.5)">Stała cena</div>
-<div style="margin-top:12px;font-size:clamp(28px,3.2vw,36px);font-weight:800;letter-spacing:-0.02em;line-height:1.1;color:#ffffff">od [25 000] zł</div>
-<div style="margin-top:6px;font-size:12.5px;color:rgba(255,255,255,0.55)">netto · zależnie od liczby repozytoriów i zespołów</div>
-<a href="#kontakt" class="btn-accent" style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:22px;background:var(--la-accent,#00CD77);color:#0b1a11;padding:15px 24px;border-radius:11px;font-weight:750;font-size:15.5px">Umów diagnostic sprint →</a>
-<div style="margin-top:12px;font-size:12px;color:rgba(255,255,255,0.5)">Program adopcji wyceniamy dopiero po sprincie</div>
-</div>
+
+<div class="rz rv">
+<span class="rz-n">Rozliczenie</span>
+<p class="rz-t"><b>Abonament</b>, kiedy zespół ma pracować w tym sposobie na stałe, albo <b>projekt</b> z konkretnym zakresem i ceną, kiedy chodzi o przestawienie jednego modułu.</p>
 </div>
 </section>
-
-<!-- ============ 6 · PROGRAM ADOPCJI ============ -->
-<section id="adopcja" style="background:#f4f8f2;padding:clamp(72px,9vw,110px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
-<div class="split" style="display:grid;grid-template-columns:1fr 1fr;gap:clamp(40px,6vw,80px);align-items:start">
-<div>
-<div class="eyebrow" style="font-size:11px">Po sprincie · 6–10 tygodni</div>
-<h2 class="h-sec" style="margin:14px 0 0;text-wrap:pretty">Program adopcji: wychodzicie z własnym stackiem</h2>
-<p class="sub" style="margin:20px 0 0;max-width:520px">Nie z naszym frameworkiem, nie z licencją i nie z zależnością od nas. Ze spisanym sposobem pracy, który zostaje w Waszych repozytoriach i przeżywa rotację ludzi.</p>
-<div style="margin-top:28px;padding:22px 24px;background:#ffffff;border:1px solid #e4ebe2;border-radius:16px">
-<div class="eyebrow" style="font-size:11px">Na końcu ten sam pomiar co na starcie</div>
-<p style="margin:12px 0 0;font-size:15px;line-height:1.6;color:#4c5850;text-wrap:pretty">Powtarzamy baseline: ta sama metodyka, te same metryki, ta sama forma raportu. Różnica ma być <strong style="color:#16211a;font-weight:700">porównywalna, a nie opowiedziana</strong> — i to jest jedyny sposób, żeby po kwartale wiedzieć, czy program się zwrócił.</p>
-</div>
-</div>
-<div>
-<div class="eyebrow" style="font-size:11px">Co zostaje w repozytorium</div>
-<div style="margin-top:16px;display:flex;flex-direction:column">
-<div class="rv" style="display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:baseline;padding:18px 0;border-top:1px solid #e2e9e0">
-<span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:700;color:#0a7a52">01</span>
-<div><div style="font-size:17px;font-weight:750;color:#16211a">Standardy</div><p style="margin:6px 0 0;font-size:14.5px;line-height:1.58;color:#4c5850">Jeden sposób pracy z agentami, opisany w Waszym języku i Waszymi przykładami.</p></div>
-</div>
-<div class="rv" style="display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:baseline;padding:18px 0;border-top:1px solid #e2e9e0">
-<span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:700;color:#0a7a52">02</span>
-<div><div style="font-size:17px;font-weight:750;color:#16211a">Reguły agentów</div><p style="margin:6px 0 0;font-size:14.5px;line-height:1.58;color:#4c5850">Wersjonowane w repozytorium, wspólne między projektami, z jasnym trybem wprowadzania zmian.</p></div>
-</div>
-<div class="rv" style="display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:baseline;padding:18px 0;border-top:1px solid #e2e9e0">
-<span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:700;color:#0a7a52">03</span>
-<div><div style="font-size:17px;font-weight:750;color:#16211a">Bramki jakości</div><p style="margin:6px 0 0;font-size:14.5px;line-height:1.58;color:#4c5850">To, co realnie blokuje merge i deploy — skonfigurowane, nie opisane w dokumencie. Szybsze, nie cięższe.</p></div>
-</div>
-<div class="rv" style="display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:baseline;padding:18px 0;border-top:1px solid #e2e9e0;border-bottom:1px solid #e2e9e0">
-<span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:700;color:#0a7a52">04</span>
-<div><div style="font-size:17px;font-weight:750;color:#16211a">Definicja gotowości produkcyjnej</div><p style="margin:6px 0 0;font-size:14.5px;line-height:1.58;color:#4c5850">Jedno zdanie, pod którym podpisze się i zespół, i osoba odpowiadająca za zgodność.</p></div>
-</div>
-</div>
-</div>
-</div>
-</section>
-
-<!-- ============ 7 · WISESTACK ============ -->
-<!-- WERSJA STARTOWA. Docelowo w tym miejscu staje wykres benchmarkowy
-     (cztery pary słupków przed/po wdrożeniu WiseStacku, próg DORA jako linia
-     odniesienia) — wg guided-coding-sekcja-benchmark.md.
-     Warunek: przeliczyć 4 metryki na własnych repozytoriach w oknach
-     6 mies. przed i 6 mies. po. Do tego czasu NIE publikować wykresu
-     z liczbami szacunkowymi: na stronie sprzedającej dyscyplinę pomiaru
-     niezmierzona liczba jest samozaprzeczeniem oferty. -->
-<section id="wisestack" class="sec-pad">
-<div class="split" style="display:grid;grid-template-columns:1fr 1fr;gap:clamp(40px,6vw,80px);align-items:center">
-<div>
-<div class="eyebrow" style="font-size:11px">Dowód</div>
-<h2 class="h-sec" style="margin:14px 0 0;text-wrap:pretty">Te same standardy stosujemy u siebie</h2>
-<p class="sub" style="margin:20px 0 0;max-width:520px">Nasza implementacja tej metodyki nazywa się <strong style="color:#16211a;font-weight:750">WiseStack</strong> i rozwijamy ją od ponad 200 wdrożeń. Nie sprzedajemy praktyki, której sami nie stosujemy — i nie mamy zamiaru instalować Wam jej kopii.</p>
-<p class="sub" style="margin:14px 0 0;max-width:520px">U Was będzie wyglądać inaczej: inne repozytoria, inny stos technologiczny, inna definicja gotowości. Od tego jesteśmy.</p>
-<a href="/#dlaczego-my" class="lnk-green" style="display:inline-block;margin-top:20px;font-size:16px;font-weight:700;color:#0a7a52">Zobacz WiseStack →</a>
-
-<div style="margin-top:clamp(26px,3vw,34px);border:1px solid #e4ebe2;border-radius:18px;padding:clamp(24px,3vw,30px);background:#f4f8f2">
-<div class="eyebrow" style="font-size:11px">Czego tu jeszcze nie ma</div>
-<p style="margin:12px 0 0;font-size:15px;line-height:1.62;color:#4c5850;text-wrap:pretty">Wykresu z liczbami. Mierzymy u siebie te same cztery rzeczy, które mierzymy u Was — <strong style="color:#16211a;font-weight:700">lead time, change failure rate, rework rate i czas w review</strong> — w oknie sześciu miesięcy przed wdrożeniem WiseStacku i sześciu po. Kiedy okno się domknie, opublikujemy wyniki razem z metodyką liczenia. Do tego czasu nie ma tu wykresu.</p>
-</div>
-</div>
-<div style="background:#0e2b1d;border-radius:20px;padding:clamp(26px,3vw,34px);font-family:ui-monospace,Menlo,monospace">
-<div style="display:flex;align-items:center;gap:8px">
-<span style="width:9px;height:9px;border-radius:50%;background:#2f4a3b"></span><span style="width:9px;height:9px;border-radius:50%;background:#2f4a3b"></span><span style="width:9px;height:9px;border-radius:50%;background:#2f4a3b"></span>
-<span style="margin-left:8px;font-size:10.5px;letter-spacing:0.1em;color:rgba(255,255,255,0.4)">WISESTACK · SZYNY DLA MODELU</span>
-</div>
-<div style="margin-top:22px;display:flex;flex-direction:column;gap:14px;font-size:13px;line-height:1.5">
-<div><span style="color:var(--la-accent,#00CD77)">1 ·</span> <span style="color:rgba(255,255,255,0.9)">zakres i kryteria akceptacji</span><div style="margin-top:3px;color:rgba(255,255,255,0.45)">spisane, zanim model dostanie zadanie</div></div>
-<div><span style="color:var(--la-accent,#00CD77)">2 ·</span> <span style="color:rgba(255,255,255,0.9)">twarde ograniczenia</span><div style="margin-top:3px;color:rgba(255,255,255,0.45)">czego nie wolno ruszać, czego nie wolno dodać</div></div>
-<div><span style="color:var(--la-accent,#00CD77)">3 ·</span> <span style="color:rgba(255,255,255,0.9)">weryfikacja</span><div style="margin-top:3px;color:rgba(255,255,255,0.45)">testy i review, które faktycznie blokują</div></div>
-<div><span style="color:var(--la-accent,#00CD77)">4 ·</span> <span style="color:rgba(255,255,255,0.9)">bramka przed produkcją</span><div style="margin-top:3px;color:rgba(255,255,255,0.45)">jedna, wspólna, bez ścieżek na skróty</div></div>
-</div>
-<div style="margin-top:22px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.1);font-size:11.5px;line-height:1.55;color:rgba(255,255,255,0.55)">„Prowadzone” odnosi się do AI, nie do Was.</div>
-</div>
-</div>
-</section>
-
-<GcFaq
-  heading="Pytania, które zadaje CTO"
-  lead="Zaczynamy od tego, które pada najczęściej — i zwykle decyduje o całej reszcie rozmowy."
-  items={faq}
-/>
 
 <GcCta
-  heading="Zmierzmy, ile prędkości zostaje po drodze"
-  lead="Napiszcie, ile macie repozytoriów i zespołów. Odpowiemy zakresem sprintu i najbliższym wolnym terminem."
-  eyebrow="Ze sprintu wychodzicie z"
+  heading="Zobaczmy, ile z tego da się wycisnąć u Ciebie"
+  lead="Napisz w dwóch zdaniach, ilu masz inżynierów i co najczęściej wraca do przeróbki. Odezwiemy się z terminem — 30 minut, bez zobowiązań."
+  eyebrow="Z diagnozy wychodzisz z"
   items={[
-    { t: 'Baseline metryk przepływu', d: 'lead time, czas w review, poprawki, change failure rate' },
-    { t: 'Wąskie gardło i roadmapa', d: 'gdzie stoi zmiana i co przestawić najpierw' },
-    { t: 'Porównanie z innymi', d: 'jak wypadacie na tle zespołów podobnej wielkości' },
+    { t: 'Oceną, ile roboty da się dziś oddać agentom', d: 'na Twoim repozytorium i Twoich zadaniach' },
+    { t: 'Listą tego, czego brakuje w repozytorium', d: 'w kolejności, w jakiej ma sens dokładanie' },
+    { t: 'Zakresem pierwszego miesiąca', d: 'razem ze stawką' },
   ]}
-  teamField={true}
-  placeholder="Np. 11 repozytoriów, dwa zespoły produktowe, agenci używani od pół roku bez wspólnych reguł…"
-  submitLabel="Umów diagnostic sprint"
+  fieldLabel="Jak dziś pracujecie z AI?"
+  placeholder="Np. dwunastu inżynierów, Claude Code od pół roku, agent robi drobne zadania…"
+  submitLabel="Umów bezpłatną diagnozę"
+  badges={[
+    { i: 'klodka', t: 'Twoje dane bezpieczne' },
+    { i: 'kartka', t: 'NDA przed startem' },
+    { i: 'ptaszek', t: 'Kod zostaje Twój' },
+  ]}
 />
 
-<script>
-  // ---- Wykres przepustowości — słupki rosną, gdy sekcja wejdzie w kadr ----
-  (function(){
-    var sec = document.getElementById('gdzie-ucieka');
-    if(!sec) return;
-    function show(){ sec.classList.add('lanes-in'); }
-    if(!('IntersectionObserver' in window)){ show(); return; }
-    var io = new IntersectionObserver(function(entries){
-      entries.forEach(function(e){ if(e.isIntersecting){ show(); io.disconnect(); } });
-    }, { threshold: 0.3 });
-    io.observe(sec);
-  })();
-</script>
+<GcFaq
+  heading="Pytania, które słyszymy najczęściej"
+  lead={'Pierwsze pada na każdej rozmowie z zespołem inżynierskim, zwykle w pierwszych dziesięciu minutach.'}
+  items={faq}
+/>
 </LaBase>

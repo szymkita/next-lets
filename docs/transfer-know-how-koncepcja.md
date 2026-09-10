@@ -257,3 +257,40 @@ Sprawdzone przy okazji:
 Przegląd wszystkich podstron usługowych pod kątem zapychaczy i formuł
 powtarzanych między stronami. Co dokładnie zmienione i dlaczego:
 `docs/przeglad-tekstow-podstron.md`, sekcja D.
+
+---
+
+## Korekta układu 08.09.2026 — hero na dwie kolumny, agenda naprawiona
+
+Strona szła jako jedyna z trzech drzwi bez `hero-split`: nagłówek stał
+w bloku `max-width:900px`, a rysunek leżał pod nim na całą szerokość.
+Skutki, obejrzane na zrzutach przy 1440 i 1280 px:
+
+- **prawa połowa hero była pusta** — sam gradient, żadnej treści;
+- **wiersz listy rozciągał się na 1440 px**, więc między tytułem („klucz do
+  API w kodzie") a znacznikiem przy prawej krawędzi zostawało ponad tysiąc
+  pikseli pustki. Rysunek czytał się jak pusta kartka w linie, a nie jak
+  lista, która się przestawia.
+
+Zmienione:
+
+- hero na `hero-split` `1.04fr 1fr`, jak `/bez-zespolu-it` i `/dla-zespolow` —
+  tekst po lewej, lista po prawej. Mechanizm animacji bez zmian: czasy
+  liczą się z `RUCH`, pozycje z `--rh` i `--d`, więc węższa kolumna niczego
+  nie przelicza. Nota `.tk-pod` zeszła pod rysunek, do prawej kolumny.
+- `.tk-pod` bez `max-width:74ch` (kolumna sama trzyma miarę) i 14,5 px.
+
+W ciemnym pasie trzy osobne usterki:
+
+- **plakietka „wychodzi u każdego" doklejała się do ostatniego słowa
+  tytułu**, kiedy tytuł się łamał (wiersz 1 i 4 poniżej 1440 px), a przy
+  tytule jednowierszowym stawała pod nim. `.ag-t` jest teraz `display:block`.
+- **`.ag-r` bez `align-items`** rozciągało komórki do najdłuższej, przez co
+  numer sesji odjeżdżał od tytułu, do którego należy. Teraz `start`.
+- **`.sec-head` spychało lead pod nagłówek**: nagłówek bez łamania ma ponad
+  1300 px, więc flex nie mieścił obu w wierszu. Zamiast niego `.tk-agh` —
+  siatka `1fr / 400px` wyrównana do dolnej linii tytułu.
+
+Kolumny tabeli przeważone z `1,05 / 1,15 / 1,15` na `0,95 / 1,2 / 1,2`
+i numer z 44 na 38 px: tytuły są krótkie, zdania obok długie, a poprzedni
+podział dawał odwrotnie.

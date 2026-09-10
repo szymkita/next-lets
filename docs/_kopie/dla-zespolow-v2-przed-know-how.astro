@@ -1,0 +1,931 @@
+---
+// DRZWI B — WERSJA 2 · /guided-coding/dla-zespolow-v2
+// Zaprojektowana od zera. Oryginał zostaje pod /dla-zespolow.
+//
+// POWÓD: poprzednie podejście powstało przez łatanie strony kawałek po
+// kawałku — przenoszenie sekcji, doklejanie bloków. Wyszedł z tego układ
+// bez porządku: opinia klienta lądowała nad sekcją „dla kogo", definicja
+// usługi znikała z pierwszego ekranu, a sekcje raz były na pełną
+// szerokość, raz w wąskiej kolumnie (Szymon, 07.09).
+//
+// ODBIORCA: CTO, head of engineering albo tech lead. Ma agenty w zespole
+// od kilku miesięcy, widzi rosnące tempo generowania i nie umie
+// powiedzieć, czy dowożenie za tym nadąża.
+//
+// CZYM JEST USŁUGA — i to musi być widać od razu:
+//   1. mierzymy przepływ i dajemy stan wyjściowy,
+//   2. ustawiamy szyny: reguły dla AI, bramkę przed merge'em, testy
+//      ścieżek krytycznych i evals tam, gdzie model decyduje,
+//   3. zostajemy na review zmian przecinających moduły,
+//   4. raz w miesiącu przechodzimy metryki i decydujemy, co zmienić.
+//
+// MIARA PRZEZ CAŁĄ STRONĘ: udział zmian wracających z produkcji.
+// Liczą ją: ekran PR-a w hero (szósty miesiąc), wykres w sekcji
+// „co naprawiamy" i ciemny pas z metrykami przed i po. Zmiana tablicy
+// MIESIACE przelicza wszystkie trzy.
+//
+// SŁOWNIK WIZUALNY — inny niż na drzwiach A, żeby para stron nie była
+// bliźniacza. Tam: panel narzędzia wewnętrznego z kursorem i kolejką
+// zgłoszeń. Tutaj: ekran pull requesta, na którym rozwiązuje się bramka,
+// a pod nią wchodzi nasz komentarz do decyzji architektonicznej.
+// Diagram cyklu wytwarzania z poprzedniej wersji został — siedzi
+// w sekcji definicyjnej, gdzie odpowiada na „jak to działa".
+//
+// RYTM TŁA: biel, biel, zieleń, biel, ciemny, biel, zieleń, biel,
+// zieleń, biel, zieleń. Ciemny pas pada raz i bierze metryki.
+//
+// DO POTWIERDZENIA PRZED PUBLIKACJĄ:
+// · tablice MIESIACE i METRYKI — proporcje z obserwacji, konkretne
+//   liczby do podmiany. Kształt (rosnący wolumen, malejący odsetek
+//   wracających zmian) jest pewny;
+// · „komentarz w ciągu dnia roboczego" i kadencja spotkań to
+//   zobowiązania umowne;
+// · ceny nie podajemy — świadomie, bo zakres zależy od wielkości
+//   zespołu. Tabela wyborów mówi tylko o formie rozliczenia;
+// · formularz nie ma endpointu, jak wszędzie w serwisie.
+import LaBase from '../../layouts/LaBase.astro';
+import GcFaq from '../../components/GcFaq.astro';
+import GcCta from '../../components/GcCta.astro';
+import TeamAvatar from '../../components/TeamAvatar.astro';
+import { zespol } from '../../data/zespol.js';
+
+const kanon = new URL('/guided-coding/dla-zespolow-v2', Astro.site).href;
+
+const title = "Prowadzenie zespołu technicznego — reguły, bramka i review dla pracy z AI | Let's automate";
+const description = 'Twój zespół generuje kod z AI szybciej, niż ktokolwiek zdąża go przeczytać. Ustawiamy reguły i bramkę w Twoim repozytorium, czytamy zmiany przecinające moduły i mierzymy przepływ.';
+
+
+// ---- EKRAN PULL REQUESTA (hero) ----------------------------------------
+// Cała usługa w jednym obrazie: bramka rozwiązuje się sama, a jedyna
+// rzecz, której maszyna nie rozstrzygnie, wraca z naszym komentarzem.
+// Sprawdzenia wchodzą po kolei, komentarz na końcu — czasy liczone
+// z długości listy, nie wpisane ręcznie.
+const PR = {
+  repo: 'platforma / api',
+  nr: '482',
+  tytul: 'Rozbicie modułu rozliczeń',
+  autor: 'KR',
+  plus: '+248',
+  minus: '−312',
+};
+const BRAMKA = [
+  { t: 'Reguły repozytorium', d: 'zgodne z regulami/architektura.md', s: 'ok' },
+  { t: 'Rozmiar zmiany', d: '318 linii przy limicie 400', s: 'ok' },
+  { t: 'Testy ścieżek krytycznych', d: 'płatności i logowanie — 34 przypadki', s: 'ok' },
+  { t: 'Sekrety w diffie', d: 'brak trafień', s: 'ok' },
+  { t: 'Evals modułu decyzyjnego', d: 'trafność 91% wobec progu 93%', s: 'uwaga' },
+  { t: 'Zmiana przecina moduły', d: 'billing + notyfikacje', s: 'czlowiek' },
+];
+const KOMENTARZ = 'Rozliczenia i notyfikacje wchodzą jednym commitem. Rozbij na dwa: najpierw kontrakt zdarzenia, potem konsument. Wtedy rollback dotyczy jednego modułu, a nie obu naraz.';
+
+const PR_START = 0.6;
+const PR_KROK = 0.28;
+const PR_KONIEC = PR_START + BRAMKA.length * PR_KROK;
+const PR_C = 11;
+const pp = (t) => `${((t / PR_C) * 100).toFixed(2)}%`;
+const klatkiPr = [
+  `@keyframes pr-wiersz{0%{opacity:0;transform:translateY(4px)}100%{opacity:1;transform:none}}`,
+  `@keyframes pr-znak{0%{opacity:0;transform:scale(.4)}60%{opacity:1;transform:scale(1.12)}100%{opacity:1;transform:scale(1)}}`,
+  `@keyframes pr-kom{0%,${pp(PR_KONIEC)}{opacity:0;transform:translateY(10px)}${pp(PR_KONIEC + 0.7)}{opacity:1;transform:none}${pp(PR_C - 0.6)}{opacity:1;transform:none}100%{opacity:1;transform:none}}`,
+].join('\n');
+
+
+// ---- MIARA PRZEZ CAŁĄ STRONĘ -------------------------------------------
+// Udział zmian, które wracają z produkcji. Wolumen rośnie, odsetek
+// spada — i to jest cały argument tej strony.
+const MIESIACE = [
+  { pr: 42, wraca: 9 },
+  { pr: 51, wraca: 8 },
+  { pr: 63, wraca: 6 },
+  { pr: 71, wraca: 5 },
+  { pr: 84, wraca: 4 },
+  { pr: 96, wraca: 3 },
+];
+const cfr = (m) => Math.round((m.wraca / m.pr) * 100);
+const M1 = MIESIACE[0];
+const M6 = MIESIACE[5];
+
+
+// ---- CZYM TO JEST ------------------------------------------------------
+const KROKI = [
+  {
+    n: 'Mierzymy',
+    t: 'Zaczynamy od stanu wyjściowego, nie od opinii',
+    d: 'Historia PR-ów, konfiguracje agentów, CI i praktyka review. Wychodzi z tego czas życia zmiany i miejsca, w których czeka.',
+  },
+  {
+    n: 'Ustawiamy',
+    t: 'Szyny pod Twój stack, w Twoim repozytorium',
+    d: 'Reguły dla AI podzielone na moduły, bramka przed merge’em, testy ścieżek krytycznych i evals tam, gdzie model decyduje.',
+  },
+  {
+    n: 'Zostajemy',
+    t: 'Review decyzji i comiesięczny przegląd liczb',
+    d: 'Czytamy zmiany przecinające moduły. Raz w miesiącu siadamy do metryk i decydujemy, co zmienić w szynach.',
+  },
+];
+
+// Diagram cyklu wytwarzania. Kadr stoi najpierw na jednym etapie — tam,
+// gdzie dziś siedzi AI — a potem odjeżdża i widać, że to kawałek
+// większej całości. Ruch niesie zdanie, którego nie trzeba pisać.
+const CYKL = [
+  { t: 'specyfikacja', rzad: 3 },
+  { t: 'projekt', rzad: 2 },
+  { t: 'kod', rzad: 0 },
+  { t: 'testy', rzad: 1 },
+  { t: 'review', rzad: 2 },
+  { t: 'utrzymanie', rzad: 4 },
+];
+const CY = { c: 13, blisko: 2.4, odjazd: 1.9, trzyma: 5.4, zoom: 2.2 };
+const cp = (t) => `${((t / CY.c) * 100).toFixed(2)}%`;
+const CY_RDZEN = CYKL.findIndex((x) => x.rzad === 0);
+const CY_ORIG = `${(((CY_RDZEN + 0.5) / CYKL.length) * 100).toFixed(2)}%`;
+const CY_KONIEC = CY.blisko + CY.odjazd;
+const klatkiCyklu = [
+  `@keyframes cy-kadr{0%,${cp(CY.blisko)}{transform:scale(${CY.zoom})}${cp(CY_KONIEC)}{transform:scale(1)}${cp(CY_KONIEC + CY.trzyma)}{transform:scale(1)}${cp(CY_KONIEC + CY.trzyma + 0.9)}{transform:scale(${CY.zoom})}100%{transform:scale(${CY.zoom})}}`,
+  `@keyframes cy-reszta{0%,${cp(CY.blisko + 0.5)}{opacity:0}${cp(CY_KONIEC + 0.25)}{opacity:1}${cp(CY_KONIEC + CY.trzyma)}{opacity:1}${cp(CY_KONIEC + CY.trzyma + 0.5)}{opacity:0}100%{opacity:0}}`,
+  `@keyframes cy-a{0%,${cp(CY.blisko + 0.2)}{opacity:1}${cp(CY.blisko + 0.6)}{opacity:0}${cp(CY_KONIEC + CY.trzyma + 0.6)}{opacity:0}${cp(CY_KONIEC + CY.trzyma + 0.9)}{opacity:1}100%{opacity:1}}`,
+  `@keyframes cy-b{0%,${cp(CY_KONIEC - 0.2)}{opacity:0}${cp(CY_KONIEC + 0.3)}{opacity:1}${cp(CY_KONIEC + CY.trzyma)}{opacity:1}${cp(CY_KONIEC + CY.trzyma + 0.4)}{opacity:0}100%{opacity:0}}`,
+].join('\n');
+
+
+// ---- DLA KOGO ----------------------------------------------------------
+const DLA_KOGO = [
+  {
+    t: 'Zespół od pięciu do dwudziestu osób, AI w codziennej pracy',
+    d: 'Claude Code albo Codex siedzi już w terminalach. Prędkość generowania wzrosła, prędkość dowożenia niekoniecznie.',
+  },
+  {
+    t: 'Diff rośnie szybciej, niż ktokolwiek zdąża go przeczytać',
+    d: 'Review zamienia się w formalność, bo nikt nie przeczyta ośmiuset linii dziennie. Formalność łapie literówki, nie decyzje.',
+  },
+  {
+    t: 'Płacisz za licencje i nie wiesz, co z tego wyszło',
+    d: 'Bez stanu wyjściowego każda zmiana procesu jest kwestią wiary, a budżetu na kolejny rok nie obroni anegdota.',
+  },
+];
+
+
+// ---- CO NAPRAWIAMY I NA CZYM TO WIDAĆ ----------------------------------
+// Każda pozycja podpięta pod metrykę, którą liczymy co miesiąc tak samo.
+const PROBLEMY = [
+  {
+    t: 'Review nie nadąża za tempem generowania',
+    d: 'Bramka odrzuca to, co da się sprawdzić maszynowo, więc człowiek czyta tylko decyzje. Rozmiar PR-a wchodzi do reguł jako twardy limit.',
+    m: 'czas w review',
+  },
+  {
+    t: 'Zmiany wracają z produkcji',
+    d: 'Ścieżki krytyczne dostają testy pisane przez człowieka, a AI dostaje zakaz ich modyfikowania. Rollback ćwiczymy, zanim będzie potrzebny.',
+    m: 'change failure rate',
+  },
+  {
+    t: 'Sześciu ludzi, sześć sposobów pracy z AI',
+    d: 'Jedna konfiguracja w repozytorium, wersjonowana jak kod. Nowa osoba pracuje tak samo jak reszta od pierwszego dnia.',
+    m: 'rework rate',
+  },
+  {
+    t: 'Testy sprawdzają, że kod robi to, co robi',
+    d: 'Evals i asercje na zachowaniu, nie na implementacji. Pokrycie przestaje być liczbą do slajdu.',
+    m: 'defekty po wydaniu',
+  },
+  {
+    t: 'Kontekst puchnie, jakość spada',
+    d: 'Reguły trzymamy krótkie i podzielone na moduły, a to, co model musi wiedzieć, wchodzi przez narzędzia zamiast przez wklejanie.',
+    m: 'koszt na zmianę',
+  },
+  {
+    t: 'Nie wiadomo, czy jest lepiej',
+    d: 'Cztery metryki liczone tak samo co miesiąc, z jawnym sposobem liczenia. Bez tego nie da się obronić budżetu.',
+    m: 'stan wyjściowy',
+  },
+];
+
+
+// ---- METRYKI PRZEPŁYWU, PRZED I PO (ciemny pas) ------------------------
+// Cztery liczby, które przechodzimy co miesiąc. Trzecia rośnie i tak ma
+// być: im mniej kosztuje wykonanie, tym więcej czasu zostaje na decyzje.
+const METRYKI = [
+  { t: 'Czas życia PR-a', o: 'mediana', p: 11, po: 4.2, pT: '11 h', poT: '4,2 h', dol: true },
+  { t: 'Zmiany wracające z produkcji', o: 'change failure rate', p: cfr(M1), po: cfr(M6), pT: `${cfr(M1)}%`, poT: `${cfr(M6)}%`, dol: true },
+  { t: 'Rozmiar zmiany', o: 'mediana linii', p: 640, po: 210, pT: '640', poT: '210', dol: true },
+  { t: 'Zmiany wypuszczane w miesiącu', o: 'ten sam zespół', p: M1.pr, po: M6.pr, pT: `${M1.pr}`, poT: `${M6.pr}`, dol: false },
+];
+
+
+// ---- CO ROBIMY W KAŻDYM MIESIĄCU ---------------------------------------
+const ROBIMY = [
+  {
+    k: 'na bieżąco',
+    t: 'Review zmian, które przecinają moduły',
+    d: 'Nie każdego PR-a — tych, przy których AI podejmuje decyzję architektoniczną. Komentarz wraca w ciągu dnia roboczego.',
+  },
+  {
+    k: 'co tydzień',
+    t: 'Utrzymujemy reguły i bramkę',
+    d: 'Reguły dla AI, hooki, dodatkowe przebiegi review i evals na ścieżkach, gdzie model decyduje o pieniądzach albo danych.',
+  },
+  {
+    k: 'dwa razy w miesiącu',
+    t: 'Siadamy z leadami do trudniejszych rzeczy',
+    d: 'Migracja, rozbicie monolitu, kontekst, który przestał się mieścić. Półtorej godziny na żywo, przy jednym ekranie.',
+  },
+  {
+    k: 'raz w miesiącu',
+    t: 'Przechodzimy metryki przepływu',
+    d: 'Godzina rozmowy i decyzja, co zmieniamy w szynach na kolejny miesiąc. Sposób liczenia jest jawny i stały.',
+  },
+];
+
+
+// ---- KTO PO NASZEJ STRONIE ---------------------------------------------
+const os = (n) => zespol.find((x) => x.name === n);
+const PROWADZACY = ['Krzysztof Radej', 'Michał Langowski', 'Michał Kita', 'Kamil Olejek'].map(os);
+const DOKLADANE = [
+  { t: 'Architekt', d: 'gdy trzeba rozciąć monolit albo ustawić granice modułów', kto: os('Michał Langowski') },
+  { t: 'Platform engineer', d: 'gdy wąskim gardłem jest pipeline, a nie kod', kto: os('Jakub Nowalski') },
+  { t: 'Zastępstwo', d: 'na urlop albo odejście Twojego leada', kto: os('Łukasz Filip') },
+  { t: 'Trudniejsze elementy', d: 'migracje danych, integracje, przepisanie modułu', kto: os('Adam Szarzanowicz') },
+];
+
+
+// ---- OD CZEGO ZACZYNASZ ------------------------------------------------
+const WEJSCIE = [
+  {
+    e: 'Kiedy nie masz liczb',
+    t: 'Zaczynamy od pomiaru',
+    d: 'Dwa tygodnie na stan wyjściowy: historia PR-ów, konfiguracje agentów, CI i praktyka review.',
+    kroki: ['Bezpłatna diagnoza — 30 minut', 'Dwa tygodnie pomiaru i rozmów z zespołem', 'Metryki i wąskie gardła w kolejności'],
+  },
+  {
+    e: 'Kiedy liczby już masz',
+    t: 'Zaczynamy od szyn',
+    d: 'Jeśli mierzysz przepływ i wiesz, gdzie stoi, pomijamy pomiar i idziemy prosto do reguł.',
+    kroki: ['Bezpłatna diagnoza — 30 minut', 'Reguły i bramka pod Twój stack', 'Review od pierwszego tygodnia'],
+  },
+];
+
+const ALTERNATYWY = [
+  {
+    t: 'Staff engineer na etacie',
+    d: 'Jedna osoba, którą trzeba znaleźć, wdrożyć i utrzymać — i która zna tylko Twój kontekst.',
+    kiedy: 'za 3–6 miesięcy rekrutacji',
+    kto: 'Twoja, jeśli go znajdziesz',
+  },
+  {
+    t: 'Konsultant na godziny',
+    d: 'Audyt, prezentacja, rekomendacje. Wdrożenie zostaje po Twojej stronie razem z ryzykiem.',
+    kiedy: 'po oddaniu raportu',
+    kto: 'u Ciebie',
+  },
+  {
+    t: 'Zostawić jak jest',
+    d: 'Tempo generowania rośnie dalej, a review i tak jest wąskim gardłem.',
+    kiedy: '—',
+    kto: 'u Ciebie',
+  },
+  {
+    t: 'Prowadzenie z nami',
+    d: 'Reguły i bramka w repozytorium, review decyzji i cztery metryki liczone tak samo co miesiąc.',
+    kiedy: 'od pierwszego tygodnia',
+    kto: 'zostaje u Ciebie',
+    my: true,
+  },
+];
+
+
+// ---- PYTANIA -----------------------------------------------------------
+const faq = [
+  {
+    q: 'Czy to nie jest ocena kompetencji naszego zespołu?',
+    a: 'Nie i mówimy to na pierwszej rozmowie, także zespołowi. Mierzymy przepływ, nie ludzi: czas życia zmiany, miejsca, w których czeka, i to, co bramka wyłapuje automatycznie. Nazwisk w raporcie nie ma, a wnioski przechodzimy z zespołem, zanim trafią wyżej.',
+  },
+  {
+    q: 'Pracujemy w Claude Code i Codexie. Co dokładnie ustawiacie?',
+    a: 'Reguły w repozytorium podzielone na moduły i wersjonowane jak kod, hooki uruchamiane przy zmianie, dodatkowe przebiegi review, evals na ścieżkach, gdzie model decyduje o pieniądzach albo danych osobowych, oraz bramkę przed merge’em. Wszystko zostaje w Twoim repozytorium.',
+  },
+  {
+    q: 'Nie spowolni nas kolejna bramka?',
+    a: 'Bramka odrzuca to, co i tak wróciłoby z review — tylko robi to w minutę, a nie po dwóch dniach. Jeśli po dwóch miesiącach mediana czasu życia PR-a nie spadnie, zdejmujemy reguły, które kosztują więcej, niż dają.',
+  },
+  {
+    q: 'Co z kodem, który AI już wygenerowało?',
+    a: 'Nie przepisujemy go hurtem. Ścieżki krytyczne dostają testy i review w pierwszej kolejności, reszta wchodzi w normalny rytm zmian. Przepisywanie całości jest najdroższą rzeczą, jaką można zrobić, i prawie nigdy jej nie proponujemy.',
+  },
+  {
+    q: 'Kto jest właścicielem tego, co powstaje?',
+    a: 'Ty, od pierwszego dnia. Reguły, konfiguracje, testy i opis decyzji siedzą w Twoim repozytorium. Nasze narzędzie do analizy kodu odpinamy przy rozstaniu, a reguły działają dalej, bo czyta je AI, którego używasz.',
+  },
+  {
+    q: 'Ile czasu zajmuje to zespołowi?',
+    a: 'Około czterech godzin w miesiącu po stronie leadów: dwa wspólne spotkania i godzina przeglądu metryk. Reszta dzieje się przy okazji pracy, którą zespół i tak wykonuje.',
+  },
+  {
+    q: 'Co, jeśli chcę przestać?',
+    a: 'Miesięczny okres wypowiedzenia. Zostają metryki, reguły, testy i opis decyzji — wszystko w Twoim repozytorium. Po roku większość zespołów schodzi na mniejszy zakres i to jest dobry znak.',
+  },
+];
+
+const dane = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Service',
+      '@id': `${kanon}#usluga`,
+      name: 'Guided coding dla zespołu technicznego',
+      serviceType: 'Prowadzenie zespołu inżynierskiego pracującego z AI',
+      url: kanon,
+      description: 'Stała współpraca inżynierska wokół tego, co zespół buduje z AI: pomiar przepływu, reguły w repozytorium klienta, bramka przed merge’em, review zmian przecinających moduły i comiesięczny przegląd metryk.',
+      provider: { '@id': new URL('/#organizacja', Astro.site).href },
+      areaServed: { '@type': 'Country', name: 'Polska' },
+      audience: { '@type': 'BusinessAudience', name: 'Zespoły inżynierskie od pięciu do dwudziestu osób' },
+    },
+    {
+      '@type': 'BreadcrumbList',
+      '@id': `${kanon}#okruszki`,
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Strona główna', item: new URL('/', Astro.site).href },
+        { '@type': 'ListItem', position: 2, name: 'Guided Coding', item: new URL('/guided-coding', Astro.site).href },
+        { '@type': 'ListItem', position: 3, name: 'Dla zespołów technicznych', item: kanon },
+      ],
+    },
+    {
+      '@type': 'FAQPage',
+      '@id': `${kanon}#faq`,
+      mainEntity: faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+    },
+  ],
+};
+
+const LOGA = [
+  ['682b89c78adefdc7985c534c_sports%20med_black.svg', 'Sports Med'],
+  ['682b89c78adefdc7985c5353_nars_black.svg', 'NARS'],
+  ['682b89c78adefdc7985c534e_sevium_black.svg', 'Sevium'],
+  ['682b89c78adefdc7985c5352_odo%2024_black.svg', 'ODO 24'],
+  ['682b89c78adefdc7985c534f_x3d_black.svg', 'X3D'],
+];
+const CDN = 'https://cdn.prod.website-files.com/625be9db7e9f071ffb58618a/';
+---
+<LaBase title={title} description={description} ctaHref="#kontakt" ctaLabel="Bezpłatna diagnoza">
+<script type="application/ld+json" is:inline set:html={JSON.stringify(dane)} slot="head"></script>
+<style is:global slot="head">
+  /* Tło wchodzi pod pasek nawigacji — na samej sekcji hero zaczynałoby
+     się dopiero pod nim i było widać odcięcie. */
+  .page{background:radial-gradient(880px 520px at 88% 40px, rgba(0,205,119,0.13), transparent 62%) top left / 100% 760px no-repeat, #ffffff}
+
+  /* Jedna miara odstępów dla wszystkich sekcji — poprzednia wersja miała
+     kilka różnych i część bloków siedziała w węższej kolumnie niż reszta. */
+  .b-sec{padding:clamp(60px,7.5vw,100px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px}
+  .b-zielona{background:#f4f8f2}
+  .b-oko{display:inline-block;font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.13em;color:#0a7a52}
+  .b-h{margin:16px 0 0;max-width:22ch;font-size:clamp(28px,4.3vw,50px);line-height:1.05;letter-spacing:-0.032em;font-weight:800;color:#16211a;text-wrap:balance}
+  .b-p{margin:18px 0 0;max-width:56ch;font-size:17px;line-height:1.6;color:#4c5850;text-wrap:pretty}
+  .b-head{display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:20px 56px}
+
+  /* ================= 1 · EKRAN PULL REQUESTA (hero) ===================
+     Cała usługa w jednym obrazie: bramka rozwiązuje się sama, a jedyna
+     rzecz, której maszyna nie rozstrzygnie, wraca z naszym komentarzem.
+     Skala zmienną --s, ramka wyśrodkowana w swojej kolumnie. */
+  .pr-box{position:relative;width:calc(var(--w) * var(--s, 1));height:calc(var(--h) * var(--s, 1));margin:0 auto}
+  .pr-ram{position:absolute;left:0;top:0;width:var(--w);height:var(--h);transform:scale(var(--s, 1));transform-origin:top left}
+  .pr-glow{position:absolute;left:50%;top:-30px;transform:translateX(-50%);width:86%;height:260px;background:radial-gradient(closest-side,rgba(0,205,119,0.3),rgba(0,205,119,0) 72%);filter:blur(46px);pointer-events:none}
+  .pr-okno{position:absolute;inset:0;border-radius:16px;overflow:hidden;background:#ffffff;border:1px solid rgba(20,33,26,0.1);box-shadow:0 -20px 80px -30px rgba(12,28,20,0.25),0 30px 90px -30px rgba(12,28,20,0.4)}
+  .pr-pasek{display:flex;align-items:center;gap:14px;padding:11px 18px;background:#fbfcfa;border-bottom:1px solid #eef1ec}
+  .pr-kropki{display:flex;gap:6px;flex-shrink:0}
+  .pr-kropki span{width:10px;height:10px;border-radius:50%;background:#e3e7e0}
+  .pr-url{margin:0 auto;background:#f1f4ee;border-radius:7px;padding:5px 18px;font-family:ui-monospace,Menlo,monospace;font-size:11.5px;color:#7d8a80}
+  .pr-ja{display:flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:#dcefe2;color:#0a7a52;font-size:10.5px;font-weight:800;flex-shrink:0}
+  .pr-tresc{padding:18px 22px}
+  .pr-tyt{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+  .pr-tyt b{font-size:16px;font-weight:750;letter-spacing:-0.018em;color:#16211a}
+  .pr-tyt i{font-style:normal;font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#a3ada4}
+  .pr-meta{display:flex;align-items:center;gap:8px;margin-top:7px;font-family:ui-monospace,Menlo,monospace;font-size:11px;color:#8b968d}
+  .pr-meta em{font-style:normal;color:#0a7a52;font-weight:700}
+  .pr-meta s{text-decoration:none;color:#c0492f;font-weight:700}
+  .pr-lista{margin-top:14px;border:1px solid #eef1ec;border-radius:11px;overflow:hidden}
+  .pr-w{display:grid;grid-template-columns:20px minmax(0,1fr) auto;gap:10px;align-items:center;padding:9px 13px;border-top:1px solid #f4f7f2;animation:pr-wiersz .4s ease both;animation-delay:var(--d)}
+  .pr-w:first-child{border-top:0}
+  .pr-z{display:flex;align-items:center;justify-content:center;width:17px;height:17px;border-radius:50%;font-size:9.5px;font-weight:800;color:#ffffff;animation:pr-znak .45s cubic-bezier(.3,1.3,.5,1) both;animation-delay:var(--d)}
+  .pr-z.ok{background:#0a7a52}
+  .pr-z.uwaga{background:#d99a3c}
+  .pr-z.czlowiek{background:#16211a}
+  .pr-w b{font-size:12.5px;font-weight:650;color:#16211a}
+  .pr-w span{font-family:ui-monospace,Menlo,monospace;font-size:11px;color:#8b968d;justify-self:end;text-align:right;white-space:nowrap}
+  .pr-kom{display:grid;grid-template-columns:auto minmax(0,1fr);gap:11px;margin-top:14px;padding:13px 15px;border:1px solid #cfe3d5;border-radius:11px;background:#f3faf5;animation:pr-kom .7s cubic-bezier(.2,.7,.3,1) both}
+  .pr-kom-a{display:flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:#0e2b1d;color:#ffffff;font-size:9.5px;font-weight:800;flex-shrink:0}
+  .pr-kom-n{display:flex;align-items:baseline;gap:8px;font-family:ui-monospace,Menlo,monospace;font-size:10.5px;color:#7c877e}
+  .pr-kom-n b{color:#0a7a52;font-weight:700}
+  .pr-kom p{margin:6px 0 0;font-size:12.5px;line-height:1.55;color:#33413a}
+  @media (max-width:1400px){ .pr-box{--s:0.9} }
+  @media (max-width:1180px){ .pr-box{--s:0.8} }
+  @media (max-width:900px){ .pr-box{--s:0.94} }
+  @media (max-width:760px){ .pr-box{--s:0.7} }
+  @media (max-width:520px){ .pr-box{--s:0.52} }
+  @media (prefers-reduced-motion:reduce){
+    .pr-w,.pr-z,.pr-kom{animation:none;opacity:1;transform:none}
+  }
+
+  /* ================= pas dowodu ======================================= */
+  .tr{display:flex;align-items:center;gap:36px;padding:30px max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));border-top:1px solid #eef1ec;border-bottom:1px solid #eef1ec;background:#ffffff}
+  .tr-n{position:relative;z-index:2;background:#ffffff;padding-right:12px;flex-shrink:0;max-width:210px;font-size:14px;line-height:1.45;color:#4c5850}
+  .tr-n strong{color:#16211a;font-weight:700}
+  .tr-o{overflow:hidden;position:relative;z-index:1;margin-left:-76px;flex:1;filter:grayscale(1);opacity:0.55}
+  .tr-t{display:flex;align-items:center;gap:56px;width:max-content;animation:tr-jazda 30s linear infinite}
+  .tr-o:hover .tr-t{animation-play-state:paused}
+  .tr-t img{width:114px;height:28px;object-fit:contain}
+  @keyframes tr-jazda{from{transform:translateX(0)}to{transform:translateX(calc(-50% - 28px))}}
+  @media (prefers-reduced-motion:reduce){ .tr-t{animation:none} }
+  @media (max-width:820px){
+    .tr{flex-wrap:wrap;justify-content:center;text-align:center;gap:18px}
+    .tr-n{max-width:none;padding-right:0}
+    .tr-o{margin-left:0;width:100%;flex:none}
+  }
+
+  /* ================= 2 · CZYM TO JEST ================================
+     Trzy kroki na pełnej szerokości, każdy z etykietą czynności. Obok
+     diagram cyklu, który tłumaczy, dlaczego to nie kończy się na kodzie. */
+  .kr{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(24px,4vw,56px);margin-top:clamp(32px,4vw,48px)}
+  .kr-k{padding-top:20px;border-top:2px solid #16211a}
+  .kr-n{font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.11em;text-transform:uppercase;color:#0a7a52}
+  .kr-t{margin:11px 0 0;min-height:calc(2 * 1.26em);font-size:clamp(17.5px,2vw,20.5px);font-weight:750;letter-spacing:-0.018em;line-height:1.26;color:#16211a;text-wrap:balance}
+  .kr-d{margin:10px 0 0;font-size:15px;line-height:1.6;color:#4c5850;text-wrap:pretty}
+  @media (max-width:860px){ .kr{grid-template-columns:1fr;gap:26px} .kr-t{min-height:0} }
+
+  /* diagram cyklu wytwarzania */
+  .cy{margin-top:clamp(44px,5.5vw,72px);padding-top:clamp(34px,4vw,48px);border-top:1px solid #e2e9e0}
+  .cy-g{max-width:1000px}
+  .cy-g > b{display:block;font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#a3ada4}
+  .cy-s{position:relative;display:block;height:26px;margin-top:8px}
+  .cy-s span{position:absolute;left:0;top:0;font-size:clamp(16px,2vw,19px);font-weight:700;letter-spacing:-0.015em;color:#16211a}
+  .cy-s i{font-style:normal;color:#0a7a52}
+  .cy-ram{position:relative;overflow:hidden;margin-top:clamp(20px,2.4vw,28px);padding:10px 0 4px}
+  .cy-scena{transform-origin:var(--orig) 27px}
+  .cy-e{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px}
+  .cy-e > div{position:relative;padding-top:22px;text-align:center}
+  .cy-e > div.poza{opacity:0}
+  .cy-e u{position:absolute;left:50%;top:0;transform:translateX(-50%);width:11px;height:11px;border-radius:50%;background:#ffffff;border:2px solid #c3d2c5;text-decoration:none}
+  .cy-e > div.rdzen u{background:var(--la-accent,#00CD77);border-color:var(--la-accent,#00CD77)}
+  .cy-e b{display:block;font-size:12.5px;font-weight:650;color:#16211a}
+  .cy-l{position:absolute;left:8%;right:8%;top:27px;height:2px;background:#e2e9e0;border-radius:2px}
+  .cy-pod{margin:clamp(22px,2.6vw,30px) 0 0;max-width:62ch;font-size:14.5px;line-height:1.6;color:#4c5850;text-wrap:pretty}
+  .cy-pod strong{font-weight:700;color:#16211a}
+  @media (max-width:760px){
+    .cy-e{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+    .cy-l{display:none}
+    .cy-scena{transform:none !important;animation:none !important}
+    .cy-e > div.poza{opacity:1 !important;animation:none !important}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .cy-scena{animation:none !important;transform:none}
+    .cy-e > div.poza{animation:none !important;opacity:1}
+    .cy-s span{animation:none !important}
+    .cy-s span.a{opacity:0}
+    .cy-s span.b{opacity:1}
+  }
+
+  /* ================= 3 · DLA KOGO ==================================== */
+  .dk{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(26px,4vw,60px);margin-top:clamp(30px,3.6vw,44px)}
+  .dk-i{display:block;font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:0.13em;color:#a3ada4;font-style:normal}
+  .dk-t{margin:12px 0 0;min-height:calc(2 * 1.3em);font-size:clamp(17.5px,2vw,20.5px);font-weight:750;letter-spacing:-0.016em;line-height:1.3;color:#16211a;text-wrap:balance}
+  .dk-d{margin:10px 0 0;font-size:15px;line-height:1.6;color:#4c5850;text-wrap:pretty}
+  @media (max-width:860px){ .dk{grid-template-columns:1fr;gap:26px} .dk-t{min-height:0} }
+
+  /* ================= 4 · CO NAPRAWIAMY + WYKRES ======================
+     Sześć wierszy na pełnej szerokości, każdy z metryką po prawej.
+     Pod nimi jedna miara całej strony. */
+  .pb{margin-top:clamp(30px,3.6vw,44px);border-top:1px solid #dbe4da}
+  .pb-r{display:grid;grid-template-columns:minmax(0,0.9fr) minmax(0,1.25fr) 190px;gap:clamp(16px,3vw,44px);align-items:baseline;padding:clamp(18px,2.2vw,24px) 0;border-bottom:1px solid #e7ece4}
+  .pb-t{margin:0;font-size:clamp(16.5px,1.9vw,19px);font-weight:700;letter-spacing:-0.016em;line-height:1.3;color:#16211a;text-wrap:pretty}
+  .pb-d{margin:0;font-size:14.5px;line-height:1.6;color:#4c5850;text-wrap:pretty}
+  .pb-m{justify-self:start;font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.05em;color:#0a7a52;background:#e9f5ec;border-radius:6px;padding:5px 9px;white-space:nowrap}
+  @media (max-width:900px){
+    .pb-r{grid-template-columns:1fr;gap:8px}
+    .pb-m{margin-top:4px}
+  }
+  .wy{display:grid;grid-template-columns:minmax(0,0.85fr) minmax(0,1.15fr);gap:clamp(28px,5vw,72px);align-items:center;margin-top:clamp(40px,5vw,64px)}
+  .wy-t{margin:0;max-width:20ch;font-size:clamp(21px,2.8vw,34px);line-height:1.2;letter-spacing:-0.028em;font-weight:750;color:#16211a;text-wrap:balance}
+  .wy-p{position:relative;display:flex;align-items:flex-end;gap:clamp(7px,1.4vw,18px);height:clamp(132px,15vw,178px);padding-top:30px}
+  .wy-p::after{content:'';position:absolute;left:0;right:0;bottom:0;height:1px;background:#c9d5c9}
+  .wy-c{position:relative;flex:1;height:100%}
+  .wy-b{position:absolute;left:0;right:0;bottom:0;height:0;border-radius:8px 8px 0 0;background:linear-gradient(180deg,#1f8f63,#0a7a52);transition:height 1.05s cubic-bezier(.22,.85,.3,1);transition-delay:var(--d)}
+  .rv.in .wy-b{height:var(--h)}
+  .wy-v{position:absolute;left:0;right:0;bottom:calc(var(--h) + 9px);text-align:center;font-size:clamp(13px,1.5vw,16.5px);font-weight:750;letter-spacing:-0.02em;color:#16211a;opacity:0;transition:opacity .55s ease;transition-delay:calc(var(--d) + .55s)}
+  .rv.in .wy-v{opacity:1}
+  .wy-m{display:flex;gap:clamp(7px,1.4vw,18px);margin-top:10px}
+  .wy-m span{flex:1;text-align:center;font-family:ui-monospace,Menlo,monospace;font-size:10.5px;color:#8b968d}
+  .wy-w{margin:clamp(18px,2.2vw,24px) 0 0;font-size:14px;color:#7c877e}
+  @media (max-width:860px){ .wy{grid-template-columns:1fr;gap:28px} }
+  @media (prefers-reduced-motion:reduce){ .wy-b,.wy-v{transition:none} }
+
+  /* ================= 5 · METRYKI PRZED I PO (ciemny pas) ============= */
+  .mt-sec{background:radial-gradient(900px 420px at 88% 4%, rgba(0,205,119,0.16), transparent 62%), #0e2b1d;padding:clamp(60px,7.5vw,100px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px}
+  .mt-h{margin:16px 0 0;max-width:22ch;font-size:clamp(28px,4.3vw,50px);line-height:1.05;letter-spacing:-0.032em;font-weight:800;color:#ffffff;text-wrap:balance}
+  .mt-p{margin:18px 0 0;max-width:52ch;font-size:17px;line-height:1.6;color:rgba(255,255,255,0.72);text-wrap:pretty}
+  .mt{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(20px,3vw,44px);margin-top:clamp(34px,4.4vw,56px)}
+  .mt-k{min-width:0}
+  .mt-t{margin:0;font-size:15px;font-weight:700;letter-spacing:-0.012em;line-height:1.3;color:#ffffff;text-wrap:balance}
+  .mt-o{display:block;margin-top:6px;min-height:calc(2 * 1.45em);font-family:ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:0.09em;text-transform:uppercase;color:rgba(255,255,255,0.36);line-height:1.45}
+  .mt-r{display:grid;grid-template-columns:44px minmax(0,1fr);gap:10px;align-items:center;margin-top:12px}
+  .mt-r b{font-family:ui-monospace,Menlo,monospace;font-size:9.5px;letter-spacing:0.07em;text-transform:uppercase;color:rgba(255,255,255,0.34);font-weight:500}
+  .mt-s{position:relative;display:flex;align-items:center;height:26px}
+  .mt-s i{display:block;height:100%;width:0;min-width:22px;border-radius:5px;background:rgba(255,255,255,0.2);transition:width 1s cubic-bezier(.22,.85,.3,1);transition-delay:var(--d)}
+  .mt-r.po .mt-s i{background:linear-gradient(90deg,#00CD77,#0a7a52)}
+  .rv.in .mt-s i{width:var(--w)}
+  .mt-s em{position:absolute;left:calc(var(--w) + 10px);font-style:normal;font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:700;color:rgba(255,255,255,0.5);white-space:nowrap;opacity:0;transition:opacity .5s ease;transition-delay:calc(var(--d) + .55s)}
+  .mt-r.po .mt-s em{color:#ffffff}
+  .rv.in .mt-s em{opacity:1}
+  .mt-w{margin:clamp(30px,3.6vw,42px) 0 0;max-width:64ch;font-size:14px;line-height:1.6;color:rgba(255,255,255,0.45)}
+  @media (max-width:1000px){ .mt{grid-template-columns:repeat(2,minmax(0,1fr));gap:30px} }
+  @media (max-width:560px){ .mt{grid-template-columns:1fr} .mt-o{min-height:0} }
+  @media (prefers-reduced-motion:reduce){ .mt-s i,.mt-s em{transition:none} }
+
+  /* ================= 6 · CO ROBIMY W MIESIĄCU (pełna szerokość) ====== */
+  .rb{margin-top:clamp(30px,3.6vw,44px);border-top:1px solid #dbe4da}
+  .rb-r{display:grid;grid-template-columns:170px minmax(0,0.95fr) minmax(0,1.2fr);gap:clamp(16px,3vw,44px);align-items:baseline;padding:clamp(20px,2.4vw,26px) 0;border-bottom:1px solid #e7ece4}
+  .rb-k{font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.08em;color:#0a7a52}
+  .rb-t{margin:0;font-size:clamp(17px,2vw,20px);font-weight:750;letter-spacing:-0.018em;line-height:1.28;color:#16211a;text-wrap:pretty}
+  .rb-d{margin:0;font-size:14.5px;line-height:1.6;color:#4c5850;text-wrap:pretty}
+  @media (max-width:900px){ .rb-r{grid-template-columns:1fr;gap:7px} }
+
+  /* ================= 7 · KTO PO NASZEJ STRONIE ======================= */
+  .os-n{display:flex;align-items:center;gap:12px;font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:0.13em;text-transform:uppercase;color:#8b968d}
+  .os-n::after{content:'';flex:1;height:1px;background:#e2e9e0}
+  .os-n.a{color:#0a7a52;margin-top:clamp(28px,3.4vw,40px)}
+  .os-n.b{margin-top:clamp(34px,4vw,52px)}
+  .os-s{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(20px,3vw,44px);margin-top:clamp(22px,2.6vw,30px)}
+  .os-i{display:grid;grid-template-columns:auto minmax(0,1fr);gap:16px;align-items:center}
+  .os-a{display:flex;align-items:center}
+  .os-a > *{margin-left:-11px}
+  .os-a > *:first-child{margin-left:0}
+  .os-z{flex-shrink:0;display:block;width:48px;height:48px;border-radius:13px;background:#0e2b1d}
+  .os-t{display:block;font-size:clamp(16.5px,1.9vw,19px);font-weight:750;letter-spacing:-0.015em;color:#16211a}
+  .os-d{display:block;margin-top:5px;max-width:42ch;font-size:14.5px;line-height:1.5;color:#4c5850;text-wrap:pretty}
+  .os-g{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(16px,2.2vw,30px);margin-top:clamp(22px,2.6vw,30px)}
+  .os-g b{display:block;margin-top:12px;font-size:15.5px;font-weight:750;letter-spacing:-0.014em;line-height:1.3;color:#16211a}
+  .os-g span{display:block;margin-top:5px;font-size:13.5px;line-height:1.45;color:#7c877e;text-wrap:pretty}
+  @media (max-width:900px){ .os-s{grid-template-columns:1fr;gap:22px} .os-g{grid-template-columns:repeat(2,minmax(0,1fr))} }
+
+  /* ================= 9 · START + WYBÓR + ROZLICZENIE ================= */
+  .we{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(20px,2.4vw,28px);align-items:stretch;margin-top:clamp(30px,3.6vw,46px)}
+  .we-k{display:flex;flex-direction:column;padding:clamp(28px,3.2vw,40px);border:1px solid #e2e9e0;border-radius:20px;background:#ffffff;transition:border-color .25s,box-shadow .25s}
+  .we-k:hover{border-color:#cfe0d3;box-shadow:0 26px 60px -44px rgba(18,38,28,0.32)}
+  .we-e{display:inline-flex;align-self:flex-start;padding:6px 12px;border-radius:20px;background:#e9f2ea;font-family:ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:0.11em;text-transform:uppercase;color:#0a7a52;font-weight:650}
+  .we-t{margin:clamp(16px,2vw,20px) 0 0;font-size:clamp(20px,2.3vw,25px);font-weight:800;letter-spacing:-0.024em;line-height:1.2;color:#16211a;text-wrap:balance}
+  .we-d{margin:12px 0 0;min-height:calc(2 * 1.62em);font-size:15px;line-height:1.62;color:#4c5850;text-wrap:pretty}
+  .we-l{margin:clamp(20px,2.4vw,26px) 0 0;padding:clamp(18px,2.2vw,22px) 0 0;list-style:none;border-top:1px solid #eef2ec;counter-reset:we}
+  .we-l li{counter-increment:we;position:relative;padding:9px 0 9px 32px;font-size:14.5px;line-height:1.5;color:#33413a}
+  .we-l li::before{content:counter(we);position:absolute;left:0;top:9px;width:20px;height:20px;border-radius:50%;background:#f1f6f1;color:#0a7a52;font-family:ui-monospace,Menlo,monospace;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center}
+  @media (max-width:860px){ .we{grid-template-columns:1fr} .we-d{min-height:0} }
+
+  .al{margin-top:clamp(44px,5vw,68px)}
+  .al-n{display:grid;grid-template-columns:minmax(0,1.6fr) 200px 200px;gap:clamp(14px,2.4vw,30px);padding-bottom:11px;border-bottom:1px solid #dde7db}
+  .al-n span{font-family:ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:#a3ada4}
+  .al-r{display:grid;grid-template-columns:minmax(0,1.6fr) 200px 200px;gap:clamp(14px,2.4vw,30px);align-items:baseline;padding:clamp(16px,2vw,22px) 0;border-bottom:1px solid #e7ece4}
+  .al-r.my{background:#ffffff;border-radius:14px;padding-left:clamp(14px,1.8vw,20px);padding-right:clamp(14px,1.8vw,20px);margin:0 calc(-1 * clamp(14px,1.8vw,20px));border-bottom-color:transparent}
+  .al-t{margin:0;font-size:clamp(16.5px,1.9vw,19px);font-weight:750;letter-spacing:-0.015em;color:#16211a}
+  .al-r.my .al-t{color:#0a5c3c}
+  .al-d{margin:6px 0 0;max-width:58ch;font-size:14px;line-height:1.55;color:#7c877e;text-wrap:pretty}
+  .al-v{font-size:14.5px;line-height:1.45;color:#33413a}
+  .al-r.my .al-v{font-weight:650;color:#16211a}
+  @media (max-width:920px){
+    .al-n{display:none}
+    .al-r{grid-template-columns:1fr;gap:5px}
+    .al-v::before{content:attr(data-l) ': ';color:#a3ada4}
+  }
+  .rz{display:flex;align-items:baseline;flex-wrap:wrap;gap:8px 18px;margin-top:clamp(26px,3vw,36px);padding-top:clamp(20px,2.4vw,26px);border-top:1px solid #dbe4da}
+  .rz-n{flex-shrink:0;font-family:ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:0.13em;text-transform:uppercase;color:#a3ada4}
+  .rz-t{margin:0;max-width:74ch;font-size:15px;line-height:1.6;color:#4c5850;text-wrap:pretty}
+  .rz-t b{font-weight:700;color:#16211a}
+</style>
+
+<!-- =====================================================================
+     1 · HERO — ekran pull requesta
+     Bramka rozwiązuje się sama, a jedyna rzecz, której maszyna nie
+     rozstrzygnie, wraca z naszym komentarzem. To jest cała usługa
+     w jednym obrazie i dlatego stoi na pierwszym ekranie.
+     ===================================================================== -->
+<section style="position:relative;overflow:hidden;background:transparent;padding:clamp(28px,4vw,50px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) clamp(48px,6vw,76px)">
+<div style="display:grid;grid-template-columns:minmax(0,0.88fr) minmax(0,1.12fr);gap:clamp(32px,4.5vw,64px);align-items:center;margin-top:clamp(24px,3vw,34px)" class="hero-split">
+<div>
+<span class="b-oko">guided coding dla zespołów technicznych</span>
+<h1 style="margin:16px 0 0;font-size:clamp(30px,4.6vw,52px);line-height:1.05;letter-spacing:-0.034em;font-weight:800;color:#16211a;text-wrap:balance">Twój zespół buduje z AI. My ustawiamy szyny i czytamy to, co ważne</h1>
+<p style="margin:22px 0 0;max-width:520px;font-size:clamp(16px,2vw,18.5px);line-height:1.6;color:#33413a;text-wrap:pretty">Reguły i bramka w Twoim repozytorium, review zmian przecinających moduły i cztery metryki przepływu liczone co miesiąc tak samo.</p>
+<div style="display:flex;align-items:center;flex-wrap:wrap;gap:14px 20px;margin-top:clamp(26px,3.2vw,36px)">
+<a href="#kontakt" class="btn-dark" style="display:inline-flex;align-items:center;gap:10px;background:#16211a;color:#ffffff;padding:17px 30px;border-radius:12px;font-weight:650;font-size:16px;box-shadow:0 14px 30px -14px rgba(16,33,26,0.45)">Umów bezpłatną diagnozę <span aria-hidden="true">→</span></a>
+<a href="#czym-jest" class="btn-ghost" style="display:inline-flex;align-items:center;gap:8px;font-size:16px;font-weight:700;color:#16211a;background:rgba(255,255,255,0.6);padding:17px 24px;border-radius:12px;border:1px solid rgba(22,33,26,0.16)">Czym to jest <span aria-hidden="true">↓</span></a>
+</div>
+</div>
+
+<div>
+<div class="pr-box" style="--w:660px;--h:470px">
+<div class="pr-ram" role="img" aria-label={`Ekran pull requesta „${PR.tytul}". Bramka rozwiązuje sześć sprawdzeń: ${BRAMKA.map((x) => `${x.t} — ${x.d}`).join('; ')}. Pod spodem komentarz od Let's automate do decyzji architektonicznej.`}>
+<span class="pr-glow" aria-hidden="true"></span>
+<div class="pr-okno">
+<div class="pr-pasek">
+<span class="pr-kropki" aria-hidden="true"><span></span><span></span><span></span></span>
+<span class="pr-url">{PR.repo} · pull/{PR.nr}</span>
+<span class="pr-ja">{PR.autor}</span>
+</div>
+<div class="pr-tresc">
+<div class="pr-tyt"><b>{PR.tytul}</b><i>#{PR.nr}</i></div>
+<div class="pr-meta"><span>{PR.autor}</span><em>{PR.plus}</em><s>{PR.minus}</s><span>· 6 sprawdzeń</span></div>
+<div class="pr-lista">
+{BRAMKA.map((x, i) => (
+  <div class="pr-w" style={`--d:${(PR_START + i * PR_KROK).toFixed(2)}s`}>
+    <span class={`pr-z ${x.s}`} style={`--d:${(PR_START + i * PR_KROK).toFixed(2)}s`} aria-hidden="true">{x.s === 'ok' ? '✓' : x.s === 'uwaga' ? '!' : '↑'}</span>
+    <b>{x.t}</b>
+    <span>{x.d}</span>
+  </div>
+))}
+</div>
+<div class="pr-kom" style={`animation-delay:${(PR_KONIEC + 0.2).toFixed(2)}s`}>
+<span class="pr-kom-a" aria-hidden="true">LA</span>
+<div>
+<div class="pr-kom-n"><b>Let’s automate</b><span>review · 14 minut temu</span></div>
+<p>{KOMENTARZ}</p>
+</div>
+</div>
+</div>
+</div>
+<style is:inline set:html={klatkiPr}></style>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- ============ 1b · PAS DOWODU ============ -->
+<div class="tr">
+<span class="tr-n"><strong>140+ firm</strong> zmienia z nami sposób działania</span>
+<div class="tr-o">
+<div class="tr-t">
+{LOGA.map(([u, a]) => <img src={CDN + u} alt={a}>)}
+{[0, 1, 2].map(() => LOGA.map(([u]) => <img aria-hidden="true" src={CDN + u} alt="">))}
+</div>
+</div>
+</div>
+
+<!-- =====================================================================
+     2 · CZYM TO JEST — wysoko, bo to pierwsze pytanie czytelnika
+     ===================================================================== -->
+<section id="czym-jest" class="b-sec">
+<span class="b-oko">czym to jest</span>
+<h2 class="b-h">Stała współpraca inżynierska wokół tego, co zespół buduje z AI</h2>
+<p class="b-p">Nie zabieramy zespołowi pracy ani narzędzi. Zdejmujemy to, czego przy tym tempie nikt nie nadąża robić.</p>
+
+<div class="kr">
+{KROKI.map((k) => (
+  <div class="kr-k rv">
+    <span class="kr-n">{k.n}</span>
+    <h3 class="kr-t">{k.t}</h3>
+    <p class="kr-d">{k.d}</p>
+  </div>
+))}
+</div>
+
+<div class="cy rv">
+<div class="cy-g" style={`--orig:${CY_ORIG}`}>
+<b>Cykl wytwarzania</b>
+<span class="cy-s">
+<span class="a" style={`animation:cy-a ${CY.c}s steps(1,end) infinite`}>AI pracuje u Ciebie przy <i>jednym etapie</i></span>
+<span class="b" style={`animation:cy-b ${CY.c}s steps(1,end) infinite`}>po ustawieniu szyn — <i>w całym cyklu</i></span>
+</span>
+<div class="cy-ram" role="img" aria-label="Sześć etapów wytwarzania oprogramowania: specyfikacja, projekt, kod, testy, review i utrzymanie. Kadr stoi najpierw na etapie pisania kodu, potem odjeżdża i widać cały cykl.">
+<div class="cy-scena" style={`animation:cy-kadr ${CY.c}s cubic-bezier(.5,0,.2,1) infinite`}>
+<span class="cy-l" aria-hidden="true"></span>
+<div class="cy-e">
+{CYKL.map((x) => (
+  <div
+    class={x.rzad === 0 ? 'rdzen' : 'poza'}
+    style={x.rzad === 0 ? '' : `animation:cy-reszta ${CY.c}s steps(1,end) infinite`}>
+    <u aria-hidden="true"></u>
+    <b>{x.t}</b>
+  </div>
+))}
+</div>
+</div>
+</div>
+<style is:inline set:html={klatkiCyklu}></style>
+<p class="cy-pod">Dziś AI pisze u Ciebie kod i na tym się zatrzymuje. <strong>Zmiana sięga całego cyklu</strong> — specyfikacja zamiast promptu, sprawdzanie maszynowe zamiast czytania wszystkiego.</p>
+</div>
+</div>
+</section>
+
+<!-- ============ 3 · DLA KOGO ============ -->
+<section id="dla-kogo" class="b-sec b-zielona">
+<div class="b-head">
+<div>
+<span class="b-oko">dla kogo to jest</span>
+<h2 class="b-h">Trzy sytuacje, w których zespół ma już AI w pracy</h2>
+</div>
+<p class="b-p" style="margin:0 0 6px;max-width:400px">Wszystkie trzy zdarzają się naraz i wtedy najtrudniej powiedzieć, gdzie dokładnie stoi problem.</p>
+</div>
+<div class="dk">
+{DLA_KOGO.map((x, i) => (
+  <div class="rv">
+    <i class="dk-i">{String(i + 1).padStart(2, '0')}</i>
+    <h3 class="dk-t">{x.t}</h3>
+    <p class="dk-d">{x.d}</p>
+  </div>
+))}
+</div>
+</section>
+
+<!-- =====================================================================
+     4 · CO NAPRAWIAMY — sześć wierszy na pełnej szerokości, każdy
+     podpięty pod metrykę. Pod nimi miara całej strony.
+     ===================================================================== -->
+<section id="problemy" class="b-sec">
+<div class="b-head">
+<div>
+<span class="b-oko">co naprawiamy</span>
+<h2 class="b-h">Każda rzecz ma metrykę, którą liczymy co miesiąc tak samo</h2>
+</div>
+<p class="b-p" style="margin:0 0 6px;max-width:400px">Sposób liczenia jest jawny i nie zmienia się między miesiącami.</p>
+</div>
+
+<div class="pb">
+{PROBLEMY.map((x) => (
+  <div class="pb-r rv">
+    <h3 class="pb-t">{x.t}</h3>
+    <p class="pb-d">{x.d}</p>
+    <span class="pb-m">{x.m}</span>
+  </div>
+))}
+</div>
+
+<div class="wy">
+<p class="wy-t rv">Po pół roku zespół wypuszcza dwa razy więcej i prawie nic nie wraca.</p>
+<div class="rv" role="img" aria-label={`Udział zmian wracających z produkcji: ${MIESIACE.map((m, i) => `miesiąc ${i + 1}: ${cfr(m)} procent`).join(', ')}.`}>
+<div class="wy-p">
+{MIESIACE.map((m, i) => (
+  <div class="wy-c" style={`--d:${(i * 0.09).toFixed(2)}s;--h:${((cfr(m) / cfr(M1)) * 100).toFixed(1)}%`}>
+    <span class="wy-v">{cfr(m)}%</span>
+    <span class="wy-b"></span>
+  </div>
+))}
+</div>
+<div class="wy-m" aria-hidden="true">{MIESIACE.map((m, i) => <span>{i + 1}</span>)}</div>
+<p class="wy-w">Udział zmian wracających z produkcji, miesiąc po miesiącu.</p>
+</div>
+</div>
+</section>
+
+<!-- =====================================================================
+     5 · METRYKI PRZED I PO — ciemny pas, pada raz
+     Czwarta miara rośnie i tak ma być: chodzi o to, żeby zespół
+     wypuszczał więcej, a nie żeby zwalniał.
+     ===================================================================== -->
+<section id="metryki" class="mt-sec">
+<span class="b-oko" style="color:#00CD77">liczby, nie wrażenie</span>
+<h2 class="mt-h">Cztery metryki przepływu, przed i po</h2>
+<p class="mt-p">Stan wyjściowy mierzymy przed ustawieniem czegokolwiek. Potem przechodzimy te same cztery liczby co miesiąc, tym samym sposobem.</p>
+
+<div class="mt rv">
+{METRYKI.map((m, i) => {
+  const max = Math.max(m.p, m.po);
+  return (
+    <div class="mt-k">
+      <h3 class="mt-t">{m.t}<span class="mt-o">{m.o}</span></h3>
+      <div role="img" aria-label={`${m.t}: przed ${m.pT}, po ${m.poT}.`}>
+        <div class="mt-r"><b>przed</b><span class="mt-s" style={`--w:${((m.p / max) * 74).toFixed(1)}%;--d:${(i * 0.09).toFixed(2)}s`}><i></i><em>{m.pT}</em></span></div>
+        <div class="mt-r po"><b>po</b><span class="mt-s" style={`--w:${((m.po / max) * 74).toFixed(1)}%;--d:${(i * 0.09 + 0.12).toFixed(2)}s`}><i></i><em>{m.poT}</em></span></div>
+      </div>
+    </div>
+  );
+})}
+</div>
+<p class="mt-w">Ostatnia miara rośnie i tak ma być. Chodzi o to, żeby zespół wypuszczał więcej, a nie żeby zwalniał w imię porządku.</p>
+</section>
+
+<!-- ============ 6 · CO ROBIMY W KAŻDYM MIESIĄCU — pełna szerokość ============ -->
+<section id="miesiac" class="b-sec">
+<div class="b-head">
+<div>
+<span class="b-oko">co robimy</span>
+<h2 class="b-h">Cztery rzeczy w każdym miesiącu</h2>
+</div>
+<p class="b-p" style="margin:0 0 6px;max-width:400px">Pierwsza dzieje się codziennie, ostatnia raz w miesiącu decyduje o kolejnym.</p>
+</div>
+<div class="rb">
+{ROBIMY.map((x) => (
+  <div class="rb-r rv">
+    <span class="rb-k">{x.k}</span>
+    <h3 class="rb-t">{x.t}</h3>
+    <p class="rb-d">{x.d}</p>
+  </div>
+))}
+</div>
+</section>
+
+<!-- ============ 7 · KTO PO NASZEJ STRONIE ============ -->
+<section id="sklad" class="b-sec b-zielona">
+<div class="b-head">
+<div>
+<span class="b-oko">kto po naszej stronie</span>
+<h2 class="b-h">Prowadzący jest jeden i ten sam przez całą współpracę</h2>
+</div>
+<p class="b-p" style="margin:0 0 6px;max-width:400px">Reszta wchodzi tylko na te miesiące, w których jest potrzebna.</p>
+</div>
+<div class="os-n a"><b>Zawsze w abonamencie</b></div>
+<div class="os-s rv">
+<div class="os-i">
+<span class="os-a">{PROWADZACY.map((o) => <TeamAvatar person={o} size={44} ring="#f4f8f2" />)}</span>
+<span><b class="os-t">Prowadzący inżynier</b><span class="os-d">Ten sam człowiek przez całą współpracę. Przychodzi z tego zespołu.</span></span>
+</div>
+<div class="os-i">
+<svg class="os-z" viewBox="0 0 48 48" role="img" aria-label="Znak naszego narzędzia do analizy kodu">
+<rect x="11" y="13" width="20" height="3.4" rx="1.7" fill="#ffffff" opacity="0.32" />
+<rect x="11" y="22.3" width="26" height="3.4" rx="1.7" fill="#00CD77" />
+<rect x="11" y="31.6" width="14" height="3.4" rx="1.7" fill="#ffffff" opacity="0.32" />
+<path d="M29.5 33.4l2.4 2.4 5-5.2" fill="none" stroke="#00CD77" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" />
+</svg>
+<span><b class="os-t">Nasze narzędzie do analizy kodu</b><span class="os-d">Podpięte do Twojego pipeline’u. Sprawdza reguły i rozmiar zmiany, zanim PR trafi do człowieka.</span></span>
+</div>
+</div>
+<div class="os-n b">Dokładamy na miesiące, w których są potrzebni</div>
+<div class="os-g">
+{DOKLADANE.map((x) => (
+  <div class="rv">
+    <TeamAvatar person={x.kto} size={44} ring="#f4f8f2" />
+    <b>{x.t}</b>
+    <span>{x.d}</span>
+  </div>
+))}
+</div>
+</section>
+
+<!-- ============ 8 · GŁOS KLIENTA ============ -->
+<section class="b-sec" style="padding-top:clamp(52px,6.5vw,84px);padding-bottom:clamp(52px,6.5vw,84px)">
+<figure class="rv" style="margin:0;display:grid;grid-template-columns:auto 1fr;gap:clamp(20px,3vw,40px);align-items:start">
+<span aria-hidden="true" style="font-size:clamp(46px,5vw,64px);line-height:.72;font-weight:800;color:var(--la-accent,#00CD77)">„</span>
+<div>
+<blockquote style="margin:0;font-size:clamp(21px,3vw,36px);line-height:1.3;letter-spacing:-0.025em;font-weight:650;color:#16211a;text-wrap:balance">Let’s automate wziął pełną odpowiedzialność za projekt i dowiózł go do końca. To dlatego powierzyliśmy im kolejny, znacznie większy.</blockquote>
+<figcaption><span style="display:block;margin-top:clamp(16px,2vw,22px);font-size:15px;font-weight:750;color:#16211a">Jakub Ciołkowski</span><span style="display:block;margin-top:2px;font-size:14px;color:#8b968d">Członek Zarządu, NARS Polska</span></figcaption>
+</div>
+</figure>
+</section>
+
+<!-- ============ 9 · OD CZEGO ZACZYNASZ + WYBÓR + ROZLICZENIE ============ -->
+<section id="start" class="b-sec b-zielona">
+<span class="b-oko">od czego zaczynasz</span>
+<h2 class="b-h">Każda współpraca zaczyna się od tej samej bezpłatnej diagnozy</h2>
+<p class="b-p">Trzydzieści minut rozmowy. Dalej idzie jedna z dwóch dróg, zależnie od tego, czy masz już swoje liczby.</p>
+
+<div class="we">
+{WEJSCIE.map((x) => (
+  <div class="we-k rv">
+    <span class="we-e">{x.e}</span>
+    <h3 class="we-t">{x.t}</h3>
+    <p class="we-d">{x.d}</p>
+    <ul class="we-l">{x.kroki.map((k) => <li>{k}</li>)}</ul>
+  </div>
+))}
+</div>
+
+<div class="al">
+<h3 class="b-h" style="font-size:clamp(24px,3.2vw,34px);max-width:520px">Co masz do wyboru</h3>
+<div class="al-n" style="margin-top:clamp(20px,2.4vw,28px)"><span>Droga</span><span>Kiedy działa</span><span>Odpowiedzialność</span></div>
+{ALTERNATYWY.map((x) => (
+  <div class={x.my ? 'al-r my rv' : 'al-r rv'}>
+    <div>
+      <h4 class="al-t">{x.t}</h4>
+      <p class="al-d">{x.d}</p>
+    </div>
+    <span class="al-v" data-l="Kiedy działa">{x.kiedy}</span>
+    <span class="al-v" data-l="Odpowiedzialność">{x.kto}</span>
+  </div>
+))}
+</div>
+
+<div class="rz rv">
+<span class="rz-n">Rozliczenie</span>
+<p class="rz-t"><b>Abonament</b>, kiedy zmiany idą ciągle, albo <b>projekt</b> z konkretnym zakresem i ceną, kiedy chodzi o jedną rzecz do przestawienia.</p>
+</div>
+</section>
+
+<GcCta
+  heading="Zobaczmy, gdzie stoi Twój przepływ"
+  lead="Napisz w dwóch zdaniach, ile osób pracuje z AI i co Cię najbardziej spowalnia. Odezwiemy się z terminem — 30 minut, bez zobowiązań."
+  eyebrow="Z diagnozy wychodzisz z"
+  items={[
+    { t: 'Odpowiedzią, gdzie stoi przepływ', d: 'i co go najmocniej blokuje' },
+    { t: 'Listą pierwszych szyn do ustawienia', d: 'w kolejności, w jakiej mają sens' },
+    { t: 'Zakresem pierwszego miesiąca', d: 'razem ze stawką' },
+  ]}
+  fieldLabel="Co masz dzisiaj?"
+  placeholder="Np. dwanaście osób, Claude Code od pół roku, review jest wąskim gardłem…"
+  submitLabel="Umów bezpłatną diagnozę"
+  badges={[
+    { i: 'klodka', t: 'Twoje dane bezpieczne' },
+    { i: 'kartka', t: 'NDA przed startem' },
+    { i: 'ptaszek', t: 'Kod zostaje Twój' },
+  ]}
+/>
+
+<GcFaq
+  heading="Pytania, które słyszymy najczęściej"
+  lead={'Pierwsze pada na każdej rozmowie z zespołem, zanim padnie cokolwiek o narzędziach.'}
+  items={faq}
+/>
+</LaBase>

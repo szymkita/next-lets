@@ -1,0 +1,888 @@
+---
+// INSPIRACJE — /inspiracje  (wersja 4: showreel aplikacji + to, co aplikacją nie jest)
+//
+// TRZY POPRZEDNIE WERSJE W docs/_kopie/:
+//   v1 katalog   — histogram wag i 64 wiersze z filtrami
+//                  → „to jest do zrzucenia całkowicie, to ma być wizualne"
+//   v2 galeria   — dziesięć interfejsów, każdy w osobnej sekcji
+//                  → „tu nie ma żadnej wartości, żadnej inspiracji"
+//   v3 przemiany — 28 delt „przed → po" bez ani jednego ekranu
+//                  → „powinna być oparta o ekrany aplikacji, które rozwiązują
+//                     jakieś zadania, przede wszystkim w pierwszej kolejności"
+//
+// CO Z NICH ZOSTAŁO:
+//   z v2 — ekrany rysowane w HTML (klient chce zobaczyć oprogramowanie)
+//   z v3 — zadanie i liczba przy każdej rzeczy (bez tego ekran jest ozdobą)
+//   Wersja czwarta łączy jedno z drugim: SHOWREEL, w którym każdy ekran ma
+//   przypisane zadanie, które rozwiązuje, i liczbę mówiącą o ile jest lepiej.
+//
+// UKŁAD (kolejność podyktowana wprost przez Szymona):
+//   1. showreel aplikacji — NAJPIERW, zajmuje pierwszy ekran
+//   2. rok w jednej firmie — ciemny pas, dowód że rzeczy się kumulują
+//   3. „Nie wszystko jest aplikacją" — predykcje, odczyt, głos, obraz, pilnowanie
+//   4. czego nie budujemy · FAQ · kontakt
+//
+// SHOWREEL — mechanika:
+//   Lista po lewej działa jak playlista: pozycja aktywna ma pasek postępu,
+//   po 5,4 s wchodzi następna. Kliknięcie zatrzymuje obieg i pokazuje wybraną.
+//   Sterowane skryptem, nie klatkami CSS, bo lista musi być klikalna.
+//   Przy prefers-reduced-motion obiegu nie ma — stoi pierwszy ekran, klikanie
+//   dalej działa.
+//
+// ===================================================================
+// !! DO PODMIANY PRZED PUBLIKACJĄ !!
+// Wszystkie liczby (pola `a`, `b` w APLIKACJE i UMIEJETNOSCI oraz tablica
+// SCHODY) są ROBOCZE. Szymon zdecydował, że mają pochodzić z prawdziwych,
+// zanonimizowanych wdrożeń — branża i wielkość firmy, bez nazw.
+// Dane na ekranach (nazwy firm, kwoty, numery, nazwiska) są przykładowe
+// i tak jest napisane na stronie.
+// ===================================================================
+import LaBase from '../layouts/LaBase.astro';
+import GcFaq from '../components/GcFaq.astro';
+import GcCta from '../components/GcCta.astro';
+
+const kanon = new URL('/inspiracje', Astro.site).href;
+
+// ---- SHOWREEL: osiem aplikacji, osiem różnych ekranów -------------------
+// `zadanie` to zdanie o tym, co znika z dnia pracy. `a → b` to miara.
+const APLIKACJE = [
+  { k: 'zlecenia', n: '01', t: 'Rejestr zleceń', z: 'Stan sprawy przestaje być składany z pięciu narzędzi i tablicy na ścianie.', a: '10 dni', b: '1 dzień', c: 'zanim ktoś zauważy, że sprawa stoi' },
+  { k: 'oferta', n: '02', t: 'Generator ofert', z: 'Oferta składa się z cennika, w jednym wzorze, z rabatem w limicie.', a: '3 dni', b: '25 minut', c: 'od zapytania do wysłanej oferty' },
+  { k: 'portal', n: '03', t: 'Portal klienta', z: 'Klient sam sprawdza etap sprawy, bez logowania i bez telefonu.', a: '855 pytań', b: '224', c: 'telefonów o status w miesiącu' },
+  { k: 'planer', n: '04', t: 'Planer obłożenia', z: 'Kolizja sprzętu wychodzi przy układaniu planu, na dwa tygodnie przed robotą.', a: '6 kolizji', b: '0', c: 'w miesiącu' },
+  { k: 'koszty', n: '05', t: 'Obieg akceptacji kosztów', z: 'Zgoda przestaje wisieć w mailu, a przy każdej stoi limit i ślad decyzji.', a: '5 dni', b: '4 godziny', c: 'od wniosku do księgowania' },
+  { k: 'grafik', n: '06', t: 'Grafik zmian', z: 'Dziura w obsadzie pokazuje się w chwili, w której powstaje.', a: 'w piątek', b: 'od razu', c: 'widać brak osoby z uprawnieniem' },
+  { k: 'reklamacje', n: '07', t: 'Rejestr reklamacji', z: 'Termin ustawowy odlicza się sam przy każdej sprawie i przypomina zawczasu.', a: '4 dni', b: '1 dzień', c: 'do decyzji w sprawie' },
+  { k: 'kokpit', n: '08', t: 'Kokpit zarządu', z: 'Liczba na zarząd liczy się sama, z jednej definicji dla całej firmy.', a: 'rok', b: '1 dzień', c: 'zanim widać, który klient zarabia' },
+];
+const REEL_MS = 5400;
+
+// ---- CIEMNY PAS: rok w jednej firmie ------------------------------------
+const SCHODY = [
+  { m: 'miesiąc 1', t: 'Pilnowanie ofert, które ucichły', d: 'Tydzień roboty. Pierwsza rzecz, po której ktokolwiek uwierzył, że to działa.', v: '3 dni' },
+  { m: 'miesiąc 3', t: 'Rejestr ofert z historią ustaleń', d: 'Koniec z szukaniem w czyjejś skrzynce, co ustalono z klientem.', v: '2 dni' },
+  { m: 'miesiąc 6', t: 'Wycena z rysunku technicznego', d: 'Rzecz, dla której cała reszta była rozbiegiem.', v: '6 godzin' },
+  { m: 'miesiąc 8', t: 'Portal ze statusem sprawy', d: 'Klient przestał dzwonić z pytaniem, na jakim to etapie.', v: '25 minut' },
+  { m: 'miesiąc 11', t: 'Rentowność zlecenia', d: 'Dopiero teraz było z czego ją policzyć.', v: '25 minut', nota: 'bez zmiany — ta rzecz mierzy się czym innym' },
+];
+
+// ---- NIE WSZYSTKO JEST APLIKACJĄ ----------------------------------------
+// Sześć rzeczy, które nie mają własnego ekranu: siedzą w cudzych systemach
+// albo chodzą w tle. Przy każdej trzy konkretne przykłady z miarą.
+const UMIEJETNOSCI = [
+  {
+    k: 'czyta', t: 'Czyta dokumenty',
+    d: 'Wszędzie tam, gdzie ktoś przepisuje dane z pliku do systemu.',
+    p: [
+      { t: 'Faktura kosztowa z poczty do systemu', a: '3 dni', b: '2 godziny' },
+      { t: 'Wycena z rysunku i specyfikacji', a: '3 dni', b: '25 minut' },
+      { t: 'Wymagania z dokumentacji przetargowej', a: '1 dzień', b: '15 minut' },
+      { t: 'Kary i terminy z czterystu umów', a: 'nikt nie czytał', b: '3 dni' },
+    ],
+  },
+  {
+    k: 'przewiduje', t: 'Przewiduje',
+    d: 'Model liczy szansę z Waszej historii, zamiast czekać, aż wyjdzie w raporcie.',
+    p: [
+      { t: 'Który klient zapłaci po terminie', a: '41 dni', b: '29 dni' },
+      { t: 'Prognoza z lejka zamiast sumy deklaracji', a: '±40%', b: '±12%' },
+      { t: 'Które zapytania warto wyceniać', a: '410 wycen', b: '180 wycen' },
+      { t: 'Które zlecenie zejdzie pod kreskę', a: 'po zamknięciu', b: 'w trakcie' },
+    ],
+  },
+  {
+    k: 'slucha', t: 'Słucha i mówi',
+    d: 'Rozmowa przestaje być rzeczą, którą trzeba potem przepisać.',
+    p: [
+      { t: 'Notatka ze spotkania trafia do systemu sama', a: '2 h tygodniowo', b: '0' },
+      { t: 'Agent głosowy odbiera telefon po godzinach', a: '9 nagrań', b: '0' },
+      { t: 'Podsumowanie rozmowy serwisowej w karcie klienta', a: 'jedno zdanie', b: 'komplet' },
+    ],
+  },
+  {
+    k: 'patrzy', t: 'Patrzy',
+    d: 'Zdjęcie albo obraz z kamery zamiast formularza i obchodu.',
+    p: [
+      { t: 'Przestój na linii wykryty z obrazu kamery', a: 'następny dzień', b: '4 minuty' },
+      { t: 'Dokument przewozowy ze zdjęcia telefonem', a: 'następny dzień', b: '2 minuty' },
+      { t: 'Reklamacja ze zdjęciem uszkodzenia', a: '4 dni', b: '1 dzień' },
+    ],
+  },
+  {
+    k: 'pilnuje', t: 'Pilnuje',
+    d: 'Rzeczy, o których zapomina się dokładnie wtedy, kiedy kosztuje to najwięcej.',
+    p: [
+      { t: 'Oferta, która ucichła, wraca do handlowca', a: '0 odzyskanych', b: '1 z 6 wraca' },
+      { t: 'Umowa przedłużająca się bez decyzji', a: '11 sztuk', b: '0' },
+      { t: 'Wygasające uprawnienie na zmianie', a: 'przy kontroli', b: '30 dni wcześniej' },
+      { t: 'Sprawa bez ruchu od tygodnia', a: 'przy telefonie', b: 'codziennie rano' },
+    ],
+  },
+  {
+    k: 'odpowiada', t: 'Odpowiada z Waszych dokumentów',
+    d: 'Asystent, który zna Wasze procedury i pokazuje, skąd wziął odpowiedź.',
+    p: [
+      { t: 'Pytanie o procedurę zamiast pytania do kolegi', a: '20 minut', b: '15 sekund' },
+      { t: 'Odpowiedzi do formularza przetargowego', a: '2 dni', b: '2 godziny' },
+      { t: 'Co druga strona zmieniła w umowie', a: '2 godziny', b: '5 minut' },
+    ],
+  },
+];
+
+const ILE = APLIKACJE.length + UMIEJETNOSCI.reduce((s, u) => s + u.p.length, 0);
+
+const GRANICE = [
+  { t: 'Czatu, który odpowiada na wszystko', d: 'Odpowiada również wtedy, kiedy nie wie. Koszt jednej złej odpowiedzi przy cenie albo terminie bywa większy niż oszczędność na stu dobrych.' },
+  { t: 'Przepisania ERP-a od zera', d: 'To projekt na dwa lata, który zwykle kończy się w połowie. Taniej wychodzi zbudować obok to, czego ERP nie umie, i zostawić w nim księgowość.' },
+  { t: 'Agenta, który sam pisze do klientów', d: 'Bez akceptacji człowieka pierwsza pomyłka kosztuje więcej niż rok zaoszczędzonego czasu. Projekt odpowiedzi tak, wysyłka po zatwierdzeniu.' },
+  { t: 'Aplikacji zamiast decyzji', d: 'Kiedy w firmie nie ustalono, kto zatwierdza rabat, system tego nie rozstrzygnie. Wtedy zaczynamy od reguły, a narzędzie przychodzi po niej.' },
+];
+
+const title = "Inspiracje: aplikacje, które budujemy — showreel | Let's automate";
+const description = `Osiem aplikacji firmowych pokazanych ekran po ekranie, z zadaniem, które rozwiązują, i liczbą przy każdym. Pod spodem ${ILE - APLIKACJE.length} rzeczy, które aplikacją nie są: odczyt dokumentów, prognozy, agent głosowy, obraz z kamery.`;
+
+const dane = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    { '@type': 'CollectionPage', '@id': `${kanon}#strona`, url: kanon, name: 'Inspiracje — aplikacje i rozwiązania AI, które budujemy', description, about: { '@id': new URL('/#organizacja', Astro.site).href } },
+    {
+      '@type': 'ItemList', '@id': `${kanon}#aplikacje`, name: 'Aplikacje firmowe, które budujemy', numberOfItems: APLIKACJE.length,
+      itemListElement: APLIKACJE.map((p, i) => ({ '@type': 'ListItem', position: i + 1, name: p.t, description: `${p.z} Efekt: ${p.a} → ${p.b} ${p.c}.` })),
+    },
+    {
+      '@type': 'BreadcrumbList', '@id': `${kanon}#okruszki`,
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Strona główna', item: new URL('/', Astro.site).href },
+        { '@type': 'ListItem', position: 2, name: 'Inspiracje', item: kanon },
+      ],
+    },
+  ],
+};
+
+const faq = [
+  { q: 'Czy te ekrany są z prawdziwych wdrożeń?', a: 'Kształt tak, dane nie. Ekrany rysujemy od zera pod tę stronę, a nazwy firm, kwoty i numery są przykładowe — prawdziwych zrzutów nie publikujemy, bo idą razem z danymi klientów. Na rozmowie pokazujemy działające wdrożenia po podpisaniu NDA.' },
+  { q: 'Czy dostaniemy dokładnie taką aplikację?', a: 'Nie. Każda z nich powstała pod inny proces i Wasza też będzie inna — te same są elementy, z których się składa: rejestr, formularz, kolejka zatwierdzeń, powiadomienie, widok dla klienta. Dlatego druga i trzecia rzecz w tym samym miejscu kosztują wyraźnie mniej niż pierwsza.' },
+  { q: 'Skąd biorą się liczby przy ekranach?', a: 'Z naszych wdrożeń, mierzone przed przebudową i po niej na tej samej sprawie. Firmy opisujemy branżą i wielkością, bez nazw, bo taki jest warunek większości umów. U Was mogą wyjść inne — dlatego stan wyjściowy mierzymy przed budową i zapisujemy próg w umowie. Bez pomiaru „przed" żadna z tych liczb nic nie znaczy.' },
+  { q: 'Ile trwa zbudowanie takiej aplikacji?', a: 'Od trzech tygodni do trzech miesięcy, zależnie od tego, ile systemów trzeba dotknąć i ile przypadków szczególnych ma Wasz proces. Zaczynamy od jednej rzeczy, uruchamiamy ją na produkcji i dopiero potem bierzemy następną. Ciemny pas wyżej pokazuje, jak wyglądał taki rok w jednej firmie.' },
+  { q: 'Czy do wszystkiego potrzebny jest model AI?', a: 'Nie. Aplikacje z showreelu to w większości zwykłe oprogramowanie: rejestry, obiegi, kokpity. Model dokładamy tam, gdzie wąskim gardłem jest czytanie albo słuchanie — i to są rzeczy z sekcji pod spodem. Jedno i drugie budujemy tak samo często.' },
+  { q: 'Ile to kosztuje?', a: 'Cena idzie za wielkością rzeczy i za liczbą wyjątków w Waszym procesie. Największy wpływ mają trzy sprawy: ile systemów trzeba dotknąć, ile przypadków szczególnych obsługujecie i czy dane są już w jednym miejscu. Widełki podajemy po pierwszej rozmowie, na której przechodzimy jedną pozycję do końca. Nie mamy prowizji od żadnego dostawcy, więc wybór narzędzia nie zmienia naszego przychodu.' },
+  { q: 'Nie mamy działu IT', a: 'To nie wyklucza niczego z tej strony. Wymaga natomiast osoby po Waszej stronie, która zna proces i ma prawo rozstrzygnąć wątpliwość — to zwykle kierownik działu. Dostępy do systemów ustawiamy z Waszym dostawcą IT. Firmom bez własnego działu IT poświęcona jest osobna strona: <a href="/guided-coding/bez-dzialu-it" style="font-weight:700;color:#0a7a52">budowanie aplikacji bez działu IT</a>.' },
+  { q: 'Czyja jest ta aplikacja po odbiorze?', a: 'Wasza. Repozytorium, klucze i dostępy są Wasze od pierwszego dnia, więc utrzymanie może przejąć Wasz zespół albo inny dostawca. Kiedy utrzymujemy my, umowa jest osobna od budowy i wypowiadalna z miesięcznym terminem. Jeśli chcecie budować sami, tym zajmuje się <a href="/guided-coding" style="font-weight:700;color:#0a7a52">Guided Coding</a> — kod pisze Wasz zespół, my pilnujemy jakości.' },
+];
+dane['@graph'].push({
+  '@type': 'FAQPage', '@id': `${kanon}#faq`,
+  mainEntity: faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a.replace(/<[^>]+>/g, '') } })),
+});
+---
+<LaBase title={title} description={description} ctaHref="#kontakt" ctaLabel="Umów rozmowę" nav="inspiracje">
+<script type="application/ld+json" is:inline set:html={JSON.stringify(dane)} slot="head"></script>
+<style is:global slot="head">
+  /* =====================================================================
+     PRYMITYWY INTERFEJSU — wszystkie osiem ekranów jest z tych samych klocków,
+     dzięki czemu showreel wygląda jak jedno oprogramowanie.
+     ===================================================================== */
+  .win{width:100%;min-width:0;background:#ffffff;border-radius:clamp(10px,1vw,14px);overflow:hidden;box-shadow:0 40px 70px -38px rgba(11,35,23,0.55),0 8px 20px -12px rgba(11,35,23,0.18),0 0 0 1px rgba(18,38,28,0.055)}
+  .win-bar{display:flex;align-items:center;gap:9px;padding:9px 13px;background:#fbfcfa;border-bottom:1px solid #eef1ec}
+  .win-bar i{width:7px;height:7px;border-radius:50%;background:#e0e5de;flex-shrink:0}
+  .win-bar b{margin:0 auto;font-family:ui-monospace,Menlo,monospace;font-size:9.5px;font-weight:400;letter-spacing:0.04em;color:#a6b1a7;padding-right:30px}
+  .win-body{display:grid;grid-template-columns:132px minmax(0,1fr)}
+  .win-body.solo{grid-template-columns:minmax(0,1fr)}
+  .pad{padding:clamp(13px,1.6vw,20px);min-width:0}
+
+  .sb{padding:14px 9px;background:#fafcf9;border-right:1px solid #f0f3ee}
+  .sb-h{padding:0 8px 11px;font-size:11px;font-weight:750;color:#16211a;display:flex;align-items:center;gap:7px}
+  .sb-h span{display:flex;align-items:center;justify-content:center;width:17px;height:17px;border-radius:5px;background:#0e2b1d;color:#fff;font-size:9px;font-weight:800}
+  .sb-i{display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:7px;font-size:11.5px;color:#8b968d;white-space:nowrap;overflow:hidden}
+  .sb-i.on{background:#eef6f0;color:#0a7a52}
+  .sb-i i{width:5px;height:5px;border-radius:50%;background:currentColor;opacity:.5;flex-shrink:0}
+
+  .gh{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:12px}
+  .gh b{font-size:13.5px;font-weight:750;letter-spacing:-0.015em;color:#16211a}
+  .tb{width:100%;font-size:11.5px}
+  .tb-h{display:grid;gap:0 12px;padding:0 0 8px;font-family:ui-monospace,Menlo,monospace;font-size:9px;letter-spacing:0.09em;color:#b3beb4;border-bottom:1px solid #eef1ec}
+  .tb-r{display:grid;gap:0 12px;padding:9px 0;border-bottom:1px solid #f4f7f2;align-items:center}
+  .tb-r:last-child{border-bottom:0}
+  .tb-r.hi{background:linear-gradient(90deg,rgba(0,205,119,0.09),rgba(0,205,119,0))}
+  .mono{font-family:ui-monospace,Menlo,monospace;font-size:10.5px;color:#8b968d}
+  .tr{color:#33413a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .tr b{font-weight:650;color:#16211a}
+  .st{display:inline-flex;align-items:center;gap:6px;font-size:10.5px;color:#5e6b62;white-space:nowrap}
+  .st i{width:6px;height:6px;border-radius:50%;background:#d5dcd3;flex-shrink:0}
+  .st.ok i{background:var(--la-accent,#00CD77)}
+  .st.cz i{background:#e0a854}
+  .pill{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:650;background:#eef6f0;color:#0a7a52;white-space:nowrap}
+  .pill.am{background:#fdf3e4;color:#b07524}
+  .kf{padding:12px 13px;border-radius:9px;background:#fafcf9;box-shadow:inset 0 0 0 1px #eff3ed}
+  .kf-l{font-size:10px;color:#a6b1a7}
+  .kf-v{margin-top:3px;font-size:clamp(19px,2vw,26px);font-weight:800;letter-spacing:-0.03em;line-height:1;color:#16211a}
+  .kf-d{margin-top:5px;font-size:10px;font-weight:700;color:#0a7a52}
+  .kf-d.am{color:#b07524}
+  .slup{display:flex;align-items:flex-end;gap:4px;height:48px;margin-top:10px}
+  .slup i{flex:1;border-radius:2px 2px 0 0;background:#dceadf}
+  .slup i.on{background:var(--la-accent,#00CD77)}
+  .doc{padding:13px 14px;border-radius:8px;background:#ffffff;box-shadow:0 14px 28px -20px rgba(11,35,23,0.45),0 0 0 1px #eef1ec}
+  .doc-h{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding-bottom:9px;border-bottom:1px solid #f0f3ee}
+  .doc-h b{font-size:11.5px;font-weight:750;color:#16211a}
+  .doc-h span{font-family:ui-monospace,Menlo,monospace;font-size:9.5px;color:#b3beb4}
+  .lin{display:block;height:4px;border-radius:3px;background:#eef1ec;margin-bottom:6px}
+  .lin.mark{background:#cdeddd}
+  .bt{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:7px;font-size:11px;font-weight:650}
+  .bt.pri{background:#16211a;color:#fff}
+  .bt.sec{background:#f2f5f0;color:#7c877e}
+  .bt.acc{background:var(--la-accent,#00CD77);color:#0b1a11}
+  .fon{width:clamp(176px,15vw,206px);flex-shrink:0;border-radius:26px;padding:8px;background:#12211a;box-shadow:0 40px 70px -34px rgba(11,35,23,0.7),0 0 0 1px rgba(255,255,255,0.09) inset}
+  .fon-e{border-radius:20px;background:#fff;overflow:hidden}
+  .fon-t{display:flex;align-items:center;justify-content:space-between;padding:9px 12px 7px;font-family:ui-monospace,Menlo,monospace;font-size:8.5px;color:#b3beb4}
+  .fon-b{padding:4px 12px 15px}
+  .tor{display:flex;align-items:flex-start}
+  .krk{flex:1;display:flex;flex-direction:column;align-items:center;gap:7px;position:relative}
+  .krk::before{content:"";position:absolute;top:5px;left:-50%;width:100%;height:2px;background:#e9eee6}
+  .krk:first-child::before{display:none}
+  .krk.go::before,.krk.tu::before{background:var(--la-accent,#00CD77)}
+  .krk em{width:11px;height:11px;border-radius:50%;background:#e9eee6}
+  .krk.go em{background:var(--la-accent,#00CD77)}
+  .krk.tu em{background:#fff;box-shadow:0 0 0 3px var(--la-accent,#00CD77)}
+  .krk b{font-size:8px;font-weight:650;line-height:1.25;color:#5e6b62;text-align:center;letter-spacing:-0.015em}
+  .krk.pu b{color:#b3beb4;font-weight:500}
+
+  /* siatki: planer i grafik */
+  .pl-g{display:grid;grid-template-columns:104px repeat(15,minmax(0,1fr));gap:3px;align-items:center}
+  .pl-d{font-family:ui-monospace,Menlo,monospace;font-size:8.5px;color:#b3beb4;text-align:center}
+  .pl-n{font-size:11px;font-weight:650;color:#33413a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:8px}
+  .pl-c{height:22px;border-radius:3px;background:#f1f5ef}
+  .pl-c.a{background:#9fdcbe}
+  .pl-c.b{background:var(--la-accent,#00CD77)}
+  .pl-c.c{background:#cfead9}
+  .pl-c.x{background:#f6dfbe;box-shadow:inset 0 0 0 1.5px #e0a854}
+  .gr-g{display:grid;grid-template-columns:92px repeat(7,minmax(0,1fr));gap:4px}
+  .gr-d{font-family:ui-monospace,Menlo,monospace;font-size:8.5px;color:#b3beb4;text-align:center;padding-bottom:2px}
+  .gr-n{font-size:10.5px;font-weight:650;color:#33413a;display:flex;align-items:center}
+  .gr-c{height:32px;border-radius:5px;background:#f1f5ef;display:flex;align-items:center;justify-content:center;font-family:ui-monospace,Menlo,monospace;font-size:8.5px;color:#7f8c82}
+  .gr-c.r{background:#dff2e7;color:#0a7a52}
+  .gr-c.p{background:#c9ebd9;color:#0a7a52}
+  .gr-c.luka{background:#fdf1e0;color:#b07524;box-shadow:inset 0 0 0 1.5px #e0a854}
+
+  /* =====================================================================
+     SHOWREEL
+     ===================================================================== */
+  .rl{display:grid;grid-template-columns:clamp(240px,23vw,320px) minmax(0,1fr);gap:clamp(20px,3vw,48px);align-items:start;margin-top:clamp(26px,3.4vw,44px)}
+  .rl > *{min-width:0}
+  .rl-scena{min-width:0}
+  .rl-lista{border-top:1px solid #dde7db}
+  .rl-i{position:relative;display:grid;grid-template-columns:auto minmax(0,1fr);gap:0 12px;width:100%;padding:13px 0;border:0;border-bottom:1px solid #dde7db;background:none;font-family:inherit;text-align:left;cursor:pointer;transition:padding-left .2s}
+  .rl-i:hover{padding-left:5px}
+  .rl-n{font-family:ui-monospace,Menlo,monospace;font-size:11px;color:#b6c6b4;padding-top:2px;transition:color .18s}
+  .rl-t{font-size:15.5px;font-weight:700;letter-spacing:-0.015em;line-height:1.3;color:#7c877e;transition:color .18s}
+  .rl-i:hover .rl-t{color:#16211a}
+  .rl-i.on .rl-t{color:#16211a}
+  .rl-i.on .rl-n{color:var(--la-accent,#00CD77)}
+  .rl-prog{position:absolute;left:0;bottom:-1px;height:2px;width:0;background:var(--la-accent,#00CD77)}
+  .rl-i.on .rl-prog{animation:rl-prog var(--rl) linear forwards}
+  .rl-i.on.stop .rl-prog{animation:none;width:100%}
+  @keyframes rl-prog{from{width:0}to{width:100%}}
+  .rl-scena{position:relative;display:grid;padding:clamp(16px,2.2vw,34px);border-radius:clamp(16px,2vw,24px);background:linear-gradient(158deg,#f4f9f4 0%,#e7f0e8 100%);overflow:hidden}
+  .rl-scena::before{content:"";position:absolute;inset:0;background:radial-gradient(56% 62% at 82% -6%, rgba(0,205,119,0.28), transparent 68%);pointer-events:none}
+  .rl-e{grid-area:1/1;z-index:1;display:flex;align-items:center;justify-content:center;gap:clamp(14px,2vw,28px);opacity:0;transform:translateY(10px) scale(.995);transition:opacity .42s cubic-bezier(.4,0,.2,1),transform .42s cubic-bezier(.4,0,.2,1);pointer-events:none}
+  .rl-e.on{opacity:1;transform:none;pointer-events:auto}
+  .rl-pod{display:grid;margin-top:clamp(16px,2vw,24px)}
+  .rl-c{grid-area:1/1;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px clamp(24px,3vw,52px);align-items:start;opacity:0;transform:translateY(8px);transition:opacity .42s,transform .42s;pointer-events:none}
+  .rl-c.on{opacity:1;transform:none;pointer-events:auto}
+  .rl-z{margin:0;font-size:clamp(16px,1.9vw,20px);line-height:1.45;font-weight:650;letter-spacing:-0.014em;color:#16211a;text-wrap:pretty;max-width:640px}
+  .rl-dl{display:flex;flex-direction:column;align-items:flex-end;gap:3px;text-align:right}
+  .rl-a{font-size:14px;color:#9aa69c;white-space:nowrap}
+  .rl-k{display:block;width:9px;height:9px;border-right:2px solid var(--la-accent,#00CD77);border-bottom:2px solid var(--la-accent,#00CD77);transform:rotate(45deg);margin:3px 3px 6px 0}
+  .rl-b{font-size:clamp(23px,2.7vw,32px);font-weight:800;letter-spacing:-0.034em;line-height:1;color:#16211a;white-space:nowrap}
+  .rl-cap{margin:5px 0 0;font-size:12px;color:#8b968d;max-width:210px}
+  .rl-nota{margin:clamp(18px,2.2vw,26px) 0 0;font-size:13px;color:#a3aea4}
+  @media (max-width:1000px){
+    .rl{grid-template-columns:1fr}
+    .rl-lista{order:2;border-top:0}
+    .rl-i:first-child{border-top:1px solid #dde7db}
+    .rl-scena{order:1}
+    .rl-pod{order:1}
+  }
+  @media (max-width:640px){
+    .rl-scena{padding:12px}
+    /* Makiety nie ściskają się — upraszczamy je: kolumny drugorzędne wypadają,
+       a ekrany złożone z dwóch okien układają się w pionie. */
+    /* Na telefonie scena dopasowuje się do bieżącego ekranu — układanie
+       wszystkich ośmiu w jednej komórce zostawiałoby pod niższymi
+       dwieście pikseli martwej zieleni. */
+    .rl-e{display:none;flex-direction:column;align-items:stretch;gap:10px}
+    .rl-e.on{display:flex}
+    .gh{flex-wrap:wrap}
+    .pill{white-space:normal}
+    .e1 .tb-h,.e1 .tb-r{grid-template-columns:60px minmax(0,1fr) 68px !important}
+    .e1 .tb-h > :nth-child(3),.e1 .tb-r > :nth-child(3),
+    .e1 .tb-h > :nth-child(4),.e1 .tb-r > :nth-child(4){display:none !important}
+    .e2 .win:first-child{max-width:none !important}
+    .e2 .tb-h,.e2 .tb-r{grid-template-columns:minmax(0,1fr) 70px !important}
+    .e2 .tb-h > :nth-child(2),.e2 .tb-r > :nth-child(2){display:none !important}
+    .e3 .tb-r{grid-template-columns:minmax(0,1fr) 46px !important}
+    .e3 .tb-r > :nth-child(2){display:none !important}
+    .e5 .pad{grid-template-columns:1fr !important}
+    .e7 .tb-h,.e7 .tb-r{grid-template-columns:64px minmax(0,1fr) 72px !important}
+    .e7 .tb-h > :nth-child(3),.e7 .tb-r > :nth-child(3),
+    .e7 .tb-h > :nth-child(4),.e7 .tb-r > :nth-child(4){display:none !important}
+    .e8 .pad > div:first-child{grid-template-columns:repeat(2,minmax(0,1fr)) !important}
+    .e8 .pad > div:nth-child(2){grid-template-columns:1fr !important}
+    .e8 .tb-r{grid-template-columns:minmax(0,1fr) 76px 44px !important}
+    .rl-c{grid-template-columns:1fr}
+    .rl-dl{flex-direction:row;align-items:baseline;justify-content:flex-start;gap:10px;text-align:left}
+    .rl-k{transform:rotate(-45deg);margin:0 3px}
+    .rl-cap{max-width:none}
+    .win-body{grid-template-columns:minmax(0,1fr)}
+    .sb{display:none}
+    .pl-g{grid-template-columns:58px repeat(15,minmax(0,1fr));gap:2px}
+    .pl-c{height:13px}
+    .gr-g{grid-template-columns:52px repeat(7,minmax(0,1fr));gap:2px}
+    .gr-c{height:20px;font-size:7px}
+    .gr-n{font-size:9px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .rl-e,.rl-c{transition:none}
+    .rl-i.on .rl-prog{animation:none;width:100%}
+  }
+
+  /* =====================================================================
+     CIEMNY PAS — schody
+     ===================================================================== */
+  .sh{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:clamp(10px,1.4vw,18px);margin-top:clamp(28px,3.4vw,44px);align-items:end}
+  .sh-k{display:flex;flex-direction:column;justify-content:flex-end;padding:clamp(15px,1.8vw,21px);border-radius:13px;background:rgba(255,255,255,0.055);box-shadow:inset 0 0 0 1px rgba(255,255,255,0.09)}
+  .sh-m{font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.42)}
+  .sh-t{margin:9px 0 0;font-size:14.5px;font-weight:750;letter-spacing:-0.014em;line-height:1.3;color:#ffffff;text-wrap:balance}
+  .sh-d{margin:7px 0 0;font-size:12.5px;line-height:1.5;color:rgba(255,255,255,0.6);text-wrap:pretty}
+  .sh-os{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:clamp(10px,1.4vw,18px);margin-top:14px}
+  .sh-v{display:flex;flex-direction:column;gap:7px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.16)}
+  .sh-v b{font-size:clamp(17px,2.1vw,25px);font-weight:800;letter-spacing:-0.03em;line-height:1;color:#ffffff}
+  .sh-v.ost b{color:var(--la-accent,#00CD77)}
+  .sh-v span{font-size:11px;color:rgba(255,255,255,0.42)}
+  @media (max-width:960px){ .sh,.sh-os{grid-template-columns:repeat(2,minmax(0,1fr))} .sh-k{justify-content:flex-start} }
+  @media (max-width:540px){ .sh,.sh-os{grid-template-columns:1fr} }
+
+  /* =====================================================================
+     NIE WSZYSTKO JEST APLIKACJĄ
+     ===================================================================== */
+  .um{margin-top:clamp(28px,3.4vw,44px)}
+  .um-r{display:grid;grid-template-columns:minmax(0,0.72fr) minmax(0,1.5fr);gap:clamp(16px,3vw,56px);align-items:start;padding:clamp(24px,2.8vw,34px) 0;border-top:1px solid #dde7db}
+  .um-r:last-of-type{border-bottom:1px solid #dde7db}
+  .um-t{margin:0;font-size:clamp(20px,2.4vw,27px);font-weight:800;letter-spacing:-0.028em;line-height:1.1;color:#16211a;text-wrap:balance}
+  .um-d{margin:11px 0 0;font-size:14.5px;line-height:1.55;color:#6d7a71;text-wrap:pretty}
+  .um-p{display:grid;grid-template-columns:minmax(0,1fr) 104px 14px 124px;gap:0 clamp(10px,1.6vw,20px);align-items:baseline;padding:9px 0;border-top:1px solid #eaefe7}
+  .um-p:first-child{border-top:0;padding-top:0}
+  .um-p b{font-size:14.5px;font-weight:600;letter-spacing:-0.01em;line-height:1.4;color:#16211a;text-wrap:pretty}
+  .um-a{font-size:13px;color:#9aa69c;text-align:right;white-space:nowrap}
+  .um-s{display:block;width:7px;height:7px;border-right:1.8px solid var(--la-accent,#00CD77);border-bottom:1.8px solid var(--la-accent,#00CD77);transform:rotate(-45deg)}
+  .um-b{font-size:15px;font-weight:750;letter-spacing:-0.015em;color:#16211a;white-space:nowrap}
+  @media (max-width:900px){ .um-r{grid-template-columns:1fr;gap:16px} }
+  @media (max-width:520px){
+    .um-p{grid-template-columns:minmax(0,1fr) auto;gap:4px 12px}
+    .um-a{grid-column:1;text-align:left;font-size:12.5px}
+    .um-s{display:none}
+    .um-b{grid-column:2;grid-row:2}
+  }
+
+  /* granice */
+  .gr2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 clamp(28px,4vw,64px);margin-top:clamp(24px,3vw,36px)}
+  .gr2 > div{padding:clamp(18px,2.2vw,26px) 0;border-top:1px solid #e2e9e0}
+  .gr2 h3{margin:0;font-size:clamp(16px,1.9vw,19px);font-weight:750;letter-spacing:-0.016em;line-height:1.3;color:#16211a;text-wrap:balance}
+  .gr2 p{margin:8px 0 0;font-size:14.5px;line-height:1.6;color:#4c5850;text-wrap:pretty}
+  @media (max-width:820px){ .gr2{grid-template-columns:1fr} }
+</style>
+
+<!-- ============ HERO + SHOWREEL ============
+     Showreel stoi od razu pod nagłówkiem, bo to on jest treścią strony.
+     Lista po lewej jest playlistą: pozycja aktywna ma pasek postępu,
+     kliknięcie zatrzymuje obieg i pokazuje wybraną aplikację. -->
+<div aria-hidden="true" style="position:absolute;left:0;right:0;top:0;height:980px;background:radial-gradient(1020px 600px at 74% -6%, rgba(0,205,119,0.17), transparent 62%);pointer-events:none"></div>
+<section id="showreel" style="position:relative;overflow:hidden;padding:clamp(22px,3.2vw,42px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) clamp(48px,6vw,80px);scroll-margin-top:74px">
+
+<div class="sec-head" style="align-items:flex-end">
+<h1 style="margin:0;max-width:760px;font-size:clamp(30px,4.2vw,52px);line-height:1.03;letter-spacing:-0.035em;font-weight:800;color:#16211a;text-wrap:balance">Aplikacje, które budujemy firmom</h1>
+<div style="display:flex;flex-direction:column;gap:16px;max-width:430px">
+<p style="margin:0;font-size:clamp(15.5px,1.9vw,17.5px);line-height:1.6;color:#4c5850;text-wrap:pretty">Osiem ekranów, a przy każdym zadanie, które znika z dnia pracy, i liczba mówiąca o ile. Kliknijcie pozycję z listy, żeby zatrzymać się dłużej.</p>
+<a href="#kontakt" class="btn-dark" style="align-self:flex-start;display:inline-flex;align-items:center;gap:10px;background:#16211a;color:#ffffff;padding:15px 26px;border-radius:11px;font-weight:650;font-size:15.5px">Umów rozmowę <span aria-hidden="true">→</span></a>
+</div>
+</div>
+
+<div class="rl" style={`--rl:${REEL_MS}ms`} data-ms={String(REEL_MS)}>
+
+<div class="rl-lista" role="tablist" aria-label="Aplikacje">
+{APLIKACJE.map((p, i) => (
+  <button type="button" class={i === 0 ? 'rl-i on' : 'rl-i'} role="tab" aria-selected={i === 0 ? 'true' : 'false'}>
+    <span class="rl-n">{p.n}</span>
+    <span class="rl-t">{p.t}</span>
+    <span class="rl-prog" aria-hidden="true"></span>
+  </button>
+))}
+</div>
+
+<div>
+<div class="rl-scena">
+
+<!-- 01 · rejestr zleceń -->
+<div class="rl-e on e1">
+<div class="win">
+<div class="win-bar"><i></i><i></i><i></i><b>rejestr zleceń</b></div>
+<div class="win-body">
+<div class="sb">
+<div class="sb-h"><span>W</span>Wasza firma</div>
+<div class="sb-i on"><i></i>Zlecenia</div>
+<div class="sb-i"><i></i>Klienci</div>
+<div class="sb-i"><i></i>Zasoby</div>
+<div class="sb-i"><i></i>Raporty</div>
+</div>
+<div class="pad">
+<div class="gh"><b>Zlecenia w toku</b><span class="pill">18 aktywnych</span></div>
+<div class="tb">
+<div class="tb-h" style="grid-template-columns:64px minmax(0,1fr) 92px 70px 74px"><span>NUMER</span><span>SPRAWA</span><span>PROWADZI</span><span>TERMIN</span><span>STAN</span></div>
+<div class="tb-r hi" style="grid-template-columns:64px minmax(0,1fr) 92px 70px 74px"><span class="mono">ZLC-118</span><span class="tr"><b>Montaż</b> — Weldon sp. z o.o.</span><span class="tr">M. Wrona</span><span class="mono">24 wrz</span><span class="st ok"><i></i>w toku</span></div>
+<div class="tb-r" style="grid-template-columns:64px minmax(0,1fr) 92px 70px 74px"><span class="mono">ZLC-119</span><span class="tr"><b>Serwis</b> — Prima Logistics</span><span class="tr">K. Lis</span><span class="mono">26 wrz</span><span class="st cz"><i></i>czeka</span></div>
+<div class="tb-r" style="grid-template-columns:64px minmax(0,1fr) 92px 70px 74px"><span class="mono">ZLC-120</span><span class="tr"><b>Montaż</b> — Zakład Kowalski</span><span class="tr">M. Wrona</span><span class="mono">27 wrz</span><span class="st"><i></i>gotowe</span></div>
+<div class="tb-r" style="grid-template-columns:64px minmax(0,1fr) 92px 70px 74px"><span class="mono">ZLC-121</span><span class="tr"><b>Przegląd</b> — Nordis Sp. z o.o.</span><span class="tr">T. Bąk</span><span class="mono">02 paź</span><span class="st ok"><i></i>w toku</span></div>
+<div class="tb-r" style="grid-template-columns:64px minmax(0,1fr) 92px 70px 74px"><span class="mono">ZLC-122</span><span class="tr"><b>Wymiana</b> — Fabryka Wschód</span><span class="tr">K. Lis</span><span class="mono">04 paź</span><span class="st ok"><i></i>w toku</span></div>
+</div>
+<div style="display:flex;align-items:center;flex-wrap:wrap;gap:8px 10px;margin-top:13px;padding-top:12px;border-top:1px solid #f0f3ee">
+<span class="pill am">ZLC-119 stoi 3 dni — czeka na materiał</span>
+<span style="font-size:11px;color:#8b968d">sygnał poszedł do K. Lisa dziś rano</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- 02 · generator ofert -->
+<div class="rl-e e2">
+<div class="win" style="max-width:340px;flex-shrink:0">
+<div class="win-bar"><i></i><i></i><i></i><b>cennik</b></div>
+<div class="pad">
+<div style="font-size:11px;font-weight:750;color:#16211a;margin-bottom:10px">Wybrane pozycje</div>
+{[
+  { t: 'Moduł montażowy MX-4', v: '4 × 3 900', on: true },
+  { t: 'Sterownik serii S', v: '1 × 8 200', on: true },
+  { t: 'Montaż i uruchomienie', v: '1 × 14 400', on: true },
+  { t: 'Przegląd roczny', v: 'opcja', on: false },
+  { t: 'Szkolenie obsługi', v: 'opcja', on: false },
+].map((r) => (
+  <div style="display:flex;align-items:center;gap:9px;padding:8px 0;border-bottom:1px solid #f4f7f2;font-size:11.5px;color:#33413a">
+    <i style={`width:14px;height:14px;border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:${r.on ? '#00CD77' : '#e6ece5'}`}>
+      {r.on && <svg viewBox="0 0 24 24" width="9" height="9" fill="none" stroke="#0b1a11" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>}
+    </i>
+    <span class="tr">{r.t}</span>
+    <span class="mono" style="margin-left:auto">{r.v}</span>
+  </div>
+))}
+<div style="display:flex;align-items:baseline;justify-content:space-between;margin-top:11px;padding-top:11px;border-top:1px solid #eef1ec;font-size:11px;color:#8b968d">Razem netto <b style="font-size:16px;font-weight:800;letter-spacing:-0.02em;color:#16211a">48 200 zł</b></div>
+</div>
+</div>
+<div class="win">
+<div class="win-bar"><i></i><i></i><i></i><b>oferta-0147.pdf</b></div>
+<div class="pad">
+<div class="doc-h" style="border-bottom:0;padding-bottom:2px"><b style="font-size:13px">Oferta 0147/2026</b><span>ważna 21 dni</span></div>
+<div style="font-size:11px;color:#8b968d;margin-bottom:12px">dla Weldon sp. z o.o. · Marta Wrona</div>
+<div class="tb">
+<div class="tb-h" style="grid-template-columns:minmax(0,1fr) 34px 78px"><span>POZYCJA</span><span>IL.</span><span>WARTOŚĆ</span></div>
+<div class="tb-r" style="grid-template-columns:minmax(0,1fr) 34px 78px"><span class="tr">Moduł montażowy MX-4</span><span class="mono">4</span><span class="mono" style="color:#33413a">15 600</span></div>
+<div class="tb-r" style="grid-template-columns:minmax(0,1fr) 34px 78px"><span class="tr">Sterownik serii S</span><span class="mono">1</span><span class="mono" style="color:#33413a">8 200</span></div>
+<div class="tb-r" style="grid-template-columns:minmax(0,1fr) 34px 78px"><span class="tr">Montaż i uruchomienie</span><span class="mono">1</span><span class="mono" style="color:#33413a">14 400</span></div>
+</div>
+<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:13px;padding-top:12px;border-top:1px solid #eef1ec">
+<span class="pill">rabat 8% w limicie handlowca</span>
+<b style="font-size:17px;font-weight:800;letter-spacing:-0.025em;color:#16211a">48 200 zł</b>
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:13px"><span class="bt pri">Wyślij do klienta</span><span class="bt sec">Poproś o zgodę na rabat</span></div>
+</div>
+</div>
+</div>
+
+<!-- 03 · portal klienta -->
+<div class="rl-e e3">
+<div class="fon">
+<div class="fon-e">
+<div class="fon-t"><span>9:41</span><span>●●●</span></div>
+<div class="fon-b">
+<div style="font-size:12.5px;font-weight:800;letter-spacing:-0.02em;color:#16211a">Twoje zlecenie</div>
+<div class="mono" style="margin-top:2px">ZLC-118 · montaż</div>
+<div class="tor" style="margin:16px 2px 15px">
+<span class="krk go"><em></em><b>Przyjęte</b></span>
+<span class="krk go"><em></em><b>Wycena</b></span>
+<span class="krk tu"><em></em><b>Montaż</b></span>
+<span class="krk pu"><em></em><b>Odbiór</b></span>
+</div>
+<div style="padding:11px 12px;border-radius:9px;background:#f4f8f2">
+<div style="font-size:10px;color:#8b968d">Planowany odbiór</div>
+<div style="margin-top:3px;font-size:12.5px;font-weight:750;color:#16211a">24 września, 10:00</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:6px;margin-top:10px">
+<span class="bt acc" style="justify-content:center">Pobierz protokół</span>
+<span class="bt sec" style="justify-content:center">Zgłoś uwagę</span>
+</div>
+</div>
+</div>
+</div>
+<div class="win">
+<div class="win-bar"><i></i><i></i><i></i><b>obsługa · pytania o status</b></div>
+<div class="pad">
+<div class="gh"><b>Pytania, które przestały przychodzić</b><span class="mono">wrzesień</span></div>
+{[
+  { t: 'Na jakim etapie jest zlecenie', w: 86, n: '312' },
+  { t: 'Kiedy przyjedzie ekipa', w: 71, n: '184' },
+  { t: 'Gdzie jest protokół odbioru', w: 64, n: '96' },
+  { t: 'Reklamacja poza katalogiem', w: 11, n: '41', am: true },
+].map((r) => (
+  <div class="tb-r" style="grid-template-columns:minmax(0,1fr) 110px 44px">
+    <span class="tr">{r.t}</span>
+    <span style="display:block;height:6px;border-radius:3px;background:#eaefe7;overflow:hidden"><i style={`display:block;width:${r.w}%;height:100%;border-radius:3px;background:${r.am ? '#e0a854' : '#00CD77'}`}></i></span>
+    <span class="mono" style="text-align:right">{r.n}</span>
+  </div>
+))}
+<p style="margin:13px 0 0;font-size:11.5px;line-height:1.5;color:#8b968d">Ostatni wiersz zostaje przy telefonie — i to są rozmowy, w których jesteście naprawdę potrzebni.</p>
+</div>
+</div>
+</div>
+
+<!-- 04 · planer obłożenia -->
+<div class="rl-e e4">
+<div class="win">
+<div class="win-bar"><i></i><i></i><i></i><b>planer obłożenia · wrzesień</b></div>
+<div class="pad">
+<div class="pl-g" style="margin-bottom:7px">
+<span></span>
+{['pn','wt','śr','cz','pt','pn','wt','śr','cz','pt','pn','wt','śr','cz','pt'].map((d) => <span class="pl-d">{d}</span>)}
+</div>
+{[
+  { n: 'Brygada A', c: 'aabbb..cccc.aaa' },
+  { n: 'Brygada B', c: '.ccaaabb..bbcc.' },
+  { n: 'Brygada C', c: 'bb..ccaaaa.b...' },
+  { n: 'Serwis', c: 'c.aa..cc..bbb.a' },
+  { n: 'Podnośnik', c: '..bbxx..cc.aaa.' },
+  { n: 'Spawalnia', c: 'aa.ccc..bb..aa.' },
+].map((r) => (
+  <div class="pl-g" style="margin-bottom:3px">
+    <span class="pl-n">{r.n}</span>
+    {r.c.split('').map((z) => <span class={z === '.' ? 'pl-c' : `pl-c ${z}`}></span>)}
+  </div>
+))}
+<div style="display:flex;align-items:center;flex-wrap:wrap;gap:9px 18px;margin-top:15px;padding-top:13px;border-top:1px solid #f0f3ee">
+<span class="pill am">Kolizja: podnośnik zajęty w dwóch zleceniach 18 i 19 września</span>
+<span style="display:inline-flex;align-items:center;gap:7px;font-size:11px;color:#8b968d"><i style="width:11px;height:11px;border-radius:3px;background:var(--la-accent,#00CD77);display:block"></i>montaż</span>
+<span style="display:inline-flex;align-items:center;gap:7px;font-size:11px;color:#8b968d"><i style="width:11px;height:11px;border-radius:3px;background:#9fdcbe;display:block"></i>serwis</span>
+<span style="display:inline-flex;align-items:center;gap:7px;font-size:11px;color:#8b968d"><i style="width:11px;height:11px;border-radius:3px;background:#cfead9;display:block"></i>przegląd</span>
+</div>
+</div>
+</div>
+</div>
+
+<!-- 05 · obieg akceptacji kosztów -->
+<div class="rl-e e5">
+<div class="win">
+<div class="win-bar"><i></i><i></i><i></i><b>koszt w obiegu · KOS-2418</b></div>
+<div class="pad" style="display:grid;grid-template-columns:minmax(0,0.8fr) minmax(0,1fr);gap:clamp(14px,2vw,24px);align-items:start">
+<div class="doc">
+<div class="doc-h"><b>FV/2026/0418</b><span>PDF</span></div>
+<div style="margin-top:11px">
+<span class="lin" style="width:62%"></span>
+<span class="lin mark" style="width:86%"></span>
+<span class="lin" style="width:48%"></span>
+<span class="lin" style="width:74%"></span>
+<span class="lin mark" style="width:56%;margin-bottom:0"></span>
+</div>
+<div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-top:13px;padding-top:11px;border-top:1px solid #f0f3ee">
+<span style="font-size:10.5px;color:#a6b1a7">Weldon sp. z o.o.</span>
+<b style="font-size:14px;font-weight:800;letter-spacing:-0.02em;color:#16211a">12 480 zł</b>
+</div>
+</div>
+<div>
+<div style="font-size:11px;font-weight:750;color:#16211a;margin-bottom:10px">Obieg akceptacji</div>
+<div class="tb">
+<div class="tb-r" style="grid-template-columns:16px minmax(0,1fr) auto;gap:0 9px"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#00CD77" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span class="tr"><b>Kierownik działu</b> · Marta W.</span><span class="mono">09:14</span></div>
+<div class="tb-r" style="grid-template-columns:16px minmax(0,1fr) auto;gap:0 9px"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#00CD77" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span class="tr"><b>Kontroling</b> · Anna S.</span><span class="mono">09:41</span></div>
+<div class="tb-r" style="grid-template-columns:16px minmax(0,1fr) auto;gap:0 9px"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#d99a3c" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span class="tr"><b>Zarząd</b> · próg 10 000 zł</span><span class="mono" style="color:#b07524">czeka</span></div>
+</div>
+<div style="display:flex;align-items:center;gap:9px;margin:13px 0 12px;font-size:10.5px;color:#8b968d">64% budżetu Q3<span style="flex:1;height:5px;border-radius:3px;background:#eef2ec;overflow:hidden"><i style="display:block;width:64%;height:100%;background:var(--la-accent,#00CD77);border-radius:3px"></i></span></div>
+<div class="kf" style="padding:11px 13px">
+<div style="display:flex;align-items:baseline;justify-content:space-between;gap:9px"><span style="font-size:10.5px;color:#a6b1a7">Księgowanie</span><b style="font-size:11.5px;font-weight:650;color:#16211a">5-01-2 · usługi obce</b></div>
+<div style="display:flex;align-items:baseline;justify-content:space-between;gap:9px;margin-top:8px"><span style="font-size:10.5px;color:#a6b1a7">Projekt</span><b style="font-size:11.5px;font-weight:650;color:#16211a">Hala W — etap 2</b></div>
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:12px"><span class="bt pri">Zatwierdź</span><span class="bt sec">Odeślij z uwagą</span></div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- 06 · grafik zmian -->
+<div class="rl-e e6">
+<div class="win">
+<div class="win-bar"><i></i><i></i><i></i><b>grafik zmian · 14–20 września</b></div>
+<div class="pad">
+<div class="gr-g" style="margin-bottom:5px">
+<span></span>
+{['pn 14','wt 15','śr 16','cz 17','pt 18','sb 19','nd 20'].map((d) => <span class="gr-d">{d}</span>)}
+</div>
+{[
+  { n: 'Anna S.', c: ['r','r','r','p','p','', ''] },
+  { n: 'Marek W.', c: ['p','p','','r','r','r',''] },
+  { n: 'Kasia L.', c: ['','r','r','r','','p','p'] },
+  { n: 'Tomek B.', c: ['r','','p','p','r','','r'] },
+  { n: 'Ewa K.', c: ['p','p','r','','luka','r','r'] },
+].map((w) => (
+  <div class="gr-g" style="margin-bottom:4px">
+    <span class="gr-n">{w.n}</span>
+    {w.c.map((z) => (
+      z === '' ? <span class="gr-c">—</span>
+        : z === 'luka' ? <span class="gr-c luka">?</span>
+        : <span class={`gr-c ${z}`}>{z === 'r' ? '6–14' : '14–22'}</span>
+    ))}
+  </div>
+))}
+<div style="display:flex;align-items:center;flex-wrap:wrap;gap:9px 18px;margin-top:14px;padding-top:12px;border-top:1px solid #f0f3ee">
+<span class="pill am">Piątek, zmiana popołudniowa — brakuje osoby z uprawnieniem SEP</span>
+<span style="font-size:11px;color:#8b968d">Marek W. ma wolne i ważne uprawnienie do 03.2027</span>
+</div>
+</div>
+</div>
+</div>
+
+<!-- 07 · rejestr reklamacji -->
+<div class="rl-e e7">
+<div class="win">
+<div class="win-bar"><i></i><i></i><i></i><b>reklamacje · terminy ustawowe</b></div>
+<div class="pad">
+<div class="gh"><b>Sprawy otwarte</b><span class="pill am">2 na dziś</span></div>
+<div class="tb">
+<div class="tb-h" style="grid-template-columns:66px minmax(0,1fr) 104px 96px 80px"><span>NUMER</span><span>KLIENT I PRZEDMIOT</span><span>ZOSTAŁO</span><span>ETAP</span><span>DECYZJA</span></div>
+{[
+  { n: 'REK-0231', k: 'Weldon — moduł MX-4', d: 6, dt: '6 z 14 dni', e: 'oględziny', s: 'dziś', am: true },
+  { n: 'REK-0232', k: 'Nordis — sterownik S', d: 30, dt: '3 z 14 dni', e: 'ekspertyza', s: '4 dni', am: false },
+  { n: 'REK-0233', k: 'Prima — montaż hali', d: 64, dt: '9 z 14 dni', e: 'wycena naprawy', s: '9 dni', am: false },
+  { n: 'REK-0234', k: 'Zakład Kowalski — przegląd', d: 12, dt: '2 z 14 dni', e: 'oględziny', s: 'jutro', am: true },
+  { n: 'REK-0235', k: 'Fabryka Wschód — wymiana', d: 86, dt: '12 z 14 dni', e: 'przyjęta', s: '12 dni', am: false },
+].map((r) => (
+  <div class="tb-r" style="grid-template-columns:66px minmax(0,1fr) 104px 96px 80px">
+    <span class="mono">{r.n}</span>
+    <span class="tr">{r.k}</span>
+    <span style="display:block;height:6px;border-radius:3px;background:#eaefe7;overflow:hidden"><i style={`display:block;width:${r.d}%;height:100%;border-radius:3px;background:${r.am ? '#e0a854' : '#00CD77'}`}></i></span>
+    <span class="tr" style="font-size:11px">{r.e}</span>
+    <span class={r.am ? 'st cz' : 'st'} style="justify-content:flex-start"><i></i>{r.s}</span>
+  </div>
+))}
+</div>
+<div style="display:flex;align-items:center;flex-wrap:wrap;gap:8px 10px;margin-top:13px;padding-top:12px;border-top:1px solid #f0f3ee">
+<span class="pill am">REK-0231 — termin ustawowy mija dziś o 23:59</span>
+<span style="font-size:11px;color:#8b968d">przypomnienie poszło wczoraj i dziś rano</span>
+</div>
+</div>
+</div>
+</div>
+
+<!-- 08 · kokpit zarządu -->
+<div class="rl-e e8">
+<div class="win">
+<div class="win-bar"><i></i><i></i><i></i><b>kokpit zarządu · trzeci kwartał</b></div>
+<div class="pad">
+<div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px">
+<div class="kf"><div class="kf-l">Przychód kwartału</div><div class="kf-v">4,2 mln</div><div class="kf-d">↑ 11% r/r</div></div>
+<div class="kf"><div class="kf-l">Marża</div><div class="kf-v">21%</div><div class="kf-d am">↓ z 24%</div></div>
+<div class="kf"><div class="kf-l">Zleceń zamkniętych</div><div class="kf-v">126</div><div class="kf-d">↑ 12%</div></div>
+<div class="kf"><div class="kf-l">Czas sprawy</div><div class="kf-v">1,5 dnia</div><div class="kf-d">↓ z 6 dni</div></div>
+</div>
+<div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:clamp(12px,1.6vw,20px);margin-top:11px;align-items:start">
+<div class="kf">
+<div style="display:flex;align-items:baseline;justify-content:space-between"><div class="kf-l">Przychód tygodniami</div><div class="mono">13 tyg.</div></div>
+<div class="slup"><i style="height:36%"></i><i style="height:48%"></i><i style="height:41%"></i><i style="height:57%"></i><i style="height:50%"></i><i style="height:64%"></i><i style="height:59%"></i><i style="height:72%"></i><i style="height:66%"></i><i style="height:83%"></i><i style="height:77%"></i><i style="height:91%"></i><i class="on" style="height:100%"></i></div>
+</div>
+<div>
+<div style="font-size:11px;font-weight:750;color:#16211a;margin-bottom:9px">Marża po kliencie</div>
+{[
+  { n: 'Weldon sp. z o.o.', p: 31, v: '31%' },
+  { n: 'Nordis Sp. z o.o.', p: 24, v: '24%' },
+  { n: 'Prima Logistics', p: 18, v: '18%' },
+  { n: 'Zakład Kowalski', p: 9, v: '9%', sr: true },
+  { n: 'Fabryka Wschód', p: -4, v: '−4%', am: true },
+].map((r) => (
+  <div class="tb-r" style="grid-template-columns:minmax(0,1fr) 104px 44px;gap:0 10px">
+    <span class="tr">{r.n}</span>
+    <span style="position:relative;display:block;height:6px;border-radius:3px;background:#eef2ec;overflow:hidden">
+      <i style="position:absolute;left:18%;top:0;bottom:0;width:1px;background:#c3cec2;z-index:2"></i>
+      {r.p >= 0
+        ? <i style={`position:absolute;left:18%;top:0;bottom:0;border-radius:3px;width:${((r.p / 31) * 82).toFixed(1)}%;background:${r.sr ? '#9fdcbe' : '#00CD77'}`}></i>
+        : <i style={`position:absolute;right:82%;top:0;bottom:0;border-radius:3px;width:${((-r.p / 8) * 18).toFixed(1)}%;background:#e0a854`}></i>}
+    </span>
+    <span class="mono" style={r.am ? 'text-align:right;color:#b07524;font-weight:700' : 'text-align:right;color:#33413a'}>{r.v}</span>
+  </div>
+))}
+<div style="display:flex;align-items:center;flex-wrap:wrap;gap:8px 9px;margin-top:11px;padding-top:10px;border-top:1px solid #f0f3ee">
+<span class="pill am">Fabryka Wschód pod kreską trzeci kwartał</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+
+<!-- podpisy: zadanie i miara, zmieniają się razem z ekranem -->
+<div class="rl-pod">
+{APLIKACJE.map((p, i) => (
+  <div class={i === 0 ? 'rl-c on' : 'rl-c'}>
+    <p class="rl-z">{p.z}</p>
+    <div class="rl-dl">
+      <span class="rl-a">{p.a}</span>
+      <span class="rl-k"></span>
+      <span class="rl-b">{p.b}</span>
+      <span class="rl-cap">{p.c}</span>
+    </div>
+  </div>
+))}
+</div>
+</div>
+</div>
+
+<p class="rl-nota">Ekrany rysujemy pod tę stronę — kształt jest prawdziwy, nazwy firm, kwoty i numery są przykładowe.</p>
+</section>
+
+<!-- ============ CIEMNY PAS — rok w jednej firmie ============
+     Dowód, że rzeczy się kumulują. Pod schodami jedna miara pięć razy:
+     ile mija od zapytania do oferty. Piąty stopień świadomie jej nie
+     poprawia i jest o tym napisane. -->
+<section id="rok" style="position:relative;background:radial-gradient(1000px 460px at 84% 0%, rgba(0,205,119,0.16), transparent 62%), #0e2b1d;padding:clamp(58px,7vw,100px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:74px">
+<div class="sec-head">
+<h2 class="h-sec" style="margin:0;max-width:620px;color:#ffffff;text-wrap:balance">Żadna z nich nie stoi sama</h2>
+<p style="margin:0 0 6px;max-width:480px;font-size:17px;line-height:1.6;color:rgba(255,255,255,0.72);text-wrap:pretty">Jeden rok u producenta konstrukcji stalowych, 120 osób. Pod spodem ta sama miara pięć razy: ile mija od zapytania do oferty.</p>
+</div>
+
+<div class="sh">
+{SCHODY.map((s) => (
+  <div class="sh-k rv">
+    <div class="sh-m">{s.m}</div>
+    <h3 class="sh-t">{s.t}</h3>
+    <p class="sh-d">{s.d}</p>
+  </div>
+))}
+</div>
+<div class="sh-os">
+{SCHODY.map((s, i) => (
+  <div class={i === 3 ? 'sh-v ost' : 'sh-v'}>
+    <b style={s.nota ? 'color:rgba(255,255,255,0.42)' : ''}>{s.v}</b>
+    <span>{s.nota || 'od zapytania do oferty'}</span>
+  </div>
+))}
+</div>
+
+<p style="margin:clamp(24px,2.8vw,34px) 0 0;max-width:840px;font-size:16.5px;line-height:1.65;color:rgba(255,255,255,0.72);text-wrap:pretty">Pierwsza rzecz zajęła tydzień i nie zmieniła prawie nic. Zmieniła natomiast to, że przy szóstym miesiącu nikt już nie pytał, czy warto. Rzecz, dla której cała reszta była rozbiegiem, weszła jako trzecia — i weszła w gotowe, bo dane i zgody były już na miejscu.</p>
+</section>
+
+<!-- ============ NIE WSZYSTKO JEST APLIKACJĄ ============
+     Rzeczy bez własnego ekranu: siedzą w cudzych systemach albo chodzą w tle.
+     Świadomie bez makiet — po showreelu kolejne okna byłyby szumem. -->
+<section id="poza" class="sec-pad" style="background:#f4f8f2;padding-top:clamp(58px,7vw,96px)">
+<div class="sec-head">
+<h2 class="h-sec" style="margin:0;max-width:640px;text-wrap:balance">Nie wszystko jest aplikacją</h2>
+<p style="margin:0 0 6px;max-width:500px;font-size:17px;line-height:1.6;color:#4c5850;text-wrap:pretty">Część rzeczy nie ma własnego ekranu — siedzą w systemach, które już macie, albo chodzą w tle. Widać po nich tylko efekt.</p>
+</div>
+
+<div class="um">
+{UMIEJETNOSCI.map((u) => (
+  <div class="um-r rv">
+    <div>
+      <h3 class="um-t">{u.t}</h3>
+      <p class="um-d">{u.d}</p>
+    </div>
+    <div>
+    {u.p.map((x) => (
+      <div class="um-p">
+        <b>{x.t}</b>
+        <span class="um-a">{x.a}</span>
+        <span class="um-s" aria-hidden="true"></span>
+        <span class="um-b">{x.b}</span>
+      </div>
+    ))}
+    </div>
+  </div>
+))}
+</div>
+
+<p class="sub rv" style="margin:clamp(28px,3.4vw,42px) 0 0;max-width:780px">Liczby są z naszych wdrożeń, mierzone przed przebudową i po niej na tej samej sprawie. Firmy opisujemy branżą i wielkością, bez nazw — tak stoi w umowach. U Was mogą wyjść inne i dlatego stan wyjściowy mierzymy przed budową, a próg zapisujemy w umowie.</p>
+</section>
+
+<!-- ============ CZEGO NIE BUDUJEMY ============ -->
+<section id="granice" class="sec-pad" style="padding-top:clamp(56px,7vw,92px)">
+<h2 class="h-mod" style="margin:0;max-width:620px;text-wrap:balance">Czego nie budujemy</h2>
+<p class="sub rv" style="margin:16px 0 0;max-width:700px">Cztery rzeczy, o które pytają najczęściej. Powód przy każdej jest ten sam: łatwiej sprzedać, trudniej obronić po roku.</p>
+<div class="gr2">
+{GRANICE.map((g) => (
+  <div class="rv"><h3>{g.t}</h3><p>{g.d}</p></div>
+))}
+</div>
+</section>
+
+<GcFaq
+  heading="Pytania, które padają<br>przy tych ekranach"
+  lead="Najczęściej o to, czy dostaniecie dokładnie taką aplikację i ile trwa dojście do pierwszej."
+  ctaLabel="Zadajcie swoje wprost →"
+  items={faq}
+/>
+
+<GcCta
+  heading="Który ekran jest Wasz?"
+  lead="Na pierwszej rozmowie przechodzimy to, na czym schodzi u Was czas, i wskazujemy jedną rzecz do zrobienia najpierw — razem z tymi, które odradzamy."
+  eyebrow="Z rozmowy wychodzicie z"
+  items={[
+    { t: 'Jedną rzeczą na start', d: 'wybraną z Waszej listy, z powodem takiego wyboru' },
+    { t: 'Szkicem ekranu pod Wasz proces', d: 'takim jak te wyżej, tylko z Waszymi sprawami' },
+    { t: 'Punktem odniesienia', d: 'co i jak zmierzyć przed startem, żeby dało się porównać' },
+  ]}
+  submitLabel="Umów rozmowę"
+  fieldLabel="Na czym schodzi u Was czas?"
+  placeholder="Np. wycena czeka na technologa i wraca po trzech dniach…"
+  badges={[
+    { i: 'klodka', t: 'Twoje dane bezpieczne' },
+    { i: 'kartka', t: 'NDA przed startem' },
+    { i: 'ptaszek', t: 'Aplikacja zostaje Wasza' },
+  ]}
+/>
+
+<script>
+  // ---- SHOWREEL ----------------------------------------------------------
+  // Playlista po lewej steruje ekranem po prawej. Obieg leci sam, a kliknięcie
+  // w pozycję zatrzymuje go na dobre — kto zaczął wybierać, nie chce, żeby mu
+  // uciekało sprzed nosa.
+  (function(){
+    var wrap = document.querySelector('.rl');
+    if(!wrap) return;
+    var lista = [].slice.call(wrap.querySelectorAll('.rl-i'));
+    var ekrany = [].slice.call(wrap.querySelectorAll('.rl-e'));
+    var podpisy = [].slice.call(wrap.querySelectorAll('.rl-c'));
+    if(!lista.length || lista.length !== ekrany.length) return;
+
+    var ms = parseInt(wrap.getAttribute('data-ms'), 10) || 5400;
+    var bezRuchu = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var i = 0, zegar = null, zatrzymany = bezRuchu;
+
+    function pokaz(n){
+      i = n;
+      lista.forEach(function(el, k){
+        el.classList.toggle('on', k === n);
+        el.classList.toggle('stop', zatrzymany && k === n);
+        el.setAttribute('aria-selected', k === n ? 'true' : 'false');
+      });
+      ekrany.forEach(function(el, k){ el.classList.toggle('on', k === n); });
+      podpisy.forEach(function(el, k){ el.classList.toggle('on', k === n); });
+    }
+
+    lista.forEach(function(el, k){
+      el.addEventListener('click', function(){
+        zatrzymany = true;
+        if(zegar){ clearInterval(zegar); zegar = null; }
+        pokaz(k);
+      });
+    });
+
+    pokaz(0);
+    if(!zatrzymany){
+      zegar = setInterval(function(){ pokaz((i + 1) % lista.length); }, ms);
+    }
+  })();
+</script>
+</LaBase>

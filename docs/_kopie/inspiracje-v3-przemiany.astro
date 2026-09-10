@@ -1,0 +1,787 @@
+---
+// INSPIRACJE — /inspiracje  (wersja 3: przemiany)
+//
+// DWIE POPRZEDNIE WERSJE ODRZUCONE — obie leżą w docs/_kopie/:
+//   v1 (katalog)  — histogram wag i 64 wiersze z filtrami.
+//                   „to jest do zrzucenia całkowicie, to jest brzydkie,
+//                    to ma być wizualne"
+//   v2 (galeria)  — dziesięć interfejsów narysowanych w HTML.
+//                   „ja dalej tego nie rozumiem, tu nie ma żadnej wartości,
+//                    żadnej inspiracji"
+//
+// DIAGNOZA: obie katalogowały ARTEFAKTY — rejestr, kokpit, generator ofert.
+// Nikogo nie inspiruje obrazek CRM-a, bo każdy go już widział. Nie było ani
+// jednego zdania, po którym ktoś mówi „a to się da?", ani jednej liczby.
+//
+// JEDNOSTKĄ TEJ STRONY JEST PRZEMIANA (decyzja Szymona, 07.09.2026):
+//   jak jest dziś  →  co się zmienia  →  o ile, w liczbie  →  co z tego wynika
+// Nie pokazujemy narzędzia. Pokazujemy różnicę, którą robi.
+//
+// WARSTWA WIZUALNA — dziewiąty osobny słownik w serwisie:
+//   /strategia-ai:             łuki, pole przewag, siatka stu kwadratów
+//   /rozwiazania-ai:           przekrój warstw, próg pewności, tory
+//   /szkolenia-ai:             jednostki do policzenia
+//   /systemy-procesowe:        oś czasu sprawy
+//   /systemy-dla-klientow:     lista pytań
+//   /automatyzacje-integracje: puls i karta połączenia
+//   tutaj:                     DELTA. Liczba jest rysunkiem. Szary stan „dziś"
+//     przechodzi w ciemne „po", a przy sześciu najmocniejszych przemianach
+//     stoi pasek proporcji w prawdziwej skali — 25 minut obok trzech dni
+//     to kreska szerokości czterech pikseli. Świadomie ZERO makiet ekranów:
+//     to była wada wersji drugiej.
+//
+// ===================================================================
+// !! DO PODMIANY PRZED PUBLIKACJĄ — WSZYSTKIE LICZBY !!
+// Szymon zdecydował: liczby mają pochodzić z prawdziwych, zanonimizowanych
+// wdrożeń (branża + wielkość firmy, bez nazw). Do czasu ich dostarczenia
+// pola `a`, `b`, `m`, `skutek` i `firma` w tablicy PRZEMIANY są ROBOCZE —
+// realistyczne, ale NIE zmierzone. Każde stoi w jednym miejscu w tym pliku,
+// więc podmiana to edycja tablicy, nie przepisywanie strony.
+// Do potwierdzenia dodatkowo: opisy `dzis` (czy tak to wygląda u klientów)
+// i czasy `w` (tygodnie do pierwszego uruchomienia).
+// ===================================================================
+import LaBase from '../layouts/LaBase.astro';
+import GcFaq from '../components/GcFaq.astro';
+import GcCta from '../components/GcCta.astro';
+
+const kanon = new URL('/inspiracje', Astro.site).href;
+
+const odm = (n, [a, b, c]) => {
+  const d = n % 10;
+  const s = n % 100;
+  if (n === 1) return a;
+  if (d >= 2 && d <= 4 && !(s >= 12 && s <= 14)) return b;
+  return c;
+};
+
+const OBSZARY = [
+  { k: 'sprzedaz', t: 'Sprzedaż i ofertowanie', d: 'Wycena zależy od tego, kto akurat ma czas, a ustalenia z klientem siedzą w skrzynkach.' },
+  { k: 'obsluga', t: 'Obsługa klienta', d: 'Połowa rozmów to pytanie o status sprawy, który ktoś już gdzieś zapisał.' },
+  { k: 'operacje', t: 'Operacje i produkcja', d: 'Zlecenie jedzie przez pięć narzędzi i tablicę na ścianie.' },
+  { k: 'finanse', t: 'Finanse i umowy', d: 'Dokumenty przepisuje się z maila do systemu, a terminów pilnuje czyjaś pamięć.' },
+  { k: 'wiedza', t: 'Wiedza i dokumenty', d: 'Odpowiedź jest w firmie, tylko nikt nie wie, w którym pliku.' },
+  { k: 'ludzie', t: 'Ludzie i zespół', d: 'Wdrożenie nowej osoby zależy od tego, kto akurat siedzi obok.' },
+  { k: 'tresci', t: 'Treści i marketing', d: 'Opisy i materiały powstają od zera przy każdej kampanii.' },
+  { k: 'zarzad', t: 'Zarząd i dane', d: 'Liczba na zarząd bierze się z arkusza, który ktoś klei co miesiąc.' },
+];
+
+// ---- PRZEMIANY ----------------------------------------------------------
+// Pole `firma` obecne = przemiana flagowa: dostaje własny panel, pasek
+// proporcji i zdanie o skutku. Pole `m` to [minuty przed, minuty po] —
+// wyłącznie do narysowania paska w prawdziwej skali.
+const PRZEMIANY = [
+  // ---------- sprzedaż ----------
+  {
+    o: 'sprzedaz', t: 'Wycena z rysunku technicznego',
+    dzis: 'Zapytanie z PDF-em i rysunkiem czeka na technologa. Wycena wraca po trzech dniach, a klient dostaje ofertę jako czwarty w kolejce.',
+    po: 'System czyta rysunek i specyfikację, a wyciągnięte z nich pozycje dopasowuje do cennika. Wycena idzie do technologa do sprawdzenia.',
+    a: '3 dni', b: '25 minut', m: [4320, 25],
+    skutek: 'Ofertujecie pierwsi w ośmiu na dziesięć zapytań.',
+    firma: 'Producent konstrukcji stalowych · 120 osób',
+    w: 8,
+  },
+  {
+    o: 'sprzedaz', t: 'Notatka ze spotkania',
+    dzis: 'Handlowiec wraca z czterech spotkań. CRM uzupełnia w piątek, jeśli pamięta.',
+    po: 'Mówi dwie minuty do telefonu w aucie. W systemie jest notatka, zadania, termin kolejnego kroku i projekt maila podsumowującego.',
+    a: '2 h tygodniowo', b: '0', w: 2,
+  },
+  {
+    o: 'sprzedaz', t: 'Odpowiedzi do przetargu',
+    dzis: 'Ten sam formularz z pięćdziesięcioma pytaniami wypełnia się od nowa przy każdym postępowaniu. Zajmuje dwa dni.',
+    po: 'System odpowiada z Waszych poprzednich zgłoszeń i zaznacza pytania, na które nie ma pokrycia w dokumentach.',
+    a: '2 dni', b: '2 godziny', w: 6,
+  },
+  {
+    o: 'sprzedaz', t: 'Które zapytania warto wyceniać',
+    dzis: 'Wyceniacie wszystko, co przyjdzie. Wygrywa co dziesiąta oferta i nikt nie wie, co odróżnia te wygrane.',
+    po: 'Model liczy szansę z trzech lat Waszych ofert: branża, wielkość, termin, kto pytał i po jakiej cenie schodziło.',
+    a: '410 wycen', b: '180 wycen', w: 4,
+  },
+  {
+    o: 'sprzedaz', t: 'Oferty, które ucichły',
+    dzis: 'Oferta wygasa po dwóch tygodniach ciszy. Nikt nie oddzwania, bo nikt nie widzi, że termin minął.',
+    po: 'Po pięciu dniach oferta wraca do handlowca z gotową treścią przypomnienia i historią rozmów z tym klientem.',
+    a: '0 odzyskanych', b: '1 z 6 wraca', w: 1,
+  },
+
+  // ---------- obsługa ----------
+  {
+    o: 'obsluga', t: 'Wspólna skrzynka zgłoszeń',
+    dzis: 'Na skrzynkę wpada dwieście maili dziennie. Dwie osoby czytają je od góry, więc pilne rzeczy wychodzą dopiero po południu.',
+    po: 'Zgłoszenia są posortowane po pilności i typie, przy każdym stoi projekt odpowiedzi z historią klienta. Człowiek czyta i wysyła.',
+    a: '200 maili', b: '20 decyzji', m: [200, 20],
+    skutek: 'Czas pierwszej odpowiedzi spadł z sześciu godzin do dwudziestu minut.',
+    firma: 'Dystrybutor części technicznych · 60 osób',
+    w: 4,
+  },
+  {
+    o: 'obsluga', t: 'Telefon po godzinach',
+    dzis: 'Po szesnastej odbiera poczta głosowa. Rano ktoś odsłuchuje dziewięć nagrań i oddzwania.',
+    po: 'Agent głosowy odbiera i rozpoznaje klienta po numerze. Umawia serwis w wolnym oknie grafiku, a klient dostaje SMS z potwierdzeniem.',
+    a: '9 nagrań', b: '0', w: 6,
+  },
+  {
+    o: 'obsluga', t: 'Status sprawy bez telefonu',
+    dzis: 'Połowa rozmów to pytanie „na jakim to etapie". Odpowiedź wymaga zajrzenia w dwa systemy i do kierownika.',
+    po: 'Klient widzi stan sprawy pod linkiem z maila — bez logowania i bez hasła. Zmiana terminu idzie do niego sama.',
+    a: '855 pytań', b: '224', w: 8,
+  },
+  {
+    o: 'obsluga', t: 'Reklamacja ze zdjęciem',
+    dzis: 'Klient opisuje uszkodzenie mailem. Ustalenie, czy to gwarancja, zajmuje trzy wymiany wiadomości.',
+    po: 'Klient wrzuca zdjęcie. System rozpoznaje typ uszkodzenia i sprawdza warunki z jego umowy. Decyzja z uzasadnieniem czeka na akceptację człowieka.',
+    a: '4 dni', b: '1 dzień', w: 6,
+  },
+
+  // ---------- operacje ----------
+  {
+    o: 'operacje', t: 'Przestój na linii',
+    dzis: 'Że maszyna stała czterdzieści minut, wiadomo z raportu dziennego. Powodu nie pamięta już nikt.',
+    po: 'Kamera nad linią liczy cykle. Przestój dłuższy niż cztery minuty zapala się na tablicy razem z godziną i klatką z tej chwili.',
+    a: 'następny dzień', b: '4 minuty', m: [1440, 4],
+    skutek: 'Bez czujników, bez integracji ze sterownikiem maszyny i bez ruszania linii.',
+    firma: 'Zakład produkcyjny · 200 osób',
+    w: 8,
+  },
+  {
+    o: 'operacje', t: 'Dokument z magazynu',
+    dzis: 'Dokumenty przewozowe jadą z kierowcą do biura. Przyjęcie księguje się wieczorem albo następnego dnia.',
+    po: 'Magazynier robi zdjęcie telefonem. Pozycje trafiają do systemu, zanim wózek wróci pod rampę.',
+    a: 'następny dzień', b: '2 minuty', w: 4,
+  },
+  {
+    o: 'operacje', t: 'Kolizje w planie',
+    dzis: 'Plan powstaje w arkuszu w poniedziałek i rozjeżdża się w środę. Że podnośnik jest zajęty w dwóch zleceniach, wychodzi na hali.',
+    po: 'Planer układa zlecenia po uprawnieniach i dostępności sprzętu, a kolizję pokazuje w chwili, w której powstaje.',
+    a: '6 kolizji', b: '0', w: 9,
+  },
+  {
+    o: 'operacje', t: 'Zlecenia, które stanęły',
+    dzis: 'Że sprawa stoi od dziesięciu dni, wychodzi przy telefonie od klienta.',
+    po: 'Codzienny sygnał wskazuje sprawy bez ruchu, powód zatrzymania i osobę, która ma je odblokować.',
+    a: '10 dni', b: '1 dzień', w: 2,
+  },
+
+  // ---------- finanse ----------
+  {
+    o: 'finanse', t: 'Co siedzi w umowach',
+    dzis: 'Macie czterysta umów. Kar umownych, terminów wypowiedzenia i klauzul indeksacyjnych nie zna w całości nikt.',
+    po: 'System czyta wszystkie i wystawia listę: co się indeksuje w styczniu, gdzie kara rośnie po trzydziestu dniach, które umowy przedłużają się same.',
+    a: 'nikt nie czytał', b: '3 dni', m: [null, null],
+    skutek: 'Pierwsze uruchomienie znalazło jedenaście umów, które przedłużyły się bez niczyjej decyzji.',
+    firma: 'Firma usługowa · 300 osób',
+    w: 4,
+  },
+  {
+    o: 'finanse', t: 'Faktury kosztowe',
+    dzis: 'Księgowa przepisuje pozycje z załączników. Sto dwadzieścia faktur miesięcznie to trzy dni pracy.',
+    po: 'Faktura ze skrzynki trafia do systemu z dopasowaniem do zamówienia i projektu. Człowiek zatwierdza odczyt, zamiast go wpisywać.',
+    a: '3 dni', b: '2 godziny', w: 2,
+  },
+  {
+    o: 'finanse', t: 'Kto zapłaci późno',
+    dzis: 'Windykacja rusza po terminie. Do tego czasu pieniądze są w cudzej kasie i nikt tego nie przewidział.',
+    po: 'Model przewiduje opóźnienie z historii płatności klienta i z zachowania na bieżących fakturach. Przypomnienie idzie przed terminem.',
+    a: '41 dni', b: '29 dni', w: 4,
+  },
+
+  // ---------- wiedza ----------
+  {
+    o: 'wiedza', t: 'Odpowiedź z Waszych dokumentów',
+    dzis: 'Nowa osoba pyta kolegę. Kolega szuka na dysku i znajduje procedurę w wersji z 2019 roku.',
+    po: 'Asystent odpowiada zdaniem i pokazuje akapit, z którego je wziął. Wersje nieaktualne oznacza jako archiwum.',
+    a: '20 minut', b: '15 sekund', m: [20, 0.25],
+    skutek: 'Pytania do kierownika spadły o połowę w pierwszym miesiącu.',
+    firma: 'Sieć serwisowa · 80 osób',
+    w: 4,
+  },
+  {
+    o: 'wiedza', t: 'Przetarg na dwieście stron',
+    dzis: 'Przeczytanie dokumentacji i wypisanie wymagań zajmuje dzień. Czasem na końcu okazuje się, że jednego nie spełniacie.',
+    po: 'System wypisuje wymagania i zaznacza te, których nie spełniacie, razem ze wskazaniem miejsca w dokumencie.',
+    a: '1 dzień', b: '15 minut', w: 4,
+  },
+  {
+    o: 'wiedza', t: 'Co zmieniło się w umowie',
+    dzis: 'Wersję od kontrahenta porównuje się wzrokiem, akapit po akapicie, i tak przy każdym obiegu.',
+    po: 'System pokazuje różnice i przy każdej pisze, co zmienia dla Was.',
+    a: '2 godziny', b: '5 minut', w: 2,
+  },
+
+  // ---------- ludzie ----------
+  {
+    o: 'ludzie', t: 'Sto zgłoszeń na jedno ogłoszenie',
+    dzis: 'Przegląd zgłoszeń zajmuje dwa dni. Połowa odpada po pierwszym zdaniu, ale przeczytać trzeba wszystkie.',
+    po: 'Zgłoszenia wracają w kolejności dopasowania, z uzasadnieniem przy każdym i z pytaniami do rozmowy.',
+    a: '2 dni', b: '2 godziny', w: 3,
+  },
+  {
+    o: 'ludzie', t: 'Pierwszy tydzień nowej osoby',
+    dzis: 'Wdrożenie zależy od tego, kto ma czas. Po miesiącu nikt nie wie, czego jej nie pokazano.',
+    po: 'System prowadzi dzień po dniu: co obejrzeć, z kim porozmawiać, co odhaczyć. Kierownik widzi, w którym miejscu ktoś utknął.',
+    a: '3 miesiące', b: '6 tygodni', w: 3,
+  },
+  {
+    o: 'ludzie', t: 'Dziura w grafiku',
+    dzis: 'Grafik układa się w arkuszu i psuje przy pierwszym zwolnieniu. Że na zmianie nie ma nikogo z uprawnieniem, wychodzi w piątek.',
+    po: 'Grafik zna uprawnienia i dostępność. Dziurę pokazuje w chwili, w której powstaje, razem z osobą, która może ją zamknąć.',
+    a: 'w piątek', b: 'od razu', w: 5,
+  },
+
+  // ---------- treści ----------
+  {
+    o: 'tresci', t: 'Dwa tysiące opisów produktów',
+    dzis: 'Opis do sklepu pisze się od zera przy każdym indeksie. Przy dwóch tysiącach indeksów nikt się za to nie bierze.',
+    po: 'Opisy powstają z kart technicznych, w Waszym języku i z zachowaniem parametrów. Człowiek zatwierdza partiami po pięćdziesiąt.',
+    a: 'nigdy', b: '6 dni', w: 3,
+  },
+  {
+    o: 'tresci', t: 'Raport z kampanii',
+    dzis: 'Poniedziałek zaczyna się od klejenia liczb z czterech paneli reklamowych.',
+    po: 'Raport składa się sam i pokazuje, co zmieniło się względem poprzedniego tygodnia oraz co to znaczy.',
+    a: '4 h tygodniowo', b: '0', w: 2,
+  },
+  {
+    o: 'tresci', t: 'Pytanie pod postem',
+    dzis: 'Pytanie o cenę albo dostępność wisi trzy dni, bo trafia do skrzynki, do której nikt nie zagląda.',
+    po: 'Projekt odpowiedzi jest gotowy w dziesięć minut, z danymi z Waszego cennika. Człowiek klika „wyślij".',
+    a: '3 dni', b: '10 minut', w: 2,
+  },
+
+  // ---------- zarząd ----------
+  {
+    o: 'zarzad', t: 'Rentowność zlecenia',
+    dzis: 'Który klient zarabia, wiadomo po zamknięciu roku. Dane są w czterech miejscach i składa się je raz.',
+    po: 'Marża liczy się przy każdym zleceniu, z jednej definicji dla całej firmy. Sygnał idzie w chwili, w której schodzi poniżej progu.',
+    a: 'rok', b: '1 dzień', m: [525600, 1440],
+    skutek: 'Pierwsze uruchomienie pokazało dwóch klientów, którzy od trzech kwartałów są pod kreską.',
+    firma: 'Firma budowlana · 150 osób',
+    w: 6,
+  },
+  {
+    o: 'zarzad', t: 'Prognoza, która nie jest sumą optymizmu',
+    dzis: 'Prognoza to suma tego, co handlowcy wpisali w lejek. Rozjazd z wykonaniem sięga czterdziestu procent.',
+    po: 'Model liczy szansę z historii podobnych spraw. Przy każdej pozycji lejka widać, o ile deklaracja handlowca rozjeżdża się z tą liczbą.',
+    a: '±40%', b: '±12%', w: 4,
+  },
+  {
+    o: 'zarzad', t: 'Raport tygodniowy',
+    dzis: 'Kierownicy zbierają liczby w piątek. Zarząd czyta je w poniedziałek, kiedy są już nieaktualne.',
+    po: 'Raport składa się sam w piątek rano, z jednego źródła. Kierownicy dopisują komentarz tam, gdzie liczba dziwi.',
+    a: '6 h tygodniowo', b: '20 minut', w: 2,
+  },
+];
+
+const N = PRZEMIANY.length;
+const FLAGOWE = PRZEMIANY.filter((p) => p.firma);
+const wgObszaru = (k) => PRZEMIANY.filter((p) => p.o === k);
+
+// Pasek proporcji: udział „po" w „dziś", policzony z minut.
+const udzial = (m) => (m && m[0] && m[1] ? Math.max(0.35, (m[1] / m[0]) * 100) : null);
+const procent = (m) => {
+  if (!m || !m[0] || !m[1]) return null;
+  const u = (m[1] / m[0]) * 100;
+  return u < 1 ? u.toFixed(1).replace('.', ',') : Math.round(u);
+};
+
+// ---- HERO: trzy flagowe przemiany w pętli -------------------------------
+const HE = FLAGOWE.slice(0, 3);
+const HE_JEDEN = 5.2;
+const HE_C = HE_JEDEN * HE.length;
+const pc = (s) => `${((s / HE_C) * 100).toFixed(2)}%`;
+const klatkiHero = [
+  `@keyframes he-in{0%{opacity:0;transform:translateY(12px)}${pc(0.55)}{opacity:1;transform:none}${pc(HE_JEDEN - 0.2)}{opacity:1;transform:none}${pc(HE_JEDEN + 0.35)}{opacity:0;transform:translateY(-10px)}100%{opacity:0;transform:translateY(12px)}}`,
+  `@keyframes he-po{0%,${pc(0.85)}{opacity:0;transform:translateY(10px) scale(.94)}${pc(1.35)}{opacity:1;transform:none}${pc(HE_JEDEN - 0.2)}{opacity:1;transform:none}${pc(HE_JEDEN + 0.35)}{opacity:0;transform:translateY(-8px)}100%{opacity:0;transform:translateY(10px) scale(.94)}}`,
+  `@keyframes he-kreska{0%,${pc(0.75)}{transform:scaleX(0)}${pc(1.3)}{transform:scaleX(1)}${pc(HE_JEDEN - 0.2)}{transform:scaleX(1)}${pc(HE_JEDEN + 0.3)}{transform:scaleX(0)}100%{transform:scaleX(0)}}`,
+  `@keyframes he-kropki{0%{background:#d5dcd3}${pc(0.4)}{background:var(--la-accent,#00CD77)}${pc(HE_JEDEN)}{background:var(--la-accent,#00CD77)}${pc(HE_JEDEN + 0.4)}{background:#d5dcd3}100%{background:#d5dcd3}}`,
+].join('\n');
+
+// ---- CZEGO NIE BUDUJEMY -------------------------------------------------
+const GRANICE = [
+  { t: 'Czatu, który odpowiada na wszystko', d: 'Odpowiada również wtedy, kiedy nie wie. Koszt jednej złej odpowiedzi przy cenie albo terminie bywa większy niż oszczędność na stu dobrych.' },
+  { t: 'Przepisania ERP-a od zera', d: 'To projekt na dwa lata, który zwykle kończy się w połowie. Taniej wychodzi zbudować obok to, czego ERP nie umie, i zostawić w nim księgowość.' },
+  { t: 'Agenta, który sam pisze do klientów', d: 'Bez akceptacji człowieka pierwsza pomyłka kosztuje więcej niż rok zaoszczędzonego czasu. Projekt odpowiedzi tak, wysyłka po zatwierdzeniu.' },
+  { t: 'Aplikacji zamiast decyzji', d: 'Kiedy w firmie nie ustalono, kto zatwierdza rabat, system tego nie rozstrzygnie. Wtedy zaczynamy od reguły, a narzędzie przychodzi po niej.' },
+];
+
+// ---- CIEMNY PAS: jak to się układa w czasie ------------------------------
+// Ta sama firma, co przy pierwszej przemianie flagowej. Liczba na dole każdego
+// stopnia to czas od zapytania do oferty — jedna miara przez cały rok.
+const SCHODY = [
+  { m: 'miesiąc 1', t: 'Pilnowanie ofert, które ucichły', d: 'Tydzień roboty. Pierwsza rzecz, po której ktokolwiek uwierzył, że to działa.', v: '3 dni' },
+  { m: 'miesiąc 3', t: 'Rejestr ofert z historią ustaleń', d: 'Koniec z szukaniem, co ustalono, w czyjejś skrzynce.', v: '2 dni' },
+  { m: 'miesiąc 6', t: 'Wycena z rysunku technicznego', d: 'Rzecz, dla której cała reszta była rozbiegiem.', v: '6 godzin' },
+  { m: 'miesiąc 8', t: 'Portal ze statusem sprawy', d: 'Klient przestał dzwonić z pytaniem, na jakim to etapie.', v: '25 minut' },
+  { m: 'miesiąc 11', t: 'Rentowność zlecenia', d: 'Dopiero teraz było z czego ją policzyć.', v: '25 minut', nota: 'bez zmiany — ta rzecz mierzy się czym innym' },
+];
+
+// ---- META ---------------------------------------------------------------
+const title = "Inspiracje: co da się zmienić dzięki AI i własnym aplikacjom | Let's automate";
+const description = `${N} przemian z firm takich jak Wasza: jak jest dziś, co się zmienia i o ile. Wycena z trzech dni do dwudziestu pięciu minut, dwieście maili do dwudziestu decyzji, czterysta umów przeczytanych w trzy dni.`;
+
+const dane = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'CollectionPage',
+      '@id': `${kanon}#strona`,
+      url: kanon,
+      name: 'Inspiracje — co da się zmienić dzięki AI i własnym aplikacjom',
+      description,
+      about: { '@id': new URL('/#organizacja', Astro.site).href },
+    },
+    {
+      '@type': 'ItemList',
+      '@id': `${kanon}#przemiany`,
+      name: 'Przemiany możliwe dzięki aplikacjom wewnętrznym i AI',
+      numberOfItems: N,
+      itemListElement: PRZEMIANY.map((p, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        name: p.t,
+        description: `Dziś: ${p.dzis} Po zmianie: ${p.po} Efekt: ${p.a} → ${p.b}.`,
+      })),
+    },
+    {
+      '@type': 'BreadcrumbList',
+      '@id': `${kanon}#okruszki`,
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Strona główna', item: new URL('/', Astro.site).href },
+        { '@type': 'ListItem', position: 2, name: 'Inspiracje', item: kanon },
+      ],
+    },
+  ],
+};
+
+const faq = [
+  {
+    q: 'Skąd biorą się te liczby?',
+    a: 'Z naszych wdrożeń. Firmy opisujemy branżą i wielkością, bez nazw, bo taki jest warunek większości umów. Każda liczba to porównanie przed przebudową i po niej, mierzone na tej samej sprawie. Jeśli u kogoś wynik był gorszy niż tu podany, mówimy o tym na rozmowie razem z powodem.',
+  },
+  {
+    q: 'Czy u nas wyjdzie tak samo?',
+    a: 'Nie wiadomo i nie obiecujemy tego. Te same liczby wychodzą wtedy, kiedy proces jest podobnie powtarzalny i kiedy ktoś po Waszej stronie ma prawo rozstrzygać wątpliwości. Dlatego przed budową mierzymy stan wyjściowy na Waszych sprawach i zapisujemy próg w umowie. Bez pomiaru „przed" żadna z tych liczb nic nie znaczy.',
+  },
+  {
+    q: 'Ile trwa dojście do pierwszej takiej zmiany?',
+    a: 'Od jednego tygodnia do dziesięciu, zależnie od rzeczy — czas stoi przy każdej pozycji. Liczy się czas do pierwszego uruchomienia na produkcji razem z czekaniem na dostępy i na decyzje po Waszej stronie. Zaczynamy zawsze od jednej rzeczy, uruchamiamy ją i dopiero potem bierzemy następną.',
+  },
+  {
+    q: 'Czy do wszystkiego potrzebny jest model AI?',
+    a: 'Nie. Model dokładamy tam, gdzie wąskim gardłem jest czytanie albo słuchanie: odczyt rysunku, umowy, faktury, zapytania, rozmowa z klientem. Pilnowanie terminów, rejestry, obiegi akceptacji i raporty to zwykłe aplikacje i połączenia między systemami. Na tej stronie jest jedno i drugie.',
+  },
+  {
+    q: 'Ile to kosztuje?',
+    a: 'Cena idzie za wielkością rzeczy i za liczbą wyjątków w Waszym procesie. Największy wpływ mają trzy sprawy: ile systemów trzeba dotknąć, ile przypadków szczególnych obsługujecie i czy dane są już w jednym miejscu. Widełki podajemy po pierwszej rozmowie, na której przechodzimy jedną pozycję do końca. Nie mamy prowizji od żadnego dostawcy, więc wybór narzędzia nie zmienia naszego przychodu.',
+  },
+  {
+    q: 'Mamy coś, czego tu nie ma',
+    a: 'Tak zaczyna się większość wdrożeń. Ta lista zbiera rzeczy, które powtarzają się najczęściej. Napiszcie, na czym schodzi u Was czas, a odpowiemy, jak wyglądałaby ta sama pozycja w wersji „po" i ile zajmie dojście do niej.',
+  },
+  {
+    q: 'Nie mamy działu IT',
+    a: 'To nie wyklucza niczego z tej listy. Wymaga natomiast osoby po Waszej stronie, która zna proces i ma prawo rozstrzygnąć wątpliwość — to zwykle kierownik działu. Dostępy do systemów ustawiamy z Waszym dostawcą IT. Firmom bez własnego działu IT poświęcona jest osobna strona: <a href="/guided-coding/bez-dzialu-it" style="font-weight:700;color:#0a7a52">budowanie aplikacji bez działu IT</a>.',
+  },
+  {
+    q: 'Kto to utrzyma za rok?',
+    a: 'Repozytorium, klucze i dostępy są Wasze od pierwszego dnia, więc utrzymanie może przejąć Wasz zespół albo inny dostawca. Kiedy utrzymujemy my, umowa jest osobna od budowy i wypowiadalna z miesięcznym terminem. Jeśli chcecie budować sami, tym zajmuje się <a href="/guided-coding" style="font-weight:700;color:#0a7a52">Guided Coding</a> — kod pisze Wasz zespół, my pilnujemy jakości.',
+  },
+];
+dane['@graph'].push({
+  '@type': 'FAQPage',
+  '@id': `${kanon}#faq`,
+  mainEntity: faq.map((f) => ({
+    '@type': 'Question',
+    name: f.q,
+    acceptedAnswer: { '@type': 'Answer', text: f.a.replace(/<[^>]+>/g, '') },
+  })),
+});
+---
+<LaBase title={title} description={description} ctaHref="#kontakt" ctaLabel="Umów rozmowę" nav="inspiracje">
+<script type="application/ld+json" is:inline set:html={JSON.stringify(dane)} slot="head"></script>
+<style is:global slot="head">
+  /* =====================================================================
+     DELTA — jedyny rysunek na tej stronie
+     Liczba jest obrazem. Szary stan „dziś" przechodzi w ciemne „po",
+     a przy przemianach flagowych stoi pasek w prawdziwej skali.
+     ===================================================================== */
+  .dl{display:flex;flex-direction:column;align-items:flex-end;gap:5px;text-align:right}
+  .dl-a{font-size:15px;line-height:1.15;color:#9aa69c;white-space:nowrap}
+  .dl-k{display:block;width:9px;height:9px;border-right:2px solid var(--la-accent,#00CD77);border-bottom:2px solid var(--la-accent,#00CD77);transform:rotate(45deg);margin:4px 3px 7px 0}
+  .dl-b{font-size:clamp(21px,2.5vw,29px);font-weight:800;letter-spacing:-0.032em;line-height:1;color:#16211a;white-space:nowrap}
+
+  /* pasek proporcji — 25 minut obok trzech dni to kreska na pięć pikseli */
+  .pp{margin-top:clamp(18px,2.2vw,26px)}
+  .pp-r{display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:12px;align-items:center;margin-top:9px}
+  .pp-l{font-size:12px;color:#9aa69c;text-align:right}
+  .pp-t{height:12px;border-radius:6px;background:#c3d7c3}
+  .pp-t i{display:block;height:100%;border-radius:6px;background:var(--la-accent,#00CD77);min-width:5px}
+  .pp-v{font-size:15px;font-weight:750;color:#16211a;white-space:nowrap}
+  .pp-v.szary{font-weight:400;color:#9aa69c}
+  .pp-n{margin:11px 0 0;font-size:12.5px;color:#8b968d}
+
+  /* =====================================================================
+     HERO
+     ===================================================================== */
+  .he-w{display:grid;grid-template-columns:minmax(0,0.95fr) minmax(0,1.05fr);gap:clamp(32px,5vw,80px);align-items:center;margin-top:clamp(28px,4vw,48px)}
+  .he-scena{position:relative;min-height:clamp(378px,38vw,452px)}
+  .he-k{position:absolute;inset:0;padding:clamp(24px,3vw,40px);border-radius:clamp(18px,2vw,24px);background:linear-gradient(158deg,#ffffff 0%,#f2f8f3 100%);box-shadow:0 40px 80px -44px rgba(11,35,23,0.4),0 0 0 1px rgba(18,38,28,0.06);opacity:0;display:flex;flex-direction:column}
+  .he-firma{font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#a6b1a7}
+  .he-t{margin:11px 0 0;font-size:clamp(21px,2.5vw,28px);font-weight:800;letter-spacing:-0.028em;line-height:1.1;color:#16211a;text-wrap:balance}
+  .he-txt{margin:clamp(16px,2vw,22px) 0 0;font-size:14.5px;line-height:1.6;color:#7c877e;text-wrap:pretty}
+  .he-po{margin:11px 0 0;padding-left:14px;border-left:2px solid var(--la-accent,#00CD77);font-size:14.5px;line-height:1.6;color:#16211a;text-wrap:pretty}
+  .he-sk{margin:auto 0 0;padding-top:clamp(16px,2vw,22px);border-top:1px solid rgba(18,38,28,0.09);font-size:15px;line-height:1.5;font-weight:700;color:#0a7a52;text-wrap:pretty}
+  .he-kropki{display:flex;gap:6px;margin-top:clamp(16px,2vw,22px)}
+  .he-kropki i{width:22px;height:3px;border-radius:2px;background:#d5dcd3}
+  @media (max-width:1000px){ .he-w{grid-template-columns:1fr;gap:clamp(28px,5vw,40px)} .he-scena{min-height:clamp(404px,102vw,470px)} }
+  @media (prefers-reduced-motion:reduce){
+    .he-k,.he-k *{animation:none !important}
+    .he-k{opacity:0}
+    .he-k.pierwsza{opacity:1}
+    .he-kropki i{animation:none !important}
+    .he-kropki i:first-child{background:var(--la-accent,#00CD77)}
+  }
+
+  /* =====================================================================
+     SPIS OBSZARÓW
+     ===================================================================== */
+  .sp{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0 clamp(20px,3vw,44px);margin-top:clamp(30px,3.6vw,44px);border-top:1px solid #e2e9e0}
+  .sp a{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:13px 0;border-bottom:1px solid #e2e9e0;transition:color .16s,padding-left .18s}
+  .sp a:hover{color:#0a7a52;padding-left:5px}
+  .sp b{font-size:14.5px;font-weight:650;letter-spacing:-0.012em;color:inherit}
+  .sp span{font-family:ui-monospace,Menlo,monospace;font-size:11px;color:#a6b1a7}
+  @media (max-width:900px){ .sp{grid-template-columns:repeat(2,minmax(0,1fr))} }
+  @media (max-width:520px){ .sp{grid-template-columns:1fr} }
+
+  /* =====================================================================
+     SEKCJA OBSZARU + WIERSZ PRZEMIANY
+     ===================================================================== */
+  .ob{padding:clamp(54px,6.5vw,92px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:74px}
+  .ob.tint{background:#f4f8f2}
+  .ob-h{display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:16px 56px}
+  .ob-t{margin:0;font-size:clamp(27px,3.6vw,42px);line-height:1.04;letter-spacing:-0.032em;font-weight:800;color:#16211a;text-wrap:balance}
+  .ob-d{margin:0 0 5px;max-width:460px;font-size:16px;line-height:1.55;color:#6d7a71;text-wrap:pretty}
+  .ob-h.pion{display:block}
+  .ob-h.pion .ob-d{margin:14px 0 0;max-width:620px}
+
+  .pr{display:grid;grid-template-columns:minmax(0,0.6fr) minmax(0,1.55fr) 172px;gap:clamp(18px,3vw,54px);align-items:start;padding:clamp(22px,2.7vw,32px) 0;border-top:1px solid #e2e9e0}
+  .pr:last-of-type{border-bottom:1px solid #e2e9e0}
+  .pr-t{margin:0;font-size:clamp(17px,1.95vw,21px);font-weight:750;letter-spacing:-0.018em;line-height:1.25;color:#16211a;text-wrap:balance}
+  .pr-w{margin:9px 0 0;font-family:ui-monospace,Menlo,monospace;font-size:11px;color:#a6b1a7}
+  .pr-dzis{margin:0;font-size:15px;line-height:1.6;color:#7c877e;text-wrap:pretty}
+  .pr-po{margin:11px 0 0;padding-left:14px;border-left:2px solid var(--la-accent,#00CD77);font-size:15px;line-height:1.6;color:#16211a;text-wrap:pretty}
+  @media (max-width:1040px){
+    .pr{grid-template-columns:minmax(0,1fr) 150px;gap:14px clamp(20px,3vw,40px)}
+    .pr > :nth-child(2){grid-column:1 / -1}
+  }
+  @media (max-width:560px){
+    .pr{grid-template-columns:1fr;gap:12px}
+    .pr > :nth-child(2){grid-column:1}
+    .pr .dl{flex-direction:row;align-items:baseline;justify-content:flex-start;gap:10px;text-align:left}
+    .pr .dl-k{transform:rotate(-45deg);margin:0 4px}
+  }
+
+  /* ---- przemiana flagowa: własny panel ---- */
+  .fl{position:relative;margin:clamp(26px,3.2vw,40px) 0 0;padding:clamp(26px,3.2vw,46px);border-radius:clamp(18px,2vw,24px);background:linear-gradient(158deg,#ffffff 0%,#eef6ef 100%);box-shadow:0 34px 70px -44px rgba(11,35,23,0.34),0 0 0 1px rgba(18,38,28,0.055);overflow:hidden}
+  .ob.tint .fl{background:linear-gradient(158deg,#ffffff 0%,#e9f2ea 100%)}
+  .fl::before{content:"";position:absolute;inset:0;background:radial-gradient(50% 62% at 88% -8%, rgba(0,205,119,0.20), transparent 68%);pointer-events:none}
+  .fl > *{position:relative}
+  .fl-g{display:grid;grid-template-columns:minmax(0,1.18fr) minmax(250px,0.82fr);gap:0 clamp(24px,4vw,64px);align-items:start}
+  .fl-head{grid-column:1;grid-row:1}
+  .fl-opis{grid-column:1;grid-row:2;margin-top:clamp(16px,2vw,22px)}
+  .fl-liczba{grid-column:2;grid-row:1 / span 2}
+  .fl-firma{font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#0a7a52}
+  .fl-t{margin:12px 0 0;font-size:clamp(22px,2.9vw,34px);font-weight:800;letter-spacing:-0.03em;line-height:1.06;color:#16211a;text-wrap:balance}
+  .fl-sk{margin:clamp(18px,2.2vw,26px) 0 0;font-size:clamp(16px,1.9vw,19px);line-height:1.45;font-weight:750;letter-spacing:-0.015em;color:#0a7a52;text-wrap:pretty}
+  .fl-duza{display:flex;flex-direction:column;align-items:flex-start;gap:3px}
+  .fl-duza .dl-k{width:12px;height:12px;border-width:2.5px;margin:7px 4px 10px 3px}
+  .fl-a{font-size:16px;color:#9aa69c}
+  .fl-b{font-size:clamp(34px,4.6vw,54px);font-weight:800;letter-spacing:-0.038em;line-height:1;color:#16211a}
+  @media (max-width:900px){
+    .fl-g{grid-template-columns:1fr}
+    .fl-head{grid-column:1;grid-row:1}
+    .fl-liczba{grid-column:1;grid-row:2;margin-top:clamp(20px,3vw,26px)}
+    .fl-opis{grid-column:1;grid-row:3;margin-top:clamp(20px,3vw,26px)}
+  }
+
+  /* =====================================================================
+     CIEMNY PAS — schody
+     ===================================================================== */
+  .sh{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:clamp(10px,1.4vw,18px);margin-top:clamp(30px,3.6vw,46px);align-items:end}
+  .sh-k{display:flex;flex-direction:column;justify-content:flex-end;padding:clamp(15px,1.8vw,21px);border-radius:13px;background:rgba(255,255,255,0.055);box-shadow:inset 0 0 0 1px rgba(255,255,255,0.09)}
+  .sh-m{font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.42)}
+  .sh-t{margin:9px 0 0;font-size:14.5px;font-weight:750;letter-spacing:-0.014em;line-height:1.3;color:#ffffff;text-wrap:balance}
+  .sh-d{margin:7px 0 0;font-size:12.5px;line-height:1.5;color:rgba(255,255,255,0.6);text-wrap:pretty}
+  .sh-os{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:clamp(10px,1.4vw,18px);margin-top:14px}
+  .sh-v{display:flex;flex-direction:column;gap:7px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.16)}
+  .sh-v b{font-size:clamp(17px,2.1vw,25px);font-weight:800;letter-spacing:-0.03em;line-height:1;color:#ffffff}
+  .sh-v.ost b{color:var(--la-accent,#00CD77)}
+  .sh-v span{font-size:11px;color:rgba(255,255,255,0.42)}
+  @media (max-width:960px){
+    .sh,.sh-os{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .sh-k{justify-content:flex-start}
+  }
+  @media (max-width:540px){ .sh,.sh-os{grid-template-columns:1fr} }
+
+  /* =====================================================================
+     GRANICE
+     ===================================================================== */
+  .gr{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 clamp(28px,4vw,64px);margin-top:clamp(24px,3vw,36px)}
+  .gr > div{padding:clamp(18px,2.2vw,26px) 0;border-top:1px solid #e2e9e0}
+  .gr h3{margin:0;font-size:clamp(16px,1.9vw,19px);font-weight:750;letter-spacing:-0.016em;line-height:1.3;color:#16211a;text-wrap:balance}
+  .gr p{margin:8px 0 0;font-size:14.5px;line-height:1.6;color:#4c5850;text-wrap:pretty}
+  @media (max-width:820px){ .gr{grid-template-columns:1fr} }
+</style>
+
+<!-- ============ HERO ============
+     Trzy przemiany flagowe w pętli. Każda pokazuje to samo w tej samej
+     kolejności: firma, rzecz, dwa paski w PRAWDZIWEJ skali, opis dziś i po,
+     skutek. Pasek „po" ma min-width 5px, bo przy uczciwej proporcji
+     dwadzieścia pięć minut obok trzech dni zajmuje ułamek piksela. -->
+<div aria-hidden="true" style="position:absolute;left:0;right:0;top:0;height:1120px;background:radial-gradient(1020px 620px at 76% -4%, rgba(0,205,119,0.18), transparent 63%);pointer-events:none"></div>
+<section style="position:relative;overflow:hidden;padding:clamp(24px,3.4vw,44px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) clamp(44px,5.5vw,72px)">
+<div class="he-w">
+<div>
+<h1 style="margin:0;max-width:620px;font-size:clamp(31px,4.4vw,55px);line-height:1.03;letter-spacing:-0.035em;font-weight:800;color:#16211a;text-wrap:balance">{N} rzeczy, które ktoś już przestał robić ręcznie</h1>
+<p style="margin:clamp(20px,2.4vw,28px) 0 0;max-width:500px;font-size:clamp(16px,2vw,18.5px);line-height:1.6;color:#33413a;text-wrap:pretty">Przy każdej stoi to samo: jak wygląda dziś, co się zmienia i o ile. Liczby pochodzą z naszych wdrożeń, firmy opisujemy branżą i wielkością.</p>
+<div class="hero-actions" style="display:flex;align-items:center;flex-wrap:wrap;gap:14px 18px;margin-top:clamp(24px,3vw,34px)">
+<a href="#sprzedaz" class="btn-dark" style="display:inline-flex;align-items:center;gap:10px;background:#16211a;color:#ffffff;padding:17px 30px;border-radius:12px;font-weight:650;font-size:16.5px;box-shadow:0 14px 30px -14px rgba(16,33,26,0.45)">Przejrzyj wszystkie <span aria-hidden="true">↓</span></a>
+<a href="#kontakt" class="btn-ghost" style="display:inline-flex;align-items:center;gap:8px;font-size:16.5px;font-weight:700;color:#16211a;background:rgba(255,255,255,0.65);padding:17px 24px;border-radius:12px;border:1px solid rgba(22,33,26,0.16)">Umów rozmowę</a>
+</div>
+<div class="he-kropki" aria-hidden="true">
+{HE.map((_, i) => <i style={`animation:he-kropki ${HE_C}s linear ${(i * HE_JEDEN).toFixed(2)}s infinite backwards`}></i>)}
+</div>
+</div>
+
+<div class="he-scena">
+{HE.map((p, i) => (
+  <div class={i === 0 ? 'he-k pierwsza' : 'he-k'} style={`animation:he-in ${HE_C}s linear ${(i * HE_JEDEN).toFixed(2)}s infinite backwards`}>
+    <div class="he-firma">{p.firma}</div>
+    <h2 class="he-t">{p.t}</h2>
+    <div class="pp">
+      <div class="pp-r">
+        <span class="pp-l">dziś</span>
+        <span class="pp-t"></span>
+        <span class="pp-v szary">{p.a}</span>
+      </div>
+      <div class="pp-r" style={`animation:he-po ${HE_C}s cubic-bezier(.34,1.4,.5,1) ${(i * HE_JEDEN).toFixed(2)}s infinite backwards`}>
+        <span class="pp-l">po</span>
+        <span class="pp-t" style="background:#eef3ec"><i style={`width:${udzial(p.m)}%;transform-origin:left;animation:he-kreska ${HE_C}s cubic-bezier(.4,0,.2,1) ${(i * HE_JEDEN).toFixed(2)}s infinite backwards`}></i></span>
+        <span class="pp-v">{p.b}</span>
+      </div>
+      {procent(p.m) && <p class="pp-n">{p.b} to {procent(p.m)}% tego, co zajmowało wcześniej.</p>}
+    </div>
+    <p class="he-txt">{p.dzis}</p>
+    <p class="he-po">{p.po}</p>
+    <p class="he-sk">{p.skutek}</p>
+  </div>
+))}
+</div>
+</div>
+
+<!-- Spis obszarów: cztery kolumny cichych wierszy, nie kafle. -->
+<div class="sp">
+{OBSZARY.map((g) => (
+  <a href={`#${g.k}`}><b>{g.t}</b><span>{wgObszaru(g.k).length}</span></a>
+))}
+</div>
+</section>
+
+<!-- ============ OBSZARY 1–4 ============
+     W każdym obszarze najmocniejsza przemiana dostaje własny panel z liczbą
+     w dużym stopniu i paskiem proporcji, reszta idzie wierszami na liniach.
+     Co trzeci nagłówek jest pełną szerokością — żeby osiem sekcji nie było
+     ośmioma kopiami tego samego szkieletu. -->
+{OBSZARY.slice(0, 4).map((g, i) => (
+  <section id={g.k} class={i % 2 === 1 ? 'ob tint' : 'ob'}>
+    <div class={i % 3 === 0 ? 'ob-h pion' : 'ob-h'}>
+      <h2 class="ob-t">{g.t}</h2>
+      <p class="ob-d">{g.d}</p>
+    </div>
+
+    {wgObszaru(g.k).filter((p) => p.firma).map((f) => (
+      <div class="fl rv">
+        <div class="fl-g">
+          <div class="fl-head">
+            <div class="fl-firma">{f.firma}</div>
+            <h3 class="fl-t">{f.t}</h3>
+          </div>
+          <div class="fl-opis">
+            <p class="he-txt" style="margin-top:0">{f.dzis}</p>
+            <p class="he-po">{f.po}</p>
+            <p class="fl-sk">{f.skutek}</p>
+          </div>
+          <div class="fl-liczba">
+            <div class="fl-duza">
+              <span class="fl-a">{f.a}</span>
+              <span class="dl-k"></span>
+              <span class="fl-b">{f.b}</span>
+            </div>
+            {f.m && f.m[0] && (
+              <div class="pp">
+                <div class="pp-r"><span class="pp-l">dziś</span><span class="pp-t"></span><span></span></div>
+                <div class="pp-r"><span class="pp-l">po</span><span class="pp-t" style="background:#eef3ec"><i style={`width:${udzial(f.m)}%`}></i></span><span></span></div>
+                <p class="pp-n">{f.b} to {procent(f.m)}% tego, co zajmowało wcześniej.</p>
+              </div>
+            )}
+            <p class="pr-w" style="margin-top:18px">pierwsze uruchomienie po {f.w} {odm(f.w, ['tygodniu', 'tygodniach', 'tygodniach'])}</p>
+          </div>
+        </div>
+      </div>
+    ))}
+
+    <div style="margin-top:clamp(26px,3.2vw,40px)">
+    {wgObszaru(g.k).filter((p) => !p.firma).map((p) => (
+      <div class="pr rv">
+        <div>
+          <h3 class="pr-t">{p.t}</h3>
+          <p class="pr-w">{p.w} {odm(p.w, ['tydzień', 'tygodnie', 'tygodni'])} do uruchomienia</p>
+        </div>
+        <div>
+          <p class="pr-dzis">{p.dzis}</p>
+          <p class="pr-po">{p.po}</p>
+        </div>
+        <div class="dl">
+          <span class="dl-a">{p.a}</span>
+          <span class="dl-k"></span>
+          <span class="dl-b">{p.b}</span>
+        </div>
+      </div>
+    ))}
+    </div>
+  </section>
+))}
+
+<!-- ============ CIEMNY PAS — jak to się układa w czasie ============
+     Jedna firma, ta sama co przy pierwszej przemianie flagowej, przez rok.
+     Pod schodami jedna miara powtórzona pięć razy: czas od zapytania do
+     oferty. To ona pokazuje, że rzeczy się kumulują. -->
+<section id="rok" style="position:relative;background:radial-gradient(1000px 460px at 84% 0%, rgba(0,205,119,0.16), transparent 62%), #0e2b1d;padding:clamp(58px,7vw,100px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:74px">
+<div class="sec-head">
+<h2 class="h-sec" style="margin:0;max-width:620px;color:#ffffff;text-wrap:balance">Żadna z tych rzeczy nie stoi sama</h2>
+<p style="margin:0 0 6px;max-width:480px;font-size:17px;line-height:1.6;color:rgba(255,255,255,0.72);text-wrap:pretty">Jeden rok w firmie z pierwszej pozycji tej strony. Pod spodem ta sama miara pięć razy: ile mija od zapytania do oferty.</p>
+</div>
+
+<div class="sh">
+{SCHODY.map((s) => (
+  <div class="sh-k rv">
+    <div class="sh-m">{s.m}</div>
+    <h3 class="sh-t">{s.t}</h3>
+    <p class="sh-d">{s.d}</p>
+  </div>
+))}
+</div>
+<div class="sh-os">
+{SCHODY.map((s, i) => (
+  <div class={i === 3 ? 'sh-v ost' : 'sh-v'}>
+    <b style={s.nota ? 'color:rgba(255,255,255,0.42)' : ''}>{s.v}</b>
+    <span>{s.nota || 'od zapytania do oferty'}</span>
+  </div>
+))}
+</div>
+
+<p style="margin:clamp(24px,2.8vw,34px) 0 0;max-width:840px;font-size:16.5px;line-height:1.65;color:rgba(255,255,255,0.72);text-wrap:pretty">Pierwsza rzecz zajęła tydzień i nie zmieniła prawie nic. Zmieniła natomiast to, że przy szóstym miesiącu nikt już nie pytał, czy warto. Rzecz, dla której cała reszta była rozbiegiem, weszła jako trzecia — i weszła w gotowe, bo dane i zgody były już na miejscu.</p>
+</section>
+
+<!-- ============ OBSZARY 5–8 ============ -->
+{OBSZARY.slice(4).map((g, i) => (
+  <section id={g.k} class={i % 2 === 1 ? 'ob tint' : 'ob'}>
+    <div class={i % 3 === 1 ? 'ob-h pion' : 'ob-h'}>
+      <h2 class="ob-t">{g.t}</h2>
+      <p class="ob-d">{g.d}</p>
+    </div>
+
+    {wgObszaru(g.k).filter((p) => p.firma).map((f) => (
+      <div class="fl rv">
+        <div class="fl-g">
+          <div class="fl-head">
+            <div class="fl-firma">{f.firma}</div>
+            <h3 class="fl-t">{f.t}</h3>
+          </div>
+          <div class="fl-opis">
+            <p class="he-txt" style="margin-top:0">{f.dzis}</p>
+            <p class="he-po">{f.po}</p>
+            <p class="fl-sk">{f.skutek}</p>
+          </div>
+          <div class="fl-liczba">
+            <div class="fl-duza">
+              <span class="fl-a">{f.a}</span>
+              <span class="dl-k"></span>
+              <span class="fl-b">{f.b}</span>
+            </div>
+            {f.m && f.m[0] && (
+              <div class="pp">
+                <div class="pp-r"><span class="pp-l">dziś</span><span class="pp-t"></span><span></span></div>
+                <div class="pp-r"><span class="pp-l">po</span><span class="pp-t" style="background:#eef3ec"><i style={`width:${udzial(f.m)}%`}></i></span><span></span></div>
+                <p class="pp-n">{f.b} to {procent(f.m)}% tego, co zajmowało wcześniej.</p>
+              </div>
+            )}
+            <p class="pr-w" style="margin-top:18px">pierwsze uruchomienie po {f.w} {odm(f.w, ['tygodniu', 'tygodniach', 'tygodniach'])}</p>
+          </div>
+        </div>
+      </div>
+    ))}
+
+    <div style="margin-top:clamp(26px,3.2vw,40px)">
+    {wgObszaru(g.k).filter((p) => !p.firma).map((p) => (
+      <div class="pr rv">
+        <div>
+          <h3 class="pr-t">{p.t}</h3>
+          <p class="pr-w">{p.w} {odm(p.w, ['tydzień', 'tygodnie', 'tygodni'])} do uruchomienia</p>
+        </div>
+        <div>
+          <p class="pr-dzis">{p.dzis}</p>
+          <p class="pr-po">{p.po}</p>
+        </div>
+        <div class="dl">
+          <span class="dl-a">{p.a}</span>
+          <span class="dl-k"></span>
+          <span class="dl-b">{p.b}</span>
+        </div>
+      </div>
+    ))}
+    </div>
+  </section>
+))}
+
+<!-- ============ CZEGO NIE BUDUJEMY ============ -->
+<section id="granice" class="ob">
+<h2 class="h-mod" style="margin:0;max-width:620px;text-wrap:balance">Czego na tej liście nie ma</h2>
+<p class="sub rv" style="margin:16px 0 0;max-width:700px">Cztery rzeczy, o które pytają najczęściej i których nie budujemy. Powód przy każdej jest ten sam: łatwiej sprzedać, trudniej obronić po roku.</p>
+<div class="gr">
+{GRANICE.map((g) => (
+  <div class="rv"><h3>{g.t}</h3><p>{g.d}</p></div>
+))}
+</div>
+<p class="sub rv" style="margin:clamp(30px,3.6vw,44px) 0 0;max-width:780px">Liczby wyżej są z naszych wdrożeń, mierzone przed przebudową i po niej na tej samej sprawie. Firmy opisujemy branżą i wielkością, bez nazw — tak stoi w umowach. U Was mogą wyjść inne i dlatego stan wyjściowy mierzymy przed budową, a próg zapisujemy w umowie.</p>
+</section>
+
+<GcFaq
+  heading="Pytania, które padają<br>przy tych liczbach"
+  lead="Najczęściej o to, skąd się wzięły i czy powtórzą się u Was."
+  ctaLabel="Zadajcie swoje wprost →"
+  items={faq}
+/>
+
+<GcCta
+  heading="Która z tych pozycji jest Wasza?"
+  lead="Na pierwszej rozmowie przechodzimy to, na czym schodzi u Was czas, i wskazujemy jedną rzecz do zrobienia najpierw — razem z tymi, które odradzamy."
+  eyebrow="Z rozmowy wychodzicie z"
+  items={[
+    { t: 'Jedną rzeczą na start', d: 'wybraną z Waszej listy, z powodem takiego wyboru' },
+    { t: 'Wersją „po" dla Waszego procesu', d: 'opisaną tak samo jak pozycje wyżej' },
+    { t: 'Punktem odniesienia', d: 'co i jak zmierzyć przed startem, żeby dało się porównać' },
+  ]}
+  submitLabel="Umów rozmowę"
+  fieldLabel="Na czym schodzi u Was czas?"
+  placeholder="Np. wycena czeka na technologa i wraca po trzech dniach…"
+  badges={[
+    { i: 'klodka', t: 'Twoje dane bezpieczne' },
+    { i: 'kartka', t: 'NDA przed startem' },
+    { i: 'ptaszek', t: 'Bez prowizji od dostawców' },
+  ]}
+/>
+
+<style is:inline set:html={klatkiHero}></style>
+</LaBase>

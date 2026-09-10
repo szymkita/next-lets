@@ -1,4 +1,6 @@
 ---
+import Nawigacja from '../components/Nawigacja.astro';
+import Stopka from '../components/Stopka.astro';
 // Wspólne rusztowanie podstron Guided Coding: head, style bazowe, nawigacja,
 // stopka i skrypty (sticky header + akordeon FAQ).
 // Design 1:1 ze stroną główną — te same tokeny, ta sama nawigacja.
@@ -119,7 +121,7 @@ const pageUrl = new URL(Astro.url.pathname, Astro.site).href;
   .nav-item:hover .mega-wrap,.nav-item:focus-within .mega-wrap{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0);pointer-events:auto}
   .nav-caret{transition:transform .2s}
   .nav-item:hover .nav-caret,.nav-item:focus-within .nav-caret{transform:rotate(180deg)}
-  .mega-eyebrow{font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#808b83;padding:0 11px;margin-bottom:6px}
+  .mega-eyebrow{font-weight:700;font-size:11px;letter-spacing:0.07em;text-transform:uppercase;color:#808b83;padding:0 11px;margin-bottom:6px}
   .mega-item{display:block;padding:9px 11px;border-radius:11px;transition:background .15s}
   .mega-item:hover{background:#f4f8f2}
   .mega-t{display:block;font-size:14.5px;font-weight:650;color:#16211a;transition:color .15s}
@@ -149,7 +151,7 @@ const pageUrl = new URL(Astro.url.pathname, Astro.site).href;
   .h-mod{font-size:clamp(24px,3.2vw,34px);line-height:1.1;letter-spacing:-0.02em;font-weight:800}
   .sub{font-size:17px;line-height:1.6;color:#4c5850;text-wrap:pretty}
   .sec-head{display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:24px 56px}
-  .eyebrow{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;letter-spacing:0.14em;text-transform:uppercase;color:#808b83}
+  .eyebrow{font-weight:700;font-size:11.5px;letter-spacing:0.08em;text-transform:uppercase;color:#808b83}
   .sec-pad{padding:clamp(72px,10vw,120px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px}
 
   /* ---------- karty ---------- */
@@ -176,16 +178,27 @@ const pageUrl = new URL(Astro.url.pathname, Astro.site).href;
 
   /* ---------- responsywność wspólna ---------- */
   @media (max-width:1024px){
-    .faq-grid{grid-template-columns:1fr !important;gap:clamp(32px,5vw,48px) !important}
-    .s2-grid{grid-template-columns:1fr !important;gap:clamp(32px,5vw,48px) !important}
-    .s9-grid{grid-template-columns:1fr !important}
+    /* minmax(0,1fr), nie samo 1fr: `1fr` nie schodzi poniżej najszerszej
+       nierozbijalnej treści w kolumnie i przy 320px rozpychało sekcję poza
+       kadr. Zero jako minimum każe kolumnie zmieścić się w ekranie. */
+    .faq-grid{grid-template-columns:minmax(0,1fr) !important;gap:clamp(32px,5vw,48px) !important}
+    .s2-grid{grid-template-columns:minmax(0,1fr) !important;gap:clamp(32px,5vw,48px) !important}
+    .s9-grid{grid-template-columns:minmax(0,1fr) !important}
     .grid4{grid-template-columns:1fr 1fr !important}
     .grid3{grid-template-columns:1fr 1fr !important}
   }
   @media (max-width:900px){
     .nav-menu{display:none !important}
-    .grid2,.grid3,.split{grid-template-columns:1fr !important;gap:40px !important}
+    .grid2,.grid3,.split{grid-template-columns:minmax(0,1fr) !important;gap:40px !important}
     .foot-grid{grid-template-columns:1fr 1fr !important;gap:40px !important}
+    /* Chrome wlicza `text-wrap:pretty` do minimalnej szerokości bloku: akapit
+       .sub liczy się wtedy jak 483px, kolumna gridu nie schodzi poniżej tej
+       wartości i wypycha sekcję poza kadr (widać było na /inspiracje).
+       Na wąskim ekranie ładniejsze łamanie nie jest tego warte. */
+    .sub{text-wrap:wrap}
+    /* Palec potrzebuje więcej niż wysokość linijki tekstu: linki-odnośniki
+       dostają zapas w pionie bez zmiany odstępów (ujemny margines go znosi). */
+    .lnk-green,.row-lnk{padding-block:10px;margin-block:-10px}
   }
   @media (max-width:600px){
     .grid4,.grid2,.foot-grid{grid-template-columns:1fr !important}
@@ -194,6 +207,13 @@ const pageUrl = new URL(Astro.url.pathname, Astro.site).href;
     .stat-row{flex-wrap:wrap !important;gap:24px 32px !important}
     .cta-card{grid-template-columns:1fr !important}
     .cta-portrait{display:none !important}
+  }
+
+  /* iOS Safari powiększa całą stronę, gdy kursor wchodzi w pole z krojem
+     mniejszym niż 16px — po wyjściu z pola układ zostaje przesunięty.
+     Na telefonie pola dostają więc równe 16px. */
+  @media (max-width:900px){
+    input,select,textarea{font-size:16px !important}
   }
 
   /* nawigacja przeniesiona ze strony głównej (31.08.2026) */
@@ -208,222 +228,17 @@ const pageUrl = new URL(Astro.url.pathname, Astro.site).href;
 
 <div class="page">
 
-<header class="site-header">
-<div class="nav-pill">
-<img src="/uploads/logo-2.svg" alt="Let's automate" style="height:26px;display:block">
-<div class="nav-menu" style="display:flex;align-items:center;gap:clamp(2px,0.6vw,8px);font-size:15px;font-weight:550;color:#2c3a30">
-<div class="nav-item">
-<a href="/#oferta" class="nav-lnk" style="display:inline-flex;align-items:center;gap:5px;color:#2c3a30">Usługi <svg class="nav-caret" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></a>
-<div class="mega-wrap">
-<div class="mega-panel" style="background:#ffffff;border:1px solid #e7ece4;border-radius:20px;box-shadow:0 40px 90px -44px rgba(18,38,28,0.45);padding:22px">
-<div class="usl-grid">
-
-<div class="usl-lane">
-<div class="usl-top"><a href="/#oferta" class="usl-head">Wdrażamy AI</a><span class="usl-sub">Gdy AI jeszcze nie weszło w procesy</span></div>
-<span class="usl-rule" aria-hidden="true"></span>
-<div class="usl-list">
-<a href="/strategia-ai" class="mega-item"><span class="mega-t">Strategia transformacji AI</span><span class="mega-d">Plan wdrożenia z policzonym zwrotem</span></a>
-<a href="/rozwiazania-ai" class="mega-item"><span class="mega-t">Indywidualne rozwiązania AI</span><span class="mega-d">AI wpięte w Wasze systemy i dane</span></a>
-<a href="/szkolenia-ai" class="mega-item"><span class="mega-t">Szkolenia i adopcja AI</span><span class="mega-d">Zespół używa AI w codziennej pracy</span></a>
-</div>
-</div>
-
-<div class="usl-lane">
-<div class="usl-top"><a href="/#oferta" class="usl-head">Budujemy aplikacje</a><span class="usl-sub">Gdy żadne gotowe narzędzie nie pasuje</span></div>
-<span class="usl-rule" aria-hidden="true"></span>
-<div class="usl-list">
-<a href="/systemy-procesowe" class="mega-item"><span class="mega-t">Systemy dla kluczowych procesów</span><span class="mega-d">Aplikacja pod Wasz sposób pracy</span></a>
-<a href="/systemy-dla-klientow" class="mega-item"><span class="mega-t">Systemy dla Waszych klientów</span><span class="mega-d">Portal klienta, platforma B2B, samoobsługa</span></a>
-<a href="/automatyzacje-integracje" class="mega-item"><span class="mega-t">Automatyzacje i integracje</span><span class="mega-d">Przepływ danych między systemami</span></a>
-</div>
-</div>
-
-<div class="usl-lane">
-<div class="usl-top"><a href="/guided-coding" class="usl-head">Guided Coding</a><span class="usl-sub">Gdy sami budujecie aplikacje z AI</span></div>
-<span class="usl-rule" aria-hidden="true"></span>
-<div class="usl-list">
-<a href="/guided-coding/bez-dzialu-it" class="mega-item"><span class="mega-t">Dla zespołów nietechnicznych</span><span class="mega-d">Budujecie bez działu IT, my pilnujemy</span></a>
-<a href="/guided-coding/dla-zespolow" class="mega-item"><span class="mega-t">Dla zespołów technicznych</span><span class="mega-d">Dział IT dowozi szybciej i bezpieczniej</span></a>
-<a href="/guided-coding/transfer-know-how" class="mega-item"><span class="mega-t">Szkolenia i transfer know-how</span><span class="mega-d">Program szkoleniowy pod Waszą aplikację</span></a>
-</div>
-</div>
-
-</div>
-</div>
-</div>
-</div>
-<!-- SCHOWANE 29.08.2026 — zakladka "Rozwiazania". Powod i plan powrotu: docs/nawigacja-decyzje.md
-     Zdjac ten komentarz, gdy powstana podstrony procesowe. -->
-<!--
-<div class="nav-item">
-<a href="/#dowody" class="nav-lnk" style="display:inline-flex;align-items:center;gap:5px;color:#2c3a30">Rozwiązania <svg class="nav-caret" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></a>
-<div class="mega-wrap">
-<div class="mega-panel" style="background:#ffffff;border:1px solid #e7ece4;border-radius:20px;box-shadow:0 40px 90px -44px rgba(18,38,28,0.45);padding:22px">
-<div style="display:grid;grid-template-columns:1fr 264px;gap:22px">
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:18px 16px">
-<div>
-<div class="mega-eyebrow">Według obszaru</div>
-<a href="/#dowody" class="mega-item"><span class="mega-t">Sprzedaż i klienci</span><span class="mega-d">Oferty za wolno, leady bez odpowiedzi</span></a>
-<a href="/#dowody" class="mega-item"><span class="mega-t">Obsługa i komunikacja</span><span class="mega-d">Maile i zgłoszenia zjadają zespół</span></a>
-</div>
-<div>
-<div class="mega-eyebrow">&nbsp;</div>
-<a href="/#dowody" class="mega-item"><span class="mega-t">Operacje i procesy</span><span class="mega-d">Procesy żyją w głowach i w Excelu</span></a>
-<a href="/#dowody" class="mega-item"><span class="mega-t">Dane i decyzje</span><span class="mega-d">Raporty klejone ręcznie co miesiąc</span></a>
-</div>
-<div>
-<div class="mega-eyebrow">Według systemu</div>
-<a href="/#oferta" class="mega-item"><span class="mega-t">System CRM na miarę</span><span class="mega-d">Sprzedaż w jednym miejscu, nie w mailu</span></a>
-<a href="/#oferta" class="mega-item"><span class="mega-t">Portal i panel klienta</span><span class="mega-d">Klient obsługuje się sam, 24/7</span></a>
-</div>
-<div>
-<div class="mega-eyebrow">&nbsp;</div>
-<a href="/#oferta" class="mega-item"><span class="mega-t">Panel operacyjny</span><span class="mega-d">Cały zespół działa z jednego ekranu</span></a>
-<a href="/#oferta" class="mega-item"><span class="mega-t">Integracje systemów</span><span class="mega-d">Twoje narzędzia wymieniają dane same</span></a>
-</div>
-</div>
-<a href="/#oferta" class="mega-feat" style="padding:18px 18px 20px">
-<div style="background:#ffffff;border-radius:11px;overflow:hidden;box-shadow:0 22px 44px -22px rgba(0,0,0,0.6);text-align:left">
-<div style="display:flex;align-items:center;gap:8px;padding:8px 11px;background:#fbfcfa;border-bottom:1px solid #eef1ec">
-<div style="display:flex;gap:4px;flex-shrink:0"><span style="width:7px;height:7px;border-radius:50%;background:#e3e7e0"></span><span style="width:7px;height:7px;border-radius:50%;background:#e3e7e0"></span><span style="width:7px;height:7px;border-radius:50%;background:#e3e7e0"></span></div>
-<span style="margin:0 auto;font-family:ui-monospace,Menlo,monospace;font-size:9px;color:#9aa69c">app · pulpit</span>
-</div>
-<div style="padding:11px 12px 13px">
-<div style="font-family:ui-monospace,Menlo,monospace;font-size:8.5px;letter-spacing:0.1em;color:#9aa69c">ZADANIA DZIŚ</div>
-<div style="display:flex;align-items:baseline;gap:6px;margin-top:2px"><span style="font-size:19px;font-weight:800;color:#16211a">42</span><span style="font-size:10px;font-weight:700;color:#0a7a52">↑ +12%</span></div>
-<div style="display:flex;flex-direction:column;gap:5px;margin-top:10px">
-<span style="display:flex;align-items:center;gap:7px;font-size:11px;color:#4c5850"><span style="width:5px;height:5px;border-radius:50%;background:var(--la-accent,#00CD77);flex-shrink:0"></span>AG Ofertowy<span style="margin-left:auto;font-size:9px;color:#9aa69c">gotowe</span></span>
-<span style="display:flex;align-items:center;gap:7px;font-size:11px;color:#4c5850"><span style="width:5px;height:5px;border-radius:50%;background:var(--la-accent,#00CD77);flex-shrink:0"></span>AG Fakturowy<span style="margin-left:auto;font-size:9px;color:#9aa69c">gotowe</span></span>
-</div>
-</div>
-</div>
-<div style="margin-top:16px;font-size:17px;font-weight:800;line-height:1.15;letter-spacing:-0.01em;color:#ffffff">Cała firma na jednym ekranie</div>
-<p style="margin:7px 0 0;font-size:12.5px;line-height:1.5;color:rgba(255,255,255,0.72)">Zbudowany pod Twoje procesy — nie pod cudzy szablon.</p>
-<span style="display:inline-flex;align-items:center;gap:7px;margin-top:15px;background:var(--la-accent,#00CD77);color:#0b1a11;font-size:13px;font-weight:750;padding:9px 15px;border-radius:9px;align-self:flex-start">Zobacz jak budujemy →</span>
-</a>
-</div>
-</div>
-</div>
-</div>
--->
-<div class="nav-item">
-<a href="/#dlaczego-my" class="nav-lnk" style="display:inline-flex;align-items:center;gap:5px;color:#2c3a30">Know-how <svg class="nav-caret" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></a>
-<div class="mega-wrap">
-<div class="mega-panel" style="background:#ffffff;border:1px solid #e7ece4;border-radius:20px;box-shadow:0 40px 90px -44px rgba(18,38,28,0.45);padding:22px">
-<div style="display:grid;grid-template-columns:1fr 264px;gap:22px">
-<div>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
-<div>
-<div class="mega-eyebrow">Metoda</div>
-<a href="/#dlaczego-my" class="mega-item" style="display:flex;gap:11px;align-items:flex-start">
-<span style="display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,#0a7a52,#00CD77);color:#ffffff;font-size:14px;font-weight:800;flex-shrink:0">W</span>
-<span><span class="mega-t">WiseStack</span><span class="mega-d">Framework i stack transformacji</span></span>
-</a>
-<a href="/#dlaczego-my" class="mega-item" style="display:flex;gap:11px;align-items:flex-start">
-<span style="display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:9px;background:#0e2b1d;flex-shrink:0"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg></span>
-<span><span class="mega-t">AI Adoption Framework</span><span class="mega-d">Od pierwszego kroku do firmy napędzanej AI</span></span>
-</a>
-<div class="mega-eyebrow" style="margin-top:14px">Produkty</div>
-<a href="https://appto.ai" class="mega-item" style="display:flex;gap:11px;align-items:flex-start">
-<span style="display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:9px;background:#0e2b1d;flex-shrink:0"><svg viewBox="0 0 103.24 79.25" width="17" height="13" fill="#ffffff" fill-rule="evenodd" aria-hidden="true"><path d="M54.537,65.167L54.537,79.253L0,65.167L0,0L54.537,14.134L54.537,0L87.005,14.148L87.005,0L103.239,14.148L103.239,79.253L87.005,65.167L87.005,79.253L54.537,65.167Z"/></svg></span>
-<span><span class="mega-t">Appto.ai ↗</span><span class="mega-d">Gotowe AI z półki</span></span>
-</a>
-<a href="https://deskto.ai" class="mega-item" style="display:flex;gap:11px;align-items:flex-start">
-<span style="display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:9px;background:#0e2b1d;flex-shrink:0"><svg viewBox="0 0 84 80.14" width="15" height="14.5" fill="#ffffff" fill-rule="evenodd" aria-hidden="true"><path d="M0,14L58,28.14L58,80.14L0,66Z"/><path d="M13,7L71,21.14L71,73.14L61.5,70.83L61.5,25.39L13,13.57Z"/><path d="M26,0L84,14.14L84,66.14L74.5,63.82L74.5,18.39L26,6.57Z"/></svg></span>
-<span><span class="mega-t">Deskto.ai ↗</span><span class="mega-d">Agenci AI na Twoim pulpicie</span></span>
-</a>
-</div>
-<div>
-<div class="mega-eyebrow">Wiedza</div>
-<a href="/#dowody" class="mega-item"><span class="mega-t">Baza wiedzy</span><span class="mega-d">Artykuły i analizy</span></a>
-<a href="/#dowody" class="mega-item"><span class="mega-t">Playbooki i guide'y</span><span class="mega-d">Gotowe do wdrożenia</span></a>
-<a href="/#dowody" class="mega-item"><span class="mega-t">Webinary i nagrania</span><span class="mega-d">Rozbieramy wdrożenia na czynniki</span></a>
-<a href="/#dowody" class="mega-item"><span class="mega-t">Słownik AI</span><span class="mega-d">Pojęcia bez ściemy</span></a>
-</div>
-</div>
-</div>
-<a href="/#diagnoza" class="mega-feat" style="padding:20px 20px 22px">
-<div style="font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.5)">Narzędzie</div>
-<div style="margin-top:11px;font-size:19px;font-weight:800;line-height:1.15;letter-spacing:-0.01em;color:#ffffff">Wise AI Score</div>
-<p style="margin:8px 0 0;font-size:12.5px;line-height:1.5;color:rgba(255,255,255,0.72)">Sprawdź w 3 minuty, jak mocno AI napędza dziś Twoją firmę.</p>
-<div style="margin-top:18px">
-<div style="position:relative;height:8px;border-radius:6px;background:linear-gradient(90deg,rgba(255,255,255,0.16),var(--la-accent,#00CD77))">
-<span style="position:absolute;left:64%;top:50%;transform:translate(-50%,-50%);width:15px;height:15px;border-radius:50%;background:#ffffff;border:3px solid var(--la-accent,#00CD77);box-shadow:0 2px 9px rgba(0,0,0,0.45)"></span>
-</div>
-<div style="display:flex;justify-content:space-between;margin-top:8px;font-family:ui-monospace,Menlo,monospace;font-size:9px;letter-spacing:0.08em;color:rgba(255,255,255,0.5)"><span>RĘCZNIE</span><span>NAPĘDZANA AI</span></div>
-</div>
-<span style="display:inline-flex;align-items:center;gap:7px;margin-top:18px;background:var(--la-accent,#00CD77);color:#0b1a11;font-size:13px;font-weight:750;padding:9px 15px;border-radius:9px;align-self:flex-start">Zrób test →</span>
-</a>
-</div>
-</div>
-</div>
-</div>
-<a href="/#dowody" class="nav-lnk" style="color:#2c3a30">Inspiracje</a>
-<a href="/dlaczego-my" class="nav-lnk" style="color:#2c3a30">Dlaczego my</a>
-</div>
-<a href={ctaHref} class="btn-dark" id="navCta" style="position:relative;display:inline-flex;align-items:center;justify-content:center;background:#16211a;color:#ffffff;padding:12px 22px;border-radius:10px;font-weight:650;font-size:15px;white-space:nowrap"><span class="nav-cta-sizer" aria-hidden="true">{ctaLabel}</span><span class="nav-cta-live"><span class="nav-cta-text">{ctaLabel}</span></span></a>
-</div>
-</header>
+<Nawigacja ctaHref={ctaHref} />
 
 <slot />
 
-<footer style="background:#16211a;color:#e8ece7;padding:64px max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) 36px">
-<div class="foot-grid" style="display:grid;grid-template-columns:1fr 220px 220px 220px;gap:clamp(32px,4vw,56px);align-items:start">
-<div>
-<img src="/uploads/logo-2.svg" alt="Let's automate" style="height:22px;display:block;filter:brightness(0) invert(1)">
-<p style="margin:18px 0 0;max-width:300px;font-size:14px;line-height:1.6;color:#9fb0a3">Studio transformacji AI.<br>Projektujemy i budujemy systemy,<br>na których firmy działają po nowemu.</p>
-<div style="margin-top:20px;font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.1em;color:#7d9080">CZĘŚĆ WISE GROUP · SELLWISE · HIREWISE · ADWISE</div>
-<div style="margin-top:22px;font-size:12.5px;line-height:1.75;color:#7d9080">Let's automate sp. z o.o.<br>ul. Nowy Świat 33/13, 00-029 Warszawa<br>NIP 5252908405 · KRS 0000972542</div>
-<div style="display:flex;gap:14px;margin-top:16px">
-<a href="https://www.linkedin.com/company/letsautomate-io" class="foot-lnk" aria-label="LinkedIn" style="display:inline-flex;align-items:center;gap:7px;color:#cfd9cf;font-size:13.5px"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 100 5 2.5 2.5 0 000-5zM3 9h4v12H3zM9 9h3.8v1.64h.05c.53-.95 1.83-1.95 3.77-1.95 4.03 0 4.78 2.5 4.78 5.75V21h-4v-4.86c0-1.16-.02-2.65-1.77-2.65-1.77 0-2.04 1.26-2.04 2.57V21H9z"/></svg>LinkedIn</a>
-</div>
-</div>
-<div>
-<div style="font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.1em;color:#7d9080;margin-bottom:15px">USŁUGI</div>
-<div style="display:flex;flex-direction:column;gap:10px;font-size:14.5px">
-<a href="/#oferta" class="foot-lnk" style="color:#cfd9cf">Automatyzacja procesów</a>
-<a href="/#oferta" class="foot-lnk" style="color:#cfd9cf">Integracje systemów</a>
-<a href="/rozwiazania-ai" class="foot-lnk" style="color:#cfd9cf">Wdrożenia AI</a>
-<a href="/guided-coding" class="foot-lnk" style="color:#cfd9cf">Guided Coding</a>
-<a href="https://appto.ai" class="foot-lnk" style="color:#cfd9cf">appto.ai ↗</a>
-</div>
-</div>
-<div>
-<div style="font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.1em;color:#7d9080;margin-bottom:15px">BUDUJECIE SAMI</div>
-<div style="display:flex;flex-direction:column;gap:10px;font-size:14.5px">
-<a href="/guided-coding" class="foot-lnk" style="color:#cfd9cf">Guided Coding</a>
-<a href="/guided-coding/bez-dzialu-it" class="foot-lnk" style="color:#cfd9cf">Bez zespołu IT</a>
-<a href="/guided-coding/dla-zespolow" class="foot-lnk" style="color:#cfd9cf">Dla zespołów</a>
-<a href="/guided-coding/transfer-know-how" class="foot-lnk" style="color:#cfd9cf">Transfer know-how</a>
-<a href="/dlaczego-my" class="foot-lnk" style="color:#cfd9cf">Dlaczego my</a>
-</div>
-</div>
-<div>
-<div style="font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.1em;color:#7d9080;margin-bottom:15px">ZACZNIJ</div>
-<p style="margin:0;font-size:14.5px;line-height:1.6;color:#cfd9cf">Przegląd gotowości produkcyjnej — kończy się liczbą i werdyktem.</p>
-<a href="#kontakt" class="btn-accent" style="display:inline-flex;align-items:center;gap:8px;margin-top:15px;background:var(--la-accent,#00CD77);color:#0b1a11;padding:12px 20px;border-radius:10px;font-weight:750;font-size:14px">Sprawdź gotowość →</a>
-</div>
-</div>
-<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-top:56px;padding-top:24px;border-top:1px solid rgba(232,236,231,0.14);font-size:12.5px;color:#7d9080">
-<span>© 2026 Let's automate · część Wise Group</span>
-<div style="display:flex;gap:24px">
-<a href="#" class="foot-lnk" style="color:#7d9080">Polityka prywatności</a>
-<a href="#" class="foot-lnk" style="color:#7d9080">RODO</a>
-</div>
-</div>
-</footer>
+<Stopka />
 
 </div>
 
 <script>
   // ---- Sticky header: cień/obramowanie po scrollu ----
-  (function(){
-    var h = document.querySelector('.site-header');
-    if(!h) return;
-    function upd(){ h.classList.toggle('scrolled', window.scrollY > 65); }
-    upd();
-    window.addEventListener('scroll', upd, {passive:true});
-  })();
+  
 
   // ---- FAQ — akordeon (jeden otwarty naraz) ----
   (function(){

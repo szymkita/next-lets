@@ -1,0 +1,777 @@
+---
+// WISESTACK — /wisestack
+// Pierwsza podstrona z pionu KNOW-HOW (megamenu: Know-how → Metoda). Dotąd
+// pozycja „WiseStack" w nawigacji prowadziła na /#dlaczego-my, a cztery
+// podstrony Guided Codingu miały link „Zobacz WiseStack →" bez celu.
+// Źródło treści: wewnętrzny whitepaper „WiseStack — jak tworzymy
+// oprogramowanie z AI", wersja 1.1, lipiec 2026.
+//
+// CZYM SIĘ RÓŻNI OD RESZTY SERWISU:
+// To jedyna strona, która niczego nie sprzedaje wprost. Sprzedaje wiarygodność
+// wykonania — i dlatego wolno jej być trudniejsza niż podstrony usługowe.
+//
+// TEZA (jedno zdanie, którego konkurencja nie przepisze):
+//   „Kod przestał być kosztem. Kosztem jest sprawdzenie, że jest dobry."
+// Cała reszta strony jest dowodem tego zdania. Kategoria mówi „budujemy
+// szybciej z AI"; my pokazujemy, że samo szybsze pisanie nic nie zmienia,
+// dopóki sygnał o błędzie wraca po dniu.
+//
+// MIARA POWTÓRZONA PRZEZ CAŁĄ STRONĘ: CZAS DO SYGNAŁU.
+// Ile mija od zrobienia czegoś do momentu, w którym wiadomo, czy było dobre.
+//   · hero          — sześć sygnałów na osi logarytmicznej, cztery przejeżdżają
+//                     w lewo o rzędy wielkości, dwa nie drgają
+//   · ślad zmiany   — te same czasy jako artefakt: jeden dzień, jedna zmiana
+//   · mechanizmy    — co sprawia, że dany sygnał wraca sam
+// Liczby między rysunkami się spinają: 2 s / 40 s / 93 s w śladzie to te same
+// wartości, które hero stawia na osi.
+//
+// WARSTWA WIZUALNA — siódmy osobny słownik w serwisie:
+//   /strategia-ai:         łuki, przewijany strumień, siatka stu kwadratów
+//   /rozwiazania-ai:       przekrój warstw, próg pewności, tory harmonogramu
+//   /szkolenia-ai:         jednostki do policzenia (ludzie, minuty)
+//   /systemy-procesowe:    oś czasu sprawy — praca kontra czekanie
+//   /systemy-dla-klientow: lista pytań
+//   /automatyzacje-integracje: puls
+//   tutaj:                 OŚ LOGARYTMICZNA CZASU. Jedyny sposób, żeby dwie
+//     sekundy i dwa tygodnie zmieściły się w jednym rysunku — a bez tego nie
+//     da się pokazać, że część sygnałów skróciła się o cztery rzędy wielkości,
+//     a część nie o żaden.
+//   Para sprawdzona na /automatyzacje-integracje: JEDNA animacja z prawdziwym
+//   ruchem (hero) i JEDEN artefakt (ślad jednej zmiany). Ciemny pas dostaje
+//   trzeci rejestr — kliny delegacji — i najcięższy argument strony.
+//
+// RUCH JEST ARGUMENTEM. W hero każdy sygnał startuje tam, gdzie stał kiedyś,
+// i przejeżdża w lewo do dzisiejszej wartości; długość śladu to dokładnie
+// skala przyspieszenia. Dwa ostatnie wiersze nie mają śladu, bo nie ruszyły
+// się o milimetr. Żadne zdanie tego nie zastąpi.
+//
+// CZEGO ŚWIADOMIE NIE MA: MNOŻNIKA.
+// Nigdzie nie pada „przyspieszyliśmy X razy". Na /guided-coding/dla-zespolow
+// stoi zobowiązanie, że liczby publikujemy dopiero po domknięciu okna pomiaru
+// przed/po. Strona o metodzie, która sama podałaby niezmierzony mnożnik,
+// przeczyłaby wszystkiemu, co mówi o weryfikacji. Zamiast mnożnika jest
+// mechanizm i czasy powrotu sygnałów, które da się sprawdzić w minutę.
+//
+// DO POTWIERDZENIA PRZED PUBLIKACJĄ:
+// · Czasy sygnałów (2 s, 4 s, 40 s, 93 s, minuta) — wzięte z obserwacji
+//   naszego stosu, nie z pomiaru. Do przejrzenia przez zespół.
+// · Kolumna „dawniej" (2 godz. / 1 dzień / 2 dni) — szacunek sprzed
+//   przebudowy, nie zapis z narzędzia.
+// · Ślad jednej zmiany: kształt jest prawdziwy, znaczniki czasu przykładowe.
+//   Zamiana na prawdziwy log z repozytorium byłaby mocniejsza.
+// · FAQ o poufności — deklaracja handlowa (ustawienia narzędzi, zakres NDA).
+//   Do potwierdzenia przez Szymona, zanim strona wyjdzie z noindex.
+// · Sześć mechanizmów w #tempo opisuje nasz stos; nazwy narzędzi celowo padają
+//   tylko przy Next.js i Convex, bo tylko one są w whitepaperze.
+// · /og/wisestack.png — strona dziedziczy /og/hub.png.
+import LaBase from '../layouts/LaBase.astro';
+import GcFaq from '../components/GcFaq.astro';
+import GcCta from '../components/GcCta.astro';
+
+const kanon = new URL('/wisestack', Astro.site).href;
+
+const title = "WiseStack — jak tworzymy oprogramowanie z AI | Let's automate";
+const description = 'WiseStack to nazwa naszego sposobu pracy z AI. Delegujemy tyle wykonania, ile potrafimy wiarygodnie sprawdzić — a przyspieszenie bierze się z tego, jak szybko wraca sygnał, że coś jest nie tak.';
+
+// ============================================================================
+// HERO · CZAS DO SYGNAŁU
+// Oś logarytmiczna od jednej sekundy do dwóch tygodni. Inaczej się nie da:
+// między „2 s" a „2 dni" jest pięć rzędów wielkości i na osi liniowej cztery
+// pierwsze wiersze zlałyby się w jeden punkt przy lewej krawędzi.
+// Wszystkie pozycje i wszystkie czasy animacji liczy kod z tej tablicy.
+// ============================================================================
+const MIN = 60, GODZ = 3600, DZIEN = 86400, TYDZ = 604800;
+const OS_MAX = 14 * DZIEN;                       // prawa krawędź osi
+const lg = (s) => Math.log10(s) / Math.log10(OS_MAX);
+const os = (s) => `${(lg(s) * 100).toFixed(2)}%`;
+
+const PODZIALKA = [
+  { s: 1, t: '1 s' },
+  { s: MIN, t: '1 min' },
+  { s: GODZ, t: '1 godz.' },
+  { s: DZIEN, t: '1 dzień' },
+];
+
+// „dawniej" to stan sprzed przebudowy stosu, „dziś" to czas powrotu sygnału
+// w projekcie, który tego sygnału pilnuje. Dwa ostatnie wiersze nie ruszyły
+// się wcale — i to one są pointą całej strony.
+const SYGNALY = [
+  { t: 'Niezgodność typów i kontraktów', d: 'zmiana pola w schemacie, kod obok o niej nie wie', o: DZIEN, oL: '1 dzień', n: 2, nL: '2 s' },
+  { t: 'Złe dane na wejściu funkcji', d: 'brak pola, zła wartość, pusty wiersz', o: 2 * GODZ, oL: '2 godz.', n: 4, nL: '4 s' },
+  { t: 'Zepsuty cudzy przypadek', d: 'poprawka w jednym miejscu psuje inne', o: 2 * GODZ, oL: '2 godz.', n: 40, nL: '40 s' },
+  { t: 'Zachowanie na żywym systemie', d: 'klikalna wersja zmiany, na danych testowych', o: DZIEN, oL: '1 dzień', n: 93, nL: '93 s' },
+  { t: 'Czy druga osoba to zrozumie', d: 'przegląd inżynierski, czytelność, koszt utrzymania', o: 2 * DZIEN, oL: '2 dni', n: 2 * DZIEN, nL: '2 dni', stoi: true },
+  { t: 'Czy tego potrzebował biznes', d: 'potwierdzenie na prawdziwej sprawie u klienta', o: TYDZ, oL: 'tygodnie', n: TYDZ, nL: 'tygodnie', stoi: true },
+];
+
+// ---- zegar hero -----------------------------------------------------------
+// Jedna pętla, długie przytrzymanie stanu końcowego. Wszystkie klatki poniżej
+// są liczone z tych sekund; zmiana czasu w jednym miejscu przelicza całość.
+const C = 17;                                   // długość pętli
+const pc = (t) => `${Math.max(0, Math.min(100, (t / C) * 100)).toFixed(2)}%`;
+const T_WEJ = 0.4;                              // pierwsza kropka
+const KROK_WEJ = 0.13;
+const T_RUCH = 3.0;                             // start przejazdu
+const KROK = 0.19;
+const RUCH = 1.05;                              // czas jednego przejazdu
+const T_POD = T_RUCH + (SYGNALY.length - 1) * KROK + RUCH + 0.55;
+const T_KON = 15.0;                             // początek wygaszania
+const ZANIK = 1.1;
+
+const SZARY = '#c3cec4';
+const ZIELEN = 'var(--la-accent,#00CD77)';
+const BURSZTYN = '#d99a3c';
+
+const klatki = SYGNALY.flatMap((x, i) => {
+  const w0 = T_WEJ + i * KROK_WEJ;
+  const m0 = T_RUCH + i * KROK;
+  const m1 = m0 + RUCH;
+  const kolor = x.stoi ? BURSZTYN : ZIELEN;
+  const k = [
+    `@keyframes sg-pkt-${i}{0%,${pc(w0)}{opacity:0;left:var(--od);background:${SZARY}}` +
+    `${pc(w0 + 0.4)}{opacity:1;left:var(--od);background:${SZARY}}` +
+    `${pc(m0)}{opacity:1;left:var(--od);background:${SZARY}}` +
+    `${pc(m1)}{opacity:1;left:var(--do);background:${kolor}}` +
+    `${pc(T_KON)}{opacity:1;left:var(--do);background:${kolor}}` +
+    `${pc(T_KON + ZANIK)}{opacity:0;left:var(--do);background:${kolor}}` +
+    `100%{opacity:0;left:var(--od);background:${SZARY}}}`,
+    `@keyframes sg-stare-${i}{0%,${pc(w0)}{opacity:0}${pc(w0 + 0.4)}{opacity:1}` +
+    `${pc(m0 + 0.12)}{opacity:1}${pc(m0 + 0.42)}{opacity:0}100%{opacity:0}}`,
+    `@keyframes sg-nowe-${i}{0%,${pc(m1 - 0.3)}{opacity:0}${pc(m1 + 0.08)}{opacity:1}` +
+    `${pc(T_KON)}{opacity:1}${pc(T_KON + ZANIK)}{opacity:0}100%{opacity:0}}`,
+  ];
+  if (!x.stoi) {
+    k.push(
+      `@keyframes sg-slad-${i}{0%,${pc(m0)}{width:0;opacity:1}${pc(m1)}{width:var(--dl);opacity:1}` +
+      `${pc(T_KON)}{width:var(--dl);opacity:1}${pc(T_KON + ZANIK)}{width:var(--dl);opacity:0}100%{width:0;opacity:0}}`
+    );
+  }
+  return k;
+}).concat([
+  `@keyframes sg-podpis{0%,${pc(T_POD)}{opacity:0;transform:translateY(5px)}` +
+  `${pc(T_POD + 0.5)}{opacity:1;transform:none}${pc(T_KON)}{opacity:1;transform:none}` +
+  `${pc(T_KON + ZANIK)}{opacity:0;transform:none}100%{opacity:0;transform:translateY(5px)}}`,
+]).join('\n');
+
+// ============================================================================
+// ŚLAD JEDNEJ ZMIANY (artefakt, sekcja #tempo)
+// Te same czasy co w hero, tylko postawione na zegarze jednego popołudnia.
+// Ostatni wiersz jest pointą: do niego wszystko trwało trzy minuty, a on sam
+// może stać godzinę albo tydzień.
+// ============================================================================
+const SLAD = [
+  { g: '14:02:11', t: 'polecenie do modelu', d: 'dodaj termin płatności do rejestru faktur', typ: 'krok' },
+  { g: '14:02:44', t: 'zmiana w schemacie i w trzech miejscach kodu', typ: 'krok' },
+  { g: '14:02:46', t: 'typy przeliczone', d: 'dwa miejsca nie znały nowego pola', typ: 'ok', ile: '2 s' },
+  { g: '14:03:09', t: 'model poprawił oba, czytając treść błędu', typ: 'krok' },
+  { g: '14:03:49', t: 'testy na granicach procesu', d: 'osiemdziesiąt cztery przypadki', typ: 'ok', ile: '40 s' },
+  { g: '14:05:22', t: 'podgląd pod własnym adresem', d: 'klikalna wersja zmiany na danych testowych', typ: 'ok', ile: '93 s' },
+  { g: '14:05:22', t: 'czeka na człowieka', d: 'czy księgowość liczy ten termin od wystawienia, czy od doręczenia', typ: 'brama' },
+];
+
+// ============================================================================
+// SZEŚĆ MECHANIZMÓW — co sprawia, że sygnał wraca sam (sekcja #tempo)
+// ============================================================================
+const MECHANIZMY = [
+  { t: 'Schemat danych i typy w jednym miejscu', d: 'Każdy fragment kodu, który nie zna nowego pola, przestaje się kompilować.', kiedy: 'przy zapisie pliku' },
+  { t: 'Funkcje serwera z walidacją argumentów', d: 'Złe dane odbijają się na granicy, z nazwą pola i powodem odrzucenia.', kiedy: 'przy wywołaniu' },
+  { t: 'Testy postawione na granicach procesu', d: 'Test pilnuje przebiegu sprawy — tam, gdzie spotyka się użytkownik, reguła i dane.', kiedy: '~40 sekund' },
+  { t: 'Osobny działający adres dla każdej gałęzi', d: 'Zmianę widać jako klikalną wersję systemu, zanim ktokolwiek ją zatwierdzi.', kiedy: '~93 sekundy' },
+  { t: 'Logi i błędy czytelne dla modelu', d: 'Model dostaje przyczynę zamiast objawu i poprawia się bez zgadywania.', kiedy: 'w tej samej sesji' },
+  { t: 'Decyzje i słownik domeny obok kodu', d: 'Kolejna sesja nie zaczyna od odtwarzania tego, co zostało już rozstrzygnięte.', kiedy: 'na starcie sesji' },
+];
+
+// ============================================================================
+// SYTUACJA → NASTĘPNY KROK (sekcja #krok)
+// ============================================================================
+const KROKI = [
+  { s: 'Nie rozumiemy potrzeby', k: 'Wracamy do problemu i do języka, którym mówi o nim biznes' },
+  { s: 'Nie jesteśmy pewni zachowania rozwiązania', k: 'Przygotowujemy najtańszy sposób jego sprawdzenia' },
+  { s: 'Kierunek jest jasny i łatwy do zweryfikowania', k: 'Implementujemy mały fragment i sprawdzamy rezultat' },
+  { s: 'Konsekwencje błędu są wysokie', k: 'Ograniczamy delegację i wzmacniamy niezależną weryfikację' },
+  { s: 'Rzeczywiste użycie podważa założenie', k: 'Aktualizujemy decyzję i wybieramy kolejny krok' },
+];
+
+// ============================================================================
+// DELEGACJA WEDŁUG RYZYKA (ciemny pas)
+// Kliny: zielony maleje w prawo, biały rośnie. Cztery przystanki na osi.
+// ============================================================================
+const POZIOMY = [
+  { p: 'Odwracalny błąd', ai: 88, t: 'Szeroka delegacja', d: 'AI wykonuje całość, człowiek potwierdza rezultat' },
+  { p: 'Umiarkowane ryzyko', ai: 62, t: 'Implementacja wspierana', d: 'przegląd zachowania i przegląd kodu, osobno' },
+  { p: 'Wysokie ryzyko', ai: 34, t: 'Projekt po stronie człowieka', d: 'ograniczona delegacja, niezależna weryfikacja' },
+  { p: 'Krytyczne skutki', ai: 12, t: 'Wykonanie ręczne', d: 'przegląd kilku inżynierów, zaostrzone kryteria dopuszczenia' },
+];
+const OBUDOWA = ['testy', 'symulator', 'generator danych', 'implementacja porównawcza', 'debugger krok po kroku'];
+
+// Kliny liczone z kolumny `ai` powyżej — zmiana liczby przelicza rysunek.
+const KL_W = 1000, KL_BASE = 168, KL_TOP = 26, KL_SK = 138;
+const klX = (i) => (KL_W / POZIOMY.length) * (i + 0.5);
+const klY = (p) => KL_BASE - (p.ai / 100) * KL_SK;
+const klKrawedz = (() => {
+  const pts = POZIOMY.map((p, i) => [klX(i), klY(p)]);
+  let d = `M0,${pts[0][1].toFixed(1)} L${pts[0][0].toFixed(1)},${pts[0][1].toFixed(1)}`;
+  for (let i = 0; i < pts.length - 1; i++) {
+    const [x1, y1] = pts[i];
+    const [x2, y2] = pts[i + 1];
+    const mx = ((x1 + x2) / 2).toFixed(1);
+    d += ` C${mx},${y1.toFixed(1)} ${mx},${y2.toFixed(1)} ${x2.toFixed(1)},${y2.toFixed(1)}`;
+  }
+  d += ` L${KL_W},${pts[pts.length - 1][1].toFixed(1)}`;
+  return d;
+})();
+const klObszar = `${klKrawedz} L${KL_W},${KL_BASE} L0,${KL_BASE} Z`;
+
+// ============================================================================
+// GRANICE — sekcja, która niczego nie sprzedaje
+// ============================================================================
+const GRANICE = [
+  'Rezultat wygenerowany przez AI jest z definicji poprawny.',
+  'Każda funkcjonalność potrzebuje prototypu.',
+  'Prototyp ma jakość produkcyjną.',
+  'Przepisanie systemu usuwa koszt migracji i ryzyko operacyjne.',
+  'Testy napisane przez model są niezależnym dowodem bezpieczeństwa.',
+  'Odpowiedzialność da się przekazać agentowi.',
+];
+
+const faq = [
+  {
+    q: 'Czy nasz kod trafia do modelu i zostaje w nim na zawsze?',
+    a: 'Pracujemy na narzędziach w konfiguracji, która wyłącza wykorzystanie treści do trenowania modeli, a przy projektach objętych NDA zakres ustalamy przed pierwszą linijką kodu. Jeśli u Was obowiązuje ostrzejsza zasada — własna infrastruktura, model po Waszej stronie, zakaz wysyłania fragmentów na zewnątrz — to jest decyzja projektowa i zapada przed pierwszym commitem.',
+  },
+  {
+    q: 'Czy AI pisze u Was cały kod?',
+    a: 'Nie. Zakres delegacji ustawiamy według konsekwencji błędu i tego, co potrafimy wiarygodnie sprawdzić. Przy odwracalnej zmianie w interfejsie model robi całość, a my potwierdzamy rezultat. Przy rozliczeniach albo przy integracji, której awarii nikt nie zauważy, projekt prowadzi człowiek, a model buduje wokół narzędzia do sprawdzania.',
+  },
+  {
+    q: 'Skąd wiadomo, że to naprawdę przyspiesza?',
+    a: 'Czasy powrotu sygnałów da się sprawdzić w kilka minut: typy wracają przy zapisie pliku, testy w kilkadziesiąt sekund, klikalna wersja zmiany w około półtorej minuty. Mnożnika produktywności tu nie znajdziecie — mierzymy u siebie okno przed i po, a liczby opublikujemy razem ze sposobem liczenia. Do tego czasu nie ma tu wykresu.',
+  },
+  {
+    q: 'Czy możemy pracować tak samo u siebie?',
+    a: 'Tak, i temu służy osobna usługa. <a href="/guided-coding" style="font-weight:700;color:#0a7a52">Guided Coding</a> to przeniesienie tego sposobu pracy do Waszego zespołu: zasady, konfiguracja narzędzi i sposób sprawdzania, dopasowane do tego, co już budujecie. Nie instalujemy kopii naszego stosu — przenosimy to, co u Was ma sens.',
+  },
+  {
+    q: 'Dlaczego akurat Next.js i Convex?',
+    a: 'Bo spełniają dwa warunki, których nie spełnia sama popularność narzędzia: zwracają aktualny kontekst i dają kontrolowane narzędzia działania. Schemat danych, generowane typy, walidacja i logi mówią modelowi, co się właśnie stało w działającym systemie. Dzięki temu wartość tego wyboru rośnie razem z możliwościami kolejnych modeli, bez przepisywania projektu.',
+  },
+];
+
+const dane = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'TechArticle',
+      '@id': `${kanon}#artykul`,
+      headline: 'WiseStack — jak tworzymy oprogramowanie z AI',
+      description,
+      url: kanon,
+      inLanguage: 'pl-PL',
+      author: { '@id': new URL('/#organizacja', Astro.site).href },
+      publisher: { '@id': new URL('/#organizacja', Astro.site).href },
+      about: ['Wytwarzanie oprogramowania z AI', 'Delegowanie pracy do modeli językowych', 'Weryfikacja rezultatów AI'],
+    },
+    {
+      '@type': 'BreadcrumbList',
+      '@id': `${kanon}#okruszki`,
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Strona główna', item: new URL('/', Astro.site).href },
+        { '@type': 'ListItem', position: 2, name: 'WiseStack', item: kanon },
+      ],
+    },
+    {
+      '@type': 'FAQPage',
+      '@id': `${kanon}#faq`,
+      mainEntity: faq.map((f) => ({
+        '@type': 'Question',
+        name: f.q,
+        acceptedAnswer: { '@type': 'Answer', text: f.a.replace(/<[^>]+>/g, '') },
+      })),
+    },
+  ],
+};
+---
+<LaBase title={title} description={description} ctaHref="#kontakt" ctaLabel="Umów rozmowę" nav="dlaczego-my">
+<script type="application/ld+json" is:inline set:html={JSON.stringify(dane)} slot="head"></script>
+<style is:global slot="head">
+  /* ================= HERO · CZAS DO SYGNAŁU =================
+     Oś logarytmiczna 1 s … 14 dni. Każdy wiersz startuje tam, gdzie sygnał
+     wracał kiedyś, i przejeżdża w lewo do dzisiejszej wartości. Długość śladu
+     to skala przyspieszenia — dwa dolne wiersze nie mają śladu w ogóle.
+     UWAGA: wartości niosą zmienne --od/--do w stylu elementu, nie same klatki.
+     Dzięki temu blok prefers-reduced-motion zdejmuje ruch, a nie dane. */
+  .cs-karta{background:#ffffff;border:1px solid #e7ece4;border-radius:20px;padding:clamp(18px,2.4vw,26px) clamp(16px,2.2vw,26px) clamp(14px,1.8vw,20px);box-shadow:0 34px 74px -46px rgba(18,38,28,0.34)}
+  .cs-gora{display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding-bottom:12px;border-bottom:1px solid #e7ece4}
+  .cs-gora b{font-size:13px;font-weight:750;color:#16211a}
+  .cs-gora span{font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:0.06em;color:#a9b3aa}
+  .cs-w{display:grid;grid-template-columns:minmax(0,0.92fr) minmax(0,1.5fr);gap:clamp(10px,1.6vw,24px);align-items:center;padding:9px 0;border-bottom:1px solid #f2f5f0}
+  .cs-t{display:block;font-size:14px;font-weight:650;letter-spacing:-0.01em;line-height:1.25;color:#16211a}
+  .cs-d{display:block;margin-top:2px;font-size:11.5px;line-height:1.35;color:#9aa69c}
+  .cs-lane{position:relative;height:30px}
+  .cs-tor{position:absolute;left:24px;right:42px;top:0;bottom:0;background-image:var(--gl);background-repeat:no-repeat}
+  .cs-slad{position:absolute;top:50%;height:2px;width:var(--dl);margin-top:-1px;border-radius:2px;background:linear-gradient(90deg,rgba(0,205,119,0.6) 0%,rgba(0,205,119,0.08) 100%)}
+  .cs-pkt{position:absolute;top:50%;left:var(--do);width:11px;height:11px;margin:-5.5px 0 0 -5.5px;border-radius:50%;background:var(--la-accent,#00CD77);box-shadow:0 0 0 3px rgba(0,205,119,0.14)}
+  .cs-pkt.stoi{background:#d99a3c;box-shadow:0 0 0 3px rgba(217,154,60,0.16)}
+  .cs-pkt em{position:absolute;top:50%;left:16px;transform:translateY(-50%);font-style:normal;white-space:nowrap;font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:-0.01em;color:#16211a}
+  .cs-pkt.lewo em{left:auto;right:16px}
+  .cs-pkt .stare{opacity:0;color:#a9b3aa}
+  .cs-os{position:relative;height:22px;margin-top:2px}
+  .cs-os .cs-tor > span{position:absolute;top:4px;transform:translateX(-50%);font-family:ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:0.04em;color:#b3bcb3}
+  .cs-leg{display:flex;flex-wrap:wrap;gap:6px 22px;margin-top:12px;padding-top:11px;border-top:1px solid #f0f3ee}
+  .cs-leg span{display:inline-flex;align-items:center;gap:8px;font-size:11.5px;color:#9aa69c}
+  .cs-leg i{display:block;flex-shrink:0}
+  .cs-leg .l-slad{width:26px;height:2px;border-radius:2px;background:linear-gradient(90deg,rgba(0,205,119,0.6),rgba(0,205,119,0.08))}
+  .cs-leg .l-stoi{width:9px;height:9px;border-radius:50%;background:#d99a3c}
+  .cs-podpis{margin:clamp(14px,1.8vw,20px) 0 0;font-size:14.5px;line-height:1.55;color:#4c5850;text-wrap:pretty}
+  .cs-podpis strong{font-weight:700;color:#16211a}
+  .cs-nota{margin:8px 0 0;font-size:12px;line-height:1.5;color:#a0aba1}
+  .cs-karta.gra .cs-pkt{animation-duration:17s;animation-timing-function:cubic-bezier(.65,0,.35,1);animation-iteration-count:infinite}
+  .cs-karta.gra .cs-slad{animation-duration:17s;animation-timing-function:cubic-bezier(.65,0,.35,1);animation-iteration-count:infinite}
+  .cs-karta.gra .cs-pkt em{animation-duration:17s;animation-timing-function:linear;animation-iteration-count:infinite}
+  .cs-karta.gra .cs-podpis{animation-duration:17s;animation-timing-function:ease;animation-iteration-count:infinite;animation-name:sg-podpis}
+  @media (max-width:820px){
+    .cs-w{grid-template-columns:1fr;gap:4px;padding:11px 0}
+    .cs-lane{height:26px}
+    .cs-tor{left:16px;right:36px}
+    .cs-pkt em{font-size:10px;left:14px}
+    .cs-pkt.lewo em{right:14px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    /* Stan końcowy: kropki stoją na dzisiejszych wartościach, ślady w pełnej
+       długości, podpis widoczny. Wszystko czyta się ze zmiennych, nie z klatek. */
+    .cs-karta.gra .cs-pkt,.cs-karta.gra .cs-slad,.cs-karta.gra .cs-pkt em,.cs-karta.gra .cs-podpis{animation:none !important}
+    .cs-pkt .stare{opacity:0}
+    .cs-podpis{opacity:1}
+  }
+
+  /* ================= ŚLAD JEDNEJ ZMIANY (artefakt) =================
+     Drugi nośnik na stronie jest celowo z innego gatunku niż hero: nie rysunek,
+     tylko zapis. Ostatni wiersz — brama człowieka — jest jedyny bez czasu. */
+  .sl{background:#0e2b1d;border-radius:18px;overflow:hidden;box-shadow:0 30px 66px -40px rgba(14,43,29,0.55)}
+  .sl-gora{display:flex;align-items:center;gap:10px;padding:13px 18px;border-bottom:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.04)}
+  .sl-gora b{font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.55);font-weight:600}
+  .sl-gora i{display:block;width:7px;height:7px;border-radius:50%;background:var(--la-accent,#00CD77);flex-shrink:0}
+  .sl-w{display:grid;grid-template-columns:76px 18px minmax(0,1fr) auto;gap:0 12px;align-items:baseline;padding:9px 18px}
+  .sl-g{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;color:rgba(255,255,255,0.4)}
+  .sl-i{font-family:ui-monospace,Menlo,monospace;font-size:12px;line-height:1.4;color:rgba(255,255,255,0.35)}
+  .sl-t{font-size:13.5px;line-height:1.45;color:rgba(255,255,255,0.86);text-wrap:pretty}
+  .sl-t b{font-weight:700;color:#ffffff}
+  .sl-t span{display:block;font-size:12px;color:rgba(255,255,255,0.45)}
+  .sl-ile{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;color:var(--la-accent,#00CD77);white-space:nowrap}
+  .sl-w.ok .sl-i{color:var(--la-accent,#00CD77)}
+  .sl-w.brama{margin-top:6px;padding-top:15px;padding-bottom:17px;border-top:1px solid rgba(255,255,255,0.14);background:rgba(217,154,60,0.16)}
+  .sl-w.brama .sl-i,.sl-w.brama .sl-ile{color:#e0a94f}
+  .sl-w.brama .sl-t b{color:#ffffff}
+  .sl-pod{margin:16px 0 0;font-size:13.5px;line-height:1.6;color:#4c5850;text-wrap:pretty}
+  @media (max-width:560px){
+    .sl-w{grid-template-columns:66px 16px minmax(0,1fr);gap:0 9px;padding:9px 14px}
+    .sl-ile{grid-column:3;font-size:11px}
+  }
+
+  /* ================= mechanizmy ================= */
+  .mc{display:grid;grid-template-columns:minmax(0,0.95fr) minmax(0,1.1fr) 176px;gap:clamp(12px,2vw,32px);align-items:baseline;padding:15px 0;border-top:1px solid #e2e9e0}
+  .mc:last-of-type{border-bottom:1px solid #e2e9e0}
+  .mc-t{margin:0;font-size:15.5px;font-weight:700;letter-spacing:-0.012em;line-height:1.3;color:#16211a;text-wrap:balance}
+  .mc-d{margin:0;font-size:14.5px;line-height:1.55;color:#4c5850;text-wrap:pretty}
+  .mc-k{margin:0;font-family:ui-monospace,Menlo,monospace;font-size:12.5px;color:#0a7a52;text-align:right}
+  @media (max-width:860px){
+    .mc{grid-template-columns:1fr auto;gap:6px 16px;padding:14px 0}
+    .mc-t{grid-column:1}
+    .mc-k{grid-column:2;grid-row:1}
+    .mc-d{grid-column:1 / -1}
+  }
+
+  /* ================= sytuacja → następny krok ================= */
+  .kr{display:grid;grid-template-columns:minmax(0,1fr) 30px minmax(0,1.05fr);gap:clamp(10px,2vw,28px);align-items:center;padding:clamp(15px,1.9vw,22px) 0;border-top:1px solid #e7ece4}
+  .kr:last-of-type{border-bottom:1px solid #e7ece4}
+  .kr-s{margin:0;font-size:clamp(16px,1.9vw,19px);font-weight:650;letter-spacing:-0.015em;line-height:1.3;color:#8b968d;text-wrap:balance}
+  .kr-str{display:block;height:1px;background:#dbe4d8;position:relative}
+  .kr-str::after{content:"";position:absolute;right:0;top:-2.5px;width:5px;height:5px;border-top:1px solid #b9c6b8;border-right:1px solid #b9c6b8;transform:rotate(45deg)}
+  .kr-k{margin:0;font-size:clamp(16px,1.9vw,19px);font-weight:750;letter-spacing:-0.015em;line-height:1.3;color:#16211a;text-wrap:balance}
+  .kr.on .kr-str{animation:kr-rys .5s cubic-bezier(.4,0,.2,1) both}
+  @keyframes kr-rys{from{transform:scaleX(0);transform-origin:left}to{transform:scaleX(1);transform-origin:left}}
+  @media (max-width:760px){
+    .kr{grid-template-columns:1fr;gap:5px;padding:14px 0}
+    .kr-str{display:none}
+    .kr-k{padding-left:16px;border-left:2px solid var(--la-accent,#00CD77)}
+  }
+
+  /* ================= kliny delegacji (ciemny pas) ================= */
+  .kl{position:relative;margin-top:clamp(26px,3.2vw,38px)}
+  .kl-plot{position:relative;height:clamp(150px,17vw,196px)}
+  .kl-plot svg{display:block;width:100%;height:100%}
+  .kl-clip{clip-path:inset(0 100% 0 0);transition:clip-path 1.5s cubic-bezier(.4,0,.2,1)}
+  .kl.on .kl-clip{clip-path:inset(0 0 0 0)}
+  .kl-o{display:grid;grid-template-columns:repeat(4,1fr);margin-top:14px;border-top:1px solid rgba(255,255,255,0.16)}
+  .kl-kol{padding:14px 14px 0 0}
+  .kl-p{display:block;font-size:12px;letter-spacing:0.04em;color:rgba(255,255,255,0.45)}
+  .kl-t{display:block;margin-top:6px;font-size:15.5px;font-weight:750;letter-spacing:-0.015em;line-height:1.25;color:#ffffff;text-wrap:balance}
+  .kl-d{display:block;margin-top:5px;font-size:13px;line-height:1.5;color:rgba(255,255,255,0.6);text-wrap:pretty}
+  .kl-rdzen{position:absolute;right:2%;top:18%;padding:8px 13px;border:1px dashed rgba(255,255,255,0.5);border-radius:10px;background:rgba(14,43,29,0.7);font-size:11px;letter-spacing:0.02em;color:rgba(255,255,255,0.82)}
+  .kl-rdzen i{position:absolute;width:8px;height:8px;border-radius:50%;background:var(--la-accent,#00CD77);box-shadow:0 0 0 3px rgba(0,205,119,0.18)}
+  @media (max-width:680px){ .kl-rdzen{display:none} }
+  .kl-leg{display:flex;flex-wrap:wrap;gap:8px 22px;margin-top:clamp(18px,2.2vw,24px)}
+  .kl-leg span{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:rgba(255,255,255,0.72)}
+  .kl-leg i{display:block;width:11px;height:11px;border-radius:3px;flex-shrink:0}
+  .ob{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+  .ob span{display:inline-block;padding:6px 12px;border-radius:999px;border:1px solid rgba(0,205,119,0.4);font-size:12.5px;color:rgba(255,255,255,0.85)}
+  @media (max-width:860px){
+    .kl-o{grid-template-columns:1fr 1fr;gap:0 18px}
+    .kl-kol{padding:14px 0 0}
+    .kl-kol:nth-child(n+3){border-top:1px solid rgba(255,255,255,0.12)}
+  }
+  @media (max-width:520px){ .kl-o{grid-template-columns:1fr} .kl-kol:nth-child(n+2){border-top:1px solid rgba(255,255,255,0.12)} }
+  @media (prefers-reduced-motion:reduce){ .kl-clip{transition:none;clip-path:inset(0 0 0 0)} }
+
+  /* ================= dwie oceny ================= */
+  .oc{display:grid;grid-template-columns:1fr 1fr;gap:clamp(24px,4vw,64px);margin-top:clamp(28px,3.4vw,42px)}
+  .oc-h{display:flex;align-items:center;gap:11px;padding-bottom:14px;border-bottom:2px solid #16211a}
+  .oc-n{display:flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:8px;background:#16211a;color:#ffffff;font-size:13px;font-weight:800;flex-shrink:0}
+  .oc-q{margin:0;font-size:clamp(17px,2.1vw,21px);font-weight:800;letter-spacing:-0.02em;line-height:1.2;color:#16211a;text-wrap:balance}
+  .oc-l{margin:16px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:9px}
+  .oc-l li{display:flex;gap:10px;font-size:14.5px;line-height:1.5;color:#4c5850}
+  .oc-l i{display:block;width:5px;height:5px;margin-top:8px;border-radius:50%;background:var(--la-accent,#00CD77);flex-shrink:0}
+  @media (max-width:760px){ .oc{grid-template-columns:1fr;gap:32px} }
+
+  /* ================= granice ================= */
+  .gr{margin:0;padding-left:clamp(20px,2.4vw,30px);border-left:2px solid var(--la-accent,#00CD77);max-width:720px}
+  .gr li{font-size:clamp(15.5px,1.8vw,17px);line-height:1.5;color:#33413a;padding:8px 0;text-wrap:pretty}
+
+  /* ================= pas z jednym zdaniem ================= */
+  .ps{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px 48px;padding:clamp(26px,3.2vw,38px) 0;border-top:1px solid #e7ece4;border-bottom:1px solid #e7ece4}
+  .ps p{margin:0;max-width:760px;font-size:clamp(19px,2.5vw,28px);line-height:1.28;letter-spacing:-0.022em;font-weight:750;color:#16211a;text-wrap:pretty}
+
+  @media (max-width:960px){ .hero-split{grid-template-columns:1fr !important;gap:clamp(30px,5vw,44px) !important} }
+</style>
+<style is:inline set:html={klatki}></style>
+
+<!-- ============ 1 · HERO ============
+     Sześć sygnałów na osi logarytmicznej. Każdy startuje tam, gdzie wracał
+     przed przebudową stosu, i przejeżdża w lewo do dzisiejszej wartości.
+     Ruch jest tu argumentem: cztery ślady mają po kilka centymetrów,
+     a dwa dolne wiersze nie ruszają się wcale. -->
+<div aria-hidden="true" style="position:absolute;left:0;right:0;top:0;height:1060px;background:radial-gradient(920px 620px at 84% 0%, rgba(0,205,119,0.13), transparent 64%);pointer-events:none"></div>
+<section style="position:relative;overflow:hidden;background:transparent;padding:clamp(26px,3.6vw,48px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) clamp(54px,6.5vw,84px)">
+<div class="hero-split" style="display:grid;grid-template-columns:0.92fr 1.12fr;gap:clamp(32px,4.5vw,68px);align-items:center;margin-top:clamp(8px,1.4vw,18px)">
+<div>
+<div class="eyebrow" style="color:#0a7a52;font-weight:650">WiseStack · whitepaper</div>
+<h1 style="margin:clamp(16px,2.2vw,24px) 0 0;font-size:clamp(30px,4.5vw,53px);line-height:1.05;letter-spacing:-0.033em;font-weight:800;color:#16211a;text-wrap:balance">Kod przestał być kosztem. Kosztem jest sprawdzenie, że jest dobry</h1>
+<p style="margin:26px 0 0;max-width:580px;font-size:clamp(16px,2.1vw,19px);line-height:1.6;color:#33413a;text-wrap:pretty">WiseStack to nazwa naszego sposobu pracy z AI. Obok stoją sygnały, po których poznajemy, że zmiana jest dobra, i czas, w jakim każdy z nich do nas wraca. Cztery skróciły się do sekund. Dwa stoją tam, gdzie stały.</p>
+<div class="hero-actions" style="display:flex;align-items:center;flex-wrap:wrap;gap:16px 22px;margin-top:34px">
+<a href="#tempo" class="btn-dark" style="display:inline-flex;align-items:center;gap:10px;background:#16211a;color:#ffffff;padding:18px 32px;border-radius:12px;font-weight:650;font-size:16.5px;box-shadow:0 14px 30px -14px rgba(16,33,26,0.45)">Jak przyspieszyliśmy <span aria-hidden="true">→</span></a>
+<a href="#ryzyko" class="btn-ghost" style="display:inline-flex;align-items:center;gap:8px;font-size:16.5px;font-weight:700;color:#16211a;background:rgba(255,255,255,0.6);padding:18px 26px;border-radius:12px;border:1px solid rgba(22,33,26,0.16)">Co delegujemy, a co nie →</a>
+</div>
+</div>
+
+<div class="cs-karta gra" style={`--gl:${PODZIALKA.map((p) => `linear-gradient(90deg,transparent calc(${os(p.s)} - 1px),#eaefe8 calc(${os(p.s)} - 1px),#eaefe8 ${os(p.s)},transparent ${os(p.s)})`).join(',')}`}>
+<div role="img" aria-label="Sześć sygnałów, po których poznajemy, że zmiana jest dobra, ustawionych na osi czasu od jednej sekundy do dwóch tygodni. Cztery pierwsze przejeżdżają z pozycji sprzed przebudowy stosu — jeden dzień, dwie godziny — do dzisiejszych wartości: dwie sekundy, cztery sekundy, czterdzieści sekund, dziewięćdziesiąt trzy sekundy. Dwa ostatnie sygnały, zrozumiałość dla drugiej osoby i potwierdzenie potrzeby biznesowej, zostają na dwóch dniach i na tygodniach.">
+<div class="cs-gora"><b>Czas do sygnału</b><span>od zmiany do informacji, czy była dobra</span></div>
+{SYGNALY.map((x, i) => (
+  <div class="cs-w">
+    <span><span class="cs-t">{x.t}</span><span class="cs-d">{x.d}</span></span>
+    <span class="cs-lane">
+      <span class="cs-tor">
+        {!x.stoi && (
+          <span class="cs-slad" style={`--dl:${((lg(x.o) - lg(x.n)) * 100).toFixed(2)}%;right:calc(100% - ${os(x.o)});animation-name:sg-slad-${i}`}></span>
+        )}
+        <span
+          class={'cs-pkt' + (x.stoi ? ' stoi' : '') + (lg(x.n) > 0.5 ? ' lewo' : '')}
+          style={`--od:${os(x.o)};--do:${os(x.n)};animation-name:sg-pkt-${i}`}
+        >
+          <em class="stare" style={`animation-name:sg-stare-${i}`}>{x.oL}</em>
+          <em class="nowe" style={`animation-name:sg-nowe-${i}`}>{x.nL}</em>
+        </span>
+      </span>
+    </span>
+  </div>
+))}
+<div class="cs-w" style="border-bottom:0;padding-bottom:0">
+  <span></span>
+  <span class="cs-os"><span class="cs-tor" style="background-image:none">{PODZIALKA.map((p) => (<span style={`left:${os(p.s)}`}>{p.t}</span>))}</span></span>
+</div>
+</div>
+<div class="cs-leg"><span><i class="l-slad" aria-hidden="true"></i>ślad pokazuje, skąd ten sygnał wracał przed przebudową</span><span><i class="l-stoi" aria-hidden="true"></i>bez zmiany</span></div>
+<p class="cs-podpis"><strong>Cztery sygnały przejechały o rzędy wielkości.</strong> Dwa dolne stoją tam, gdzie stały — i to one wyznaczają dziś tempo pracy.</p>
+<p class="cs-nota">Oś nie jest liniowa: każdy odcinek to kilkadziesiąt razy dłuższy czas. Inaczej cztery górne wiersze zlałyby się w jeden punkt przy lewej krawędzi.</p>
+</div>
+</div>
+</section>
+
+<!-- ============ 2 · CZYM JEST WISESTACK ============ -->
+<section id="czym-jest" class="sec-pad" style="padding-top:clamp(56px,7vw,84px)">
+<div class="s2-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:clamp(36px,5vw,88px);align-items:start">
+<div>
+<div class="eyebrow">Definicja</div>
+<h2 class="h-sec" style="margin:16px 0 0;text-wrap:pretty">Czym jest WiseStack</h2>
+<p style="margin:24px 0 0;font-size:clamp(17px,2vw,19px);line-height:1.6;color:#16211a;text-wrap:pretty"><strong style="font-weight:750">WiseStack to sposób, w jaki tworzymy oprogramowanie z AI: kolejny krok dobieramy do tego, jak groźny jest błąd i co potrafimy po nim sprawdzić.</strong> Nie jest to zamknięta metodyka ani narzucona sekwencja etapów.</p>
+<p class="sub" style="margin:18px 0 0">Nie zaczęliśmy od projektowania metody. Najpierw wypracowaliśmy sposób działania: ustalenie, jaki problem naprawdę rozwiązujemy, wspólny język z klientem, decyzje zapisane razem z uzasadnieniem, weryfikacja na granicach istotnych dla biznesu. Dopiero temu nadaliśmy nazwę.</p>
+<p class="sub" style="margin:16px 0 0">Nazwa opisuje podejście. Decyzje pozostają po naszej stronie: to my wybieramy następny krok i odpowiadamy za wdrożenie.</p>
+</div>
+<div style="padding-top:clamp(0px,3vw,54px)">
+<p style="margin:0;font-size:clamp(20px,2.6vw,29px);line-height:1.24;letter-spacing:-0.024em;font-weight:750;color:#16211a;text-wrap:pretty">AI obniżyła koszt wykonania. Nie usunęła potrzeby zrozumienia problemu, podjęcia decyzji ani potwierdzenia, że rezultat jest poprawny.</p>
+<div style="margin-top:clamp(24px,3vw,34px);padding-top:clamp(20px,2.4vw,28px);border-top:1px solid #e7ece4">
+<p style="margin:0;font-size:15.5px;line-height:1.62;color:#4c5850;text-wrap:pretty">Kiedy zbudowanie niemal dowolnego pomysłu staje się tanie, wartości nabiera co innego: rozstrzygnięcie, czego jeszcze nie wiemy i jaki jest najtańszy wiarygodny sposób zdobycia tej wiedzy. Kod bywa produktem, bywa też jednorazowym narzędziem do sprawdzenia założenia.</p>
+<p style="margin:20px 0 0;font-size:16.5px;line-height:1.5;font-weight:700;color:#16211a;text-wrap:pretty">Nie delegujemy myślenia. Delegujemy wykonanie tam, gdzie potrafimy nadać mu kierunek i ocenić rezultat.</p>
+</div>
+</div>
+</div>
+</section>
+
+<!-- ============ 3 · JAK PRZYSPIESZYLIŚMY WŁASNY DEVELOPMENT ============
+     Centrum strony. Artefakt zamiast rysunku: ślad jednej zmiany z zegarem.
+     Te same wartości, które hero stawia na osi, tu stoją na godzinach jednego
+     popołudnia. Ostatni wiersz — brama człowieka — jest jedynym bez czasu. -->
+<section id="tempo" class="sec-pad" style="background:#f4f8f2">
+<div class="sec-head">
+<div>
+<div class="eyebrow">Tempo</div>
+<h2 class="h-sec" style="margin:16px 0 0;max-width:720px;text-wrap:pretty">Jak przyspieszyliśmy własny development</h2>
+</div>
+<p class="sub" style="margin:0;max-width:430px">Model pisze zmianę w minutę. Dopóki sprawdzenie tej zmiany trwa dzień, minuta niczego nie zmienia — tempo wyznacza wolniejsza część cyklu. Ostatni rok poszedł u nas na to, żeby projekt sam mówił, co się właśnie zepsuło.</p>
+</div>
+
+<div class="hero-split" style="display:grid;grid-template-columns:1.06fr 0.94fr;gap:clamp(30px,4.5vw,68px);align-items:start;margin-top:clamp(34px,4.4vw,54px)">
+<div>
+<div class="sl">
+<div class="sl-gora"><i aria-hidden="true"></i><b>Ślad jednej zmiany · 14:02–14:06</b></div>
+{SLAD.map((w) => (
+  <div class={'sl-w ' + w.typ}>
+    <span class="sl-g">{w.g}</span>
+    <span class="sl-i" aria-hidden="true">{w.typ === 'ok' ? '✓' : w.typ === 'brama' ? '⏸' : '·'}</span>
+    <span class="sl-t"><b>{w.t}</b>{w.d && <span>{w.d}</span>}</span>
+    <span class="sl-ile">{w.ile || (w.typ === 'brama' ? 'bez zegara' : '')}</span>
+  </div>
+))}
+</div>
+<p class="sl-pod">Do przedostatniego wiersza minęły trzy minuty. Ostatni może stać godzinę albo tydzień — i to on rozstrzyga, czy poprzednie wiersze miały sens. <span style="color:#8b968d">Zapis poglądowy: kształt i czasy są nasze, znaczniki godzin przykładowe.</span></p>
+</div>
+
+<div>
+<h3 class="h-mod" style="margin:0;text-wrap:balance">Pętla, która sama wraca z odpowiedzią</h3>
+<p style="margin:18px 0 0;font-size:16px;line-height:1.62;color:#33413a;text-wrap:pretty">AI wykonuje krok, narzędzie zwraca aktualny stan, AI ocenia rezultat, a kolejny krok dopuszcza człowiek albo ustalona reguła. Potrzebne są oba kierunki: bez narzędzi model zmienia kod po ciemku, bez zwrotnego kontekstu nie ma jak ocenić skutków własnej pracy.</p>
+<p style="margin:16px 0 0;font-size:16px;line-height:1.62;color:#33413a;text-wrap:pretty">Dlatego technologie wybieramy również pod tym kątem. Sama popularność narzędzia ani obszerna dokumentacja nie wystarczą — narzędzie ma <strong style="font-weight:700;color:#16211a">zwracać kontekst</strong> i <strong style="font-weight:700;color:#16211a">dawać kontrolowane sposoby działania</strong>.</p>
+<div style="margin-top:22px;padding:20px 22px;background:#ffffff;border:1px solid #e2e9e0;border-radius:16px">
+<div class="eyebrow" style="color:#0a7a52">W naszym stosie</div>
+<p style="margin:10px 0 0;font-size:14.5px;line-height:1.6;color:#4c5850;text-wrap:pretty"><strong style="font-weight:700;color:#16211a">Next.js</strong> daje konwencje struktury i jawną granicę między serwerem a przeglądarką, a kontrola typów zwraca szybki sygnał o skutkach zmiany. <strong style="font-weight:700;color:#16211a">Convex</strong> trzyma schemat danych, walidowane funkcje serwera, transakcyjność i logi w jednym miejscu, więc stan systemu da się odczytać bez budowania własnych warstw pośrednich.</p>
+<p style="margin:12px 0 0;font-size:14px;line-height:1.55;color:#8b968d;text-wrap:pretty">Żadne z nich nie definiuje naszego sposobu pracy. Spełniają warunek, dzięki któremu ich wartość rośnie razem z możliwościami kolejnych modeli.</p>
+</div>
+</div>
+</div>
+
+<h3 class="h-mod" style="margin:clamp(44px,5.5vw,68px) 0 0;max-width:640px;text-wrap:balance">Co sprawia, że sygnał wraca sam</h3>
+<div style="margin-top:clamp(20px,2.6vw,30px)">
+{MECHANIZMY.map((m) => (
+  <div class="mc">
+    <p class="mc-t">{m.t}</p>
+    <p class="mc-d">{m.d}</p>
+    <p class="mc-k">{m.kiedy}</p>
+  </div>
+))}
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:clamp(28px,4vw,72px);margin-top:clamp(36px,4.4vw,56px)" class="grid2">
+<div>
+<h3 style="margin:0;font-size:clamp(19px,2.2vw,23px);font-weight:800;letter-spacing:-0.02em;line-height:1.2;color:#16211a;text-wrap:balance">Czego to nie skróciło</h3>
+<p style="margin:14px 0 0;font-size:15.5px;line-height:1.62;color:#4c5850;text-wrap:pretty">Dwa dolne sygnały z rysunku w nagłówku nie drgnęły. Czy druga osoba zrozumie to rozwiązanie za pół roku, wie tylko druga osoba. Czy tego potrzebował biznes, widać na prawdziwej sprawie u klienta. Tańsze wykonanie przesunęło wąskie gardło na decyzje — i tam idzie dziś większość naszej uwagi.</p>
+</div>
+<div style="padding-left:clamp(0px,2vw,26px);border-left:2px solid #dbe4d8">
+<h3 style="margin:0;font-size:clamp(19px,2.2vw,23px);font-weight:800;letter-spacing:-0.02em;line-height:1.2;color:#16211a;text-wrap:balance">Dlaczego nie ma tu mnożnika</h3>
+<p style="margin:14px 0 0;font-size:15.5px;line-height:1.62;color:#4c5850;text-wrap:pretty">Nigdzie na tej stronie nie pada „przyspieszyliśmy X razy”. Mierzymy u siebie okno przed i po, w tych samych czterech miarach, które proponujemy klientom. Kiedy się domknie, opublikujemy liczby razem ze sposobem liczenia. Do tego czasu stoją tu wyłącznie czasy, które da się sprawdzić samemu w kilka minut.</p>
+</div>
+</div>
+</section>
+
+<!-- ============ pas z jednym zdaniem — miejsce bez nagłówka ============ -->
+<section style="padding:0 max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2))">
+<div class="ps">
+<p>AI przyspiesza wykonanie zarówno dobrych, jak i złych decyzji. Większa prędkość bez wspólnego języka i zapisanych kryteriów zwiększa skalę błędu.</p>
+<a href="#krok" class="lnk-green" style="font-size:16px;font-weight:700;color:#0a7a52;white-space:nowrap">Jak wybieramy krok <span aria-hidden="true">→</span></a>
+</div>
+</section>
+
+<!-- ============ 4 · DOBIERAMY NASTĘPNY KROK ============ -->
+<section id="krok" class="sec-pad">
+<div class="sec-head">
+<div>
+<div class="eyebrow">Kolejność</div>
+<h2 class="h-sec" style="margin:16px 0 0;max-width:660px;text-wrap:pretty">Dobieramy następny krok</h2>
+</div>
+<p class="sub" style="margin:0;max-width:430px">Kolejność etapów nie jest u nas stała. Nie każda funkcjonalność wymaga odkrywania, prototypu i osobnej demonstracji. Gdy potrzeba jest zrozumiana, przechodzimy wprost do małego fragmentu i jego weryfikacji. Gdy pewności brakuje, wybieramy działanie, które najtaniej ją zmniejszy.</p>
+</div>
+
+<div style="margin-top:clamp(32px,4vw,48px)">
+{KROKI.map((k) => (
+  <div class="kr" data-anim>
+    <p class="kr-s">{k.s}</p>
+    <span class="kr-str" aria-hidden="true"></span>
+    <p class="kr-k">{k.k}</p>
+  </div>
+))}
+</div>
+
+<div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:clamp(28px,4vw,72px);margin-top:clamp(40px,5vw,60px)" class="grid2">
+<p style="margin:0;font-size:clamp(18px,2.2vw,23px);line-height:1.32;letter-spacing:-0.02em;font-weight:750;color:#16211a;text-wrap:pretty">Zwinność to dla nas tyle struktury, ile trzeba do podjęcia następnej odpowiedzialnej decyzji.</p>
+<div>
+<h3 style="margin:0;font-size:16.5px;font-weight:750;letter-spacing:-0.012em;color:#16211a">Kiedy sięgamy po prototyp</h3>
+<p style="margin:12px 0 0;font-size:15.5px;line-height:1.62;color:#4c5850;text-wrap:pretty">Wtedy, gdy niepewność dotyczy potrzeby, przebiegu procesu albo interakcji, a działająca forma rozstrzygnie ją szybciej niż kolejna rozmowa. Taki prototyp bywa niepełny i jego jakość mierzymy wartością zdobytej wiedzy. Po potwierdzeniu kierunku decydujemy, co zostaje, co powstaje od nowa, a co odpada.</p>
+<p style="margin:12px 0 0;font-size:15.5px;line-height:1.62;color:#8b968d;text-wrap:pretty">Gdy niepewności nie ma, demonstracji nie robimy. Prototypowanie ma zmniejszać ryzyko; kiedy tylko dokłada pracy, odpuszczamy.</p>
+</div>
+</div>
+</section>
+
+<!-- ============ 5 · CIEMNY PAS · DELEGACJA WEDŁUG RYZYKA ============
+     Najcięższy argument strony. Zielony klin to zakres, który AI wykonuje
+     samodzielnie; maleje wraz z konsekwencjami błędu. Przy krytycznym końcu
+     osi AI nie znika — przenosi się wokół rdzenia, w narzędzia do sprawdzania. -->
+<section id="ryzyko" style="position:relative;background:radial-gradient(900px 460px at 88% 2%, rgba(0,205,119,0.16), transparent 62%), #0e2b1d;padding:clamp(64px,8vw,104px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
+<div class="sec-head">
+<div>
+<div class="eyebrow" style="color:rgba(255,255,255,0.5)">Delegacja</div>
+<h2 class="h-sec" style="margin:16px 0 0;max-width:680px;color:#ffffff;text-wrap:pretty">Delegujemy zależnie od ryzyka</h2>
+</div>
+<p style="margin:0;max-width:440px;font-size:17px;line-height:1.6;color:rgba(255,255,255,0.72);text-wrap:pretty">Zakres delegacji nie wynika z tego, co model potrafi wygenerować. Wynika z konsekwencji błędu i z tego, co potrafimy wiarygodnie zweryfikować.</p>
+</div>
+
+<div class="kl" data-anim>
+<div class="kl-plot" role="img" aria-label="Wykres: im poważniejsze konsekwencje błędu, tym mniejszy zakres pracy wykonywany samodzielnie przez AI. Przy odwracalnym błędzie AI wykonuje niemal całość, przy krytycznych skutkach zostaje niewielki margines, a wokół ręcznie pisanego rdzenia pojawiają się narzędzia budowane przez AI.">
+<svg viewBox="0 0 1000 200" preserveAspectRatio="none" aria-hidden="true">
+<defs>
+<linearGradient id="klg" x1="0" y1="0" x2="1" y2="0">
+<stop offset="0" stop-color="#00CD77" stop-opacity="0.92"/>
+<stop offset="1" stop-color="#00CD77" stop-opacity="0.42"/>
+</linearGradient>
+</defs>
+<rect x="0" y={KL_TOP} width="1000" height={KL_BASE - KL_TOP} fill="rgba(255,255,255,0.06)"/>
+{[250, 500, 750].map((x) => (<line x1={x} y1={KL_TOP} x2={x} y2={KL_BASE} stroke="rgba(255,255,255,0.12)" stroke-width="1"/>))}
+<g class="kl-clip">
+<path d={klObszar} fill="url(#klg)"/>
+<path d={klKrawedz} fill="none" stroke="#00CD77" stroke-width="2"/>
+</g>
+<line x1="0" y1={KL_BASE} x2="1000" y2={KL_BASE} stroke="rgba(255,255,255,0.28)" stroke-width="1"/>
+</svg>
+<span class="kl-rdzen" aria-hidden="true">rdzeń pisany ręcznie<i style="top:-13px;left:14px"></i><i style="top:-13px;right:20px"></i><i style="bottom:-13px;left:30px"></i><i style="bottom:-13px;right:12px"></i><i style="top:9px;left:-13px"></i></span>
+</div>
+<div class="kl-leg">
+<span><i style="background:#00CD77"></i>Zakres, który AI wykonuje samodzielnie</span>
+<span><i style="background:rgba(255,255,255,0.3)"></i>Praca prowadzona przez człowieka</span>
+<span style="color:rgba(255,255,255,0.5)">Oś pozioma: konsekwencje błędu</span>
+</div>
+
+<div class="kl-o">
+{POZIOMY.map((p) => (
+  <div class="kl-kol">
+    <span class="kl-p">{p.p}</span>
+    <span class="kl-t">{p.t}</span>
+    <span class="kl-d">{p.d}</span>
+  </div>
+))}
+</div>
+</div>
+
+<div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(28px,4vw,72px);margin-top:clamp(40px,5vw,62px)" class="grid2">
+<div>
+<h3 style="margin:0;font-size:clamp(19px,2.2vw,24px);font-weight:800;letter-spacing:-0.02em;line-height:1.2;color:#ffffff;text-wrap:balance">Przy krytycznym kodzie AI nie znika</h3>
+<p style="margin:14px 0 0;font-size:15.5px;line-height:1.62;color:rgba(255,255,255,0.72);text-wrap:pretty">Wokół fragmentu pisanego ręcznie model buduje to, co zwiększa szansę wykrycia błędu:</p>
+<div class="ob">{OBUDOWA.map((o) => (<span>{o}</span>))}</div>
+</div>
+<div style="padding-left:clamp(0px,2vw,28px);border-left:1px solid rgba(255,255,255,0.18)">
+<p style="margin:0;font-size:15.5px;line-height:1.62;color:rgba(255,255,255,0.72);text-wrap:pretty">Te narzędzia same nie dowodzą poprawności. Mogą powtórzyć założenia zawarte w sprawdzanej implementacji — wtedy zgadzają się z błędem zamiast go pokazać.</p>
+<p style="margin:14px 0 0;font-size:16px;line-height:1.55;font-weight:700;color:#ffffff;text-wrap:pretty">Kryteria dopuszczenia definiuje człowiek. On też ocenia, czy sprawdzenie było niezależne.</p>
+</div>
+</div>
+</section>
+
+<!-- ============ 6 · DWIE OCENY ============ -->
+<section id="jakosc" class="sec-pad">
+<div class="sec-head">
+<div>
+<div class="eyebrow">Jakość</div>
+<h2 class="h-sec" style="margin:16px 0 0;max-width:640px;text-wrap:pretty">Dwa pytania, na które odpowiadamy osobno</h2>
+</div>
+<p class="sub" style="margin:0;max-width:430px">Dobra jakość kodu nie uratuje niepotrzebnej funkcjonalności. Trafny pomysł nie usprawiedliwia rozwiązania, którego nie da się bezpiecznie utrzymać. Dlatego potwierdzenie produktu i przegląd inżynierski mają osobne kryteria.</p>
+</div>
+
+<div class="oc">
+<div>
+<div class="oc-h"><span class="oc-n">1</span><p class="oc-q">Czy zbudowaliśmy właściwy produkt?</p></div>
+<ul class="oc-l">
+<li><i aria-hidden="true"></i>Potrzeba użytkownika, potwierdzona na prawdziwej sprawie</li>
+<li><i aria-hidden="true"></i>Kompletność procesu, razem z przypadkami, o których nikt nie mówił</li>
+<li><i aria-hidden="true"></i>Zgodność z decyzjami zapisanymi wcześniej</li>
+<li><i aria-hidden="true"></i>Wartość, którą da się nazwać liczbą po stronie biznesu</li>
+</ul>
+</div>
+<div>
+<div class="oc-h"><span class="oc-n">2</span><p class="oc-q">Czy zbudowaliśmy go właściwie?</p></div>
+<ul class="oc-l">
+<li><i aria-hidden="true"></i>Bezpieczeństwo i odporność na błędne dane</li>
+<li><i aria-hidden="true"></i>Poprawność zachowania na granicach istotnych dla biznesu</li>
+<li><i aria-hidden="true"></i>Czytelność dla osoby, która zobaczy to za pół roku</li>
+<li><i aria-hidden="true"></i>Koszt dalszego rozwoju, wliczony w decyzję dziś</li>
+</ul>
+</div>
+</div>
+
+<p style="margin:clamp(28px,3.4vw,42px) 0 0;max-width:840px;font-size:15.5px;line-height:1.62;color:#4c5850;text-wrap:pretty">Zachowanie sprawdzamy przede wszystkim na styku użytkownika, reguł, danych i usług zewnętrznych. Dzięki temu weryfikacja obejmuje przebieg całej sprawy, zamiast zatrzymywać się na poprawności pojedynczych fragmentów kodu.</p>
+</section>
+
+<!-- ============ 7 · GRANICE — sekcja, która niczego nie sprzedaje ============ -->
+<section id="granice" class="sec-pad" style="padding-top:clamp(40px,5vw,64px)">
+<div class="s2-grid" style="display:grid;grid-template-columns:0.82fr 1.18fr;gap:clamp(32px,5vw,84px);align-items:start">
+<div>
+<div class="eyebrow">Granice</div>
+<h2 class="h-sec" style="margin:16px 0 0;text-wrap:pretty">Czego ta metoda nie obiecuje</h2>
+<p class="sub" style="margin:18px 0 0;max-width:420px">Nie zakładamy żadnej z poniższych rzeczy. Każda brzmi wygodnie w ofercie i każda kosztowałaby kogoś pieniądze.</p>
+</div>
+<div style="padding-top:6px">
+<ul class="gr" style="list-style:none">
+{GRANICE.map((g) => (<li>{g}</li>))}
+</ul>
+<p style="margin:clamp(26px,3.2vw,38px) 0 0;max-width:700px;font-size:clamp(17px,2.1vw,21px);line-height:1.4;letter-spacing:-0.018em;font-weight:750;color:#16211a;text-wrap:pretty">Odpowiedzialność za to, co zasługuje na wdrożenie, zostaje po naszej stronie. Tego akurat nie da się zdelegować.</p>
+</div>
+</div>
+</section>
+
+<GcFaq
+  heading="Pytania, które padają po lekturze"
+  lead="Cztery pierwsze dostajemy od zespołów technicznych, ostatnie od osób, które podpisują umowę."
+  ctaLabel="Zadajcie nam swoje →"
+  items={faq}
+/>
+
+<GcCta
+  heading="Zobaczcie tę metodę na własnym projekcie"
+  lead="Napiszcie w dwóch zdaniach, co budujecie i w którym miejscu praca zwalnia. Odpowiemy, który krok ma u Was sens jako pierwszy — także wtedy, gdy odpowiedź brzmi „na razie żaden”."
+  eyebrow="Z pierwszej rozmowy wychodzicie z"
+  items={[
+    { t: 'Wskazanym pierwszym krokiem', d: 'tym, który najtaniej zmniejszy niepewność' },
+    { t: 'Oceną zakresu delegacji', d: 'co przy Waszym ryzyku zostaje po stronie ludzi' },
+    { t: 'Listą sygnałów do skrócenia', d: 'miejsca, w których projekt milczy zbyt długo' },
+  ]}
+  placeholder="Np. budujemy aplikację w Next.js, każda zmiana czeka dwa dni na przegląd…"
+  submitLabel="Umów rozmowę"
+  badges={[
+    { i: 'klodka', t: 'Wasze dane bezpieczne' },
+    { i: 'kartka', t: 'NDA przed startem' },
+    { i: 'ptaszek', t: 'Kod zostaje Wasz' },
+  ]}
+/>
+
+<script>
+  var redukcja = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  (function(){
+    var els = document.querySelectorAll('[data-anim]');
+    if(!els.length) return;
+    if(redukcja || !('IntersectionObserver' in window)){
+      els.forEach(function(el){ el.classList.add('on'); });
+      return;
+    }
+    var io = new IntersectionObserver(function(wpisy){
+      wpisy.forEach(function(w){
+        if(w.isIntersecting){ w.target.classList.add('on'); io.unobserve(w.target); }
+      });
+    }, { threshold: 0.22 });
+    els.forEach(function(el){ io.observe(el); });
+  })();
+</script>
+</LaBase>

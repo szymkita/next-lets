@@ -358,8 +358,15 @@ const faq = [
   .tk-tag.wsz{background:#eef1ec;color:#7c877e}
   .tk-tag.sami{background:transparent;color:#9aa79b;border:1px dashed #d3ddd2}
   .tk-kres{position:absolute;left:0;right:0;top:calc(7 * var(--rh));height:2px;background:#16211a;opacity:0;transform-origin:left center}
-  .tk-pod{margin:clamp(20px,2.4vw,26px) 0 0;max-width:74ch;font-size:15px;line-height:1.6;color:#4c5850;text-wrap:pretty}
+  .tk-pod{margin:clamp(18px,2vw,22px) 0 0;font-size:14.5px;line-height:1.6;color:#4c5850;text-wrap:pretty}
   .tk-pod strong{font-weight:700;color:#16211a}
+  /* Hero stoi na dwóch kolumnach jak pozostałe drzwi: tekst po lewej,
+     rysunek po prawej. W jednej kolumnie na całą szerokość wiersz listy
+     rozjeżdżał się na ponad tysiąc pikseli pustki między tytułem
+     a znacznikiem, a prawa połowa nagłówka stała pusta. */
+  @media (max-width:900px){
+    .hero-split{grid-template-columns:1fr !important;gap:clamp(30px,5vw,46px) !important}
+  }
   @media (max-width:760px){
     .tk-lista{--rh:46px}
     .tk-t{font-size:13.5px}
@@ -439,19 +446,31 @@ const faq = [
      Artefakt, nie ilustracja: to jest dokument, który klient dostaje po
      przeglądzie. Trzy kolumny na szerokim ekranie, na wąskim wiersze
      z podpisami przez data-l. */
+  /* Własny nagłówek zamiast .sec-head: przy nagłówku, który bez łamania ma
+     ponad tysiąc trzysta pikseli, flex spycha lead pod spód. Siatka trzyma
+     go po prawej i wyrównuje do dolnej linii tytułu. */
+  .tk-agh{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,400px);gap:24px clamp(32px,5vw,72px);align-items:end}
+  @media (max-width:900px){ .tk-agh{grid-template-columns:1fr;gap:16px} }
   .ag{margin-top:clamp(32px,4vw,48px);border:1px solid rgba(255,255,255,0.14);border-radius:20px;overflow:hidden;background:rgba(255,255,255,0.03)}
   .ag-g{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:8px 24px;padding:clamp(18px,2.2vw,24px) clamp(20px,2.6vw,30px);border-bottom:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
   .ag-g b{font-size:15px;font-weight:750;color:#ffffff}
   .ag-g span{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;letter-spacing:0.08em;color:rgba(255,255,255,0.55)}
-  .ag-n{display:grid;grid-template-columns:44px minmax(0,1.05fr) minmax(0,1.15fr) minmax(0,1.15fr);gap:clamp(14px,2vw,26px);padding:12px clamp(20px,2.6vw,30px);border-bottom:1px solid rgba(255,255,255,0.1)}
+  /* Kolumny: numer, temat i dwie kolumny prozy. Temat jest krótki, więc
+     dostaje mniej niż zdania obok — inaczej tytuły stoją w połowie pustej
+     kolumny, a proza łamie się co trzy słowa. */
+  .ag-n{display:grid;grid-template-columns:38px minmax(0,0.95fr) minmax(0,1.2fr) minmax(0,1.2fr);gap:clamp(14px,2vw,26px);padding:12px clamp(20px,2.6vw,30px);border-bottom:1px solid rgba(255,255,255,0.1)}
   .ag-n span{font-family:ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.42)}
-  .ag-r{display:grid;grid-template-columns:44px minmax(0,1.05fr) minmax(0,1.15fr) minmax(0,1.15fr);gap:clamp(14px,2vw,26px);padding:clamp(16px,2vw,20px) clamp(20px,2.6vw,30px);border-bottom:1px solid rgba(255,255,255,0.09)}
+  /* align-items:start — bez tego wiersz rozciąga się do najdłuższej komórki
+     i numer odjeżdża od tytułu, do którego należy. */
+  .ag-r{display:grid;grid-template-columns:38px minmax(0,0.95fr) minmax(0,1.2fr) minmax(0,1.2fr);gap:clamp(14px,2vw,26px);align-items:start;padding:clamp(16px,2vw,20px) clamp(20px,2.6vw,30px);border-bottom:1px solid rgba(255,255,255,0.09)}
   .ag-r:last-child{border-bottom:0}
-  .ag-nr{font-family:ui-monospace,Menlo,monospace;font-size:13px;font-weight:700;color:var(--la-accent,#00CD77)}
-  .ag-t{font-size:15.5px;line-height:1.4;font-weight:700;color:#ffffff;text-wrap:pretty}
+  .ag-nr{font-family:ui-monospace,Menlo,monospace;font-size:13px;font-weight:700;line-height:1.4;color:var(--la-accent,#00CD77)}
+  /* block, nie inline: przy łamiącym się tytule plakietka doklejała się do
+     ostatniego słowa zamiast stanąć pod nim. */
+  .ag-t{display:block;font-size:15.5px;line-height:1.4;font-weight:700;color:#ffffff;text-wrap:pretty}
   .ag-v{font-size:14px;line-height:1.55;color:rgba(255,255,255,0.68);text-wrap:pretty}
   .ag-v.z{color:rgba(255,255,255,0.9)}
-  .ag-w{display:inline-block;margin-top:8px;font-family:ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.5);border:1px solid rgba(255,255,255,0.22);border-radius:6px;padding:3px 7px}
+  .ag-w{display:inline-block;margin-top:9px;font-family:ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.5);border:1px solid rgba(255,255,255,0.22);border-radius:6px;padding:3px 7px}
   .ag-o{margin:clamp(26px,3vw,34px) 0 0;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(20px,3vw,44px)}
   .ag-o p{margin:0;font-size:15.5px;line-height:1.65;color:rgba(255,255,255,0.78);text-wrap:pretty}
   .ag-o p strong{color:#ffffff;font-weight:700}
@@ -505,16 +524,17 @@ const faq = [
      Lista z przeglądu przestawia się w program. Dwa wiersze zjeżdżają pod
      kreskę — te naprawiamy sami, bo nie ma z nich czego uczyć. -->
 <section style="position:relative;overflow:hidden;background:radial-gradient(880px 500px at 86% -6%, rgba(0,205,119,0.13), transparent 62%), #ffffff;padding:clamp(44px,6vw,76px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) clamp(52px,6.5vw,80px)">
-<div style="max-width:900px">
+<div class="hero-split" style="display:grid;grid-template-columns:1.04fr 1fr;gap:clamp(32px,4.5vw,64px);align-items:center">
+<div>
 <h1 style="margin:0;font-size:clamp(30px,4.6vw,52px);line-height:1.06;letter-spacing:-0.033em;font-weight:800;color:#16211a;text-wrap:balance">Najpierw czytamy to, co zbudowaliście. Program powstaje z tego, co znajdziemy</h1>
-<p style="margin:24px 0 0;max-width:660px;font-size:clamp(16px,2.1vw,19px);line-height:1.6;color:#33413a;text-wrap:pretty">Uczymy Waszych ludzi na Waszej aplikacji: pracujemy na jej kodzie i na sprawach, które i tak są w tym tygodniu na liście. Po każdej sesji zostaje w niej zmiana.</p>
+<p style="margin:24px 0 0;max-width:560px;font-size:clamp(16px,2.1vw,19px);line-height:1.6;color:#33413a;text-wrap:pretty">Uczymy Waszych ludzi na Waszej aplikacji: pracujemy na jej kodzie i na sprawach, które i tak są w tym tygodniu na liście. Po każdej sesji zostaje w niej zmiana.</p>
 <div class="hero-actions" style="display:flex;align-items:center;flex-wrap:wrap;gap:16px 22px;margin-top:32px">
 <a href="#kontakt" class="btn-dark" style="display:inline-flex;align-items:center;gap:10px;background:#16211a;color:#ffffff;padding:18px 32px;border-radius:12px;font-weight:650;font-size:16.5px;box-shadow:0 14px 30px -14px rgba(16,33,26,0.45)">Umów rozmowę <span aria-hidden="true">→</span></a>
 <a href="#agenda" class="btn-ghost" style="display:inline-flex;align-items:center;gap:8px;font-size:16.5px;font-weight:700;color:#16211a;background:rgba(255,255,255,0.6);padding:18px 26px;border-radius:12px;border:1px solid rgba(22,33,26,0.16)">Zobacz agendę z uzasadnieniem →</a>
 </div>
 </div>
 
-<div style="margin-top:clamp(40px,5vw,64px)">
+<div>
 <div class="tk-scena" role="img" aria-label={`Dziewięć rzeczy znalezionych w przeglądzie układa się w program siedmiu sesji. Dwa tematy — sposób proszenia modelu i sprawdzenie przed wypuszczeniem zmiany — wychodzą u każdego klienta. Pięć bierze się z kodu tej firmy. Dwa znaleziska zostają poza programem, bo naprawiamy je sami.`}>
 <div class="tk-gl">
   <span class="a" style={`animation:tk-tyt-a ${CYKL}s cubic-bezier(.4,0,.2,1) infinite`}>Co znaleźliśmy w przeglądzie</span>
@@ -543,6 +563,7 @@ const faq = [
 <style is:inline set:html={klatkiHero}></style>
 </div>
 <p class="tk-pod"><strong>{Z_KODU} z {SESJI} tematów</strong> bierze się z rzeczy, które znaleźliśmy tylko u tej firmy. {WSZEDZIE === 2 ? 'Dwa' : WSZEDZIE} wychodzą u każdego i mówimy o tym wprost. Dwóch rzeczy z tej listy nie ma sensu uczyć — naprawiamy je sami, w tygodniu po przeglądzie.</p>
+</div>
 </div>
 </section>
 
@@ -637,9 +658,9 @@ const faq = [
      klient dostaje przed decyzją, i jednocześnie dowód tezy. Pozycje 1 i 2
      są oznaczone jako powtarzalne — bez tego rysunek byłby przechwałką. -->
 <section id="agenda" style="position:relative;background:radial-gradient(900px 420px at 88% 4%, rgba(0,205,119,0.16), transparent 62%), #0e2b1d;padding:clamp(60px,7.5vw,98px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
-<div class="sec-head">
-<h2 class="h-sec" style="margin:0;max-width:620px;color:#ffffff;text-wrap:pretty">Tak wygląda agenda, którą dostajecie po przeglądzie</h2>
-<p style="margin:0 0 6px;max-width:450px;font-size:17px;line-height:1.6;color:rgba(255,255,255,0.72);text-wrap:pretty">Przy każdej sesji stoi miejsce w aplikacji, z którego temat się wziął, i to, co po niej w tej aplikacji zostaje.</p>
+<div class="tk-agh">
+<h2 class="h-sec" style="margin:0;max-width:820px;color:#ffffff;text-wrap:balance">Tak wygląda agenda, którą dostajecie po przeglądzie</h2>
+<p style="margin:0 0 6px;font-size:17px;line-height:1.6;color:rgba(255,255,255,0.72);text-wrap:pretty">Przy każdej sesji stoi miejsce w aplikacji, z którego temat się wziął, i to, co po niej w tej aplikacji zostaje.</p>
 </div>
 
 <div class="ag rv">

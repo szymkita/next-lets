@@ -1,0 +1,497 @@
+---
+// STRATEGIA AI — WERSJA 3 · /strategia-ai-v3
+//
+// CO BYŁO NIE TAK Z v2 (uwaga: „długa, nic nie mówi, nie tłumaczy dobrze,
+// wrzuciłeś rzeczy, których nie potrzebujemy"):
+//
+// 1. SEKCJA NARZĘDZI BYŁA BŁĘDEM. ChatGPT, Gemini, Claude jako „czym
+//    pracujemy" to oferta Sellwise'u — oni wdrażają gotowe narzędzia.
+//    My projektujemy i budujemy systemy. Przepisanie ich sekcji przeniosło
+//    do nas cudzy model biznesowy. Wypada w całości.
+// 2. OSIEMNAŚCIE SEKCJI. v2 miała 17 000 pikseli. Czytelnik nie dochodził do
+//    ceny. v3 ma dziewięć sekcji i mniej więcej połowę tej długości.
+// 3. NAGŁÓWEK NIE TŁUMACZYŁ, CO TO JEST. „Strategia AI kończy się u nas
+//    procesem, który już działa" to zdanie pozycjonujące, nie opis produktu.
+//    Teraz w nagłówku stoi nazwa rzeczy, którą klient dostaje.
+// 4. RYSUNKI WYMAGAŁY STUDIOWANIA. Macierz zwrot × gotowość, siatka stu
+//    kwadratów i lejek kryteriów były ładne i trzeba je było czytać.
+//    Zostają dwa, które tłumaczą bez wysiłku: dokument z kolejnością
+//    (paski długości oszczędności) i arkusz z suwakami.
+//
+// CO WYPADŁO Z v2: narzędzia, macierz w hero, siatka stu pilotaży, lejek
+// kryteriów, diagram bezpieczeństwa, twarze zespołu, mity, przełącznik
+// działów, ściana opinii. Część wraca w skróconej formie w innych sekcjach.
+//
+// DO POTWIERDZENIA: [29 000] zł, trzy tygodnie z pilotem w cenie,
+// /og/strategia-ai.png.
+import LaBase from '../layouts/LaBase.astro';
+import GcFaq from '../components/GcFaq.astro';
+import GcCta from '../components/GcCta.astro';
+
+const title = "Strategia transformacji AI — plan wdrożeń z policzonym zwrotem | Let's automate";
+const description = 'Trzy tygodnie na Waszych procesach. Mierzymy, ile czasu zabierają dzisiaj, liczymy, ile wróci po wdrożeniu, i układamy je w kolejności. Pierwszą pozycję uruchamiamy w trakcie przeglądu.';
+
+// Dokument w hero. Pasek ma długość proporcjonalną do rocznej oszczędności,
+// więc kolejność widać bez czytania liczb. Ostatnia pozycja jest odrzucona.
+const kolejnosc = [
+  { n: '01', t: 'Obieg faktur kosztowych', z: 'Faktura z maila zostaje odczytana i zaksięgowana', kwota: '96 500 zł', pasek: 100, zwrot: '1,4×', start: 'tydzień 1' },
+  { n: '02', t: 'Ofertowanie w handlu', z: 'Szkic oferty powstaje z danych z CRM i cennika', kwota: '61 000 zł', pasek: 63, zwrot: '1,2×', start: 'miesiąc 2' },
+  { n: '03', t: 'Zapytania serwisowe', z: 'Typowe zgłoszenie dostaje odpowiedź z danymi z systemu', kwota: '44 000 zł', pasek: 46, zwrot: '0,5×', start: 'kwartał 2' },
+  { n: '—', t: 'Planowanie produkcji', z: 'Dane leżą w trzech arkuszach poza systemem', kwota: null, pasek: 0, zwrot: null, start: 'najpierw integracja', odpada: true },
+];
+
+const dostajecie = [
+  { n: '01', t: 'Kolejność wdrożeń z kwotami', d: 'Procesy ułożone od najkrótszego zwrotu. Przy każdym: co zmienia się w pracy zespołu, ile kosztuje wdrożenie i ile wraca w rok.' },
+  { n: '02', t: 'Arkusz z wyliczeniami', d: 'Otwarty plik, w którym przy każdej liczbie stoi jej źródło. Zmieniacie stawkę godzinową i cała kolumna przelicza się od nowa.' },
+  { n: '03', t: 'Specyfikacja dwóch pierwszych wdrożeń', d: 'Opisana na tyle dokładnie, że wycenę zrobi też inna firma. Dokument zostaje Wasz razem z prawem do niego.' },
+  { n: '04', t: 'Lista procesów, przy których odradzamy model', d: 'Razem z powodem. Zwykle jest na niej pozycja, którą taniej załatwia zwykła integracja między systemami.' },
+];
+
+// Zamiast przełącznika sześciu działów z v2 — sześć zdań o procesach,
+// które realnie wychodzą na pierwszych miejscach list.
+const procesy = [
+  { t: 'Obieg faktur kosztowych', d: 'Dokument z maila trafia do księgowania bez przepisywania.' },
+  { t: 'Ofertowanie', d: 'Szkic oferty powstaje z danych, które już macie w CRM.' },
+  { t: 'Zapytania od klientów', d: 'Typowe sprawy dostają odpowiedź z systemu, o każdej porze.' },
+  { t: 'Obieg dokumentów', d: 'Umowy i specyfikacje czytają się same i trafiają do rekordów.' },
+  { t: 'Raportowanie zarządcze', d: 'Raport czeka gotowy pierwszego roboczego dnia miesiąca.' },
+  { t: 'Reklamacje i zwroty', d: 'Zgłoszenie idzie ustaloną ścieżką, z historią klienta w tle.' },
+];
+
+const niepotrzebne = [
+  { t: 'Wiecie, który proces boli najbardziej', d: 'Jeden oczywisty kandydat nie potrzebuje trzytygodniowego przeglądu. Wyceniamy wdrożenie od razu.' },
+  { t: 'Dane leżą poza systemami', d: 'Gdy kluczowe informacje żyją w arkuszach i skrzynkach, pierwszym krokiem jest integracja. Przegląd policzy to samo, co widać gołym okiem.' },
+  { t: 'Dokument ma trafić do wniosku o dotację', d: 'Piszemy dokumenty do wdrażania. Odsyłamy do firm, które piszą wnioski na co dzień.' },
+];
+
+const etapy = [
+  { e: 'TYDZIEŃ 1', t: 'Mapowanie i pomiar', d: 'Warsztat z zarządem, a po nim rozmowy z ludźmi, którzy wykonują pracę. Na wybranych krokach mierzymy czas zamiast pytać o szacunki.', h: 5, pct: 34 },
+  { e: 'TYDZIEŃ 2', t: 'Liczenie i wybór', d: 'Powstaje arkusz i kolejność. Założenia potwierdzamy z Wami, zanim cokolwiek pójdzie dalej. Wybieramy proces do uruchomienia.', h: 1, pct: 33 },
+  { e: 'TYDZIEŃ 3', t: 'Uruchomienie i omówienie', d: 'Pierwsza pozycja z listy rusza na Waszych danych. Na koniec 90 minut z zarządem nad gotowym dokumentem.', h: 2.5, pct: 33 },
+];
+
+const dowody = [
+  { d: 'Finanse', n: 99.7, dec: 1, j: '%', o: 'skuteczności księgowania w obiegu faktur' },
+  { d: 'Sprzedaż', n: -80, dec: 0, j: '%', o: 'czasu przygotowania oferty' },
+  { d: 'Operacje', n: 65, dec: 0, j: 'h', o: 'odzyskane miesięcznie' },
+  { d: 'Obsługa klienta', n: -90, dec: 0, j: '%', o: 'zapytań obsługiwanych ręcznie' },
+];
+
+const faq = [
+  { q: 'Czym to się różni od audytu AI za trzy tysiące złotych?', a: 'Zakresem i tym, co zostaje na końcu. Audyt w tej cenie to warsztat i lista pomysłów uszeregowana na podstawie rozmowy. Tutaj mierzymy czas na realnych dokumentach, liczby biorą się z Waszych systemów, a trzeci tydzień kończy się procesem, który już pracuje. Jeśli szukacie samej listy okazji, taki audyt wystarczy i powiemy to wprost.' },
+  { q: 'Co, jeśli wyjdzie, że żaden proces się nie opłaca?', a: 'Zdarza się to w firmach, które mają dane rozsypane poza systemami. Wtedy dokument mówi, że pierwszym krokiem jest integracja, i pokazuje wyliczenie, z którego to wynika. Za taki wynik płacicie tyle samo. Jest wart tyle, co roczne wdrożenie zatrzymane w porę.' },
+  { q: 'Czy sprzedajecie przy okazji licencje na narzędzia AI?', a: 'Nie. Nie jesteśmy odsprzedawcą i nie mamy prowizji od żadnego dostawcy, więc rekomendacja w dokumencie nie ma drugiego dna. Projektujemy i budujemy systemy pod Wasz proces, a tam, gdzie wystarczy gotowe narzędzie, piszemy to wprost i nie bierzemy za to pieniędzy.' },
+  { q: 'Ile czasu zajmie to naszemu zespołowi?', a: 'Osiem i pół godziny łącznie: pięć godzin warsztatu i rozmów w pierwszym tygodniu, godzina na potwierdzenie założeń i dwie i pół przy uruchomieniu oraz omówieniu. Rozmowy z osobami wykonującymi pracę umawiamy pojedynczo, żeby nie zatrzymywać całego działu.' },
+  { q: 'Nasze dane są wrażliwe. Co się z nimi dzieje?', a: 'NDA podpisujemy przed pierwszym dostępem. Do pomiarów wystarczają dane z trzech miesięcy w zakresie jednego procesu, zwykle na kopii z usuniętymi danymi osobowymi. Przy uruchomieniu ustalamy, co wychodzi poza Waszą infrastrukturę, i zapisujemy to w dokumencie razem z zasadą, że modele nie uczą się na Waszych danych.' },
+];
+---
+<LaBase noindex title={title} description={description} ctaHref="#kontakt" ctaLabel="Umów rozmowę" nav="uslugi">
+<style is:global slot="head">
+  .dok-row{display:grid;grid-template-columns:26px 1fr 116px;gap:14px;align-items:start;padding:16px 0;border-top:1px solid #eef1ec}
+  .dok-bar{display:block;height:6px;margin-top:9px;border-radius:3px;background:#eef2ec;overflow:hidden}
+  .dok-bar span{display:block;height:100%;width:0;border-radius:3px;background:linear-gradient(90deg,#0a7a52,#00CD77);transition:width .9s cubic-bezier(.4,0,.2,1);transition-delay:calc(var(--i)*140ms + .2s)}
+  .dok.on .dok-bar span{width:var(--w)}
+
+  .sl{-webkit-appearance:none;appearance:none;width:100%;height:3px;border-radius:3px;background:#dde5db;outline:none;margin:0}
+  .sl::-webkit-slider-thumb{-webkit-appearance:none;width:19px;height:19px;border-radius:50%;background:#0a7a52;border:3px solid #fff;box-shadow:0 3px 10px -2px rgba(10,122,82,.55);cursor:pointer;transition:transform .15s}
+  .sl::-webkit-slider-thumb:hover{transform:scale(1.12)}
+  .sl::-moz-range-thumb{width:15px;height:15px;border-radius:50%;background:#0a7a52;border:3px solid #fff;cursor:pointer}
+  .ark-in{display:grid;grid-template-columns:1fr auto 190px;gap:16px;align-items:baseline;padding:10px 0;border-top:1px solid #edf0ea}
+  .ark-out{display:flex;align-items:baseline;justify-content:space-between;gap:18px;padding:9px 0;border-top:1px solid #edf0ea}
+  .ark-live{background:#eaf6ee;box-shadow:0 0 0 3px #eaf6ee;border-radius:2px}
+
+  .gt{display:flex;gap:8px;align-items:flex-end}
+  .gt-seg{display:flex;flex-direction:column;gap:9px;min-width:0}
+  .gt-bar{display:block;height:11px;border-radius:6px;background:var(--la-accent,#00CD77);opacity:var(--o);transform:scaleX(0);transform-origin:left;transition:transform .65s cubic-bezier(.4,0,.2,1);transition-delay:calc(var(--i)*150ms)}
+  .gt.on .gt-bar{transform:none}
+  .gt-lab{font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:0.1em;color:#8b968d}
+  .gt-h{font-size:14px;font-weight:750;color:#16211a}
+
+  .etp-row{display:grid;grid-template-columns:118px 1fr 92px;gap:clamp(18px,3vw,40px);align-items:start;padding:clamp(20px,2.4vw,26px) 0;border-top:1px solid #e2e9e0}
+  .etp-row:last-of-type{border-bottom:1px solid #e2e9e0}
+  .prc-row{display:grid;grid-template-columns:260px 1fr;gap:clamp(14px,2.4vw,32px);align-items:baseline;padding:16px 0;border-top:1px solid #e7ece4}
+  .prc-row:last-of-type{border-bottom:1px solid #e7ece4}
+  .dow-row{display:grid;grid-template-columns:170px 1fr;gap:clamp(14px,2vw,28px);align-items:baseline}
+  .dal-row{display:grid;grid-template-columns:1fr 250px;gap:clamp(18px,3vw,40px);align-items:baseline;padding:22px 0;border-top:1px solid #e7ece4}
+  .dal-row:last-of-type{border-bottom:1px solid #e7ece4}
+  .hero-split > *,.s2-grid > *,.grid2 > *,.cena-grid > *{min-width:0}
+  .fakty{display:grid;grid-template-columns:repeat(4,auto);gap:22px 34px;justify-content:start}
+
+  @media (max-width:900px){
+    .hero-split{grid-template-columns:1fr !important;gap:36px !important}
+    .etp-row{grid-template-columns:1fr !important;gap:6px !important}
+    .etp-czas{justify-self:start !important}
+    .prc-row,.dal-row{grid-template-columns:1fr !important;gap:6px !important}
+    .ark-in{grid-template-columns:1fr auto !important}
+    .ark-zrodlo{grid-column:1 / -1;padding-top:2px}
+    .cena-grid{grid-template-columns:1fr !important;gap:28px !important}
+    .zbd-row{grid-template-columns:1fr !important;gap:6px !important}
+    .gt{display:none}
+    .fakty{grid-template-columns:1fr 1fr;gap:18px 24px}
+    .dow-grid{grid-template-columns:1fr 1fr !important}
+  }
+  @media (max-width:600px){ .dow-grid{grid-template-columns:1fr !important} }
+  @media (prefers-reduced-motion:reduce){ .dok-bar span,.gt-bar{transition:none !important} }
+</style>
+
+<!-- ============ 1 · HERO ============
+     Nagłówek nazywa rzecz, którą klient dostaje. Nośnikiem jest ten sam
+     dokument — paski mają długość rocznej oszczędności, więc kolejność
+     czyta się bez patrzenia na liczby. -->
+<section style="position:relative;overflow:hidden;background:radial-gradient(880px 520px at 88% -6%, rgba(0,205,119,0.13), transparent 62%), #ffffff;padding:clamp(28px,4vw,52px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) clamp(48px,6vw,72px)">
+<div style="display:flex;align-items:center;gap:8px;font-size:13.5px;color:#8b968d">
+<a href="/#oferta" class="lnk-green" style="color:#0a7a52;font-weight:650">Wdrażamy AI</a>
+<span aria-hidden="true">/</span><span>Strategia transformacji AI</span>
+</div>
+
+<div class="hero-split" style="display:grid;grid-template-columns:1fr 520px;gap:clamp(40px,5vw,76px);align-items:center;margin-top:clamp(26px,3vw,40px)">
+<div>
+<h1 style="margin:0;font-size:clamp(30px,4.8vw,54px);line-height:1.05;letter-spacing:-0.034em;font-weight:800;color:#16211a;text-wrap:balance">Kolejność wdrożeń AI z kwotą przy każdej pozycji.</h1>
+<p style="margin:24px 0 0;max-width:590px;font-size:clamp(16px,2.1vw,19px);line-height:1.6;color:#33413a;text-wrap:pretty">Trzy tygodnie na Waszych procesach. Mierzymy, ile czasu zabierają dzisiaj, liczymy, ile z tego wróci po wdrożeniu, i układamy je w kolejności. Pierwszą pozycję z listy uruchamiamy jeszcze w trakcie przeglądu.</p>
+
+<div class="fakty" style="margin-top:30px">
+<div><div style="font-size:20px;font-weight:800;letter-spacing:-0.02em;color:#16211a">3 tygodnie</div><div style="margin-top:2px;font-size:12.5px;color:#8b968d">od dostępu do dokumentu</div></div>
+<div><div style="font-size:20px;font-weight:800;letter-spacing:-0.02em;color:#16211a">8,5 h</div><div style="margin-top:2px;font-size:12.5px;color:#8b968d">po Waszej stronie</div></div>
+<div><div style="font-size:20px;font-weight:800;letter-spacing:-0.02em;color:#16211a">[29 000] zł</div><div style="margin-top:2px;font-size:12.5px;color:#8b968d">stała cena netto</div></div>
+<div><div style="font-size:20px;font-weight:800;letter-spacing:-0.02em;color:#0a7a52">1 proces</div><div style="margin-top:2px;font-size:12.5px;color:#8b968d">działa na koniec</div></div>
+</div>
+
+<div class="hero-actions" style="display:flex;align-items:center;flex-wrap:wrap;gap:16px 22px;margin-top:32px">
+<a href="#kontakt" class="btn-dark" style="display:inline-flex;align-items:center;gap:10px;background:#16211a;color:#ffffff;padding:18px 32px;border-radius:12px;font-weight:650;font-size:16.5px;box-shadow:0 14px 30px -14px rgba(16,33,26,0.45)">Umów rozmowę <span aria-hidden="true">→</span></a>
+<a href="#arkusz" class="btn-ghost" style="display:inline-flex;align-items:center;gap:8px;font-size:16.5px;font-weight:700;color:#16211a;background:rgba(255,255,255,0.6);padding:18px 26px;border-radius:12px;border:1px solid rgba(22,33,26,0.16)">Zobaczcie, jak liczymy →</a>
+</div>
+</div>
+
+<div class="dok" data-anim style="background:#ffffff;border-radius:18px;padding:clamp(22px,2.6vw,30px);box-shadow:0 40px 90px -46px rgba(18,38,28,0.42), 0 2px 10px -4px rgba(18,38,28,0.08)">
+<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding-bottom:6px">
+<div>
+<div style="font-size:15.5px;font-weight:750;color:#16211a">Tak wygląda wynik</div>
+<div style="margin-top:3px;font-size:12px;color:#8b968d">producent mebli, 140 osób · osiem procesów przejrzanych</div>
+</div>
+<span style="flex-shrink:0;background:#f1f4ee;color:#7c877e;font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:0.1em;font-weight:650;padding:5px 9px;border-radius:6px">PRZYKŁAD</span>
+</div>
+
+{kolejnosc.map((k, i) => (
+  <div class="dok-row" style={`--i:${i}`}>
+    <span style={`font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:700;padding-top:2px;color:${k.odpada ? '#c0a99f' : '#0a7a52'}`}>{k.n}</span>
+    <span>
+      <span style={`display:block;font-size:15px;font-weight:750;line-height:1.3;color:${k.odpada ? '#8b968d' : '#16211a'}`}>{k.t}</span>
+      <span style="display:block;margin-top:4px;font-size:12.5px;line-height:1.45;color:#8b968d">{k.z}</span>
+      {k.pasek > 0
+        ? <span class="dok-bar" style={`--w:${k.pasek}%`}><span></span></span>
+        : <span style="display:inline-block;margin-top:9px;font-size:10.5px;font-weight:750;color:#a3391f;background:#fbeee9;padding:3px 8px;border-radius:5px">odradzamy teraz</span>}
+    </span>
+    <span style="text-align:right;white-space:nowrap;padding-top:1px">
+      {k.kwota
+        ? <><span style="display:block;font-size:15px;font-weight:800;letter-spacing:-0.015em;color:#16211a">{k.kwota}</span><span style="display:block;margin-top:2px;font-size:11.5px;color:#8b968d">zwrot {k.zwrot}</span></>
+        : <span style="display:block;font-size:11.5px;color:#8b968d">bez wyceny</span>}
+      <span style="display:block;margin-top:5px;font-family:ui-monospace,Menlo,monospace;font-size:10.5px;color:#a8b2a8">{k.start}</span>
+    </span>
+  </div>
+))}
+
+<p style="margin:16px 0 0;padding-top:14px;border-top:1px solid #eef1ec;font-size:12.5px;line-height:1.55;color:#7c877e">Długość paska to roczna oszczędność. Ostatnia pozycja ma najwyższy potencjał na liście i mimo to odpada — dane do niej leżą poza systemem.</p>
+</div>
+</div>
+</section>
+
+<!-- ============ 2 · CO DOSTAJECIE ============ -->
+<section id="co-dostajecie" style="background:#f4f8f2;padding:clamp(64px,8vw,96px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
+<div class="sec-head">
+<h2 class="h-sec" style="margin:0;max-width:520px;text-wrap:pretty">Co zostaje u Was po trzech tygodniach.</h2>
+<p class="sub" style="margin:0 0 6px;max-width:440px">Cztery rzeczy do wzięcia w ręce i jeden proces, który już pracuje.</p>
+</div>
+
+<div class="s2-grid" style="display:grid;grid-template-columns:1fr 420px;gap:clamp(32px,5vw,64px);align-items:start;margin-top:clamp(32px,4vw,46px)">
+<div>
+{dostajecie.map((z) => (
+  <div class="prc-row rv">
+    <span style="font-size:clamp(17px,2vw,20px);font-weight:750;letter-spacing:-0.012em;line-height:1.25;color:#16211a">{z.t}</span>
+    <p style="margin:0;max-width:600px;font-size:14.5px;line-height:1.6;color:#4c5850;text-wrap:pretty">{z.d}</p>
+  </div>
+))}
+</div>
+
+<div class="rv" style="background:radial-gradient(120% 140% at 100% 0%, rgba(0,205,119,0.2), transparent 58%), #0e2b1d;border-radius:20px;padding:clamp(28px,3.2vw,36px)">
+<div style="font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--la-accent,#00CD77)">Piąta rzecz, której nie ma w dokumencie</div>
+<div style="margin-top:14px;font-size:clamp(21px,2.4vw,27px);font-weight:800;line-height:1.15;letter-spacing:-0.02em;color:#ffffff;text-wrap:balance">Pierwszy proces z listy pracuje, zanim skończymy projekt.</div>
+<p style="margin:14px 0 0;font-size:15px;line-height:1.6;color:rgba(255,255,255,0.78);text-wrap:pretty">Działa na Waszych danych i obsługują go Wasi ludzie. Przez ostatni tydzień przechodzi przez niego tyle spraw, żeby wynik dało się porównać z pomiarem z tygodnia pierwszego.</p>
+<div style="margin-top:22px;padding-top:18px;border-top:1px solid rgba(255,255,255,0.16);display:flex;align-items:baseline;gap:12px">
+<span class="cnt" data-n="312" style="font-size:34px;font-weight:800;letter-spacing:-0.03em;color:#ffffff;line-height:1">0</span>
+<span style="font-size:13.5px;line-height:1.5;color:rgba(255,255,255,0.72)">dokumentów przeszło przez nowy obieg w pięć dni.<br>Ręcznie dotknięto 41 z nich.</span>
+</div>
+</div>
+</div>
+</section>
+
+<!-- ============ 3 · ARKUSZ ============
+     Serce strony. Klient obiecany plik dostaje tu do ręki od razu. -->
+<section id="arkusz" class="sec-pad">
+<div class="s2-grid" style="display:grid;grid-template-columns:1fr 600px;gap:clamp(40px,6vw,76px);align-items:center">
+<div>
+<h2 class="h-sec" style="margin:0;text-wrap:pretty">Każda liczba ma podpis.</h2>
+<p class="sub" style="margin:20px 0 0;max-width:470px">Obok jedna pozycja z kolejności rozłożona na czynniki. Wartości wejściowe pochodzą z systemów klienta albo z pomiaru z pierwszego tygodnia, a przy każdej stoi kolumna „skąd".</p>
+<p style="margin:20px 0 0;max-width:470px;font-size:15px;line-height:1.62;color:#4c5850;text-wrap:pretty"><strong style="color:#16211a;font-weight:700">Przesuńcie suwaki.</strong> Tak samo działa plik, który zostaje u Was po projekcie. Benchmarków z internetu w nim nie ma, bo nie da się ich obronić przed zarządem.</p>
+<a href="#kontakt" class="btn-dark" style="display:inline-flex;align-items:center;gap:10px;margin-top:30px;background:#16211a;color:#ffffff;padding:17px 30px;border-radius:12px;font-weight:650;font-size:16px">Policzmy to na Waszych danych <span aria-hidden="true">→</span></a>
+</div>
+
+<div style="background:linear-gradient(160deg,#eef5ee 0%,#e6f0e8 55%,#eaf2ea 100%);border-radius:24px;padding:clamp(22px,3vw,36px)">
+<div id="ark" style="background:#ffffff;border-radius:8px;padding:clamp(20px,2.8vw,30px);box-shadow:0 30px 70px -34px rgba(15,30,22,0.34);font-family:ui-monospace,Menlo,monospace">
+<div style="display:flex;align-items:baseline;justify-content:space-between;gap:14px">
+<span style="font-size:13px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#16211a">Obieg faktur kosztowych</span>
+<span style="font-size:11px;color:#8b968d">pozycja 01</span>
+</div>
+<div style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:16px 22px;background:#f6f9f5;border-radius:8px;padding:15px 17px" class="grid2">
+<label style="display:block">
+<span style="display:flex;align-items:baseline;justify-content:space-between;gap:10px;font-size:11px;letter-spacing:0.06em;color:#7c877e">KOSZT GODZINY <strong id="v-stawka" style="font-size:14px;color:#0a7a52">68 zł</strong></span>
+<input id="sl-stawka" class="sl" type="range" min="40" max="160" step="2" value="68" style="margin-top:10px" aria-label="Koszt godziny zespołu">
+</label>
+<label style="display:block">
+<span style="display:flex;align-items:baseline;justify-content:space-between;gap:10px;font-size:11px;letter-spacing:0.06em;color:#7c877e">FAKTUR MIESIĘCZNIE <strong id="v-faktur" style="font-size:14px;color:#0a7a52">1 240</strong></span>
+<input id="sl-faktur" class="sl" type="range" min="300" max="3000" step="20" value="1240" style="margin-top:10px" aria-label="Liczba faktur miesięcznie">
+</label>
+</div>
+<div style="margin-top:16px">
+<div style="display:flex;align-items:baseline;justify-content:space-between;font-size:10.5px;letter-spacing:0.1em;color:#a3aca4;padding-bottom:8px"><span>WEJŚCIE</span><span>SKĄD</span></div>
+<div class="ark-in"><span style="font-size:12.5px;color:#3f4b44">Faktury miesięcznie</span><span id="o-faktur" class="ark-live" style="font-size:14px;font-weight:700;color:#16211a;white-space:nowrap">1 240</span><span class="ark-zrodlo" style="font-size:11px;line-height:1.4;color:#8b968d">eksport z systemu księgowego</span></div>
+<div class="ark-in"><span style="font-size:12.5px;color:#3f4b44">Czas na jednym dokumencie</span><span style="font-size:14px;font-weight:700;color:#16211a;white-space:nowrap">6,5 min</span><span class="ark-zrodlo" style="font-size:11px;line-height:1.4;color:#8b968d">pomiar na 40 dokumentach</span></div>
+<div class="ark-in"><span style="font-size:12.5px;color:#3f4b44">Koszt godziny zespołu</span><span id="o-stawka" class="ark-live" style="font-size:14px;font-weight:700;color:#16211a;white-space:nowrap">68 zł</span><span class="ark-zrodlo" style="font-size:11px;line-height:1.4;color:#8b968d">stawka od działu HR klienta</span></div>
+<div class="ark-in"><span style="font-size:12.5px;color:#3f4b44">Sprawy wymagające człowieka</span><span style="font-size:14px;font-weight:700;color:#16211a;white-space:nowrap">12%</span><span class="ark-zrodlo" style="font-size:11px;line-height:1.4;color:#8b968d">przegląd 3 miesięcy historii</span></div>
+</div>
+<div style="margin-top:18px;border-top:1.5px solid #16211a;padding-top:6px">
+<div class="ark-out"><span style="font-size:12.5px;color:#3f4b44">Praca dzisiaj</span><span id="o-dzis" style="font-size:14px;font-weight:700;color:#16211a">134 h / mies.</span></div>
+<div class="ark-out"><span style="font-size:12.5px;color:#3f4b44">Odzyskany czas</span><span id="o-odz" style="font-size:14px;font-weight:700;color:#16211a">118 h / mies.</span></div>
+<div class="ark-out"><span style="font-size:12.5px;font-weight:700;color:#16211a">Oszczędność w skali roku</span><span id="o-rok" style="font-size:17px;font-weight:800;color:#16211a">96 500 zł</span></div>
+<div class="ark-out"><span style="font-size:12.5px;color:#3f4b44">Nakład na wdrożenie</span><span style="font-size:14px;font-weight:700;color:#16211a">68 000 zł</span></div>
+</div>
+<div style="margin-top:18px;background:#0e2b1d;border-radius:6px;padding:15px 17px;display:flex;align-items:center;justify-content:space-between;gap:14px">
+<span style="font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.62)">Zwrot w pierwszym roku</span>
+<span id="o-zwrot" style="font-size:25px;font-weight:800;letter-spacing:-0.02em;color:var(--la-accent,#00CD77);line-height:1">1,4×</span>
+</div>
+<div style="margin-top:9px;font-size:11px;line-height:1.6;color:#8b968d;text-align:center">próg rentowności w <span id="o-prog" style="color:#4c5850;font-weight:700">9.</span> miesiącu</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- ============ 4 · KTÓRE PROCESY ============
+     Zamiast przełącznika sześciu działów z v2 — sześć zdań i reguła,
+     przy której sami odradzamy model. -->
+<section id="procesy" style="background:#f4f8f2;padding:clamp(64px,8vw,96px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
+<div class="sec-head">
+<h2 class="h-sec" style="margin:0;max-width:420px;text-wrap:pretty">Od czego zwykle się zaczyna.</h2>
+<p class="sub" style="margin:0 0 6px;max-width:470px">Sześć procesów, które najczęściej wychodzą na pierwszych miejscach list. Wspólny mianownik jest jeden: dużo powtórzeń i dane, które już leżą w systemie.</p>
+</div>
+<div style="margin-top:clamp(30px,3.6vw,44px)">
+{procesy.map((p) => (
+  <div class="prc-row rv">
+    <span style="font-size:clamp(17px,2vw,20px);font-weight:750;letter-spacing:-0.012em;color:#16211a">{p.t}</span>
+    <p style="margin:0;font-size:15px;line-height:1.6;color:#4c5850;text-wrap:pretty">{p.d}</p>
+  </div>
+))}
+</div>
+
+<div class="rv" style="margin-top:clamp(28px,3.4vw,38px);display:grid;grid-template-columns:auto 1fr;gap:clamp(16px,2.4vw,26px);align-items:start;max-width:900px">
+<span style="width:3px;align-self:stretch;border-radius:2px;background:var(--la-accent,#00CD77)"></span>
+<p style="margin:0;font-size:clamp(16px,1.9vw,18.5px);line-height:1.6;color:#16211a;text-wrap:pretty">Proces, który da się załatwić zwykłą integracją między systemami, dostaje od nas integrację. Model kosztuje więcej i psuje się w mniej oczywisty sposób, więc taka rekomendacja trafia do dokumentu na tych samych prawach co każda inna.</p>
+</div>
+
+<div class="rv" style="margin-top:clamp(30px,3.6vw,44px);background:#fdf7f4;border:1px solid #f0e0d8;border-radius:18px;padding:clamp(24px,3vw,32px) clamp(22px,3.2vw,36px)">
+<div style="font-size:clamp(18px,2.1vw,22px);font-weight:750;letter-spacing:-0.015em;color:#16211a">Kiedy przegląd jest zbędny</div>
+<div style="display:flex;flex-direction:column;gap:14px;margin-top:18px">
+{niepotrzebne.map((n) => (
+  <div class="zbd-row" style="display:grid;grid-template-columns:230px 1fr;gap:clamp(12px,2vw,28px);align-items:baseline">
+    <span style="font-size:15px;font-weight:700;line-height:1.35;color:#a3391f">{n.t}</span>
+    <p style="margin:0;font-size:14.5px;line-height:1.6;color:#4c5850;text-wrap:pretty">{n.d}</p>
+  </div>
+))}
+</div>
+<p style="margin:20px 0 0;padding-top:16px;border-top:1px solid #f0e0d8;font-size:14.5px;line-height:1.6;color:#4c5850">Każdą z tych trzech rzeczy poznajemy na pierwszej rozmowie i wtedy mówimy o tym wprost.</p>
+</div>
+</section>
+
+<!-- ============ 5 · PRZEBIEG ============ -->
+<section id="przebieg" class="sec-pad">
+<div class="sec-head">
+<h2 class="h-sec" style="margin:0;max-width:420px;text-wrap:pretty">Trzy tygodnie i osiem i pół godziny po Waszej stronie.</h2>
+<p class="sub" style="margin:0 0 6px;max-width:420px">Nasycenie paska to czas, którego potrzebujemy od Was w danym tygodniu. Najdroższy jest pierwszy.</p>
+</div>
+<div class="gt" data-anim style="margin-top:clamp(28px,3.4vw,40px)">
+{etapy.map((e, i) => (
+  <div class="gt-seg" style={`flex:${e.pct};--i:${i}`}>
+    <span class="gt-h">{String(e.h).replace('.', ',')} h</span>
+    <span class="gt-bar" style={`--o:${(0.32 + e.h * 0.13).toFixed(2)}`}></span>
+    <span class="gt-lab">{e.e}</span>
+  </div>
+))}
+</div>
+<div style="margin-top:clamp(18px,2.2vw,26px)">
+{etapy.map((e) => (
+  <div class="etp-row rv">
+    <span style="font-family:ui-monospace,Menlo,monospace;font-size:11.5px;letter-spacing:0.1em;color:#0a7a52;padding-top:5px">{e.e}</span>
+    <span>
+      <span style="display:block;font-size:clamp(18px,2.1vw,22px);font-weight:750;letter-spacing:-0.015em;color:#16211a">{e.t}</span>
+      <p style="margin:8px 0 0;max-width:660px;font-size:15px;line-height:1.6;color:#4c5850;text-wrap:pretty">{e.d}</p>
+    </span>
+    <span class="etp-czas" style="justify-self:end;text-align:right">
+      <span style="display:block;font-size:18px;font-weight:800;letter-spacing:-0.02em;color:#16211a">{String(e.h).replace('.', ',')} h</span>
+      <span style="display:block;margin-top:2px;font-size:11.5px;color:#8b968d">Wasz czas</span>
+    </span>
+  </div>
+))}
+</div>
+<p style="margin:22px 0 0;font-size:15px;line-height:1.6;color:#7c877e">NDA podpisujemy przed pierwszym dostępem do systemów.</p>
+</section>
+
+<!-- ============ 6 · DLACZEGO MY ============
+     Krótko i o jednej rzeczy: doradzamy to, co potrafimy zbudować.
+     Bez licencji, bez prowizji od dostawców. -->
+<section id="dlaczego-my" style="background:#0e2b1d;padding:clamp(60px,7.5vw,92px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
+<div class="s2-grid" style="display:grid;grid-template-columns:1fr 460px;gap:clamp(36px,5vw,72px);align-items:start">
+<div>
+<h2 class="h-sec" style="margin:0;max-width:560px;color:#ffffff;text-wrap:pretty">Rekomendujemy to, co sami potrafimy zbudować.</h2>
+<p style="margin:20px 0 0;max-width:540px;font-size:16.5px;line-height:1.62;color:rgba(255,255,255,0.8);text-wrap:pretty">Studio liczy 22 osoby i projektuje systemy pod procesy klientów. Nie sprzedajemy licencji i nie mamy prowizji od żadnego dostawcy, więc kolejność w dokumencie wynika z liczb, a nie z tego, na czym zarabiamy przy wdrożeniu.</p>
+<p style="margin:16px 0 0;max-width:540px;font-size:16.5px;line-height:1.62;color:rgba(255,255,255,0.8);text-wrap:pretty">Wycena wdrożenia z takiego dokumentu jest sprawdzalna, bo pochodzi od zespołu, który to samo dowiózł u innych.</p>
+<div style="display:flex;align-items:center;flex-wrap:wrap;gap:14px 28px;margin-top:28px">
+<a href="/dlaczego-my" class="lnk-green" style="font-size:16px;font-weight:700;color:var(--la-accent,#00CD77)">Jak pracujemy →</a>
+<span style="font-size:14.5px;color:rgba(255,255,255,0.5)">Część Wise Group · Sellwise · Hirewise · Adwise</span>
+</div>
+</div>
+
+<div>
+<div class="dow-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:clamp(20px,2.6vw,30px)">
+{dowody.map((d) => (
+  <div class="rv" style="padding-top:16px;border-top:1px solid rgba(255,255,255,0.16)">
+    <div style="font-size:clamp(30px,3.6vw,40px);font-weight:800;letter-spacing:-0.03em;line-height:1;color:#ffffff"><span class="cnt" data-n={d.n} data-dec={d.dec}>0</span><span style="color:var(--la-accent,#00CD77)">{d.j}</span></div>
+    <div style="margin-top:8px;font-size:13.5px;line-height:1.5;color:rgba(255,255,255,0.72)">{d.o}</div>
+    <div style="margin-top:5px;font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.42)">{d.d}</div>
+  </div>
+))}
+</div>
+<figure class="rv" style="margin:clamp(26px,3vw,34px) 0 0;padding-top:20px;border-top:2px solid rgba(0,205,119,0.55)">
+<blockquote style="margin:0;font-size:15.5px;line-height:1.6;color:rgba(255,255,255,0.9);text-wrap:pretty">„Let’s automate wziął pełną odpowiedzialność za projekt i dowiózł go do końca. To dlatego powierzyliśmy im kolejny, znacznie większy."</blockquote>
+<figcaption style="margin-top:14px;font-size:13px;color:rgba(255,255,255,0.6)"><strong style="display:block;color:#ffffff;font-weight:700;font-size:14px">Jakub Ciołkowski</strong>Członek Zarządu, NARS Polska</figcaption>
+</figure>
+</div>
+</div>
+</section>
+
+<!-- ============ 7 · CENA I CO POTEM ============ -->
+<section id="cena" class="sec-pad">
+<div class="cena-grid" style="display:grid;grid-template-columns:360px 1fr;gap:clamp(32px,5vw,60px);align-items:center;background:#f4f8f2;border:1px solid #e4ebe2;border-radius:24px;padding:clamp(30px,3.6vw,48px)">
+<div style="background:#0e2b1d;border-radius:20px;padding:32px 28px">
+<div style="font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.5)">Stała cena, podana z góry</div>
+<div style="margin-top:12px;font-size:clamp(29px,3.2vw,38px);font-weight:800;letter-spacing:-0.025em;line-height:1.05;color:#ffffff">[29 000] zł</div>
+<div style="margin-top:6px;font-size:12.5px;color:rgba(255,255,255,0.55)">netto · trzy tygodnie · do ośmiu procesów</div>
+<a href="#kontakt" class="btn-accent" style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:22px;background:var(--la-accent,#00CD77);color:#0b1a11;padding:15px 24px;border-radius:11px;font-weight:750;font-size:15.5px">Umów rozmowę →</a>
+</div>
+<div>
+<h2 class="h-mod" style="margin:0;text-wrap:pretty">Kwota schodzi z pierwszego wdrożenia.</h2>
+<p class="sub" style="margin:14px 0 0;max-width:540px">Jeśli wdrażamy razem, cała opłata pomniejsza fakturę za pierwszy projekt z listy. Jeśli wdraża kto inny, dokument i tak zostaje Wasz razem z prawem do niego.</p>
+<div style="margin-top:24px">
+<div class="dal-row" style="border-top:1px solid #dfe7dd">
+<span><span style="display:block;font-size:17px;font-weight:750;color:#16211a">Wdrażamy my</span><p style="margin:5px 0 0;font-size:14.5px;line-height:1.55;color:#4c5850">Wycena powstaje na specyfikacji, którą już macie w ręku.</p></span>
+<span style="font-size:13.5px;line-height:1.5;color:#7c877e">opłata odliczona</span>
+</div>
+<div class="dal-row">
+<span><span style="display:block;font-size:17px;font-weight:750;color:#16211a">Budujecie sami, my pilnujemy</span><p style="margin:5px 0 0;font-size:14.5px;line-height:1.55;color:#4c5850">Zasady, przeglądy i bramka przed produkcją. To jest <a href="/guided-coding" class="lnk-green" style="font-weight:700;color:#0a7a52">Guided Coding</a>.</p></span>
+<span style="font-size:13.5px;line-height:1.5;color:#7c877e">stały abonament</span>
+</div>
+<div class="dal-row">
+<span><span style="display:block;font-size:17px;font-weight:750;color:#16211a">Bierzecie dokument gdzie indziej</span><p style="margin:5px 0 0;font-size:14.5px;line-height:1.55;color:#4c5850">Specyfikacja jest opisana tak, żeby wycenił ją też inny dostawca. <strong style="color:#16211a;font-weight:700">To w pełni akceptowalny scenariusz.</strong></p></span>
+<span style="font-size:13.5px;line-height:1.5;color:#7c877e">bez zobowiązań</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<GcFaq
+  heading="Pytania, które padają na pierwszej rozmowie."
+  lead="Pierwsze zadaje prawie każdy zarząd, więc zostaje otwarte."
+  ctaLabel="Zadajcie nam swoje →"
+  items={faq}
+/>
+
+<GcCta
+  heading="Zacznijmy od Waszej listy."
+  lead="Napiszcie w dwóch zdaniach, jakie procesy są dziś na stole. Odpowiemy z najbliższym wolnym terminem i pierwszym pytaniem kontrolnym."
+  eyebrow="Z przeglądu wychodzicie z"
+  items={[
+    { t: 'Kolejnością wdrożeń', d: 'z kwotą i terminem przy każdej pozycji' },
+    { t: 'Arkuszem wyliczeń', d: 'otwartym, z podpisem przy każdej liczbie' },
+    { t: 'Działającym procesem', d: 'pierwsza pozycja pracuje na Waszych danych' },
+  ]}
+  placeholder="Np. mamy 1 200 faktur kosztowych miesięcznie i dwie osoby, które je przepisują…"
+  submitLabel="Umów rozmowę"
+/>
+
+<script>
+  var redukcja = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  (function(){
+    var els = document.querySelectorAll('[data-anim]');
+    if(!els.length) return;
+    if(redukcja || !('IntersectionObserver' in window)){
+      els.forEach(function(el){ el.classList.add('on'); });
+      return;
+    }
+    var io = new IntersectionObserver(function(w){
+      w.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('on'); io.unobserve(e.target); } });
+    }, { threshold: 0.2 });
+    els.forEach(function(el){ io.observe(el); });
+  })();
+
+  (function(){
+    var els = document.querySelectorAll('.cnt');
+    if(!els.length) return;
+    function pisz(el, v, dec){
+      var znak = v < 0 ? '−' : '';
+      el.textContent = znak + (dec ? Math.abs(v).toFixed(dec).replace('.', ',') : Math.round(Math.abs(v)).toString());
+    }
+    function licz(el){
+      var cel = parseFloat(el.dataset.n), dec = parseInt(el.dataset.dec || '0', 10), start = 0;
+      if(redukcja){ pisz(el, cel, dec); return; }
+      function krok(t){
+        if(!start) start = t;
+        var p = Math.min(1, (t - start) / 900);
+        pisz(el, cel * (1 - Math.pow(1 - p, 3)), dec);
+        if(p < 1) requestAnimationFrame(krok);
+      }
+      requestAnimationFrame(krok);
+    }
+    if(!('IntersectionObserver' in window)){ els.forEach(licz); return; }
+    var io = new IntersectionObserver(function(w){
+      w.forEach(function(e){ if(e.isIntersecting){ licz(e.target); io.unobserve(e.target); } });
+    }, { threshold: 0.5 });
+    els.forEach(function(el){ io.observe(el); });
+  })();
+
+  (function(){
+    var box = document.getElementById('ark');
+    if(!box) return;
+    var slStawka = document.getElementById('sl-stawka');
+    var slFaktur = document.getElementById('sl-faktur');
+    var MINUTY = 6.5, WYJATKI = 0.12, NAKLAD = 68000;
+    function spacja(n){ return Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' '); }
+    function przelicz(){
+      var stawka = parseInt(slStawka.value, 10), faktur = parseInt(slFaktur.value, 10);
+      var dzis = faktur * MINUTY / 60, odz = dzis * (1 - WYJATKI);
+      var rok = odz * stawka * 12, zwrot = rok / NAKLAD;
+      var prog = Math.max(1, Math.ceil(NAKLAD / (rok / 12)));
+      document.getElementById('v-stawka').textContent = stawka + ' zł';
+      document.getElementById('v-faktur').textContent = spacja(faktur);
+      document.getElementById('o-stawka').textContent = stawka + ' zł';
+      document.getElementById('o-faktur').textContent = spacja(faktur);
+      document.getElementById('o-dzis').textContent = Math.round(dzis) + ' h / mies.';
+      document.getElementById('o-odz').textContent = Math.round(odz) + ' h / mies.';
+      document.getElementById('o-rok').textContent = spacja(Math.round(rok / 100) * 100) + ' zł';
+      document.getElementById('o-zwrot').textContent = zwrot.toFixed(1).replace('.', ',') + '×';
+      document.getElementById('o-prog').textContent = prog + '.';
+    }
+    slStawka.addEventListener('input', przelicz);
+    slFaktur.addEventListener('input', przelicz);
+    przelicz();
+  })();
+</script>
+</LaBase>

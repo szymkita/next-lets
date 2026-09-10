@@ -1,0 +1,502 @@
+---
+// DLACZEGO MY — /dlaczego-my · WERSJA 4 (07.09.2026)
+// Napisana od zera. Poprzednia leży w docs/_kopie/dlaczego-my-przed-v4.astro,
+// wariant typograficzny z 30.08 w src/pages/dlaczego-my-v3.astro.
+//
+// CO BYŁO NIE TAK
+// Uwaga Szymona: „strona jest zbyt ciężka, jest tam zbyt wiele niepotrzebnych
+// informacji, całość wygląda jak AI slop". Policzone na poprzedniej wersji:
+// dziewięć sekcji, metryczka na siedem wierszy w hero, roster dwudziestu
+// dwóch twarzy, pięć ról projektowych, org-chart grupy, sześć zasad,
+// drabinka czterech etapów, protokół przekazania, cytat i trzy kafle liczbowe.
+// Każdy blok osobno był do obrony; razem to był katalog firmy, a nie odpowiedź
+// na pytanie „dlaczego wy".
+//
+// TEZA TEJ WERSJI
+// Do wyboru jest jedno: kto siada do klawiatury. Zasady, code review
+// i właściciel repozytorium są w każdym układzie te same. Tego konkurencja
+// nie przepisze, bo firma sprzedająca godziny nie ma powodu proponować
+// wariantu, w którym klient buduje sam.
+// Teza wychodzi z dwóch rzeczy, które realnie istnieją: z WiseStacku
+// (/wisestack — dwanaście wyborów podjętych raz) i z prowadzenia zespołów
+// bez działu IT (/guided-coding/bez-dzialu-it — code review każdej wersji).
+//
+// WARSTWA WIZUALNA — WŁASNY SŁOWNIK, DZIESIĄTY W SERWISIE
+// Motyw: KTO TRZYMA KLAWIATURĘ. Jedna animacja z prawdziwym ruchem
+// (szyna trzech układów w hero — znacznik przesuwa się, dolny panel „bez
+// zmian" stoi) i jeden artefakt (karta code review w sekcji 2).
+// Świadomie ZERO: słupków, osi czasu, siatek kafli, rosteru twarzy,
+// org-chartu, makiety aplikacji. Wszystkie są zajęte przez rodzeństwo:
+//   /wisestack — paski modeli, pasek bramek, pas 100%
+//   /guided-coding/bez-dzialu-it — makieta panelu, słupki miesięcy, siatka dni
+//   /inspiracje — delta „dziś → po"
+//   /systemy-procesowe — oś czasu sprawy
+//
+// RYTM TŁA: biel → #f4f8f2 → #0e2b1d → biel → biel (CTA) → #f4f8f2 (FAQ).
+// Ciemny pas pada raz i bierze najcięższy argument strony: wariant,
+// w którym klient buduje sam.
+//
+// OSOBA: „Ty", jak na stronie głównej i na /guided-coding/bez-dzialu-it.
+// Link do tej strony stoi w ciemnej sekcji strony głównej, która mówi „Ty" —
+// zmiana rozmówcy w jednym kliknięciu była już raz zgłoszona jako wada.
+// Uwaga przy dalszym pisaniu: żadnego czasu przeszłego w drugiej osobie
+// („zbudowałeś"), bo jest rodzajowy.
+//
+// DO POTWIERDZENIA PRZED PUBLIKACJĄ:
+// · „40 minut od wypchnięcia zmiany do odpowiedzi" — zobowiązanie umowne,
+//   ta sama liczba stoi na /guided-coding/bez-dzialu-it;
+// · „7 z 55" i „11 z 18" — proporcje z tablicy MIESIACE na tamtej stronie,
+//   wzięte z obserwacji. Zmiana tam rozjeżdża zdanie tutaj;
+// · treść karty code review jest przykładem zbudowanym z prawdziwego wzorca
+//   (eksport bez limitu), ale to nie jest cytat z konkretnego wdrożenia —
+//   dane w karcie są wymyślone i mają takie wyglądać;
+// · „ponad dwieście wdrożeń" — liczba używana już na /guided-coding
+//   i na stronie głównej;
+// · /og/dlaczego-my.png — strona dziedziczy /og/hub.png.
+//
+// CZEGO TU CELOWO NIE MA:
+// · rosteru zespołu — pytanie „kto to zrobi" schodzi do FAQ z liczbą 30+;
+// · sekcji o Wise Group — pięć znaków grupy stoi w stopce i w pasku nad
+//   nawigacją, trzecie wystąpienie na tej samej stronie niczego nie dokłada;
+// · kwot — na żadnej stronie poza /strategia-ai widełek nie ma.
+import LaBase from '../layouts/LaBase.astro';
+import GcFaq from '../components/GcFaq.astro';
+import GcCta from '../components/GcCta.astro';
+
+const title = "Dlaczego my — dwieście wdrożeń zamienionych w zasady | Let's automate";
+const description =
+  'Zasady wytwarzania z ponad dwustu wdrożeń, code review każdej wersji i repozytorium, które zostaje Twoje. Zbudujemy aplikację albo poprowadzimy zespół, który buduje ją sam.';
+
+// ── Hero · trzy układy ───────────────────────────────────────────────────
+// Zmienna strony. Znacznik na szynie przechodzi przez te trzy pozycje,
+// panel „bez zmian" obok stoi nieruchomo — i to jest cały rysunek.
+const UKLADY = [
+  {
+    kto: 'Nasz zespół',
+    co: 'Zlecasz aplikację. Powstaje w WiseStacku, na naszym stosie i naszych zasadach.',
+    l: 'Jak budujemy',
+    h: '/wisestack',
+  },
+  {
+    kto: 'Twój zespół bez działu IT',
+    co: 'Budujecie w Claude Code. Czytamy każdą wersję i mówimy, co poprawić najpierw.',
+    l: 'Prowadzenie zespołu',
+    h: '/guided-coding/bez-dzialu-it',
+  },
+  {
+    kto: 'Twoi inżynierowie',
+    co: 'Ustawiamy zasady, review i bramki w Twoich repozytoriach. Dalej zespół jedzie sam.',
+    l: 'Doradztwo dla zespołu',
+    h: '/guided-coding/dla-zespolow',
+  },
+];
+
+// Stała strony. Trzy fakty sprawdzalne przed podpisaniem umowy.
+const BEZ_ZMIAN = [
+  'Zasady wytwarzania spisane w Twoim repozytorium',
+  'Code review każdej wersji, zanim zobaczą ją ludzie',
+  'Repozytorium, klucze i dane Twoje od pierwszego dnia',
+];
+
+// ── Sekcja 2 · Artefakt ──────────────────────────────────────────────────
+// Jedyny artefakt na stronie. Pokazuje usługę w najmniejszej możliwej skali:
+// jedna zmiana, jedna uwaga, jedna reguła, która po niej zostaje.
+// Dane wymyślone (patrz nota wyżej).
+const PR = {
+  nr: 'PR #148',
+  tytul: 'eksport zgłoszeń do CSV',
+  plik: 'app/api/eksport/route.ts',
+  plus: '+48',
+  minus: '−2',
+  czas: '38 min po wypchnięciu zmiany',
+  // Linia, której dotyczy uwaga. Nietechniczny czytelnik jej nie czyta,
+  // ale widzi, że rozmowa toczy się o kodzie, a nie o wrażeniach.
+  linia: '38',
+  kod: "const zgloszenia = await ctx.db.query('zgloszenia').collect()",
+  uwaga:
+    'Zapytanie pobiera wszystkie zgłoszenia naraz. Przy czterdziestu tysiącach rekordów eksport położy bazę w godzinach pracy. Do poprawki: limit na jedno żądanie i stronicowanie.',
+  regula:
+    'Każde zapytanie zwracające listę ma limit i stronicowanie. Od tej wersji sprawdza to review przy każdej kolejnej zmianie.',
+};
+
+const LICZBY = [
+  { l: '40 minut', o: 'średni czas od wypchnięcia zmiany do naszej odpowiedzi' },
+  { l: '7 z 55', o: 'tyle wersji wróciło z uwagami w szóstym miesiącu prowadzenia; w pierwszym było 11 z 18' },
+];
+
+// ── Sekcja 4 · Krajobraz alternatyw ──────────────────────────────────────
+// Najtrudniejszy blok do skopiowania: przy każdym dostawcy stoi sytuacja,
+// w której to on wygrywa, i miejsce, w którym ta droga boli. Nasz wiersz
+// ma to samo pole wypełnione i przyznaje się do przegranej przy prostym
+// scenariuszu — konkurencja tego u siebie nie napisze.
+const ALTERNATYWY = [
+  {
+    n: 'Software house',
+    gdy: 'Zakres jest spisany i domknięty, brakuje rąk do jego wykonania.',
+    boli: 'Kod powstaje zgodnie z zamówieniem, także wtedy, kiedy zamówienie było błędem. Pytanie, czy proces w ogóle powinien tak wyglądać, zostaje bez właściciela.',
+  },
+  {
+    n: 'Integrator no-code',
+    gdy: 'Chodzi o jeden scenariusz na już, w budżecie kilku tysięcy złotych.',
+    boli: 'Po roku scenariuszy jest czternaście, każdy żyje osobno i nikt nie umie powiedzieć, co się stanie, kiedy jeden stanie w piątek wieczorem.',
+  },
+  {
+    n: 'Duże doradztwo',
+    gdy: 'Zarząd potrzebuje strategii sygnowanej marką, którą rada nadzorcza zna z rynku.',
+    boli: 'Dokument kończy się w miejscu, w którym zaczyna się wdrożenie. Kod pisze potem inna firma, na podstawie slajdów.',
+  },
+  {
+    n: 'Twój dział IT',
+    gdy: 'Zespół ma wolne moce, a pierwsza automatyzacja działa u Was w produkcji od kilku miesięcy.',
+    boli: 'Backlog utrzymaniowy zjada każdą nową inicjatywę. Projekt transformacyjny przegrywa z awarią w systemie sprzed ośmiu lat — słusznie, bo awaria jest pilniejsza.',
+  },
+];
+
+const MY = {
+  n: "Let's automate",
+  gdy: 'System ma stanąć na Twoim procesie i działać za rok, a ktoś ma być za to odpowiedzialny z nazwiska.',
+  boli: 'Przy jednym prostym scenariuszu jesteśmy za drodzy. Wtedy mówimy to wprost i odsyłamy do integratora no-code.',
+};
+
+const faq = [
+  {
+    q: 'Co, jeśli za pół roku zechcesz robić to bez nas?',
+    a: 'Repozytorium, klucze i dane są Twoje od pierwszego dnia, a reguły wytwarzania leżą w repozytorium jako pliki, które Twój zespół czyta i zmienia. Wyjście ze współpracy nie wymaga migracji ani wykupienia licencji. Najczęściej dzieje się to inaczej: zespół przechodzi z układu, w którym budujemy my, do układu, w którym buduje sam, a my czytamy kolejne wersje.',
+  },
+  {
+    q: 'Kto realnie siada do projektu?',
+    a: 'Trzydzieści kilka osób w jednym studiu — analitycy, developerzy, project managerowie, QA i projektanci. Bez podwykonawców i bez łańcuszka firm, w którym nie wiadomo, kto odbiera telefon. Rozmowę handlową i projekt prowadzi ta sama osoba, więc ustalenia ze sprzedaży nie giną po drodze.',
+  },
+  {
+    q: 'Skąd wiadomo, że kod napisany przez AI jest dobry?',
+    a: 'Decyduje o tym, przez co zmiana musi przejść, zanim zobaczą ją ludzie: typy i kontrakty danych, testy na granicach procesu, skan zależności i sekretów, przegląd produktu, przegląd inżynierski i zgoda człowieka. Wszystkie sześć opisaliśmy na <a href="/wisestack" style="font-weight:700;color:#0a7a52">stronie WiseStacku</a>.',
+  },
+  {
+    q: 'Jak to jest rozliczane?',
+    a: 'Budowa idzie w stałej cenie za etap, więc koszt kolejnego kroku znasz, zanim go zamówisz. Prowadzenie zespołu jest abonamentem miesięcznym z okresem wypowiedzenia. Prowizji od dostawców narzędzi nie bierzemy, więc rekomendacja stosu nie ma drugiego dna.',
+  },
+  {
+    q: 'Co z tego, że jesteście częścią Wise Group?',
+    a: 'Sellwise, HireWise, AdWise, Finerto i IRSM robią doradztwo sprzedażowe, rekrutację, marketing i finanse. Kiedy proces do przebudowania okazuje się procesem sprzedaży albo rekrutacji, obok siada ktoś, kto zajmuje się tym na co dzień. Dla Ciebie to jedna umowa i jedna osoba odpowiedzialna.',
+  },
+];
+---
+
+<LaBase
+  title={title}
+  description={description}
+  nav="dlaczego-my"
+  ctaHref="#kontakt"
+  ctaLabel="Umów diagnozę"
+>
+
+<style is:global slot="head">
+  /* ============================================================ HERO ==== */
+  .dm-h1{margin:0;max-width:15ch;font-size:clamp(42px,7.4vw,92px);line-height:0.95;letter-spacing:-0.045em;font-weight:800;color:#16211a;text-wrap:balance}
+  .dm-lead{margin:clamp(24px,3vw,32px) 0 0;max-width:640px;font-size:clamp(17px,2.1vw,21px);line-height:1.52;color:#33413a;text-wrap:pretty}
+  .dm-lead b{font-weight:750;color:#16211a}
+
+  /* ---- ARTEFAKT HERO: trzy układy + panel, który się nie zmienia ----
+     Lewa kolumna jest zmienną strony, prawa stałą. Kreska pomiędzy zbiera
+     trzy wiersze w jeden panel — dzięki niej rysunek czyta się także na
+     zrzucie, kiedy znacznik akurat stoi na pierwszym wierszu. */
+  .dm-art{display:grid;grid-template-columns:minmax(0,1.28fr) 52px minmax(280px,0.72fr);grid-template-rows:auto minmax(0,1fr);max-width:1210px;margin-top:clamp(46px,5.4vw,72px)}
+  .dm-kto{grid-column:1;grid-row:1;font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:#a0aba1;padding-bottom:12px}
+
+  .ukl{grid-column:1;grid-row:2;position:relative}
+  .ukl::before{content:'';position:absolute;left:1px;top:0;bottom:0;width:1px;background:#e2e9e0}
+  .ukl-w{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px clamp(18px,2.4vw,34px);align-items:baseline;padding:clamp(17px,2vw,23px) 0 clamp(17px,2vw,23px) clamp(20px,2.4vw,30px);border-top:1px solid #e2e9e0}
+  .ukl-w:last-of-type{border-bottom:1px solid #e2e9e0}
+  .ukl-m{position:absolute;left:0;top:clamp(19px,2.2vw,26px);width:3px;height:21px;border-radius:3px;background:var(--la-accent,#00CD77);transform:scaleY(0);transform-origin:top center;opacity:0}
+  .ukl-b{min-width:0;opacity:.52;transition:opacity .4s}
+  .ukl-t{display:block;font-size:clamp(19px,2.3vw,25px);font-weight:800;letter-spacing:-0.026em;line-height:1.15;color:#16211a;text-wrap:balance}
+  .ukl-d{display:block;margin-top:6px;font-size:14.5px;line-height:1.55;color:#4c5850;text-wrap:pretty}
+  .ukl-l{align-self:center;flex-shrink:0;font-size:13.5px;font-weight:700;color:#0a7a52;white-space:nowrap;opacity:.52;transition:opacity .4s,color .15s}
+  .ukl-l:hover{color:#16211a}
+  .ukl-l [aria-hidden="true"]{display:inline-block;transition:transform .18s}
+  .ukl-l:hover [aria-hidden="true"]{transform:translateX(4px)}
+
+  @keyframes dmMark{0%{transform:scaleY(0);opacity:0}3%{transform:scaleY(1);opacity:1}30%{transform:scaleY(1);opacity:1}34%{transform:scaleY(0);opacity:0}100%{transform:scaleY(0);opacity:0}}
+  @keyframes dmRow{0%{opacity:.52}3%{opacity:1}30%{opacity:1}34%{opacity:.52}100%{opacity:.52}}
+  .ukl-m{animation:dmMark 12s cubic-bezier(.4,0,.2,1) infinite}
+  .ukl-b,.ukl-l{animation:dmRow 12s ease infinite}
+  .ukl-w:nth-of-type(2) .ukl-m,.ukl-w:nth-of-type(2) .ukl-b,.ukl-w:nth-of-type(2) .ukl-l{animation-delay:4s}
+  .ukl-w:nth-of-type(3) .ukl-m,.ukl-w:nth-of-type(3) .ukl-b,.ukl-w:nth-of-type(3) .ukl-l{animation-delay:8s}
+
+  /* Klamra: nawias obejmujący wszystkie trzy wiersze, z wyjściem w bok.
+     Siedzi w tym samym wierszu siatki co lista układów, więc jego wysokość
+     jest równa jej wysokości bez żadnego liczenia offsetów. */
+  .dm-klamra{grid-column:2;grid-row:2;position:relative;align-self:stretch}
+  .dm-klamra::before{content:'';position:absolute;left:2px;right:22px;top:18px;bottom:18px;border:1px solid #d5dfd3;border-left:none;border-radius:0 7px 7px 0}
+  .dm-klamra::after{content:'';position:absolute;right:0;width:22px;top:50%;height:1px;background:#d5dfd3}
+  .dm-kropka{position:absolute;right:22px;top:50%;width:7px;height:7px;margin:-3.5px -3.5px 0 0;border-radius:50%;background:#0a7a52}
+
+  .dm-stale{grid-column:3;grid-row:2;align-self:center;border-left:2px solid var(--la-accent,#00CD77);background:#f4f8f2;border-radius:0 6px 6px 0;padding:clamp(20px,2.4vw,26px) clamp(18px,2.2vw,24px)}
+  .dm-stale-l{font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:#0a7a52}
+  .dm-stale-p{display:block;margin-top:12px;padding-top:12px;font-size:14px;line-height:1.5;font-weight:600;color:#243329;border-top:1px solid #e2e9e0;text-wrap:pretty}
+  .dm-stale-p:first-of-type{border-top:none;padding-top:0}
+  .dm-podpis{margin:clamp(18px,2.2vw,24px) 0 0;font-size:13.5px;color:#8b968d}
+
+  @media (max-width:980px){
+    .dm-art{grid-template-columns:1fr;grid-template-rows:none;max-width:none}
+    .dm-kto,.ukl,.dm-stale{grid-column:1;grid-row:auto}
+    .dm-klamra{display:none}
+    .dm-stale{margin-top:26px;align-self:start}
+  }
+  @media (max-width:620px){
+    .ukl-w{grid-template-columns:1fr}
+    .ukl-l{align-self:start;margin-top:8px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .ukl-m{animation:none;transform:scaleY(1);opacity:1}
+    .ukl-b,.ukl-l{animation:none;opacity:1}
+  }
+
+  /* ========================================================= ARTEFAKT ==== */
+  .rev{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(240px,0.45fr);gap:clamp(32px,4.5vw,64px);align-items:start;margin-top:clamp(34px,4.2vw,50px)}
+
+  .karta{background:#ffffff;border:1px solid #e2e9e0;border-radius:8px;overflow:hidden;box-shadow:0 24px 60px -40px rgba(18,38,28,0.4)}
+  .k-top{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:8px 20px;padding:clamp(16px,1.9vw,20px) clamp(18px,2.2vw,26px);border-bottom:1px solid #eef2ec;background:#fbfcfa}
+  .k-nr{font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#8b968d}
+  .k-tyt{font-size:15.5px;font-weight:700;letter-spacing:-0.012em;color:#16211a}
+  .k-plik{font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#8b968d}
+  .k-plus{font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:700;color:#0a7a52}
+  .k-minus{font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:700;color:#a3391f}
+
+  /* Linia, której dotyczy uwaga. Czerwona krecha w rynience zamiast
+     kolorowania składni: rysunek ma pokazać MIEJSCE, nie język. */
+  .k-kod{display:grid;grid-template-columns:auto minmax(0,1fr);gap:16px;align-items:baseline;padding:14px clamp(18px,2.2vw,26px);border-bottom:1px solid #eef2ec;background:#fcfdfb;box-shadow:inset 3px 0 0 #a3391f;overflow-x:auto}
+  .k-lin{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;color:#c3cec4}
+  .k-kod code{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;line-height:1.5;color:#4c5850;white-space:pre}
+
+  .k-body{padding:clamp(20px,2.4vw,28px) clamp(18px,2.2vw,26px)}
+  .k-kto{display:flex;align-items:center;flex-wrap:wrap;gap:8px 14px}
+  .k-znak{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:750;color:#16211a}
+  .k-znak::before{content:'';width:9px;height:9px;border-radius:50%;background:var(--la-accent,#00CD77)}
+  .k-czas{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;color:#a0aba1}
+  .k-uwaga{margin:13px 0 0;font-size:clamp(15.5px,1.8vw,17px);line-height:1.6;color:#243329;text-wrap:pretty}
+  .k-uwaga b{font-weight:750;color:#16211a}
+
+  .k-reg{display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;padding:clamp(16px,1.9vw,20px) clamp(18px,2.2vw,26px);border-top:1px solid #eef2ec;background:linear-gradient(90deg,rgba(0,205,119,0.09),rgba(0,205,119,0.02))}
+  .k-strzalka{font-size:14px;line-height:1.5;color:#0a7a52}
+  .k-reg-t{display:block;font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:#0a7a52}
+  .k-reg-d{display:block;margin-top:6px;font-size:14.5px;line-height:1.55;font-weight:600;color:#243329;text-wrap:pretty}
+
+  /* Odsłonięcie raz, przy wejściu w kadr: najpierw uwaga, potem reguła.
+     Kolejność jest tu treścią — reguła bierze się z uwagi. */
+  .rev .k-body,.rev .k-reg{opacity:0;transform:translateY(10px);transition:opacity .55s ease,transform .55s cubic-bezier(.4,0,.2,1)}
+  .rev.on .k-body{opacity:1;transform:none;transition-delay:.15s}
+  .rev.on .k-reg{opacity:1;transform:none;transition-delay:.75s}
+  @media (prefers-reduced-motion:reduce){ .rev .k-body,.rev .k-reg{opacity:1;transform:none;transition:none} }
+
+  .lb{padding:clamp(20px,2.4vw,26px) 0;border-top:1px solid #e2e9e0}
+  .lb:first-of-type{border-top:none;padding-top:0}
+  .lb b{display:block;font-size:clamp(25px,3vw,34px);font-weight:800;letter-spacing:-0.032em;line-height:1;color:#0a7a52}
+  .lb span{display:block;margin-top:9px;font-size:13.5px;line-height:1.5;color:#4c5850;text-wrap:pretty}
+  @media (max-width:900px){ .rev{grid-template-columns:1fr;gap:36px} }
+
+  /* ======================================================= CIEMNY PAS ==== */
+  .cp-h{margin:0;max-width:16ch;font-size:clamp(33px,5.4vw,64px);line-height:1.02;letter-spacing:-0.032em;font-weight:800;color:#ffffff;text-wrap:balance}
+  .cp-p{margin:clamp(22px,2.6vw,30px) 0 0;max-width:640px;font-size:clamp(16.5px,1.9vw,19px);line-height:1.6;color:rgba(255,255,255,0.74);text-wrap:pretty}
+  .cp-p b{font-weight:700;color:#ffffff}
+  .cp-drzwi{margin-top:clamp(38px,4.4vw,56px);border-top:1px solid rgba(255,255,255,0.16)}
+  .cp-d{display:grid;grid-template-columns:minmax(0,0.85fr) minmax(0,1.15fr) auto;gap:10px clamp(20px,3vw,48px);align-items:baseline;padding:clamp(22px,2.6vw,30px) 0;border-bottom:1px solid rgba(255,255,255,0.16);transition:padding-left .25s}
+  .cp-d:hover{padding-left:10px}
+  .cp-dt{font-size:clamp(18px,2.1vw,22px);font-weight:750;letter-spacing:-0.02em;color:#ffffff}
+  .cp-dd{font-size:14.5px;line-height:1.55;color:rgba(255,255,255,0.66);text-wrap:pretty}
+  .cp-da{font-size:14px;font-weight:700;color:var(--la-accent,#00CD77);white-space:nowrap}
+  .cp-stopka{margin:clamp(26px,3vw,34px) 0 0;max-width:720px;font-size:14.5px;line-height:1.62;color:rgba(255,255,255,0.5);text-wrap:pretty}
+  @media (max-width:820px){ .cp-d{grid-template-columns:1fr;gap:6px} .cp-da{margin-top:6px} }
+  @media (prefers-reduced-motion:reduce){ .cp-d{transition:none} .cp-d:hover{padding-left:0} }
+
+  /* ====================================================== ALTERNATYWY ==== */
+  .alt-nag{display:grid;grid-template-columns:minmax(150px,0.7fr) minmax(0,1fr) minmax(0,1.25fr);gap:clamp(16px,2.6vw,42px);padding-bottom:11px;border-bottom:1px solid #16211a;margin-top:clamp(34px,4.2vw,50px)}
+  .alt-nag span{font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.13em;text-transform:uppercase;color:#8b968d}
+  .alt{display:grid;grid-template-columns:minmax(150px,0.7fr) minmax(0,1fr) minmax(0,1.25fr);gap:8px clamp(16px,2.6vw,42px);align-items:baseline;padding:clamp(20px,2.4vw,28px) 0;border-bottom:1px solid #e7ece4}
+  .alt-n{font-size:clamp(16.5px,1.9vw,19px);font-weight:750;letter-spacing:-0.018em;color:#4c5850;text-wrap:balance}
+  .alt-t{font-size:14.5px;line-height:1.58;color:#4c5850;text-wrap:pretty}
+  .alt-b{font-size:14.5px;line-height:1.58;color:#8b968d;text-wrap:pretty}
+  .alt.nasz{padding-left:clamp(16px,1.8vw,22px);margin-left:calc(-1 * clamp(16px,1.8vw,22px));border-left:3px solid var(--la-accent,#00CD77);border-bottom:none;background:linear-gradient(90deg,rgba(0,205,119,0.07),transparent 72%)}
+  .alt.nasz .alt-n{font-size:clamp(20px,2.4vw,26px);font-weight:800;color:#16211a}
+  .alt.nasz .alt-t{color:#243329}
+  .alt.nasz .alt-b{color:#4c5850}
+  .alt.nasz .alt-b b{font-weight:750;color:#16211a}
+  @media (max-width:860px){
+    .alt-nag{display:none}
+    .alt{grid-template-columns:1fr;gap:10px}
+    .alt-t::before{content:'Najlepszy wybór, gdy — ';font-weight:700;color:#16211a}
+    .alt-b::before{content:'Gdzie to boli — ';font-weight:700;color:#16211a}
+  }
+</style>
+
+<!-- ============ 1 · HERO ============
+     Nagłówek, zdanie i jeden rysunek: szyna trzech układów po lewej,
+     panel „bez zmian" po prawej. Ruch jest tylko po lewej stronie —
+     to jest cały argument strony i nie da się go zrobić zdaniem. -->
+<div aria-hidden="true" style="position:absolute;left:0;right:0;top:0;height:760px;background:radial-gradient(940px 560px at 16% -10%, rgba(0,205,119,0.15), transparent 62%);pointer-events:none"></div>
+<section style="position:relative;padding:clamp(40px,5.6vw,84px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) clamp(64px,8vw,100px)">
+
+<h1 class="dm-h1">Dwieście wdrożeń, z których zostały zasady</h1>
+<p class="dm-lead">Twój projekt nie zaczyna się od pustej kartki. Dwanaście wyborów jest podjętych, reguły wytwarzania spisane, a każdą nową wersję ktoś czyta, zanim zobaczą ją ludzie. <b>Do wyboru zostaje jedno: kto siada do klawiatury.</b></p>
+
+<div class="hero-actions" style="display:flex;align-items:center;flex-wrap:wrap;gap:14px 18px;margin-top:clamp(26px,3.2vw,36px)">
+<a href="#kontakt" class="btn-dark" style="display:inline-flex;align-items:center;gap:10px;background:#16211a;color:#ffffff;padding:18px 32px;border-radius:12px;font-weight:650;font-size:16.5px;box-shadow:0 14px 30px -14px rgba(16,33,26,0.45)">Umów bezpłatną diagnozę <span aria-hidden="true">→</span></a>
+<a href="/wisestack" class="btn-ghost" style="display:inline-flex;align-items:center;gap:8px;font-size:16.5px;font-weight:700;color:#16211a;background:rgba(255,255,255,0.6);padding:18px 26px;border-radius:12px;border:1px solid rgba(22,33,26,0.16)">Zobacz, jak budujemy <span aria-hidden="true">→</span></a>
+</div>
+
+<div class="dm-art">
+
+<div class="dm-kto">Do wyboru</div>
+<div class="ukl">
+{UKLADY.map((u) => (
+  <div class="ukl-w">
+    <span class="ukl-m" aria-hidden="true"></span>
+    <span class="ukl-b"><span class="ukl-t">{u.kto}</span><span class="ukl-d">{u.co}</span></span>
+    <a href={u.h} class="ukl-l">{u.l} <span aria-hidden="true">→</span></a>
+  </div>
+))}
+</div>
+
+<div class="dm-klamra" aria-hidden="true"><span class="dm-kropka"></span></div>
+
+<div class="dm-stale">
+<div class="dm-stale-l">Bez zmian</div>
+{BEZ_ZMIAN.map((z) => (<span class="dm-stale-p">{z}</span>))}
+</div>
+
+</div>
+
+<p class="dm-podpis">Trzy układy, jeden zestaw zasad.</p>
+
+</section>
+
+<!-- ============ 2 · ARTEFAKT: JEDNA UWAGA ============
+     Usługa w najmniejszej możliwej skali. Karta jest rysowana w HTML,
+     nie wklejona jako zrzut: dane są wymyślone i mają takie wyglądać. -->
+<section id="uwaga" class="sec-pad" style="background:#f4f8f2">
+<h2 class="h-sec" style="margin:0;max-width:16ch;text-wrap:pretty">Jedna uwaga i to, co po niej zostaje</h2>
+<p style="margin:18px 0 0;max-width:660px;font-size:clamp(16px,1.9vw,18px);line-height:1.6;color:#33413a;text-wrap:pretty">Zespół wypuszcza nową wersję. Czyta ją najpierw nasze narzędzie, potem człowiek. Uwaga wraca tego samego dnia, a reguła, która z niej wynika, zostaje w repozytorium — więc ten sam błąd nie wraca w kolejnej wersji.</p>
+
+<div class="rev" data-anim>
+
+<div class="karta">
+<div class="k-top">
+<span><span class="k-nr">{PR.nr}</span> &nbsp;<span class="k-tyt">{PR.tytul}</span></span>
+<span><span class="k-plik">{PR.plik}</span> &nbsp;<span class="k-plus">{PR.plus}</span> <span class="k-minus">{PR.minus}</span></span>
+</div>
+
+<div class="k-kod"><span class="k-lin">{PR.linia}</span><code>{PR.kod}</code></div>
+
+<div class="k-body">
+<div class="k-kto">
+<span class="k-znak">Let&rsquo;s automate · przegląd</span>
+<span class="k-czas">{PR.czas}</span>
+</div>
+<p class="k-uwaga">{PR.uwaga}</p>
+</div>
+
+<div class="k-reg">
+<span class="k-strzalka" aria-hidden="true">&#8627;</span>
+<span><span class="k-reg-t">Reguła w repozytorium</span><span class="k-reg-d">{PR.regula}</span></span>
+</div>
+</div>
+
+<div>
+{LICZBY.map((x) => (<div class="lb"><b>{x.l}</b><span>{x.o}</span></div>))}
+<a href="/guided-coding/bez-dzialu-it" class="lnk-green" style="display:inline-block;margin-top:20px;font-size:15px;font-weight:700;color:#0a7a52">Jak wygląda prowadzenie zespołu →</a>
+</div>
+
+</div>
+</section>
+
+<!-- ============ 3 · CIEMNY PAS ============
+     Najcięższy argument strony: wariant, w którym klient buduje sam.
+     Ciemne tło pada na tej stronie raz i bierze właśnie to. -->
+<section id="sam" style="position:relative;background:radial-gradient(880px 500px at 88% 0%, rgba(0,205,119,0.17), transparent 62%), #0e2b1d;padding:clamp(68px,9vw,116px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
+
+<h2 class="cp-h">Sprzedajemy też wariant, w którym budujesz sam</h2>
+<p class="cp-p">Firmie, która sprzedaje godziny, ten wariant się nie opłaca — każda godzina po Twojej stronie to godzina, której nie zafakturuje. <b>U nas kod i tak pisze AI.</b> O tym, czy aplikacja będzie działać za rok, decydują zasady i to, czy ktoś czyta kolejne wersje.</p>
+
+<div class="cp-drzwi">
+<a href="/guided-coding/bez-dzialu-it" class="cp-d">
+<span class="cp-dt">Zespół bez działu IT</span>
+<span class="cp-dd">Budujecie w Claude Code, my czytamy każdą wersję i mówimy, co poprawić najpierw. Trudniejsze rzeczy bierzemy na siebie.</span>
+<span class="cp-da">Zobacz →</span>
+</a>
+<a href="/guided-coding/dla-zespolow" class="cp-d">
+<span class="cp-dt">Zespół inżynierów</span>
+<span class="cp-dd">Mierzymy przepływ, układamy kolejność zmian i ustawiamy review, bramki i reguły agentów w Waszych repozytoriach.</span>
+<span class="cp-da">Zobacz →</span>
+</a>
+</div>
+
+<p class="cp-stopka">Ten wariant jest tańszy od zlecenia całości i mniejszy dla nas. Robimy go, bo takie aplikacje w tych firmach i tak powstają — zwykle bez nikogo, kto by je przeczytał.</p>
+
+</section>
+
+<!-- ============ 4 · KRAJOBRAZ ALTERNATYW ============
+     Cztery drogi z uczciwym „najlepszy wybór, gdy" i z polem „gdzie to boli".
+     Nasz wiersz ma to samo pole wypełnione — to jedyna konstrukcja na tej
+     stronie, której konkurencja nie przepisze u siebie. -->
+<section id="alternatywy" class="sec-pad">
+<h2 class="h-sec" style="margin:0;max-width:15ch;text-wrap:pretty">Kiedy lepiej wybrać kogoś innego</h2>
+<p style="margin:18px 0 0;max-width:640px;font-size:clamp(16px,1.9vw,18px);line-height:1.6;color:#33413a;text-wrap:pretty">Cztery typy dostawców, z którymi nas zestawiasz. Przy każdym stoi sytuacja, w której to on jest lepszym wyborem, i miejsce, w którym ta droga zwykle boli. Przy nas to samo pole jest wypełnione.</p>
+
+<div class="alt-nag" aria-hidden="true">
+<span>Dostawca</span><span>Najlepszy wybór, gdy</span><span>Gdzie to boli</span>
+</div>
+
+{ALTERNATYWY.map((a) => (
+  <div class="alt">
+    <span class="alt-n">{a.n}</span>
+    <span class="alt-t">{a.gdy}</span>
+    <span class="alt-b">{a.boli}</span>
+  </div>
+))}
+
+<div class="alt nasz">
+<span class="alt-n">{MY.n}</span>
+<span class="alt-t">{MY.gdy}</span>
+<span class="alt-b" set:html={'Przy jednym prostym scenariuszu <b>jesteśmy za drodzy</b>. Wtedy mówimy to wprost i odsyłamy do integratora no-code.'}></span>
+</div>
+
+</section>
+
+<GcCta
+  heading="Zacznij od bezpłatnej diagnozy"
+  lead="Napisz w dwóch zdaniach, co masz dzisiaj i kto to u Ciebie rozwija. Odezwiemy się z terminem — 30 minut, bez zobowiązań."
+  eyebrow="Z diagnozy wychodzisz z"
+  fieldLabel="Co masz dzisiaj?"
+  placeholder="Np. zespół sprzedaży zbudował sobie aplikację do ofertowania i nikt jej nie ogląda…"
+  items={[
+    { t: 'Odpowiedzią, w jakim to jest stanie', d: 'co grozi awarią i co spokojnie poczeka' },
+    { t: 'Kolejnością zmian z powodem przy każdej', d: 'razem z tym, ile kosztuje pierwsza' },
+    { t: 'Wskazaniem układu', d: 'budujemy my, buduje Twój zespół albo Twoi inżynierowie' },
+  ]}
+/>
+
+<GcFaq
+  heading="Pytania, które padają przed podpisaniem"
+  ctaLabel="Zadaj swoje wprost →"
+  items={faq}
+/>
+
+<script>
+  (function(){
+    var els = document.querySelectorAll('[data-anim]');
+    if(!els.length) return;
+    var redukcja = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if(redukcja || !('IntersectionObserver' in window)){
+      els.forEach(function(el){ el.classList.add('on'); });
+      return;
+    }
+    var io = new IntersectionObserver(function(wpisy){
+      wpisy.forEach(function(w){
+        if(w.isIntersecting){ w.target.classList.add('on'); io.unobserve(w.target); }
+      });
+    }, { threshold: 0.2 });
+    els.forEach(function(el){ io.observe(el); });
+  })();
+</script>
+
+</LaBase>

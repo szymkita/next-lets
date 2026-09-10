@@ -1,0 +1,638 @@
+---
+// WISESTACK — /wisestack · WERSJA 3 (07.09.2026)
+//
+// Kopie poprzednich: docs/_kopie/wisestack-v1-czas-do-sygnalu.astro (whitepaper
+// o czasie powrotu sygnału) i wisestack-v2-manifest.astro (manifest z sześcioma
+// wykresami). Uwagi, które doprowadziły do tej wersji:
+//
+//   „Można usunąć z hero te wykresy, bo one tam tylko przeszkadzają."
+//   „Nie dodawaj takich dopisków: skąd bierze się różnica… te podtytuły
+//    to jest w ogóle do wyrzucenia."
+//   „Cała sekcja cztery sposoby zbudowania tej samej aplikacji jest mega
+//    brzydka, te wykresy nie mogą tak wyglądać."
+//   „Usuń zakres porównania i dane przykładowe."
+//   „Trzeba wpleść osobną sekcję: jakość i bezpieczeństwo kodu jest
+//    z WiseStackiem dużo lepsze."
+//   „Sekcję o wdrożeniu podziel na pół: albo zlecacie nam aplikację i ona
+//    powstanie w WiseStacku, albo chcecie to wdrożyć u siebie."
+//
+// CO Z TEGO WYNIKŁO:
+//   1. Hero: sam nagłówek, zdanie i cztery liczby. Zero wykresów.
+//   2. JEDNO porównanie na całej stronie zamiast trzech (hero + fazy +
+//      słupki + macierz). Cztery wiersze, jeden pasek na wiersz.
+//   3. Zero nadtytułów wersalikami i zero podtytułów przy nagłówkach sekcji.
+//      Gdzie potrzebne jest zdanie, stoi pod nagłówkiem w normalnym stopniu.
+//      Zero podpisów „dane poglądowe" i „zakres porównania".
+//   4. Nowa sekcja #jakosc: bramki, przez które przechodzi każda zmiana,
+//      plus jakość i bezpieczeństwo jako dwie kolumny konkretów.
+//   5. Rozwidlenie #drogi: zlecacie nam / robicie u siebie, oba z wezwaniem.
+//   6. Wykres faz (3 odcinki) wypadł w całości — był niejasny.
+//
+// DO POTWIERDZENIA PRZED PUBLIKACJĄ — WSZYSTKIE LICZBY SĄ PRZYKŁADOWE:
+// · MODELE (24 / 18 / 9 / 5 tygodni i koszty kolejnej zmiany), STATY, ZMIANY.
+//   Na stronie nie ma już podpisu „dane poglądowe" — zdjęty na prośbę Szymona
+//   — więc do publikacji liczby muszą być prawdziwe albo wyjęte.
+// · „100% kodu pisze AI" — deklaracja, nie pomiar.
+// · Lista bramek i punktów bezpieczeństwa opisuje nasz stos; do przejrzenia
+//   przez zespół, zanim stanie się obietnicą handlową.
+// · „200+ wdrożeń" — liczba używana już na /guided-coding.
+// · /og/wisestack.png — strona dziedziczy /og/hub.png.
+import LaBase from '../layouts/LaBase.astro';
+import GcFaq from '../components/GcFaq.astro';
+import GcCta from '../components/GcCta.astro';
+
+const kanon = new URL('/wisestack', Astro.site).href;
+
+const title = "WiseStack — tak budujemy oprogramowanie z AI | Let's automate";
+const description = 'Cały kod pisze AI, wszystkie decyzje podejmuje człowiek. WiseStack to zestaw wyborów, które podjęliśmy raz i wnosimy do każdego projektu — od poukładania procesu, przez kod, po wdrożenie i utrzymanie.';
+
+// Obie krotności wychodzą dokładnie z tablicy MODELE niżej: 15/5 = 3×,
+// 30/5 = 6×. Po zmianie tygodni przeliczyć te dwie pozycje.
+const STATY = [
+  { l: '100%', o: 'kodu pisze AI' },
+  { l: '3×', o: 'krócej niż development z AI' },
+  { l: '6×', o: 'krócej niż klasyczny development' },
+  { l: '40+', o: 'projektów zbudowanych w WiseStacku' },
+];
+
+const MANIFEST = [
+  { n: '01', t: 'Cały kod pisze AI', d: 'Od pierwszej linijki do wdrożenia. Nie zostawiamy sobie pracy tylko dlatego, że kiedyś tak się ją robiło.' },
+  { n: '02', t: 'Wszystkie decyzje podejmuje człowiek', d: 'Co powstaje, dla kogo, w jakiej kolejności i kiedy to jest gotowe. Model wykonuje, kierunek nadaje zespół.' },
+  { n: '03', t: 'Wybory są już podjęte', d: 'Stos technologiczny, konwencje, sposób weryfikacji i sposób zapisu wiedzy. Projekt zaczyna się od Waszego problemu.' },
+  { n: '04', t: 'Obejmuje całą drogę', d: 'Poukładanie procesu przed kodem i wszystko, co dzieje się po wdrożeniu. Samo pisanie jest najkrótszym odcinkiem.' },
+];
+
+// ============================================================================
+// JEDYNE PORÓWNANIE NA STRONIE
+// Cztery drogi do tej samej aplikacji. Drugi wiersz jest tym, z którym klient
+// realnie nas zestawia: własny zespół, ten sam stos, to samo AI, brak zasad.
+// ============================================================================
+// „Ten sam stack z AI" było nieprawdą: my stoimy na Convexie, a typowy zespół
+// nie. Zostaje sam fakt, który ma znaczenie — AI bez spisanych zasad.
+const MODELE = [
+  { t: 'Klasyczny development', d: 'zespół bez AI', tyg: 30 },
+  { t: 'Development z AI', d: 'bez spisanych zasad', tyg: 15 },
+  { t: 'No-code', d: 'do granic platformy', tyg: 9 },
+  { t: 'WiseStack', tyg: 5, nasz: true },
+];
+const MAX_TYG = Math.max(...MODELE.map((m) => m.tyg));
+
+// ============================================================================
+// DWANAŚCIE WYBORÓW — trzy fazy projektu
+// ============================================================================
+const WYBORY = [
+  {
+    faza: 'Zanim powstanie kod',
+    p: [
+      { t: 'Język domeny spisany przed pierwszym ekranem', d: 'Jedna nazwa na jedną rzecz, u Was i u nas.' },
+      { t: 'Decyzje zapisane razem z powodem', d: 'Wracamy do nich zamiast rozstrzygać drugi raz.' },
+      { t: 'Kryterium „gotowe” ustalone z góry', d: 'Zdanie, po którym widać, że funkcja jest skończona.' },
+      { t: 'Prototyp tam, gdzie rozstrzyga szybciej niż rozmowa', d: 'Działająca forma zamiast kolejnego spotkania.' },
+    ],
+  },
+  {
+    faza: 'Kiedy powstaje kod',
+    p: [
+      { t: 'Next.js i Convex jako jeden stos', d: 'Schemat, typy, funkcje serwera i logi w jednym miejscu.' },
+      { t: 'Typy generowane ze schematu danych', d: 'Kontrakt między częściami aplikacji jest wymuszony.' },
+      { t: 'Reguły projektu czytane przez modele', d: 'Nowa sesja zna konwencje bez tłumaczenia od zera.' },
+      { t: 'Każda gałąź z własnym działającym adresem', d: 'Zmianę widać jako klikalną wersję systemu.' },
+    ],
+  },
+  {
+    faza: 'Po napisaniu kodu',
+    p: [
+      { t: 'Osobna ocena produktu i osobna wykonania', d: 'Dwa pytania z osobnymi kryteriami.' },
+      { t: 'Testy postawione na granicach procesu', d: 'Pilnują przebiegu całej sprawy w systemie.' },
+      { t: 'Monitoring z imiennym właścicielem', d: 'Wiadomo, do kogo idzie sygnał i w jakim czasie.' },
+      { t: 'Repozytorium i klucze Wasze od pierwszego dnia', d: 'Wyjście ze współpracy nie wymaga migracji.' },
+    ],
+  },
+];
+
+// ============================================================================
+// PARTNERSTWO Z CONVEXEM
+// DO POTWIERDZENIA: sam fakt partnerstwa i zdanie o bezpośredniej pracy
+// z zespołem produktu. Sformułowane bez terminów reakcji i bez nazwisk,
+// ale nadal jest to deklaracja handlowa.
+// Logo: public/uploads/convex-logo.svg (wersja kolorowa z zestawu znaków).
+// ============================================================================
+
+// ============================================================================
+// JAKOŚĆ I BEZPIECZEŃSTWO
+// Bramki, przez które przechodzi każda zmiana, zanim zobaczy ją użytkownik.
+// ============================================================================
+const BRAMKI = [
+  'Typy i kontrakty danych',
+  'Testy granic procesu',
+  'Skan zależności i sekretów',
+  'Przegląd produktu',
+  'Przegląd inżynierski',
+  'Zgoda człowieka',
+];
+const JAKOSC = [
+  { t: 'Kontrakt danych wymuszony typami', d: 'Zmiana pola w schemacie wywala każdy kod, który jej nie uwzględnia. Nie da się tego przeoczyć.' },
+  { t: 'Testy na granicach procesu', d: 'Sprawdzamy przebieg całej sprawy, tam gdzie spotyka się użytkownik, reguła i dane.' },
+  { t: 'Klikalna wersja przed produkcją', d: 'Każda zmiana dostaje własny adres, więc ocenia się ją na działającym systemie.' },
+  { t: 'Jedna konwencja w całym projekcie', d: 'Kod wygląda tak samo niezależnie od tego, kto i kiedy prowadził sesję.' },
+];
+const BEZPIECZENSTWO = [
+  { t: 'Klucze i hasła poza kodem', d: 'W sejfie dostawcy chmury, z rozdzieleniem środowisk. W repozytorium nie ma czego wykraść.' },
+  { t: 'Dostęp nadawany imiennie i rolami', d: 'Widać, kto ma wejście do danych produkcyjnych, i da się je odebrać w minutę.' },
+  { t: 'Dane osobowe z ustaloną retencją', d: 'Zapisane, gdzie leżą, jak długo i kto może je pobrać — jako decyzja, nie jako skutek uboczny.' },
+  { t: 'Kopie odtwarzane próbnie', d: 'Kopia, z której nikt nigdy nie wrócił, nie jest kopią zapasową.' },
+];
+
+// ============================================================================
+// CIEMNY PAS · UDZIAŁ AI
+// ============================================================================
+const DECYZJE = [
+  { p: 6, t: 'Co budujemy' },
+  { p: 22, t: 'Jak to ma działać' },
+  { p: 41, t: 'Które przypadki są ważne' },
+  { p: 60, t: 'Czy to jest to' },
+  { p: 78, t: 'Co wchodzi na produkcję' },
+  { p: 93, t: 'Co dalej' },
+];
+
+// ============================================================================
+// CO ZMIENIŁO SIĘ U NAS
+// Celowo nie powtarza liczb z porównania — inne trzy rzeczy.
+// ============================================================================
+// Każda pozycja ma liczbę główną wyliczoną z pary „skąd → dokąd", żeby dało
+// się ją sprawdzić: 41→9 to −78%, 2,6→8,8 to 3,4×, 40→3 to −93%, 15→2 to −87%.
+const ZMIANY = [
+  { l: '−78%', t: 'Błędów docierających do użytkowników', d: 'z 41 do 9 zgłoszeń na kwartał' },
+  { l: '3,4×', t: 'Tyle dowozi dziś jeden programista', d: 'z 2,6 do 8,8 zmian tygodniowo' },
+  { l: '−93%', t: 'Czas naprawy zgłoszenia z produkcji', d: 'z 40 godzin do 3' },
+  { l: '−87%', t: 'Czas wejścia nowej osoby w projekt', d: 'z 3 tygodni do 2 dni' },
+];
+
+const faq = [
+  {
+    q: 'Naprawdę cały kod pisze AI?',
+    a: 'Tak — od pierwszej linijki do wdrożenia. Człowiek prowadzi pracę, czyta rezultat i decyduje, co wchodzi na produkcję. Wartość WiseStacku leży w tym, co ustawiamy wokół modelu: schemacie danych, typach, regułach projektu, sposobie sprawdzania i zapisie decyzji. Dopiero to sprawia, że model pracuje na aktualnym stanie systemu.',
+  },
+  {
+    q: 'Czy kod pisany przez AI jest bezpieczny?',
+    a: 'Bezpieczeństwo nie zależy u nas od tego, kto pisał kod, tylko od tego, przez co ten kod przechodzi. Klucze leżą poza repozytorium, dostęp do danych produkcyjnych jest imienny, zależności są skanowane przy każdej zmianie, a kopie zapasowe odtwarzamy próbnie. Te reguły są wpisane w projekt, więc obowiązują tak samo w pierwszym tygodniu i w setnym.',
+  },
+  {
+    q: 'Czym to się różni od no-code?',
+    a: 'Sufitem i własnością. Platformy no-code są szybkie do pierwszej wersji i dobrze sprawdzają się w prostych przepływach, ale kończą się tam, gdzie kończy się wyobraźnia ich twórców — a aplikacja zostaje u dostawcy. U nas powstaje zwykły kod w Waszym repozytorium, więc kolejna zmiana kosztuje tyle samo co pierwsza, a integracja z Waszym ERP-em jest kwestią decyzji.',
+  },
+  {
+    q: 'Czy WiseStack to produkt, który kupujemy?',
+    a: 'To sposób, w jaki realizujemy projekty — dostajecie go razem z każdą aplikacją, którą dla Was budujemy. Jeśli chcecie pracować tak samo u siebie, służy do tego osobna usługa: <a href="/guided-coding" style="font-weight:700;color:#0a7a52">Guided Coding</a>, czyli przeniesienie tych zasad i konfiguracji do Waszego zespołu.',
+  },
+  {
+    q: 'Co z poufnością naszego kodu?',
+    a: 'Pracujemy na narzędziach w konfiguracji, która wyłącza wykorzystanie treści do trenowania modeli, a przy projektach objętych NDA zakres ustalamy przed pierwszym commitem. Jeśli u Was obowiązuje ostrzejsza zasada — własna infrastruktura albo model po Waszej stronie — to jest decyzja projektowa i zapada na starcie.',
+  },
+];
+
+const dane = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'TechArticle',
+      '@id': `${kanon}#artykul`,
+      headline: 'WiseStack — tak budujemy oprogramowanie z AI',
+      description,
+      url: kanon,
+      inLanguage: 'pl-PL',
+      author: { '@id': new URL('/#organizacja', Astro.site).href },
+      publisher: { '@id': new URL('/#organizacja', Astro.site).href },
+      about: ['Wytwarzanie oprogramowania z AI', 'Jakość i bezpieczeństwo kodu', 'Porównanie z no-code'],
+    },
+    {
+      '@type': 'BreadcrumbList',
+      '@id': `${kanon}#okruszki`,
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Strona główna', item: new URL('/', Astro.site).href },
+        { '@type': 'ListItem', position: 2, name: 'WiseStack', item: kanon },
+      ],
+    },
+    {
+      '@type': 'FAQPage',
+      '@id': `${kanon}#faq`,
+      mainEntity: faq.map((f) => ({
+        '@type': 'Question',
+        name: f.q,
+        acceptedAnswer: { '@type': 'Answer', text: f.a.replace(/<[^>]+>/g, '') },
+      })),
+    },
+  ],
+};
+---
+<LaBase title={title} description={description} ctaHref="#kontakt" ctaLabel="Umów rozmowę" nav="dlaczego-my">
+<script type="application/ld+json" is:inline set:html={JSON.stringify(dane)} slot="head"></script>
+<style is:global slot="head">
+  /* ================= HERO ================= */
+  .mega{font-size:clamp(44px,8.4vw,104px);line-height:0.94;letter-spacing:-0.045em;font-weight:800;color:#16211a;text-wrap:balance}
+  .lead{font-size:clamp(17px,2.3vw,22px);line-height:1.5;color:#33413a;text-wrap:pretty}
+  .lead b{font-weight:750;color:#16211a}
+  .staty{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(20px,3vw,44px);max-width:1080px;margin:clamp(46px,5.6vw,74px) auto 0;padding-top:clamp(28px,3.2vw,38px);border-top:1px solid #e2e9e0;text-align:left}
+  .staty b{display:block;font-size:clamp(26px,3.6vw,42px);font-weight:800;letter-spacing:-0.038em;line-height:1;color:#0a7a52}
+  .staty span{display:block;margin-top:10px;font-size:13.5px;line-height:1.4;color:#4c5850;text-wrap:pretty}
+  @media (max-width:760px){ .staty{grid-template-columns:1fr 1fr;gap:26px} }
+
+  /* ================= MANIFEST ================= */
+  .mf{display:grid;grid-template-columns:78px minmax(0,1.05fr) minmax(0,1fr);gap:clamp(16px,3vw,48px);align-items:baseline;padding:clamp(26px,3.4vw,40px) 0;border-top:1px solid #e2e9e0}
+  .mf:last-of-type{border-bottom:1px solid #e2e9e0}
+  .mf-n{font-family:ui-monospace,Menlo,monospace;font-size:13px;letter-spacing:0.06em;color:#b3bcb3}
+  .mf-t{margin:0;font-size:clamp(24px,3.4vw,40px);line-height:1.06;letter-spacing:-0.032em;font-weight:800;color:#16211a;text-wrap:balance}
+  .mf-d{margin:0;font-size:15.5px;line-height:1.62;color:#4c5850;text-wrap:pretty}
+  @media (max-width:860px){
+    .mf{grid-template-columns:52px minmax(0,1fr);gap:8px 16px;padding:24px 0}
+    .mf-d{grid-column:2}
+  }
+
+  /* ================= PORÓWNANIE — jedyne na stronie =================
+     Cztery wiersze, jeden pasek na wiersz. Bez siatki kart, bez słupków
+     grupowanych, bez tabeli. Wiersz WiseStacku leży na własnym paśmie. */
+  .pw{margin-top:clamp(34px,4.4vw,56px)}
+  .pw-w{display:grid;grid-template-columns:minmax(200px,0.9fr) minmax(0,1.6fr) 118px;gap:clamp(16px,2.6vw,40px);align-items:center;padding:clamp(16px,2vw,24px) clamp(14px,1.8vw,22px);border-radius:16px}
+  .pw-w + .pw-w{margin-top:4px}
+  .pw-w.nasz{background:linear-gradient(90deg,rgba(0,205,119,0.1),rgba(0,205,119,0.03));box-shadow:inset 0 0 0 1px rgba(0,205,119,0.25)}
+  .pw-t{display:block;font-size:clamp(16px,1.9vw,19px);font-weight:700;letter-spacing:-0.018em;line-height:1.2;color:#4c5850;text-wrap:balance}
+  .pw-w.nasz .pw-t{font-size:clamp(19px,2.3vw,24px);font-weight:800;color:#16211a}
+  .pw-d{display:block;margin-top:4px;font-size:12.5px;font-weight:500;color:#a0aba1}
+  .pw-tor{height:clamp(14px,1.6vw,18px);border-radius:99px;background:rgba(22,33,26,0.06)}
+  .pw-b{display:block;height:100%;width:0;border-radius:99px;background:#c3cec4;transition:width 1.1s cubic-bezier(.4,0,.2,1)}
+  .pw-w:nth-child(2) .pw-b{background:#9fb0a4}
+  .pw-w:nth-child(3) .pw-b{background:#e0a94f}
+  .pw-w.nasz .pw-b{background:linear-gradient(90deg,#00CD77,#0a7a52);box-shadow:0 8px 22px -10px rgba(0,205,119,0.8)}
+  .pw.on .pw-b{width:var(--w)}
+  .pw-v{text-align:right}
+  .pw-n{display:block;font-size:clamp(21px,2.6vw,30px);font-weight:800;letter-spacing:-0.032em;line-height:1;color:#8b968d}
+  .pw-w.nasz .pw-n{font-size:clamp(26px,3.2vw,38px);color:#0a7a52}
+  @media (max-width:860px){
+    .pw-w{grid-template-columns:minmax(0,1fr) auto;gap:10px 16px;padding:16px 14px}
+    .pw-tor{grid-column:1 / -1;order:3}
+    .pw-v{order:2}
+    .pw-n{font-size:22px}
+    .pw-w.nasz .pw-n{font-size:26px}
+  }
+  @media (prefers-reduced-motion:reduce){ .pw-b{transition:none;width:var(--w)} }
+
+  /* ================= WYBORY ================= */
+  .wb{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(24px,3.4vw,54px);margin-top:clamp(30px,3.8vw,46px)}
+  .wb-f{display:flex;align-items:center;gap:11px;padding-bottom:14px;border-bottom:2px solid #16211a}
+  .wb-f b{font-size:16px;font-weight:800;letter-spacing:-0.015em;color:#16211a}
+  .wb-p{padding:15px 0;border-bottom:1px solid #e7ece4}
+  .wb-t{display:block;font-size:14.5px;font-weight:700;letter-spacing:-0.01em;line-height:1.35;color:#16211a;text-wrap:pretty}
+  .wb-d{display:block;margin-top:4px;font-size:13px;line-height:1.5;color:#8b968d;text-wrap:pretty}
+  @media (max-width:900px){ .wb{grid-template-columns:1fr;gap:32px} }
+
+  /* ================= PARTNER CONVEX =================
+     Pas, nie sekcja. Po lewej lokup dwóch znaków, po prawej zdanie o tym,
+     co z partnerstwa wynika. Rola pisana zwykłym krojem — wersaliki
+     w monospace robiły z niej stopkę. */
+  .cv{display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(24px,4.5vw,72px);align-items:center;padding:clamp(26px,3.2vw,38px) 0;border-top:1px solid #e2e9e0;border-bottom:1px solid #e2e9e0}
+  .cv-lock{display:flex;align-items:center;gap:clamp(16px,2.2vw,26px)}
+  .cv-la{display:block;height:clamp(24px,2.4vw,30px);width:auto}
+  .cv-cx{display:block;height:clamp(38px,4.4vw,54px);width:auto}
+  .cv-x{font-size:clamp(19px,2.2vw,25px);font-weight:300;line-height:1;color:#c3cec4}
+  .cv-rola{display:block;font-size:14px;font-weight:700;letter-spacing:-0.005em;line-height:1.4;color:#0a7a52;text-wrap:pretty}
+  .cv-t{margin:9px 0 0;font-size:clamp(18px,2.2vw,23px);font-weight:750;letter-spacing:-0.02em;line-height:1.25;color:#16211a;text-wrap:balance}
+  .cv-d{margin:9px 0 0;font-size:14.5px;line-height:1.6;color:#4c5850;text-wrap:pretty}
+  @media (max-width:820px){
+    .cv{grid-template-columns:1fr;gap:20px}
+    .cv-lock{gap:18px}
+  }
+
+  /* ================= JAKOŚĆ I BEZPIECZEŃSTWO ================= */
+  .br{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:clamp(26px,3.2vw,38px)}
+  .br-p{display:inline-flex;align-items:center;gap:9px;padding:11px 17px;border-radius:99px;background:#ffffff;border:1px solid #dbe4d8;font-size:14px;font-weight:650;color:#16211a;opacity:0;transform:translateY(6px);transition:opacity .5s ease,transform .5s cubic-bezier(.4,0,.2,1)}
+  .br.on .br-p{opacity:1;transform:none}
+  .br-p i{display:block;width:7px;height:7px;border-radius:50%;background:var(--la-accent,#00CD77);flex-shrink:0}
+  .br-s{color:#c3cec4;font-size:15px}
+  .br-koniec{background:#16211a;border-color:#16211a;color:#ffffff}
+  @media (max-width:760px){ .br{gap:8px} .br-s{display:none} }
+  .jb{display:grid;grid-template-columns:1fr 1fr;gap:clamp(28px,4.5vw,80px);margin-top:clamp(40px,5vw,64px)}
+  .jb-h{margin:0 0 6px;font-size:clamp(19px,2.2vw,23px);font-weight:800;letter-spacing:-0.02em;color:#16211a}
+  .jb-p{padding:16px 0;border-top:1px solid #dde7db}
+  .jb-t{display:block;font-size:15.5px;font-weight:700;letter-spacing:-0.012em;line-height:1.3;color:#16211a;text-wrap:pretty}
+  .jb-d{display:block;margin-top:5px;font-size:14px;line-height:1.55;color:#4c5850;text-wrap:pretty}
+  @media (max-width:820px){ .jb{grid-template-columns:1fr;gap:34px} }
+  @media (prefers-reduced-motion:reduce){ .br-p{transition:none;opacity:1;transform:none} }
+
+  /* ================= CIEMNY PAS · udział AI =================
+     Pasek to jedna funkcjonalność. Numerowane kropki siedzą NA nim, a nazwy
+     decyzji stoją pod spodem jako spis — wcześniej wisiały nad paskiem na
+     cienkich kreskach i przy sześciu pozycjach robiły się nieczytelne. */
+  .ai-pas{position:relative;margin-top:clamp(36px,4.6vw,58px)}
+  .ai-bar{position:relative;height:clamp(64px,7vw,84px);border-radius:16px;background:linear-gradient(90deg,#00CD77,#0a7a52);box-shadow:0 26px 60px -30px rgba(0,205,119,0.55);clip-path:inset(0 100% 0 0);transition:clip-path 1.4s cubic-bezier(.4,0,.2,1)}
+  .ai-pas.on .ai-bar{clip-path:inset(0 0 0 0)}
+  .ai-etyk{display:flex;align-items:center;gap:10px;margin-bottom:14px;font-family:ui-monospace,Menlo,monospace;font-size:11.5px;letter-spacing:0.14em;text-transform:uppercase;color:var(--la-accent,#00CD77)}
+  .ai-etyk::after{content:"";flex:1;height:1px;background:rgba(255,255,255,0.14)}
+  .ai-pkt{position:absolute;top:50%;transform:translate(-50%,-50%) scale(.6);display:flex;align-items:center;justify-content:center;width:clamp(28px,3.2vw,36px);height:clamp(28px,3.2vw,36px);border-radius:50%;background:#ffffff;box-shadow:0 6px 18px -6px rgba(6,48,31,0.55);font-family:ui-monospace,Menlo,monospace;font-size:clamp(12px,1.3vw,14px);font-weight:700;color:#0a7a52;opacity:0;transition:opacity .4s ease,transform .4s cubic-bezier(.34,1.56,.64,1)}
+  .ai-pas.on .ai-pkt{opacity:1;transform:translate(-50%,-50%) scale(1)}
+  /* Podpisy stoją przy swoich punktach, naprzemiennie nad i pod paskiem —
+     przy sześciu pozycjach w jednym rzędzie nachodziły na siebie. */
+  .ai-gora,.ai-dol{position:relative;height:clamp(58px,6vw,74px)}
+  .ai-gora .stem,.ai-dol .stem{position:absolute;transform:translateX(-50%);width:1px;height:20px;background:rgba(255,255,255,0.3)}
+  .ai-gora .stem{bottom:0}
+  .ai-dol .stem{top:0}
+  .ai-gora .lab,.ai-dol .lab{position:absolute;width:174px;text-align:center;font-size:clamp(13px,1.4vw,14.5px);line-height:1.3;font-weight:650;letter-spacing:-0.01em;color:#ffffff;text-wrap:pretty;opacity:0;transition:opacity .5s ease}
+  .ai-pas.on .ai-gora .lab,.ai-pas.on .ai-dol .lab{opacity:1}
+  .ai-gora .lab{bottom:26px;transform:translateX(-50%)}
+  .ai-dol .lab{top:26px;transform:translateX(-50%)}
+  .ai-gora .lab.kraj-l,.ai-dol .lab.kraj-l{transform:translateX(-22%)}
+  .ai-gora .lab.kraj-p,.ai-dol .lab.kraj-p{transform:translateX(-72%)}
+  .ai-pod{display:flex;justify-content:space-between;margin-top:12px;font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.04em;color:rgba(255,255,255,0.4)}
+  .ai-spis{display:none;grid-template-columns:repeat(3,1fr);gap:clamp(12px,1.8vw,22px) clamp(24px,4vw,64px);margin-top:clamp(26px,3vw,36px);padding-top:clamp(22px,2.6vw,30px);border-top:1px solid rgba(255,255,255,0.16)}
+  .ai-spis div{display:flex;align-items:baseline;gap:12px}
+  .ai-spis em{font-family:ui-monospace,Menlo,monospace;font-style:normal;font-size:12.5px;color:var(--la-accent,#00CD77);flex-shrink:0}
+  .ai-spis span{font-size:clamp(15px,1.7vw,17px);font-weight:650;letter-spacing:-0.012em;line-height:1.3;color:#ffffff;text-wrap:pretty}
+  /* Poniżej 900 px sześć podpisów przy osi nie ma prawa się zmieścić:
+     zostają numerowane kropki, a nazwy schodzą pod pasek jako spis. */
+  @media (max-width:900px){
+    .ai-gora,.ai-dol{display:none}
+    .ai-spis{display:grid;grid-template-columns:1fr 1fr}
+  }
+  @media (max-width:560px){ .ai-spis{grid-template-columns:1fr;gap:11px} }
+  @media (prefers-reduced-motion:reduce){
+    .ai-bar{transition:none;clip-path:inset(0 0 0 0)}
+    .ai-pkt{transition:none;opacity:1;transform:translate(-50%,-50%) scale(1)}
+    .ai-gora .lab,.ai-dol .lab{transition:none;opacity:1}
+  }
+
+  /* ================= CO ZMIENIŁO SIĘ U NAS ================= */
+  /* Cztery liczby w jednym rzędzie — wersja z czterema wierszami zajmowała
+     pół ekranu i nic więcej nie mówiła. */
+  .zm{display:grid;grid-template-columns:repeat(4,1fr);gap:0 clamp(18px,2.6vw,40px);margin-top:clamp(26px,3.2vw,38px);padding-top:clamp(24px,2.8vw,32px);border-top:1px solid #e2e9e0}
+  .zm-w + .zm-w{padding-left:clamp(18px,2.6vw,40px);border-left:1px solid #e2e9e0}
+  .zm-l{display:block;font-size:clamp(32px,4.4vw,54px);font-weight:800;letter-spacing:-0.042em;line-height:0.95;color:#0a7a52;white-space:nowrap}
+  .zm-t{margin:12px 0 0;font-size:clamp(15px,1.7vw,17px);font-weight:750;letter-spacing:-0.015em;line-height:1.25;color:#16211a;text-wrap:pretty}
+  .zm-d{margin:6px 0 0;font-size:13px;line-height:1.45;color:#8b968d;text-wrap:pretty}
+  @media (max-width:860px){
+    .zm{grid-template-columns:1fr 1fr;gap:clamp(24px,4vw,34px) 0}
+    .zm-w{padding:0 clamp(14px,3vw,26px)}
+    .zm-w:nth-child(odd){padding-left:0}
+    .zm-w + .zm-w{padding-left:clamp(14px,3vw,26px);border-left:1px solid #e2e9e0}
+    .zm-w:nth-child(odd){border-left:0}
+  }
+  @media (max-width:520px){
+    .zm{grid-template-columns:1fr;gap:0}
+    .zm-w{padding:18px 0 !important;border-left:0 !important}
+    .zm-w + .zm-w{border-top:1px solid #e2e9e0}
+    .zm-l{font-size:36px}
+  }
+
+  /* ================= DWIE DROGI ================= */
+  .dr{display:grid;grid-template-columns:1fr 1fr;gap:0;margin-top:clamp(32px,4vw,50px);border-top:1px solid #dde7db}
+  .dr-k{display:flex;flex-direction:column;padding:clamp(30px,3.6vw,46px) clamp(24px,3vw,44px) clamp(30px,3.6vw,44px) 0}
+  .dr-k + .dr-k{padding-left:clamp(24px,3vw,44px);padding-right:0;border-left:1px solid #dde7db}
+  .dr-n{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;letter-spacing:0.12em;text-transform:uppercase;color:#0a7a52}
+  .dr-h{margin:14px 0 0;font-size:clamp(22px,2.8vw,32px);line-height:1.1;letter-spacing:-0.028em;font-weight:800;color:#16211a;text-wrap:balance}
+  .dr-d{margin:14px 0 0;font-size:15.5px;line-height:1.62;color:#4c5850;text-wrap:pretty}
+  .dr-l{display:flex;align-items:flex-start;gap:10px;margin-top:11px;font-size:14.5px;line-height:1.5;color:#4c5850}
+  .dr-l svg{flex-shrink:0;margin-top:3px}
+  .dr-a{align-self:flex-start;margin-top:auto;padding-top:clamp(22px,2.6vw,30px)}
+  @media (max-width:820px){
+    .dr{grid-template-columns:1fr}
+    .dr-k{padding:28px 0}
+    .dr-k + .dr-k{padding-left:0;border-left:0;border-top:1px solid #dde7db}
+  }
+
+  @media (max-width:960px){ .grid2{grid-template-columns:1fr !important} }
+</style>
+
+<!-- ============ 1 · HERO ============
+     Sam nagłówek, jedno zdanie, dwa wezwania i cztery liczby. Wykres wypadł:
+     w hero tylko przeszkadzał. -->
+<div aria-hidden="true" style="position:absolute;left:0;right:0;top:0;height:820px;background:radial-gradient(1100px 620px at 50% -8%, rgba(0,205,119,0.16), transparent 64%);pointer-events:none"></div>
+<section style="position:relative;text-align:center;padding:clamp(52px,7.5vw,110px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) clamp(56px,7vw,90px)">
+<h1 class="mega" style="margin:0 auto;max-width:14ch">Poznajcie WiseStack</h1>
+<p class="lead" style="margin:clamp(24px,3vw,34px) auto 0;max-width:740px">Tak budujemy oprogramowanie. <b>Cały kod pisze AI. Wszystkie decyzje podejmuje człowiek.</b> Pomiędzy jednym a drugim stoi zestaw wyborów, które podjęliśmy raz i wnosimy do każdego projektu.</p>
+<div class="hero-actions" style="display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:16px 20px;margin-top:clamp(28px,3.4vw,40px)">
+<a href="#kontakt" class="btn-dark" style="display:inline-flex;align-items:center;gap:10px;background:#16211a;color:#ffffff;padding:19px 34px;border-radius:12px;font-weight:650;font-size:17px;box-shadow:0 16px 34px -16px rgba(16,33,26,0.5)">Zbudujcie z nami <span aria-hidden="true">→</span></a>
+<a href="#porownanie" class="btn-ghost" style="display:inline-flex;align-items:center;gap:8px;font-size:17px;font-weight:700;color:#16211a;background:rgba(255,255,255,0.6);padding:19px 28px;border-radius:12px;border:1px solid rgba(22,33,26,0.16)">Zobaczcie różnicę →</a>
+</div>
+<div class="staty">
+{STATY.map((x) => (<div><b>{x.l}</b><span>{x.o}</span></div>))}
+</div>
+</section>
+
+<!-- ============ 2 · MANIFEST ============ -->
+<section id="manifest" class="sec-pad" style="padding-top:clamp(24px,3.4vw,48px)">
+<h2 class="h-sec" style="margin:0 0 clamp(26px,3.2vw,40px);max-width:640px;text-wrap:pretty">Cztery zdania, na których to stoi</h2>
+{MANIFEST.map((m) => (
+  <div class="mf">
+    <span class="mf-n">{m.n}</span>
+    <p class="mf-t">{m.t}</p>
+    <p class="mf-d">{m.d}</p>
+  </div>
+))}
+</section>
+
+<!-- ============ 3 · PORÓWNANIE ============
+     Jedyne porównanie na stronie. Wcześniej były trzy i biły się ze sobą. -->
+<section id="porownanie" class="sec-pad" style="background:#f4f8f2">
+<h2 class="h-sec" style="margin:0;max-width:760px;text-wrap:pretty">Cztery drogi do tej samej aplikacji</h2>
+<p style="margin:18px 0 0;max-width:760px;font-size:clamp(16px,1.9vw,18px);line-height:1.6;color:#33413a;text-wrap:pretty">Ten sam system: integracje z dwoma narzędziami, panel dla zespołu i portal dla klientów. Od startu do wdrożenia u pierwszych użytkowników.</p>
+
+<div class="pw" data-anim>
+{MODELE.map((m) => (
+  <div class={'pw-w' + (m.nasz ? ' nasz' : '')}>
+    <span><span class="pw-t">{m.t}</span>{m.d && <span class="pw-d">{m.d}</span>}</span>
+    <span class="pw-tor"><span class="pw-b" style={`--w:${((m.tyg / MAX_TYG) * 100).toFixed(1)}%`}></span></span>
+    <span class="pw-v"><span class="pw-n">{m.tyg} tyg.</span></span>
+  </div>
+))}
+</div>
+
+</section>
+
+<!-- ============ 4 · DWANAŚCIE WYBORÓW ============ -->
+<section id="wybory" class="sec-pad">
+<h2 class="h-sec" style="margin:0;max-width:700px;text-wrap:pretty">Dwanaście wyborów, które już podjęliśmy</h2>
+<div class="wb">
+{WYBORY.map((g) => (
+  <div>
+    <div class="wb-f"><b>{g.faza}</b></div>
+    {g.p.map((x) => (
+      <div class="wb-p"><span class="wb-t">{x.t}</span><span class="wb-d">{x.d}</span></div>
+    ))}
+  </div>
+))}
+</div>
+</section>
+
+<!-- ============ 5 · PARTNER CONVEX ============
+     Pas domykający sekcję wyborów: to tam pada nazwa Convexa jako element
+     stosu, a tu stoi powód, dla którego ta nazwa ma wagę.
+     UWAGA: nie twierdzimy, że Convex stoi pod każdym systemem, jaki robimy —
+     tylko pod tymi, które budujemy na naszym stosie. -->
+<section id="convex" style="padding:0 max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) clamp(48px,6vw,76px);scroll-margin-top:16px">
+<div class="cv">
+<div class="cv-lock">
+<img class="cv-la" src="/uploads/logo-2.svg" alt="Let's automate" width="237" height="41" loading="lazy">
+<span class="cv-x" aria-hidden="true">×</span>
+<img class="cv-cx" src="/uploads/convex-logo.svg" alt="Convex" width="382" height="146" loading="lazy">
+</div>
+<div>
+<span class="cv-rola">Let's automate jest partnerem strategicznym Convex na Polskę</span>
+<p class="cv-t">Do zespołu, który buduje ten stos, mamy bezpośrednie wejście</p>
+<p class="cv-d">Convex jest warstwą danych w systemach, które stawiamy na naszym stosie: schemat, walidacja, transakcje i logi stoją w jednym miejscu. Sprawy z platformy zgłaszamy prosto do ludzi, którzy ją piszą, a o zmianach w niej wiemy, zanim wejdą.</p>
+</div>
+</div>
+</section>
+
+<!-- ============ 6 · JAKOŚĆ I BEZPIECZEŃSTWO ============
+     Sekcja dopisana 07.09. Argument: jedno i drugie przestaje zależeć od tego,
+     czy ktoś pamiętał, bo bramki są wpisane w projekt. -->
+<section id="jakosc" class="sec-pad" style="background:#f4f8f2">
+<h2 class="h-sec" style="margin:0;max-width:820px;text-wrap:pretty">Jakość i bezpieczeństwo przestają zależeć od czyjejś pamięci</h2>
+<p style="margin:18px 0 0;max-width:760px;font-size:clamp(16px,1.9vw,18px);line-height:1.6;color:#33413a;text-wrap:pretty">Każda zmiana przechodzi tę samą drogę, zanim zobaczy ją użytkownik. Nie da się jej ominąć w piątek o siedemnastej.</p>
+
+<div class="br" data-anim>
+{BRAMKI.map((b, i) => (
+  <>
+    <span class={'br-p' + (i === BRAMKI.length - 1 ? ' br-koniec' : '')} style={`transition-delay:${(i * 0.09).toFixed(2)}s`}>
+      {i < BRAMKI.length - 1 && <i aria-hidden="true"></i>}{b}
+    </span>
+    {i < BRAMKI.length - 1 && <span class="br-s" aria-hidden="true">→</span>}
+  </>
+))}
+</div>
+
+<div class="jb">
+<div>
+<h3 class="jb-h">Jakość</h3>
+{JAKOSC.map((x) => (<div class="jb-p"><span class="jb-t">{x.t}</span><span class="jb-d">{x.d}</span></div>))}
+</div>
+<div>
+<h3 class="jb-h">Bezpieczeństwo</h3>
+{BEZPIECZENSTWO.map((x) => (<div class="jb-p"><span class="jb-t">{x.t}</span><span class="jb-d">{x.d}</span></div>))}
+</div>
+</div>
+</section>
+
+<!-- ============ 6 · CIEMNY PAS · UDZIAŁ AI ============ -->
+<section id="ai" style="position:relative;background:radial-gradient(900px 460px at 86% 0%, rgba(0,205,119,0.18), transparent 62%), #0e2b1d;padding:clamp(64px,8vw,108px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
+<h2 class="h-sec" style="margin:0;max-width:840px;color:#ffffff;text-wrap:pretty">100% kodu pisze AI. 100% decyzji podejmuje człowiek</h2>
+<p style="margin:18px 0 0;max-width:700px;font-size:17px;line-height:1.6;color:rgba(255,255,255,0.72);text-wrap:pretty">Żadna z tych liczb nie jest przenośnią. Model pisze wszystko, co trafia do repozytorium. Zespół rozstrzyga wszystko, co decyduje o kształcie produktu.</p>
+
+<div class="ai-pas" data-anim>
+<div class="ai-etyk">Kod pisany przez AI · 100%</div>
+<div class="ai-gora" aria-hidden="true">
+{DECYZJE.map((d, i) => (i % 2 === 0 &&
+  <><span class={'lab' + (i === 0 ? ' kraj-l' : '')} style={`left:${d.p}%;transition-delay:${(0.8 + i * 0.06).toFixed(2)}s`}>{d.t}</span><i class="stem" style={`left:${d.p}%`}></i></>
+))}
+</div>
+<div class="ai-bar" role="img" aria-label="Pasek jednej funkcjonalności: cały kod pisze AI. Na pasku sześć punktów, w których rozstrzyga człowiek: co budujemy, jak to ma działać, które przypadki są ważne, czy to jest to, co wchodzi na produkcję, co dalej.">
+{DECYZJE.map((d, i) => (
+  <span class="ai-pkt" style={`left:${d.p}%;transition-delay:${(0.55 + i * 0.08).toFixed(2)}s`}>{i + 1}</span>
+))}
+</div>
+<div class="ai-dol" aria-hidden="true">
+{DECYZJE.map((d, i) => (i % 2 === 1 &&
+  <><i class="stem" style={`left:${d.p}%`}></i><span class={'lab' + (i === DECYZJE.length - 1 ? ' kraj-p' : '')} style={`left:${d.p}%;transition-delay:${(0.8 + i * 0.06).toFixed(2)}s`}>{d.t}</span></>
+))}
+</div>
+<div class="ai-pod"><span>start funkcjonalności</span><span>wdrożenie</span></div>
+<div class="ai-spis">
+{DECYZJE.map((d, i) => (
+  <div><em>{String(i + 1).padStart(2, '0')}</em><span>{d.t}</span></div>
+))}
+</div>
+</div>
+
+<div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(28px,4vw,72px);margin-top:clamp(44px,5.4vw,70px);padding-top:clamp(36px,4.4vw,52px);border-top:1px solid rgba(255,255,255,0.16)" class="grid2">
+<p style="margin:0;font-size:clamp(19px,2.4vw,26px);line-height:1.28;letter-spacing:-0.022em;font-weight:750;color:#ffffff;text-wrap:pretty">Wartość nie leży w tym, że model pisze kod. Leży w tym, co jest wokół niego ustawione.</p>
+<p style="margin:0;font-size:15.5px;line-height:1.62;color:rgba(255,255,255,0.7);text-wrap:pretty">Schemat danych, typy, reguły projektu, sposób sprawdzania i zapis decyzji sprawiają, że model pracuje na aktualnym stanie systemu. To jest ta część, którą przynosimy do projektu gotową — i ta, która sprawia, że kolejne pokolenie modeli działa u Was lepiej bez przepisywania aplikacji.</p>
+</div>
+</section>
+
+<!-- ============ 7 · CO ZMIENIŁO SIĘ U NAS ============
+     Trzy inne miary niż w porównaniu — powtórzenie 24 → 5 nic by nie dodało. -->
+<section id="zmiany" class="sec-pad">
+<h2 class="h-sec" style="margin:0;max-width:640px;text-wrap:pretty">Co zmieniło się u nas</h2>
+<div class="zm">
+{ZMIANY.map((z) => (
+  <div class="zm-w">
+    <span class="zm-l">{z.l}</span>
+    <p class="zm-t">{z.t}</p>
+    <p class="zm-d">{z.d}</p>
+  </div>
+))}
+</div>
+</section>
+
+<!-- ============ 8 · DWIE DROGI ============
+     Rozwidlenie na prośbę Szymona: albo budujemy dla Was, albo wdrażacie
+     to u siebie. Obie połowy kończą się wezwaniem. -->
+<section id="drogi" class="sec-pad" style="background:#f4f8f2">
+<h2 class="h-sec" style="margin:0;max-width:700px;text-wrap:pretty">Dwie drogi do WiseStacku</h2>
+<div class="dr">
+<div class="dr-k">
+<span class="dr-n">Zlecacie nam aplikację</span>
+<h3 class="dr-h">Wasz system powstanie w WiseStacku</h3>
+<p class="dr-d">Nie trzeba o to prosić ani dopłacać. Każdy projekt, który dla Was budujemy, idzie tą drogą — razem z regułami, bramkami i zapisem decyzji.</p>
+<div style="margin-top:16px">
+{['Repozytorium i klucze Wasze od pierwszego dnia', 'Aplikacja gotowa do przejęcia przez Wasz zespół', 'Ten sam sposób pracy w utrzymaniu i rozwoju'].map((t) => (
+  <div class="dr-l"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#00CD77" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span>{t}</span></div>
+))}
+</div>
+<div class="dr-a"><a href="#kontakt" class="btn-dark" style="display:inline-flex;align-items:center;gap:10px;background:#16211a;color:#ffffff;padding:17px 28px;border-radius:12px;font-weight:650;font-size:16.5px;box-shadow:0 14px 30px -14px rgba(16,33,26,0.45)">Umówcie rozmowę <span aria-hidden="true">→</span></a></div>
+</div>
+
+<div class="dr-k">
+<span class="dr-n">Budujecie sami</span>
+<h3 class="dr-h">Wdrożymy WiseStack w Waszym zespole</h3>
+<p class="dr-d">Te same zasady, konfigurację narzędzi i sposób sprawdzania przenosimy do zespołów, które budują same — dopasowane do tego, co już macie.</p>
+<div style="margin-top:16px">
+{['Spisane zasady i konwencje pod Wasz projekt', 'Konfiguracja narzędzi AI, którą czyta każdy model', 'Zespół, który potrafi to prowadzić bez nas'].map((t) => (
+  <div class="dr-l"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#00CD77" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span>{t}</span></div>
+))}
+</div>
+<div class="dr-a"><a href="/guided-coding" class="btn-ghost" style="display:inline-flex;align-items:center;gap:8px;font-size:16.5px;font-weight:700;color:#16211a;background:#ffffff;padding:17px 26px;border-radius:12px;border:1px solid rgba(22,33,26,0.16)">Zobaczcie Guided Coding <span aria-hidden="true">→</span></a></div>
+</div>
+</div>
+</section>
+
+<GcCta
+  heading="Zbudujmy Waszą aplikację w ten sposób"
+  lead="Napiszcie w dwóch zdaniach, co chcecie zbudować. Odezwiemy się z pytaniem o proces, który ma za tym stać, i terminem pierwszej rozmowy."
+  eyebrow="Z pierwszej rozmowy wychodzicie z"
+  items={[
+    { t: 'Zakresem pierwszej wersji', d: 'tym, co ma działać najwcześniej i dlaczego' },
+    { t: 'Kształtem procesu', d: 'tym, co trzeba poukładać, zanim powstanie kod' },
+    { t: 'Terminem i widełkami', d: 'policzonymi na Waszym zakresie' },
+  ]}
+  placeholder="Np. chcemy zbudować portal dla naszych klientów, dziś wszystko idzie mailem…"
+  submitLabel="Umów rozmowę"
+  badges={[
+    { i: 'klodka', t: 'Wasze dane bezpieczne' },
+    { i: 'kartka', t: 'NDA przed startem' },
+    { i: 'ptaszek', t: 'Kod zostaje Wasz' },
+  ]}
+/>
+
+<GcFaq
+  heading="Pytania, które padają najczęściej"
+  ctaLabel="Zadajcie nam swoje →"
+  items={faq}
+/>
+
+<script>
+  var redukcja = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  (function(){
+    var els = document.querySelectorAll('[data-anim]');
+    if(!els.length) return;
+    if(redukcja || !('IntersectionObserver' in window)){
+      els.forEach(function(el){ el.classList.add('on'); });
+      return;
+    }
+    var io = new IntersectionObserver(function(wpisy){
+      wpisy.forEach(function(w){
+        if(w.isIntersecting){ w.target.classList.add('on'); io.unobserve(w.target); }
+      });
+    }, { threshold: 0.18 });
+    els.forEach(function(el){ io.observe(el); });
+  })();
+</script>
+</LaBase>

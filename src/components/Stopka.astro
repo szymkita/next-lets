@@ -1,0 +1,204 @@
+---
+// STOPKA — jedna dla całego serwisu (pas Wise Group + właściwa stopka).
+//
+// DLACZEGO KOMPONENT
+// Do 07.09.2026 stopka istniała w trzech kopiach: w index.astro, w layoucie
+// LaBase.astro i w darmowa-konsultacja.astro. Rozjechały się — inne kolumny,
+// inne linki, odznaka OpenAI tylko na stronie głównej. Teraz jest jedno
+// źródło: zmiana tutaj wchodzi na każdą stronę.
+//
+// LINKI SĄ BEZWZGLĘDNE
+// Stopka renderuje się na dowolnym adresie, więc kotwice muszą prowadzić do
+// strony głównej („/#oferta"), nie do bieżącej („#oferta"). To był główny
+// błąd starej wersji z index.astro: na podstronach te linki nie działały.
+//
+// PAS GRUPY
+// Odwzorowanie bloku znad stopki z sellwise.pl: sześć marek w równych
+// komórkach z separatorami, logotypy szare, kolor pod kursorem. Logotypy
+// leżą lokalnie w public/uploads/wisegroup — nie linkujemy do plików na
+// cudzym serwerze. Nasza marka nie jest linkiem i zostaje w kolorze, tak jak
+// w panelu marek w TopbarWiseGroup.astro.
+const GRUPA = [
+  { nazwa: 'AdWise',         url: 'https://adwise.pl',       logo: '/uploads/wisegroup/wg-adwise.svg' },
+  { nazwa: 'HireWise',       url: 'https://hirewise.pl',     logo: '/uploads/wisegroup/wg-hirewise.svg' },
+  { nazwa: 'SellWise',       url: 'https://www.sellwise.pl', logo: '/uploads/wisegroup/wg-sellwise.svg' },
+  { nazwa: "Let's automate", url: null,                      logo: '/uploads/logo-2.svg' },
+  { nazwa: 'Finerto',        url: 'https://finerto.pl',      logo: '/uploads/wisegroup/wg-finerto.svg' },
+  { nazwa: 'IRSM',           url: 'https://irsm.pl',         logo: '/uploads/wisegroup/wg-irsm.svg' },
+];
+
+const USLUGI = [
+  { t: 'Strategia transformacji AI', h: '/strategia-ai' },
+  { t: 'Indywidualne rozwiązania AI', h: '/rozwiazania-ai' },
+  { t: 'Automatyzacje i integracje', h: '/automatyzacje-integracje' },
+  { t: 'Systemy procesowe', h: '/systemy-procesowe' },
+  { t: 'Systemy dla klientów', h: '/systemy-dla-klientow' },
+  { t: 'Szkolenia i adopcja AI', h: '/szkolenia-ai' },
+];
+
+// Produkty mają własną kolumnę od 09.09.2026. Wcześniej appto.ai wisiało
+// jako ostatni wiersz kolumny USŁUGI, czyli w kolumnie, w której nie było.
+const PRODUKTY = [
+  { t: 'Appto', h: '/produkty/appto' },
+  { t: 'Wingman', h: '/produkty#wingman' },
+  { t: 'Wszystkie produkty', h: '/produkty' },
+  { t: 'appto.ai ↗', h: 'https://appto.ai', zew: true },
+];
+
+// Podstrony obszarowe świadomie NIE wchodzą do menu głównego (decyzja
+// Szymona, 10.09.2026): oferta dzieli się według rodzaju rezultatu i ta oś
+// ma zostać jedyną w nawigacji. Stopka jest ich jedynym wewnętrznym
+// wejściem — i jedynym miejscem, z którego wyszukiwarka je przechodzi,
+// więc ta kolumna jest tu warunkiem, żeby adresy w ogóle się indeksowały.
+const OBSZARY = [
+  { t: 'Sprzedaż i marketing', h: '/automatyzacja-w-sprzedazy-i-marketingu' },
+  { t: 'Obsługa klienta', h: '/automatyzacja-w-obsludze-klienta' },
+  { t: 'Administracja i dokumenty', h: '/automatyzacja-w-administracji' },
+  { t: 'Rekrutacja i HR', h: '/automatyzacja-w-rekrutacji-oraz-hr' },
+  { t: 'Dashboardy i dane', h: '/automatyzacja-w-dashboardach-i-danych' },
+  { t: 'Nietypowe procesy i AI', h: '/automatyzacja-oraz-ai-w-nietypowych-procesach' },
+];
+
+const SAMI = [
+  { t: 'Baza wiedzy', h: '/baza-wiedzy' },
+  { t: 'Inspiracje', h: '/inspiracje' },
+  { t: 'Guided Coding', h: '/guided-coding' },
+  { t: 'Bez działu IT', h: '/guided-coding/bez-dzialu-it' },
+  { t: 'Dla zespołów', h: '/guided-coding/dla-zespolow' },
+  { t: 'Transfer know-how', h: '/guided-coding/transfer-know-how' },
+  { t: 'Dlaczego my', h: '/dlaczego-my' },
+];
+---
+
+<section id="grupa" class="wg-sekcja">
+<div style="text-align:center">
+<img src="/uploads/wisegroup_logo_v2.webp" alt="Wise Group" width="442" height="52" loading="lazy" decoding="async" style="display:block;margin:0 auto;height:26px;width:auto">
+<p style="margin:14px 0 0;font-size:15.5px;line-height:1.6;color:#7c877e">Łączymy siły dla mądrego wzrostu</p>
+</div>
+<div class="wg-pas">
+{GRUPA.map((m) => (
+  m.url
+    ? <a class="wg-cell" href={m.url} target="_blank" rel="noopener"><img src={m.logo} alt={m.nazwa} loading="lazy" decoding="async" /></a>
+    : <span class="wg-cell wg-tu" aria-current="true"><img src={m.logo} alt={m.nazwa} loading="lazy" decoding="async" /></span>
+))}
+</div>
+</section>
+
+<footer style="background:#16211a;color:#e8ece7;padding:64px max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) 36px">
+<div class="foot-grid" style="display:grid;grid-template-columns:1fr 178px 178px 178px 178px 178px;gap:clamp(28px,3vw,44px);align-items:start">
+
+<div>
+<img src="/uploads/logo-2.svg" alt="Let's automate" style="height:22px;display:block;filter:brightness(0) invert(1)">
+<p style="margin:18px 0 0;max-width:300px;font-size:14px;line-height:1.6;color:#9fb0a3">Studio transformacji AI.<br>Projektujemy i budujemy systemy,<br>na których firmy działają po nowemu.</p>
+<div style="margin-top:22px;font-size:12.5px;line-height:1.75;color:#7d9080">Let's automate sp. z o.o.<br>ul. Nowy Świat 33/13, 00-029 Warszawa<br>NIP 5252908405 · KRS 0000972542</div>
+<div style="display:flex;gap:14px;margin-top:16px">
+<a href="https://www.linkedin.com/company/letsautomate-io" class="foot-lnk" aria-label="LinkedIn" style="display:inline-flex;align-items:center;gap:7px;color:#cfd9cf;font-size:13.5px"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 100 5 2.5 2.5 0 000-5zM3 9h4v12H3zM9 9h3.8v1.64h.05c.53-.95 1.83-1.95 3.77-1.95 4.03 0 4.78 2.5 4.78 5.75V21h-4v-4.86c0-1.16-.02-2.65-1.77-2.65-1.77 0-2.04 1.26-2.04 2.57V21H9z"/></svg>LinkedIn</a>
+</div>
+<!-- Odznaka partnerska OpenAI. Plik ma własne białe tło (przezroczyste są
+     tylko narożniki), więc żadnego filtra nie nakładamy — na ciemnej stopce
+     działa jak biała plakietka. Wybielenie zniszczyłoby czarny napis. -->
+<img src="/uploads/openai-select-partner.png" alt="OpenAI Select Partner" width="1125" height="531" loading="lazy" decoding="async" style="display:block;height:84px;width:auto;margin-top:30px;border-radius:12px">
+</div>
+
+<div>
+<div class="foot-lbl">USŁUGI</div>
+<div style="display:flex;flex-direction:column;gap:10px;font-size:14.5px">
+{USLUGI.map((p) => <a href={p.h} class="foot-lnk" style="color:#cfd9cf">{p.t}</a>)}
+</div>
+</div>
+
+<div>
+<div class="foot-lbl">PRODUKTY</div>
+<div style="display:flex;flex-direction:column;gap:10px;font-size:14.5px">
+{PRODUKTY.map((p) => <a href={p.h} class="foot-lnk" target={p.zew ? '_blank' : null} rel={p.zew ? 'noopener' : null} style="color:#cfd9cf">{p.t}</a>)}
+</div>
+</div>
+
+<div>
+<div class="foot-lbl">BUDUJECIE SAMI</div>
+<div style="display:flex;flex-direction:column;gap:10px;font-size:14.5px">
+{SAMI.map((p) => <a href={p.h} class="foot-lnk" style="color:#cfd9cf">{p.t}</a>)}
+</div>
+</div>
+
+<div>
+<div class="foot-lbl">OBSZARY</div>
+<div style="display:flex;flex-direction:column;gap:10px;font-size:14.5px">
+{OBSZARY.map((p) => <a href={p.h} class="foot-lnk" style="color:#cfd9cf">{p.t}</a>)}
+</div>
+</div>
+
+<div>
+<div class="foot-lbl">ZACZNIJ</div>
+<p style="margin:0;font-size:14.5px;line-height:1.6;color:#cfd9cf">Bezpłatna diagnoza kosztu status quo — wynik w liczbach.</p>
+<a href="/darmowa-konsultacja" class="btn-accent" style="display:inline-flex;align-items:center;gap:8px;margin-top:15px;background:var(--la-accent,#00CD77);color:#0b1a11;padding:12px 20px;border-radius:10px;font-weight:750;font-size:14px">Umów diagnozę →</a>
+</div>
+
+</div>
+
+<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-top:56px;padding-top:24px;border-top:1px solid rgba(232,236,231,0.14);font-size:12.5px;color:#7d9080">
+<span>© 2026 Let's automate · część Wise Group</span>
+<!-- Docelowe adresy dokumentów prawnych — do podmiany, gdy powstaną. -->
+<div style="display:flex;gap:24px">
+<a href="#" class="foot-lnk" style="color:#7d9080">Polityka prywatności</a>
+<a href="#" class="foot-lnk" style="color:#7d9080">RODO</a>
+</div>
+</div>
+</footer>
+
+<style>
+  /* Strony trzymają własny reset `a{text-decoration:none}` w scope'owanym
+     <style>, a ten do komponentu nie dociera — bez tej linijki linki wychodzą
+     podkreślone (widoczne na stronie głównej po wydzieleniu komponentu). */
+  a{color:inherit;text-decoration:none}
+  /* Komponent stoi w stronach, które mają własne `*{box-sizing:border-box}`
+     w scope'owanym <style>, a to do niego nie dociera — stąd własna linijka. */
+  .wg-sekcja,.wg-sekcja *,footer,footer *{box-sizing:border-box}
+
+  .wg-sekcja{background:#ffffff;padding:clamp(56px,7vw,88px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2))}
+
+  /* Sześć marek w równych komórkach. Logotypy stoją szare i wygaszone do 55% —
+     kolor wraca dopiero pod kursorem, żeby pas nie konkurował z treścią wyżej.
+     Nasza marka jest wyjątkiem: zawsze w kolorze i bez linku, bo prowadziłby
+     na stronę, na której użytkownik już jest. */
+  .wg-pas{display:grid;grid-template-columns:repeat(6,1fr);margin-top:clamp(26px,3.2vw,38px);border:1px solid #eef1ec;border-radius:16px;overflow:hidden;background:#ffffff}
+  .wg-cell{display:flex;align-items:center;justify-content:center;padding:26px 14px;border-left:1px solid #eef1ec;transition:background .2s}
+  .wg-cell:first-child{border-left:0}
+  .wg-cell img{width:auto;height:auto;max-height:20px;max-width:100%;display:block;filter:grayscale(1);opacity:.55;transition:filter .25s,opacity .25s}
+  a.wg-cell:hover{background:#f9fbf8}
+  a.wg-cell:hover img{filter:none;opacity:1}
+  .wg-cell.wg-tu img{filter:none;opacity:1}
+
+  .foot-lbl{font-weight:700;font-size:11px;letter-spacing:0.07em;color:#7d9080;margin-bottom:15px}
+  .foot-lnk{text-decoration:none;transition:color .15s}
+  .foot-lnk:hover{color:#fff !important}
+  .btn-accent{text-decoration:none;transition:background .2s}
+  .btn-accent:hover{background:#00b96c !important;color:#0b1a11 !important}
+
+  /* Pięć kolumn mieści się dopiero powyżej ~1180px; niżej idą po dwie
+     w rzędzie, żeby nazwy usług nie łamały się na trzy linijki. */
+  @media (max-width:1320px){
+    .foot-grid{grid-template-columns:1fr 1fr 1fr !important}
+  }
+  @media (max-width:900px){
+    .wg-pas{grid-template-columns:repeat(3,1fr)}
+    .wg-cell{border-left:1px solid #eef1ec}
+    .wg-cell:nth-child(3n+1){border-left:0}
+    .wg-cell:nth-child(n+4){border-top:1px solid #eef1ec}
+    .foot-grid{grid-template-columns:1fr 1fr !important;gap:40px !important}
+  }
+  @media (max-width:600px){
+    .foot-grid{grid-template-columns:1fr !important}
+  }
+  @media (max-width:900px){
+    /* Linki stopki mają wysokość jednej linijki — na dotyku dostają zapas
+       w pionie, a ujemny margines zostawia odstępy takie jak były. */
+    .foot-lnk{padding-block:5px;margin-block:-5px}
+  }
+  @media (max-width:560px){
+    .wg-pas{grid-template-columns:repeat(2,1fr)}
+    .wg-cell{padding:22px 12px;border-left:1px solid #eef1ec}
+    .wg-cell:nth-child(odd){border-left:0}
+    .wg-cell:nth-child(n+3){border-top:1px solid #eef1ec}
+  }
+</style>

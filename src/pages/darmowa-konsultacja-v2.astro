@@ -1,0 +1,715 @@
+---
+import LaBase from '../layouts/LaBase.astro';
+import GcFaq from '../components/GcFaq.astro';
+import FormularzLead from '../components/FormularzLead.astro';
+
+// ============================================================================
+// BEZPŁATNA KONSULTACJA — strona, która jest formularzem.
+//
+// Różnica wobec /darmowa-konsultacja (wersja z 07.09.2026): tamta sprzedaje
+// rozmowę splitem „argumenty po lewej, formularz po prawej". Ta zaczyna się
+// od samego formularza, a wszystko poniżej odpowiada na jedno pytanie:
+// co się wydarzy, kiedy go wyślesz. Kolejność sekcji idzie po osi czasu
+// zgłoszenia — wysyłka, kontakt, rozmowa, mail — a nie po liście zalet.
+//
+// TEZA STRONY: mail po rozmowie zostaje u klienta niezależnie od tego, czy
+// zaczniemy współpracę. Dlatego ma na stronie własny artefakt (sekcja S2),
+// a nie zdanie w wyliczance.
+//
+// DO POTWIERDZENIA PRZED PUBLIKACJĄ
+//   1. Czas rozmowy. Strona mówi 30 minut (za stroną główną i /darmowa-
+//      konsultacja). Obecny letsautomate.pl obiecuje „pełną godzinę" —
+//      trzeba wybrać jedną liczbę dla całego serwisu.
+//   2. Podział tych 30 minut (tablica AGENDA) i wynikające z niego zdanie
+//      „20 z 30 minut mówisz Ty". Liczby są z obserwacji, nie z pomiaru.
+//   3. Termin maila po rozmowie: „kilka dni roboczych".
+//   4. Treść przykładowego maila (S2) — czy tak wygląda to, co wysyłamy.
+//   5. Kto prowadzi rozmowy (strona pokazuje Szymona) i czy zdjęcie zostaje.
+//   6. Sekcja „Kiedy nie warto się umawiać" — obie granice są decyzją
+//      handlową, nie faktem technicznym.
+//   7. Adres /polityka-prywatnosci (link w zgodzie formularza).
+//   8. Druga zgoda — marketingowa. Obecny formularz na letsautomate.pl ma
+//      dwie; tutaj jest jedna, bo /api/kontakt nie zapisuje zgód osobno.
+//
+// PODGLĄD EKRANU PO WYSŁANIU: /darmowa-konsultacja-v2?sukces=1
+// ============================================================================
+
+const KONTAKT_MAIL = 'hello@letsautomate.pl';
+const KONTAKT_TEL = '+48 571 399 932';
+const TEL_HREF = 'tel:+48571399932';
+
+// Oś czasu zgłoszenia. Akcent dostaje tylko etap oznaczony `mocny`: w tym
+// jednym punkcie po drugiej stronie siedzi człowiek. Reszta to skrzynka.
+const ETAPY = [
+  {
+    kiedy: 'po kliknięciu',
+    t: 'Zgłoszenie idzie do nas',
+    d: 'Trafia na skrzynkę i na kanał zespołu. Nie ma kolejki ani systemu ticketowego.',
+  },
+  {
+    kiedy: '1 dzień roboczy',
+    t: 'Piszemy albo dzwonimy',
+    d: 'Na kontakt, który zostawisz. Ustawiamy termin — zwykle w tym samym tygodniu.',
+  },
+  {
+    kiedy: '30 minut',
+    t: 'Rozmawiamy o jednym procesie',
+    d: 'Online przez Meet albo Zoom, jak wolisz — telefonicznie.',
+    mocny: true,
+  },
+  {
+    kiedy: 'kilka dni później',
+    t: 'Przychodzi mail',
+    d: 'Pierwszy krok opisany tak, żeby dało się go komuś zlecić. Bez oferty w załączniku.',
+  },
+];
+
+// Podział rozmowy. Procenty liczą się z minut — po zmianie liczby pasek
+// przelicza się sam i zdanie pod nim też.
+const AGENDA = [
+  { min: 5, t: 'Po co ta rozmowa', d: 'Co się dzieje w firmie, że w ogóle o tym myślisz.' },
+  { min: 15, t: 'Jak to wygląda dziś', d: 'Ten jeden proces, krok po kroku, z nazwami narzędzi.', mocny: true },
+  { min: 7, t: 'Co da się z tym zrobić', d: 'Od czego zacząć i co odłożyć na później.' },
+  { min: 3, t: 'Ustalenia', d: 'Co dostaniesz mailem i kiedy.' },
+];
+const MINUTY = AGENDA.reduce((s, a) => s + a.min, 0);
+const TWOJE_MINUTY = AGENDA[0].min + AGENDA[1].min;
+const pct = (m) => (m / MINUTY) * 100;
+
+// Pytania z drugiego etapu rozmowy — te same, które zajmują 15 minut paska.
+const PYTANIA = [
+  'Jak ten proces wygląda od pierwszego kontaktu do zamknięcia sprawy?',
+  'Ile osób go dotyka i w których miejscach te same dane wpisujecie drugi raz?',
+  'Ile spraw przechodzi przez niego w miesiącu?',
+  'W czym to dziś siedzi — skrzynka, arkusz, CRM, system magazynowy?',
+  'Co się dzieje, kiedy sprawa utknie? Kto to zauważa i po czym?',
+  'Co się zmieni w firmie, jeśli ten proces zacznie działać inaczej?',
+];
+
+const NIE_BEDZIE = [
+  {
+    t: 'Prezentacji o nas',
+    d: 'Nie mamy przygotowanego deka i nie wysyłamy go po spotkaniu. Cała rozmowa idzie po Twoim procesie.',
+  },
+  {
+    t: 'Kwoty rzuconej w ciemno',
+    d: 'Cena pada, kiedy znamy zakres. Na pierwszej rozmowie zwykle jest na to za wcześnie — dostajesz rząd wielkości i to, od czego on zależy.',
+  },
+  {
+    t: 'Namawiania na AI',
+    d: 'Część spraw tanio załatwia zmiana w procesie albo narzędzie, które już macie. Kiedy tak jest, mówimy to na spotkaniu.',
+  },
+  {
+    t: 'Handlowca po drugiej stronie',
+    d: 'Rozmowę prowadzi osoba, która potem odpowiada za wdrożenie. To ona zna koszt tego, co obiecuje.',
+  },
+];
+
+const GRANICE = [
+  'Szukasz wykonawcy do gotowej specyfikacji i najniższej stawki za godzinę. Wyślij ją mailem — odpowiemy, czy się tego podejmujemy, bez rozmowy.',
+  'Potrzebujesz darmowej wyceny do przetargu albo do porównania z inną ofertą. Tego nie robimy.',
+];
+
+const OPINIE = [
+  {
+    q: 'Wprowadzenie danych trwało godzinę. Dziś przesłanie oferty to 10 minut — oszczędności liczymy w etatach.',
+    kto: 'Mateusz Chinczewski',
+    rola: 'Prezes Zarządu, Finerto',
+  },
+  {
+    q: 'Let’s automate wziął pełną odpowiedzialność za projekt i dowiózł go do końca. To dlatego powierzyliśmy im kolejny, znacznie większy.',
+    kto: 'Jakub Ciołkowski',
+    rola: 'Członek Zarządu, NARS Polska',
+  },
+  {
+    q: 'Bardzo dobrze zrozumieli nasze potrzeby i zaprojektowali scenariusz, który spełnił cele biznesowe. Otwartość i komunikacja to ich DNA.',
+    kto: 'Arkadiusz Andruch',
+    rola: 'Prezes Zarządu, X2O',
+  },
+];
+
+const FAQ = [
+  {
+    q: 'Czym właściwie jest ta konsultacja?',
+    a: 'To 30 minut z osobą, która buduje takie systemy na co dzień. Opowiadasz, jak wygląda jeden proces w Twojej firmie, my dopytujemy o szczegóły i mówimy, co da się z tym zrobić. Kilka dni później dostajesz to samo mailem, na piśmie.',
+  },
+  {
+    q: 'Czy to mnie do czegoś zobowiązuje?',
+    a: 'Nie. Konsultacja i mail po niej są bezpłatne. Jeśli po rozmowie uznasz, że to nie ten moment, zostaje u Ciebie opis pierwszego kroku i możesz go zrobić sam albo z kimś innym.',
+  },
+  {
+    q: 'Nie mam sprecyzowanego pomysłu. Ma to sens?',
+    a: 'Wtedy ma największy. Wystarczy jeden proces, który Was uwiera — reszta to nasze pytania. Nazwanie, co i w jakiej kolejności da się usprawnić, jest częścią tej rozmowy, nie warunkiem wstępnym.',
+  },
+  {
+    q: 'Mam gotowy projekt. Możecie od razu wycenić?',
+    a: 'Tak. Wtedy pomijamy diagnozę i rozmawiamy o zakresie, ryzykach i terminie. Opisz projekt w formularzu, a na rozmowę przyjdziemy z pytaniami do wyceny.',
+  },
+  {
+    q: 'Jak wygląda rozmowa od strony technicznej?',
+    a: 'Google Meet albo Zoom, link wysyłamy mailem. Jeśli wolisz telefon, dzwonimy. Nagrywamy tylko wtedy, gdy o to poprosisz.',
+  },
+  {
+    q: 'Co z naszymi danymi?',
+    a: 'Pracujemy zgodnie z RODO, a przed każdym projektem podpisujemy NDA — także przed samą rozmową, jeśli tego potrzebujecie. Do konsultacji nie potrzebujemy dostępu do żadnego z Waszych systemów.',
+  },
+];
+---
+<LaBase
+  title="Bezpłatna konsultacja — Let's automate"
+  description="Wypełnij formularz, odezwiemy się w jeden dzień roboczy. 30 minut o jednym procesie w Twojej firmie, a kilka dni po rozmowie mail z pierwszym krokiem. Bezpłatnie i bez zobowiązań."
+  ctaHref="#formularz"
+  nav={null}
+  noindex={true}
+>
+
+<style is:global slot="head">
+
+  /* Poświata biegnie od samej góry strony, więc pod przyklejoną nawigacją
+     nie ma krawędzi koloru. LaBase daje `.page` białe — tu dokładamy tło. */
+  .page{background:radial-gradient(940px 600px at 84% 0, rgba(0,205,119,0.14), transparent 62%) no-repeat, #ffffff}
+
+  /* Kolumna węższa niż domyślne 1440 z `.sec-pad`: strona jest formularzem,
+     a nie katalogiem — dłuższe wiersze robiłyby z niej ulotkę. */
+  .sec{padding:clamp(64px,8vw,104px) max(clamp(20px,5vw,56px),calc((100% - 1320px) / 2));scroll-margin-top:80px}
+  .sec-tint{background:#f4f8f2}
+  .h-sec{text-wrap:pretty}
+
+  /* ---------- S0 · FORMULARZ NAD ZGIĘCIEM ---------- */
+  .fold{position:relative;z-index:1;padding:clamp(22px,3vw,40px) max(clamp(20px,5vw,56px),calc((100% - 1120px) / 2)) clamp(48px,6vw,76px)}
+  .fold h1{margin:0;max-width:15ch;font-size:clamp(34px,5.4vw,60px);line-height:1.02;letter-spacing:-0.034em;font-weight:800;text-wrap:balance}
+  .fold-lead{margin:18px 0 clamp(26px,3vw,34px);max-width:58ch;font-size:clamp(16px,1.5vw,18.5px);line-height:1.58;color:#3d4a42;text-wrap:pretty}
+  .fold-pod{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:14px 40px;margin-top:20px}
+  .fold-pod p{margin:0;max-width:56ch;font-size:14.5px;line-height:1.6;color:#6d786f}
+  .fold-kontakt{font-size:14.5px;color:#6d786f;white-space:nowrap}
+  .fold-kontakt a{font-weight:700;color:#0a7a52}
+
+  /* ---------- S1 · OŚ ZGŁOSZENIA ---------- */
+  .os{position:relative;margin-top:clamp(38px,4.6vw,58px)}
+  .os-tor{position:absolute;left:0;right:0;top:7px;height:1px;background:linear-gradient(90deg,#d7e2d4 0%,#d7e2d4 76%,rgba(215,226,212,0) 100%);transform:scaleX(0);transform-origin:left;transition:transform 1s cubic-bezier(.4,0,.2,1)}
+  .os.on .os-tor{transform:scaleX(1)}
+  .os-lista{position:relative;display:grid;grid-template-columns:repeat(4,1fr);gap:0 clamp(18px,2.4vw,36px)}
+  .os-etap{position:relative;padding-right:12px;opacity:0;transform:translateY(10px);transition:opacity .5s ease,transform .5s cubic-bezier(.4,0,.2,1)}
+  .os.on .os-etap{opacity:1;transform:none}
+  .os.on .os-etap:nth-child(1){transition-delay:.10s}
+  .os.on .os-etap:nth-child(2){transition-delay:.28s}
+  .os.on .os-etap:nth-child(3){transition-delay:.46s}
+  .os.on .os-etap:nth-child(4){transition-delay:.64s}
+  .os-kropka{display:block;width:15px;height:15px;border-radius:50%;background:#ffffff;border:2px solid #c3d2bf}
+  .os-etap.mocny .os-kropka{width:15px;height:15px;background:var(--la-accent,#00CD77);border-color:var(--la-accent,#00CD77);box-shadow:0 0 0 6px rgba(0,205,119,0.18)}
+  .os-kiedy{margin-top:18px;font-family:ui-monospace,Menlo,monospace;font-size:11.5px;letter-spacing:0.08em;text-transform:uppercase;color:#8b968d}
+  .os-etap.mocny .os-kiedy{color:#0a7a52}
+  .os-t{margin-top:9px;font-size:clamp(17px,1.7vw,20px);font-weight:750;letter-spacing:-0.018em;color:#16211a}
+  .os-d{margin:7px 0 0;font-size:14.5px;line-height:1.55;color:#4c5850;max-width:26ch}
+  .os-stopka{margin-top:clamp(34px,4vw,46px);padding-top:20px;border-top:1px solid #dfe8db;font-size:15px;color:#4c5850}
+  .os-stopka a{font-weight:700;color:#0a7a52}
+
+  /* ---------- S2 · MAIL PO ROZMOWIE ---------- */
+  .mail-grid{display:grid;grid-template-columns:1fr 640px;gap:clamp(36px,5vw,80px);align-items:start}
+  .teza{margin:26px 0 0;font-size:clamp(21px,2.4vw,30px);line-height:1.24;letter-spacing:-0.02em;font-weight:700;color:#16211a;text-wrap:pretty}
+  .teza em{font-style:normal;background:linear-gradient(transparent 62%, rgba(0,205,119,0.35) 62%)}
+  .mail-poza{margin:22px 0 0;font-size:15px;line-height:1.6;color:#4c5850;max-width:44ch}
+  .koperta{background:#ffffff;border:1px solid #e2e9df;border-radius:16px;box-shadow:0 34px 70px -46px rgba(18,38,28,0.5);overflow:hidden}
+  .kop-head{padding:16px 22px;border-bottom:1px solid #eef2ec;background:#fbfcfa}
+  .kop-linia{display:flex;gap:10px;font-size:13px;line-height:1.7;color:#6d786f}
+  .kop-klucz{flex-shrink:0;width:46px;font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.04em;text-transform:uppercase;color:#9aa69c;padding-top:3px}
+  .kop-temat{font-size:15.5px;font-weight:750;color:#16211a}
+  .kop-body{padding:24px 22px 26px}
+  .kop-wiersz{display:grid;grid-template-columns:132px 1fr;gap:14px;padding:13px 0;border-top:1px solid #f0f3ee}
+  .kop-wiersz:first-child{border-top:0;padding-top:0}
+  .kop-et{font-size:12.5px;font-weight:700;line-height:1.5;color:#0a7a52}
+  .kop-tr{font-size:14.5px;line-height:1.6;color:#33413a}
+  .kop-tr strong{font-weight:750;color:#16211a}
+  .kop-stopa{padding:14px 22px;border-top:1px solid #eef2ec;background:#fbfcfa;font-size:13px;line-height:1.55;color:#7c877e}
+  .podpis-rys{margin:14px 0 0;font-size:13px;line-height:1.55;color:#8b968d}
+
+  /* ---------- S3 · PASEK 30 MINUT ---------- */
+  .min-head{display:grid;grid-template-columns:1fr 380px;gap:clamp(28px,4vw,72px);align-items:end}
+  .pasek{display:flex;width:100%;height:clamp(56px,6vw,72px);margin-top:clamp(34px,4vw,48px);border-radius:12px;overflow:hidden;background:#e7ece4}
+  /* Wypełnienie jedzie osobną warstwą, nie napisem — inaczej scaleX ściska
+     też cyfry i podczas animacji „5 min" wygląda jak zgnieciony druk. */
+  .pasek-seg{position:relative;overflow:hidden}
+  .pasek-fill{position:absolute;inset:0;background:#cfe3d3;transform:scaleX(0);transform-origin:left;transition:transform .7s cubic-bezier(.4,0,.2,1)}
+  .pasek-seg + .pasek-seg .pasek-fill{border-left:1px solid rgba(255,255,255,0.85)}
+  .pasek-seg.mocny .pasek-fill{background:var(--la-accent,#00CD77)}
+  .pasek-seg span{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;height:100%;font-family:ui-monospace,Menlo,monospace;font-size:13px;font-weight:700;color:#0e2b1d;opacity:0;transition:opacity .3s ease}
+  .pasek-seg.mocny span{color:#06170e}
+  .pasek.on .pasek-seg .pasek-fill{transform:scaleX(1)}
+  .pasek.on .pasek-seg span{opacity:1}
+  .pasek.on .pasek-seg:nth-child(1) .pasek-fill{transition-delay:.05s}
+  .pasek.on .pasek-seg:nth-child(2) .pasek-fill{transition-delay:.24s}
+  .pasek.on .pasek-seg:nth-child(3) .pasek-fill{transition-delay:.50s}
+  .pasek.on .pasek-seg:nth-child(4) .pasek-fill{transition-delay:.66s}
+  .pasek.on .pasek-seg:nth-child(1) span{transition-delay:.45s}
+  .pasek.on .pasek-seg:nth-child(2) span{transition-delay:.74s}
+  .pasek.on .pasek-seg:nth-child(3) span{transition-delay:.90s}
+  .pasek.on .pasek-seg:nth-child(4) span{transition-delay:1.02s}
+  .pasek-opisy{display:flex;width:100%;margin-top:16px}
+  .pasek-opis{padding-right:18px}
+  .pasek-opis .t{font-size:15px;font-weight:700;letter-spacing:-0.01em;color:#16211a;text-wrap:balance}
+  .pasek-opis .d{margin:5px 0 0;font-size:13.5px;line-height:1.5;color:#6d786f}
+  .odczyt{margin:clamp(30px,3.6vw,42px) 0 0;max-width:24ch;font-size:clamp(20px,2.2vw,27px);line-height:1.25;letter-spacing:-0.02em;font-weight:700;color:#16211a}
+
+  /* ---------- S3b · PYTANIA ---------- */
+  .pyt{margin-top:clamp(46px,5.4vw,68px);padding-top:clamp(34px,4vw,44px);border-top:1px solid #dfe8db}
+  .pyt-wstep{max-width:52ch;font-size:16.5px;line-height:1.6;color:#3d4a42}
+  .pyt-lista{margin-top:clamp(20px,2.4vw,28px)}
+  .pyt-w{display:flex;align-items:baseline;gap:clamp(14px,2vw,26px);padding:15px 0;border-top:1px solid #e4ebe0;font-size:clamp(16px,1.75vw,19.5px);line-height:1.45;letter-spacing:-0.012em;color:#22302a;text-wrap:pretty}
+  .pyt-w:last-child{border-bottom:1px solid #e4ebe0}
+  .pyt-n{flex-shrink:0;font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:700;color:#9aa69c}
+
+  /* ---------- S4 · CIEMNY PAS ---------- */
+  .ciemny{position:relative;overflow:hidden;background:radial-gradient(860px 480px at 86% 0%, rgba(0,205,119,0.15), transparent 58%), #0e2b1d;border-radius:26px;padding:clamp(44px,5.6vw,76px) clamp(30px,4.4vw,66px)}
+  .nb-lista{margin-top:clamp(32px,3.8vw,46px)}
+  .nb-w{display:grid;grid-template-columns:300px 1fr;gap:8px clamp(24px,3vw,52px);padding:22px 0;border-top:1px solid rgba(255,255,255,0.13)}
+  .nb-w:last-child{border-bottom:1px solid rgba(255,255,255,0.13)}
+  .nb-t{font-size:clamp(18px,1.9vw,22px);font-weight:750;letter-spacing:-0.02em;color:#ffffff;text-wrap:balance}
+  .nb-d{margin:0;font-size:15.5px;line-height:1.6;color:rgba(255,255,255,0.72);max-width:62ch}
+  .granica{margin-top:clamp(34px,4vw,48px);display:grid;grid-template-columns:300px 1fr;gap:14px clamp(24px,3vw,52px)}
+  .granica h3{margin:0;font-size:clamp(18px,1.9vw,22px);font-weight:750;letter-spacing:-0.02em;color:var(--la-accent,#00CD77);text-wrap:balance}
+  .granica p{margin:0 0 14px;font-size:15.5px;line-height:1.6;color:rgba(255,255,255,0.72);max-width:62ch}
+  .granica p:last-child{margin-bottom:0}
+  .wroc{display:inline-flex;align-items:center;gap:9px;margin-top:clamp(34px,4vw,44px);background:var(--la-accent,#00CD77);color:#06170e;padding:16px 28px;border-radius:12px;font-weight:750;font-size:16px}
+
+  /* ---------- S5 · DOWÓD ---------- */
+  .dow{display:grid;grid-template-columns:300px 1fr;gap:clamp(32px,4vw,64px);align-items:start}
+  .licz{display:flex;gap:34px;margin-top:22px}
+  .licz-n{font-size:30px;font-weight:800;letter-spacing:-0.03em;color:#16211a}
+  .licz-l{margin-top:2px;font-size:13px;color:#6d786f}
+  .op-w{padding:22px 0;border-top:1px solid #e4ebe0}
+  .op-w:last-child{border-bottom:1px solid #e4ebe0}
+  .op-q{margin:0;font-size:clamp(16px,1.7vw,18.5px);line-height:1.55;color:#22302a;text-wrap:pretty}
+  .op-kto{margin-top:11px;font-size:13.5px;color:#6d786f}
+  .op-kto strong{font-weight:700;color:#16211a}
+
+  /* ---------- S7 · DOMKNIĘCIE ---------- */
+  .konc{max-width:760px;margin:0 auto;text-align:center}
+  .konc h2{margin:0 auto;max-width:16ch}
+  .konc .sub{margin:18px auto 0;max-width:50ch}
+  .konc-form{margin-top:clamp(30px,3.6vw,42px);text-align:left}
+
+  /* ---------- pasek CTA na mobile ---------- */
+  .mob-cta{display:none}
+
+  /* ---------- RESPONSYWNOŚĆ ---------- */
+  @media (max-width:1080px){
+    .mail-grid{grid-template-columns:1fr;gap:clamp(28px,4vw,40px)}
+    .min-head{grid-template-columns:1fr;align-items:start;gap:18px}
+    .nb-w,.granica,.dow{grid-template-columns:1fr;gap:10px}
+    .dow{gap:26px}
+  }
+  @media (max-width:860px){
+    /* Oś kładzie się pionowo: linia po lewej, etapy jeden pod drugim. */
+    .os-lista{grid-template-columns:1fr;gap:0}
+    .os-tor{left:7px;right:auto;top:0;bottom:0;width:1px;height:auto;background:linear-gradient(180deg,#d7e2d4 0%,#d7e2d4 82%,rgba(215,226,212,0) 100%);transform:scaleY(0);transform-origin:top;transition:transform 1s cubic-bezier(.4,0,.2,1)}
+    .os.on .os-tor{transform:scaleY(1)}
+    .os-etap{padding:0 0 26px 30px}
+    .os-etap:last-child{padding-bottom:0}
+    .os-kropka{position:absolute;left:0;top:3px}
+    .os-kiedy{margin-top:0}
+    .os-d{max-width:none}
+    /* Pasek 30 minut: opisy pod paskiem przestają być kolumnami. */
+    .pasek{height:44px}
+    .pasek-seg span{font-size:11px}
+    .pasek-opisy{display:block;margin-top:20px}
+    .pasek-opis{display:grid;grid-template-columns:52px 1fr;gap:14px;width:auto !important;padding:12px 0;border-top:1px solid #dfe8db}
+    .pasek-opis::before{content:attr(data-min);font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:700;color:#0a7a52;padding-top:2px}
+    .odczyt{max-width:none}
+    .mob-cta{display:flex;align-items:center;gap:12px;position:fixed;left:0;right:0;bottom:0;z-index:70;padding:11px clamp(14px,4vw,20px) calc(11px + env(safe-area-inset-bottom));background:rgba(255,255,255,0.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid #e2eade;box-shadow:0 -10px 30px -18px rgba(18,38,28,0.4)}
+    .mob-cta.hide{display:none}
+    body{padding-bottom:74px}
+  }
+  @media (max-width:600px){
+    .kop-wiersz{grid-template-columns:1fr;gap:5px}
+    .licz{gap:24px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .os-tor,.os-etap,.pasek-fill,.pasek-seg span,.faq-a,.faq-ico{transition:none}
+    .os-tor{transform:none}
+    .os-etap{opacity:1;transform:none}
+    .pasek-fill{transform:scaleX(1)}
+    .pasek-seg span{opacity:1}
+  }
+</style>
+
+<!-- ============ S0 · FORMULARZ ============ -->
+<section id="formularz" class="fold">
+<h1>Zostaw kontakt, resztę ustalimy w 30 minut</h1>
+<p class="fold-lead">Formularz zajmuje minutę. Odzywamy się w jeden dzień roboczy, żeby dobrać termin rozmowy. Kilka dni po niej dostajesz mail z pierwszym krokiem — opisanym tak, żeby dało się go komuś zlecić.</p>
+
+<FormularzLead id="gora" zrodlo="darmowa-konsultacja-v2 · formularz u góry" portret={true} />
+
+<div class="fold-pod">
+<p>Rozmowa jest bezpłatna i nie kończy się ofertą. Jeśli nie widzimy sensownego pierwszego kroku, mówimy to na tym samym spotkaniu.</p>
+<div class="fold-kontakt">
+Wolisz napisać? <a href={`mailto:${KONTAKT_MAIL}`} class="lnk-green">{KONTAKT_MAIL}</a>
+</div>
+</div>
+</section>
+
+<!-- ============ S1 · CO SIĘ WYDARZY ============ -->
+<section id="co-dalej" class="sec sec-tint">
+<h2 class="h-sec" style="margin:0;max-width:18ch">Co się dzieje po wysłaniu formularza</h2>
+
+<div class="os" data-anim>
+<span class="os-tor" aria-hidden="true"></span>
+<div class="os-lista">
+{ETAPY.map((e) => (
+  <div class={e.mocny ? 'os-etap mocny' : 'os-etap'}>
+    <span class="os-kropka" aria-hidden="true"></span>
+    <div class="os-kiedy">{e.kiedy}</div>
+    <div class="os-t">{e.t}</div>
+    <p class="os-d">{e.d}</p>
+  </div>
+))}
+</div>
+</div>
+
+<div class="os-stopka">Sprawa pilna? Zadzwoń: <a href={TEL_HREF} class="lnk-green">{KONTAKT_TEL}</a></div>
+</section>
+
+<!-- ============ S2 · MAIL PO ROZMOWIE ============ -->
+<section class="sec">
+<div class="mail-grid">
+
+<div>
+<h2 class="h-sec" style="margin:0">Co przychodzi mailem</h2>
+<p class="teza">Ten mail zostaje u Ciebie <em>niezależnie od tego</em>, czy zaczniemy współpracę.</p>
+<p class="mail-poza">Piszemy go po rozmowie, w kilka dni roboczych. Ma opisać jeden krok na tyle dokładnie, żeby dało się go zrobić bez nas — z zespołem, który już macie, albo z inną firmą.</p>
+</div>
+
+<div>
+<div class="koperta">
+<div class="kop-head">
+<div class="kop-linia"><span class="kop-klucz">Od</span><span>Szymon Kita — Let&rsquo;s automate</span></div>
+<div class="kop-linia"><span class="kop-klucz">Temat</span><span class="kop-temat">Po naszej rozmowie — od czego zacząć</span></div>
+</div>
+<div class="kop-body">
+<div class="kop-wiersz">
+<div class="kop-et">Proces</div>
+<div class="kop-tr">Ofertowanie — od zapytania w skrzynce do oferty wysłanej klientowi.</div>
+</div>
+<div class="kop-wiersz">
+<div class="kop-et">Gdzie ucieka czas</div>
+<div class="kop-tr">Te same dane wpisujecie w trzech miejscach: mail, arkusz wyceny, system. Oferta czeka średnio <strong>dwa dni</strong> na akceptację, bo prośba idzie mailem i ginie w skrzynce.</div>
+</div>
+<div class="kop-wiersz">
+<div class="kop-et">Pierwszy krok</div>
+<div class="kop-tr">Jedno miejsce, w którym powstaje oferta. Dane z zapytania wchodzą do niej same, akceptacja idzie powiadomieniem z terminem.</div>
+</div>
+<div class="kop-wiersz">
+<div class="kop-et">Czego bym teraz nie ruszał</div>
+<div class="kop-tr">Wymiany systemu magazynowego. Kosztuje najwięcej, a na czas oferty nie wpływa.</div>
+</div>
+<div class="kop-wiersz">
+<div class="kop-et">Co możecie zrobić sami</div>
+<div class="kop-tr">Policzyć, ile ofert wychodzi w miesiącu i ile z nich wraca do poprawki. Bez tej liczby żadna wycena wdrożenia nie ma podstawy.</div>
+</div>
+</div>
+<div class="kop-stopa">Nakład na pierwszy krok i rząd wielkości kosztu podajemy w tym samym mailu, na podstawie tego, co usłyszymy na rozmowie.</div>
+</div>
+<p class="podpis-rys">Przykład. Treść jest zmyślona, układ prawdziwy — tak wygląda mail, który wysyłamy po konsultacji.</p>
+</div>
+
+</div>
+</section>
+
+<!-- ============ S3 · JAK WYGLĄDA ROZMOWA ============ -->
+<section class="sec sec-tint">
+<div class="min-head">
+<h2 class="h-sec" style="margin:0;max-width:14ch">Jak wygląda ta rozmowa</h2>
+<p class="sub" style="margin:0 0 6px">Trzydzieści minut, cztery części. Najdłuższa jest ta, w której my tylko dopytujemy.</p>
+</div>
+
+<div class="pasek" data-anim role="img" aria-label={`Pasek trzydziestu minut rozmowy podzielony na cztery części: ${AGENDA.map((a) => `${a.t} — ${a.min} minut`).join(', ')}.`}>
+{AGENDA.map((a) => (
+  <div class={a.mocny ? 'pasek-seg mocny' : 'pasek-seg'} style={`width:${pct(a.min)}%`}><i class="pasek-fill"></i><span>{a.min} min</span></div>
+))}
+</div>
+
+<div class="pasek-opisy" aria-hidden="true">
+{AGENDA.map((a) => (
+  <div class="pasek-opis" data-min={`${a.min} min`} style={`width:${pct(a.min)}%`}>
+    <div>
+      <div class="t">{a.t}</div>
+      <p class="d">{a.d}</p>
+    </div>
+  </div>
+))}
+</div>
+
+<p class="odczyt">{TWOJE_MINUTY} z {MINUTY} minut mówisz Ty.</p>
+
+<div class="pyt">
+<p class="pyt-wstep">Do rozmowy nie musisz się przygotowywać — od zadawania pytań jesteśmy my. Gdybyś jednak chciał mieć odpowiedzi wcześniej, padną te:</p>
+<div class="pyt-lista">
+{PYTANIA.map((p, i) => (
+  <div class="pyt-w"><span class="pyt-n">{String(i + 1).padStart(2, '0')}</span><span>{p}</span></div>
+))}
+</div>
+</div>
+</section>
+
+<!-- ============ S4 · CZEGO NIE BĘDZIE ============ -->
+<section class="sec" style="padding-bottom:clamp(10px,1.4vw,20px)">
+<div class="ciemny">
+<h2 class="h-sec" style="margin:0;max-width:16ch;color:#ffffff">Czego na tej rozmowie nie będzie</h2>
+
+<div class="nb-lista">
+{NIE_BEDZIE.map((n) => (
+  <div class="nb-w">
+    <div class="nb-t">{n.t}</div>
+    <p class="nb-d">{n.d}</p>
+  </div>
+))}
+</div>
+
+<div class="granica">
+<h3>Kiedy nie warto się umawiać</h3>
+<div>
+{GRANICE.map((g) => (<p>{g}</p>))}
+</div>
+</div>
+
+<a href="#formularz" class="wroc btn-accent">Wróć do formularza <span aria-hidden="true">↑</span></a>
+</div>
+</section>
+
+<!-- ============ S5 · DOWÓD ============ -->
+<section class="sec">
+<div class="dow">
+<div>
+<h2 class="h-sec" style="margin:0">Zgłosili się przed Tobą</h2>
+<div class="licz">
+<div>
+<div class="licz-n">140+</div>
+<div class="licz-l">firm</div>
+</div>
+<div>
+<div class="licz-n">200+</div>
+<div class="licz-l">wdrożeń</div>
+</div>
+</div>
+</div>
+
+<div>
+{OPINIE.map((o) => (
+  <figure class="op-w" style="margin:0">
+    <blockquote class="op-q" style="margin:0">&bdquo;{o.q}&rdquo;</blockquote>
+    <figcaption class="op-kto"><strong>{o.kto}</strong> · {o.rola}</figcaption>
+  </figure>
+))}
+</div>
+</div>
+</section>
+
+<!-- ============ S6 · FAQ ============ -->
+<GcFaq
+  heading="Zanim wypełnisz formularz"
+  lead="Sześć pytań, które słyszymy przed pierwszą rozmową. Nie ma tu Twojego?"
+  ctaLabel="Zadaj je nam wprost →"
+  ctaHref="#formularz"
+  items={FAQ}
+/>
+
+<!-- ============ S7 · DOMKNIĘCIE ============ -->
+<section id="kontakt" class="sec">
+<div class="konc">
+<h2 class="h-sec" style="margin:0">Zostaw kontakt</h2>
+<p class="sub">Ten sam formularz co na górze — dotarłeś na dół strony, więc masz go pod ręką. Odzywamy się w jeden dzień roboczy, żeby dobrać termin.</p>
+
+<div class="konc-form">
+<FormularzLead
+  id="dol"
+  zrodlo="darmowa-konsultacja-v2 · formularz na dole"
+  wariant="jasny"
+  submitLabel="Wyślij zgłoszenie"
+  podpis="Bezpłatnie i bez zobowiązań. Odpowiadamy w jeden dzień roboczy."
+/>
+</div>
+
+<p class="sub" style="margin:22px auto 0;font-size:15px">
+Wolisz napisać lub zadzwonić? <a href={`mailto:${KONTAKT_MAIL}`} class="lnk-green" style="font-weight:700;color:#0a7a52">{KONTAKT_MAIL}</a>
+<span style="color:#c3cbc2"> · </span>
+<a href={TEL_HREF} class="lnk-green" style="font-weight:700;color:#0a7a52;white-space:nowrap">{KONTAKT_TEL}</a>
+</p>
+</div>
+</section>
+
+
+<!-- pasek CTA na mobile — znika, gdy któryś formularz jest w kadrze -->
+<div class="mob-cta hide" id="mobCta">
+<a href={TEL_HREF} aria-label="Zadzwoń" style="display:flex;align-items:center;justify-content:center;width:48px;height:48px;flex-shrink:0;border:1px solid #e2eade;border-radius:11px;color:#0a7a52"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .3 1.9.6 2.8a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.2-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.5 2.8.6a2 2 0 0 1 1.7 2z"/></svg></a>
+<a href="#formularz" style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;background:#0a7a52;color:#fff;padding:15px 20px;border-radius:11px;font-weight:750;font-size:16px">Umów konsultację <span aria-hidden="true">→</span></a>
+</div>
+
+<script>
+  // ---- Odsłanianie sekcji przy wejściu w kadr ----
+  (function(){
+    var els = document.querySelectorAll('[data-anim]');
+    if(!els.length) return;
+    var redukcja = window.matchMedia && window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+    if(redukcja || !('IntersectionObserver' in window)){
+      els.forEach(function(el){ el.classList.add('on'); });
+      return;
+    }
+    var io = new IntersectionObserver(function(wpisy){
+      wpisy.forEach(function(w){
+        if(w.isIntersecting){ w.target.classList.add('on'); io.unobserve(w.target); }
+      });
+    }, { threshold: 0.25 });
+    els.forEach(function(el){ io.observe(el); });
+  })();
+
+  // ---- Formularze: walidacja, wysyłka, stan po wysłaniu ----
+  //
+  // Na stronie stoją dwa formularze (u góry i w domknięciu) i jeden skrypt
+  // obsługuje oba. Wszystko, czego potrzebuje, siedzi wewnątrz [data-lead],
+  // więc identyfikatory pól nie mają znaczenia.
+  (function(){
+    var ENDPOINT = '/api/kontakt';
+    var MAIL = 'hello@letsautomate.pl';
+    var formy = document.querySelectorAll('[data-lead]');
+    if(!formy.length) return;
+
+    var REGULY = [
+      { pole: 'email',   msg: 'Sprawdź adres e-mail.',   ok: function(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v); } },
+      { pole: 'telefon', msg: 'Sprawdź numer telefonu.', ok: function(v){ return v.replace(/\D/g, '').length >= 9; } }
+    ];
+
+    function pole(el){ return el.closest ? el.closest('.f-field') : null; }
+
+    function bladWl(el, msg){
+      var f = pole(el); if(!f) return;
+      f.classList.add('err');
+      el.setAttribute('aria-invalid', 'true');
+      var box = f.querySelector('.f-err');
+      if(box && msg) box.textContent = msg;
+    }
+    function bladWyl(el){
+      var f = pole(el); if(!f) return;
+      f.classList.remove('err');
+      el.removeAttribute('aria-invalid');
+    }
+
+    formy.forEach(function(form){
+      var karta = form.closest('.fk');
+      var btn = form.querySelector('[data-submit]');
+      var etykieta = btn.querySelector('[data-label]');
+      var zgoda = form.querySelector('[data-consent]');
+      var wierszZgody = form.querySelector('[data-consent-row]');
+      var awaria = form.querySelector('[data-fallback]');
+      var okBox = karta ? karta.querySelector('[data-ok]') : null;
+
+      function sprawdz(){
+        var pierwszy = null;
+        REGULY.forEach(function(r){
+          var el = form.elements[r.pole];
+          var v = (el.value || '').trim();
+          if(v && r.ok(v)){ bladWyl(el); }
+          else { bladWl(el, v ? r.msg : 'To pole jest wymagane.'); if(!pierwszy) pierwszy = el; }
+        });
+        wierszZgody.classList.toggle('err', !zgoda.checked);
+        if(!zgoda.checked && !pierwszy) pierwszy = zgoda;
+        return pierwszy;
+      }
+
+      form.addEventListener('input', function(e){ if(pole(e.target)) bladWyl(e.target); });
+      zgoda.addEventListener('change', function(){ wierszZgody.classList.toggle('err', !zgoda.checked); });
+
+      function telefonPelny(){
+        return (form.elements.kierunkowy.value + ' ' + (form.elements.telefon.value || '').trim()).trim();
+      }
+
+      function pokazOk(){
+        // Echo adresu — literówkę widać od razu, zanim zaczniemy czekać na odpowiedź.
+        var echo = okBox.querySelector('[data-echo]');
+        var echoTxt = okBox.querySelector('[data-echo-text]');
+        var mail = (form.elements.email.value || '').trim();
+        if(echo && echoTxt && mail){
+          echoTxt.textContent = mail;
+          echo.hidden = false;
+        }
+        form.hidden = true;
+        okBox.hidden = false;
+        okBox.scrollIntoView({ block: 'nearest' });
+        okBox.focus();
+      }
+
+      function pokazAwarie(){
+        // Nie udajemy wysyłki — dajemy drogę, którą zgłoszenie naprawdę dojdzie.
+        var mailto = awaria.querySelector('[data-mailto]');
+        if(mailto){
+          mailto.href = 'mailto:' + MAIL
+            + '?subject=' + encodeURIComponent('Bezpłatna konsultacja — zgłoszenie')
+            + '&body=' + encodeURIComponent(
+                'E-mail: ' + (form.elements.email.value || '').trim()
+                + '\nTelefon: ' + telefonPelny()
+                + '\n\n' + (form.elements.wiadomosc.value || '').trim()
+              );
+        }
+        awaria.hidden = false;
+        awaria.scrollIntoView({ block: 'nearest' });
+      }
+
+      // Podgląd ekranu po wysłaniu (?sukces=1) omija wysyłkę — inaczej
+      // podejrzenie stanu sukcesu wysyłałoby puste zgłoszenie na skrzynkę.
+      form.podgladSukcesu = pokazOk;
+
+      form.addEventListener('submit', function(e){
+        e.preventDefault();
+        var zly = sprawdz();
+        if(zly){ zly.focus(); return; }
+
+        btn.disabled = true;
+        var napis = etykieta.textContent;
+        etykieta.textContent = 'Wysyłam…';
+        awaria.hidden = true;
+
+        fetch(ENDPOINT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({
+            email: (form.elements.email.value || '').trim(),
+            telefon: telefonPelny(),
+            wiadomosc: (form.elements.wiadomosc.value || '').trim(),
+            firma_www: form.elements.firma_www.value || '',
+            zrodlo: form.dataset.zrodlo || 'darmowa-konsultacja'
+          })
+        })
+          .then(function(r){
+            if(!r.ok) throw new Error('HTTP ' + r.status);
+            pokazOk();
+          })
+          .catch(function(){
+            btn.disabled = false;
+            etykieta.textContent = napis;
+            pokazAwarie();
+          });
+      });
+    });
+
+    // Podgląd ekranu po wysłaniu bez wysyłki: ?sukces=1
+    if(location.search.indexOf('sukces=1') > -1){
+      var pierwsza = formy[0];
+      pierwsza.elements.email.value = 'jan@firma.pl';
+      if(pierwsza.podgladSukcesu) pierwsza.podgladSukcesu();
+    }
+  })();
+
+  // ---- Pasek CTA na mobile: tylko gdy żaden formularz nie jest w kadrze ----
+  (function(){
+    var bar = document.getElementById('mobCta');
+    var cele = document.querySelectorAll('.fk');
+    if(!bar || !cele.length || !('IntersectionObserver' in window)) return;
+    var widoczne = 0;
+    var io = new IntersectionObserver(function(wpisy){
+      wpisy.forEach(function(w){ widoczne += w.isIntersecting ? 1 : -1; });
+      if(widoczne < 0) widoczne = 0;
+      bar.classList.toggle('hide', widoczne > 0);
+    }, { threshold: 0.12 });
+    cele.forEach(function(el){ io.observe(el); });
+  })();
+</script>
+
+</LaBase>

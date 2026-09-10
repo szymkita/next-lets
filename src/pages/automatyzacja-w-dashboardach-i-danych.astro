@@ -1,0 +1,203 @@
+---
+// OBSZAR: DASHBOARDY I DANE — /automatyzacja-w-dashboardach-i-danych
+// GSC za 12 mies.: 6 kliknięć, 3 042 wyświetlenia, pozycja 11,5.
+// Najsłabsza z szóstki pod względem wejść, ale pozycja jest przyzwoita.
+//
+// Stara strona miała tu wklejone copy ze sprzedaży w całej sekcji
+// definicyjnej. Tekst napisany od zera.
+//
+// OŚ STRONY: rozjazd. Nie „ładny wykres", tylko to, że dwa systemy podają
+// dwie różne liczby i narada zaczyna się od ustalania, która jest prawdziwa.
+// To jedyna strona z szóstki, na której argumentem jest zaufanie do liczby,
+// a nie czas — dlatego ciemny pas mierzy tu drogę do jednej liczby.
+//
+// DO POTWIERDZENIA PRZED PUBLIKACJĄ:
+// · Rachunek przykładowy dla firmy z czterema systemami źródłowymi.
+// · Czasy w ciemnym pasie — założenie.
+// · Zdanie o odsyłaniu do gotowego narzędzia BI — decyzja Szymona.
+import ObszarStrona from '../components/ObszarStrona.astro';
+
+const d = {
+  slug: '/automatyzacja-w-dashboardach-i-danych',
+  dzial: 'Dashboardy i dane',
+  h1: 'Automatyzacja w dashboardach i danych',
+  alt: ['Automatyzacja raportowania', 'Dashboard firmowy', 'Integracja danych z różnych systemów'],
+  typ: 'Automatyzacja raportowania i łączenia danych z wielu systemów',
+  audytorium: 'Firmy, w których raporty powstają ręcznie, a systemy podają rozbieżne liczby',
+  title: "Automatyzacja w dashboardach i danych — jedna liczba zamiast czterech | Let's automate",
+  description: 'Łączymy dane z systemów, które podają różne liczby, i budujemy raporty składające się same. Każda liczba ma zapisane źródło i definicję. Zaczynamy od policzenia, ile kosztuje dziś raportowanie.',
+
+  naglowek: 'Dwa systemy, dwie różne liczby, jedna narada o tym, która jest prawdziwa',
+  lead: 'Problemem rzadko jest brak wykresu. Problemem jest to, że sprzedaż podaje jedną liczbę, księgowość drugą, i zanim ktokolwiek zacznie decydować, pół spotkania idzie na uzgodnienie, skąd się wzięła różnica. Zaczynamy od definicji, potem dopiero od wykresu.',
+
+  rachunek: {
+    naglowek: 'Rachunek raportowania',
+    podsumowanie: 'Praca nad liczbami miesięcznie',
+    wiersze: [
+      { t: 'Odpowiedź na pytanie „ile mamy X"', ile: 200, min: 7 },
+      { t: 'Ręczne wyciąganie danych z systemów', ile: 88, min: 12 },
+      { t: 'Sklejanie raportu miesięcznego z arkuszy', ile: 4, min: 240 },
+      { t: 'Uzgadnianie, która liczba jest prawdziwa', ile: 30, min: 25 },
+      { t: 'Poprawianie danych wpisanych ręcznie', ile: 140, min: 5 },
+    ],
+    nota: 'Przykładowy rachunek firmy z czterema systemami źródłowymi — liczby są poglądowe. Na bezpłatnej diagnozie wypełniamy tę samą tabelkę Waszymi danymi.',
+  },
+
+  definicja: {
+    h2: 'Czym jest automatyzacja w dashboardach i danych?',
+    akapit: 'Automatyzacja w dashboardach i danych to zebranie danych z systemów, w których dziś leżą osobno, uzgodnienie jednej definicji dla każdej liczby i pokazanie ich w jednym miejscu, które odświeża się samo.',
+    drugi: 'Kolejność jest tu ważniejsza niż na pozostałych stronach. Wykres postawiony nad danymi, których nikt nie uzgodnił, nie kończy sporu o liczby — przenosi go tylko z arkusza na ekran. Dlatego zaczynamy od spisania, co u Was znaczy „sprzedaż w miesiącu", i dopiero potem od tego, jak to narysować.',
+    listaTytul: 'Co robimy najczęściej',
+    lista: [
+      { t: 'Jedną definicję dla każdej liczby', d: 'spisaną i uzgodnioną między działami' },
+      { t: 'Zbieranie danych z systemów źródłowych', d: 'z CRM, ERP, magazynu, sklepu i księgowości' },
+      { t: 'Sprawdzanie poprawności przy wejściu', d: 'brakujące pola i wartości poza zakresem' },
+      { t: 'Widok, który odświeża się sam', d: 'z datą ostatniego odświeżenia przy każdej liczbie' },
+      { t: 'Powiadomienie o zmianie, która ma znaczenie', d: 'zamiast raportu, który nikt nie otwiera' },
+    ],
+  },
+
+  zastosowania: {
+    h2: 'Co konkretnie robimy przy danych',
+    lead: 'Siedem pozycji w kolejności, która ma tu znaczenie: definicja przed wykresem, zawsze.',
+    wiersze: [
+      {
+        t: 'Uzgodnienie definicji, zanim powstanie wykres',
+        d: 'Spisujemy z Wami, co znaczy każda liczba na widoku: od kiedy sprzedaż jest sprzedażą, czy liczy się z rabatem, co robimy ze zwrotem. To jest najnudniejszy tydzień tej pracy i ten, po którym narady przestają zaczynać się od sporu.',
+        e: 'Definicja i jej właściciel dostępne przy każdej liczbie na widoku.',
+      },
+      {
+        t: 'Jedno miejsce zamiast czterech eksportów',
+        d: 'Dane z systemów źródłowych trafiają do jednego zbioru w ustalonym rytmie, razem z informacją, kiedy ostatnio przyszły. Kończy się poranne pobieranie plików i sklejanie ich w arkuszu.',
+        e: 'Data i godzina ostatniego odświeżenia przy każdym źródle.',
+      },
+      {
+        t: 'Sprawdzanie danych przy wejściu',
+        d: 'Brakujące pola, wartości poza zakresem i pozycje, których nie da się dopasować, są zatrzymywane i pokazane jako lista do poprawy. Błąd wychodzi w dniu, w którym powstał.',
+        e: 'Liczba pozycji odrzuconych przy wejściu, widoczna przy każdym odświeżeniu.',
+      },
+      {
+        t: 'Widok dla zarządu i widok dla działu',
+        d: 'Te same dane w dwóch układach: jeden pokazuje wynik i odchylenie od planu, drugi to, co dana osoba może dziś zrobić. Widok, z którego nie wynika żadne działanie, wypada przed budową.',
+        e: 'Ten sam wynik w obu widokach, liczony z jednej definicji.',
+      },
+      {
+        t: 'Powiadomienie zamiast raportu do przeczytania',
+        d: 'Zamiast zestawienia, które ktoś ma otworzyć, wiadomość idzie wtedy, kiedy liczba wychodzi poza uzgodniony zakres. Marża poniżej progu, zapas poniżej minimum, koszt kampanii ponad plan.',
+        e: 'Historia powiadomień razem z wartością, która je wywołała.',
+      },
+      {
+        t: 'Zamknięcie miesiąca bez sklejania',
+        d: 'Raport miesięczny powstaje z tych samych danych co widok dzienny, w stałym terminie i w stałym układzie. Największa pojedyncza pozycja z rachunku u góry strony znika prawie w całości.',
+        e: 'Ten sam raport co miesiąc, z datą i źródłem każdej liczby.',
+      },
+      {
+        t: 'Prognoza tam, gdzie dane na nią pozwalają',
+        d: 'Przy stabilnej historii da się pokazać, dokąd zmierza zapas albo sprzedaż, razem z zakresem błędu. Przy krótkiej historii mówimy, że prognoza będzie zgadywaniem z wykresem, i tego nie budujemy.',
+        e: 'Zakres błędu podany przy każdej prognozie, sprawdzalny wstecz.',
+      },
+    ],
+  },
+
+  sprawa: {
+    eyebrow: 'Jedna liczba',
+    h2: 'Sprzedaż za zeszły miesiąc',
+    lead: 'Ta sama liczba, przed wdrożeniem i po nim. Kroki przekreślone przestają istnieć — zostaje spojrzenie na wynik, bo o to od początku chodziło.',
+    sprawa: 'Sprzedaż w miesiącu',
+    miara: 'Do liczby, której nikt nie kwestionuje',
+    sumaPrzed: '2 dni',
+    sumaPo: '4 min',
+    przed: [
+      { t: 'Ktoś pobiera eksporty z czterech systemów', czas: '35 min' },
+      { t: 'Skleja je w arkuszu i dopasowuje kolumny', czas: '2 h' },
+      { t: 'Poprawia pozycje, których nie dało się dopasować', czas: '50 min' },
+      { t: 'Wynik nie zgadza się z księgowością', czas: '1 dzień' },
+      { t: 'Narada o tym, która liczba jest prawdziwa', czas: '45 min' },
+    ],
+    po: [
+      { t: 'Dane przyszły w nocy, z zapisanym źródłem', czas: 'w nocy' },
+      { t: 'Skleja je w arkuszu i dopasowuje kolumny', czas: '—', znika: true },
+      { t: 'Pozycje odrzucone czekają jako lista do poprawy', czas: '4 min' },
+      { t: 'Wynik nie zgadza się z księgowością', czas: '—', znika: true },
+      { t: 'Narada o tym, która liczba jest prawdziwa', czas: '—', znika: true },
+    ],
+    nota: 'Najdroższa pozycja po lewej to <strong>dzień stracony na rozjeździe między dwoma systemami</strong>. Nie da się jej usunąć szybszym pobieraniem danych — usuwa ją dopiero jedna spisana definicja, uzgodniona przed budową czegokolwiek. To jest ten nudny tydzień, od którego zaczynamy.',
+  },
+
+  routing: {
+    h2: 'Która usługa odpowiada na to u Was',
+    lead: 'Przy danych kolejność jest sztywna: najpierw dane mają dojeżdżać, potem cokolwiek się nad nimi rysuje.',
+    wiersze: [
+      {
+        t: 'Automatyzacje i integracje',
+        h: '/automatyzacje-integracje',
+        kiedy: 'kiedy dane mają dojechać z systemów do jednego miejsca',
+        d: 'Połączenia między CRM, ERP, sklepem i księgowością, z alarmem, kiedy któreś przestanie dowozić dane. Najtańsze wejście i warunek wstępny dla wszystkiego dalej.',
+      },
+      {
+        t: 'Systemy procesowe',
+        h: '/systemy-procesowe',
+        kiedy: 'kiedy dane w ogóle nie powstają w systemie',
+        d: 'Jeśli proces żyje w arkuszu i w mailu, nie ma czego zbierać. Wtedy najpierw system prowadzący sprawę, a raport jest jego produktem ubocznym.',
+      },
+      {
+        t: 'Strategia transformacji AI',
+        h: '/strategia-ai',
+        kiedy: 'kiedy pomysłów na raporty jest kilkanaście',
+        d: 'Uporządkowanie kolejności i wskazanie, które liczby naprawdę zmieniają decyzje. Z arkuszem, w którym przy każdej pozycji stoi kolumna „skąd".',
+      },
+    ],
+  },
+
+  granica: {
+    h3: 'Kiedy nie warto tego robić',
+    punkty: [
+      'Wasze dane leżą już w jednym systemie, który ma własne raportowanie. Wtedy najtańszą drogą jest nauczenie się go albo gotowe narzędzie analityczne podpięte wprost — i tak powiemy, także wtedy, gdy oznacza to brak zlecenia.',
+      'Chcecie widoku, żeby był. Widok, z którego nie wynika żadna decyzja, kosztuje utrzymanie i przestaje być otwierany po sześciu tygodniach. Pytamy przy każdej liczbie, kto i co z nią zrobi, i tę bez odpowiedzi wykreślamy przed budową.',
+      'Dane wpisują ludzie i wpisują je nierzetelnie. Raport nad takimi danymi produkuje wiarygodnie wyglądające liczby, które są nieprawdziwe. Najpierw miejsce, w którym dane powstają, potem wykres nad nimi.',
+    ],
+  },
+
+  cta: {
+    heading: 'Policzmy, ile kosztuje dziś Wasze raportowanie',
+    lead: 'Bezpłatna diagnoza: bierzemy jedną liczbę, której używacie na naradach, i sprawdzamy, ile rąk i ile godzin dzieli ją od źródła. Wynik dostajecie niezależnie od tego, czy zdecydujecie się cokolwiek u nas zamawiać.',
+    items: [
+      { t: 'Droga jednej liczby', d: 'z ilu systemów pochodzi i gdzie po drodze się rozjeżdża' },
+      { t: 'Lista definicji do uzgodnienia', d: 'te liczby, które u Was znaczą co innego w dwóch działach' },
+      { t: 'Lista odradzeń', d: 'widoki, których nie warto budować, i powód przy każdym' },
+    ],
+    fieldLabel: 'Jak dziś powstają u Was raporty?',
+    placeholder: 'Np. cztery systemy, raport miesięczny sklejany w Excelu, sprzedaż i księgowość podają różne liczby…',
+  },
+
+  faqTytul: 'Pytania, które padają przy danych',
+  faqLead: 'Zebrane z rozmów o raportowaniu.',
+  faq: [
+    {
+      q: 'Mamy Power BI i to nie działa. Co robicie inaczej?',
+      a: 'Zwykle nic w warstwie narzędzia i często zostajemy przy tym, co macie. Raporty przestają działać najczęściej z dwóch powodów: dane dojeżdżają nieregularnie albo dwa działy liczą tę samą rzecz inaczej. Pierwsze naprawia się połączeniami z alarmem, drugie spisaną definicją. Wykres jest ostatnim krokiem i najtańszym.',
+    },
+    {
+      q: 'Po co uzgadniać definicje, skoro liczby są w systemie?',
+      a: 'Bo systemy liczą różne rzeczy pod tą samą nazwą. Sprzedaż liczy od podpisania, księgowość od faktury, magazyn od wydania — i wszystkie trzy mają rację we własnym kontekście. Dopóki nie ma jednej zapisanej definicji z właścicielem, każda narada zaczyna się od uzgadniania i dopiero potem dochodzi do decyzji. To jest tydzień pracy, który zwraca się na pierwszym zamknięciu miesiąca.',
+    },
+    {
+      q: 'Ile to kosztuje?',
+      a: 'Wyceniamy po rozmowie, na której przechodzimy drogę jednej liczby od źródła do widoku. O kwocie rozstrzyga liczba systemów źródłowych, to, czy mają API, i ile definicji trzeba uzgodnić. Zamknięcie miesiąca jest zwykle pozycją, która zwraca się najszybciej, dlatego proponujemy je jako pierwsze.',
+    },
+    {
+      q: 'Czy dane muszą wyjść z naszych systemów?',
+      a: 'Nie muszą wychodzić poza Waszą infrastrukturę i standardowo tak to stawiamy. Jeśli w grę wchodzi usługa zewnętrzna, mówimy przed wyceną, która to jest, jakie dane do niej trafiają i co da się zrobić u Was. Dostęp, repozytorium i klucze są Wasze od pierwszego dnia, a prowizji od żadnego dostawcy nie mamy.',
+    },
+    {
+      q: 'Ile to trwa?',
+      a: 'Uzgodnienie definicji to zwykle tydzień do dwóch, w zależności od tego, ile działów siada do stołu. Zbieranie danych z systemów z API to kilka dni na źródło. Pierwszy widok, z którego coś wynika, stoi zwykle po miesiącu — i to on rozstrzyga, czy warto budować kolejne.',
+    },
+    {
+      q: 'Kto to utrzymuje, kiedy zmieni się system źródłowy?',
+      a: 'Każde połączenie ma opisane zachowanie przy błędzie i alarm z progiem czasowym, więc o tym, że dane przestały dojeżdżać, wiadomo w minutach, na długo przed zamknięciem miesiąca. Definicje i dokumentacja są Wasze od pierwszego dnia. Jeśli utrzymujemy my, umowa obejmuje poprawki po zmianach u dostawców, bo to one psują raporty najczęściej.',
+    },
+  ],
+};
+---
+<ObszarStrona d={d} />

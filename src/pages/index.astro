@@ -1,6 +1,46 @@
 ---
-// Strona Let's automate v9 — odtworzenie designu jako responsywna strona Astro
-import TopbarWiseGroup from '../components/TopbarWiseGroup.astro';
+// STRONA GŁÓWNA — /
+// Wariant roboczy index-v2 wszedł tu 07.09.2026. Poprzednia wersja strony
+// siedzi w gicie (ostatni commit sprzed podmiany: 2414ed6).
+//
+// ZDJĘCIA — REGUŁA, KTÓRA TU OBOWIĄZUJE
+// Portret wtapia się w sekcję maską tylko wtedy, gdy tło kadru zgadza się
+// z tłem sekcji. Zdjęcie Piotra jest z zielonej ściany z neonem, więc wchodzi
+// w #0e2b1d w „Czym się różnimy" bez szwu i bez ramki. Portrety ze studyjnego
+// jasnego tła (/szymon-kita.jpg) tak NIE zadziałają — maska zostawia tam szarą
+// plamę, dlatego Szymon występuje w okrągłych kadrach (sekcja drogi, oferta,
+// FAQ) i w ramce przy formularzu, gdzie jego tło zgadza się z białą kartą.
+//
+// CZEGO TU CELOWO NIE MA
+// — Kółek 46 px z rejestru zespołu na ciemnej zieleni: szare wycinki na
+//   ciemnym tle robią z ludzi kropki, których nie da się rozpoznać.
+// — Fotografii nastrojowej (krajobrazy pod wykresem, tła sekcji).
+// — Osobnej sekcji „skład studia": zdjęcia mają siedzieć w sekcjach, które
+//   już są, a pełny rejestr zespołu żyje na /dlaczego-my.
+//
+import Nawigacja from '../components/Nawigacja.astro';
+
+// Ściana opinii. Taśma musi być zawsze szersza niż DWA ekrany, inaczej po
+// przewinięciu pierwszego zestawu widać pustkę — przy dwóch kopiach taśma
+// miała 2860 px i dziura pojawiała się już na 1440 px. Stąd KOPIE = 5:
+// 20 kart to 7180 px, czyli pętla trzyma się do 3590 px szerokości okna.
+// Krok animacji musi równać się szerokości JEDNEGO zestawu: przy N kopiach
+// to -(100/N)% minus odstęp/N, czyli tutaj calc(-20% - 4px). Zmieniasz KOPIE
+// — zmieniasz też @keyframes marq-scroll.
+const KOPIE = 5;
+const OPINIE = [
+  { cytat: 'Wprowadzenie danych trwało godzinę. Dziś przesłanie oferty to <span style="color:#0a7a52;font-weight:700">10 minut</span> — oszczędności liczymy w etatach.',
+    odznaka: { z: '60 min', na: '10 min' }, kto: 'Mateusz Chinczewski', rola: 'Prezes Zarządu, Finerto' },
+  { cytat: 'Let\'s automate wziął pełną odpowiedzialność za projekt i dowiózł go do końca. To dlatego powierzyliśmy im kolejny, znacznie większy.',
+    kto: 'Jakub Ciołkowski', rola: 'Członek Zarządu, NARS Polska' },
+  { cytat: 'Bardzo dobrze zrozumieli nasze potrzeby i zaprojektowali scenariusz, który w pełni spełnił cele biznesowe. Otwartość i komunikacja to ich DNA.',
+    kto: 'Arkadiusz Andruch', rola: 'Prezes Zarządu, X2O' },
+  { cytat: 'Korzystamy z usług Let\'s automate od roku. Świetna komunikacja, łatwo się dogadać, a jakość usług na wysokim poziomie.',
+    kto: 'Dominik Chylewski', rola: 'Wspólnik, X3D' },
+];
+
+import Stopka from '../components/Stopka.astro';
+
 ---
 <!DOCTYPE html>
 <html lang="pl">
@@ -11,7 +51,7 @@ import TopbarWiseGroup from '../components/TopbarWiseGroup.astro';
 <link rel="icon" href="/uploads/logo-2.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
-<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Schibsted+Grotesk:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
 <style>
   :root{--la-accent:#00CD77}
   *{box-sizing:border-box}
@@ -76,6 +116,39 @@ import TopbarWiseGroup from '../components/TopbarWiseGroup.astro';
     .la-droga .dg-line,.la-droga .dg-fill,.la-droga .dg-dot,.la-droga .dg-conn,.la-droga .dg-chip,.la-droga .dg-card{transition:none}
   }
 
+  /* ---------- „CZYM SIĘ RÓŻNIMY" · zdjęcie wtopione w sekcję (wariant v2) ----------
+     Maska, nie nakładka w kolorze tła: nakładka nigdy nie trafia w radialny
+     gradient sekcji i zostawia widoczną krawędź. Prawa krawędź trzyma się
+     kolumny treści (te same 1440 px co reszta strony), więc na szerokim
+     ekranie portret nie ucieka w sam róg ekranu. */
+  .dm-foto{position:absolute;right:max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));top:0;bottom:0;width:min(50%,600px);z-index:1}
+  .dm-foto img{width:100%;height:100%;object-fit:cover;object-position:54% 18%;display:block;filter:brightness(.94) saturate(.96);
+    -webkit-mask-image:linear-gradient(to right,transparent 0%,rgba(0,0,0,0.10) 8%,rgba(0,0,0,0.34) 16%,rgba(0,0,0,0.64) 24%,rgba(0,0,0,0.88) 32%,#000 39%,#000 76%,rgba(0,0,0,0.86) 84%,rgba(0,0,0,0.52) 91%,rgba(0,0,0,0.18) 96.5%,transparent 100%);
+            mask-image:linear-gradient(to right,transparent 0%,rgba(0,0,0,0.10) 8%,rgba(0,0,0,0.34) 16%,rgba(0,0,0,0.64) 24%,rgba(0,0,0,0.88) 32%,#000 39%,#000 76%,rgba(0,0,0,0.86) 84%,rgba(0,0,0,0.52) 91%,rgba(0,0,0,0.18) 96.5%,transparent 100%)}
+  .dm-podpis{position:absolute;right:clamp(16px,2.2vw,32px);bottom:clamp(18px,2.6vw,30px);z-index:2;text-align:right}
+  .dm-podpis b{display:block;font-size:15px;font-weight:800;color:#ffffff}
+  .dm-podpis span{display:block;margin-top:2px;font-size:12.5px;color:rgba(255,255,255,0.7)}
+  .dm-tresc{position:relative;z-index:2;max-width:min(56%,640px)}
+  @media (max-width:1100px){ .dm-tresc{max-width:min(64%,600px)} .dm-foto{width:min(44%,430px)} }
+  @media (max-width:860px){
+    .dm-tresc{max-width:100%}
+    .dm-foto{position:relative;right:auto;top:auto;bottom:auto;width:100%;height:250px;margin-bottom:30px;border-radius:18px;overflow:hidden}
+    .dm-foto img{object-position:50% 16%;
+      -webkit-mask-image:linear-gradient(to bottom,#000 58%,rgba(0,0,0,0.72) 86%,rgba(0,0,0,0.42) 100%);
+              mask-image:linear-gradient(to bottom,#000 58%,rgba(0,0,0,0.72) 86%,rgba(0,0,0,0.42) 100%)}
+    .dm-podpis{right:auto;left:18px;bottom:14px;text-align:left}
+  }
+
+  /* ---------- Zakładki oferty (S4) ----------
+     Pasek pokazuje, ile zostało do samoczynnej zmiany zakładki. Po pierwszym
+     kliknięciu rotacja gaśnie na dobre (klasa .krok-stop na kontenerze) —
+     wybór użytkownika nie może mu zniknąć spod kursora. */
+  .krok-pasek{display:block;height:2px;margin-top:12px;border-radius:2px;background:#e3e9e1;overflow:hidden;opacity:0;transition:opacity .25s}
+  .krok-tab.krok-on .krok-pasek{opacity:1}
+  .krok-tabs.krok-stop .krok-pasek{opacity:0 !important}
+  .krok-pasek i{display:block;height:100%;width:0;border-radius:2px;background:var(--la-accent,#00CD77)}
+  @media (prefers-reduced-motion:reduce){ .krok-pasek{display:none} }
+
   /* ---------- FAQ (akordeon) ---------- */
   .faq-item{border-top:1px solid #e7ece4}
   .faq-item:last-child{border-bottom:1px solid #e7ece4}
@@ -88,6 +161,16 @@ import TopbarWiseGroup from '../components/TopbarWiseGroup.astro';
   .faq-a-inner{padding:0 4px 26px;max-width:660px;font-size:15.5px;line-height:1.65;color:#4c5850;text-wrap:pretty}
   @media (prefers-reduced-motion:reduce){ .faq-a,.faq-ico{transition:none} }
 
+  /* ---------- RACHUNEK (S2) ----------
+     Courier Prime zamiast ui-monospace. SF Mono/Menlo czyta się jak okno
+     terminala — a ten blok ma wyglądać na wydruk z drukarki fiskalnej.
+     Courier ma niższy x-height i szerszy krój, więc zerujemy ujemny tracking
+     i lekko podbijamy najmniejsze rozmiary. */
+  #la8-rachunek{letter-spacing:0}
+  #la8-rachunek span{letter-spacing:inherit}
+  #la8-rachunek .rcpt-head{letter-spacing:0.2em}
+  #la8-rachunek .rcpt-lbl{letter-spacing:0.14em}
+
   /* ---------- OPINIE (ściana / marquee) ---------- */
   .marq{position:relative;overflow:hidden;
     -webkit-mask:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);
@@ -95,7 +178,9 @@ import TopbarWiseGroup from '../components/TopbarWiseGroup.astro';
   .marq-track{display:flex;gap:20px;width:max-content;will-change:transform;animation:marq-scroll 46s linear infinite}
   .marq:hover .marq-track{animation-play-state:paused}
   .marq-card{flex:0 0 auto;width:min(340px,80vw);display:flex;flex-direction:column;background:#ffffff;border:1px solid #e7ece4;border-radius:16px;padding:24px 24px 20px}
-  @keyframes marq-scroll{from{transform:translateX(0)}to{transform:translateX(calc(-50% - 10px))}}
+  /* Krok = szerokość jednego zestawu kart: -(100/KOPIE)% minus odstęp/KOPIE.
+     Przy KOPIE = 5 i gap 20px daje to calc(-20% - 4px). */
+  @keyframes marq-scroll{from{transform:translateX(0)}to{transform:translateX(calc(-20% - 4px))}}
   @media (prefers-reduced-motion:reduce){
     .marq{overflow-x:auto;-webkit-mask:none;mask:none;scroll-snap-type:x mandatory}
     .marq-track{animation:none}
@@ -114,7 +199,9 @@ import TopbarWiseGroup from '../components/TopbarWiseGroup.astro';
   @media (max-width:1024px){
     .faq-grid{grid-template-columns:1fr !important;gap:clamp(32px,5vw,48px) !important}
     .droga-cards{grid-template-columns:repeat(3,1fr) !important;gap:28px 22px !important}
-    .s2-grid,.s6-grid,.s9-grid{grid-template-columns:1fr !important;gap:clamp(40px,6vw,64px) !important}
+    /* minmax(0,1fr): samo `1fr` nie schodzi poniżej najszerszej treści
+       w kolumnie — przy 320px makieta rachunku wypychała sekcję o 52px. */
+    .s2-grid,.s6-grid,.s9-grid{grid-template-columns:minmax(0,1fr) !important;gap:clamp(40px,6vw,64px) !important}
     .grid4{grid-template-columns:1fr 1fr !important}
   }
   @media (max-width:900px){
@@ -129,6 +216,9 @@ import TopbarWiseGroup from '../components/TopbarWiseGroup.astro';
     .s4-layers{position:static !important;height:auto !important;min-height:0 !important}
     .krok-layer{position:static !important;opacity:1 !important;transform:none !important;display:none !important}
     .krok-layer.active{display:block !important}
+    /* Palec potrzebuje więcej niż wysokość linijki tekstu: linki-odnośniki
+       dostają zapas w pionie bez zmiany odstępów (ujemny margines go znosi). */
+    .lnk-green,.row-lnk{padding-block:10px;margin-block:-10px}
   }
   @media (max-width:600px){
     .droga-cards{grid-template-columns:1fr !important;gap:24px !important}
@@ -136,8 +226,13 @@ import TopbarWiseGroup from '../components/TopbarWiseGroup.astro';
     .hero-actions{flex-direction:column !important;align-items:stretch !important;width:100%}
     .hero-actions>div{width:100%}
     .hero-actions a{justify-content:center !important}
-    .trust{flex-wrap:wrap !important;justify-content:center !important;text-align:center}
-    .trust-logos{flex-wrap:wrap !important;justify-content:center !important;gap:22px !important;margin-left:0 !important;overflow:visible !important}
+    /* Napis idzie nad logotypy, a pętla dostaje całą szerokość. Wcześniej
+       `flex-wrap` siedział na .trust-logos, a zawijać musiałby się .trust-track
+       (ma width:max-content) — przy 390px pas wyjeżdżał 627px poza kadr. */
+    .trust{flex-wrap:wrap !important;justify-content:center !important;gap:18px !important;text-align:center}
+    .trust>span{max-width:none !important;padding-right:0 !important}
+    .trust-logos{flex:1 0 100% !important;margin-left:0 !important;overflow:hidden !important}
+    .trust-track{gap:34px !important}
     .stat-row{flex-wrap:wrap !important;gap:24px 32px !important}
     .metody-badge-row{flex-direction:column !important;align-items:flex-start !important;gap:16px !important}
     .final-badge-row{flex-wrap:wrap !important}
@@ -154,7 +249,7 @@ import TopbarWiseGroup from '../components/TopbarWiseGroup.astro';
   .nav-item:hover .mega-wrap,.nav-item:focus-within .mega-wrap{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0);pointer-events:auto}
   .nav-caret{transition:transform .2s}
   .nav-item:hover .nav-caret,.nav-item:focus-within .nav-caret{transform:rotate(180deg)}
-  .mega-eyebrow{font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#808b83;padding:0 11px;margin-bottom:6px}
+  .mega-eyebrow{font-weight:700;font-size:11px;letter-spacing:0.07em;text-transform:uppercase;color:#808b83;padding:0 11px;margin-bottom:6px}
   .mega-item{display:block;padding:9px 11px;border-radius:11px;transition:background .15s}
   .mega-item:hover{background:#f4f8f2}
   .mega-t{display:block;font-size:14.5px;font-weight:650;color:#16211a;transition:color .15s}
@@ -194,146 +289,26 @@ import TopbarWiseGroup from '../components/TopbarWiseGroup.astro';
   @media (prefers-reduced-motion:reduce){ .etap-card,.row-lnk [aria-hidden="true"]{transition:none} .etap-card:hover{transform:none} .row-lnk:hover [aria-hidden="true"]{transform:none} }
   .cta-contact{transition:color .15s}
   .cta-contact:hover{color:var(--la-accent,#00CD77) !important}
+
+  /* iOS Safari powiększa całą stronę, gdy kursor wchodzi w pole z krojem
+     mniejszym niż 16px — po wyjściu z pola układ zostaje przesunięty.
+     Na telefonie pola dostają więc równe 16px. */
+  @media (max-width:900px){
+    input,select,textarea{font-size:16px !important}
+  }
 </style>
 </head>
 <body>
 
 <div class="page">
 
-<TopbarWiseGroup current="letsautomate" />
-
-<header class="site-header">
-<div class="nav-pill">
-<img src="/uploads/logo-2.svg" alt="Let's automate" style="height:26px;display:block">
-<div class="nav-menu" style="display:flex;align-items:center;gap:clamp(2px,0.6vw,8px);font-size:15px;font-weight:550;color:#2c3a30">
-<div class="nav-item">
-<a href="#oferta" class="nav-lnk" style="display:inline-flex;align-items:center;gap:5px;color:#2c3a30">Usługi <svg class="nav-caret" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></a>
-<div class="mega-wrap">
-<div class="mega-panel" style="background:#ffffff;border:1px solid #e7ece4;border-radius:20px;box-shadow:0 40px 90px -44px rgba(18,38,28,0.45);padding:22px">
-<div class="usl-grid">
-
-<div class="usl-lane">
-<div class="usl-top"><a href="#oferta" data-krok-link="wdrazamy" class="usl-head">Wdrażamy AI</a><span class="usl-sub">Gdy AI jeszcze nie weszło w procesy</span></div>
-<span class="usl-rule" aria-hidden="true"></span>
-<div class="usl-list">
-<a href="/strategia-ai" class="mega-item"><span class="mega-t">Strategia transformacji AI</span><span class="mega-d">Plan wdrożenia z policzonym zwrotem</span></a>
-<a href="/rozwiazania-ai" class="mega-item"><span class="mega-t">Indywidualne rozwiązania AI</span><span class="mega-d">AI wpięte w Wasze systemy i dane</span></a>
-<a href="/szkolenia-ai" class="mega-item"><span class="mega-t">Szkolenia i adopcja AI</span><span class="mega-d">Zespół używa AI w codziennej pracy</span></a>
-</div>
-</div>
-
-<div class="usl-lane">
-<div class="usl-top"><a href="#oferta" data-krok-link="budujemy" class="usl-head">Budujemy aplikacje</a><span class="usl-sub">Gdy żadne gotowe narzędzie nie pasuje</span></div>
-<span class="usl-rule" aria-hidden="true"></span>
-<div class="usl-list">
-<a href="/systemy-procesowe" class="mega-item"><span class="mega-t">Systemy dla kluczowych procesów</span><span class="mega-d">Aplikacja pod Wasz sposób pracy</span></a>
-<a href="/systemy-dla-klientow" class="mega-item"><span class="mega-t">Systemy dla Waszych klientów</span><span class="mega-d">Portal klienta, platforma B2B, samoobsługa</span></a>
-<a href="/automatyzacje-integracje" class="mega-item"><span class="mega-t">Automatyzacje i integracje</span><span class="mega-d">Przepływ danych między systemami</span></a>
-</div>
-</div>
-
-<div class="usl-lane">
-<div class="usl-top"><a href="/guided-coding" class="usl-head">Guided Coding</a><span class="usl-sub">Gdy sami budujecie aplikacje z AI</span></div>
-<span class="usl-rule" aria-hidden="true"></span>
-<div class="usl-list">
-<a href="/guided-coding/bez-dzialu-it" class="mega-item"><span class="mega-t">Dla zespołów nietechnicznych</span><span class="mega-d">Budujecie bez działu IT, my pilnujemy</span></a>
-<a href="/guided-coding/dla-zespolow" class="mega-item"><span class="mega-t">Dla zespołów technicznych</span><span class="mega-d">Dział IT dowozi szybciej i bezpieczniej</span></a>
-<a href="/guided-coding/transfer-know-how" class="mega-item"><span class="mega-t">Szkolenia i transfer know-how</span><span class="mega-d">Program szkoleniowy pod Waszą aplikację</span></a>
-</div>
-</div>
-
-</div>
-</div>
-</div>
-</div>
-<!-- SCHOWANE 29.08.2026 — zakladka "Rozwiazania". Powod i plan powrotu: docs/nawigacja-decyzje.md
-     Zdjac ten komentarz, gdy powstana podstrony procesowe. -->
-<!--
-<div class="nav-item">
-<a href="#dowody" class="nav-lnk" style="display:inline-flex;align-items:center;gap:5px;color:#2c3a30">Rozwiązania <svg class="nav-caret" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></a>
-<div class="mega-wrap">
-<div class="mega-panel" style="background:#ffffff;border:1px solid #e7ece4;border-radius:20px;box-shadow:0 40px 90px -44px rgba(18,38,28,0.45);padding:22px">
-<div style="display:grid;grid-template-columns:1fr 264px;gap:22px">
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:18px 16px">
-<div>
-<div class="mega-eyebrow">Według obszaru</div>
-<a href="#dowody" class="mega-item"><span class="mega-t">Sprzedaż i klienci</span><span class="mega-d">Oferty za wolno, leady bez odpowiedzi</span></a>
-<a href="#dowody" class="mega-item"><span class="mega-t">Obsługa i komunikacja</span><span class="mega-d">Maile i zgłoszenia zjadają zespół</span></a>
-</div>
-<div>
-<div class="mega-eyebrow">&nbsp;</div>
-<a href="#dowody" class="mega-item"><span class="mega-t">Operacje i procesy</span><span class="mega-d">Procesy żyją w głowach i w Excelu</span></a>
-<a href="#dowody" class="mega-item"><span class="mega-t">Dane i decyzje</span><span class="mega-d">Raporty klejone ręcznie co miesiąc</span></a>
-</div>
-<div>
-<div class="mega-eyebrow">Według systemu</div>
-<a href="#oferta" class="mega-item"><span class="mega-t">System CRM na miarę</span><span class="mega-d">Sprzedaż w jednym miejscu, nie w mailu</span></a>
-<a href="#oferta" class="mega-item"><span class="mega-t">Portal i panel klienta</span><span class="mega-d">Klient obsługuje się sam, 24/7</span></a>
-</div>
-<div>
-<div class="mega-eyebrow">&nbsp;</div>
-<a href="#oferta" class="mega-item"><span class="mega-t">Panel operacyjny</span><span class="mega-d">Cały zespół działa z jednego ekranu</span></a>
-<a href="#oferta" class="mega-item"><span class="mega-t">Integracje systemów</span><span class="mega-d">Twoje narzędzia wymieniają dane same</span></a>
-</div>
-</div>
-<a href="#oferta" class="mega-feat" style="padding:18px 18px 20px">
-<div style="background:#ffffff;border-radius:11px;overflow:hidden;box-shadow:0 22px 44px -22px rgba(0,0,0,0.6);text-align:left">
-<div style="display:flex;align-items:center;gap:8px;padding:8px 11px;background:#fbfcfa;border-bottom:1px solid #eef1ec">
-<div style="display:flex;gap:4px;flex-shrink:0"><span style="width:7px;height:7px;border-radius:50%;background:#e3e7e0"></span><span style="width:7px;height:7px;border-radius:50%;background:#e3e7e0"></span><span style="width:7px;height:7px;border-radius:50%;background:#e3e7e0"></span></div>
-<span style="margin:0 auto;font-family:ui-monospace,Menlo,monospace;font-size:9px;color:#9aa69c">app · pulpit</span>
-</div>
-<div style="padding:11px 12px 13px">
-<div style="font-family:ui-monospace,Menlo,monospace;font-size:8.5px;letter-spacing:0.1em;color:#9aa69c">ZADANIA DZIŚ</div>
-<div style="display:flex;align-items:baseline;gap:6px;margin-top:2px"><span style="font-size:19px;font-weight:800;color:#16211a">42</span><span style="font-size:10px;font-weight:700;color:#0a7a52">↑ +12%</span></div>
-<div style="display:flex;flex-direction:column;gap:5px;margin-top:10px">
-<span style="display:flex;align-items:center;gap:7px;font-size:11px;color:#4c5850"><span style="width:5px;height:5px;border-radius:50%;background:var(--la-accent,#00CD77);flex-shrink:0"></span>AG Ofertowy<span style="margin-left:auto;font-size:9px;color:#9aa69c">gotowe</span></span>
-<span style="display:flex;align-items:center;gap:7px;font-size:11px;color:#4c5850"><span style="width:5px;height:5px;border-radius:50%;background:var(--la-accent,#00CD77);flex-shrink:0"></span>AG Fakturowy<span style="margin-left:auto;font-size:9px;color:#9aa69c">gotowe</span></span>
-</div>
-</div>
-</div>
-<div style="margin-top:16px;font-size:17px;font-weight:800;line-height:1.15;letter-spacing:-0.01em;color:#ffffff">Cała firma na jednym ekranie</div>
-<p style="margin:7px 0 0;font-size:12.5px;line-height:1.5;color:rgba(255,255,255,0.72)">Zbudowany pod Twoje procesy — nie pod cudzy szablon.</p>
-<span style="display:inline-flex;align-items:center;gap:7px;margin-top:15px;background:var(--la-accent,#00CD77);color:#0b1a11;font-size:13px;font-weight:750;padding:9px 15px;border-radius:9px;align-self:flex-start">Zobacz jak budujemy →</span>
-</a>
-</div>
-</div>
-</div>
-</div>
--->
-<div class="nav-item" style="position:relative">
-<a href="#dlaczego-my" class="nav-lnk" style="display:inline-flex;align-items:center;gap:5px;color:#2c3a30">Know-how <svg class="nav-caret" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></a>
-<!-- Wersja sprzed uproszczenia (nagłówki Metoda/Produkty/Wiedza + karta Wise AI Score
-     po prawej) leży w docs/_kopie/nawigacja-przed-uproszczeniem-know-how.html. -->
-<div class="mega-wrap" style="width:min(340px,calc(100vw - 40px))">
-<div class="mega-panel" style="background:#ffffff;border:1px solid #e7ece4;border-radius:20px;box-shadow:0 40px 90px -44px rgba(18,38,28,0.45);padding:22px">
-<a href="#dlaczego-my" class="mega-item" style="display:flex;gap:11px;align-items:flex-start">
-<span style="display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,#0a7a52,#00CD77);flex-shrink:0"><span style="color:#ffffff;font-size:14px;font-weight:800">W</span></span>
-<span><span class="mega-t">WiseStack</span><span class="mega-d">Framework i stack transformacji</span></span>
-</a>
-<a href="#dlaczego-my" class="mega-item" style="display:flex;gap:11px;align-items:flex-start">
-<span style="display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:9px;background:#0e2b1d;flex-shrink:0"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg></span>
-<span><span class="mega-t">AI Adoption Framework</span><span class="mega-d">Od pierwszego kroku do firmy napędzanej AI</span></span>
-</a>
-<a href="#diagnoza" class="mega-item" style="display:flex;gap:11px;align-items:flex-start">
-<span style="display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:9px;background:#0e2b1d;flex-shrink:0"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19a8 8 0 1 1 16 0"/><path d="M12 19l4.4-5.6"/></svg></span>
-<span><span class="mega-t">Wise AI Score</span><span class="mega-d">Test dojrzałości AI w 3 minuty</span></span>
-</a>
-<a href="/baza-wiedzy" class="mega-item" style="display:flex;gap:11px;align-items:flex-start">
-<span style="display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:9px;background:#0e2b1d;flex-shrink:0"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H19v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M8 7.5h7"/><path d="M8 11h5"/></svg></span>
-<span><span class="mega-t">Baza wiedzy</span><span class="mega-d">Artykuły i analizy</span></span>
-</a>
-</div>
-</div>
-</div>
-<a href="https://appto.ai" target="_blank" rel="noopener" class="nav-lnk" style="color:#2c3a30">Appto ↗</a>
-<a href="#dowody" class="nav-lnk" style="color:#2c3a30">Inspiracje</a>
-<a href="/dlaczego-my" class="nav-lnk" style="color:#2c3a30">Dlaczego my</a>
-</div>
-<a href="#diagnoza" class="btn-dark" id="navCta" style="position:relative;display:inline-flex;align-items:center;justify-content:center;background:#16211a;color:#ffffff;padding:12px 22px;border-radius:10px;font-weight:650;font-size:15px;white-space:nowrap"><span class="nav-cta-sizer" aria-hidden="true">Bezpłatna diagnoza</span><span class="nav-cta-live"><span class="nav-cta-text" data-cta-rotate>Bezpłatna diagnoza</span><span class="nav-cta-caret" aria-hidden="true"></span></span></a>
-</div>
-</header>
+<Nawigacja ctaHref="#diagnoza" />
 
 <!-- ============ S1 · HERO ============ -->
+<!-- „Nordkam" w makiecie pulpitu to firma WYMYŚLONA. Wcześniej stało tu
+     Sevium — prawdziwy klient z paska logotypów niżej — razem z decyzją
+     o rabacie, co czytało się jak wyciek z cudzego CRM-u. Jeśli nazwa
+     kiedyś się zmieni, ma zostać fikcyjna. -->
 <div style="position:relative;overflow:hidden;min-height:100svh;display:flex;flex-direction:column">
 <div style="position:absolute;inset:0">
 <img src="https://images.pexels.com/photos/2559941/pexels-photo-2559941.jpeg?auto=compress&cs=tinysrgb&w=2200" alt="" style="position:absolute;left:-18%;top:-12%;width:136%;height:136%;object-fit:cover;transform:rotate(-3deg)">
@@ -369,7 +344,7 @@ import TopbarWiseGroup from '../components/TopbarWiseGroup.astro';
 <div style="position:absolute;right:-26px;top:208px;z-index:3;--rot:2deg;animation:la-float 7s ease-in-out infinite;animation-delay:1.4s">
 <div style="display:flex;align-items:center;gap:11px;background:#ffffff;border:1px solid #eef1ec;border-radius:12px;padding:12px 17px;box-shadow:0 18px 44px -16px rgba(12,28,20,0.3);text-align:left">
 <span style="display:flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#f9efd8;color:#8f6c1c;font-size:12px;font-weight:800;flex-shrink:0">⧗</span>
-<span><span style="display:block;font-size:13.5px;font-weight:650;color:#16211a">Oferta dla Sevium — szkic gotowy</span><span style="display:block;margin-top:2px;font-size:11.5px;color:#8b968d">czeka na Twój akcept</span></span>
+<span><span style="display:block;font-size:13.5px;font-weight:650;color:#16211a">Oferta dla Nordkam — szkic gotowy</span><span style="display:block;margin-top:2px;font-size:11.5px;color:#8b968d">czeka na Twój akcept</span></span>
 </div>
 </div>
 
@@ -426,7 +401,7 @@ import TopbarWiseGroup from '../components/TopbarWiseGroup.astro';
 <span style="background:#e6f7ec;color:#0a7a52;font-size:11px;font-weight:700;padding:3.5px 9px;border-radius:6px">zrobione</span>
 </div>
 <div style="display:grid;grid-template-columns:1fr auto auto;gap:14px;align-items:center;padding:10px 2px;border-top:1px solid #f2f4ef">
-<span><span style="display:block;font-size:13px;font-weight:650;color:#16211a">Oferta dla Sevium — szkic z danych CRM</span><span style="display:block;margin-top:1px;font-size:11px;color:#808b83">agent: sprzedaż · AG Ofertowy</span></span>
+<span><span style="display:block;font-size:13px;font-weight:650;color:#16211a">Oferta dla Nordkam — szkic z danych CRM</span><span style="display:block;margin-top:1px;font-size:11px;color:#808b83">agent: sprzedaż · AG Ofertowy</span></span>
 <span style="font-family:ui-monospace,Menlo,monospace;font-size:11px;color:#808b83">12:24</span>
 <span style="background:#f9efd8;color:#8f6c1c;font-size:11px;font-weight:700;padding:3.5px 9px;border-radius:6px">czeka</span>
 </div>
@@ -435,7 +410,7 @@ import TopbarWiseGroup from '../components/TopbarWiseGroup.astro';
 <div>
 <div style="font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:0.1em;color:#808b83">CZEKA NA DECYZJĘ</div>
 <div style="margin-top:8px;border:1px solid #eef1ec;border-radius:10px;padding:11px 12px">
-<div style="font-size:12.5px;font-weight:700;color:#16211a">Rabat 12% dla Sevium?</div>
+<div style="font-size:12.5px;font-weight:700;color:#16211a">Rabat 12% dla Nordkam?</div>
 <div style="margin-top:2px;font-size:11px;color:#808b83">oferta #1204 · AG Ofertowy</div>
 <div style="display:flex;gap:6px;margin-top:9px">
 <span style="background:#0e2b1d;color:#ffffff;font-size:11.5px;font-weight:650;padding:5px 11px;border-radius:6px">Zatwierdź</span>
@@ -516,20 +491,20 @@ import TopbarWiseGroup from '../components/TopbarWiseGroup.astro';
 <path class="dg-fill" d="M10,312 C145,312 145,271 280,271 C415,271 415,149 550,149 C685,149 685,88 820,88 C955,88 955,44 1090,44 C1190,44 1262,36 1328,30 L1328,360 L10,360 Z" fill="url(#la11a-tlfill)"></path>
 <path class="dg-line" d="M10,312 C145,312 145,271 280,271 C415,271 415,149 550,149 C685,149 685,88 820,88 C955,88 955,44 1090,44 C1190,44 1262,36 1328,30" fill="none" stroke="var(--la-accent,#00CD77)" stroke-width="3.5" stroke-linecap="round" pathLength="1"></path>
 </svg>
-<div style="position:absolute;left:0;top:-4px;font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:0.1em;color:#b6bfb6">WISE AI SCORE ↑</div>
-<div style="position:absolute;right:4px;top:83.4%;transform:translateY(-50%);font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:0.1em;color:#c3cbc2">ETAP 1</div>
-<div style="position:absolute;right:4px;top:61%;transform:translateY(-50%);font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:0.1em;color:#c3cbc2">ETAP 2</div>
-<div style="position:absolute;right:4px;top:38.7%;transform:translateY(-50%);font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:0.1em;color:#c3cbc2">ETAP 3</div>
-<div style="position:absolute;right:4px;top:16.3%;transform:translateY(-50%);font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:0.1em;font-weight:700;color:#0a7a52">ETAP 4</div>
+<div style="font-weight:700;position:absolute;left:0;top:-4px;font-size:10.5px;letter-spacing:0.07em;color:#b6bfb6">WISE AI SCORE ↑</div>
+<div style="font-weight:700;position:absolute;right:4px;top:83.4%;transform:translateY(-50%);font-size:10.5px;letter-spacing:0.07em;color:#c3cbc2">ETAP 1</div>
+<div style="font-weight:700;position:absolute;right:4px;top:61%;transform:translateY(-50%);font-size:10.5px;letter-spacing:0.07em;color:#c3cbc2">ETAP 2</div>
+<div style="font-weight:700;position:absolute;right:4px;top:38.7%;transform:translateY(-50%);font-size:10.5px;letter-spacing:0.07em;color:#c3cbc2">ETAP 3</div>
+<div style="position:absolute;right:4px;top:16.3%;transform:translateY(-50%);font-size:10.5px;letter-spacing:0.07em;font-weight:700;color:#0a7a52">ETAP 4</div>
 <div style="position:absolute;left:0.75%;top:82.11%;bottom:5.26%;width:0"><div class="dg-conn" style="height:100%;transition-delay:.15s"><span style="display:block;height:100%;border-left:1px dashed #d8dfd6"></span></div></div>
 <div style="position:absolute;left:21.08%;top:71.32%;bottom:5.26%;width:0"><div class="dg-conn" style="height:100%;transition-delay:.3s"><span style="display:block;height:100%;border-left:1px dashed #d8dfd6"></span></div></div>
 <div style="position:absolute;left:41.42%;top:39.26%;bottom:5.26%;width:0"><div class="dg-conn" style="height:100%;transition-delay:.45s"><span style="display:block;height:100%;border-left:1px dashed #d8dfd6"></span></div></div>
 <div style="position:absolute;left:61.75%;top:23.16%;bottom:5.26%;width:0"><div class="dg-conn" style="height:100%;transition-delay:.6s"><span style="display:block;height:100%;border-left:1px dashed #d8dfd6"></span></div></div>
 <div style="position:absolute;left:82.08%;top:11.53%;bottom:5.26%;width:0"><div class="dg-conn" style="height:100%;transition-delay:.75s"><span style="display:block;height:100%;border-left:1px dashed #d8dfd6"></span></div></div>
-<div style="position:absolute;left:0.75%;top:82.11%;width:0;height:0;z-index:3"><div class="dg-dot" style="transition-delay:.15s"><span style="position:absolute;left:0;top:0;transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;background:var(--la-accent,#00CD77);border:3px solid #ffffff;box-shadow:0 2px 10px rgba(12,28,20,0.3);display:block"></span><span style="position:absolute;left:0;top:-32px;transform:translateX(-50%);font-family:ui-monospace,Menlo,monospace;font-size:12.5px;font-weight:700;color:#16211a">14</span></div></div>
-<div style="position:absolute;left:21.08%;top:71.32%;width:0;height:0;z-index:3"><div class="dg-dot" style="transition-delay:.3s"><span style="position:absolute;left:0;top:0;transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;background:var(--la-accent,#00CD77);border:3px solid #ffffff;box-shadow:0 2px 10px rgba(12,28,20,0.3);display:block"></span><span style="position:absolute;left:0;top:-32px;transform:translateX(-50%);font-family:ui-monospace,Menlo,monospace;font-size:12.5px;font-weight:700;color:#16211a">26</span></div></div>
-<div style="position:absolute;left:41.42%;top:39.26%;width:0;height:0;z-index:3"><div class="dg-dot" style="transition-delay:.45s"><span style="position:absolute;left:0;top:0;transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;background:var(--la-accent,#00CD77);border:3px solid #ffffff;box-shadow:0 2px 10px rgba(12,28,20,0.3);display:block"></span><span style="position:absolute;left:0;top:-32px;transform:translateX(-50%);font-family:ui-monospace,Menlo,monospace;font-size:12.5px;font-weight:700;color:#16211a">62</span></div></div>
-<div style="position:absolute;left:61.75%;top:23.16%;width:0;height:0;z-index:3"><div class="dg-dot" style="transition-delay:.6s"><span style="position:absolute;left:0;top:0;transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;background:var(--la-accent,#00CD77);border:3px solid #ffffff;box-shadow:0 2px 10px rgba(12,28,20,0.3);display:block"></span><span style="position:absolute;left:0;top:-32px;transform:translateX(-50%);font-family:ui-monospace,Menlo,monospace;font-size:12.5px;font-weight:700;color:#16211a">80</span></div></div>
+<div style="position:absolute;left:0.75%;top:82.11%;width:0;height:0;z-index:3"><div class="dg-dot" style="transition-delay:.15s"><span style="position:absolute;left:0;top:0;transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;background:var(--la-accent,#00CD77);border:3px solid #ffffff;box-shadow:0 2px 10px rgba(12,28,20,0.3);display:block"></span><span style="position:absolute;left:0;top:-32px;transform:translateX(-50%);font-size:12.5px;font-weight:700;color:#16211a">14</span></div></div>
+<div style="position:absolute;left:21.08%;top:71.32%;width:0;height:0;z-index:3"><div class="dg-dot" style="transition-delay:.3s"><span style="position:absolute;left:0;top:0;transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;background:var(--la-accent,#00CD77);border:3px solid #ffffff;box-shadow:0 2px 10px rgba(12,28,20,0.3);display:block"></span><span style="position:absolute;left:0;top:-32px;transform:translateX(-50%);font-size:12.5px;font-weight:700;color:#16211a">26</span></div></div>
+<div style="position:absolute;left:41.42%;top:39.26%;width:0;height:0;z-index:3"><div class="dg-dot" style="transition-delay:.45s"><span style="position:absolute;left:0;top:0;transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;background:var(--la-accent,#00CD77);border:3px solid #ffffff;box-shadow:0 2px 10px rgba(12,28,20,0.3);display:block"></span><span style="position:absolute;left:0;top:-32px;transform:translateX(-50%);font-size:12.5px;font-weight:700;color:#16211a">62</span></div></div>
+<div style="position:absolute;left:61.75%;top:23.16%;width:0;height:0;z-index:3"><div class="dg-dot" style="transition-delay:.6s"><span style="position:absolute;left:0;top:0;transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;background:var(--la-accent,#00CD77);border:3px solid #ffffff;box-shadow:0 2px 10px rgba(12,28,20,0.3);display:block"></span><span style="position:absolute;left:0;top:-32px;transform:translateX(-50%);font-size:12.5px;font-weight:700;color:#16211a">80</span></div></div>
 <div style="position:absolute;left:82.08%;top:11.53%;width:0;height:0;z-index:3"><div class="dg-dot" style="transition-delay:.75s"><span style="position:absolute;left:0;top:0;transform:translate(-50%,-50%);width:16px;height:16px;border-radius:50%;background:var(--la-accent,#00CD77);border:3px solid #ffffff;box-shadow:0 0 18px rgba(0,205,119,0.65);display:block"></span><span style="position:absolute;left:0;top:-44px;transform:translateX(-50%);white-space:nowrap;display:inline-flex;align-items:center;gap:7px;background:#0e2b1d;color:#ffffff;font-size:12.5px;font-weight:700;padding:6px 13px;border-radius:8px"><span style="width:7px;height:7px;border-radius:50%;background:var(--la-accent,#00CD77);display:inline-block"></span>93 · napędzana AI</span></div></div>
 <div style="position:absolute;left:2.4%;top:calc(82.11% + 14px);z-index:2"><div class="dg-chip" style="transition-delay:.2s"><span style="display:inline-block;background:#f9efd8;color:#8f6c1c;font-size:11.5px;font-weight:700;padding:4px 11px;border-radius:7px;white-space:nowrap">większość firm startuje tu</span></div></div>
 </div>
@@ -537,27 +512,27 @@ import TopbarWiseGroup from '../components/TopbarWiseGroup.astro';
 <!-- Oś czasu: 5 kroków / 12 miesięcy -->
 <div class="droga-cards" style="display:grid;grid-template-columns:repeat(5,1fr);gap:22px;margin-top:34px">
 <div class="dg-card" style="display:flex;flex-direction:column;transition-delay:.15s">
-<div style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#0a7a52">KROK 01</div>
+<div style="font-weight:700;font-size:12px;color:#0a7a52;letter-spacing:0.06em">KROK 01</div>
 <div style="margin-top:10px;font-size:19px;font-weight:700;line-height:1.25;min-height:2.5em;color:#16211a">Wszystko trzyma się na ludziach</div>
 <p style="margin:8px 0 0;font-size:14px;line-height:1.6;color:#4c5850">Procesy żyją w głowach ludzi i w Excelu. Każdy wzrost to więcej rąk i nadgodzin.</p>
 </div>
 <div class="dg-card" style="display:flex;flex-direction:column;transition-delay:.3s">
-<div style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#0a7a52">KROK 02</div>
+<div style="font-weight:700;font-size:12px;color:#0a7a52;letter-spacing:0.06em">KROK 02</div>
 <div style="margin-top:10px;font-size:19px;font-weight:700;line-height:1.25;min-height:2.5em;color:#16211a">Znika najgorsza ręczna robota</div>
 <p style="margin:8px 0 0;font-size:14px;line-height:1.6;color:#4c5850">Najcięższe, powtarzalne zadania robią się bez ludzi. Koniec tonięcia w kopiuj-wklej.</p>
 </div>
 <div class="dg-card" style="display:flex;flex-direction:column;transition-delay:.45s">
-<div style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#0a7a52">KROK 03</div>
+<div style="font-weight:700;font-size:12px;color:#0a7a52;letter-spacing:0.06em">KROK 03</div>
 <div style="margin-top:10px;font-size:19px;font-weight:700;line-height:1.25;min-height:2.5em;color:#16211a">Firma działa jak jeden system</div>
 <p style="margin:8px 0 0;font-size:14px;line-height:1.6;color:#4c5850">Narzędzia są spięte, dane płyną same. Nikt nie przekleja ich z okna do okna.</p>
 </div>
 <div class="dg-card" style="display:flex;flex-direction:column;transition-delay:.6s">
-<div style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#0a7a52">KROK 04</div>
+<div style="font-weight:700;font-size:12px;color:#0a7a52;letter-spacing:0.06em">KROK 04</div>
 <div style="margin-top:10px;font-size:19px;font-weight:700;line-height:1.25;min-height:2.5em;color:#16211a">AI wchodzi w decyzje</div>
 <p style="margin:8px 0 0;font-size:14px;line-height:1.6;color:#4c5850">AI przejmuje rutynę i przygotowuje decyzje. Ludziom zostaje to, co wymaga myślenia.</p>
 </div>
 <div class="dg-card" style="display:flex;flex-direction:column;transition-delay:.75s">
-<div style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#0a7a52">KROK 05</div>
+<div style="font-weight:700;font-size:12px;color:#0a7a52;letter-spacing:0.06em">KROK 05</div>
 <div style="margin-top:10px;font-size:19px;font-weight:700;line-height:1.25;min-height:2.5em;color:#16211a">Firma napędzana AI</div>
 <p style="margin:8px 0 0;font-size:14px;line-height:1.6;color:#4c5850">AI napędza całą firmę. Konkurencja na Excelu po prostu nie nadąża.</p>
 </div>
@@ -565,16 +540,20 @@ import TopbarWiseGroup from '../components/TopbarWiseGroup.astro';
 
 <!-- CTA -->
 <div class="droga-cta" style="display:flex;align-items:flex-start;justify-content:space-between;gap:clamp(28px,4vw,56px);margin-top:40px;padding-top:34px;border-top:1px solid #eef1ec">
-<div style="max-width:640px">
+<!-- Podpis założyciela zdjęty 08.09.2026 — miejsce po nim dostało zdanie
+     o zapleczu grupy, bo to ono jest tu różnicą wobec konkurencji. -->
+<div style="max-width:680px">
 <p style="margin:0;font-size:clamp(16px,2.2vw,18.5px);line-height:1.55;color:#4c5850;text-wrap:pretty">Nie musisz wiedzieć, od czego zacząć. <strong style="font-weight:700;color:#16211a">Przeszliśmy tę drogę ze 140 firmami — przejdziemy ją i z Tobą, krok po kroku.</strong></p>
-<div style="display:flex;align-items:center;gap:10px;margin-top:16px">
-<span style="font-size:13.5px;color:#7c877e">Jedyna w Polsce firma wdrażająca AI, za którą stoi grupa doradcza</span>
-<img src="/uploads/wisegroup_logo_v2.webp" alt="Wise Group" style="height:14px;width:auto;display:block;opacity:0.7">
+<div style="display:flex;align-items:center;gap:12px;margin-top:14px">
+<span style="font-size:15px;line-height:1.5;color:#4c5850">Jedyna w Polsce firma wdrażająca AI, za którą stoi grupa doradcza</span>
+<img src="/uploads/wisegroup_logo_v2.webp" alt="Wise Group" style="height:16px;width:auto;display:block;flex-shrink:0;opacity:0.85">
 </div>
 </div>
 <div class="droga-cta-btns" style="display:flex;flex-direction:column;align-items:flex-end;gap:13px;flex-shrink:0">
 <a href="#diagnoza" class="btn-dark" style="display:inline-flex;align-items:center;gap:10px;background:#16211a;color:#ffffff;padding:17px 30px;border-radius:12px;font-weight:650;font-size:16px;box-shadow:0 14px 30px -14px rgba(16,33,26,0.45)">Zrób pierwszy krok — umów bezpłatną diagnozę <span aria-hidden="true">→</span></a>
-<a href="#diagnoza" class="lnk-green" style="font-size:15px;font-weight:700;color:#0a7a52">Wolisz sam? Zobacz, ile kosztuje Cię status quo →</a>
+<!-- SCHOWANE 07.09.2026 — drugie CTA pod przyciskiem diagnozy. Zostaje w kodzie:
+     wraca, gdy koszt status quo dostanie własny kalkulator, do którego ten link prowadzi. -->
+<a href="#diagnoza" class="lnk-green" style="display:none;font-size:15px;font-weight:700;color:#0a7a52">Wolisz sam? Zobacz, ile kosztuje Cię status quo →</a>
 </div>
 </div>
 </section>
@@ -592,14 +571,15 @@ import TopbarWiseGroup from '../components/TopbarWiseGroup.astro';
 </div>
 <div style="display:flex;align-items:center;flex-wrap:wrap;gap:20px 24px;margin-top:40px">
 <a href="#diagnoza" class="btn-dark" style="display:inline-flex;align-items:center;gap:10px;background:#16211a;color:#ffffff;padding:17px 30px;border-radius:12px;font-weight:650;font-size:16px">Policz koszt swojego status quo <span aria-hidden="true">→</span></a>
-<a href="#diagnoza" class="lnk-green" style="font-size:15.5px;font-weight:700;color:#0a7a52">Sprawdź, od czego zacząć →</a>
+<!-- SCHOWANE 08.09.2026 — zostaje w kodzie, tak jak drugie CTA w sekcji drogi. -->
+<a href="#diagnoza" class="lnk-green" style="display:none;font-size:15.5px;font-weight:700;color:#0a7a52">Sprawdź, od czego zacząć →</a>
 </div>
 </div>
 
 <div style="background:linear-gradient(160deg,#eef5ee 0%,#e6f0e8 55%,#eaf2ea 100%);border-radius:26px;padding:clamp(28px,5vw,48px) clamp(24px,5vw,56px)">
-<div id="la8-rachunek" style="background:#ffffff;border-radius:6px;padding:clamp(24px,4vw,36px) clamp(22px,4vw,36px) 28px;box-shadow:0 30px 70px -32px rgba(15,30,22,0.35);transform:rotate(-1.2deg);font-family:ui-monospace,Menlo,monospace">
-<div style="text-align:center;font-size:13px;letter-spacing:0.14em;text-transform:uppercase;color:#16211a;font-weight:700">Rachunek</div>
-<div style="text-align:center;margin-top:5px;font-size:11.5px;color:#8b968d">za utrzymanie status quo · nr 2026/07 · co miesiąc</div>
+<div id="la8-rachunek" style="background:#ffffff;border-radius:6px;padding:clamp(24px,4vw,36px) clamp(22px,4vw,36px) 28px;box-shadow:0 30px 70px -32px rgba(15,30,22,0.35);transform:rotate(-1.2deg);font-family:'Courier Prime','Courier New',Courier,monospace">
+<div class="rcpt-head" style="text-align:center;font-size:13.5px;text-transform:uppercase;color:#16211a;font-weight:700">Rachunek</div>
+<div style="text-align:center;margin-top:6px;font-size:10.5px;color:#8b968d">za utrzymanie status quo · nr 2026/07 · co miesiąc</div>
 <div style="margin-top:24px;border-top:1.5px dashed #d8dcd4"></div>
 <div style="display:flex;flex-direction:column">
 <div style="display:flex;align-items:baseline;justify-content:space-between;gap:18px;padding:14px 0;border-bottom:1px dashed #e7ece4">
@@ -620,11 +600,11 @@ import TopbarWiseGroup from '../components/TopbarWiseGroup.astro';
 </div>
 </div>
 <div style="display:flex;align-items:baseline;justify-content:space-between;gap:18px;padding:20px 0 4px">
-<span style="font-size:13.5px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#16211a">Razem</span>
-<span style="font-size:40px;font-weight:800;letter-spacing:-0.02em;color:#16211a;white-space:nowrap"><span id="rcpt-total" data-total="305">305</span> <span style="font-size:15px;font-weight:700;color:#4c5850">h / mies.</span></span>
+<span class="rcpt-lbl" style="font-size:13.5px;font-weight:700;text-transform:uppercase;color:#16211a">Razem</span>
+<span style="font-size:38px;font-weight:700;color:#16211a;white-space:nowrap"><span id="rcpt-total" data-total="305">305</span> <span style="font-size:15px;font-weight:700;color:#4c5850">h / mies.</span></span>
 </div>
 <div style="text-align:right;font-size:12px;color:#0a7a52;font-weight:700">≈ 1,9 etatu pracy ręcznej</div>
-<div style="margin-top:22px;border-top:1.5px dashed #d8dcd4;padding-top:16px;font-size:11px;line-height:1.6;color:#8b968d;text-align:center">pozycje przykładowe — u Ciebie policzymy prawdziwe<br>płatność: marżą, tempem i nerwami zespołu</div>
+<div style="margin-top:22px;border-top:1.5px dashed #d8dcd4;padding-top:16px;font-size:11.5px;line-height:1.6;color:#8b968d;text-align:center">płatność: marżą, tempem i nerwami zespołu</div>
 <div style="margin:18px auto 0;width:170px;height:32px;background:repeating-linear-gradient(90deg,#16211a 0 2px,transparent 2px 5px,#16211a 5px 6px,transparent 6px 11px)"></div>
 </div>
 </div>
@@ -640,25 +620,25 @@ import TopbarWiseGroup from '../components/TopbarWiseGroup.astro';
 
 <div class="grid4" style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:22px;margin-top:64px">
 <div class="etap-card" style="background:#ffffff;border:1px solid #e7ece4;border-radius:16px;padding:26px 26px 24px">
-<span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#8b968d">ETAP 1</span>
+<span style="font-weight:700;font-size:12px;color:#8b968d;letter-spacing:0.06em">ETAP 1</span>
 <div style="margin-top:38px;height:4px;border-radius:2px;background:#e7ece4"><span style="display:block;width:25%;height:100%;border-radius:2px;background:#c3cbc2"></span></div>
 <div style="margin-top:18px;font-size:20px;font-weight:700;color:#4c5850">Ręczna firma</div>
 <p style="margin:8px 0 0;font-size:14px;line-height:1.55;color:#7c877e">Excel, maile, przepisywanie danych. Każdy wzrost wymaga nowych rąk.</p>
 </div>
 <div class="etap-card" style="background:#ffffff;border:1px solid #e7ece4;border-radius:16px;padding:26px 26px 24px">
-<div style="display:flex;align-items:center;justify-content:space-between;gap:10px"><span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#8b968d">ETAP 2</span><span style="font-size:11.5px;font-weight:700;color:#8f6c1c;background:#f9efd8;padding:4px 10px;border-radius:7px">większość firm jest tu</span></div>
+<div style="display:flex;align-items:center;justify-content:space-between;gap:10px"><span style="font-weight:700;font-size:12px;color:#8b968d;letter-spacing:0.06em">ETAP 2</span><span style="font-size:11.5px;font-weight:700;color:#8f6c1c;background:#f9efd8;padding:4px 10px;border-radius:7px">większość firm jest tu</span></div>
 <div style="margin-top:38px;height:4px;border-radius:2px;background:#e7ece4"><span style="display:block;width:50%;height:100%;border-radius:2px;background:#9fb3a3"></span></div>
 <div style="margin-top:18px;font-size:20px;font-weight:700;color:#4c5850">Punktowe automatyzacje</div>
 <p style="margin:8px 0 0;font-size:14px;line-height:1.55;color:#7c877e">Kilka skryptów i botów. Pomagają, ale każdy żyje osobno.</p>
 </div>
 <div class="etap-card" style="background:#ffffff;border:1px solid #e7ece4;border-radius:16px;padding:26px 26px 24px">
-<span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#8b968d">ETAP 3</span>
+<span style="font-weight:700;font-size:12px;color:#8b968d;letter-spacing:0.06em">ETAP 3</span>
 <div style="margin-top:38px;height:4px;border-radius:2px;background:#e7ece4"><span style="display:block;width:75%;height:100%;border-radius:2px;background:#3f8f68"></span></div>
 <div style="margin-top:18px;font-size:20px;font-weight:700;color:#16211a">Systemy zintegrowane</div>
 <p style="margin:8px 0 0;font-size:14px;line-height:1.55;color:#4c5850">Dane płyną między CRM, finansami i operacjami bez przepisywania.</p>
 </div>
 <div class="etap-card" style="background:#0e2b1d;border:1px solid #0e2b1d;border-radius:16px;padding:26px 26px 24px">
-<span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--la-accent,#00CD77)">ETAP 4</span>
+<span style="font-weight:700;font-size:12px;color:var(--la-accent,#00CD77);letter-spacing:0.06em">ETAP 4</span>
 <div style="margin-top:38px;height:4px;border-radius:2px;background:rgba(255,255,255,0.18)"><span style="display:block;width:100%;height:100%;border-radius:2px;background:var(--la-accent,#00CD77);box-shadow:0 0 14px rgba(0,205,119,0.6)"></span></div>
 <div style="margin-top:18px;font-size:20px;font-weight:800;color:#ffffff">Napędzana AI</div>
 <p style="margin:8px 0 0;font-size:14px;line-height:1.55;color:rgba(255,255,255,0.75)">AI podejmuje pracę w środku procesów: czyta, decyduje, wykonuje. Ludzie prowadzą wyjątki.</p>
@@ -678,57 +658,66 @@ import TopbarWiseGroup from '../components/TopbarWiseGroup.astro';
 </div>
 
 <div class="s4-grid" style="display:grid;grid-template-columns:360px 1fr;gap:clamp(32px,5vw,72px);margin-top:56px;align-items:start;background:#f4f8f2;border-radius:24px;padding:clamp(28px,4vw,44px) clamp(24px,4vw,48px) 40px">
-<div style="display:flex;flex-direction:column;gap:6px">
+<div class="krok-tabs" style="display:flex;flex-direction:column;gap:6px">
 <button data-krok="wdrazamy" class="krok-tab" style="appearance:none;font-family:inherit;text-align:left;cursor:pointer;display:block;padding:16px 18px;border:none;border-radius:14px;background:transparent;box-shadow:none;transition:background 0.3s,box-shadow 0.3s">
-<span style="display:block;font-size:22px;font-weight:800;letter-spacing:-0.015em;color:#16211a">Wdrażamy AI</span><span style="display:block;margin-top:3px;font-size:13px;color:#7c877e">Gdy AI jeszcze nie weszło w procesy</span>
+<span style="display:block;font-size:22px;font-weight:800;letter-spacing:-0.015em;color:#16211a">Wdrażamy AI</span><span style="display:block;margin-top:3px;font-size:13px;color:#7c877e">Gdy AI jeszcze nie weszło w procesy</span><span class="krok-pasek" aria-hidden="true"><i></i></span>
 </button>
 <button data-krok="budujemy" class="krok-tab" style="appearance:none;font-family:inherit;text-align:left;cursor:pointer;display:block;padding:16px 18px;border:none;border-radius:14px;background:transparent;box-shadow:none;transition:background 0.3s,box-shadow 0.3s">
-<span style="display:block;font-size:22px;font-weight:800;letter-spacing:-0.015em;color:#16211a">Budujemy aplikacje</span><span style="display:block;margin-top:3px;font-size:13px;color:#7c877e">Gdy żadne gotowe narzędzie nie pasuje</span>
+<span style="display:block;font-size:22px;font-weight:800;letter-spacing:-0.015em;color:#16211a">Budujemy aplikacje</span><span style="display:block;margin-top:3px;font-size:13px;color:#7c877e">Gdy żadne gotowe narzędzie nie pasuje</span><span class="krok-pasek" aria-hidden="true"><i></i></span>
 </button>
 <button data-krok="guided" class="krok-tab" style="appearance:none;font-family:inherit;text-align:left;cursor:pointer;display:block;padding:16px 18px;border:none;border-radius:14px;background:transparent;box-shadow:none;transition:background 0.3s,box-shadow 0.3s">
-<span style="display:block;font-size:22px;font-weight:800;letter-spacing:-0.015em;color:#16211a">Guided Coding</span><span style="display:block;margin-top:3px;font-size:13px;color:#7c877e">Gdy sami budujecie aplikacje z AI</span>
+<span style="display:block;font-size:22px;font-weight:800;letter-spacing:-0.015em;color:#16211a">Guided Coding</span><span style="display:block;margin-top:3px;font-size:13px;color:#7c877e">Gdy sami budujecie aplikacje z AI</span><span class="krok-pasek" aria-hidden="true"><i></i></span>
 </button>
+<!-- EKSPERYMENT 3 — pod zakładkami było puste miejsce, a wybór ścieżki
+     to najczęstsze miejsce, w którym ktoś utyka. -->
+<div style="display:flex;align-items:center;gap:13px;margin-top:26px;padding:14px 16px;background:#ffffff;border:1px solid #e7ece4;border-radius:14px">
+<!-- Plik jest już przycięty do kadru głowa-ramiona (320x320), więc w kółku
+     nie trzeba nic doskalowywać. Źródło: awatar ze Slacka, 512x512.
+     [do uzupełnienia] czyje to zdjęcie — alt jest bez nazwiska, dopóki nie wiem. -->
+<span style="display:block;width:48px;height:48px;border-radius:50%;overflow:hidden;flex-shrink:0;background:#eef1ec"><img src="/uploads/portret-oferta.jpg" alt="Konsultant Let's automate" width="96" height="96" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;display:block"></span>
+<div style="font-size:13.5px;line-height:1.45;color:#4c5850">Nie wiesz, która ścieżka?<br><a href="#diagnoza" class="lnk-green" style="font-weight:700;color:#0a7a52">Napisz do mnie →</a></div>
+</div>
 </div>
 <div class="s4-layers" style="display:grid;align-items:start">
 <div class="krok-layer" data-layer="wdrazamy" style="grid-area:1/1;transition:opacity 0.45s cubic-bezier(0.4,0,0.2,1),transform 0.45s cubic-bezier(0.4,0,0.2,1)">
 <a href="/strategia-ai" class="row-lnk" style="display:grid;grid-template-columns:1fr 36px;gap:20px;align-items:baseline;padding:6px 4px 22px;border-bottom:1px solid #e7ece4;color:#16211a">
-<span><span style="display:block;font-size:clamp(20px,2.4vw,25px);font-weight:750;letter-spacing:-0.015em">Strategia transformacji AI</span><span style="display:block;margin-top:8px;font-size:14.5px;line-height:1.55;color:#4c5850;max-width:580px">Kolejność wdrożeń z policzonym zwrotem z każdego kroku. Plan, który obroni się przed zarządem.</span></span>
+<span><span style="display:block;font-size:clamp(20px,2.4vw,25px);font-weight:750;letter-spacing:-0.015em">Strategia transformacji AI</span><span style="display:block;margin-top:8px;font-size:14.5px;line-height:1.55;color:#4c5850;max-width:560px;text-wrap:balance">Kolejność wdrożeń z policzonym zwrotem z każdego kroku. Plan, który obroni się przed zarządem.</span></span>
 <span style="font-size:22px;color:#0a7a52;justify-self:end" aria-hidden="true">→</span>
 </a>
 <a href="/rozwiazania-ai" class="row-lnk" style="display:grid;grid-template-columns:1fr 36px;gap:20px;align-items:baseline;padding:20px 4px 20px;border-bottom:1px solid #e7ece4;color:#16211a">
-<span><span style="display:block;font-size:clamp(20px,2.4vw,25px);font-weight:750;letter-spacing:-0.015em">Indywidualne rozwiązania AI</span><span style="display:block;margin-top:8px;font-size:14.5px;line-height:1.55;color:#4c5850;max-width:580px">Zbudowane pod Wasz przypadek i wpięte w systemy oraz dane, z których korzystacie na co dzień.</span></span>
+<span><span style="display:block;font-size:clamp(20px,2.4vw,25px);font-weight:750;letter-spacing:-0.015em">Indywidualne rozwiązania AI</span><span style="display:block;margin-top:8px;font-size:14.5px;line-height:1.55;color:#4c5850;max-width:560px;text-wrap:balance">Zbudowane pod Wasz przypadek i wpięte w systemy oraz dane, z których korzystacie na co dzień.</span></span>
 <span style="font-size:22px;color:#0a7a52;justify-self:end" aria-hidden="true">→</span>
 </a>
 <a href="/szkolenia-ai" class="row-lnk" style="display:grid;grid-template-columns:1fr 36px;gap:20px;align-items:baseline;padding:20px 4px 20px;border-bottom:1px solid #e7ece4;color:#16211a">
-<span><span style="display:block;font-size:clamp(20px,2.4vw,25px);font-weight:750;letter-spacing:-0.015em">Szkolenia i adopcja AI</span><span style="display:block;margin-top:8px;font-size:14.5px;line-height:1.55;color:#4c5850;max-width:580px">Warsztaty na Waszych procesach i danych. Zespół pracuje po nowemu — i zostaje przy tym na dłużej.</span></span>
+<span><span style="display:block;font-size:clamp(20px,2.4vw,25px);font-weight:750;letter-spacing:-0.015em">Szkolenia i adopcja AI</span><span style="display:block;margin-top:8px;font-size:14.5px;line-height:1.55;color:#4c5850;max-width:560px;text-wrap:balance">Warsztaty na Waszych procesach i danych. Zespół pracuje po nowemu — i zostaje przy tym na dłużej.</span></span>
 <span style="font-size:22px;color:#0a7a52;justify-self:end" aria-hidden="true">→</span>
 </a>
 </div>
 <div class="krok-layer" data-layer="budujemy" style="grid-area:1/1;transition:opacity 0.45s cubic-bezier(0.4,0,0.2,1),transform 0.45s cubic-bezier(0.4,0,0.2,1)">
 <a href="/systemy-procesowe" class="row-lnk" style="display:grid;grid-template-columns:1fr 36px;gap:20px;align-items:baseline;padding:6px 4px 22px;border-bottom:1px solid #e7ece4;color:#16211a">
-<span><span style="display:block;font-size:clamp(20px,2.4vw,25px);font-weight:750;letter-spacing:-0.015em">Systemy dla kluczowych procesów</span><span style="display:block;margin-top:8px;font-size:14.5px;line-height:1.55;color:#4c5850;max-width:580px">Obieg faktur, ofertowanie i raportowanie prowadzi system. Ludzie zajmują się wyjątkami.</span></span>
+<span><span style="display:block;font-size:clamp(20px,2.4vw,25px);font-weight:750;letter-spacing:-0.015em">Systemy dla kluczowych procesów</span><span style="display:block;margin-top:8px;font-size:14.5px;line-height:1.55;color:#4c5850;max-width:560px;text-wrap:balance">Proces, na którym firma zarabia — od zamówienia po odbiór — prowadzi system, który zna Wasze reguły.</span></span>
 <span style="font-size:22px;color:#0a7a52;justify-self:end" aria-hidden="true">→</span>
 </a>
 <a href="/systemy-dla-klientow" class="row-lnk" style="display:grid;grid-template-columns:1fr 36px;gap:20px;align-items:baseline;padding:20px 4px 20px;border-bottom:1px solid #e7ece4;color:#16211a">
-<span><span style="display:block;font-size:clamp(20px,2.4vw,25px);font-weight:750;letter-spacing:-0.015em">Systemy dla Waszych klientów</span><span style="display:block;margin-top:8px;font-size:14.5px;line-height:1.55;color:#4c5850;max-width:580px">Klient sprawdza status, składa zamówienie i pobiera dokumenty sam, o każdej porze.</span></span>
+<span><span style="display:block;font-size:clamp(20px,2.4vw,25px);font-weight:750;letter-spacing:-0.015em">Systemy dla Waszych klientów</span><span style="display:block;margin-top:8px;font-size:14.5px;line-height:1.55;color:#4c5850;max-width:560px;text-wrap:balance">Klient sprawdza status, składa zamówienie i pobiera dokumenty sam, o każdej porze.</span></span>
 <span style="font-size:22px;color:#0a7a52;justify-self:end" aria-hidden="true">→</span>
 </a>
 <a href="/automatyzacje-integracje" class="row-lnk" style="display:grid;grid-template-columns:1fr 36px;gap:20px;align-items:baseline;padding:20px 4px 20px;border-bottom:1px solid #e7ece4;color:#16211a">
-<span><span style="display:block;font-size:clamp(20px,2.4vw,25px);font-weight:750;letter-spacing:-0.015em">Automatyzacje i integracje</span><span style="display:block;margin-top:8px;font-size:14.5px;line-height:1.55;color:#4c5850;max-width:580px">CRM, finanse i operacje wymieniają dane same. Nikt niczego nie przepisuje.</span></span>
+<span><span style="display:block;font-size:clamp(20px,2.4vw,25px);font-weight:750;letter-spacing:-0.015em">Automatyzacje i integracje</span><span style="display:block;margin-top:8px;font-size:14.5px;line-height:1.55;color:#4c5850;max-width:560px;text-wrap:balance">CRM, finanse i operacje wymieniają dane same. Nikt niczego nie przepisuje.</span></span>
 <span style="font-size:22px;color:#0a7a52;justify-self:end" aria-hidden="true">→</span>
 </a>
 </div>
 <div class="krok-layer" data-layer="guided" style="grid-area:1/1;transition:opacity 0.45s cubic-bezier(0.4,0,0.2,1),transform 0.45s cubic-bezier(0.4,0,0.2,1)">
 <a href="/guided-coding/bez-dzialu-it" class="row-lnk" style="display:grid;grid-template-columns:1fr 36px;gap:20px;align-items:baseline;padding:6px 4px 22px;border-bottom:1px solid #e7ece4;color:#16211a">
-<span><span style="display:block;font-size:clamp(20px,2.4vw,25px);font-weight:750;letter-spacing:-0.015em">Dla zespołów nietechnicznych</span><span style="display:block;margin-top:8px;font-size:14.5px;line-height:1.55;color:#4c5850;max-width:580px">Ludzie z biznesu budują sami, a my pilnujemy, żeby to, co powstaje, dało się utrzymać i rozwijać.</span></span>
+<span><span style="display:block;font-size:clamp(20px,2.4vw,25px);font-weight:750;letter-spacing:-0.015em">Dla zespołów nietechnicznych</span><span style="display:block;margin-top:8px;font-size:14.5px;line-height:1.55;color:#4c5850;max-width:560px;text-wrap:balance">Ludzie z biznesu budują sami, a my pilnujemy, żeby to, co powstaje, dało się utrzymać i rozwijać.</span></span>
 <span style="font-size:22px;color:#0a7a52;justify-self:end" aria-hidden="true">→</span>
 </a>
 <a href="/guided-coding/dla-zespolow" class="row-lnk" style="display:grid;grid-template-columns:1fr 36px;gap:20px;align-items:baseline;padding:20px 4px 20px;border-bottom:1px solid #e7ece4;color:#16211a">
-<span><span style="display:block;font-size:clamp(20px,2.4vw,25px);font-weight:750;letter-spacing:-0.015em">Dla zespołów technicznych</span><span style="display:block;margin-top:8px;font-size:14.5px;line-height:1.55;color:#4c5850;max-width:580px">Wasz zespół wyciska z AI więcej: krótsza droga od napisanego kodu do działającej funkcji.</span></span>
+<span><span style="display:block;font-size:clamp(20px,2.4vw,25px);font-weight:750;letter-spacing:-0.015em">Dla zespołów technicznych</span><span style="display:block;margin-top:8px;font-size:14.5px;line-height:1.55;color:#4c5850;max-width:560px;text-wrap:balance">Wasz zespół wyciska z AI więcej: krótsza droga od napisanego kodu do działającej funkcji.</span></span>
 <span style="font-size:22px;color:#0a7a52;justify-self:end" aria-hidden="true">→</span>
 </a>
 <a href="/guided-coding/transfer-know-how" class="row-lnk" style="display:grid;grid-template-columns:1fr 36px;gap:20px;align-items:baseline;padding:20px 4px 20px;border-bottom:1px solid #e7ece4;color:#16211a">
-<span><span style="display:block;font-size:clamp(20px,2.4vw,25px);font-weight:750;letter-spacing:-0.015em">Szkolenia i transfer know-how</span><span style="display:block;margin-top:8px;font-size:14.5px;line-height:1.55;color:#4c5850;max-width:580px">Program szkoleniowy projektowany po przeglądzie Waszego kodu i prowadzony na Waszej aplikacji.</span></span>
+<span><span style="display:block;font-size:clamp(20px,2.4vw,25px);font-weight:750;letter-spacing:-0.015em">Szkolenia i transfer know-how</span><span style="display:block;margin-top:8px;font-size:14.5px;line-height:1.55;color:#4c5850;max-width:560px;text-wrap:balance">Program szkoleniowy projektowany po przeglądzie Waszego kodu i prowadzony na Waszej aplikacji.</span></span>
 <span style="font-size:22px;color:#0a7a52;justify-self:end" aria-hidden="true">→</span>
 </a>
 </div>
@@ -739,59 +728,60 @@ import TopbarWiseGroup from '../components/TopbarWiseGroup.astro';
 </section>
 
 <!-- ============ S5 · DLACZEGO MY ============ -->
-<section id="dlaczego-my" style="position:relative;overflow:hidden;background:radial-gradient(900px 520px at 12% -2%, rgba(0,205,119,0.14), transparent 60%), #0e2b1d;padding:clamp(72px,10vw,120px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) clamp(72px,9vw,110px);scroll-margin-top:16px">
-<div class="s6-grid" style="display:grid;grid-template-columns:1fr 400px;gap:clamp(40px,6vw,72px);align-items:stretch">
+<section id="dlaczego-my" style="position:relative;overflow:hidden;background:radial-gradient(900px 520px at 12% -2%, rgba(0,205,119,0.14), transparent 60%), #0e2b1d;padding:clamp(56px,7vw,88px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) clamp(56px,6.5vw,80px);scroll-margin-top:16px">
+<div class="dm-foto">
+<img src="/piotr-wojciuk.jpg" alt="Piotr Wojciuk, New Business Lead w Let's automate" width="1002" height="1100" loading="lazy" decoding="async">
+<div class="dm-podpis"><b>Piotr Wojciuk</b><span>New Business Lead</span></div>
+</div>
 
-<div>
-<h2 class="h-sec" style="margin:0;max-width:720px;color:#ffffff;text-wrap:pretty">Czym się różnimy od dziesiątek firm „od AI".</h2>
+<div class="dm-tresc">
+<h2 class="h-sec" style="margin:0;color:#ffffff;text-wrap:pretty">Czym się różnimy od dziesiątek firm „od AI".</h2>
 <div style="margin-top:clamp(30px,3.6vw,44px)">
 <div style="display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:baseline;padding:2px 0 18px">
-<span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:700;color:var(--la-accent,#00CD77)">01</span>
+<span style="font-size:12px;font-weight:700;color:var(--la-accent,#00CD77);letter-spacing:0.06em">01</span>
 <div>
 <div style="font-size:17px;font-weight:750;letter-spacing:-0.01em;color:#ffffff">Cały zespół, jedna odpowiedzialność</div>
 <p style="margin:5px 0 0;font-size:14px;line-height:1.55;color:rgba(255,255,255,0.62)">Analitycy, developerzy, PM i QA w jednym studiu — nie łańcuszek podwykonawców.</p>
 </div>
 </div>
 <div style="display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:baseline;padding:18px 0;border-top:1px solid rgba(255,255,255,0.11)">
-<span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:700;color:var(--la-accent,#00CD77)">02</span>
+<span style="font-size:12px;font-weight:700;color:var(--la-accent,#00CD77);letter-spacing:0.06em">02</span>
 <div>
 <div style="font-size:17px;font-weight:750;letter-spacing:-0.01em;color:#ffffff">Własny produkt AI</div>
 <p style="margin:5px 0 0;font-size:14px;line-height:1.55;color:rgba(255,255,255,0.62)">appto.ai, zbudowany tą samą metodą, którą wdrażamy u Ciebie. <a href="https://appto.ai" style="font-weight:700;color:var(--la-accent,#00CD77)">appto.ai ↗</a></p>
 </div>
 </div>
 <div style="display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:baseline;padding:18px 0;border-top:1px solid rgba(255,255,255,0.11)">
-<span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:700;color:var(--la-accent,#00CD77)">03</span>
+<span style="font-size:12px;font-weight:700;color:var(--la-accent,#00CD77);letter-spacing:0.06em">03</span>
 <div>
-<div style="font-size:17px;font-weight:750;letter-spacing:-0.01em;color:#ffffff">Zaplecze Wise Group</div>
-<p style="margin:5px 0 0;font-size:14px;line-height:1.55;color:rgba(255,255,255,0.62)">Sellwise, HireWise, AdWise. Rozumiemy biznes, nie tylko kod.</p>
+<div style="font-size:17px;font-weight:750;letter-spacing:-0.01em;color:#ffffff">Zaplecze <span style="white-space:nowrap">Wise Group</span></div>
+<p style="margin:5px 0 0;font-size:14px;line-height:1.55;color:rgba(255,255,255,0.62)">SellWise, HireWise, AdWise. Rozumiemy biznes, nie tylko kod.</p>
 </div>
 </div>
 <div style="display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:baseline;padding:18px 0;border-top:1px solid rgba(255,255,255,0.11);border-bottom:1px solid rgba(255,255,255,0.11)">
-<span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:700;color:var(--la-accent,#00CD77)">04</span>
+<span style="font-size:12px;font-weight:700;color:var(--la-accent,#00CD77);letter-spacing:0.06em">04</span>
 <div>
 <div style="font-size:17px;font-weight:750;letter-spacing:-0.01em;color:#ffffff">Stała cena, etap po etapie</div>
 <p style="margin:5px 0 0;font-size:14px;line-height:1.55;color:rgba(255,255,255,0.62)">Znasz koszt następnego kroku, zanim go zamówisz — bez roboczogodzin w ciemno.</p>
 </div>
 </div>
-<a href="/dlaczego-my" class="lnk-accent" style="display:inline-flex;align-items:center;gap:9px;margin-top:26px;font-size:15.5px;font-weight:700;color:var(--la-accent,#00CD77)">Skład studia, zasady rozliczeń i sytuacje, w których odsyłamy gdzie indziej <span aria-hidden="true">&rarr;</span></a>
-</div>
-</div>
+<!-- SCHOWANE 08.09.2026 — link do /dlaczego-my. Zostaje w kodzie: wraca,
+     gdy skład studia i zasady rozliczeń mają być pokazywane. -->
+<a href="/dlaczego-my" class="lnk-accent" style="display:none;align-items:center;gap:9px;margin-top:26px;font-size:15.5px;font-weight:700;color:var(--la-accent,#00CD77)">Skład studia, zasady rozliczeń i sytuacje, w których odsyłamy gdzie indziej <span aria-hidden="true">&rarr;</span></a>
 
-<div style="position:relative;min-height:440px">
-<div style="height:100%;border-radius:20px;overflow:hidden;background:#163021;border:1px solid rgba(255,255,255,0.08)">
-<img src="/szymon-kita.jpg" alt="Szymon Kita — założyciel Let's automate" style="width:100%;height:100%;object-fit:cover;object-position:50% 16%">
-</div>
-<div style="position:absolute;left:16px;bottom:16px;background:#ffffff;border-radius:12px;padding:11px 16px;box-shadow:0 18px 42px -18px rgba(0,0,0,0.5)">
-<div style="font-size:15px;font-weight:800;color:#16211a">Szymon Kita</div>
-<div style="margin-top:2px;font-size:12px;color:#7c877e">założyciel, Let's automate</div>
-</div>
-<div style="position:absolute;right:16px;bottom:16px;display:flex;align-items:center;gap:14px;background:#ffffff;border-radius:12px;padding:10px 15px;box-shadow:0 18px 42px -18px rgba(0,0,0,0.5)">
-<span><span style="display:block;font-size:18px;font-weight:800;color:#16211a">200+</span><span style="display:block;font-size:10.5px;color:#7c877e">wdrożeń</span></span>
-<span style="width:1px;height:26px;background:#e7ece4"></span>
-<span><span style="display:block;font-size:18px;font-weight:800;color:#16211a">30+</span><span style="display:block;font-size:10.5px;color:#7c877e">ekspertów</span></span>
+<!-- Liczby wchodzą w tę samą numerację co cztery punkty wyżej — to piąta
+     różnica, tylko podana cyframi zamiast zdaniem. -->
+<div style="display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:center;padding:22px 0 0">
+<span style="font-weight:700;font-size:12px;letter-spacing:0.06em;color:var(--la-accent,#00CD77)">05</span>
+<div style="justify-self:start;display:inline-flex;align-items:center;gap:18px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.13);border-radius:14px;padding:12px 20px">
+<span><span style="display:block;font-size:19px;font-weight:800;color:#ffffff">200+</span><span style="display:block;margin-top:1px;font-size:11.5px;color:rgba(255,255,255,0.6)">wdrożeń</span></span>
+<span style="width:1px;height:28px;background:rgba(255,255,255,0.15)"></span>
+<span><span style="display:block;font-size:19px;font-weight:800;color:#ffffff">30+</span><span style="display:block;margin-top:1px;font-size:11.5px;color:rgba(255,255,255,0.6)">ekspertów</span></span>
+<span style="width:1px;height:28px;background:rgba(255,255,255,0.15)"></span>
+<span><span style="display:block;font-size:19px;font-weight:800;color:#ffffff">140+</span><span style="display:block;margin-top:1px;font-size:11.5px;color:rgba(255,255,255,0.6)">firm</span></span>
 </div>
 </div>
-
+</div>
 </div>
 </section>
 
@@ -804,7 +794,7 @@ import TopbarWiseGroup from '../components/TopbarWiseGroup.astro';
 
 <div class="grid4" style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:22px;margin-top:60px">
 <div class="proof-card" style="background:#ffffff;border:1px solid #e7ece4;border-radius:18px;padding:30px 28px;box-shadow:0 24px 50px -34px rgba(18,38,28,0.14)">
-<div style="font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.1em;color:#808b83">FINANSE</div>
+<div style="font-weight:700;font-size:11px;letter-spacing:0.07em;color:#808b83">FINANSE</div>
 <div style="margin-top:16px;font-size:56px;font-weight:800;letter-spacing:-0.035em;line-height:1">99,7<span style="color:var(--la-accent,#00CD77)">%</span></div>
 <div style="margin-top:8px;font-size:14px;font-weight:650;color:#4c5850">skuteczności księgowania</div>
 <div style="margin-top:22px;padding-top:18px;border-top:1px solid #eef1ec">
@@ -815,7 +805,7 @@ import TopbarWiseGroup from '../components/TopbarWiseGroup.astro';
 </div>
 </div>
 <div class="proof-card" style="background:#ffffff;border:1px solid #e7ece4;border-radius:18px;padding:30px 28px;box-shadow:0 24px 50px -34px rgba(18,38,28,0.14)">
-<div style="font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.1em;color:#808b83">SPRZEDAŻ</div>
+<div style="font-weight:700;font-size:11px;letter-spacing:0.07em;color:#808b83">SPRZEDAŻ</div>
 <div style="margin-top:16px;font-size:56px;font-weight:800;letter-spacing:-0.035em;line-height:1">−80<span style="color:var(--la-accent,#00CD77)">%</span></div>
 <div style="margin-top:8px;font-size:14px;font-weight:650;color:#4c5850">czasu przygotowania oferty</div>
 <div style="margin-top:22px;padding-top:18px;border-top:1px solid #eef1ec">
@@ -826,7 +816,7 @@ import TopbarWiseGroup from '../components/TopbarWiseGroup.astro';
 </div>
 </div>
 <div class="proof-card" style="background:#ffffff;border:1px solid #e7ece4;border-radius:18px;padding:30px 28px;box-shadow:0 24px 50px -34px rgba(18,38,28,0.14)">
-<div style="font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.1em;color:#808b83">OPERACJE</div>
+<div style="font-weight:700;font-size:11px;letter-spacing:0.07em;color:#808b83">OPERACJE</div>
 <div style="margin-top:16px;font-size:56px;font-weight:800;letter-spacing:-0.035em;line-height:1">65<span style="color:var(--la-accent,#00CD77)">h</span></div>
 <div style="margin-top:8px;font-size:14px;font-weight:650;color:#4c5850">odzyskane miesięcznie w operacjach</div>
 <div style="margin-top:22px;padding-top:18px;border-top:1px solid #eef1ec">
@@ -837,7 +827,7 @@ import TopbarWiseGroup from '../components/TopbarWiseGroup.astro';
 </div>
 </div>
 <div class="proof-card" style="background:#ffffff;border:1px solid #e7ece4;border-radius:18px;padding:30px 28px;box-shadow:0 24px 50px -34px rgba(18,38,28,0.14)">
-<div style="font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.1em;color:#808b83">OBSŁUGA KLIENTA</div>
+<div style="font-weight:700;font-size:11px;letter-spacing:0.07em;color:#808b83">OBSŁUGA KLIENTA</div>
 <div style="margin-top:16px;font-size:56px;font-weight:800;letter-spacing:-0.035em;line-height:1">−90<span style="color:var(--la-accent,#00CD77)">%</span></div>
 <div style="margin-top:8px;font-size:14px;font-weight:650;color:#4c5850">zapytań obsługiwanych ręcznie</div>
 <div style="margin-top:22px;padding-top:18px;border-top:1px solid #eef1ec">
@@ -866,85 +856,23 @@ import TopbarWiseGroup from '../components/TopbarWiseGroup.astro';
 <!-- Ściana opinii (auto-przewijana) -->
 <div class="marq" style="margin-top:clamp(32px,4vw,48px)" role="region" aria-label="Opinie klientów">
 <div class="marq-track">
-<!-- Finerto -->
-<figure class="marq-card" style="margin:0">
+{Array.from({ length: KOPIE }).map((_, k) => OPINIE.map((o) => (
+<figure class:list={['marq-card', k > 0 && 'marq-dup']} aria-hidden={k > 0 ? 'true' : undefined} style="margin:0">
 <div aria-hidden="true" style="font-size:13px;letter-spacing:2px;color:#0a7a52;margin-bottom:14px">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-<blockquote style="margin:0;flex:1;font-size:14.5px;line-height:1.6;color:#33413a;text-wrap:pretty">„Wprowadzenie danych trwało godzinę. Dziś przesłanie oferty to <span style="color:#0a7a52;font-weight:700">10 minut</span> — oszczędności liczymy w etatach."</blockquote>
+<blockquote style="margin:0;flex:1;font-size:14.5px;line-height:1.6;color:#33413a;text-wrap:pretty">„<Fragment set:html={o.cytat} />"</blockquote>
+{o.odznaka && (
 <div style="display:inline-flex;align-items:center;gap:8px;margin-top:16px;background:#f4f8f2;border:1px solid #e7ece4;border-radius:8px;padding:6px 11px;align-self:flex-start">
-<span style="font-size:12.5px;font-weight:700;color:#808b83;text-decoration:line-through">60 min</span>
-<span style="color:#0a7a52;font-weight:800" aria-hidden="true">→</span>
-<span style="font-size:12.5px;font-weight:800;color:#0a7a52">10 min</span>
+<span style="font-size:12.5px;font-weight:700;color:#808b83;text-decoration:line-through">{o.odznaka.z}</span>
+<span style="color:#0a7a52;font-weight:800" aria-hidden="true">&rarr;</span>
+<span style="font-size:12.5px;font-weight:800;color:#0a7a52">{o.odznaka.na}</span>
 </div>
-<figcaption style="display:flex;align-items:center;gap:11px;margin-top:18px;padding-top:16px;border-top:1px solid #eef1ec">
-<span style="width:38px;height:38px;border-radius:50%;overflow:hidden;flex-shrink:0"><img src="https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Mateusz Chinczewski" style="width:38px;height:38px;object-fit:cover"></span>
-<span><span style="display:block;font-size:13.5px;font-weight:700;color:#16211a">Mateusz Chinczewski</span><span style="display:block;font-size:12px;color:#7c877e">Prezes Zarządu, Finerto</span></span>
+)}
+<figcaption style="margin-top:18px;padding-top:16px;border-top:1px solid #eef1ec">
+<span style="display:block;font-size:13.5px;font-weight:700;color:#16211a">{o.kto}</span>
+<span style="display:block;font-size:12px;color:#7c877e">{o.rola}</span>
 </figcaption>
 </figure>
-<!-- NARS -->
-<figure class="marq-card" style="margin:0">
-<div aria-hidden="true" style="font-size:13px;letter-spacing:2px;color:#0a7a52;margin-bottom:14px">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-<blockquote style="margin:0;flex:1;font-size:14.5px;line-height:1.6;color:#33413a;text-wrap:pretty">„Let's automate wziął pełną odpowiedzialność za projekt i dowiózł go do końca. To dlatego powierzyliśmy im kolejny, znacznie większy."</blockquote>
-<figcaption style="display:flex;align-items:center;gap:11px;margin-top:18px;padding-top:16px;border-top:1px solid #eef1ec">
-<span style="width:38px;height:38px;border-radius:50%;overflow:hidden;flex-shrink:0"><img src="https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Jakub Ciołkowski" style="width:38px;height:38px;object-fit:cover"></span>
-<span><span style="display:block;font-size:13.5px;font-weight:700;color:#16211a">Jakub Ciołkowski</span><span style="display:block;font-size:12px;color:#7c877e">Członek Zarządu, NARS Polska</span></span>
-</figcaption>
-</figure>
-<!-- X2O -->
-<figure class="marq-card" style="margin:0">
-<div aria-hidden="true" style="font-size:13px;letter-spacing:2px;color:#0a7a52;margin-bottom:14px">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-<blockquote style="margin:0;flex:1;font-size:14.5px;line-height:1.6;color:#33413a;text-wrap:pretty">„Bardzo dobrze zrozumieli nasze potrzeby i zaprojektowali scenariusz, który w pełni spełnił cele biznesowe. Otwartość i komunikacja to ich DNA."</blockquote>
-<figcaption style="display:flex;align-items:center;gap:11px;margin-top:18px;padding-top:16px;border-top:1px solid #eef1ec">
-<span style="width:38px;height:38px;border-radius:50%;overflow:hidden;flex-shrink:0"><img src="https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Arkadiusz Andruch" style="width:38px;height:38px;object-fit:cover"></span>
-<span><span style="display:block;font-size:13.5px;font-weight:700;color:#16211a">Arkadiusz Andruch</span><span style="display:block;font-size:12px;color:#7c877e">Prezes Zarządu, X2O</span></span>
-</figcaption>
-</figure>
-<!-- X3D -->
-<figure class="marq-card" style="margin:0">
-<div aria-hidden="true" style="font-size:13px;letter-spacing:2px;color:#0a7a52;margin-bottom:14px">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-<blockquote style="margin:0;flex:1;font-size:14.5px;line-height:1.6;color:#33413a;text-wrap:pretty">„Korzystamy z usług Let's automate od roku. Świetna komunikacja, łatwo się dogadać, a jakość usług na wysokim poziomie."</blockquote>
-<figcaption style="display:flex;align-items:center;gap:11px;margin-top:18px;padding-top:16px;border-top:1px solid #eef1ec">
-<span style="width:38px;height:38px;border-radius:50%;overflow:hidden;flex-shrink:0"><img src="https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Dominik Chylewski" style="width:38px;height:38px;object-fit:cover"></span>
-<span><span style="display:block;font-size:13.5px;font-weight:700;color:#16211a">Dominik Chylewski</span><span style="display:block;font-size:12px;color:#7c877e">Wspólnik, X3D</span></span>
-</figcaption>
-</figure>
-<!-- Duplikat zestawu dla płynnej pętli (ukryty dla czytników ekranu) -->
-<figure class="marq-card marq-dup" aria-hidden="true" style="margin:0">
-<div style="font-size:13px;letter-spacing:2px;color:#0a7a52;margin-bottom:14px">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-<blockquote style="margin:0;flex:1;font-size:14.5px;line-height:1.6;color:#33413a;text-wrap:pretty">„Wprowadzenie danych trwało godzinę. Dziś przesłanie oferty to <span style="color:#0a7a52;font-weight:700">10 minut</span> — oszczędności liczymy w etatach."</blockquote>
-<div style="display:inline-flex;align-items:center;gap:8px;margin-top:16px;background:#f4f8f2;border:1px solid #e7ece4;border-radius:8px;padding:6px 11px;align-self:flex-start">
-<span style="font-size:12.5px;font-weight:700;color:#808b83;text-decoration:line-through">60 min</span>
-<span style="color:#0a7a52;font-weight:800">→</span>
-<span style="font-size:12.5px;font-weight:800;color:#0a7a52">10 min</span>
-</div>
-<figcaption style="display:flex;align-items:center;gap:11px;margin-top:18px;padding-top:16px;border-top:1px solid #eef1ec">
-<span style="width:38px;height:38px;border-radius:50%;overflow:hidden;flex-shrink:0"><img src="https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=200" alt="" style="width:38px;height:38px;object-fit:cover"></span>
-<span><span style="display:block;font-size:13.5px;font-weight:700;color:#16211a">Mateusz Chinczewski</span><span style="display:block;font-size:12px;color:#7c877e">Prezes Zarządu, Finerto</span></span>
-</figcaption>
-</figure>
-<figure class="marq-card marq-dup" aria-hidden="true" style="margin:0">
-<div style="font-size:13px;letter-spacing:2px;color:#0a7a52;margin-bottom:14px">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-<blockquote style="margin:0;flex:1;font-size:14.5px;line-height:1.6;color:#33413a;text-wrap:pretty">„Let's automate wziął pełną odpowiedzialność za projekt i dowiózł go do końca. To dlatego powierzyliśmy im kolejny, znacznie większy."</blockquote>
-<figcaption style="display:flex;align-items:center;gap:11px;margin-top:18px;padding-top:16px;border-top:1px solid #eef1ec">
-<span style="width:38px;height:38px;border-radius:50%;overflow:hidden;flex-shrink:0"><img src="https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=200" alt="" style="width:38px;height:38px;object-fit:cover"></span>
-<span><span style="display:block;font-size:13.5px;font-weight:700;color:#16211a">Jakub Ciołkowski</span><span style="display:block;font-size:12px;color:#7c877e">Członek Zarządu, NARS Polska</span></span>
-</figcaption>
-</figure>
-<figure class="marq-card marq-dup" aria-hidden="true" style="margin:0">
-<div style="font-size:13px;letter-spacing:2px;color:#0a7a52;margin-bottom:14px">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-<blockquote style="margin:0;flex:1;font-size:14.5px;line-height:1.6;color:#33413a;text-wrap:pretty">„Bardzo dobrze zrozumieli nasze potrzeby i zaprojektowali scenariusz, który w pełni spełnił cele biznesowe. Otwartość i komunikacja to ich DNA."</blockquote>
-<figcaption style="display:flex;align-items:center;gap:11px;margin-top:18px;padding-top:16px;border-top:1px solid #eef1ec">
-<span style="width:38px;height:38px;border-radius:50%;overflow:hidden;flex-shrink:0"><img src="https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg?auto=compress&cs=tinysrgb&w=200" alt="" style="width:38px;height:38px;object-fit:cover"></span>
-<span><span style="display:block;font-size:13.5px;font-weight:700;color:#16211a">Arkadiusz Andruch</span><span style="display:block;font-size:12px;color:#7c877e">Prezes Zarządu, X2O</span></span>
-</figcaption>
-</figure>
-<figure class="marq-card marq-dup" aria-hidden="true" style="margin:0">
-<div style="font-size:13px;letter-spacing:2px;color:#0a7a52;margin-bottom:14px">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-<blockquote style="margin:0;flex:1;font-size:14.5px;line-height:1.6;color:#33413a;text-wrap:pretty">„Korzystamy z usług Let's automate od roku. Świetna komunikacja, łatwo się dogadać, a jakość usług na wysokim poziomie."</blockquote>
-<figcaption style="display:flex;align-items:center;gap:11px;margin-top:18px;padding-top:16px;border-top:1px solid #eef1ec">
-<span style="width:38px;height:38px;border-radius:50%;overflow:hidden;flex-shrink:0"><img src="https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=200" alt="" style="width:38px;height:38px;object-fit:cover"></span>
-<span><span style="display:block;font-size:13.5px;font-weight:700;color:#16211a">Dominik Chylewski</span><span style="display:block;font-size:12px;color:#7c877e">Wspólnik, X3D</span></span>
-</figcaption>
-</figure>
+)))}
 </div>
 </div>
 
@@ -954,19 +882,21 @@ import TopbarWiseGroup from '../components/TopbarWiseGroup.astro';
 <section id="diagnoza" style="padding:clamp(72px,10vw,120px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) clamp(72px,10vw,120px);scroll-margin-top:16px">
 <div class="s9-grid" style="background:#0e2b1d;border-radius:26px;overflow:hidden;padding:0;display:grid;grid-template-columns:1fr 760px;gap:0;align-items:stretch;box-shadow:0 34px 84px -44px rgba(18,38,28,0.4)">
 <div style="display:flex;flex-direction:column;padding:clamp(48px,6vw,84px) clamp(40px,5vw,64px)">
-<h2 class="h-sec" style="margin:0;color:#ffffff;text-wrap:pretty">Odzyskaj czas i pieniądze.</h2>
-<p style="margin:20px 0 0;max-width:430px;font-size:17px;line-height:1.6;color:rgba(255,255,255,0.75);text-wrap:pretty">Zacznij od bezpłatnej diagnozy — 30 minut i masz konkretny plan. Bez zobowiązań.</p>
+<h2 class="h-sec" style="margin:0;font-size:clamp(28px,3.6vw,44px);color:#ffffff;text-wrap:balance">Od czego zacząć i ile to kosztuje</h2>
+<p style="margin:22px 0 0;max-width:460px;font-size:17px;line-height:1.6;color:rgba(255,255,255,0.78);text-wrap:pretty">Trzydzieści minut na Twoich procesach. Bezpłatnie i bez oferty na koniec — jeśli nie widzimy sensownego pierwszego kroku, mówimy to na tym samym spotkaniu.</p>
 <div style="margin-top:30px;max-width:470px">
-<div style="font-family:ui-monospace,Menlo,monospace;font-size:11.5px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.5)">Z diagnozy wychodzisz z</div>
+<div style="font-weight:700;font-size:11.5px;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.5)">Wychodzisz z rozmowy z</div>
 <div style="display:flex;flex-direction:column;gap:11px;margin-top:14px">
-<div style="display:flex;align-items:flex-start;gap:11px;font-size:14.5px;line-height:1.5;color:rgba(255,255,255,0.85)"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#00CD77" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:2px" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span><strong style="font-weight:700;color:#fff">Koszt status quo</strong> — w złotówkach i godzinach</span></div>
-<div style="display:flex;align-items:flex-start;gap:11px;font-size:14.5px;line-height:1.5;color:rgba(255,255,255,0.85)"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#00CD77" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:2px" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span><strong style="font-weight:700;color:#fff">Mapa wdrożeń</strong> — priorytety ułożone wg ROI</span></div>
-<div style="display:flex;align-items:flex-start;gap:11px;font-size:14.5px;line-height:1.5;color:rgba(255,255,255,0.85)"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#00CD77" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:2px" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span><strong style="font-weight:700;color:#fff">Wise AI Score</strong> — punkt na skali, od którego ruszamy</span></div>
+<div style="display:flex;align-items:flex-start;gap:11px;font-size:14.5px;line-height:1.5;color:rgba(255,255,255,0.85)"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#00CD77" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:2px" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span style="text-wrap:balance"><strong style="font-weight:700;color:#fff">Koszt kolejnego etapu</strong> — ile kosztuje pierwszy krok i co za to dostajesz</span></div>
+<div style="display:flex;align-items:flex-start;gap:11px;font-size:14.5px;line-height:1.5;color:rgba(255,255,255,0.85)"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#00CD77" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:2px" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span style="text-wrap:balance"><strong style="font-weight:700;color:#fff">Plan działania</strong> — od którego procesu zaczynamy i dlaczego od tego</span></div>
+<div style="display:flex;align-items:flex-start;gap:11px;font-size:14.5px;line-height:1.5;color:rgba(255,255,255,0.85)"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#00CD77" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:2px" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span style="text-wrap:balance"><strong style="font-weight:700;color:#fff">Wise AI Score</strong> — punkt na skali, od którego ruszasz</span></div>
 </div>
 </div>
-<div class="final-badge-row" style="display:flex;align-items:center;gap:16px;margin-top:auto;padding-top:40px;border-top:0">
-<span style="font-size:11.5px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.5)">Część grupy</span>
-<img src="/uploads/wisegroup_logo_v2.webp" alt="Wise Group" style="height:19px;width:auto;display:block;filter:brightness(0) invert(1);opacity:0.9">
+<!-- Nazwa grupy zostaje w logotypie, nie w wyliczance marek — tu liczy się
+     sama przynależność, a nie kto jeszcze do niej należy. -->
+<div class="final-badge-row" style="display:flex;align-items:center;gap:13px;margin-top:auto;padding-top:32px;border-top:1px solid rgba(255,255,255,0.13)">
+<span style="font-size:14px;color:rgba(255,255,255,0.55)">Jesteśmy częścią</span>
+<img src="/uploads/wisegroup_logo_v2.webp" alt="Wise Group" style="height:17px;width:auto;display:block;flex-shrink:0;filter:brightness(0) invert(1);opacity:0.92">
 </div>
 </div>
 
@@ -1040,15 +970,15 @@ import TopbarWiseGroup from '../components/TopbarWiseGroup.astro';
 <div>
 <a href="#wiedza" class="row-lnk" style="display:grid;grid-template-columns:1fr auto;gap:24px;align-items:baseline;padding:20px 6px;border-bottom:1px solid #eef1ec;color:#16211a">
 <span style="font-size:19px;font-weight:650;letter-spacing:-0.01em">Czym różni się automatyzacja od pełnej transformacji AI</span>
-<span style="font-family:ui-monospace,Menlo,monospace;font-size:11.5px;color:#8b968d;white-space:nowrap">ARTYKUŁ · 9 MIN</span>
+<span style="font-weight:700;font-size:11.5px;color:#8b968d;white-space:nowrap;letter-spacing:0.06em">ARTYKUŁ · 9 MIN</span>
 </a>
 <a href="#wiedza" class="row-lnk" style="display:grid;grid-template-columns:1fr auto;gap:24px;align-items:baseline;padding:20px 6px;border-bottom:1px solid #eef1ec;color:#16211a">
 <span style="font-size:19px;font-weight:650;letter-spacing:-0.01em">Ile naprawdę kosztuje ręczne fakturowanie — policz na swoich danych</span>
-<span style="font-family:ui-monospace,Menlo,monospace;font-size:11.5px;color:#8b968d;white-space:nowrap">KALKULATOR · 6 MIN</span>
+<span style="font-weight:700;font-size:11.5px;color:#8b968d;white-space:nowrap;letter-spacing:0.06em">KALKULATOR · 6 MIN</span>
 </a>
 <a href="#wiedza" class="row-lnk" style="display:grid;grid-template-columns:1fr auto;gap:24px;align-items:baseline;padding:20px 6px;color:#16211a">
 <span style="font-size:19px;font-weight:650;letter-spacing:-0.01em">Agent AI w obsłudze klienta — wdrożenie krok po kroku</span>
-<span style="font-family:ui-monospace,Menlo,monospace;font-size:11.5px;color:#8b968d;white-space:nowrap">WIDEO · 14 MIN</span>
+<span style="font-weight:700;font-size:11.5px;color:#8b968d;white-space:nowrap;letter-spacing:0.06em">WIDEO · 14 MIN</span>
 </a>
 </div>
 </div>
@@ -1060,7 +990,15 @@ import TopbarWiseGroup from '../components/TopbarWiseGroup.astro';
 <div>
 <h2 class="h-sec" style="margin:0;text-wrap:pretty">Masz pytania?<br>Zaczynamy od odpowiedzi.</h2>
 <p class="sub" style="margin:20px 0 0;max-width:380px">Najczęstsze wątpliwości, zanim usiądziemy do rozmowy. Nie znalazłeś swojej?</p>
-<a href="#diagnoza" class="lnk-green" style="display:inline-block;margin-top:18px;font-size:16px;font-weight:700;color:#0a7a52">Zadaj je nam wprost →</a>
+<!-- EKSPERYMENT 2 — „zadaj wprost" bez twarzy jest adresowane do nikogo. -->
+<div style="display:flex;align-items:center;gap:16px;margin-top:28px;padding-top:26px;border-top:1px solid #e3e9e1;max-width:380px">
+<span style="display:block;width:76px;height:76px;border-radius:50%;overflow:hidden;flex-shrink:0;background:#eef1ec"><img src="/szymon-kita.jpg" alt="Szymon Kita — założyciel Let's automate" width="152" height="152" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;object-position:50% 9%;display:block"></span>
+<div>
+<div style="font-size:15px;font-weight:750;color:#16211a">Szymon Kita</div>
+<div style="margin-top:2px;font-size:12.5px;color:#7c877e">założyciel, Let's automate</div>
+<a href="#diagnoza" class="lnk-green" style="display:inline-block;margin-top:7px;font-size:15px;font-weight:700;color:#0a7a52">Zadaj pytanie wprost →</a>
+</div>
+</div>
 </div>
 <div class="faq-list">
 <div class="faq-item open">
@@ -1091,68 +1029,13 @@ import TopbarWiseGroup from '../components/TopbarWiseGroup.astro';
 </div>
 </section>
 
-<!-- ============ S11 · STOPKA ============ -->
-<footer style="background:#16211a;color:#e8ece7;padding:64px max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) 36px">
-<div class="foot-grid" style="display:grid;grid-template-columns:1fr 220px 220px 220px;gap:clamp(32px,4vw,56px);align-items:start">
-<div>
-<img src="/uploads/logo-2.svg" alt="Let's automate" style="height:22px;display:block;filter:brightness(0) invert(1)">
-<p style="margin:18px 0 0;max-width:300px;font-size:14px;line-height:1.6;color:#9fb0a3">Studio transformacji AI.<br>Projektujemy i budujemy systemy,<br>na których firmy działają po nowemu.</p>
-<div style="margin-top:22px;font-size:12.5px;line-height:1.75;color:#7d9080">Let's automate sp. z o.o.<br>ul. Nowy Świat 33/13, 00-029 Warszawa<br>NIP 5252908405 · KRS 0000972542</div>
-<div style="display:flex;gap:14px;margin-top:16px">
-<a href="https://www.linkedin.com/company/letsautomate-io" class="foot-lnk" aria-label="LinkedIn" style="display:inline-flex;align-items:center;gap:7px;color:#cfd9cf;font-size:13.5px"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 100 5 2.5 2.5 0 000-5zM3 9h4v12H3zM9 9h3.8v1.64h.05c.53-.95 1.83-1.95 3.77-1.95 4.03 0 4.78 2.5 4.78 5.75V21h-4v-4.86c0-1.16-.02-2.65-1.77-2.65-1.77 0-2.04 1.26-2.04 2.57V21H9z"/></svg>LinkedIn</a>
-</div>
-<!-- Odznaka partnerska OpenAI. Plik ma wlasne biale tlo (tylko narozniki sa
-     przezroczyste), wiec zadnego filtra nie nakladamy — na ciemnej stopce dziala
-     jak biala plakietka. Wybielenie jak przy logo zniszczyloby czarny napis. -->
-<img src="/uploads/openai-select-partner.png" alt="OpenAI Select Partner" width="1125" height="531" loading="lazy" decoding="async" style="display:block;height:84px;width:auto;margin-top:30px;border-radius:12px">
-</div>
-<div>
-<div style="font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.1em;color:#7d9080;margin-bottom:15px">USŁUGI</div>
-<div style="display:flex;flex-direction:column;gap:10px;font-size:14.5px">
-<a href="#oferta" class="foot-lnk" style="color:#cfd9cf">Automatyzacja procesów</a>
-<a href="#oferta" class="foot-lnk" style="color:#cfd9cf">Integracje systemów</a>
-<a href="#oferta" class="foot-lnk" style="color:#cfd9cf">Wdrożenia AI</a>
-<a href="#oferta" class="foot-lnk" style="color:#cfd9cf">Systemy szyte na miarę</a>
-<a href="/guided-coding" class="foot-lnk" style="color:#cfd9cf">Guided Coding</a>
-<a href="#dlaczego-my" class="foot-lnk" style="color:#cfd9cf">appto.ai ↗</a>
-</div>
-</div>
-<div>
-<div style="font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.1em;color:#7d9080;margin-bottom:15px">FIRMA</div>
-<div style="display:flex;flex-direction:column;gap:10px;font-size:14.5px">
-<a href="/dlaczego-my" class="foot-lnk" style="color:#cfd9cf">O nas</a>
-<a href="#dowody" class="foot-lnk" style="color:#cfd9cf">Transformacje</a>
-<a href="#wiedza" class="foot-lnk" style="color:#cfd9cf">Blog</a>
-<a href="#diagnoza" class="foot-lnk" style="color:#cfd9cf">Kontakt</a>
-</div>
-</div>
-<div>
-<div style="font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.1em;color:#7d9080;margin-bottom:15px">ZACZNIJ</div>
-<p style="margin:0;font-size:14.5px;line-height:1.6;color:#cfd9cf">Bezpłatna diagnoza kosztu status quo — wynik w liczbach.</p>
-<a href="#diagnoza" class="btn-accent" style="display:inline-flex;align-items:center;gap:8px;margin-top:15px;background:var(--la-accent,#00CD77);color:#0b1a11;padding:12px 20px;border-radius:10px;font-weight:750;font-size:14px">Umów diagnozę →</a>
-</div>
-</div>
-<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-top:56px;padding-top:24px;border-top:1px solid rgba(232,236,231,0.14);font-size:12.5px;color:#7d9080">
-<span>© 2026 Let's automate</span>
-<div style="display:flex;gap:24px">
-<a href="#diagnoza" class="foot-lnk" style="color:#7d9080">Polityka prywatności</a>
-<a href="#diagnoza" class="foot-lnk" style="color:#7d9080">RODO</a>
-</div>
-</div>
-</footer>
+<!-- ============ S10b/S11 · PAS GRUPY + STOPKA ============
+     Jedno źródło dla całego serwisu: src/components/Stopka.astro -->
+<Stopka />
 
 </div>
 
 <script>
-  // ---- Sticky header: cień/obramowanie po scrollu ----
-  (function(){
-    var h = document.querySelector('.site-header');
-    if(!h) return;
-    function upd(){ h.classList.toggle('scrolled', window.scrollY > 65); }
-    upd();
-    window.addEventListener('scroll', upd, {passive:true});
-  })();
-
   // ---- Hero: makieta pulpitu skalowana do szerokości kontenera ----
   (function(){
     var frame = document.querySelector('.mockup-frame');
@@ -1216,16 +1099,56 @@ import TopbarWiseGroup from '../components/TopbarWiseGroup.astro';
   })();
 
   // ---- Zakładki oferty (S4) — Wdrażamy AI / Budujemy / Guided Coding ----
+  // Zakładki krążą same, dopóki nikt ich nie tknie: bez tego dwie trzecie
+  // oferty nigdy się nie pokazują. Pierwsze kliknięcie zatrzymuje rotację
+  // NA DOBRE — nic nie przełącza się pod ręką czytającego. Rotacja chodzi
+  // wyłącznie wtedy, gdy sekcja jest na ekranie, żeby nikt nie wracał
+  // do losowo przestawionej zakładki.
   (function(){
+    var box = document.querySelector('.krok-tabs');
     var tabs = document.querySelectorAll('.krok-tab');
     var layers = document.querySelectorAll('.krok-layer');
-    function setKrok(k){
+    if(!tabs.length) return;
+
+    var KROKI = ['wdrazamy','budujemy','guided'];
+    var CZAS = 7000;
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+    var auto = !reduce, widoczna = false, biezacy = 'wdrazamy', timer = null;
+
+    function pasek(t, aktywna){
+      if(!t) return;
+      var i = t.querySelector('.krok-pasek i');
+      if(!i) return;
+      i.style.transition = 'none';
+      i.style.width = '0%';
+      if(aktywna && auto && widoczna){
+        void i.offsetWidth;                     // reflow, inaczej przeglądarka sklei oba zapisy w jeden
+        i.style.transition = 'width ' + CZAS + 'ms linear';
+        i.style.width = '100%';
+      }
+    }
+    function plan(){
+      clearTimeout(timer);
+      if(!auto || !widoczna) return;
+      timer = setTimeout(function(){
+        setKrok(KROKI[(KROKI.indexOf(biezacy) + 1) % KROKI.length]);
+      }, CZAS);
+    }
+    function setKrok(k, odUzytkownika){
+      if(odUzytkownika && auto){
+        auto = false;
+        clearTimeout(timer);
+        if(box) box.classList.add('krok-stop');
+      }
+      biezacy = k;
       tabs.forEach(function(t){
         var on = t.dataset.krok === k;
+        t.classList.toggle('krok-on', on);
         t.style.background = on ? '#ffffff' : 'transparent';
         t.style.boxShadow = on ? '0 12px 28px -16px rgba(12,28,20,0.3)' : 'none';
         var num = t.querySelector('.krok-num');
         if(num) num.style.color = on ? '#0a7a52' : '#808b83';
+        pasek(t, on);
       });
       layers.forEach(function(l){
         var on = l.dataset.layer === k;
@@ -1234,10 +1157,26 @@ import TopbarWiseGroup from '../components/TopbarWiseGroup.astro';
         l.style.pointerEvents = on ? 'auto' : 'none';
         l.classList.toggle('active', on);
       });
+      plan();
     }
-    tabs.forEach(function(t){ t.addEventListener('click', function(){ setKrok(t.dataset.krok); }); });
-    document.querySelectorAll('[data-krok-link]').forEach(function(el){ el.addEventListener('click', function(){ setKrok(el.dataset.krokLink); }); });
+
+    tabs.forEach(function(t){ t.addEventListener('click', function(){ setKrok(t.dataset.krok, true); }); });
+    document.querySelectorAll('[data-krok-link]').forEach(function(el){
+      el.addEventListener('click', function(){ setKrok(el.dataset.krokLink, true); });
+    });
     setKrok('wdrazamy');
+
+    var sec = document.getElementById('oferta');
+    if(sec && 'IntersectionObserver' in window){
+      new IntersectionObserver(function(e){
+        widoczna = e[0].isIntersecting;
+        if(widoczna){ pasek(document.querySelector('.krok-tab.krok-on'), true); plan(); }
+        else clearTimeout(timer);
+      }, {threshold:0.3}).observe(sec);
+    } else {
+      widoczna = true;
+      plan();
+    }
   })();
 
   // ---- Rachunek (S2) — licznik od 0 do wartości docelowej gdy widoczny ----
@@ -1286,39 +1225,7 @@ import TopbarWiseGroup from '../components/TopbarWiseGroup.astro';
     }, 5200);
   })();
 
-  // ---- Nav CTA — rotujący typing (Bezpłatna diagnoza / Wyceń projekt / …) ----
-  (function(){
-    var el = document.querySelector('[data-cta-rotate]');
-    if(!el) return;
-    // UWAGA: szerokość przycisku trzyma ukryty .nav-cta-sizer w HTML —
-    // musi zawierać NAJDŁUŻSZĄ z fraz poniżej.
-    var phrases = ['Bezpłatna diagnoza', 'Wyceń projekt', 'Umów rozmowę'];
 
-    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion:reduce)').matches;
-    var i = 0;
-    if(reduce){
-      el.textContent = phrases[0];
-      setInterval(function(){ i = (i + 1) % phrases.length; el.textContent = phrases[i]; }, 3200);
-      return;
-    }
-
-    var ci = 0, deleting = false;
-    function tick(){
-      var full = phrases[i];
-      if(!deleting){
-        ci++;
-        el.textContent = full.slice(0, ci);
-        if(ci >= full.length){ deleting = true; return setTimeout(tick, 1800); }
-        return setTimeout(tick, 60 + Math.random() * 45);
-      }
-      ci--;
-      el.textContent = full.slice(0, ci);
-      if(ci <= 0){ deleting = false; i = (i + 1) % phrases.length; return setTimeout(tick, 300); }
-      return setTimeout(tick, 32);
-    }
-    el.textContent = '';
-    setTimeout(tick, 800);
-  })();
 </script>
 
 </body>

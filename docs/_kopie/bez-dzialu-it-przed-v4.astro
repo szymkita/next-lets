@@ -1,0 +1,1041 @@
+---
+// DRZWI A — /guided-coding/bez-dzialu-it
+// Ta strona zastąpiła wersję sprzedającą jednorazowy przegląd (31.08.2026).
+// Poprzednia leży w docs/_kopie/bez-zespolu-it-przed-abonamentem.astro.
+//
+// KOREKTA KIERUNKU (feedback Szymona, 30.08):
+// „usługa guided coding to jest de facto abonamentowa usługa, ona się zaczyna
+//  od review tego co juz zrobili albo od ustalenia celów (i wtedy mamy wpływ
+//  na np. stack), ale my tam utrzymujemy biezace code review, jest pairing
+//  miedzy nimi a nami" — plus bieżące wsparcie i rozszerzenie o analityka,
+//  PM-a, projektanta.
+// I v1, i pierwsza v2 sprzedawały PRZEGLĄD jako produkt: pięć dni, stała
+// cena, raport, a abonament stał jako jeden z trzech wierszy w „co dalej".
+// Tu jest odwrotnie: produktem jest PROWADZENIE, a wejście (przegląd albo
+// ustalenie celów) zajmuje jedną sekcję.
+//
+// TEZA:
+// Kategoria sprzedaje godziny wsparcia w miesiącu. My sprzedajemy liczbę,
+// która ma spadać — jak często musimy wrócić do Waszej zmiany. Opieka,
+// przy której w dwunastym miesiącu wracamy tak samo często jak w pierwszym,
+// jest źle ustawiona. Dlatego każdy komentarz ma się kończyć zasadą, która
+// zostaje u klienta.
+//
+// KOREKTA DRUGA (feedback Szymona po pierwszym podejściu abonamentowym):
+// „oryginalna opcja robiła duzo rzeczy lepiej, lepiej tłumaczyła czym jest
+//  ta usługa, bardziej holistycznie traktowała to wsparcie".
+// Pierwsze podejście zwęziło usługę do jednego mechanizmu (komentarz pod
+// zmianą) i wycięło wszystko, co tłumaczyło, czym ona jest. Wracają więc
+// z v1, przepisane na abonament: rozpoznanie odbiorcy z „czego nie musicie
+// mieć", sekcja definicyjna, PIĘĆ OSI jako zakres stałej opieki (nie tylko
+// kod: bezpieczeństwo, dane, architektura, koszty, utrzymywalność) oraz
+// „co zostaje u Was" razem ze zdaniem o braku prowizji od dostawców.
+//
+// DWA NOŚNIKI, DWA GATUNKI:
+// · HERO — plik zasad, który sam się dopisuje przez sześć miesięcy. Rytm
+//   dopisywania JEST daną: trzy zasady w pierwszym miesiącu, jedna w szóstym.
+//   Obok licznik: 18 zmian / 6 komentarzy → 55 zmian / 3 komentarze.
+// · CIEMNY PAS — jeden komentarz, który zostawiamy pod zmianą, w całości.
+//   Artefakt dowodzi rejestru („napisane dla osoby, która nie programuje")
+//   zamiast go zapowiadać. Z tego komentarza powstaje zasada nr 7 z hero —
+//   oba rysunki opowiadają ten sam czwarty miesiąc.
+//
+// CZEGO NIE POWTARZAM Z RODZEŃSTWA: łuki i strumień wierszy (/strategia-ai),
+// przekrój warstw (/rozwiazania-ai), jednostki do policzenia (/szkolenia-ai),
+// oś pracy i czekania (/systemy-procesowe), listy słupków
+// (/systemy-dla-klientow), pulsujące linie (/automatyzacje-integracje),
+// lista, która się sortuje (poprzednia wersja tej strony).
+//
+// DO POTWIERDZENIA PRZED PUBLIKACJĄ:
+// · [4 500] zł/mies. i [8 000] zł za przegląd — obie kwoty są hipotezą.
+//   Druga przeniesiona ze spec'u v1, pierwsza wymyślona na potrzeby układu.
+// · Czy przegląd jest płatny osobno, czy wchodzi w pierwszy miesiąc —
+//   decyzja handlowa. Strona mówi dziś „wyceniane osobno".
+// · Liczby miesięcy (18→55 zmian, 6→3 komentarze, 9 zasad, co trzeci
+//   komentarz kończy się zasadą) — proporcje z obserwacji, nie z pomiaru.
+//   Kształt (spadek częstości) jest pewny, konkretne liczby do podmiany.
+//   Zmiana tablic ZASADY i MIESIACE przelicza wysokości i wszystkie klatki.
+// · Kadencja: dwie sesje pairingu i jeden przegląd w miesiącu, odpowiedź
+//   tego samego dnia — do potwierdzenia, bo to zobowiązanie umowne.
+// · „Pytania w wątku nie są liczone osobno" — decyzja handlowa. To zdanie
+//   niesie ciepło całej strony, więc jeśli ma wypaść, trzeba je zastąpić.
+import LaBase from '../../layouts/LaBase.astro';
+import GcFaq from '../../components/GcFaq.astro';
+import GcCta from '../../components/GcCta.astro';
+import TeamAvatar from '../../components/TeamAvatar.astro';
+import { zespol } from '../../data/zespol.js';
+
+const title = "Prowadzenie zespołu bez działu IT — ktoś czyta to, co budujecie | Let's automate";
+const description = 'Stała opieka nad zespołem, który buduje aplikacje w Claude Code bez działu IT. Code review każdej zmiany, doradztwo i poprawki po naszej stronie — dla firm, które zaczęły od vibe codingu.';
+
+
+// ---- ZASADY, KTÓRE ZOSTAJĄ U KLIENTA -----------------------------------
+// Powstają z komentarzy. Trzy ostatnie pokazujemy w sekcji „co zostaje
+// u Was" — to najkonkretniejszy dowód, że wiedza przechodzi na klienta.
+const ZASADY = [
+  { t: 'Każda rzecz podpięta z zewnątrz ma właściciela z imienia', z: 'nikt nie wiedział, kto pilnuje wysyłki faktur' },
+  { t: 'Eksporty i raporty pobierają dane porcjami', z: 'eksport zamówień zatrzymywał panel na kwadrans' },
+  { t: 'AI nie zmienia pieniędzy bez zgody człowieka', z: 'agent wystawił korektę do faktury sam' },
+];
+
+// Sześć miesięcy współpracy: nowych wersji przybywa, interwencji ubywa.
+// „sami" — poprawiliśmy u siebie, „wam" — oddaliśmy z instrukcją, bo tę
+// samą rzecz klient spotka jeszcze nieraz.
+const MIESIACE = [
+  { wersji: 18, sami: 7, wam: 4 },
+  { wersji: 24, sami: 7, wam: 4 },
+  { wersji: 31, sami: 6, wam: 4 },
+  { wersji: 38, sami: 7, wam: 4 },
+  { wersji: 46, sami: 5, wam: 3 },
+  { wersji: 55, sami: 4, wam: 3 },
+];
+const M4 = MIESIACE[3];
+
+
+// ---- LUPA NAD KODEM (hero) ---------------------------------------------
+// Kod przewija się sam i poza lupą jest blady — dokładnie tak wygląda dla
+// osoby, która nie programuje. Lupa wędruje nad nim i zatrzymuje się na
+// trzech miejscach: podkreślenie zapala się na czerwono albo bursztynowo,
+// a po chwili robi się zielone. Bez jednego słowa komentarza — to jest cała
+// usługa: ktoś czyta kod, którego Wy nie czytacie, i od razu to poprawia.
+//
+// Powiększenie: druga kopia tego samego kodu, przycięta do koła. Obie kopie
+// mają tę samą animację przewijania, więc nie mają jak się rozjechać.
+// Kompensacja powiększenia liczy się z pozycji lupy: przesunięcie kopii to
+// (r - k·cx, r - k·cy), więc punkt (cx, cy) sceny ląduje w środku koła.
+//
+// Kod jest prawdziwy: eksport zamówień z panelu, jakich powstaje najwięcej.
+// Trzy podkreślenia to trzy rzeczy, które faktycznie się w takim kodzie
+// znajduje — klucz w kodzie, zapytanie bez limitu, dane klientów w mailu.
+const KOD = [
+  "import { db } from './db';",
+  "import type { Request, Response } from 'express';",
+  '',
+  'type Zamowienie = {',
+  '  nr: string; data: string; kwota: number;',
+  '  klientId: string;',
+  '};',
+  '',
+  { a: 'const KLUCZ_MAILA = ', m: "'sk-live-8f2c41c9a7'", b: ';', po: 'process.env.KLUCZ_MAILA!' },
+  '',
+  'export async function eksportZamowien(',
+  '  req: Request, res: Response',
+  '): Promise<void> {',
+  "  const od = (req.query.od as string) ?? '2026-01-01';",
+  '',
+  '  const zamowienia = await db.query<Zamowienie>(',
+  '    `select nr, data, kwota, klient_id',
+  { a: '     from zamowienia ', m: 'where data >= $1`', b: ',', po: 'where data >= $1 limit 1000`' },
+  '    [od]',
+  '  );',
+  '',
+  '  const plik = doCSV(zamowienia);',
+  { a: '  await ', m: 'wyslijMailem(plik, req.user.email)', b: ';', po: 'wyslijLink(zapisz(plik), req.user.id)' },
+  '  res.json({ ok: true, ile: zamowienia.length });',
+  '}',
+];
+
+const LU = {
+  c: 22,             // długość cyklu
+  w: 600, h: 420,    // scena
+  wiersz: 26, gora: 16, lewo: 18,
+  r: 76, k: 1.55,    // promień lupy i powiększenie
+  fs: 15,
+  x0: 210, y0: 120,  // gdzie lupa stoi na początku i na końcu cyklu
+};
+const LU_H = KOD.length * LU.wiersz;
+const LU_V = LU_H / LU.c;                                   // px na sekundę
+const yWiersza = (i, t) => LU.gora + i * LU.wiersz + LU.wiersz / 2 - LU_V * t;
+
+// Trzy przystanki lupy. „zgasnie" to moment, w którym wiersz wyjechał już
+// górą — podkreślenie musi zniknąć, zanim jego kopia z drugiego bloku
+// wjedzie od dołu, inaczej zielone podkreślenia pojawiałyby się same.
+// x liczy się z długości tekstu, żeby lupa stała dokładnie nad podkreśleniem
+// (Menlo ma szerokość znaku 0,6021 em), a nie „mniej więcej tam".
+const ZNAK_W = LU.fs * 0.6021;
+const srodek = (i) => LU.lewo + (KOD[i].a.length + KOD[i].m.length / 2) * ZNAK_W;
+// „wroci" to moment, w którym wiersz wraca do stanu sprzed poprawki —
+// musi wypaść wtedy, gdy ani on, ani jego kopia z drugiego bloku nie są
+// widoczne, inaczej poprawiony kod mrugałby z powrotem na oczach czytelnika.
+const PRZYSTANKI = [
+  { i: 8,  od: 1.0,  do: 3.4,  kolor: '#c0492f', zgasnie: 8.9,  wroci: 15.5 },
+  { i: 17, od: 8.6,  do: 11.0, kolor: '#d99a3c', zgasnie: 16.8, wroci: 21.9 },
+  { i: 22, od: 13.0, do: 15.4, kolor: '#d99a3c', zgasnie: 21.2, wroci: 21.9 },
+].map((z) => ({ ...z, x: srodek(z.i) }));
+const ZNAKI = PRZYSTANKI.map((z) => z.i);
+
+const lp = (t) => `${((t / LU.c) * 100).toFixed(2)}%`;
+const poz = (cx, cy) => `left:${(cx - LU.r).toFixed(1)}px;top:${(cy - LU.r).toFixed(1)}px`;
+const kadr = (cx, cy) => `transform:translate(${(LU.r - LU.k * cx).toFixed(1)}px,${(LU.r - LU.k * cy).toFixed(1)}px) scale(${LU.k})`;
+
+// Punkty toru: start, potem po dwa na każdy przystanek (dojazd i odjazd).
+const MIEKKO = 'cubic-bezier(.45,0,.25,1)';
+const TOR_LUPY = [
+  { t: 0, x: LU.x0, y: LU.y0, f: MIEKKO },
+  ...PRZYSTANKI.flatMap((z) => [
+    // od tej klatki lupa jedzie liniowo, bo śledzi przewijający się wiersz
+    { t: z.od, x: z.x, y: yWiersza(z.i, z.od), f: 'linear' },
+    { t: z.do, x: z.x, y: yWiersza(z.i, z.do), f: MIEKKO },
+  ]),
+  { t: LU.c, x: LU.x0, y: LU.y0, f: MIEKKO },
+];
+
+// Przepływ w sekcji definicyjnej: kropka jedzie od Was, zatrzymuje się
+// u nas i rusza dalej do ludzi. Cykl krótszy niż lupa, żeby oba ruchy
+// nie wpadały w ten sam rytm.
+const FL_C = 10;
+const flp = (t) => `${((t / FL_C) * 100).toFixed(2)}%`;
+const FL_POZ = ['-1px', 'calc((100% - 2 * var(--g)) / 3 + var(--g) - 1px)', 'calc(2 * ((100% - 2 * var(--g)) / 3 + var(--g)) - 1px)'];
+const FL_SZER = ['0%', 'calc((100% - 2 * var(--g)) / 3 + var(--g) + 6px)', '100%'];
+const klatkiPrzeplywu = [
+  `@keyframes fl-jedzie{0%,${flp(0.4)}{left:${FL_POZ[0]};opacity:0}${flp(0.9)}{left:${FL_POZ[0]};opacity:1}${flp(3.1)}{left:${FL_POZ[1]};opacity:1}${flp(4.9)}{left:${FL_POZ[1]};opacity:1}${flp(7.0)}{left:${FL_POZ[2]};opacity:1}${flp(8.2)}{left:${FL_POZ[2]};opacity:1}${flp(8.6)}{left:${FL_POZ[2]};opacity:0}100%{left:${FL_POZ[0]};opacity:0}}`,
+  `@keyframes fl-rosnie{0%,${flp(0.9)}{width:${FL_SZER[0]}}${flp(3.1)}{width:${FL_SZER[1]}}${flp(4.9)}{width:${FL_SZER[1]}}${flp(7.0)}{width:${FL_SZER[2]}}${flp(8.2)}{width:${FL_SZER[2]}}${flp(8.6)}{width:${FL_SZER[0]}}100%{width:${FL_SZER[0]}}}`,
+  `@keyframes fl-puls{0%,${flp(3.1)}{opacity:0;transform:scale(0.55)}${flp(3.5)}{opacity:1;transform:scale(1)}${flp(4.6)}{opacity:1;transform:scale(1)}${flp(5.1)}{opacity:0;transform:scale(1.6)}100%{opacity:0}}`,
+].join('\n');
+
+const klatkiLupy = [
+  `@keyframes lu-scroll{0%{transform:translateY(0)}100%{transform:translateY(${-LU_H}px)}}`,
+  `@keyframes lu-lot{${TOR_LUPY.map((p) => `${lp(p.t)}{${poz(p.x, p.y)};animation-timing-function:${p.f}}`).join('')}}`,
+  `@keyframes lu-kadr{${TOR_LUPY.map((p) => `${lp(p.t)}{${kadr(p.x, p.y)};animation-timing-function:${p.f}}`).join('')}}`,
+  ...PRZYSTANKI.map((z, n) => {
+    const zapala = z.od + 0.25, zielony = z.do - 0.5;
+    return `@keyframes lu-zn${n}{0%,${lp(zapala)}{opacity:0;background:${z.kolor}}${lp(zapala + 0.3)}{opacity:1;background:${z.kolor}}${lp(zielony)}{opacity:1;background:${z.kolor}}${lp(zielony + 0.35)}{opacity:1;background:#00CD77}${lp(z.zgasnie)}{opacity:1;background:#00CD77}${lp(z.zgasnie + 0.5)}{opacity:0;background:#00CD77}100%{opacity:0;background:${z.kolor}}}`;
+  }),
+  ...PRZYSTANKI.map((z, n) => {
+    const zapala = z.od + 0.25, zielony = z.do - 0.5;
+    return `@keyframes lu-tl${n}{0%,${lp(zapala)}{background:rgba(0,0,0,0)}${lp(zapala + 0.3)}{background:${z.kolor}1f}${lp(zielony)}{background:${z.kolor}1f}${lp(zielony + 0.35)}{background:rgba(0,205,119,0.14)}${lp(z.zgasnie)}{background:rgba(0,205,119,0.14)}${lp(z.zgasnie + 0.5)}{background:rgba(0,0,0,0)}100%{background:rgba(0,0,0,0)}}`;
+  }),
+  // wiersz przed poprawką i po poprawce — klucz ma zniknąć z kodu, a nie
+  // zrobić się zielony
+  ...PRZYSTANKI.map((z, n) => {
+    const zielony = z.do - 0.5;
+    return `@keyframes lu-wp${n}{0%,${lp(zielony)}{opacity:1}${lp(zielony + 0.01)}{opacity:0}${lp(z.wroci)}{opacity:0}${lp(z.wroci + 0.01)}{opacity:1}100%{opacity:1}}`;
+  }),
+  ...PRZYSTANKI.map((z, n) => {
+    const zielony = z.do - 0.5;
+    return `@keyframes lu-wo${n}{0%,${lp(zielony)}{opacity:0}${lp(zielony + 0.01)}{opacity:1}${lp(z.wroci)}{opacity:1}${lp(z.wroci + 0.01)}{opacity:0}100%{opacity:0}}`;
+  }),
+].join('\n');
+
+
+// ---- DLA KOGO -----------------------------------------------------------
+const DLA_KOGO = [
+  {
+    t: 'Ktoś u Was buduje w Claude Code i zespół już z tego korzysta',
+    d: 'Powstało w kilka wieczorów na vibe codingu, dziś siedzi w tym codzienna robota działu. Ta osoba poprawia to dalej i przy każdej większej zmianie zastanawia się, czy czegoś nie zepsuje.',
+  },
+  {
+    t: 'Wasze narzędzie wewnętrzne zaczęło obsługiwać pieniądze albo dane klientów',
+    d: 'Zamówienia, faktury, dane osobowe. Do tej pory nikt tego nie oglądał z zewnątrz, a stawka podniosła się na tyle, że pomyłka zaczyna kosztować.',
+  },
+  {
+    t: 'Macie produkt, z którego korzystają płacący klienci',
+    d: 'Programistów na etacie nie ma i na razie nie będzie. Chodzi o to, żeby dziesiąty klient nie był trudniejszy od pierwszego, a tempo nie spadło po trzecim miesiącu.',
+  },
+];
+
+
+// ---- JAK TO WCHODZI DO WASZEJ PRACY -------------------------------------
+// Trzy kroki, zero żargonu. Wcześniej stała tu osobna sekcja „jak wygląda
+// wtorek" — dublowała sekcję o miesiącu, więc mechanika wjeżdża tutaj,
+// obok definicji, a sekcja o miesiącu odpowiada tylko za rytm.
+const KROKI = [
+  {
+    n: '01',
+    t: 'Budujecie jak dotąd, z inżynierami pod ręką',
+    d: 'W Claude Code albo w Codexie, tym samym sposobem co dziś. Po drugiej stronie siedzą ludzie, którzy budują takie systemy zawodowo.',
+  },
+  {
+    n: '02',
+    t: 'Każda zmiana przechodzi przez code review',
+    d: 'Narzędzie sprawdza ją zasadami z Waszego repozytorium, a człowiek siada do tego, co ono podniesie. Nie musicie zgadywać, która zmiana jest ważna.',
+  },
+  {
+    n: '03',
+    t: 'Z poprawek zostają Wasze zasady',
+    d: 'Co trzecia kończy się regułą dopisaną do Waszego repozytorium. Czyta ją AI, w którym budujecie, więc ten sam błąd nie wraca.',
+  },
+];
+
+
+// ---- CO JESZCZE ROBIMY W MIESIĄCU ---------------------------------------
+// Świadomie czasownikami, nie nazwami. Osiem rzeczowników na części usługi
+// („opieka", „dyżur", „bramka", „pairing", „przegląd miesiąca") sprawiało,
+// że czytelnik gubił, co jest usługą, a co jej elementem.
+const ROBIMY = [
+  {
+    t: 'Poprawiamy u siebie',
+    d: 'Przy drobnych piszemy jednym zdaniem, co zmieniliśmy. Przy większych pytamy, czy zrobić to u nas, czy przejść przez to razem.',
+    k: 'na bieżąco',
+  },
+  {
+    t: 'Siadamy z Wami, kiedy coś się zacina',
+    d: 'Dwa spotkania po półtorej godziny w miesiącu, przy jednym ekranie. Klawiaturę trzyma Wasza osoba, a my mówimy, dlaczego robi się to tak.',
+    k: 'dwa razy w miesiącu',
+  },
+  {
+    t: 'Odpowiadamy na pytania w trakcie pracy',
+    d: 'Kanał na czacie, na którym pytacie o wszystko, także o podstawy. Nikt tych pytań nie liczy.',
+    k: 'codziennie',
+  },
+  {
+    t: 'Raz w miesiącu siadamy do podsumowania',
+    d: 'Godzina: co powstało, co zatrzymaliśmy i dlaczego, co dopisaliśmy do Waszych zasad.',
+    k: 'raz w miesiącu',
+  },
+];
+
+
+// ---- MIESIĄC DZIEŃ PO DNIU ---------------------------------------------
+// Kafelki jak w wykresie aktywności na GitHubie: intensywność koloru mówi,
+// ile się danego dnia działo, a dymek pokazuje co dokładnie. Dzięki temu
+// nie potrzeba legendy — treść siedzi w każdym dniu z osobna.
+//
+// Liczby są przykładem miesiąca zespołu dwóch osób budujących w Claude Code.
+const DNI = [
+  { w: 2, q: 1 },            { w: 3, p: 1 },            { w: 1, q: 2 },            { w: 4, q: 1 },            { w: 2 },
+  { w: 3, q: 1 },            { w: 2, p: 1, q: 1 },      { w: 3, s: 1 },            { w: 1, q: 1 },            { w: 4, p: 1 },
+  { w: 2, q: 2 },            { w: 3 },                  { w: 2, q: 1 },            { w: 4, s: 1 },            { w: 1, p: 1, q: 1 },
+  { w: 3, q: 1 },            { w: 2 },                  { w: 4, p: 1, q: 2 },      { w: 2, q: 1 },            { w: 3, d: 1 },
+];
+const DNI_TYG = ['pn', 'wt', 'śr', 'cz', 'pt'];
+
+// polska odmiana bez kombinowania: 1 / 2–4 / 5+
+const odm = (n, jeden, kilka, wiele) => (n === 1 ? jeden : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14) ? kilka : wiele);
+const opisDnia = (x) => {
+  const l = [`${x.w} ${odm(x.w, 'nowa wersja przejrzana', 'nowe wersje przejrzane', 'nowych wersji przejrzanych')}`];
+  if (x.p) l.push('poprawka po naszej stronie');
+  if (x.q) l.push(`${x.q} ${odm(x.q, 'pytanie na czacie', 'pytania na czacie', 'pytań na czacie')}`);
+  if (x.s) l.push('wspólne spotkanie · 90 minut');
+  if (x.d) l.push('podsumowanie miesiąca · godzina');
+  return l;
+};
+const MIESIAC = DNI.map((x, i) => ({
+  ...x,
+  i,
+  tydzien: Math.floor(i / 5) + 1,
+  dzien: DNI_TYG[i % 5],
+  poziom: Math.min(4, x.w + (x.p ? 1 : 0)),
+  opis: opisDnia(x),
+}));
+
+
+// ---- JAKIE PROBLEMY ROZWIĄZUJEMY ---------------------------------------
+// Sekcja, o którą prosił Szymon: wsparcie, analiza i review kodu oraz pomoc
+// przy trudniejszych rzeczach są po coś. Lewa kolumna to zdanie, które
+// klient mówi sam sobie w nocy, prawa — co z tym robimy.
+const PROBLEMY = [
+  {
+    t: 'Boję się kliknąć „publikuj" przy większej zmianie',
+    d: 'Zmiana idzie do nas, zanim zobaczą ją ludzie. Wiecie, że ktoś ją obejrzał, i wiecie, jak ją cofnąć — o powrocie do poprzedniej wersji rozmawiamy w pierwszym tygodniu, nie przy pierwszej awarii.',
+  },
+  {
+    t: 'AI kręci się w kółko trzeci wieczór i nie mam kogo zapytać',
+    d: 'Piszecie na czacie i tego samego dnia dostajecie odpowiedź. Przy większych sprawach siadamy razem przy jednym ekranie.',
+  },
+  {
+    t: 'Nikt nigdy tego nie widział i nie wiem, czy to jest dobre',
+    d: 'Pierwszy przegląd mówi wprost, co jest dobre, a co zmienić — z podziałem na to, co zrobicie w wieczór, i to, co bierzemy na siebie. Większość zespołów słyszy wtedy, że jest lepiej, niż się bali.',
+  },
+  {
+    t: 'Wyciekną nam klucze albo dane klientów',
+    d: 'Hasła do usług wychodzą z kodu w pierwszym tygodniu. Potem pilnujemy, kto ma dostęp do danych osobowych i co z nich wychodzi do zewnętrznych modeli AI.',
+  },
+  {
+    t: 'Stanie, kiedy przyjdzie więcej ludzi',
+    d: 'Sprawdzamy, co wytrzyma dziesięć razy większy ruch, i poprawiamy wąskie miejsca, zanim urosną. Eksport, który dziś radzi sobie z trzema tysiącami zamówień, ma sobie poradzić z czterdziestoma tysiącami.',
+  },
+  {
+    t: 'Trzeba będzie napisać to od nowa',
+    d: 'Pilnujemy, żeby dało się wymieniać kawałki pojedynczo, a rachunki za usługi i za model przechodzimy raz w miesiącu.',
+  },
+];
+
+// ---- WISESTACK (ciemny pas) --------------------------------------------
+// Sekcja była nieczytelna: trzy pary słupków, nota, trzy liczby i zdanie
+// o kategorii. Zostaje JEDEN wykres, który pokazuje, skąd bierze się
+// przyspieszenie — droga jednej zmiany od pomysłu do ludzi, rozbita na
+// etapy, przed metodą i z nią.
+//
+// TEZA RYSUNKU: samo budowanie trwa tyle samo. Znika czekanie.
+// To jest uczciwsze niż obietnica „szybszego kodowania" i trudniejsze
+// do podważenia, bo każdy zna to z własnego zespołu.
+//
+// WSZYSTKIE LICZBY DO PODMIANY — dni robocze, mediana z wdrożeń.
+const ETAPY = [
+  { k: 'budowa', o: 'budujecie', kolor: 'b' },
+  { k: 'czekanie', o: 'czekanie na sprawdzenie', kolor: 'c' },
+  { k: 'poprawki', o: 'poprawki po fakcie', kolor: 'p' },
+];
+const DROGI = [
+  { t: 'Bez metody', budowa: 1.5, czekanie: 3.0, poprawki: 1.0 },
+  { t: 'Z WiseStackiem', budowa: 1.5, czekanie: 0.4, poprawki: 0.4, my: true },
+];
+const DR_MAX = Math.max(...DROGI.map((d) => d.budowa + d.czekanie + d.poprawki));
+const suma = (d) => d.budowa + d.czekanie + d.poprawki;
+const dni = (v) => `${v.toFixed(1).replace('.', ',')} dnia`;
+
+// ---- KTO PO NASZEJ STRONIE ---// ---- KTO PO NASZEJ STRONIE ---// ---- KTO PO NASZEJ STRONIE ---// ---- KTO PO NASZEJ STRONIE ----------------------------------------------
+// Twarze biorę z rejestru zespołu (src/data/zespol.js), bo abstrakcyjne
+// kafle nic nie mówią, a stockowych zdjęć nie używamy. Nikogo nie
+// przypisuję na sztywno do klienta — prowadzący „przychodzi z tego
+// zespołu", a przy rozszerzeniach stoją ci ludzie, którzy faktycznie
+// robią u nas tę robotę.
+const os = (n) => zespol.find((x) => x.name === n);
+const PROWADZACY = ['Krzysztof Radej', 'Michał Langowski', 'Michał Kita', 'Kamil Olejek', 'Marcel Bilski'].map(os);
+
+// Rozszerzenia: twarz, rola i jeden warunek. Nazwisk nie wypisujemy —
+// twarze mają pokazać, że ci ludzie istnieją, a nie przypisać ich do
+// konkretnego klienta.
+const DOKLADANE = [
+  { t: 'Analityk biznesowy', d: 'gdy z aplikacji zaczynają wychodzić raporty', kto: os('Damian Trzciński') },
+  { t: 'Zastępstwo', d: 'na urlop albo odejście Waszej osoby', kto: os('Łukasz Filip') },
+  { t: 'Trudniejsze elementy', d: 'płatności, migracje, ciężkie integracje', kto: os('Krzysztof Radej') },
+  { t: 'Kierownik projektu', d: 'gdy budujecie dwa produkty naraz', kto: os('Aleksander Żaboklicki') },
+  { t: 'Projektant', d: 'gdy narzędzie zaczynają widzieć klienci', kto: os('Dawid Kita') },
+];
+
+
+// ---- OD CZEGO ZACZYNAMY -------------------------------------------------
+const WEJSCIE = [
+  {
+    e: 'Kiedy coś już działa',
+    t: 'Macie już coś zbudowane',
+    d: 'Pięć dni, w których przechodzimy to, co powstało. Wychodzimy z listą podzieloną po tym, kto co wykona: co zrobicie sami w wieczór, co bierzemy na siebie, a co jest decyzją. Pierwszy miesiąc opieki idzie po tej liście.',
+    kroki: ['Dajecie nam podgląd do projektu', 'Przechodzimy pięć dni przeglądu', 'Dostajecie listę i zaczynamy pierwszy miesiąc'],
+    m: 'przegląd · 5 dni',
+    cta: 'Umów przegląd',
+  },
+  {
+    e: 'Kiedy zaczynacie od zera',
+    t: 'Jeszcze nie ma czego oglądać',
+    d: 'Dwa dni na cele i dobór narzędzi. Ustalamy, co ma powstać, w czym to zbudujecie i kto po Waszej stronie będzie tym kierował. Tu mamy wpływ na wybory, których później nie da się zmienić tanio.',
+    kroki: ['Ustalamy, co ma powstać i po co', 'Dobieramy narzędzia i sposób pracy', 'Pierwszy miesiąc zaczyna się od budowy'],
+    m: 'ustalenia · 2 dni',
+    cta: 'Umów rozmowę o celach',
+  },
+];
+
+
+// ---- CO MACIE DO WYBORU -------------------------------------------------
+// Zestawienie alternatyw. Zyski tej usługi widać dopiero obok tego, co
+// klient rozważa naprawdę: etat, software house albo nic. Kwoty w nawiasach.
+const ALTERNATYWY = [
+  {
+    t: 'Programista na etacie',
+    d: 'Jedna osoba, która zna tylko Wasz projekt — i idzie na urlop w lipcu.',
+    koszt: '[15–25 tys.] zł / mies.',
+    kto: 'Wasza, jeśli go znajdziecie',
+    kiedy: 'za [2–4] miesiące rekrutacji',
+  },
+  {
+    t: 'Software house',
+    d: 'Dostajecie gotowy produkt i rachunek za każdą kolejną zmianę.',
+    koszt: 'wycena za projekt',
+    kto: 'przechodzi do nich',
+    kiedy: 'po ustaleniu zakresu',
+  },
+  {
+    t: 'Nic',
+    d: 'Działa do dnia, w którym coś się wysypie albo autor odejdzie.',
+    koszt: '0 zł do pierwszej awarii',
+    kto: 'u Was',
+    kiedy: '—',
+  },
+  {
+    t: 'Prowadzenie z nami',
+    d: 'Code review każdej zmiany, poprawki po naszej stronie i ludzie, którzy z miesiąca na miesiąc umieją więcej.',
+    koszt: 'od 2900 zł / mies.',
+    kto: 'zostaje u Was',
+    kiedy: 'od pierwszego tygodnia',
+    my: true,
+  },
+];
+
+
+const faq = [
+  {
+    q: 'Za co płacimy w miesiącu, w którym nic się nie zepsuło?',
+    a: 'Za to, że każda nowa wersja przeszła przez code review, i za to, że mieliście gdzie zapytać w środę o czternastej. Jeśli spokojnych miesięcy jest kilka pod rząd, sami proponujemy zejście na mniejszy zakres — po roku robi tak większość zespołów.',
+  },
+  {
+    q: 'Musimy dać Wam dostęp do wszystkiego?',
+    a: 'Nie. Wystarczy podgląd do projektu i do miejsca, gdzie leży kod — w większości narzędzi to zaproszenie na adres e-mail, do cofnięcia jednym kliknięciem. Do danych klientów zwykle nie zaglądamy, a umowę o poufności podpisujemy przed pierwszym dostępem.',
+  },
+  {
+    q: 'Pracujemy w Claude Code. Umiecie w tym pomóc?',
+    a: 'Tak — Claude Code i Codex to nasze codzienne narzędzia. Jeśli budujecie w czymś innym, powiedzcie o tym na pierwszej rozmowie: przy części narzędzi pomożemy słabiej i mówimy to wprost.',
+  },
+  {
+    q: 'Nie wiemy, kiedy coś jest ważne, a kiedy nie. Jak mamy zgadnąć?',
+    a: 'Nie musicie. Widzimy każdą wersję i sami decydujemy, przy której się zatrzymać. Piszcie tylko wtedy, kiedy coś jest pilne albo sami czujecie się niepewnie.',
+  },
+  {
+    q: 'Poprawiacie sami czy tylko mówicie, co zrobić?',
+    a: 'Jedno i drugie. Drobne poprawki robimy u siebie od ręki, a to, co będziecie spotykać co tydzień, zostawiamy Wam z instrukcją — po trzecim razie zrobicie to bez nas. Budowy produktu nie przejmujemy.',
+  },
+  {
+    q: 'Nie mamy nikogo technicznego. Czy zrozumiemy, co do nas wraca?',
+    a: 'Wiadomość, po której ktoś czuje się głupszy, jest źle napisaną wiadomością — to jedyne kryterium, po którym oceniamy własną robotę. Każda ma cztery części: co zobaczyliśmy, co proponujemy, ile to zajmie i czego nie ruszamy.',
+  },
+  {
+    q: 'Ile naszego czasu to zajmuje?',
+    a: 'Około czterech godzin w miesiącu: dwa spotkania, godzina podsumowania i drobne pytania po drodze.',
+  },
+  {
+    q: 'Czy dojdą jakieś koszty poza abonamentem?',
+    a: 'Nie po naszej stronie — narzędzia, licencje i tokeny są w stawce miesięcznej. Osobno płacicie tylko za to, co i tak jest Wasze: subskrypcję Claude Code i rachunki za usługi, na których stoi aplikacja.',
+  },
+  {
+    q: 'Co, jeśli chcemy przestać?',
+    a: 'Miesięczny okres wypowiedzenia. Zostaje u Was wszystko: kod, dostępy i spisane zasady — jak „AI nie zmienia pieniędzy bez zgody człowieka”, dopisana po tym, jak agent wystawił korektę do faktury sam. Czyta je AI, w którym budujecie, więc działają dalej. Od dostawców narzędzi nie bierzemy prowizji, więc nic Was u nas nie trzyma poza tym, że się opłaca.',
+  },
+];
+---
+<LaBase title={title} description={description} ogImage="/og/bez-dzialu-it.png" ctaHref="#kontakt" ctaLabel="Umów rozmowę">
+<style is:global slot="head">
+  /* ================= lupa nad kodem (hero) =============================
+     Bez ramki i bez tła: kod jest częścią hero, wygaszony maską u góry
+     i u dołu. Poza lupą jest blady, pod lupą ostry. Lupa wędruje po torze
+     liczonym w nagłówku pliku i zatrzymuje się na trzech podkreśleniach,
+     które zapalają się na czerwono albo bursztynowo i gasną na zielono. */
+  .lu-box{position:relative;width:calc(var(--w) * var(--s, 1));height:calc(var(--h) * var(--s, 1))}
+  .lu-ram{position:absolute;left:0;top:0;width:var(--w);height:var(--h);transform:scale(var(--s, 1));transform-origin:top left}
+  .lu-plot{position:absolute;inset:0;overflow:hidden;-webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 13%,#000 76%,transparent 100%);mask-image:linear-gradient(to bottom,transparent 0,#000 13%,#000 76%,transparent 100%)}
+  .lu-strum{position:absolute;left:0;top:var(--gora);width:100%}
+  .lu-l{position:relative;display:block;white-space:pre;font-family:ui-monospace,Menlo,monospace;font-size:var(--fs);line-height:var(--wiersz);height:var(--wiersz);color:#c6d1c5;padding-left:var(--lewo)}
+  .lu-w{position:absolute;left:var(--lewo);top:0;white-space:pre}
+  .lu-m{position:relative;display:inline-block}
+  .lu-m u{position:absolute;left:-3px;right:-3px;top:-1px;bottom:-1px;border-radius:4px;background:rgba(0,0,0,0)}
+  .lu-m i{position:absolute;left:-2px;right:-2px;bottom:-3px;height:2.5px;border-radius:2px;opacity:0}
+  .lu-m em{position:relative;font-style:normal}
+  .lu-lupa{position:absolute;left:0;top:0;width:calc(var(--r) * 2);height:calc(var(--r) * 2)}
+  .lu-kolo{position:absolute;inset:0;border-radius:50%;overflow:hidden;background:#ffffff;box-shadow:0 22px 44px -20px rgba(18,38,28,0.45), 0 0 0 1.5px #16211a, inset 0 0 0 5px rgba(255,255,255,0.92)}
+  .lu-zoom{position:absolute;left:0;top:0;width:var(--w);height:var(--h);transform-origin:0 0}
+  .lu-zoom .lu-l{color:#16211a}
+  .lu-blysk{position:absolute;inset:0;border-radius:50%;pointer-events:none;background:radial-gradient(120% 120% at 30% 22%, rgba(255,255,255,0.6), rgba(255,255,255,0) 46%), radial-gradient(90% 90% at 76% 84%, rgba(22,33,26,0.09), rgba(255,255,255,0) 55%)}
+  .lu-uchwyt{position:absolute;left:calc(var(--r) * 1.66);top:calc(var(--r) * 1.66);width:58px;height:10px;border-radius:6px;background:#16211a;transform:rotate(42deg);transform-origin:0 50%}
+  @media (max-width:1240px){ .lu-box{--s:0.88} }
+  @media (max-width:900px){ .lu-box{--s:1} }
+  @media (max-width:660px){ .lu-box{--s:0.62} }
+  @media (max-width:420px){ .lu-box{--s:0.54} }
+  @media (prefers-reduced-motion:reduce){
+    /* Bez ruchu: lupa stoi na drugim podkreśleniu, wszystkie na zielono. */
+    .lu-strum{animation:none !important;transform:translateY(var(--stop))}
+    .lu-lupa{animation:none !important;left:var(--sl);top:var(--st)}
+    .lu-zoom{animation:none !important;transform:var(--sk)}
+    .lu-m i{animation:none !important;opacity:1;background:#00CD77}
+    .lu-m u{animation:none !important;background:rgba(0,205,119,0.14)}
+    .lu-w.p{animation:none !important;opacity:0}
+    .lu-w.o{animation:none !important;opacity:1}
+  }
+
+  /* ================= miesiąc dzień po dniu ==============================
+     Kafelki jak w wykresie aktywności: im ciemniejszy, tym więcej się działo.
+     Dymek pokazuje, co dokładnie — dzięki temu nie ma legendy, a treść
+     siedzi w każdym dniu. Działa na najechanie i na tabulator. */
+  .mk{display:grid;grid-template-columns:minmax(320px,0.82fr) minmax(0,1.18fr);gap:clamp(34px,5vw,72px);align-items:start;margin-top:clamp(30px,3.6vw,44px)}
+  .mk-s{display:grid;grid-template-columns:34px repeat(5,minmax(0,1fr));gap:7px}
+  .mk-h{font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:0.1em;color:#a3ada4;text-align:center;padding-bottom:2px}
+  .mk-t{font-family:ui-monospace,Menlo,monospace;font-size:11px;color:#b9c4ba;display:flex;align-items:center;justify-content:center}
+  .mk-d{position:relative;height:56px;border-radius:9px;border:1px solid transparent;background:#e9efe8;cursor:default}
+  .mk-d.p1{background:#dcecdf}
+  .mk-d.p2{background:#b8dfc6}
+  .mk-d.p3{background:#6fcb9b}
+  .mk-d.p4{background:#1fa968}
+  .mk-d.sp{background:var(--la-accent,#00CD77);box-shadow:inset 0 0 0 2px #ffffff,0 0 0 2px #0a7a52}
+  .mk-d.pd{background:#16211a;box-shadow:inset 0 0 0 2px #ffffff,0 0 0 2px #16211a}
+  .mk-nr{position:absolute;left:8px;top:7px;font-family:ui-monospace,Menlo,monospace;font-size:9.5px;color:rgba(22,33,26,0.4)}
+  .mk-d.p3 .mk-nr,.mk-d.p4 .mk-nr{color:rgba(255,255,255,0.75)}
+  .mk-d.sp .mk-nr,.mk-d.pd .mk-nr{color:rgba(255,255,255,0.85)}
+  .mk-y{position:absolute;left:50%;bottom:calc(100% + 10px);transform:translateX(-50%) translateY(4px);width:230px;padding:12px 14px;border-radius:12px;background:#16211a;color:#ffffff;opacity:0;visibility:hidden;transition:opacity .16s ease,transform .16s ease;z-index:5;pointer-events:none;box-shadow:0 20px 40px -22px rgba(18,38,28,0.6)}
+  .mk-y::after{content:'';position:absolute;left:50%;top:100%;margin-left:-6px;border:6px solid transparent;border-top-color:#16211a}
+  .mk-y b{display:block;font-family:ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.5);margin-bottom:7px}
+  .mk-y u{display:block;text-decoration:none;font-size:13.5px;line-height:1.45;color:rgba(255,255,255,0.9)}
+  .mk-y u + u{margin-top:4px}
+  .mk-d:hover .mk-y,.mk-d:focus-visible .mk-y{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0)}
+  .mk-d:first-of-type .mk-y{left:0;transform:translateX(0) translateY(4px)}
+  .mk-d:first-of-type:hover .mk-y{transform:translateX(0) translateY(0)}
+  .mk-d:first-of-type .mk-y::after{left:24px}
+  .mk-w{margin:clamp(18px,2.2vw,24px) 0 0;font-size:13.5px;line-height:1.55;color:#7c877e;text-wrap:pretty}
+  .mk-p{padding:0;margin:0;list-style:none}
+  .mk-p li{padding:clamp(15px,1.9vw,20px) 0;border-top:1px solid #dde7db}
+  .mk-p li:last-child{border-bottom:1px solid #dde7db}
+  .mk-p b{font-size:clamp(16.5px,1.9vw,19px);font-weight:750;letter-spacing:-0.015em;color:#16211a}
+  .mk-p p{margin:8px 0 0;max-width:56ch;font-size:14.5px;line-height:1.6;color:#4c5850;text-wrap:pretty}
+  @media (max-width:1000px){ .mk{grid-template-columns:1fr;gap:34px} }
+  @media (max-width:560px){ .mk-s{grid-template-columns:26px repeat(5,minmax(0,1fr));gap:5px} .mk-d{height:46px} .mk-y{width:180px} }
+
+  /* ================= przepływ: Wy → my → ludzie =========================
+     Każdy przystanek siedzi w swojej kolumnie, więc kropka stoi dokładnie
+     nad swoim podpisem, a wszystkie trzy bloki są wyrównane do lewej.
+     Odstęp siatki jest stałą (--g), bo z niej liczą się klatki jadącej
+     kropki — inaczej rozjechałaby się z przystankami. */
+  .fl{--g:34px;position:relative;margin-top:clamp(52px,6vw,84px)}
+  .fl-t{position:absolute;left:6px;right:6px;top:5px;height:2px;background:#e2e9e0;border-radius:2px;overflow:hidden}
+  .fl-f{position:absolute;left:0;top:0;bottom:0;width:0;background:linear-gradient(90deg,rgba(0,205,119,0.35),var(--la-accent,#00CD77));border-radius:2px}
+  .fl-k{position:absolute;top:-1px;width:14px;height:14px;border-radius:50%;background:var(--la-accent,#00CD77);box-shadow:0 0 0 4px rgba(0,205,119,0.16);z-index:1}
+  .fl-o{position:relative;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--g)}
+  .fl-o > div{position:relative;padding-top:34px}
+  .fl-s{position:absolute;left:0;top:0;width:12px;height:12px;border-radius:50%;background:#ffffff;border:2px solid #c3d2c5}
+  .fl-o > div:nth-child(2) .fl-s{border-color:#0a7a52}
+  .fl-p{position:absolute;left:50%;top:50%;width:22px;height:22px;margin:-11px 0 0 -11px;border-radius:50%;border:1.5px solid rgba(10,122,82,0.45);opacity:0;pointer-events:none}
+  .fl-o b{display:block;font-size:clamp(16px,1.85vw,18.5px);font-weight:750;letter-spacing:-0.015em;line-height:1.3;color:#16211a;text-wrap:balance}
+  .fl-o span{display:block;margin-top:8px;font-size:14.5px;line-height:1.58;color:#4c5850;text-wrap:pretty}
+  @media (max-width:760px){
+    .fl-o{grid-template-columns:1fr;gap:24px}
+    .fl-t,.fl-k{display:none}
+  }
+
+  /* trzy sytuacje obok siebie, bez linii — żeby nie była to kolejna tabelka */
+  .dk{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(26px,4vw,56px);margin-top:clamp(34px,4vw,52px)}
+  .dk-i{display:block;font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:0.13em;color:#a3ada4;font-style:normal}
+  .wr-t{margin:12px 0 0;font-size:clamp(17.5px,2vw,20.5px);font-weight:750;letter-spacing:-0.016em;line-height:1.3;color:#16211a;text-wrap:balance}
+  .wr-d{margin:10px 0 0;font-size:15px;line-height:1.6;color:#4c5850;text-wrap:pretty}
+  @media (max-width:860px){ .dk{grid-template-columns:1fr;gap:26px} }
+
+  /* ================= problemy: kolumny w pasie przewijanym =============
+     Bez pudełek, ramek i cieni — kolumny rozdzielone włosową kreską, jak
+     w gazecie. Ciężar niesie typografia: cudzysłów, zdanie klienta w dużym
+     stopniu pisma i nasza odpowiedź drobniej pod kreską. */
+  .pk{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(348px,1fr);gap:0;margin-top:clamp(32px,4vw,48px);overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;scrollbar-width:thin;scrollbar-color:#d4ded4 transparent;padding-bottom:18px}
+  .pk::-webkit-scrollbar{height:5px}
+  .pk::-webkit-scrollbar-track{background:transparent}
+  .pk::-webkit-scrollbar-thumb{background:#dbe4da;border-radius:3px}
+  .pk-k{scroll-snap-align:start;display:flex;flex-direction:column;padding:2px clamp(28px,3vw,44px) 4px;border-left:1px solid #e2e9e0}
+  .pk-k:first-child{border-left:0;padding-left:0}
+  .pk-c{display:block;font-size:46px;line-height:0.62;font-weight:800;color:#cfe3d5;user-select:none}
+  .pk-t{margin:14px 0 0;max-width:15ch;font-size:clamp(19px,2.1vw,22px);font-weight:750;letter-spacing:-0.022em;line-height:1.24;color:#16211a;text-wrap:balance}
+  .pk-r{width:34px;height:2px;margin:20px 0 0;background:#16211a;border-radius:2px}
+  .pk-d{margin:16px 0 0;max-width:34ch;font-size:14.5px;line-height:1.62;color:#4c5850;text-wrap:pretty}
+  .pk-s{display:flex;align-items:center;gap:12px;margin-top:2px;font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:#a3ada4}
+  .pk-s i{flex:1;height:1px;background:#e4ebe2}
+  @media (max-width:620px){ .pk{grid-auto-columns:minmax(262px,1fr)} .pk-k{padding-left:24px;padding-right:24px} }
+
+  /* ================= dla kogo (dwie kolumny) ============================ */
+  /* trzy sytuacje obok siebie, bez linii — żeby nie była to kolejna tabelka */
+  .dk{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(26px,4vw,60px);margin-top:clamp(30px,3.6vw,44px)}
+  .dk-i{display:block;font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:0.13em;color:#a3ada4;font-style:normal}
+  .wr-t{margin:12px 0 0;font-size:clamp(17.5px,2vw,20.5px);font-weight:750;letter-spacing:-0.016em;line-height:1.3;color:#16211a;text-wrap:balance}
+  .wr-d{margin:10px 0 0;font-size:15px;line-height:1.6;color:#4c5850;text-wrap:pretty}
+  @media (max-width:860px){ .dk{grid-template-columns:1fr;gap:26px} }
+
+  /* ================= droga jednej zmiany (ciemny pas) ==================
+     Jeden wykres zamiast trzech: ta sama zmiana przed metodą i z nią,
+     rozbita na etapy. Widać, że budowa trwa tyle samo, a znika czekanie.
+     Każdy odcinek jest podpisany, więc legenda nie jest potrzebna. */
+  .dr{margin-top:clamp(34px,4vw,52px)}
+  .dr-w + .dr-w{margin-top:clamp(26px,3vw,36px)}
+  .dr-e{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-bottom:12px}
+  .dr-e b{font-size:clamp(16px,1.9vw,19px);font-weight:750;letter-spacing:-0.015em;color:rgba(255,255,255,0.72)}
+  .dr-w.my .dr-e b{color:#ffffff}
+  .dr-e span{font-family:ui-monospace,Menlo,monospace;font-size:clamp(15px,1.9vw,19px);font-weight:700;color:rgba(255,255,255,0.72)}
+  .dr-w.my .dr-e span{color:var(--la-accent,#00CD77)}
+  .dr-s{display:flex;gap:3px;height:34px}
+  .dr-s > span{position:relative;display:flex;align-items:center;padding-left:12px;border-radius:6px;font-size:12.5px;font-weight:650;white-space:nowrap;overflow:hidden}
+  .dr-s .b{background:rgba(255,255,255,0.24);color:#ffffff}
+  .dr-s .c{background:#c0492f;color:#ffffff}
+  .dr-s .p{background:rgba(0,205,119,0.28);color:#ffffff}
+  .dr-w.my .dr-s .c{background:rgba(192,73,47,0.55)}
+  .dr-o{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:10px;font-size:12.5px;color:rgba(255,255,255,0.5)}
+  .dr-t{margin:clamp(26px,3vw,34px) 0 0;max-width:66ch;font-size:clamp(16px,1.9vw,19px);line-height:1.5;color:#ffffff;text-wrap:pretty}
+  .dr-t strong{color:var(--la-accent,#00CD77);font-weight:750}
+  .dr-n{margin:14px 0 0;max-width:780px;font-size:13px;line-height:1.55;color:rgba(255,255,255,0.45)}
+  .dw-cta{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px 32px;margin-top:clamp(30px,3.6vw,44px);padding:clamp(22px,2.6vw,30px) clamp(24px,2.8vw,34px);border:1px solid rgba(255,255,255,0.18);border-radius:18px;background:rgba(255,255,255,0.04)}
+  .dw-cta p{margin:0;max-width:640px;font-size:clamp(16px,1.9vw,19px);line-height:1.5;color:#ffffff;text-wrap:pretty}
+  .btn-jasny{display:inline-flex;align-items:center;gap:9px;flex-shrink:0;background:var(--la-accent,#00CD77);color:#0b1a11;padding:15px 26px;border-radius:11px;font-weight:700;font-size:15.5px;transition:background .2s}
+  .btn-jasny:hover{background:#ffffff}
+  @media (max-width:760px){
+    .dr-s{height:30px}
+    .dr-s > span{padding-left:8px;font-size:11.5px}
+    
+  }
+
+  /* ================= skład: dwa wiersze i pięć kolumn ==================
+     Twarze zostają, nazwiska nie — mają pokazać, że ci ludzie istnieją,
+     a nie przypisywać kogoś do klienta. Cała sekcja mieści się teraz
+     w jednym ekranie zamiast w siedmiu wierszach. */
+  .os-s{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(20px,3vw,44px);margin-top:clamp(24px,2.8vw,32px)}
+  .os-i{display:grid;grid-template-columns:auto minmax(0,1fr);gap:16px;align-items:center}
+  .os-a{display:flex;align-items:center}
+  .os-a > *{margin-left:-11px}
+  .os-a > *:first-child{margin-left:0}
+  /* znak autorskiego narzędzia: ciemny kwadrat obok okrągłych twarzy —
+     kontrast kształtu sam mówi, że to nie człowiek */
+  .os-z{flex-shrink:0;display:block;width:48px;height:48px;border-radius:13px;background:#0e2b1d;box-shadow:0 10px 22px -14px rgba(14,43,29,0.7)}
+  .os-t{display:block;font-size:clamp(16.5px,1.9vw,19px);font-weight:750;letter-spacing:-0.015em;color:#16211a}
+  .os-d{display:block;margin-top:5px;max-width:38ch;font-size:14.5px;line-height:1.5;color:#4c5850;text-wrap:pretty}
+  .os-n{display:flex;align-items:center;gap:12px;font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:0.13em;text-transform:uppercase;color:#8b968d}
+  .os-n::after{content:'';flex:1;height:1px;background:#e2e9e0}
+  .os-n.pierwszy{color:#0a7a52;margin-top:clamp(28px,3.4vw,40px)}
+  .os-n.drugi{margin-top:clamp(34px,4vw,52px)}
+  .os-g{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:clamp(16px,2.2vw,30px);margin-top:clamp(22px,2.6vw,30px)}
+  .os-g b{display:block;margin-top:12px;font-size:15.5px;font-weight:750;letter-spacing:-0.014em;line-height:1.3;color:#16211a;text-wrap:balance}
+  .os-g span{display:block;margin-top:5px;font-size:13.5px;line-height:1.45;color:#7c877e;text-wrap:pretty}
+  .os-w2{margin:clamp(24px,2.8vw,32px) 0 0;max-width:760px;font-size:14.5px;line-height:1.6;color:#4c5850;text-wrap:pretty}
+  @media (max-width:1000px){ .os-g{grid-template-columns:repeat(3,minmax(0,1fr));gap:24px} }
+  @media (max-width:760px){ .os-s{grid-template-columns:1fr;gap:22px} .os-g{grid-template-columns:repeat(2,minmax(0,1fr))} }
+
+  /* ================= dwie drogi wejścia ================================
+     Celowo nierówne: pierwsza droga jest tą, którą idzie większość, więc
+     dostaje białą kartę i ciemny przycisk. Druga stoi na samej kresce. */
+  .we{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(24px,3vw,36px);align-items:stretch;margin-top:clamp(30px,3.6vw,44px)}
+  .we-k{display:flex;flex-direction:column;background:#ffffff;border:1px solid #e2e9e0;border-radius:20px;padding:clamp(28px,3.2vw,38px);box-shadow:0 30px 64px -44px rgba(18,38,28,0.3)}
+  .we-k .we-f{margin-top:auto;padding-top:clamp(20px,2.4vw,26px)}
+  .we-e{font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:0.13em;text-transform:uppercase;color:#0a7a52;font-weight:650}
+  .we-t{margin:13px 0 0;font-size:clamp(20px,2.4vw,26px);font-weight:800;letter-spacing:-0.022em;line-height:1.2;color:#16211a;text-wrap:balance}
+  .we-d{margin:12px 0 0;font-size:15px;line-height:1.62;color:#4c5850;text-wrap:pretty}
+  .we-l{margin:clamp(18px,2.2vw,24px) 0 0;padding:0;list-style:none}
+  .we-l li{position:relative;padding:9px 0 9px 26px;font-size:14.5px;line-height:1.5;color:#33413a;border-top:1px solid #eef2ec}
+  .we-l li:first-child{border-top:0}
+  .we-l li::before{content:'';position:absolute;left:2px;top:16px;width:7px;height:7px;border-radius:50%;background:var(--la-accent,#00CD77)}
+  .we-f{display:flex;align-items:center;flex-wrap:wrap;gap:14px 18px;margin-top:clamp(20px,2.4vw,26px)}
+  .we-m{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;letter-spacing:0.05em;color:#8b968d}
+  @media (max-width:860px){ .we{grid-template-columns:1fr;gap:22px} }
+
+  /* ================= co macie do wyboru ================================
+     Zestawienie alternatyw tuż nad ceną. Ostatni wiersz jest nasz i jako
+     jedyny ma tło — po to, żeby porównanie miało puentę. */
+  .al{margin-top:clamp(26px,3vw,36px)}
+  .al-n{display:grid;grid-template-columns:minmax(0,1.5fr) 180px 180px 180px;gap:clamp(14px,2.4vw,30px);padding-bottom:11px;border-bottom:1px solid #dde7db}
+  .al-n span{font-family:ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:#a3ada4}
+  .al-r{display:grid;grid-template-columns:minmax(0,1.5fr) 180px 180px 180px;gap:clamp(14px,2.4vw,30px);align-items:baseline;padding:clamp(16px,2vw,22px) 0;border-bottom:1px solid #e7ece4}
+  .al-r.my{background:#f4f8f2;border-radius:14px;padding-left:clamp(14px,1.8vw,20px);padding-right:clamp(14px,1.8vw,20px);margin:0 calc(-1 * clamp(14px,1.8vw,20px));border-bottom-color:transparent}
+  .al-t{margin:0;font-size:clamp(16.5px,1.9vw,19px);font-weight:750;letter-spacing:-0.015em;color:#16211a}
+  .al-r.my .al-t{color:#0a5c3c}
+  .al-d{margin:6px 0 0;max-width:58ch;font-size:14px;line-height:1.55;color:#7c877e;text-wrap:pretty}
+  .al-v{font-size:14.5px;line-height:1.45;color:#33413a}
+  .al-r.my .al-v{font-weight:650;color:#16211a}
+  @media (max-width:920px){
+    .al-n{display:none}
+    .al-r{grid-template-columns:1fr;gap:5px}
+    .al-v::before{content:attr(data-l) ': ';color:#a3ada4}
+  }
+
+  /* ================= cena ============================================== */
+
+
+  @media (max-width:900px){
+    .hero-split{grid-template-columns:1fr !important;gap:clamp(32px,5vw,48px) !important}
+    .cj{grid-template-columns:1fr !important;gap:34px !important}
+  }
+</style>
+
+<!-- ============ 1 · HERO ============
+     Plik zasad dopisuje się przez sześć miesięcy, a licznik obok pokazuje,
+     jak zmienia się stosunek zmian do komentarzy. Rytm dopisywania niesie
+     tezę: opieka, która działa, robi się z miesiąca na miesiąc rzadsza. -->
+<section style="position:relative;overflow:hidden;background:radial-gradient(880px 520px at 88% -4%, rgba(0,205,119,0.13), transparent 62%), #ffffff;padding:clamp(28px,4vw,52px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) clamp(48px,6vw,72px)">
+<div class="hero-split" style="display:grid;grid-template-columns:1fr 1.04fr;gap:clamp(36px,5vw,72px);align-items:center;margin-top:clamp(24px,3vw,34px)">
+<div>
+<h1 style="margin:0;font-size:clamp(30px,4.6vw,52px);line-height:1.06;letter-spacing:-0.033em;font-weight:800;color:#16211a;text-wrap:balance">Budujecie dalej sami. My pilnujemy, żeby to było bezpieczne i nie przestało działać</h1>
+<p >Stała opieka nad tym, co budujecie w Claude Code bez działu IT. Code review każdej zmiany według zasad z dwustu wdrożeń, a kiedy AI kręci się w kółko trzeci wieczór, siadamy z Wami przy jednym ekranie.</p>
+<div class="hero-actions" style="display:flex;align-items:center;flex-wrap:wrap;gap:16px 22px;margin-top:32px">
+<a href="#kontakt" class="btn-dark" style="display:inline-flex;align-items:center;gap:10px;background:#16211a;color:#ffffff;padding:18px 32px;border-radius:12px;font-weight:650;font-size:16.5px;box-shadow:0 14px 30px -14px rgba(16,33,26,0.45)">Umów rozmowę <span aria-hidden="true">→</span></a>
+<a href="#wisestack" class="btn-ghost" style="display:inline-flex;align-items:center;gap:8px;font-size:16.5px;font-weight:700;color:#16211a;background:rgba(255,255,255,0.6);padding:18px 26px;border-radius:12px;border:1px solid rgba(22,33,26,0.16)">Zobacz, jak pracujemy →</a>
+</div>
+</div>
+
+<div>
+<div class="lu-box" style={`--w:${LU.w}px;--h:${LU.h}px;--r:${LU.r}px;--fs:${LU.fs}px;--wiersz:${LU.wiersz}px;--gora:${LU.gora}px;--lewo:${LU.lewo}px;--stop:${(-LU_V * PRZYSTANKI[1].do).toFixed(1)}px;--sl:${(PRZYSTANKI[1].x - LU.r).toFixed(1)}px;--st:${(yWiersza(PRZYSTANKI[1].i, PRZYSTANKI[1].do) - LU.r).toFixed(1)}px;--sk:translate(${(LU.r - LU.k * PRZYSTANKI[1].x).toFixed(1)}px,${(LU.r - LU.k * yWiersza(PRZYSTANKI[1].i, PRZYSTANKI[1].do)).toFixed(1)}px) scale(${LU.k})`}>
+<div class="lu-ram" role="img" aria-label="Kod Waszej aplikacji przewija się sam i poza lupą jest blady. Nad nim wędruje lupa, pod którą kod robi się ostry. Zatrzymuje się kolejno na kluczu wpisanym wprost w kod, na zapytaniu pobierającym wszystkie zamówienia naraz i na wysyłce pliku z danymi klientów — każde z tych miejsc podkreśla się na czerwono albo bursztynowo, a po chwili robi się zielone.">
+<div class="lu-plot">
+  <div class="lu-strum" style={`animation:lu-scroll ${LU.c}s linear infinite`}>
+  {[0, 1].map(() => KOD.map((w, i) => (
+    <span class="lu-l">{typeof w === 'string' ? w : (<>
+      <span class={`lu-w p`} style={`animation:lu-wp${ZNAKI.indexOf(i)} ${LU.c}s steps(1,end) infinite`}>{w.a}<span class="lu-m"><u style={`animation:lu-tl${ZNAKI.indexOf(i)} ${LU.c}s linear infinite`}></u><em>{w.m}</em><i style={`animation:lu-zn${ZNAKI.indexOf(i)} ${LU.c}s linear infinite`}></i></span>{w.b}</span>
+      <span class={`lu-w o`} style={`animation:lu-wo${ZNAKI.indexOf(i)} ${LU.c}s steps(1,end) infinite`}>{w.a}<span class="lu-m"><u style={`animation:lu-tl${ZNAKI.indexOf(i)} ${LU.c}s linear infinite`}></u><em>{w.po}</em><i style={`animation:lu-zn${ZNAKI.indexOf(i)} ${LU.c}s linear infinite`}></i></span>{w.b}</span>
+    </>)}</span>
+  )))}
+  </div>
+</div>
+<div class="lu-lupa" style={`animation:lu-lot ${LU.c}s linear infinite`}>
+  <div class="lu-kolo">
+    <div class="lu-zoom" style={`animation:lu-kadr ${LU.c}s linear infinite`}>
+      <div class="lu-strum" style={`animation:lu-scroll ${LU.c}s linear infinite`}>
+      {[0, 1].map(() => KOD.map((w, i) => (
+        <span class="lu-l">{typeof w === 'string' ? w : (<>
+      <span class={`lu-w p`} style={`animation:lu-wp${ZNAKI.indexOf(i)} ${LU.c}s steps(1,end) infinite`}>{w.a}<span class="lu-m"><u style={`animation:lu-tl${ZNAKI.indexOf(i)} ${LU.c}s linear infinite`}></u><em>{w.m}</em><i style={`animation:lu-zn${ZNAKI.indexOf(i)} ${LU.c}s linear infinite`}></i></span>{w.b}</span>
+      <span class={`lu-w o`} style={`animation:lu-wo${ZNAKI.indexOf(i)} ${LU.c}s steps(1,end) infinite`}>{w.a}<span class="lu-m"><u style={`animation:lu-tl${ZNAKI.indexOf(i)} ${LU.c}s linear infinite`}></u><em>{w.po}</em><i style={`animation:lu-zn${ZNAKI.indexOf(i)} ${LU.c}s linear infinite`}></i></span>{w.b}</span>
+    </>)}</span>
+      )))}
+      </div>
+    </div>
+    <span class="lu-blysk" aria-hidden="true"></span>
+  </div>
+  <span class="lu-uchwyt" aria-hidden="true"></span>
+</div>
+<style is:inline set:html={klatkiLupy}></style>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- ============ 2 · CZYM JEST GUIDED CODING ============
+     Sekcja definicyjna: pierwsze zdanie ma podmiot równy nazwie usługi.
+     Obok trzy kroki, czyli odpowiedź na „jak to fizycznie wchodzi do mojej
+     pracy" — bez nich czytelnik nie potrafił sobie tego wyobrazić. -->
+<section id="czym-jest" style="background:#f4f8f2;padding:clamp(60px,7.5vw,96px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
+<h2 class="h-sec" style="margin:0;max-width:820px;text-wrap:balance">Czym jest guided coding dla zespołu bez działu IT</h2>
+<div class="cj" style="display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:clamp(30px,5vw,72px);margin-top:clamp(26px,3vw,36px);align-items:start">
+<div style="font-size:17px;line-height:1.65;color:#33413a">
+<p style="margin:0;text-wrap:pretty">Guided coding to sposób pracy, w którym AI pisze kod według spisanych zasad, a wynik jest sprawdzany, zanim trafi do ludzi. Dla zespołu bez działu IT to stałe doradztwo: mówimy, co poprawić najpierw i dlaczego, a drobne poprawki bierzemy na siebie.</p>
+<p style="margin:18px 0 0;text-wrap:pretty">Słowo „prowadzenie" dotyczy AI, którego używacie. Klawiatura zostaje u Waszych ludzi, a kiedy utkną, siadamy obok.</p>
+</div>
+<div style="font-size:17px;line-height:1.65;color:#33413a">
+<p style="margin:0;text-wrap:pretty">Aplikacja zostaje Wasza — kod, dostępy i decyzja, co idzie do ludzi. Mówimy, w jakim jest stanie i co poprawić najpierw, także kiedy odpowiedź jest niewygodna.</p>
+<p class="rv" style="margin:20px 0 0;font-size:clamp(16px,1.9vw,19px);line-height:1.5;font-weight:650;color:#16211a;text-wrap:pretty">Zmianę, która kosztowałaby Was tydzień, da się zatrzymać w jednym miejscu: zanim pójdzie do ludzi. Dlatego odpowiadamy tego samego dnia.</p>
+</div>
+</div>
+
+<div class="fl rv" role="img" aria-label="Trzy przystanki: budujecie w Claude Code, każda zmiana przechodzi przez nasze ręce, potem trafia do ludzi.">
+  <div class="fl-o">
+    <span class="fl-t" aria-hidden="true"><span class="fl-f" style={`animation:fl-rosnie ${FL_C}s cubic-bezier(.55,0,.35,1) infinite`}></span></span>
+    <span class="fl-k" style={`animation:fl-jedzie ${FL_C}s cubic-bezier(.55,0,.35,1) infinite`} aria-hidden="true"></span>
+    {KROKI.map((k, i) => (
+      <div>
+        <span class="fl-s" aria-hidden="true">{i === 1 && <span class="fl-p" style={`animation:fl-puls ${FL_C}s ease-out infinite`}></span>}</span>
+        <b>{k.t}</b>
+        <span>{k.d}</span>
+      </div>
+    ))}
+  </div>
+  <style is:inline set:html={klatkiPrzeplywu}></style>
+</div>
+</section>
+
+<!-- ============ 3 · DLA KOGO + CZEGO NIE MUSICIE MIEĆ ============
+     Wraca z v1: czytelnik musi się rozpoznać, zanim zacznie czytać opis
+     usługi. Bariera wejścia schodzi na dół tej samej sekcji. -->
+<section id="dla-kogo" class="sec-pad">
+<div class="sec-head">
+<h2 class="h-sec" style="margin:0;max-width:520px;text-wrap:pretty">Dla kogo to jest</h2>
+<p class="sub" style="margin:0 0 6px;max-width:430px">Jeśli rozpoznajecie się w którymkolwiek z tych trzech opisów, to jest rozmowa dla Was.</p>
+</div>
+<div class="dk">
+{DLA_KOGO.map((x, i) => (
+  <div class="rv">
+    <i class="dk-i">{String(i + 1).padStart(2, '0')}</i>
+    <h3 class="wr-t">{x.t}</h3>
+    <p class="wr-d">{x.d}</p>
+  </div>
+))}
+</div>
+
+</section>
+
+<!-- ============ 4 · CO JESZCZE ROBIMY ============
+     Czasownikami, nie nazwami: „siadamy", „odpowiadamy", „spisujemy".
+     Wcześniej stały tu rzeczowniki (dyżur, pairing, bramka, przegląd
+     miesiąca) i czytelnik gubił, co jest usługą, a co jej częścią. -->
+<section id="miesiac" style="background:#f4f8f2;padding:clamp(60px,7.5vw,96px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
+<div class="sec-head">
+<h2 class="h-sec" style="margin:0;max-width:520px;text-wrap:pretty">Jak wygląda miesiąc</h2>
+<p class="sub" style="margin:0 0 6px;max-width:430px">Dwadzieścia dni roboczych. Poza czytaniem nowych wersji dzieje się w nim jeszcze tyle.</p>
+</div>
+<div class="mk">
+<div class="rv">
+  <div class="mk-s">
+    <span class="mk-h">tydz.</span>
+    {DNI_TYG.map((d) => <span class="mk-h">{d}</span>)}
+    {[1, 2, 3, 4].map((t) => (
+      <>
+        <span class="mk-t">{t}</span>
+        {MIESIAC.filter((x) => x.tydzien === t).map((x) => (
+          <div
+            class={`mk-d ${x.s ? 'sp' : x.d ? 'pd' : 'p' + x.poziom}`}
+            tabindex="0"
+            role="button"
+            aria-label={`${x.dzien}, tydzień ${x.tydzien}: ${x.opis.join(', ')}`}>
+            <span class="mk-nr">{x.i + 1}</span>
+            <span class="mk-y">
+              <b>{x.dzien} · tydzień {x.tydzien}</b>
+              {x.opis.map((o) => <u>{o}</u>)}
+            </span>
+          </div>
+        ))}
+      </>
+    ))}
+  </div>
+  <p class="mk-w">Dwadzieścia dni roboczych z czwartego miesiąca. Najedźcie na dzień, żeby zobaczyć, co się w nim wydarzyło.</p>
+</div>
+<ul class="mk-p">
+{ROBIMY.map((x) => (
+  <li class="rv">
+    <b>{x.t}</b>
+    <p>{x.d}</p>
+  </li>
+))}
+</ul>
+</div>
+</section>
+
+<!-- ============ 5 · JAKIE PROBLEMY ROZWIĄZUJEMY + TEZA ============
+     Sekcja, do której sprowadza się cała usługa: bezpieczeństwo,
+     skalowalność, brak przepisywania od nowa, ciągłość działania.
+     Na dole jedyne miejsce na stronie, gdzie zamiast nagłówka stoi
+     zdanie w dużym stopniu pisma. -->
+<section id="problemy" class="sec-pad">
+<div class="sec-head">
+<h2 class="h-sec" style="margin:0;max-width:560px;text-wrap:pretty">Jakie problemy rozwiązujemy</h2>
+<p class="sub" style="margin:0 0 6px;max-width:460px">Trzy pierwsze czuć w czwartek o dwudziestej drugiej. Trzy kolejne przychodzą później i kosztują więcej.</p>
+</div>
+<div class="pk rv">
+{PROBLEMY.map((x) => (
+  <div class="pk-k">
+    <span class="pk-c" aria-hidden="true">„</span>
+    <h3 class="pk-t">{x.t}</h3>
+    <span class="pk-r" aria-hidden="true"></span>
+    <p class="pk-d">{x.d}</p>
+  </div>
+))}
+</div>
+<div class="pk-s" aria-hidden="true"><span>przesuń w bok</span><i></i></div>
+<div style="display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:clamp(24px,4vw,64px);margin-top:clamp(34px,4vw,52px)">
+<p class="rv" style="margin:0;padding-left:clamp(0px,2vw,28px);font-size:clamp(19px,2.4vw,27px);line-height:1.35;letter-spacing:-0.02em;font-weight:700;color:#16211a;text-wrap:pretty">Opieka, przy której w dwunastym miesiącu wchodzimy w to tak samo często jak w pierwszym, jest źle ustawiona.</p>
+<p class="rv" style="margin:0;font-size:15.5px;line-height:1.65;color:#4c5850;text-wrap:pretty">W pierwszym miesiącu przy co trzeciej zmianie coś poprawiamy i to jest najtrudniejszy moment całej współpracy — wychodzi wtedy wszystko, co odłożyło się przez ostatni rok. Od trzeciego robi się spokojnie. Co trzecia poprawka kończy się nową zasadą, a zasada nie pozwala temu samemu błędowi wrócić.</p>
+</div>
+</section>
+
+<!-- ============ 6 · WISESTACK ============
+     Ciemny pas bierze najcięższy argument strony: mamy własną metodę
+     wytwarzania oprogramowania z AI i pracujemy nią u klientów. Trzy pary
+     słupków, każda podpisana wprost, więc nic nie zależy od koloru.
+     WSZYSTKIE LICZBY DO PODMIANY — patrz nagłówek pliku. -->
+<section id="wisestack" style="position:relative;background:radial-gradient(900px 420px at 88% 4%, rgba(0,205,119,0.16), transparent 62%), #0e2b1d;padding:clamp(60px,7.5vw,98px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
+<div class="sec-head">
+<h2 class="h-sec" style="margin:0;max-width:600px;color:#ffffff;text-wrap:pretty">Mamy własną metodę wytwarzania oprogramowania z AI</h2>
+<p style="margin:0 0 6px;max-width:470px;font-size:17px;line-height:1.6;color:rgba(255,255,255,0.72);text-wrap:pretty">Nazywa się <strong style="color:#ffffff;font-weight:700">WiseStack</strong>: zasady, konfiguracja narzędzi i sposób sprawdzania, które rozwijamy od ponad dwustu wdrożeń. Nie wymyślamy metody na Wasz projekt — przenosimy tę, którą sami pracujemy codziennie.</p>
+</div>
+
+<div class="dr rv">
+{DROGI.map((d) => (
+  <div class={d.my ? 'dr-w my' : 'dr-w'}>
+    <div class="dr-e"><b>{d.t}</b><span>{dni(suma(d))}</span></div>
+    <div class="dr-s" role="img" aria-label={`${d.t}: budowa ${dni(d.budowa)}, czekanie na sprawdzenie ${dni(d.czekanie)}, poprawki po fakcie ${dni(d.poprawki)}.`}>
+      {ETAPY.map((e) => (
+        <span class={e.kolor} style={`width:${((d[e.k] / DR_MAX) * 100).toFixed(2)}%`}>{d[e.k] >= 0.9 ? e.o : ''}</span>
+      ))}
+    </div>
+    <div class="dr-o">
+      {ETAPY.map((e) => <span>{e.o}: {dni(d[e.k])}</span>)}
+    </div>
+  </div>
+))}
+</div>
+
+<p class="dr-t rv">Samo budowanie trwa dokładnie tyle samo. <strong>Znika czekanie na to, aż ktoś na to spojrzy</strong> — i to jest cała różnica między pięcioma dniami a dwoma.</p>
+<p class="dr-n rv">Skąd te liczby: mediana drogi jednej zmiany, mierzona u klientów w oknie sześciu miesięcy. Dopóki okno się nie domknie, liczby stoją w nawiasach — razem z wynikami opublikujemy sposób liczenia.</p>
+
+<div class="dw-cta rv">
+<p>Chcecie zobaczyć, jak ta metoda wygląda na Waszym projekcie? Pierwsza rozmowa jest po to, żeby powiedzieć, czy w ogóle warto.</p>
+<a href="#kontakt" class="btn-jasny">Umów rozmowę <span aria-hidden="true">→</span></a>
+</div>
+</section>
+
+<!-- ============ 8 · KTO PO NASZEJ STRONIE ============
+     Przy abonamencie kupuje się czyjś czas, więc pytanie „kto to będzie
+     i ile go mamy" pada wcześnie. Rozszerzenia stoją tu jawnie razem
+     z ceną, którą zmieniają. -->
+<section id="sklad" class="sec-pad">
+<div class="sec-head">
+<h2 class="h-sec" style="margin:0;max-width:560px;text-wrap:pretty">Kto po naszej stronie i co można dołożyć</h2>
+<p class="sub" style="margin:0 0 6px;max-width:440px">Prowadzący jest jeden i ten sam przez całą współpracę. Reszta wchodzi tylko na te miesiące, w których jest potrzebna.</p>
+</div>
+<div class="os-n pierwszy"><b>Zawsze w abonamencie</b></div>
+<div class="os-s rv">
+  <div class="os-i">
+    <span class="os-a">{PROWADZACY.map((o) => <TeamAvatar person={o} size={44} ring="#ffffff" />)}</span>
+    <span><b class="os-t">Prowadzący</b><span class="os-d">Ten sam człowiek przez całą współpracę. Przychodzi z tego zespołu.</span></span>
+  </div>
+  <div class="os-i">
+    <svg class="os-z" viewBox="0 0 48 48" role="img" aria-label="Znak naszego narzędzia do analizy kodu">
+      <rect x="11" y="13" width="20" height="3.4" rx="1.7" fill="#ffffff" opacity="0.32" />
+      <rect x="11" y="22.3" width="26" height="3.4" rx="1.7" fill="#00CD77" />
+      <rect x="11" y="31.6" width="14" height="3.4" rx="1.7" fill="#ffffff" opacity="0.32" />
+      <path d="M29.5 33.4l2.4 2.4 5-5.2" fill="none" stroke="#00CD77" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+    <span><b class="os-t">AI code review według naszych zasad</b><span class="os-d">Nasze narzędzie, zbudowane na know-how z ponad dwustu wdrożeń. Podpinamy je do miejsca, w którym trzymacie kod, a reguły, których pilnuje, zapisujemy w Waszym repozytorium. Czyta każdą nową wersję, zanim zrobi to człowiek.</span></span>
+  </div>
+</div>
+
+<div class="os-n drugi">Dokładamy na miesiące, w których są potrzebni</div>
+<div class="os-g">
+{DOKLADANE.map((x) => (
+  <div class="rv">
+    <TeamAvatar person={x.kto} size={44} ring="#ffffff" />
+    <b>{x.t}</b>
+    <span>{x.d}</span>
+  </div>
+))}
+</div>
+<p class="os-w2 rv">Każde rozszerzenie wchodzi na konkretne miesiące i na ten czas zmienia stawkę. Domyślnie go nie ma. Zastępstwo umawia się z wyprzedzeniem, ale przy nagłym odejściu wchodzimy w tydzień.</p>
+</section>
+
+<!-- ============ 9 · OD CZEGO ZACZYNAMY ============
+     Cała poprzednia wersja tej strony mieści się w tej jednej sekcji.
+     Dwie drogi wejścia, obie kończą się pierwszym miesiącem prowadzenia. -->
+<section id="start" style="background:#f4f8f2;padding:clamp(60px,7.5vw,96px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
+<h2 class="h-sec" style="margin:0;max-width:640px;text-wrap:pretty">Od czego zaczynamy</h2>
+<div class="we">
+{WEJSCIE.map((x) => (
+  <div class="we-k rv">
+    <div class="we-e">{x.e}</div>
+    <h3 class="we-t">{x.t}</h3>
+    <p class="we-d">{x.d}</p>
+    <ul class="we-l">{x.kroki.map((k) => <li>{k}</li>)}</ul>
+    <div class="we-f">
+      <a href="#kontakt" class="btn-dark" style="display:inline-flex;align-items:center;gap:9px;background:#16211a;color:#ffffff;padding:15px 26px;border-radius:11px;font-weight:650;font-size:15.5px">{x.cta} <span aria-hidden="true">→</span></a>
+      <span class="we-m">{x.m}</span>
+    </div>
+  </div>
+))}
+</div>
+<p class="rv" style="margin:clamp(22px,2.6vw,30px) 0 0;max-width:760px;font-size:15.5px;line-height:1.6;color:#4c5850;text-wrap:pretty">Obie drogi kończą się w tym samym miejscu: pierwszym miesiącem prowadzenia. Wejście wyceniamy osobno, żeby dało się je kupić bez decyzji o współpracy na dłużej — i żeby dało się po nim podziękować.</p>
+</section>
+
+<!-- ============ 10 · CENA I GRANICA ============
+     Kwoty są hipotezą (patrz nagłówek pliku). Zaraz pod ceną stoi jedyna
+     na tej stronie sekcja, która niczego nie sprzedaje. -->
+<section id="wybor" class="sec-pad">
+<div class="sec-head">
+<h2 class="h-sec" style="margin:0;max-width:560px;text-wrap:pretty">Co macie do wyboru</h2>
+<p class="sub" style="margin:0 0 6px;max-width:430px">Cztery drogi, które rozważa większość zespołów bez działu IT. Ostatnia jest nasza.</p>
+</div>
+<div class="al">
+<div class="al-n"><span>Droga</span><span>Koszt</span><span>Klawiatura</span><span>Kiedy działa</span></div>
+{ALTERNATYWY.map((x) => (
+  <div class={x.my ? 'al-r my rv' : 'al-r rv'}>
+    <div>
+      <h3 class="al-t">{x.t}</h3>
+      <p class="al-d">{x.d}</p>
+    </div>
+    <span class="al-v" data-l="Koszt">{x.koszt}</span>
+    <span class="al-v" data-l="Klawiatura">{x.kto}</span>
+    <span class="al-v" data-l="Kiedy działa">{x.kiedy}</span>
+  </div>
+))}
+</div>
+
+</section>
+
+<GcCta
+  heading="Zobaczmy, co budujecie"
+  lead="Napiszcie w dwóch zdaniach, co powstało i kto to u Was poprawia. Odezwiemy się z terminem rozmowy."
+  eyebrow="Co dostajecie co miesiąc"
+  items={[
+    { t: 'Code review każdej wersji', d: 'zielone światło albo poprawka tego samego dnia' },
+    { t: 'Dwa wspólne spotkania', d: 'klawiaturę trzyma Wasza osoba' },
+    { t: 'Zasady, które zostają u Was', d: 'działają też wtedy, kiedy przestaniemy współpracować' },
+  ]}
+  placeholder="Np. panel zamówień w Claude Code, poprawia go dwoje ludzi z operacji…"
+  submitLabel="Umów rozmowę"
+/>
+<GcFaq
+  heading="Pytania, które słyszymy najczęściej"
+  lead={'Pierwsze jest tym, które pada na każdej rozmowie o abonamencie.'}
+  items={faq}
+/>
+
+</LaBase>

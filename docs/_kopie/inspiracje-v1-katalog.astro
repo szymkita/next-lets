@@ -1,0 +1,1121 @@
+---
+// INSPIRACJE — /inspiracje
+// Hub inspiracji: katalog tego, co da się zbudować z aplikacji, agentów AI,
+// automatyzacji i raportów. To NIE jest podstrona usługowa — nie sprzedaje
+// jednej usługi, tylko rozpoznanie własnego problemu na cudzej liście.
+// Playbook: docs/podstrony-uslugowe-playbook.md (kroki 1–15 stosowane
+// z jednym świadomym odstępstwem, opisanym niżej przy hero).
+//
+// TEZA POZYCJONUJĄCA:
+//   Zmiana, po której firma pracuje inaczej, rzadko jest jedną dużą aplikacją.
+//   Zwykle to kilka drobiazgów, z których żaden osobno nie wygląda na projekt.
+//   Kategoria pokazuje trzydzieści błyszczących zrzutów bez ceny i bez czasu.
+//   My przy każdej pozycji stawiamy tę samą miarę — ile tygodni do pierwszego
+//   uruchomienia — i pokazujemy rozkład: masa katalogu siedzi na 2–4 tygodniach.
+//   To jest niewygodne do skopiowania, bo agencji opłaca się duży projekt.
+//
+// JEDNA MIARA PRZEZ CAŁĄ STRONĘ (playbook §5): TYDZIEŃ DO PIERWSZEGO URUCHOMIENIA.
+//   · hero      — rozkład wagi całego katalogu, jeden klocek = jedna pozycja
+//   · katalog   — pasek wagi przy każdej z 64 pozycji, w tej samej skali
+//   · ciemny pas — trzy poziomy jednego pomysłu, +1 / +4 / +8 tygodni
+//   Liczby spinają się, bo wszystkie są liczone z tablicy KATALOG, nie wpisane.
+//
+// WARSTWA WIZUALNA — dziewiąty osobny słownik w serwisie:
+//   /strategia-ai:         łuki, pole przewag, siatka stu kwadratów
+//   /rozwiazania-ai:       przekrój warstw, próg pewności, tory harmonogramu
+//   /szkolenia-ai:         jednostki do policzenia (ludzie, minuty)
+//   /systemy-procesowe:    oś czasu sprawy — praca kontra czekanie
+//   /systemy-dla-klientow: lista pytań
+//   /automatyzacje-integracje: puls i karta połączenia
+//   tutaj:  KLOCEK = POZYCJA. Rozkład wagi zbudowany z 64 klocków, z których
+//     każdy jest konkretnym pomysłem — najazd kursorem nazywa go po imieniu.
+//     Drugi rejestr: ZAGNIEŻDŻENIE (ciemny pas) — trzy ramki jedna w drugiej,
+//     bo wyższy poziom zawiera poprzedni. Trzeci: fragmenty interfejsu.
+//
+// ODSTĘPSTWO OD PLAYBOOKU §7 (hero chodzi w pętli):
+//   Hero wypełnia się RAZ i zostaje. Powód: rysunek jest tu przyrządem, nie
+//   pętlą — 64 klocki są klikalne i filtrują katalog. Ruch po wypełnieniu
+//   daje cichy obchód: co ~2,4 s zapala się inna pozycja i jej nazwa staje
+//   w podpisie. Najazd kursorem przejmuje obchód, zejście go wznawia.
+//   Przy prefers-reduced-motion obchodu nie ma, stan końcowy jest pełny.
+//
+// SEKCJA, KTÓRA NICZEGO NIE SPRZEDAJE (playbook §9), RAZ:
+//   „Czego w tym katalogu nie ma" — cztery rzeczy, których nie budujemy,
+//   z powodem. Ciemny pas świadomie NIE powtarza tej figury: niesie liczbę
+//   (próg opłacalności poziomu trzeciego), nie odmowę.
+//
+// DO POTWIERDZENIA PRZED PUBLIKACJĄ:
+// · WAGI (pole `w` w tablicy KATALOG) to mediany z obserwacji, nie z pomiaru.
+//   Trzeba je przejść z zespołem pozycja po pozycji — cała strona stoi na tym,
+//   że są uczciwe. Zmiana liczby przelicza hero, paski i wszystkie zdania.
+// · Próg opłacalności poziomu trzeciego („około stu zapytań miesięcznie")
+//   jest założeniem handlowym Szymona, do potwierdzenia.
+// · Lista „czego nie budujemy" to decyzja handlowa — cztery pozycje do zatwierdzenia.
+// · Kwoty świadomie nie ma (jak na pięciu innych podstronach). Miejsce czeka w FAQ.
+// · /og/inspiracje.png — na razie strona dziedziczy /og/hub.png.
+import LaBase from '../layouts/LaBase.astro';
+import GcFaq from '../components/GcFaq.astro';
+import GcCta from '../components/GcCta.astro';
+
+const kanon = new URL('/inspiracje', Astro.site).href;
+
+// Odmiana liczebnika — używana wszędzie, gdzie liczba jest liczona z danych,
+// żeby zmiana katalogu nie zostawiła w tekście błędu gramatycznego.
+const odm = (n, [a, b, c]) => {
+  const d = n % 10;
+  const s = n % 100;
+  if (n === 1) return a;
+  if (d >= 2 && d <= 4 && !(s >= 12 && s <= 14)) return b;
+  return c;
+};
+
+// Tekst do wyszukiwarki: bez ogonków i bez wielkich liter, żeby „faktury"
+// znajdowało „Faktury kosztowe", a „grafik" — „Grafik zmian".
+const bezOgonkow = (s) =>
+  s.toLowerCase().replace(/ł/g, 'l').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+// ---- RODZAJE ------------------------------------------------------------
+// Cztery rodzaje, każdy z własną usługą po drugiej stronie. Filtr rodzaju
+// dopisuje pod sobą link do tej usługi — to jest cała nawigacja handlowa
+// tej strony, bez osobnej sekcji „nasze usługi".
+const RODZAJE = [
+  { k: 'app', t: 'Aplikacja', m: 'aplikacja', d: 'Miejsce, w którym mieszka sprawa', h: '/systemy-procesowe', ht: 'systemy dla kluczowych procesów' },
+  { k: 'agent', t: 'Agent AI', m: 'agent AI', d: 'Model czyta i przygotowuje, człowiek zatwierdza', h: '/rozwiazania-ai', ht: 'indywidualne rozwiązania AI' },
+  { k: 'auto', t: 'Automatyzacja', m: 'automatyzacja', d: 'Dane przechodzą między systemami bez człowieka', h: '/automatyzacje-integracje', ht: 'automatyzacje i integracje' },
+  { k: 'dane', t: 'Analityka', m: 'analityka', d: 'Liczba, która składa się sama', h: '/automatyzacje-integracje', ht: 'automatyzacje i integracje' },
+];
+const RODZ = Object.fromEntries(RODZAJE.map((r) => [r.k, r]));
+
+// ---- KATALOG ------------------------------------------------------------
+// Osiem obszarów po osiem pozycji. Pole `w` to tygodnie do pierwszego
+// uruchomienia na produkcji — jedyna miara na tej stronie. Podpis obszaru
+// opisuje stan zastany, nie obiecuje efektu.
+const KATALOG = [
+  {
+    k: 'sprzedaz',
+    t: 'Sprzedaż i ofertowanie',
+    d: 'Wycena zależy od tego, kto akurat ma czas, a ustalenia z klientem siedzą w skrzynkach.',
+    p: [
+      { t: 'Generator ofert z cennika', d: 'Każdy handlowiec składa ofertę po swojemu, w Wordzie', r: 'app', w: 3 },
+      { t: 'Wycena z rysunku i specyfikacji', d: 'Wycena czeka na technologa i wraca po trzech dniach', r: 'agent', w: 8 },
+      { t: 'Rejestr szans z historią ustaleń', d: 'Co ustalono z klientem, wie tylko skrzynka handlowca', r: 'app', w: 4 },
+      { t: 'Odpowiedzi na zapytania i przetargi', d: 'Te same odpowiedzi przepisuje się do każdego formularza', r: 'agent', w: 6 },
+      { t: 'Notatka ze spotkania trafia do CRM sama', d: 'Po rozmowie nikt nie uzupełnia systemu', r: 'auto', w: 1 },
+      { t: 'Konfigurator produktu dla handlowca', d: 'Kombinacji jest tyle, że składają je dwie osoby w firmie', r: 'app', w: 7 },
+      { t: 'Pilnowanie terminów ważności ofert', d: 'Oferta wygasa i nikt nie oddzwania', r: 'auto', w: 1 },
+      { t: 'Które zapytania warto wyceniać', d: 'Wyceniamy wszystko, wygrywa co dziesiąta oferta', r: 'dane', w: 4 },
+    ],
+  },
+  {
+    k: 'obsluga',
+    t: 'Obsługa klienta',
+    d: 'Połowa rozmów to pytanie o status sprawy, który ktoś już gdzieś zapisał.',
+    p: [
+      { t: 'Portal klienta ze statusem sprawy', d: 'Połowa telefonów to pytanie, na jakim to etapie', r: 'app', w: 8 },
+      { t: 'Asystent na wspólnej skrzynce', d: 'Na skrzynkę zgłoszeń wpada dwieście maili dziennie', r: 'agent', w: 4 },
+      { t: 'Baza wiedzy, która odpowiada zdaniem', d: 'Klient dostaje link do PDF-a na czterdzieści stron', r: 'agent', w: 3 },
+      { t: 'Rejestr reklamacji z terminami', d: 'Terminu ustawowego pilnuje kalendarz jednej osoby', r: 'app', w: 4 },
+      { t: 'Powiadomienie o zmianie terminu', d: 'O opóźnieniu klient dowiaduje się, kiedy zadzwoni', r: 'auto', w: 1 },
+      { t: 'Panel serwisu w telefonie technika', d: 'Technik wraca do biura, żeby wpisać, co zrobił', r: 'app', w: 5 },
+      { t: 'Podsumowanie rozmowy w karcie klienta', d: 'Z półgodzinnej rozmowy zostaje jedno zdanie albo nic', r: 'agent', w: 2 },
+      { t: 'Co wraca w ankietach po sprawie', d: 'Ankiety są, wniosków z nich nie ma', r: 'dane', w: 2 },
+    ],
+  },
+  {
+    k: 'operacje',
+    t: 'Operacje i realizacja',
+    d: 'Zlecenie jedzie przez pięć narzędzi i tablicę na ścianie.',
+    p: [
+      { t: 'System prowadzący zlecenie do odbioru', d: 'Stan zlecenia trzeba składać z trzech miejsc', r: 'app', w: 10 },
+      { t: 'Planowanie obłożenia zespołu i maszyn', d: 'Plan powstaje w arkuszu i rozjeżdża się w drugim dniu', r: 'app', w: 9 },
+      { t: 'Cyfrowa karta pracy', d: 'Godziny spisuje się na kartce i przepisuje wieczorem', r: 'app', w: 3 },
+      { t: 'Odczyt dokumentów przewozowych', d: 'Dane z listu przewozowego przepisuje człowiek', r: 'agent', w: 4 },
+      { t: 'Kolejka zatwierdzeń ze śladem', d: 'Zgoda wisi w mailu, a potem nie wiadomo, kto ją dał', r: 'app', w: 3 },
+      { t: 'Kontrola jakości ze zdjęciem', d: 'Protokół z odbioru istnieje tylko na papierze', r: 'app', w: 4 },
+      { t: 'Zamówienia z portalu prosto na produkcję', d: 'Zamówienie przepisuje się z portalu do systemu', r: 'auto', w: 2 },
+      { t: 'Wykrywanie zleceń, które stanęły', d: 'Że sprawa stoi od tygodnia, wychodzi przy reklamacji', r: 'dane', w: 2 },
+    ],
+  },
+  {
+    k: 'finanse',
+    t: 'Finanse i administracja',
+    d: 'Dokumenty przepisuje się z maila do systemu, a terminów pilnuje czyjaś pamięć.',
+    p: [
+      { t: 'Faktury kosztowe z poczty do ERP', d: 'Pozycje i kwoty przepisuje się z załącznika', r: 'auto', w: 2 },
+      { t: 'Obieg akceptacji kosztów z limitami', d: 'Akceptacja chodzi mailem i ginie w wątku', r: 'app', w: 3 },
+      { t: 'Pilnowanie płatności i przypomnienia', d: 'Przeterminowane faktury sprawdza się raz na miesiąc', r: 'auto', w: 2 },
+      { t: 'Rejestr umów z terminami wypowiedzenia', d: 'Umowa przedłuża się sama, bo nikt nie spojrzał w kalendarz', r: 'app', w: 3 },
+      { t: 'Sprawdzenie kontrahenta przed transakcją', d: 'Biała lista i KRS otwierają się w trzech zakładkach', r: 'auto', w: 2 },
+      { t: 'Budżet projektu kontra wykonanie', d: 'Że projekt jest pod kreską, widać po zamknięciu', r: 'dane', w: 4 },
+      { t: 'Lista braków przed zamknięciem miesiąca', d: 'Zamknięcie zaczyna się od szukania, czego brakuje', r: 'dane', w: 4 },
+      { t: 'Wnioski wewnętrzne w jednym miejscu', d: 'Urlop, delegacja i zakup chodzą trzema drogami', r: 'app', w: 3 },
+    ],
+  },
+  {
+    k: 'ludzie',
+    t: 'Ludzie i zespół',
+    d: 'Wdrożenie nowej osoby zależy od tego, kto akurat siedzi obok.',
+    p: [
+      { t: 'Przegląd zgłoszeń rekrutacyjnych', d: 'Sto zgłoszeń na jedno ogłoszenie przegląda jedna osoba', r: 'agent', w: 3 },
+      { t: 'Wdrożenie nowej osoby dzień po dniu', d: 'Pierwszy tydzień zależy od tego, kto ma czas', r: 'app', w: 3 },
+      { t: 'Asystent kadrowy do pytań o regulamin', d: 'Te same pytania o urlop wracają co tydzień', r: 'agent', w: 2 },
+      { t: 'Grafik zmian z regułami i zastępstwami', d: 'Grafik układa się w arkuszu i psuje przy pierwszym L4', r: 'app', w: 5 },
+      { t: 'Rozmowy okresowe z historią ustaleń', d: 'Ustalenia z rozmowy rocznej zostają w notatniku', r: 'app', w: 4 },
+      { t: 'Rejestr szkoleń i uprawnień', d: 'Wygasłe uprawnienie wychodzi przy kontroli', r: 'app', w: 3 },
+      { t: 'Zgłoszenia do działów wewnętrznych', d: 'Prośby do IT i administracji chodzą przez komunikator', r: 'app', w: 3 },
+      { t: 'Rotacja i przyczyny odejść', d: 'Prawdziwy powód odejścia zna kierownik i nikt więcej', r: 'dane', w: 3 },
+    ],
+  },
+  {
+    k: 'wiedza',
+    t: 'Wiedza i dokumenty',
+    d: 'Odpowiedź jest w firmie, tylko nikt nie wie, w którym pliku.',
+    p: [
+      { t: 'Wyszukiwarka po dokumentach firmy', d: 'Szukanie w dyskach zajmuje więcej niż napisanie od nowa', r: 'agent', w: 4 },
+      { t: 'Odczyt umów: terminy, kary, wypowiedzenie', d: 'Warunki umowy sprawdza się dopiero przy sporze', r: 'agent', w: 4 },
+      { t: 'Porównanie wersji dokumentu', d: 'Co druga strona zmieniła w umowie, szuka się wzrokiem', r: 'agent', w: 2 },
+      { t: 'Generator dokumentów z danych sprawy', d: 'Protokół powstaje z kopiowania trzech innych', r: 'app', w: 3 },
+      { t: 'Instrukcje, które ktoś naprawdę czyta', d: 'Procedura leży na dysku w wersji z 2019 roku', r: 'app', w: 3 },
+      { t: 'Archiwum z nazwami, po których da się szukać', d: 'Pliki nazywają się skan_2024_ost_final', r: 'auto', w: 2 },
+      { t: 'Sprawdzenie dokumentu z Waszymi zasadami', d: 'Zgodność z regulaminem ocenia człowiek, jeśli zdąży', r: 'agent', w: 4 },
+      { t: 'Asystent, który cytuje źródło', d: 'Odpowiedź bez wskazania miejsca trzeba i tak sprawdzić w źródle', r: 'agent', w: 4 },
+    ],
+  },
+  {
+    k: 'marketing',
+    t: 'Marketing i treści',
+    d: 'Opisy i materiały powstają od zera przy każdej kampanii.',
+    p: [
+      { t: 'Opisy produktów z karty technicznej', d: 'Opis do sklepu pisze się od zera przy każdym indeksie', r: 'agent', w: 3 },
+      { t: 'Redakcja treści w Waszym języku', d: 'Każdy tekst brzmi, jakby pisał go ktoś inny', r: 'agent', w: 3 },
+      { t: 'Kalendarz publikacji z akceptacją', d: 'Plan treści żyje w arkuszu i w trzech głowach', r: 'app', w: 3 },
+      { t: 'Odpowiedzi na opinie i pytania', d: 'Pytanie pod postem wisi trzy dni', r: 'agent', w: 2 },
+      { t: 'Strona pod kampanię w jeden dzień', d: 'Na landing czeka się dwa tygodnie', r: 'app', w: 1 },
+      { t: 'Raport z kampanii, który składa się sam', d: 'Raport klei się z czterech paneli reklamowych', r: 'auto', w: 2 },
+      { t: 'O co klienci pytają przed zakupem', d: 'Pytania sprzed zakupu zna sprzedaż i nikt więcej', r: 'dane', w: 3 },
+      { t: 'Biblioteka materiałów dla handlowców', d: 'Handlowiec wysyła prezentację sprzed roku', r: 'app', w: 4 },
+    ],
+  },
+  {
+    k: 'zarzad',
+    t: 'Zarząd i dane',
+    d: 'Liczba na zarząd bierze się z arkusza, który ktoś klei co miesiąc.',
+    p: [
+      { t: 'Kokpit zarządu z jednym źródłem liczb', d: 'Dwa działy podają dwie różne liczby na to samo', r: 'dane', w: 4 },
+      { t: 'Prognoza sprzedaży z lejka', d: 'Prognoza to suma optymizmu handlowców', r: 'dane', w: 4 },
+      { t: 'Rentowność klienta i zlecenia', d: 'Który klient zarabia, wiadomo po roku', r: 'dane', w: 6 },
+      { t: 'Raport tygodniowy bez człowieka', d: 'Poniedziałek zaczyna się od klejenia raportu', r: 'auto', w: 2 },
+      { t: 'Sygnał, kiedy coś odjeżdża od planu', d: 'Odchylenie widać dopiero w raporcie miesięcznym', r: 'dane', w: 3 },
+      { t: 'Rejestr decyzji i ich skutków', d: 'Po co zmieniliśmy tę zasadę, nie pamięta nikt', r: 'app', w: 3 },
+      { t: 'Symulacja: co się stanie, jeśli', d: 'Skutki podwyżki cen liczy się w arkuszu na kolanie', r: 'app', w: 5 },
+      { t: 'Jedna definicja wskaźnika dla firmy', d: 'Marża liczy się inaczej w sprzedaży i w finansach', r: 'dane', w: 4 },
+    ],
+  },
+];
+
+// Płaska lista z indeksem — indeks jest identyfikatorem klocka w hero.
+const POMYSLY = KATALOG.flatMap((g) => g.p.map((x) => ({ ...x, ok: g.k, on: g.t })));
+POMYSLY.forEach((p, i) => {
+  p.i = i;
+  p.szukaj = bezOgonkow(`${p.t} ${p.d} ${p.on} ${RODZ[p.r].t}`);
+});
+
+const N = POMYSLY.length;
+const MAX_W = Math.max(...POMYSLY.map((p) => p.w));
+const PROG = 3;                                    // granica „szybkich" pozycji
+const SZYBKIE = POMYSLY.filter((p) => p.w <= PROG).length;
+KATALOG.forEach((g) => { g.szybkie = g.p.filter((x) => x.w <= PROG).length; });
+const ILE_AI = POMYSLY.filter((p) => p.r === 'agent').length;
+const KOLUMNY = Array.from({ length: MAX_W }, (_, i) => POMYSLY.filter((p) => p.w === i + 1));
+const NAJWYZSZA = Math.max(...KOLUMNY.map((c) => c.length));
+
+// ---- HERO: wypełnianie klocków -----------------------------------------
+// Kolumny wchodzą od lewej, klocek po klocku. Wszystkie opóźnienia liczone
+// z danych: zmiana wagi jednej pozycji przestawia rysunek i czas jego wejścia.
+const HG_START = 0.35;      // pierwszy klocek
+const HG_KOL = 0.3;         // odstęp między kolumnami
+const HG_KLO = 0.045;       // odstęp między klockami w kolumnie
+const HG_KONIEC = HG_START + (MAX_W - 1) * HG_KOL + (KOLUMNY[MAX_W - 1].length - 1) * HG_KLO + 0.5;
+const HG_MASA = HG_KONIEC + 0.35;   // podświetlenie pierwszych trzech kolumn
+const HG_KLAMRA = HG_MASA + 0.2;    // klamra z liczbą pod nimi
+
+const klatkiHero = [
+  '@keyframes hg-in{from{opacity:0;transform:translateY(7px) scaleY(.35)}to{opacity:1;transform:none}}',
+  '@keyframes hg-masa{to{background-color:#a9dbc2}}',
+  '@keyframes hg-klamra{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:none}}',
+].join('\n');
+
+// ---- TRZY POZIOMY (ciemny pas) -----------------------------------------
+// Zagnieżdżenie zamiast trzech kafli obok siebie: wyższy poziom fizycznie
+// zawiera poprzedni, bo tak wygląda budowa — drugi etap nie zaczyna od zera.
+const POZIOMY = [
+  {
+    n: 3,
+    t: 'Agent czyta zapytanie',
+    w: '+8 tygodni',
+    d: 'Czyta zapytanie klienta razem z załącznikiem i składa projekt oferty na podstawie kilkuset poprzednich. Poniżej progu pewności sprawa idzie do handlowca z zaznaczonym miejscem, którego agent nie rozpoznał.',
+    kiedy: 'Zwraca się mniej więcej od stu zapytań miesięcznie. Poniżej tego kosztuje więcej niż osoba, która robi to ręcznie.',
+  },
+  {
+    n: 2,
+    t: 'Rejestr ofert',
+    w: '+4 tygodnie',
+    d: 'Wersje, termin ważności, próg rabatu z akceptacją i jedno miejsce z historią ustaleń. Widać, ile ofert czeka, które wygasają w tym tygodniu i o ile schodzicie z ceny.',
+    kiedy: 'Wystarcza, kiedy ofertuje więcej niż dwie osoby i ktoś pyta o skuteczność.',
+  },
+  {
+    n: 1,
+    t: 'Generator oferty',
+    w: '1 tydzień',
+    d: 'Handlowiec wybiera pozycje z cennika, dokument składa się sam, w jednym wzorze. Nietypowa cena dalej wymaga rozmowy.',
+    kiedy: 'Wystarcza przy kilkunastu ofertach miesięcznie, kiedy wszystkie są podobne.',
+  },
+];
+
+// ---- SZEŚĆ KLOCKÓW ------------------------------------------------------
+// Argument sekcji: prawie każda pozycja z katalogu składa się z tych samych
+// sześciu elementów. Dlatego druga rzecz w tym samym miejscu kosztuje mniej.
+const KLOCKI = [
+  { n: '01', t: 'Rejestr', d: 'Miejsce, w którym mieszka sprawa: numer, stan, kto prowadzi, co dalej.' },
+  { n: '02', t: 'Kokpit', d: 'Liczba policzona z jednego źródła, ta sama dla wszystkich działów.' },
+  { n: '03', t: 'Odczyt dokumentu', d: 'Model wyciąga pola z faktury, umowy albo listu przewozowego.' },
+  { n: '04', t: 'Odpowiedź ze źródłem', d: 'Zdanie z Waszych dokumentów razem ze wskazaniem miejsca.' },
+  { n: '05', t: 'Kolejka zatwierdzeń', d: 'Prośba, limit, decyzja i ślad, kto ją podjął i kiedy.' },
+  { n: '06', t: 'Widok dla klienta', d: 'Ten sam stan sprawy, pokazany na zewnątrz firmy.' },
+];
+
+// ---- CZEGO NIE BUDUJEMY -------------------------------------------------
+const GRANICE = [
+  {
+    t: 'Czatu na stronie, który odpowiada na wszystko',
+    d: 'Odpowiada również wtedy, kiedy nie wie. Koszt jednej złej odpowiedzi przy cenie albo terminie bywa większy niż oszczędność na stu dobrych.',
+  },
+  {
+    t: 'Przepisania ERP-a od zera',
+    d: 'To projekt na dwa lata, który zwykle kończy się w połowie. Taniej wychodzi zbudować obok to, czego ERP nie umie, i zostawić w nim księgowość.',
+  },
+  {
+    t: 'Agenta, który sam pisze do klientów',
+    d: 'Bez akceptacji człowieka pierwsza pomyłka kosztuje więcej niż rok zaoszczędzonego czasu. Projekt odpowiedzi tak, wysyłka po zatwierdzeniu.',
+  },
+  {
+    t: 'Aplikacji zamiast decyzji',
+    d: 'Kiedy w firmie nie ustalono, kto zatwierdza rabat, system tego nie rozstrzygnie. Wtedy zaczynamy od reguły, a narzędzie przychodzi po niej.',
+  },
+];
+
+const PYTANIA_STARTOWE = [
+  { t: 'Które przepisywanie zdarza się najczęściej?', d: 'Częstotliwość waży więcej niż czas jednego przebiegu.' },
+  { t: 'Co kosztuje najwięcej, kiedy ktoś się pomyli?', d: 'Tam zwrot jest natychmiastowy i łatwy do pokazania.' },
+  { t: 'Kto po Waszej stronie to poprowadzi?', d: 'Pozycja bez właściciela nie wchodzi na produkcję.' },
+];
+
+// ---- META I DANE STRUKTURALNE ------------------------------------------
+const title = "Inspiracje: co da się zbudować z aplikacji i AI w firmie | Let's automate";
+const description = `Katalog ${N} pomysłów na aplikacje wewnętrzne, agentów AI, automatyzacje i raporty — z ośmiu obszarów firmy. Przy każdym stoi ta sama miara: ile tygodni do pierwszego uruchomienia.`;
+
+const dane = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'CollectionPage',
+      '@id': `${kanon}#strona`,
+      url: kanon,
+      name: 'Inspiracje — co da się zbudować z aplikacji i AI',
+      description,
+      isPartOf: { '@id': new URL('/', Astro.site).href },
+      about: { '@id': new URL('/#organizacja', Astro.site).href },
+    },
+    {
+      '@type': 'ItemList',
+      '@id': `${kanon}#katalog`,
+      name: 'Katalog pomysłów na aplikacje wewnętrzne i rozwiązania AI',
+      numberOfItems: N,
+      itemListOrder: 'https://schema.org/ItemListOrderAscending',
+      itemListElement: POMYSLY.map((p, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        name: p.t,
+        description: `${p.d}. Obszar: ${p.on}. Rodzaj: ${RODZ[p.r].t}. Czas do pierwszego uruchomienia: około ${p.w} ${odm(p.w, ['tygodnia', 'tygodni', 'tygodni'])}.`,
+      })),
+    },
+    {
+      '@type': 'BreadcrumbList',
+      '@id': `${kanon}#okruszki`,
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Strona główna', item: new URL('/', Astro.site).href },
+        { '@type': 'ListItem', position: 2, name: 'Inspiracje', item: kanon },
+      ],
+    },
+  ],
+};
+
+const faq = [
+  {
+    q: 'Skąd bierze się liczba tygodni przy każdej pozycji?',
+    a: 'To czas od decyzji do pierwszego uruchomienia na produkcji, wzięty z naszych wdrożeń podobnych rzeczy. Obejmuje także czekanie na Was — na dostępy, na przykładowe dokumenty i na rozstrzygnięcie, kto zatwierdza. Przy wycenie liczba jest policzona dla Waszego przypadku i wchodzi do umowy razem z zakresem. Pozycje z tego katalogu mieszczą się między jednym tygodniem a dziesięcioma; wszystko dłuższe nazywamy projektem i mówimy o tym wprost.',
+  },
+  {
+    q: 'Czy do wszystkiego potrzebny jest model AI?',
+    a: `Nie. Z ${N} pozycji ${ILE_AI} opiera się na modelu językowym — to te, w których trzeba coś przeczytać ze zdania albo z dokumentu. Reszta to zwykłe aplikacje, połączenia między systemami i raporty. Model dokładamy tam, gdzie czytanie tekstu jest wąskim gardłem procesu.`,
+  },
+  {
+    q: 'Da się połączyć kilka pozycji w jedną aplikację?',
+    a: 'Tak i zwykle tak to wygląda. Pozycje z jednego obszaru dzielą te same elementy — rejestr, formularz, kolejkę zatwierdzeń — więc druga i trzecia rzecz w tym samym miejscu kosztują wyraźnie mniej niż pierwsza. Ostrzegamy przed odwrotną kolejnością: pięć pozycji ruszonych naraz kończy się tym, że żadna nie wchodzi na produkcję.',
+  },
+  {
+    q: 'Ile to kosztuje?',
+    a: 'Cena idzie za wagą i za liczbą wyjątków. Największy wpływ mają trzy rzeczy: ile systemów trzeba dotknąć, ile przypadków szczególnych ma Wasz proces i czy dane są już w jednym miejscu. Widełki podajemy po pierwszej rozmowie, na której przechodzimy jedną pozycję do końca. Nie mamy prowizji od żadnego dostawcy, więc wybór narzędzia nie zmienia naszego przychodu.',
+  },
+  {
+    q: 'Mamy pomysł, którego nie ma w katalogu',
+    a: 'Tak zaczyna się większość wdrożeń. Katalog pokazuje kształty rzeczy, które budujemy najczęściej — prawie każda pozycja składa się z sześciu elementów opisanych wyżej, za każdym razem w innej kombinacji. Napiszcie, na czym schodzi czas u Was, a odpowiemy, z czego to się składa i ile waży.',
+  },
+  {
+    q: 'Nie mamy działu IT. To wyklucza połowę katalogu?',
+    a: 'Nie. Wymaga natomiast osoby po Waszej stronie, która zna proces i ma prawo rozstrzygnąć wątpliwość — to zwykle kierownik działu. Dostępy do systemów ustawiamy z Waszym dostawcą IT. Firmom bez własnego działu IT poświęcona jest osobna strona: <a href="/guided-coding/bez-dzialu-it" style="font-weight:700;color:#0a7a52">budowanie aplikacji bez działu IT</a>.',
+  },
+  {
+    q: 'Kto to utrzyma za rok?',
+    a: 'Repozytorium, klucze i dostępy są Wasze od pierwszego dnia, więc utrzymanie może przejąć Wasz zespół albo inny dostawca. Kiedy utrzymujemy my, umowa jest osobna od budowy i wypowiadalna z miesięcznym terminem. Jeśli chcecie budować sami, tym zajmuje się <a href="/guided-coding" style="font-weight:700;color:#0a7a52">Guided Coding</a> — kod pisze Wasz zespół, my pilnujemy jakości.',
+  },
+  {
+    q: 'Jest ich kilkanaście i nie wiadomo, od której zacząć',
+    a: 'Pierwsza rozmowa zwykle to rozstrzyga: bierzemy Waszą listę i szeregujemy ją po tym, jak często coś się zdarza i ile kosztuje jedna pomyłka. Kiedy lista jest długa, a różnice między pozycjami niejasne, właściwą usługą jest <a href="/strategia-ai" style="font-weight:700;color:#0a7a52">strategia transformacji AI</a> — dokument z kolejnością i policzonym zwrotem.',
+  },
+];
+dane['@graph'].push({
+  '@type': 'FAQPage',
+  '@id': `${kanon}#faq`,
+  mainEntity: faq.map((f) => ({
+    '@type': 'Question',
+    name: f.q,
+    acceptedAnswer: { '@type': 'Answer', text: f.a.replace(/<[^>]+>/g, '') },
+  })),
+});
+---
+<LaBase title={title} description={description} ctaHref="#kontakt" ctaLabel="Umów rozmowę" nav="inspiracje">
+<script type="application/ld+json" is:inline set:html={JSON.stringify(dane)} slot="head"></script>
+<style is:global slot="head">
+  /* ================= HERO — rozkład wagi katalogu =================
+     Jeden klocek = jedna pozycja z katalogu, ustawiona nad swoją liczbą
+     tygodni. Rysunek jest zarazem spisem treści: najazd kursorem nazywa
+     pozycję po imieniu, kliknięcie filtruje katalog do jej obszaru.
+     Świadome odstępstwo od reszty serwisu: hero wypełnia się raz i zostaje,
+     bo to przyrząd, a nie pętla. */
+  .hg-wrap{--sq:clamp(9px,1.05vw,14px);max-width:760px}
+  .hg{display:flex;align-items:flex-end;gap:7px;min-height:calc(var(--hgn) * (var(--sq) + 3px))}
+  .hg-col{flex:1;display:flex;flex-direction:column-reverse;gap:3px;cursor:pointer}
+  .hg-sq{display:block;height:var(--sq);border-radius:2px;background:#dde8d8;opacity:0;transform-origin:bottom;transition:background .16s,transform .16s}
+  .hg-sq.on{background:var(--la-accent,#00CD77) !important;transform:scaleX(1.06)}
+  .hg-os{display:flex;gap:7px;margin-top:11px}
+  .hg-os span{flex:1;text-align:center;font-family:ui-monospace,Menlo,monospace;font-size:11px;color:#a3aea4}
+  .hg-klamra{position:relative;height:26px;margin-top:2px}
+  .hg-klamra i{position:absolute;left:0;top:0;width:calc(30% - 5px);height:7px;border-left:1px solid #b6c6b4;border-right:1px solid #b6c6b4;border-bottom:1px solid #b6c6b4;border-radius:0 0 3px 3px;opacity:0}
+  .hg-klamra b{position:absolute;left:0;top:11px;width:calc(30% - 5px);text-align:center;font-size:12px;font-weight:650;color:#0a7a52;opacity:0}
+  .hg-jedn{margin:16px 0 0;font-size:12.5px;color:#a3aea4}
+  .hg-pod{display:block;margin-top:9px;min-height:46px;font-size:15px;line-height:1.45;color:#4c5850;text-wrap:pretty}
+  .hg-pod b{display:block;font-size:16.5px;font-weight:750;letter-spacing:-0.014em;color:#16211a}
+  .hg-pod em{font-style:normal;color:#8b968d}
+  .hg-pod .hg-hint{color:#a3aea4}
+  @media (max-width:900px){ .hg-wrap{--sq:clamp(8px,2.2vw,13px);max-width:none} }
+  @media (max-width:560px){ .hg{gap:4px} .hg-os{gap:4px} .hg-os span{font-size:9.5px} .hg-klamra i,.hg-klamra b{width:calc(30% - 3px)} }
+  @media (prefers-reduced-motion:reduce){
+    .hg-sq{animation:none !important;opacity:1;transform:none}
+    .hg-sq.masa{background:#a9dbc2}
+    .hg-klamra i,.hg-klamra b{animation:none !important;opacity:1}
+  }
+
+  /* ================= teza ================= */
+  .tz{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:clamp(28px,5vw,80px);align-items:start;margin-top:clamp(46px,6vw,78px);padding-top:clamp(34px,4vw,48px);border-top:1px solid #e7ece4}
+  .tz-duze{margin:0;font-size:clamp(21px,2.7vw,31px);line-height:1.28;letter-spacing:-0.022em;font-weight:750;color:#16211a;text-wrap:pretty}
+  .tz-duze span{color:#8b968d}
+  .tz-r{display:grid;grid-template-columns:auto minmax(0,1fr);gap:9px 14px;padding:11px 0;border-top:1px solid #eef2ec;align-items:baseline}
+  .tz-r:first-of-type{border-top:0;padding-top:0}
+  .tz-r b{font-size:14px;font-weight:750;color:#16211a;white-space:nowrap}
+  .tz-r span{font-size:13.5px;line-height:1.5;color:#8b968d}
+  .tz-r i{font-style:normal;font-family:ui-monospace,Menlo,monospace;font-size:11.5px;color:#a3aea4}
+  @media (max-width:860px){ .tz{grid-template-columns:1fr;gap:32px} }
+
+  /* ================= obszary =================
+     Osiem wierszy na liniach, nie osiem równych kafli: numer pozycji, nazwa
+     w dużym stopniu, stan zastany obok, waga najlżejszej i najcięższej rzeczy
+     w obszarze po prawej. Kliknięcie ustawia filtr w katalogu. */
+  .ob{margin-top:clamp(28px,3.6vw,42px)}
+  .ob-r{position:relative;display:grid;grid-template-columns:minmax(0,0.72fr) minmax(0,1.16fr) 140px;gap:clamp(14px,2.6vw,44px);align-items:center;padding:clamp(17px,2.1vw,25px) 0;border-top:1px solid #dde7db;transition:background .18s}
+  .ob-r:last-of-type{border-bottom:1px solid #dde7db}
+  .ob-r:hover{background:rgba(10,122,82,0.045)}
+  .ob-t{display:flex;align-items:baseline;gap:12px;margin:0;font-size:clamp(19px,2.5vw,27px);font-weight:800;letter-spacing:-0.026em;line-height:1.1;color:#16211a;text-wrap:balance}
+  .ob-t a{transition:color .16s}
+  .ob-t a::after{content:"";position:absolute;inset:0}
+  .ob-r:hover .ob-t a{color:#0a7a52}
+  .ob-n{flex-shrink:0;font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:400;letter-spacing:0;color:#b6c6b4}
+  .ob-d{margin:0;font-size:14.5px;line-height:1.55;color:#6d7a71;text-wrap:pretty}
+  .ob-w{display:flex;flex-direction:column;align-items:flex-end;gap:3px;text-align:right}
+  .ob-w1{display:flex;align-items:baseline;gap:6px;font-size:14px;color:#8b968d}
+  .ob-w1 em{font-style:normal;font-size:clamp(24px,2.8vw,32px);font-weight:800;letter-spacing:-0.03em;line-height:1;color:#16211a}
+  .ob-w2{font-size:11.5px;line-height:1.3;color:#a3aea4;white-space:nowrap}
+  @media (max-width:1000px){
+    .ob-r{grid-template-columns:minmax(0,1fr) 124px}
+    .ob-d{grid-column:1;grid-row:2}
+    .ob-w{grid-column:2;grid-row:1/3;justify-content:center}
+  }
+  @media (max-width:520px){ .ob-r{gap:8px 14px} .ob-d{font-size:13.5px} .ob-w2{font-size:10.5px} }
+
+  /* ================= katalog =================
+     Indeks, nie ściana kafli: dwie kolumny wierszy na liniach, zgrupowane
+     obszarami. Pasek wagi przy każdej pozycji jest w tej samej skali,
+     co kolumny w hero — to ta sama miara widziana drugi raz. */
+  .kt-bar{position:sticky;top:74px;z-index:20;background:#ffffff;padding:15px 0 13px;margin-bottom:6px;border-bottom:1px solid #e7ece4}
+  .kt-bar.stuck{padding:9px 0 8px;box-shadow:0 16px 26px -24px rgba(18,38,28,0.5)}
+  .kt-gora{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px 28px}
+  .kt-szuk{display:flex;align-items:center;gap:9px;flex:1;min-width:220px;max-width:420px;padding-bottom:7px;border-bottom:1.5px solid #16211a}
+  .kt-szuk input{flex:1;min-width:0;border:0;background:transparent;outline:none;font-family:inherit;font-size:clamp(16px,1.9vw,19px);font-weight:650;letter-spacing:-0.015em;color:#16211a}
+  .kt-szuk input::-webkit-search-cancel-button{-webkit-appearance:none}
+  .kt-licz{font-size:14px;color:#8b968d;white-space:nowrap}
+  .kt-licz b{font-family:ui-monospace,Menlo,monospace;font-size:15px;color:#16211a}
+  .kt-linie{margin-top:12px;display:flex;flex-direction:column;gap:5px}
+  .kt-bar.stuck .kt-linie{margin-top:8px}
+  .kt-l{display:grid;grid-template-columns:64px minmax(0,1fr);gap:4px 14px;align-items:baseline}
+  .kt-lab{font-size:11.5px;color:#a3aea4}
+  .kt-opts{display:flex;flex-wrap:wrap;gap:2px 4px}
+  .kt-opt{position:relative;appearance:none;border:0;background:none;font-family:inherit;font-size:13.5px;color:#6d7a71;padding:3px 8px;border-radius:7px;cursor:pointer;transition:color .14s,background .14s,box-shadow .14s}
+  .kt-opt:hover{color:#0a7a52;background:rgba(10,122,82,0.07)}
+  .kt-opt.on{color:#16211a;font-weight:700}
+  .kt-opt.on::after{content:"";position:absolute;left:8px;right:8px;bottom:0;height:2px;border-radius:2px;background:var(--la-accent,#00CD77)}
+  .kt-route{margin:11px 0 0;font-size:13.5px;color:#6d7a71}
+  .kt-route a{font-weight:700;color:#0a7a52}
+  .kt-grp{margin-top:clamp(30px,3.4vw,46px)}
+  .kt-grp[hidden]{display:none !important}
+  .kt-ghead{display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding-bottom:9px;border-bottom:2px solid #16211a}
+  .kt-ghead h3{margin:0;font-size:clamp(18px,2.1vw,23px);font-weight:800;letter-spacing:-0.024em;color:#16211a}
+  .kt-ghead span{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;color:#8b968d;white-space:nowrap}
+  .kt-lista{display:grid;grid-template-columns:1fr 1fr;gap:0 clamp(26px,4vw,64px)}
+  .kt-it{display:grid;grid-template-columns:minmax(0,1fr) 96px;gap:3px 16px;padding:13px 0;border-top:1px solid #ebf0e8;align-items:baseline}
+  .kt-it[hidden]{display:none !important}
+  .kt-t{grid-column:1;font-size:15.5px;font-weight:700;letter-spacing:-0.013em;line-height:1.3;color:#16211a;text-wrap:balance}
+  .kt-d{grid-column:1;font-size:12.5px;line-height:1.45;color:#8b968d;text-wrap:pretty}
+  .kt-meta{grid-column:2;grid-row:1/3;display:flex;flex-direction:column;align-items:flex-end;gap:6px;padding-top:2px}
+  .kt-r{font-size:11.5px;line-height:1;color:#a3aea4;white-space:nowrap}
+  .kt-para{display:flex;align-items:center;gap:8px}
+  .kt-w{display:block;width:44px;height:3px;border-radius:2px;background:#e9eee6;overflow:hidden}
+  .kt-w i{display:block;height:100%;border-radius:2px;background:#7fd0ab}
+  .kt-wn{font-family:ui-monospace,Menlo,monospace;font-size:11px;color:#8b968d;white-space:nowrap}
+  .kt-pusto{margin:36px 0 0;font-size:17px;color:#4c5850}
+  .kt-pusto a{font-weight:700;color:#0a7a52}
+  .kt-nota{margin:clamp(30px,3.4vw,44px) 0 0;font-size:13.5px;line-height:1.6;color:#a3aea4;max-width:720px;text-wrap:pretty}
+  @media (max-width:900px){ .kt-lista{grid-template-columns:1fr} .kt-bar{top:12px} }
+  @media (max-width:560px){ .kt-l{grid-template-columns:1fr;gap:1px} .kt-opt{padding:3px 7px;font-size:13px} }
+
+  /* ================= trzy poziomy (ciemny pas) =================
+     Zagnieżdżenie: ramka poziomu trzeciego zawiera drugą, druga pierwszą.
+     Rysunek niesie zdanie, którego nie ma w tekście — wyższy poziom stoi
+     na poprzednim, więc wejście na niego nie zaczyna od pustej strony. */
+  .pz{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(280px,0.88fr);gap:clamp(30px,5vw,74px);align-items:start;margin-top:clamp(30px,3.6vw,46px)}
+  .pz-ramka{position:relative;padding:clamp(15px,1.7vw,21px);border:1px solid rgba(255,255,255,0.2);border-radius:16px}
+  .pz-ramka.p2{border-color:rgba(255,255,255,0.3)}
+  .pz-ramka.p1{border-color:var(--la-accent,#00CD77);background:rgba(0,205,119,0.09)}
+  .pz-g{display:flex;align-items:baseline;justify-content:space-between;gap:14px;flex-wrap:wrap}
+  .pz-t{margin:0;font-size:clamp(16px,1.9vw,20px);font-weight:750;letter-spacing:-0.018em;color:#ffffff}
+  .pz-t em{font-style:normal;font-family:ui-monospace,Menlo,monospace;font-size:11.5px;font-weight:400;letter-spacing:0.06em;color:rgba(255,255,255,0.4);margin-right:9px}
+  .pz-w{font-family:ui-monospace,Menlo,monospace;font-size:12px;color:rgba(255,255,255,0.5);white-space:nowrap}
+  .pz-ramka.p1 .pz-w{color:var(--la-accent,#00CD77)}
+  .pz-d{margin:9px 0 0;font-size:14px;line-height:1.55;color:rgba(255,255,255,0.72);text-wrap:pretty}
+  .pz-ramka.p1 .pz-d{color:rgba(255,255,255,0.85)}
+  .pz-in{margin-top:clamp(14px,1.6vw,19px)}
+  .pz-k{margin-top:clamp(22px,2.6vw,32px)}
+  .pz-kr{padding:14px 0;border-top:1px solid rgba(255,255,255,0.14)}
+  .pz-kr:first-of-type{border-top:0;padding-top:0}
+  .pz-kr b{display:block;font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.1em;color:rgba(255,255,255,0.4)}
+  .pz-kr span{display:block;margin-top:6px;font-size:14.5px;line-height:1.55;color:rgba(255,255,255,0.8);text-wrap:pretty}
+  .pz-kr.prog span{color:#ffffff}
+  .pz-kr.prog b{color:#e0a854}
+  @media (max-width:960px){ .pz{grid-template-columns:1fr;gap:34px} }
+  @media (max-width:520px){ .pz-ramka{padding:13px} .pz-g{gap:2px 12px} }
+
+  /* ================= sześć klocków =================
+     Fragmenty interfejsu rysowane w HTML, w nierównych rozmiarach — inaczej
+     wyszedłby z tego rząd sześciu identycznych kafli. Każdy fragment jest
+     najmniejszą rozpoznawalną częścią czegoś, co budujemy naprawdę. */
+  .kl{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(20px,2.6vw,34px);margin-top:clamp(30px,3.6vw,46px)}
+  .kl-i{display:flex;flex-direction:column}
+  .kl-i.szer{grid-column:span 2}
+  .kl-ui{background:#ffffff;border-radius:13px;box-shadow:0 20px 40px -30px rgba(18,38,28,0.4),0 0 0 1px rgba(18,38,28,0.055);padding:15px 16px;flex:1;min-height:132px;display:flex;flex-direction:column;justify-content:center}
+  .kl-p{display:flex;align-items:baseline;gap:10px;margin:13px 0 0}
+  .kl-n{font-family:ui-monospace,Menlo,monospace;font-size:11px;color:#b6c6b4;flex-shrink:0}
+  .kl-p b{font-size:15.5px;font-weight:750;letter-spacing:-0.014em;color:#16211a}
+  .kl-p span{display:block;margin-top:3px;font-size:13px;line-height:1.5;color:#7c877e;text-wrap:pretty}
+  /* rejestr */
+  .u-tab{display:grid;grid-template-columns:56px minmax(0,1fr) 78px;gap:0 12px;font-size:12px}
+  .u-th{padding:0 0 7px;font-family:ui-monospace,Menlo,monospace;font-size:9.5px;letter-spacing:0.08em;color:#b0bbb1;border-bottom:1px solid #eef2ec}
+  .u-td{padding:9px 0;border-bottom:1px solid #f2f5f0;color:#4c5850;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .u-td.mono{font-family:ui-monospace,Menlo,monospace;font-size:11px;color:#8b968d}
+  .u-st{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:#4c5850}
+  .u-st i{width:6px;height:6px;border-radius:50%;background:#d5dcd3;flex-shrink:0}
+  .u-st.ok i{background:var(--la-accent,#00CD77)}
+  .u-st.cz i{background:#e0a854}
+  .u-row-hi .u-td{background:#f4faf6}
+  /* kokpit */
+  .u-kok{display:flex;align-items:flex-end;justify-content:space-between;gap:16px}
+  .u-duza{font-size:38px;font-weight:800;letter-spacing:-0.035em;line-height:1;color:#16211a}
+  .u-kap{margin-top:5px;font-size:11.5px;color:#8b968d}
+  .u-delta{font-size:12px;font-weight:700;color:#0a7a52}
+  .u-slup{display:flex;align-items:flex-end;gap:4px;height:44px}
+  .u-slup i{width:7px;border-radius:2px;background:#dfe9dc}
+  .u-slup i:last-child{background:var(--la-accent,#00CD77)}
+  /* odczyt dokumentu */
+  .u-doc{display:grid;grid-template-columns:58px minmax(0,1fr);gap:14px;align-items:center}
+  .u-kartka{padding:9px 8px;border-radius:5px;background:#f6f9f5;box-shadow:inset 0 0 0 1px #e7ece4}
+  .u-kartka i{display:block;height:3px;border-radius:2px;background:#dde6da;margin-bottom:5px}
+  .u-kartka i:nth-child(1){width:70%}
+  .u-kartka i:nth-child(3){width:88%}
+  .u-kartka i:nth-child(4){width:52%}
+  .u-kartka i:last-child{margin-bottom:0;width:76%}
+  .u-pole{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #f2f5f0;font-size:12px}
+  .u-pole:last-child{border-bottom:0}
+  .u-pole span{color:#a3aea4;width:76px;font-size:11px;flex-shrink:0}
+  .u-pole b{font-weight:650;color:#16211a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .u-pole svg{margin-left:auto;flex-shrink:0}
+  /* odpowiedź ze źródłem */
+  .u-q{font-size:12.5px;font-weight:650;color:#16211a}
+  .u-a{margin:8px 0 0;font-size:12.5px;line-height:1.5;color:#4c5850}
+  .u-zr{display:inline-flex;align-items:center;gap:7px;margin-top:10px;padding:5px 9px;border-radius:7px;background:#eef6f0;font-size:11px;color:#0a7a52}
+  /* kolejka zatwierdzeń */
+  .u-wn{font-size:12.5px;color:#4c5850}
+  .u-wn b{display:block;font-size:14px;font-weight:750;color:#16211a;margin-bottom:3px}
+  .u-lim{display:flex;align-items:center;gap:8px;margin:11px 0 12px;font-size:11px;color:#8b968d}
+  .u-lim span{flex:1;height:4px;border-radius:2px;background:#eef2ec;overflow:hidden}
+  .u-lim span i{display:block;width:72%;height:100%;background:#e0a854;border-radius:2px}
+  .u-btn{display:flex;gap:7px}
+  .u-btn i{font-style:normal;font-size:11.5px;font-weight:650;padding:6px 12px;border-radius:7px}
+  .u-btn i:first-child{background:#16211a;color:#fff}
+  .u-btn i:last-child{background:#f2f5f0;color:#7c877e}
+  /* widok dla klienta */
+  .u-tor{display:flex;align-items:center;gap:0;margin:6px 0 0}
+  .u-krok{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;position:relative}
+  .u-krok:before{content:"";position:absolute;top:6px;left:-50%;width:100%;height:2px;background:#e9eee6}
+  .u-krok:first-child:before{display:none}
+  .u-krok.done:before,.u-krok.teraz:before{background:var(--la-accent,#00CD77)}
+  .u-kropka{position:relative;width:13px;height:13px;border-radius:50%;background:#e9eee6}
+  .u-krok.done .u-kropka{background:var(--la-accent,#00CD77)}
+  .u-krok.teraz .u-kropka{background:#ffffff;box-shadow:0 0 0 3px var(--la-accent,#00CD77)}
+  .u-krok b{font-size:11px;font-weight:650;color:#4c5850;text-align:center;line-height:1.3}
+  .u-krok.pusty b{color:#b0bbb1;font-weight:500}
+  @media (max-width:900px){ .kl{grid-template-columns:repeat(2,minmax(0,1fr))} .kl-i.szer{grid-column:span 2} }
+  @media (max-width:600px){ .kl{grid-template-columns:1fr} .kl-i.szer{grid-column:span 1} }
+
+  /* ================= granice + start ================= */
+  .gr{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 clamp(28px,4vw,64px);margin-top:clamp(26px,3vw,38px)}
+  .gr-i{padding:clamp(18px,2.2vw,26px) 0;border-top:1px solid #e2e9e0}
+  .gr-i h3{margin:0;font-size:clamp(16px,1.9vw,19px);font-weight:750;letter-spacing:-0.016em;line-height:1.3;color:#16211a;text-wrap:balance}
+  .gr-i p{margin:8px 0 0;font-size:14.5px;line-height:1.6;color:#4c5850;text-wrap:pretty}
+  .st{margin:clamp(40px,5vw,64px) 0 0 clamp(0px,5vw,86px);padding-left:clamp(18px,2vw,26px);border-left:2px solid var(--la-accent,#00CD77);max-width:820px}
+  .st h3{margin:0;font-size:clamp(17px,2vw,21px);font-weight:750;letter-spacing:-0.018em;color:#16211a}
+  .st-r{display:grid;grid-template-columns:minmax(0,0.92fr) minmax(0,1fr);gap:6px clamp(18px,2.6vw,40px);padding:13px 0;border-top:1px solid #e7ece4;align-items:baseline}
+  .st-r:first-of-type{margin-top:16px}
+  .st-r b{font-size:15px;font-weight:700;letter-spacing:-0.012em;color:#16211a;text-wrap:balance}
+  .st-r span{font-size:13.5px;line-height:1.5;color:#8b968d;text-wrap:pretty}
+  @media (max-width:820px){ .gr{grid-template-columns:1fr} .st-r{grid-template-columns:1fr;gap:3px} }
+
+  @media (max-width:900px){
+    .ins-hero-split{grid-template-columns:1fr !important;gap:clamp(28px,5vw,44px) !important}
+  }
+</style>
+
+<!-- ============ 1 · HERO ============
+     Nagłówek pełną szerokością, pod nim podział na zdanie wprowadzające
+     i rysunek — inny szkielet niż hero-split z sześciu podstron usługowych.
+     Rysunek to rozkład wagi całego katalogu: jeden klocek jest jedną pozycją,
+     stoi nad swoją liczbą tygodni i zna swoją nazwę. -->
+<div aria-hidden="true" style="position:absolute;left:0;right:0;top:0;height:1120px;background:radial-gradient(1000px 620px at 78% 0%, rgba(0,205,119,0.14), transparent 62%);pointer-events:none"></div>
+<section style="position:relative;overflow:hidden;padding:clamp(26px,3.6vw,48px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) clamp(52px,6vw,78px)">
+<h1 style="margin:0;max-width:1080px;font-size:clamp(31px,5.3vw,62px);line-height:1.03;letter-spacing:-0.035em;font-weight:800;color:#16211a;text-wrap:balance">Aplikacje i rozwiązania AI, które da się zbudować w Waszej firmie</h1>
+
+<div class="ins-hero-split" style="display:grid;grid-template-columns:minmax(0,0.72fr) minmax(0,1.15fr);gap:clamp(30px,5vw,80px);align-items:center;margin-top:clamp(30px,4vw,52px)">
+<div>
+<p style="margin:0;max-width:520px;font-size:clamp(16px,2.05vw,19px);line-height:1.6;color:#33413a;text-wrap:pretty">Katalog {N} {odm(N, ['pozycji', 'pozycji', 'pozycji'])} z ośmiu obszarów firmy. Przy każdej stoi ta sama miara — ile tygodni mija do pierwszego uruchomienia na produkcji. {SZYBKIE} z nich mieści się w trzech tygodniach albo krócej.</p>
+<div class="hero-actions" style="display:flex;align-items:center;flex-wrap:wrap;gap:14px 18px;margin-top:clamp(24px,3vw,34px)">
+<a href="#katalog" class="btn-dark" style="display:inline-flex;align-items:center;gap:10px;background:#16211a;color:#ffffff;padding:17px 30px;border-radius:12px;font-weight:650;font-size:16.5px;box-shadow:0 14px 30px -14px rgba(16,33,26,0.45)">Otwórz katalog <span aria-hidden="true">→</span></a>
+<a href="#kontakt" class="btn-ghost" style="display:inline-flex;align-items:center;gap:8px;font-size:16.5px;font-weight:700;color:#16211a;background:rgba(255,255,255,0.6);padding:17px 24px;border-radius:12px;border:1px solid rgba(22,33,26,0.16)">Umów rozmowę</a>
+</div>
+</div>
+
+<div class="hg-wrap" style={`--hgn:${NAJWYZSZA}`}>
+<div class="hg" id="hg" data-po={String(Math.round((HG_KLAMRA + 0.7) * 1000))} role="img" aria-label={`Rozkład ${N} pozycji katalogu według czasu do pierwszego uruchomienia. Najwięcej pozycji, bo ${KOLUMNY[2].length}, przypada na trzy tygodnie. ${SZYBKIE} z ${N} mieści się w trzech tygodniach albo krócej, a najdłuższa pozycja zajmuje ${MAX_W} tygodni.`}>
+{KOLUMNY.map((kol, i) => (
+  <span class="hg-col">
+  {kol.map((p, j) => (
+    <span
+      class={p.w <= PROG ? 'hg-sq masa' : 'hg-sq'}
+      data-i={String(p.i)}
+      data-t={p.t}
+      data-o={p.on}
+      data-ok={p.ok}
+      data-r={RODZ[p.r].m}
+      data-w={`${p.w} ${odm(p.w, ['tydzień', 'tygodnie', 'tygodni'])}`}
+      style={`animation:hg-in .5s cubic-bezier(.34,1.4,.5,1) ${(HG_START + i * HG_KOL + j * HG_KLO).toFixed(2)}s both${p.w <= PROG ? `,hg-masa .45s linear ${HG_MASA.toFixed(2)}s forwards` : ''}`}
+    ></span>
+  ))}
+  </span>
+))}
+</div>
+<div class="hg-os" aria-hidden="true">
+{KOLUMNY.map((_, i) => <span>{i + 1}</span>)}
+</div>
+<div class="hg-klamra" aria-hidden="true">
+<i style={`width:calc(${((PROG / MAX_W) * 100).toFixed(2)}% - 5px);animation:hg-klamra .5s ease ${HG_KLAMRA.toFixed(2)}s forwards`}></i>
+<b style={`width:calc(${((PROG / MAX_W) * 100).toFixed(2)}% - 5px);animation:hg-klamra .5s ease ${(HG_KLAMRA + 0.12).toFixed(2)}s forwards`}>{SZYBKIE} z {N}</b>
+</div>
+<p class="hg-jedn">tygodnie do pierwszego uruchomienia</p>
+<p class="hg-pod" id="hgpod"><b id="hgt">Jeden klocek to jedna pozycja z katalogu</b><em id="hgm" class="hg-hint">Nazwa pojawia się po najechaniu kursorem. Kliknięcie otwiera jej obszar w katalogu.</em></p>
+</div>
+</div>
+
+<!-- Teza strony — osobna linia w dużym stopniu pisma, bez nagłówka nad nią.
+     Playbook §3: argument, który ma być zapamiętany, nie może być akapitem
+     trzecim. Po prawej legenda katalogu, żeby paski niżej dało się czytać. -->
+<div class="tz">
+<div>
+<p class="tz-duze">Zmiana, po której firma pracuje inaczej, rzadko jest jedną dużą aplikacją. Zwykle to kilka drobiazgów, <span>z których żaden osobno nie wygląda na projekt.</span></p>
+<p class="sub" style="margin:20px 0 0;max-width:600px">Dlatego przy każdej pozycji stoi tu waga w tygodniach. Rzeczy warte zbudowania rozpoznaje się po tym, jak często ktoś wykonuje je ręcznie, i po tym, ile kosztuje jedna pomyłka.</p>
+</div>
+<div>
+{RODZAJE.map((r) => {
+  const ile = POMYSLY.filter((p) => p.r === r.k).length;
+  return (
+    <div class="tz-r"><b>{r.t}</b><span>{r.d} <i>· {ile}</i></span></div>
+  );
+})}
+<div class="tz-r"><b>Waga</b><span>Tygodnie do pierwszego uruchomienia na produkcji, razem z czekaniem na Waszej stronie <i>· 1–{MAX_W}</i></span></div>
+</div>
+</div>
+</section>
+
+<!-- ============ 2 · OBSZARY ============
+     Nagłówek pełną szerokością, bez akapitu obok — trzeci szkielet na stronie.
+     Osiem wierszy na liniach: numer, nazwa, stan zastany, najlżejsza
+     i najcięższa pozycja obszaru. Wiersz jest przyciskiem: ustawia filtr. -->
+<section id="obszary" style="background:#f4f8f2;padding:clamp(58px,7vw,92px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
+<h2 class="h-sec" style="margin:0;max-width:900px;text-wrap:balance">Osiem obszarów, w których to się zwykle zaczyna</h2>
+<div class="ob">
+{KATALOG.map((g, i) => (
+    <div class="ob-r rv">
+      <h3 class="ob-t"><span class="ob-n">{String(i + 1).padStart(2, '0')}</span><a href="#katalog" data-goto={g.k}>{g.t}</a></h3>
+      <p class="ob-d">{g.d}</p>
+      <span class="ob-w"><span class="ob-w1"><em>{g.szybkie}</em>z {g.p.length}</span><span class="ob-w2">w trzy tygodnie</span></span>
+    </div>
+))}
+</div>
+<p class="sub rv" style="margin:clamp(24px,3vw,34px) 0 0;max-width:720px">Obszar oznacza miejsce, w którym schodzi czas — połowa pozycji z „wiedzy i dokumentów" pracuje ostatecznie na sprzedaż.</p>
+</section>
+
+<!-- ============ 3 · KATALOG ============
+     Serce strony. Indeks w dwóch kolumnach, zgrupowany obszarami, z paskiem
+     wagi w tej samej skali co hero. Filtry są przyrządem, nie ozdobą:
+     wybór rodzaju dopisuje pod sobą usługę, która takie rzeczy buduje. -->
+<section id="katalog" style="padding:clamp(58px,7vw,96px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) clamp(58px,7vw,92px);scroll-margin-top:84px">
+<div class="sec-head">
+<h2 class="h-sec" style="margin:0;max-width:620px;text-wrap:balance">Katalog</h2>
+<p style="margin:0 0 6px;max-width:520px;font-size:17px;line-height:1.6;color:#4c5850;text-wrap:pretty">Każda pozycja jest rzeczą, którą ktoś u kogoś dzisiaj robi ręcznie. Szukajcie po słowie, które pada u Was na korytarzu — „faktury", „grafik", „reklamacje".</p>
+</div>
+
+<span id="kt-sentinel" aria-hidden="true" style="display:block;height:1px"></span>
+<div class="kt-bar" id="ktbar">
+<div class="kt-gora">
+<label class="kt-szuk">
+<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#8b968d" stroke-width="2.1" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4.2-4.2"/></svg>
+<input type="search" id="ktq" placeholder="Szukaj w katalogu" aria-label="Szukaj w katalogu" autocomplete="off">
+</label>
+<p class="kt-licz"><b id="ktn">{N}</b> z {N} {odm(N, ['pozycji', 'pozycji', 'pozycji'])}</p>
+</div>
+<div class="kt-linie">
+<div class="kt-l"><span class="kt-lab">Obszar</span><div class="kt-opts" data-grp="o">
+<button type="button" class="kt-opt on" data-v="">wszystkie</button>
+{KATALOG.map((g) => <button type="button" class="kt-opt" data-v={g.k}>{g.t}</button>)}
+</div></div>
+<div class="kt-l"><span class="kt-lab">Rodzaj</span><div class="kt-opts" data-grp="r">
+<button type="button" class="kt-opt on" data-v="">wszystkie</button>
+{RODZAJE.map((r) => <button type="button" class="kt-opt" data-v={r.k} data-h={r.h} data-ht={r.ht}>{r.t}</button>)}
+</div></div>
+<div class="kt-l"><span class="kt-lab">Waga</span><div class="kt-opts" data-grp="w">
+<button type="button" class="kt-opt on" data-v="">wszystkie</button>
+<button type="button" class="kt-opt" data-v="1-2">do 2 tygodni</button>
+<button type="button" class="kt-opt" data-v="3-4">3–4 tygodnie</button>
+<button type="button" class="kt-opt" data-v={`5-${MAX_W}`}>dłuższe</button>
+</div></div>
+</div>
+<p class="kt-route" id="ktroute" hidden></p>
+</div>
+
+{KATALOG.map((g) => (
+  <div class="kt-grp" data-grp-o={g.k}>
+    <div class="kt-ghead"><h3>{g.t}</h3><span class="kt-gcount">{g.p.length} {odm(g.p.length, ['pozycja', 'pozycje', 'pozycji'])}</span></div>
+    <div class="kt-lista">
+    {g.p.map((x) => {
+      const p = POMYSLY.find((y) => y.ok === g.k && y.t === x.t);
+      return (
+        <div class="kt-it" data-o={g.k} data-r={x.r} data-w={String(x.w)} data-s={p.szukaj} id={`p-${p.i}`}>
+          <span class="kt-t">{x.t}</span>
+          <span class="kt-d">{x.d}</span>
+          <span class="kt-meta">
+            <span class="kt-r">{RODZ[x.r].m}</span>
+            <span class="kt-para">
+              <span class="kt-w"><i style={`width:${((x.w / MAX_W) * 100).toFixed(0)}%`}></i></span>
+              <span class="kt-wn">{x.w} tyg.</span>
+            </span>
+          </span>
+        </div>
+      );
+    })}
+    </div>
+  </div>
+))}
+
+<p class="kt-pusto" id="ktpusto" hidden>Nic nie pasuje do tego zestawu. <a href="#kontakt">Napiszcie, czego szukacie →</a></p>
+<p class="kt-nota">Wagi są medianami z naszych wdrożeń podobnych rzeczy. Liczą czas do pierwszego uruchomienia na produkcji, razem z czekaniem na dostępy i na decyzje po Waszej stronie. Przy wycenie liczba jest policzona dla Waszego przypadku i wchodzi do umowy.</p>
+</section>
+
+<!-- ============ 4 · TRZY POZIOMY ============
+     Ciemny pas bierze najcięższy argument strony. Rysunek to zagnieżdżenie:
+     ramka poziomu trzeciego zawiera drugą, druga pierwszą — bo tak wygląda
+     budowa. Odsłania się z zewnątrz do środka, więc na końcu ląduje poziom
+     pierwszy, ten, który działa sam. -->
+<section id="poziomy" style="position:relative;background:radial-gradient(950px 440px at 86% 4%, rgba(0,205,119,0.17), transparent 62%), #0e2b1d;padding:clamp(60px,7.5vw,100px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
+<h2 class="h-sec" style="margin:0;max-width:760px;color:#ffffff;text-wrap:balance">Jeden pomysł w trzech rozmiarach</h2>
+<p class="rv" style="margin:clamp(18px,2.2vw,26px) 0 0;max-width:940px;font-size:clamp(18px,2.3vw,26px);line-height:1.32;letter-spacing:-0.02em;font-weight:700;color:#ffffff;text-wrap:pretty">Każdy wyższy poziom stoi na poprzednim i dokłada do niego jedną rzecz</p>
+<p style="margin:14px 0 0;max-width:620px;font-size:16.5px;line-height:1.6;color:rgba(255,255,255,0.72);text-wrap:pretty">Ta sama pozycja z katalogu — ofertowanie — rozłożona na trzy rozmiary. Można zatrzymać się na dowolnym i to jest skończona rzecz, na której da się pracować.</p>
+
+<div class="pz">
+<div>
+<div class="pz-ramka rv">
+  <div class="pz-g"><h3 class="pz-t"><em>POZIOM 3</em>{POZIOMY[0].t}</h3><span class="pz-w">{POZIOMY[0].w}</span></div>
+  <p class="pz-d">{POZIOMY[0].d}</p>
+  <div class="pz-in">
+    <div class="pz-ramka p2 rv" style="transition-delay:.16s">
+      <div class="pz-g"><h3 class="pz-t"><em>POZIOM 2</em>{POZIOMY[1].t}</h3><span class="pz-w">{POZIOMY[1].w}</span></div>
+      <p class="pz-d">{POZIOMY[1].d}</p>
+      <div class="pz-in">
+        <div class="pz-ramka p1 rv" style="transition-delay:.32s">
+          <div class="pz-g"><h3 class="pz-t"><em>POZIOM 1</em>{POZIOMY[2].t}</h3><span class="pz-w">{POZIOMY[2].w}</span></div>
+          <p class="pz-d">{POZIOMY[2].d}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<div>
+<div class="pz-k">
+{POZIOMY.slice().reverse().map((p) => (
+  <div class={p.n === 3 ? 'pz-kr prog' : 'pz-kr'}>
+    <b>POZIOM {p.n} · {p.w}</b>
+    <span>{p.kiedy}</span>
+  </div>
+))}
+</div>
+<p style="margin:clamp(22px,2.6vw,30px) 0 0;font-size:15.5px;line-height:1.65;color:rgba(255,255,255,0.6);text-wrap:pretty">Ten sam podział działa na większości pozycji z katalogu. Dlatego przy wycenie pytamy najpierw o wolumen, a dopiero potem o kształt — od wolumenu zależy, na którym poziomie kończy się sens.</p>
+</div>
+</div>
+</section>
+
+<!-- ============ 5 · SZEŚĆ KLOCKÓW ============
+     Kupujący oprogramowanie chce zobaczyć oprogramowanie (playbook §11).
+     Zamiast pasa pełnych ekranów — sześć najmniejszych rozpoznawalnych
+     fragmentów, w nierównych rozmiarach. Argument: cały katalog to ich
+     kombinacje, więc druga rzecz w tym samym miejscu kosztuje mniej. -->
+<section id="klocki" style="background:#f4f8f2;padding:clamp(58px,7vw,96px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
+<div class="sec-head">
+<h2 class="h-sec" style="margin:0;max-width:560px;text-wrap:balance">Z czego to wszystko jest zbudowane</h2>
+<p style="margin:0 0 6px;max-width:490px;font-size:17px;line-height:1.6;color:#4c5850;text-wrap:pretty">Prawie każda pozycja z katalogu to kombinacja sześciu powtarzalnych elementów. Stąd bierze się różnica cen: druga rzecz zbudowana w tym samym miejscu kosztuje ułamek pierwszej.</p>
+</div>
+
+<div class="kl">
+
+<div class="kl-i szer rv">
+<div class="kl-ui">
+<div class="u-tab" aria-hidden="true">
+<span class="u-th">NUMER</span><span class="u-th">SPRAWA</span><span class="u-th" style="text-align:right">STAN</span>
+<span class="u-td mono">ZLC-118</span><span class="u-td">Montaż — Weldon sp. z o.o.</span><span class="u-td" style="text-align:right"><span class="u-st ok"><i></i>w toku</span></span>
+<span class="u-td mono">ZLC-119</span><span class="u-td">Serwis gwarancyjny — Prima</span><span class="u-td" style="text-align:right"><span class="u-st cz"><i></i>czeka</span></span>
+<span class="u-td mono">ZLC-120</span><span class="u-td">Montaż — Zakład Kowalski</span><span class="u-td" style="text-align:right"><span class="u-st"><i></i>gotowe</span></span>
+<span class="u-td mono" style="border-bottom:0">ZLC-121</span><span class="u-td" style="border-bottom:0">Przegląd roczny — Nordis</span><span class="u-td" style="text-align:right;border-bottom:0"><span class="u-st ok"><i></i>w toku</span></span>
+</div>
+</div>
+<p class="kl-p"><span class="kl-n">{KLOCKI[0].n}</span><span><b>{KLOCKI[0].t}</b><span>{KLOCKI[0].d}</span></span></p>
+</div>
+
+<div class="kl-i rv">
+<div class="kl-ui">
+<div class="u-kok" aria-hidden="true">
+<div>
+<div class="u-duza">1 240</div>
+<div class="u-kap">faktur w tym miesiącu</div>
+<div class="u-delta" style="margin-top:7px">↑ 12% do poprzedniego</div>
+</div>
+<div class="u-slup"><i style="height:38%"></i><i style="height:52%"></i><i style="height:44%"></i><i style="height:66%"></i><i style="height:59%"></i><i style="height:88%"></i></div>
+</div>
+</div>
+<p class="kl-p"><span class="kl-n">{KLOCKI[1].n}</span><span><b>{KLOCKI[1].t}</b><span>{KLOCKI[1].d}</span></span></p>
+</div>
+
+<div class="kl-i rv">
+<div class="kl-ui">
+<div class="u-doc" aria-hidden="true">
+<div class="u-kartka"><i></i><i></i><i></i><i></i><i></i></div>
+<div>
+<div class="u-pole"><span>Numer</span><b>FV/2026/0418</b><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#00CD77" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>
+<div class="u-pole"><span>Kwota</span><b>12 480,00 zł</b><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#00CD77" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>
+<div class="u-pole"><span>Termin</span><b>14 dni</b><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#00CD77" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>
+<div class="u-pole"><span>Zamówienie</span><b style="color:#b07524">nie rozpoznano</b><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#d99a3c" stroke-width="2.4" stroke-linecap="round"><path d="M12 8v5"/><path d="M12 17h.01"/><circle cx="12" cy="12" r="9"/></svg></div>
+</div>
+</div>
+</div>
+<p class="kl-p"><span class="kl-n">{KLOCKI[2].n}</span><span><b>{KLOCKI[2].t}</b><span>{KLOCKI[2].d}</span></span></p>
+</div>
+
+<div class="kl-i rv">
+<div class="kl-ui">
+<div aria-hidden="true">
+<p class="u-q" style="margin:0">Ile dni mamy na zgłoszenie reklamacji po odbiorze?</p>
+<p class="u-a">Czternaście dni roboczych, licząc od podpisania protokołu odbioru przez obie strony.</p>
+<span class="u-zr"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v5h5"/><path d="M7 3h7l5 5v11a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/></svg>Regulamin usług · §7 ust. 3</span>
+</div>
+</div>
+<p class="kl-p"><span class="kl-n">{KLOCKI[3].n}</span><span><b>{KLOCKI[3].t}</b><span>{KLOCKI[3].d}</span></span></p>
+</div>
+
+<div class="kl-i rv">
+<div class="kl-ui">
+<div aria-hidden="true">
+<div class="u-wn"><b>Zakup: licencje CAD</b>8 400 zł · dział konstrukcji · Marta W.</div>
+<div class="u-lim">72% limitu kwartalnego<span><i></i></span></div>
+<div class="u-btn"><i>Zatwierdź</i><i>Odeślij z uwagą</i></div>
+</div>
+</div>
+<p class="kl-p"><span class="kl-n">{KLOCKI[4].n}</span><span><b>{KLOCKI[4].t}</b><span>{KLOCKI[4].d}</span></span></p>
+</div>
+
+<div class="kl-i szer rv">
+<div class="kl-ui">
+<div aria-hidden="true">
+<div style="font-size:11.5px;color:#8b968d;margin-bottom:16px">Zlecenie ZLC-118 · Weldon sp. z o.o.</div>
+<div class="u-tor">
+<span class="u-krok done"><i class="u-kropka"></i><b>Przyjęte</b></span>
+<span class="u-krok done"><i class="u-kropka"></i><b>Wycena<br>zatwierdzona</b></span>
+<span class="u-krok teraz"><i class="u-kropka"></i><b>Montaż<br>w toku</b></span>
+<span class="u-krok pusty"><i class="u-kropka"></i><b>Odbiór</b></span>
+</div>
+<div style="margin-top:15px;font-size:11.5px;color:#8b968d">Termin odbioru: 24 września · zmiana terminu idzie mailem</div>
+</div>
+</div>
+<p class="kl-p"><span class="kl-n">{KLOCKI[5].n}</span><span><b>{KLOCKI[5].t}</b><span>{KLOCKI[5].d}</span></span></p>
+</div>
+
+<div class="kl-i" style="justify-content:center">
+<p style="margin:0;font-size:16px;line-height:1.6;color:#4c5850;text-wrap:pretty">Pierwsza pozycja płaci za rejestr, uprawnienia, powiadomienia i miejsce, w którym to stoi. Druga wchodzi w gotowe. Dlatego przy planowaniu warto brać rzeczy z jednego obszaru, nawet gdy pojedynczo wyglądają na mniej pilne.</p>
+</div>
+
+</div>
+</section>
+
+<!-- ============ 6 · CZEGO NIE BUDUJEMY ============
+     Sekcja, która niczego nie sprzedaje — na tej stronie raz. Cztery rzeczy
+     odrzucone z powodem, w dwóch kolumnach. Pod spodem, wcięte o kolumnę
+     (jedyny moment asymetrii na stronie), trzy pytania do wyboru pierwszej
+     pozycji. -->
+<section id="granice" class="sec-pad" style="padding-top:clamp(58px,7vw,92px)">
+<h2 class="h-mod" style="margin:0;max-width:620px;text-wrap:balance">Czego w tym katalogu nie ma</h2>
+<p class="sub rv" style="margin:16px 0 0;max-width:700px">Cztery rzeczy, o które pytają najczęściej i których nie budujemy. Powód przy każdej jest ten sam co przy wagach: łatwiej sprzedać, trudniej obronić po roku.</p>
+<div class="gr">
+{GRANICE.map((g) => (
+  <div class="gr-i rv"><h3>{g.t}</h3><p>{g.d}</p></div>
+))}
+</div>
+
+<div class="st">
+<h3>Jak wybrać pierwszą pozycję</h3>
+{PYTANIA_STARTOWE.map((p) => (
+  <div class="st-r rv"><b>{p.t}</b><span>{p.d}</span></div>
+))}
+<p style="margin:18px 0 0;font-size:14.5px;line-height:1.6;color:#8b968d;text-wrap:pretty">Kiedy pozycji jest kilkanaście i różnice między nimi są niejasne, kolejność jest osobną robotą — wtedy właściwą usługą jest <a href="/strategia-ai" class="lnk-green" style="font-weight:650;color:#0a7a52">strategia transformacji AI</a>.</p>
+</div>
+</section>
+
+<GcFaq
+  heading="Pytania, które padają<br>przy tej liście"
+  lead="Najczęściej o wagi i o to, czy da się wziąć kilka rzeczy naraz."
+  ctaLabel="Zadajcie swoje wprost →"
+  items={faq}
+/>
+
+<GcCta
+  heading="Która pozycja jest Wasza?"
+  lead="Na pierwszej rozmowie przechodzimy Waszą listę i wskazujemy jedną pozycję do zrobienia najpierw — razem z tymi, które odradzamy."
+  eyebrow="Z rozmowy wychodzicie z"
+  items={[
+    { t: 'Jedną pozycją na start', d: 'wybraną z Waszej listy, z powodem takiego wyboru' },
+    { t: 'Wagą i warunkami', d: 'ile tygodni i co musi być gotowe po Waszej stronie' },
+    { t: 'Listą odradzanych', d: 'tych, które przy Waszej skali się nie zwrócą' },
+  ]}
+  submitLabel="Umów rozmowę"
+  fieldLabel="Na czym schodzi u Was czas?"
+  placeholder="Np. handlowcy składają oferty w Wordzie, każdy inaczej…"
+  badges={[
+    { i: 'klodka', t: 'Twoje dane bezpieczne' },
+    { i: 'kartka', t: 'NDA przed startem' },
+    { i: 'ptaszek', t: 'Bez prowizji od dostawców' },
+  ]}
+/>
+
+<style is:inline set:html={klatkiHero}></style>
+
+<script>
+  // ---- HERO: obchód po katalogu ----------------------------------------
+  // Rysunek wypełnia się raz i zostaje. Po wypełnieniu co 2,4 s zapala się
+  // inna pozycja i jej nazwa staje w podpisie — to jest cały mechanizm
+  // inspiracji na tej stronie. Najazd kursorem przejmuje obchód, zejście
+  // z rysunku go wznawia, kliknięcie otwiera obszar pozycji w katalogu.
+  (function(){
+    var hg = document.getElementById('hg');
+    var tyt = document.getElementById('hgt');
+    var met = document.getElementById('hgm');
+    if(!hg || !tyt || !met) return;
+    var sq = [].slice.call(hg.querySelectorAll('.hg-sq'));
+    if(!sq.length) return;
+    var bezRuchu = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var akt = null, zegar = null, i = 0;
+    var n = sq.length;
+    // Krok 23 jest względnie pierwszy z 64, więc obchód odwiedza każdą
+    // pozycję dokładnie raz i skacze między obszarami zamiast iść działami.
+    var KROK = 23;
+
+    function pokaz(el){
+      if(akt === el) return;
+      if(akt) akt.classList.remove('on');
+      akt = el;
+      el.classList.add('on');
+      tyt.textContent = el.getAttribute('data-t');
+      met.classList.remove('hg-hint');
+      met.textContent = el.getAttribute('data-o') + ' · ' + el.getAttribute('data-r') + ' · ' + el.getAttribute('data-w');
+    }
+    function krok(){ pokaz(sq[(i * KROK) % n]); i++; }
+    function start(){ if(bezRuchu || zegar) return; zegar = setInterval(krok, 2400); }
+    function stop(){ if(zegar){ clearInterval(zegar); zegar = null; } }
+
+    sq.forEach(function(el){
+      el.addEventListener('mouseenter', function(){ stop(); pokaz(el); });
+      el.addEventListener('click', function(){
+        var b = document.querySelector('.kt-opts[data-grp="o"] .kt-opt[data-v="' + el.getAttribute('data-ok') + '"]');
+        if(b) b.click();
+        var sek = document.getElementById('katalog');
+        if(sek) sek.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+    hg.addEventListener('mouseleave', start);
+
+    if(!bezRuchu){
+      setTimeout(function(){ krok(); start(); }, parseInt(hg.getAttribute('data-po'), 10) || 5000);
+    }
+  })();
+
+  // ---- KATALOG: filtry i wyszukiwarka ----------------------------------
+  (function(){
+    var pole = document.getElementById('ktq');
+    var licznik = document.getElementById('ktn');
+    var pusto = document.getElementById('ktpusto');
+    var trasa = document.getElementById('ktroute');
+    var poz = [].slice.call(document.querySelectorAll('.kt-it'));
+    var grupy = [].slice.call(document.querySelectorAll('.kt-grp'));
+    if(!poz.length) return;
+
+    var stan = { o: '', r: '', w: '', q: '' };
+
+    function odm(n, a, b, c){
+      var d = n % 10, s = n % 100;
+      if(n === 1) return a;
+      if(d >= 2 && d <= 4 && !(s >= 12 && s <= 14)) return b;
+      return c;
+    }
+    function bezOgonkow(s){
+      return s.toLowerCase().replace(/ł/g, 'l').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    }
+    function pasuje(el){
+      if(stan.o && el.getAttribute('data-o') !== stan.o) return false;
+      if(stan.r && el.getAttribute('data-r') !== stan.r) return false;
+      if(stan.w){
+        var w = parseInt(el.getAttribute('data-w'), 10);
+        var z = stan.w.split('-');
+        if(w < +z[0] || w > +z[1]) return false;
+      }
+      if(stan.q && el.getAttribute('data-s').indexOf(stan.q) < 0) return false;
+      return true;
+    }
+    function odswiez(){
+      var suma = 0;
+      poz.forEach(function(el){
+        var ok = pasuje(el);
+        el.hidden = !ok;
+        if(ok) suma++;
+      });
+      grupy.forEach(function(g){
+        var widoczne = [].slice.call(g.querySelectorAll('.kt-it')).filter(function(el){ return !el.hidden; }).length;
+        g.hidden = widoczne === 0;
+        var c = g.querySelector('.kt-gcount');
+        if(c) c.textContent = widoczne + ' ' + odm(widoczne, 'pozycja', 'pozycje', 'pozycji');
+      });
+      licznik.textContent = suma;
+      pusto.hidden = suma > 0;
+    }
+
+    document.querySelectorAll('.kt-opts').forEach(function(grp){
+      var klucz = grp.getAttribute('data-grp');
+      grp.querySelectorAll('.kt-opt').forEach(function(b){
+        b.addEventListener('click', function(){
+          grp.querySelectorAll('.kt-opt').forEach(function(x){ x.classList.remove('on'); });
+          b.classList.add('on');
+          stan[klucz] = b.getAttribute('data-v');
+          if(klucz === 'r'){
+            var h = b.getAttribute('data-h');
+            if(h){
+              trasa.innerHTML = 'Pozycje tego rodzaju budujemy jako <a href="' + h + '">' + b.getAttribute('data-ht') + '</a> →';
+              trasa.hidden = false;
+            } else {
+              trasa.hidden = true;
+            }
+          }
+          odswiez();
+        });
+      });
+    });
+
+    if(pole){
+      pole.addEventListener('input', function(){
+        stan.q = bezOgonkow(pole.value.trim());
+        odswiez();
+      });
+    }
+
+    // Wiersze obszarów nad katalogiem ustawiają filtr i przewijają do listy.
+    document.querySelectorAll('[data-goto]').forEach(function(b){
+      b.addEventListener('click', function(e){
+        e.preventDefault();
+        var cel = document.querySelector('.kt-opts[data-grp="o"] .kt-opt[data-v="' + b.getAttribute('data-goto') + '"]');
+        if(cel) cel.click();
+        var sek = document.getElementById('katalog');
+        if(sek) sek.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+
+    // Pasek filtrów chudnie, kiedy przyklei się pod nawigacją.
+    var wartownik = document.getElementById('kt-sentinel');
+    var pasek = document.getElementById('ktbar');
+    if(wartownik && pasek && 'IntersectionObserver' in window){
+      new IntersectionObserver(function(w){
+        pasek.classList.toggle('stuck', !w[0].isIntersecting);
+      }, { rootMargin: '-86px 0px 0px 0px' }).observe(wartownik);
+    }
+  })();
+</script>
+
+</LaBase>

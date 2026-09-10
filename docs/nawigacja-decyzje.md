@@ -81,3 +81,19 @@ Zniknęła druga kolumna i kreska rozdzielająca, panel zwęził się z 600px do
 **Kiedy wracają:** przy pierwszym realnym playbooku. Dokładanie pozycji to jedna
 linijka w tej samej kolumnie, bez przestawiania układu. Markup starej wersji
 (dwie kolumny + cztery pozycje wiedzy) jest w kopii nawigacji obok.
+
+### Produkty — własna zakładka (09.09.2026)
+
+- **Powstała zakładka „Produkty"** między Usługami a Know-how. Panel ma 392 px
+  i dwie pozycje z sygnetami produktów (Appto, Wingman) plus wiersz
+  „Wszystkie produkty →" prowadzący na `/produkty`.
+- **Pozycja `Appto ↗` zeszła z belki.** Prowadziła poza serwis, zanim
+  istniała podstrona produktowa; teraz wyjście na appto.ai stoi w treści
+  `/produkty` i `/produkty/appto` oraz w stopce.
+- **Kafelek ikony jest ciemny od razu**, inaczej niż w Know-how, gdzie
+  ciemnieje pod kursorem. Sygnet Appto czyta się jako logotyp produktu,
+  a nie jako ikona kategorii — na jasnym kafelku wyglądał jak plama.
+- **Stopka dostała kolumnę PRODUKTY.** Wcześniej `appto.ai ↗` wisiało jako
+  ostatni wiersz kolumny USŁUGI. Siatka stopki ma teraz pięć kolumn
+  i schodzi do trzech poniżej 1180 px.
+- Powody i układ obu podstron: `docs/produkty-koncepcja.md`.

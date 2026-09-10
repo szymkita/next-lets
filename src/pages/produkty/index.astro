@@ -1,0 +1,532 @@
+---
+// HUB /produkty — lista gotowych aplikacji Let's automate.
+//
+// CZYM SIĘ RÓŻNI OD RODZEŃSTWA
+// Sześć podstron usługowych sprzedaje robotę, którą wykonujemy u klienta.
+// Ta sprzedaje rzecz, która już istnieje i ma swoją cenę. Stąd inny alfabet
+// wizualny: nie wykres i nie oś czasu, tylko ARTEFAKT — kartka, która wraca
+// zrobiona. Każdy produkt na tej stronie pokazuje to, co zostaje na biurku.
+//
+// Zajęte słowniki wizualne (nie powtarzać):
+//   /strategia-ai — łuki, strumień, siatka stu kwadratów
+//   /rozwiazania-ai — przekrój warstw, próg pewności, tory
+//   /szkolenia-ai — jednostki do policzenia
+//   /systemy-procesowe — oś czasu sprawy, poziomy pas czterech okien
+//   /systemy-dla-klientow — lista pytań
+//   /automatyzacje-integracje — puls
+//   /guided-coding — krzywa tempa, dwie ścieżki
+//   TUTAJ — artefakt: kartka, która wróciła zrobiona
+//
+// DO POTWIERDZENIA PRZED PUBLIKACJĄ
+// — Wingman: cały opis powstał z jednego zdania Szymona (nagrywanie i wsparcie
+//   w rozmowach, ofertowanie, AI QA rozmów online i telefonicznych). Nazwy
+//   trzech modułów, treść notatki z rozmowy i zdanie o kryteriach jakości
+//   są propozycją do zatwierdzenia.
+// — Zdanie „Appto i Wingman powstały z roboty, którą mieliśmy u siebie" —
+//   prawdziwe dla Appto (używamy go sami); przy Wingmanie do potwierdzenia.
+// — Kadencja wydań: strona mówi „regularnie", bez liczby. Jeśli Appto wydaje
+//   co tydzień, wpisać to wprost — to mocniejszy argument niż „regularnie".
+// — Ceny nie ma na tej stronie. Cennik Appto żyje na appto.ai; Wingman
+//   nie ma jeszcze publicznej ceny.
+// — Widoki aplikacji są rysowane w HTML i poglądowe (nota pod sekcją Wingmana).
+import LaBase from '../../layouts/LaBase.astro';
+import GcFaq from '../../components/GcFaq.astro';
+import GcCta from '../../components/GcCta.astro';
+
+const title = "Produkty — gotowe aplikacje AI Let's automate | Let's automate";
+const description = 'Appto — agenci AI z kontekstem całej firmy. Wingman — nagrywanie rozmów, ofertowanie i ocena jakości. Aplikacje, których używamy sami i wdrażamy u klientów.';
+
+// Wiersze sekcji „Skąd biorą się nasze produkty".
+const SKAD = [
+  {
+    t: 'Powstały z naszej roboty',
+    d: 'Ofertowanie, notatki z rozmów i praca, która ma dziać się w tle — to zadania, które najpierw rozwiązaliśmy u siebie.',
+  },
+  {
+    t: 'Stoją na tym samym stosie, co systemy klientów',
+    d: 'Ten sam zestaw wyborów technicznych, który opisuje WiseStack. Nasze produkty są jego najdłużej działającym wdrożeniem.',
+    l: 'WiseStack', h: '/wisestack',
+  },
+  {
+    t: 'Utrzymuje je nasz zespół',
+    d: 'Zgłoszenie trafia do ludzi, którzy pisali ten kod. Nowe wersje wychodzą regularnie i wchodzą do Waszej przestrzeni bez osobnego projektu.',
+  },
+];
+
+// Ciemny pas — najcięższy argument strony: produkt to dopiero połowa sprawy.
+const WDROZENIE = [
+  { n: '01', t: 'Kontekst firmy', d: 'Dokumenty, ustalenia i opisy procesów trafiają do bazy, z której korzystają agenci. Bez tego kroku Appto odpowiada jak każdy inny czat.' },
+  { n: '02', t: 'Agenci pod role', d: 'Ustawiamy asystentów dla działów, które skorzystają pierwsze — zwykle sprzedaż i obsługa klienta.' },
+  { n: '03', t: 'Rutyny', d: 'Praca, która ma dziać się bez proszenia: poniedziałkowy raport, podsumowania spotkań, przypomnienia o sprawach bez odpowiedzi.' },
+  { n: '04', t: 'Ludzie', d: 'Szkolenie zespołu na jego własnych sprawach i dyżur na pytania przez pierwsze tygodnie.' },
+];
+
+const FAQ = [
+  {
+    q: 'Czy Appto i Wingman to naprawdę Wasze produkty?',
+    a: 'Tak. Piszemy i utrzymujemy je sami, w naszym repozytorium i na naszym stosie. Nie jesteśmy pośrednikiem cudzej licencji, więc zgłoszenie trafia do zespołu, który zna ten kod, i wchodzi do kolejnej wersji produktu.',
+  },
+  {
+    q: 'Gdzie leżą nasze dane?',
+    a: 'W Unii Europejskiej, w osobnej przestrzeni Waszej firmy, szyfrowane w spoczynku i w transporcie. Umowa powierzenia jest częścią startu, a modele nie uczą się na Waszych danych. Dane osobowe można maskować, zanim trafią do modelu.',
+  },
+  {
+    q: 'Potrzebujemy funkcji, której nie ma. Co wtedy?',
+    a: 'Powiemy wprost, do której z trzech szuflad trafia: rzeczy przydatne wszystkim wchodzą do produktu i dostajecie je w kolejnej wersji, rzeczy specyficzne dla Was budujemy jako osobną integrację po Waszej stronie, a przy części odpowiemy, że nie warto — i uzasadnimy.',
+  },
+  {
+    q: 'Da się zacząć bez wdrożenia?',
+    a: 'Tak. Konto w Appto zakładacie sami, bez karty, i sprawdzacie je na swoich sprawach. Wdrożenie z naszym zespołem ma sens wtedy, gdy narzędzie ma objąć cały dział.',
+  },
+];
+---
+<LaBase
+  title={title}
+  description={description}
+  ogImage="/og/hub.png"
+  ctaHref="#kontakt"
+  ctaLabel="Umów pokaz"
+>
+<style is:global slot="head">
+  /* ================= alfabet strony: artefakt =================
+     Kartka, która wróciła zrobiona. Wraca w hero (stos trzech), w sekcji
+     Appto (Inbox z wynikami) i przy Wingmanie (notatka z rozmowy). */
+  .art{background:#ffffff;border:1px solid #e4ebe2;border-radius:16px;box-shadow:0 26px 54px -36px rgba(18,38,28,0.34)}
+  .art-bar{display:flex;align-items:center;gap:9px;padding:11px 15px;border-bottom:1px solid #eef1ec;background:#fbfcfa;border-radius:16px 16px 0 0}
+  .art-znak{display:flex;align-items:center;justify-content:center;width:19px;height:19px;flex-shrink:0;color:#16211a}
+  .art-znak svg{width:100%;height:auto;display:block}
+  .art-app{font-size:12px;font-weight:700;color:#16211a;letter-spacing:-0.01em}
+  .art-sciezka{font-size:11.5px;color:#98a49a}
+  .art-czas{margin-left:auto;font-family:ui-monospace,Menlo,monospace;font-size:11px;color:#98a49a}
+  .art-tresc{padding:16px 17px 17px}
+  .art-tyt{font-size:16.5px;font-weight:750;letter-spacing:-0.015em;color:#16211a;line-height:1.25}
+  .art-linie{display:flex;flex-direction:column;gap:8px;margin-top:13px}
+  /* Kropka jako element pozycjonowany, nie jako pierwszy element flexa:
+     w układzie flex `gap` wchodzi też między <b> a resztę zdania i zostawia
+     dziurę przed przecinkiem. */
+  .art-linie span{position:relative;display:block;padding-left:14px;font-size:13px;line-height:1.45;color:#4c5850}
+  .art-linie span::before{content:"";position:absolute;left:0;top:0.5em;width:5px;height:5px;border-radius:50%;background:#cfdac9}
+  .art-linie b{font-weight:750;color:#16211a}
+  .art-stopka{display:flex;align-items:center;gap:9px;margin-top:15px;padding-top:13px;border-top:1px solid #eef1ec;font-size:11.5px;color:#8b968d}
+  .art-kropka{display:block;width:7px;height:7px;border-radius:50%;background:var(--la-accent,#00CD77);flex-shrink:0}
+
+  /* ---- stos trzech kartek w hero ----
+     Dwie kartki leżą pod spodem i są odchylone; wierzchnia stoi prosto
+     i trzyma wysokość kontenera. Odchylenie jest jedynym miejscem na tej
+     stronie, gdzie coś jest krzywo — stąd bierze się asymetria hero. */
+  .stos{position:relative;margin-left:auto;width:100%;max-width:520px;padding-top:204px}
+  .stos-tyl{position:absolute;left:0;right:0}
+  .stos-tyl .art-tresc{padding-bottom:16px}
+  .stos-t3{top:0;transform:rotate(-1.3deg)}
+  .stos-t2{top:102px;transform:rotate(1.2deg)}
+  .stos-wierzch{position:relative;z-index:2}
+  .stos .art{opacity:0;transform:translateY(14px);transition:opacity .5s ease,transform .6s cubic-bezier(.4,0,.2,1)}
+  .stos.on .stos-t3 .art{opacity:1;transform:none;transition-delay:.05s}
+  .stos.on .stos-t2 .art{opacity:1;transform:none;transition-delay:.18s}
+  .stos.on .stos-wierzch .art{opacity:1;transform:none;transition-delay:.32s}
+  .stos-nota{margin:18px 0 0;font-size:12.5px;line-height:1.5;color:#98a49a;text-align:right}
+  @media (prefers-reduced-motion:reduce){
+    .stos .art{opacity:1;transform:none;transition:none}
+  }
+
+  /* ================= karta produktu =================
+     Appto i Wingman NIE dostają dwóch równych kafli obok siebie. Appto stoi
+     na jasnozielonym tle w układzie tekst → okno, Wingman na bieli, wcięty
+     i odwrócony (okno → tekst), z modułami w wierszach na liniach. */
+  .prod-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(36px,4.4vw,64px);align-items:center}
+  .prod-lokup{display:flex;align-items:center;gap:13px}
+  .prod-sygnet{display:flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:13px;background:#16211a;color:var(--la-accent,#00CD77);flex-shrink:0}
+  .prod-sygnet svg{width:22px;height:auto;display:block}
+  .prod-nazwa{font-size:clamp(28px,3.4vw,38px);font-weight:800;letter-spacing:-0.03em;line-height:1;color:#16211a}
+  .prod-kicker{margin-top:5px;font-size:13.5px;font-weight:650;color:#0a7a52}
+  .prod-def{margin:22px 0 0;font-size:clamp(17px,2vw,19px);line-height:1.55;color:#16211a;text-wrap:pretty}
+
+  /* ---- wiersze klucz → wartość; monospace tu jest funkcjonalny ---- */
+  .spec{margin-top:26px;border-top:1px solid #e2e9de}
+  .spec-w{display:grid;grid-template-columns:118px 1fr;gap:16px;padding:13px 0;border-bottom:1px solid #e2e9de}
+  .spec-k{font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.09em;text-transform:uppercase;color:#8b968d;padding-top:2px}
+  .spec-v{font-size:14.5px;line-height:1.55;color:#33413a}
+  .spec-v b{font-weight:700;color:#16211a}
+
+  .prod-akcje{display:flex;flex-wrap:wrap;align-items:center;gap:14px 20px;margin-top:28px}
+
+  /* ---- okno aplikacji ---- */
+  .win{background:#ffffff;border:1px solid #e4ebe2;border-radius:18px;overflow:hidden;box-shadow:0 34px 72px -44px rgba(18,38,28,0.4)}
+  .win-bar{display:flex;align-items:center;gap:9px;padding:11px 15px;background:#fbfcfa;border-bottom:1px solid #eef1ec}
+  .win-kropki{display:flex;gap:4px;flex-shrink:0}
+  .win-kropki span{width:7px;height:7px;border-radius:50%;background:#e3e7e0}
+  .win-tytul{font-size:11.5px;color:#98a49a}
+  .win-body{padding:15px 15px 16px}
+  .win-nag{display:flex;align-items:baseline;justify-content:space-between;gap:12px;font-size:11px;font-family:ui-monospace,Menlo,monospace;letter-spacing:0.09em;text-transform:uppercase;color:#98a49a}
+  .zad{display:grid;grid-template-columns:1fr auto;align-items:start;gap:6px 14px;margin-top:9px;padding:12px 13px;border:1px solid #eef1ec;border-radius:13px;background:#ffffff}
+  .zad-t{font-size:13.5px;font-weight:650;line-height:1.4;color:#16211a}
+  .zad-w{grid-column:1;display:flex;align-items:center;gap:8px;font-size:12px;color:#4c5850}
+  .zad-w svg{flex-shrink:0}
+  .zad-s{grid-row:1;grid-column:2;display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:#0a7a52;white-space:nowrap}
+  .zad-s i{display:block;width:6px;height:6px;border-radius:50%;background:var(--la-accent,#00CD77)}
+  .zad.toczy{background:#fbfcfa}
+  .zad.toczy .zad-s{color:#8b968d}
+  .zad.toczy .zad-s i{background:#c3cbc2;animation:la-pulse 1.6s ease-in-out infinite}
+  .zad-pole{display:flex;align-items:center;gap:9px;margin-top:12px;padding:11px 13px;border:1px dashed #dfe6da;border-radius:12px;font-size:12.5px;color:#98a49a}
+
+  /* ---- Wingman: moduły w wierszach, jeden z akcentową krechą ---- */
+  .mod{border-top:1px solid #e7ece4}
+  .mod:last-child{border-bottom:1px solid #e7ece4}
+  .mod-w{display:grid;grid-template-columns:26px 1fr;gap:16px;padding:19px 0}
+  .mod-kr{display:block;width:26px;height:2px;margin-top:11px;border-radius:2px;background:#d7e0d3;transition:width .3s cubic-bezier(.4,0,.2,1),background .3s}
+  .mod-w:hover .mod-kr{width:26px;background:var(--la-accent,#00CD77)}
+  .mod-t{font-size:17px;font-weight:750;letter-spacing:-0.015em;color:#16211a}
+  .mod-d{margin:6px 0 0;font-size:14.5px;line-height:1.55;color:#4c5850;text-wrap:pretty}
+
+  /* ---- ocena rozmowy: pięć kryteriów ---- */
+  .kryt{display:flex;align-items:center;gap:5px;margin-left:auto}
+  .kryt i{display:block;width:16px;height:4px;border-radius:2px;background:var(--la-accent,#00CD77)}
+  .kryt i.pusty{background:#e0e7dd}
+
+  /* ================= ciemny pas ================= */
+  .wdr{display:grid;grid-template-columns:74px 1fr;gap:22px;padding:22px 0;border-top:1px solid rgba(255,255,255,0.12)}
+  .wdr-n{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;font-weight:700;letter-spacing:0.08em;color:var(--la-accent,#00CD77);padding-top:3px}
+  .wdr-t{font-size:19px;font-weight:750;letter-spacing:-0.018em;color:#ffffff}
+  .wdr-d{margin:7px 0 0;font-size:14.5px;line-height:1.6;color:rgba(255,255,255,0.68);max-width:640px;text-wrap:pretty}
+
+  /* ================= granica ================= */
+  .gran{display:grid;grid-template-columns:1fr 380px;gap:clamp(32px,5vw,72px);align-items:start}
+  .gran-lista{display:flex;flex-direction:column;gap:12px;margin-top:24px}
+  .gran-lnk{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:15px 18px;border:1px solid #e7ece4;border-radius:13px;background:#ffffff;font-size:15px;font-weight:650;color:#16211a;transition:border-color .18s,transform .18s,color .18s}
+  .gran-lnk:hover{border-color:var(--la-accent,#00CD77);color:#0a7a52;transform:translateX(3px)}
+
+  @media (max-width:1024px){
+    .prod-grid{grid-template-columns:minmax(0,1fr) !important;gap:clamp(30px,5vw,44px) !important}
+    .gran{grid-template-columns:minmax(0,1fr) !important}
+    .stos{margin:0 auto}
+  }
+  @media (max-width:760px){
+    /* Odchylone kartki wyjeżdżały poza kadr, a przy 360px nachodziły na
+       nagłówek wierzchniej — na telefonie stos się prostuje. */
+    .stos{padding-top:182px}
+    .stos-t3{transform:rotate(-0.9deg)}
+    .stos-t2{top:91px;transform:rotate(0.8deg)}
+    .stos-nota{text-align:left}
+    .spec-w{grid-template-columns:minmax(0,1fr);gap:5px}
+    .wdr{grid-template-columns:minmax(0,1fr);gap:8px;padding:18px 0}
+    .wdr-n{padding-top:0}
+  }
+</style>
+
+<!-- ============ 1 · HERO ============
+     Alfabet strony wchodzi od razu: trzy kartki, które wróciły zrobione.
+     Nagłówek mówi, czyje to narzędzia, lead mówi, skąd się wzięły. -->
+<section style="position:relative;overflow:hidden;background:radial-gradient(900px 520px at 88% -10%, rgba(0,205,119,0.15), transparent 62%), #ffffff;padding:clamp(28px,4vw,56px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) clamp(64px,8vw,104px)">
+<div class="prod-grid" style="align-items:center">
+<div>
+<div class="eyebrow" style="color:#0a7a52;font-weight:650">Produkty</div>
+<h1 style="margin:clamp(16px,2.4vw,26px) 0 0;font-size:clamp(30px,4.8vw,56px);line-height:1.05;letter-spacing:-0.035em;font-weight:800;color:#16211a;text-wrap:balance;max-width:640px">Gotowe aplikacje, na których pracujemy sami</h1>
+<p style="margin:24px 0 0;max-width:560px;font-size:clamp(17px,2.1vw,20px);line-height:1.5;color:#16211a;font-weight:650;text-wrap:pretty">Appto prowadzi u nas robotę oddaną agentom. Wingman siedzi w rozmowach handlowych i zostawia po nich notatkę, ofertę i ocenę.</p>
+<p style="margin:16px 0 0;max-width:560px;font-size:clamp(16px,2vw,18px);line-height:1.6;color:#33413a;text-wrap:pretty">Obydwie aplikacje stoją na tym samym stosie, na którym budujemy systemy dla klientów. Kupujecie je z abonamentem i kolejnymi wersjami, a wdraża je nasz zespół.</p>
+<div class="hero-actions" style="display:flex;align-items:center;flex-wrap:wrap;gap:14px 20px;margin-top:34px">
+<a href="/produkty/appto" class="btn-dark" style="display:inline-flex;align-items:center;gap:10px;background:#16211a;color:#ffffff;padding:17px 30px;border-radius:12px;font-weight:650;font-size:16.5px;box-shadow:0 14px 30px -14px rgba(16,33,26,0.45)">Zobacz Appto <span aria-hidden="true">→</span></a>
+<a href="#wingman" class="btn-ghost" style="display:inline-flex;align-items:center;gap:8px;font-size:16.5px;font-weight:700;color:#16211a;background:rgba(255,255,255,0.6);padding:17px 24px;border-radius:12px;border:1px solid rgba(22,33,26,0.16)">Wingman →</a>
+</div>
+</div>
+
+<div>
+<div class="stos" data-anim>
+<div class="stos-tyl stos-t3">
+<div class="art">
+<div class="art-bar">
+<span class="art-znak"><svg viewBox="0 0 103.24 79.25" fill="currentColor" fill-rule="evenodd" aria-hidden="true"><path d="M54.537,65.167L54.537,79.253L0,65.167L0,0L54.537,14.134L54.537,0L87.005,14.148L87.005,0L103.239,14.148L103.239,79.253L87.005,65.167L87.005,79.253L54.537,65.167Z"/></svg></span>
+<span class="art-app">Appto</span><span class="art-sciezka">Rutyna · poniedziałek</span><span class="art-czas">7:30</span>
+</div>
+<div class="art-tresc">
+<div class="art-tyt">Podsumowanie tygodnia w sprzedaży</div>
+</div>
+</div>
+</div>
+
+<div class="stos-tyl stos-t2">
+<div class="art">
+<div class="art-bar">
+<span class="art-znak"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5v11"/><path d="M8.2 7.2v4.6M15.8 7.2v4.6M4.8 9v1.4M19.2 9v1.4"/><path d="M5.5 16.4a8.6 8.6 0 0 0 13 0"/></svg></span>
+<span class="art-app">Wingman</span><span class="art-sciezka">Rozmowa · 32:14</span><span class="art-czas">11:48</span>
+</div>
+<div class="art-tresc">
+<div class="art-tyt">Notatka z rozmowy · Nordis</div>
+</div>
+</div>
+</div>
+
+<div class="stos-wierzch">
+<div class="art">
+<div class="art-bar">
+<span class="art-znak"><svg viewBox="0 0 103.24 79.25" fill="currentColor" fill-rule="evenodd" aria-hidden="true"><path d="M54.537,65.167L54.537,79.253L0,65.167L0,0L54.537,14.134L54.537,0L87.005,14.148L87.005,0L103.239,14.148L103.239,79.253L87.005,65.167L87.005,79.253L54.537,65.167Z"/></svg></span>
+<span class="art-app">Appto</span><span class="art-sciezka">Inbox AI</span><span class="art-czas">9:26</span>
+</div>
+<div class="art-tresc">
+<div class="art-tyt">Oferta wstępna · Stalprofil, hala 42 × 18 m</div>
+<div class="art-linie">
+<span><b>12</b> pozycji wyciągniętych z cennika</span>
+<span>warunki płatności z ostatniej rozmowy</span>
+<span>termin sprawdzony w kalendarzu produkcji</span>
+</div>
+<div class="art-stopka"><span class="art-kropka" aria-hidden="true"></span>zlecone o 9:12 · wróciło gotowe o 9:26</div>
+</div>
+</div>
+</div>
+</div>
+<p class="stos-nota">Trzy rzeczy, które w naszej firmie wróciły zrobione jednego ranka. Widoki poglądowe.</p>
+</div>
+</div>
+</section>
+
+<!-- ============ 2 · SKĄD SIĘ BIORĄ ============
+     Nagłówek pełną szerokością, bez akapitu obok — inny szkielet niż w hero
+     i inny niż w sekcjach produktowych. Teza stoi osobno, w dużym stopniu
+     pisma, żeby nie zginęła jako trzeci akapit. -->
+<section class="sec-pad" style="background:#ffffff">
+<h2 class="h-sec" style="margin:0;max-width:900px;text-wrap:pretty">Skąd się biorą nasze produkty</h2>
+<p style="margin:26px 0 0;max-width:840px;font-size:clamp(21px,2.7vw,30px);line-height:1.28;letter-spacing:-0.022em;font-weight:750;color:#16211a;text-wrap:pretty">Produkt, którego sami nie używamy codziennie, nie trafia do naszej oferty</p>
+<p class="sub" style="margin:20px 0 0;max-width:720px">Produkty Let's automate to gotowe aplikacje, które piszemy i utrzymujemy jako własne oprogramowanie — z abonamentem, wsparciem naszego zespołu i kolejnymi wersjami. Każda z nich obsługuje najpierw naszą firmę.</p>
+
+<div style="margin-top:clamp(36px,4.6vw,56px);border-top:1px solid #e7ece4">
+{SKAD.map((s) => (
+<div class="rv" style="display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:16px 48px;padding:24px 0;border-bottom:1px solid #e7ece4">
+<div style="font-size:18.5px;font-weight:750;letter-spacing:-0.018em;color:#16211a;text-wrap:balance">{s.t}</div>
+<div>
+<p style="margin:0;font-size:15.5px;line-height:1.62;color:#4c5850;max-width:720px;text-wrap:pretty">{s.d}</p>
+{s.l && <a href={s.h} class="lnk-green" style="display:inline-block;margin-top:9px;font-size:14.5px;font-weight:700;color:#0a7a52">{s.l} →</a>}
+</div>
+</div>
+))}
+</div>
+</section>
+
+<!-- ============ 3 · APPTO ============
+     Układ tekst → okno. Okno pokazuje Inbox z rzeczami, które wróciły
+     zrobione — ten sam alfabet, co kartki w hero, ale w środku aplikacji. -->
+<section id="appto" class="sec-pad" style="background:#f4f8f2;scroll-margin-top:16px">
+<div class="prod-grid">
+<div>
+<div class="prod-lokup">
+<span class="prod-sygnet"><svg viewBox="0 0 103.24 79.25" fill="currentColor" fill-rule="evenodd" aria-hidden="true"><path d="M54.537,65.167L54.537,79.253L0,65.167L0,0L54.537,14.134L54.537,0L87.005,14.148L87.005,0L103.239,14.148L103.239,79.253L87.005,65.167L87.005,79.253L54.537,65.167Z"/></svg></span>
+<div>
+<div class="prod-nazwa">Appto</div>
+<div class="prod-kicker">Agenci AI dla całej firmy</div>
+</div>
+</div>
+<p class="prod-def">Appto to platforma AI z kontekstem całej firmy: baza wiedzy z Waszych dokumentów, asystenci pod role, rutyny działające w tle i integracje z narzędziami, w których zespół już pracuje. Zadanie oddane w Inboksie wraca jako gotowy dokument.</p>
+
+<div class="spec">
+<div class="spec-w"><div class="spec-k">Dla kogo</div><div class="spec-v">Zespoły od <b>10 do 500 osób</b>, w których pracę da się opisać procedurą.</div></div>
+<div class="spec-w"><div class="spec-k">Co wraca</div><div class="spec-v">Oferty, podsumowania spotkań, odpowiedzi na zgłoszenia, analizy i szkice dokumentów.</div></div>
+<div class="spec-w"><div class="spec-k">Dane</div><div class="spec-v">Unia Europejska, osobna przestrzeń firmy, maskowanie danych osobowych. Modele nie uczą się na Waszych danych.</div></div>
+<div class="spec-w"><div class="spec-k">Start</div><div class="spec-v">Konto bez karty w minutę. Wdrożenie samodzielne albo z naszym zespołem.</div></div>
+</div>
+
+<div class="prod-akcje">
+<a href="/produkty/appto" class="btn-dark" style="display:inline-flex;align-items:center;gap:9px;background:#16211a;color:#ffffff;padding:15px 26px;border-radius:11px;font-weight:650;font-size:15.5px">Jak działa Appto <span aria-hidden="true">→</span></a>
+<a href="https://appto.ai" target="_blank" rel="noopener" class="lnk-green" style="font-size:15.5px;font-weight:700;color:#0a7a52">appto.ai ↗</a>
+</div>
+</div>
+
+<div>
+<div class="win">
+<div class="win-bar">
+<span class="win-kropki" aria-hidden="true"><span></span><span></span><span></span></span>
+<span class="win-tytul">Appto · Inbox AI</span>
+</div>
+<div class="win-body">
+<div class="win-nag"><span>Zlecone dzisiaj</span><span>3</span></div>
+
+<div class="zad">
+<div class="zad-t">Przygotuj ofertę dla Stalprofilu na podstawie notatki z rozmowy</div>
+<div class="zad-s"><i aria-hidden="true"></i>gotowe</div>
+<div class="zad-w"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#0a7a52" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3v5h5"/><path d="M7 3h7l5 5v11a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/></svg>oferta-stalprofil.pdf</div>
+</div>
+
+<div class="zad">
+<div class="zad-t">Zbierz ustalenia ze spotkania z Nordisem i rozpisz zadania</div>
+<div class="zad-s"><i aria-hidden="true"></i>gotowe</div>
+<div class="zad-w"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#0a7a52" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 11l3 3 5-5"/><rect x="3.5" y="4.5" width="17" height="15" rx="3"/></svg>6 ustaleń, 4 zadania z terminem</div>
+</div>
+
+<div class="zad toczy">
+<div class="zad-t">Odpowiedz na zgłoszenie #4187 z warunkami gwarancji</div>
+<div class="zad-s"><i aria-hidden="true"></i>w toku</div>
+<div class="zad-w"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#8b968d" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.6V12l2.8 1.8"/></svg>czyta umowę i historię zgłoszeń</div>
+</div>
+
+<div class="zad-pole"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#b3bdb4" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Zleć zadanie albo wrzuć plik</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- ============ 4 · WINGMAN ============
+     Odwrócona kolejność kolumn i wcięcie po lewej — jedyne miejsce na
+     stronie, gdzie blok nie zaczyna się przy krawędzi siatki. Moduły idą
+     w wierszach na liniach, nie w kaflach: to lista rzeczy, nie porównanie. -->
+<section id="wingman" class="sec-pad" style="background:#ffffff;scroll-margin-top:16px">
+<div class="prod-grid" style="align-items:start">
+<div>
+<div class="win" style="box-shadow:0 34px 72px -46px rgba(18,38,28,0.44)">
+<div class="win-bar">
+<span class="win-kropki" aria-hidden="true"><span></span><span></span><span></span></span>
+<span class="win-tytul">Wingman · rozmowa z Nordisem, 32:14</span>
+</div>
+<div class="win-body">
+<div class="win-nag"><span>Ustalenia z rozmowy</span><span>11:48</span></div>
+<div class="art-linie" style="margin-top:11px">
+<span>zakres: <b>dwie linie grzewcze</b>, montaż po ich stronie</span>
+<span>budżet potwierdzony do <b>180 tys.</b></span>
+<span>decyzja zapada na zarządzie <b>18 września</b></span>
+<span>warunek: referencja z podobnej instalacji</span>
+</div>
+<div style="display:flex;align-items:center;gap:14px;margin-top:16px;padding-top:14px;border-top:1px solid #eef1ec">
+<span style="font-size:12px;font-weight:700;color:#16211a">Jakość rozmowy</span>
+<span style="font-size:12px;color:#8b968d">4 z 5 kryteriów</span>
+<span class="kryt" aria-hidden="true"><i></i><i></i><i></i><i></i><i class="pusty"></i></span>
+</div>
+<div style="display:flex;align-items:center;gap:9px;margin-top:14px">
+<span style="display:inline-flex;align-items:center;gap:8px;background:#0a7a52;color:#ffffff;font-size:12.5px;font-weight:700;padding:9px 14px;border-radius:9px">Zbuduj ofertę z rozmowy →</span>
+<span style="font-size:12px;color:#98a49a">nagranie i transkrypcja w karcie klienta</span>
+</div>
+</div>
+</div>
+<p style="margin:16px 0 0;font-size:12.5px;line-height:1.5;color:#98a49a">Widok poglądowy. Kryteria oceny ustawiacie sami — dobrą rozmowę definiuje u Was zespół sprzedaży.</p>
+</div>
+
+<div>
+<div class="prod-lokup">
+<span class="prod-sygnet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5v11"/><path d="M8.2 7.2v4.6M15.8 7.2v4.6M4.8 9v1.4M19.2 9v1.4"/><path d="M5.5 16.4a8.6 8.6 0 0 0 13 0"/></svg></span>
+<div>
+<div class="prod-nazwa">Wingman</div>
+<div class="prod-kicker">Rozmowa, oferta i ocena w jednym miejscu</div>
+</div>
+</div>
+<p class="prod-def">Wingman siedzi w rozmowach handlowych i podpowiada w ich trakcie. Po rozłączeniu zostaje notatka z ustaleniami, oferta gotowa do wysyłki i ocena jakości — tak samo przy rozmowie online, jak i telefonicznej.</p>
+
+<div class="mod" style="margin-top:28px">
+<div class="mod-w">
+<span class="mod-kr" aria-hidden="true"></span>
+<div>
+<div class="mod-t">Nagrywanie i wsparcie w rozmowie</div>
+<p class="mod-d">Nagranie i transkrypcja z rozmowy online, podpowiedzi w trakcie i notatka z ustaleniami zaraz po rozłączeniu.</p>
+</div>
+</div>
+<div class="mod-w">
+<span class="mod-kr" aria-hidden="true"></span>
+<div>
+<div class="mod-t">Aplikacja do ofertowania</div>
+<p class="mod-d">Oferta powstaje z ustaleń, które padły w rozmowie, i wychodzi do klienta tego samego dnia. Handlowiec sprawdza treść i wysyła.</p>
+</div>
+</div>
+<div class="mod-w">
+<span class="mod-kr" aria-hidden="true"></span>
+<div>
+<div class="mod-t">AI QA — ocena jakości rozmów</div>
+<p class="mod-d">Każda rozmowa online i telefoniczna dostaje ocenę według kryteriów ustawionych przez Was. Menedżer ma obraz całego tygodnia, także tego, w którym nikt nie zdążył niczego odsłuchać.</p>
+</div>
+</div>
+</div>
+
+<div class="prod-akcje">
+<a href="#kontakt" class="btn-dark" style="display:inline-flex;align-items:center;gap:9px;background:#16211a;color:#ffffff;padding:15px 26px;border-radius:11px;font-weight:650;font-size:15.5px">Umów pokaz Wingmana <span aria-hidden="true">→</span></a>
+<span style="font-size:14.5px;color:#8b968d">Dostępny, wdrażamy z zespołem sprzedaży</span>
+</div>
+</div>
+</div>
+</section>
+
+<!-- ============ 5 · CIEMNY PAS ============
+     Najcięższy argument strony i jedyny ciemny blok: samo konto niczego nie
+     zmienia. To także miejsce, które łączy produkty z resztą oferty. -->
+<section class="sec-pad" style="background:#0e2b1d;background-image:radial-gradient(760px 420px at 88% -10%, rgba(0,205,119,0.17), transparent 60%)">
+<div class="sec-head">
+<div>
+<div class="eyebrow" style="color:rgba(255,255,255,0.5)">Pierwsze tygodnie</div>
+<h2 class="h-sec" style="margin:14px 0 0;color:#ffffff;max-width:640px;text-wrap:pretty">Konto zakłada się w minutę, wdrożenie trwa dłużej</h2>
+</div>
+<p style="margin:0;max-width:400px;font-size:16px;line-height:1.62;color:rgba(255,255,255,0.72);text-wrap:pretty">Cztery rzeczy, które robimy razem z Wami po podpisaniu. Bez nich zostaje czat, który nic o Was nie wie.</p>
+</div>
+
+<div style="margin-top:clamp(30px,4vw,46px)">
+{WDROZENIE.map((w) => (
+<div class="wdr rv">
+<div class="wdr-n">{w.n}</div>
+<div>
+<div class="wdr-t">{w.t}</div>
+<p class="wdr-d">{w.d}</p>
+</div>
+</div>
+))}
+</div>
+
+<p style="margin:34px 0 0;max-width:760px;font-size:16px;line-height:1.65;color:rgba(255,255,255,0.75);border-top:1px solid rgba(255,255,255,0.12);padding-top:26px;text-wrap:pretty">Wdrożenie prowadzi ten sam zespół, który buduje systemy u klientów. Jeśli po dwóch tygodniach widać, że produkt nie obsłuży Waszego procesu, mówimy to wprost i pokazujemy, co trzeba dobudować.</p>
+</section>
+
+<!-- ============ 6 · GRANICA ============
+     Sekcja, która niczego nie sprzedaje. Raz na stronę i uczciwie: gotowy
+     produkt kończy się tam, gdzie zaczyna się Wasza przewaga. -->
+<section class="sec-pad" style="background:#ffffff">
+<div class="gran">
+<div>
+<h2 class="h-mod" style="margin:0;max-width:560px;text-wrap:pretty">Kiedy gotowy produkt nie wystarczy</h2>
+<p class="sub" style="margin:18px 0 0;max-width:620px">Produkt obsługuje robotę, która w każdej firmie wygląda podobnie: notatki, oferty, odpowiedzi, raporty. Tam, gdzie Wasza przewaga polega na tym, że robicie coś inaczej niż reszta rynku, ustawienia się kończą i trzeba zbudować własne narzędzie.</p>
+<p style="margin:18px 0 0;max-width:620px;font-size:16px;line-height:1.65;color:#4c5850;text-wrap:pretty">Zdarza się też odwrotnie: przychodzi zapytanie o system szyty na miarę, a po rozmowie mówimy, że wystarczy Appto z dwiema rutynami. Wtedy kosztuje to ułamek budowy i stoi tydzień później.</p>
+</div>
+<div>
+<div class="eyebrow">Wtedy budujemy</div>
+<div class="gran-lista">
+<a href="/systemy-procesowe" class="gran-lnk">System pod kluczowy proces <span aria-hidden="true">→</span></a>
+<a href="/rozwiazania-ai" class="gran-lnk">Rozwiązanie AI w Waszych danych <span aria-hidden="true">→</span></a>
+<a href="/automatyzacje-integracje" class="gran-lnk">Integracja z systemami, które macie <span aria-hidden="true">→</span></a>
+</div>
+</div>
+</div>
+</section>
+
+<GcFaq
+  heading="Pytania, które padają przy produktach"
+  lead="Cztery najczęstsze. Szczegóły o Appto zebraliśmy na jego własnej stronie."
+  ctaLabel="Zapytaj o resztę →"
+  items={FAQ}
+/>
+
+<GcCta
+  heading="Zobaczmy to na Waszych sprawach"
+  lead="Pokaz trwa pół godziny i idzie po Waszych przykładach: jedno zapytanie ofertowe, jedno nagranie rozmowy, jedno zgłoszenie od klienta."
+  eyebrow="Z pokazu wychodzicie z"
+  items={[
+    { t: 'Odpowiedzią, czy produkt wystarczy', d: 'także wtedy, gdy brzmi „u Was trzeba dobudować”' },
+    { t: 'Listą pierwszych rutyn', d: 'trzy rzeczy, które można oddać agentom w pierwszym tygodniu' },
+    { t: 'Ceną', d: 'koszt abonamentu i koszt wdrożenia, osobno' },
+  ]}
+  fieldLabel="Co chcecie zobaczyć na pokazie?"
+  placeholder="Np. mamy 6 handlowców, oferty robimy ręcznie w Wordzie…"
+  badges={[
+    { i: 'klodka', t: 'Dane w Unii Europejskiej' },
+    { i: 'kartka', t: 'NDA przed pokazem' },
+    { i: 'ptaszek', t: 'Bez zobowiązań' },
+  ]}
+/>
+
+<script>
+  // ---- Stos kartek w hero: odsłonięcie przy wejściu w kadr ----
+  (function(){
+    var els = document.querySelectorAll('[data-anim]');
+    if(!els.length) return;
+    var redukcja = window.matchMedia && window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+    if(redukcja || !('IntersectionObserver' in window)){
+      els.forEach(function(el){ el.classList.add('on'); });
+      return;
+    }
+    var io = new IntersectionObserver(function(wpisy){
+      wpisy.forEach(function(w){
+        if(w.isIntersecting){ w.target.classList.add('on'); io.unobserve(w.target); }
+      });
+    }, { threshold: 0.2 });
+    els.forEach(function(el){ io.observe(el); });
+  })();
+</script>
+</LaBase>
