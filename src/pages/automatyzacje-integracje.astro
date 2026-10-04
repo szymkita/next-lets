@@ -59,6 +59,7 @@
 import LaBase from '../layouts/LaBase.astro';
 import GcFaq from '../components/GcFaq.astro';
 import GcCta from '../components/GcCta.astro';
+import WarunkiZakupu from '../components/WarunkiZakupu.astro';
 
 const kanon = new URL('/automatyzacje-integracje', Astro.site).href;
 
@@ -119,7 +120,7 @@ const up = (s) => `${(Math.max(0, Math.min(1, s / PU_C)) * 100).toFixed(2)}%`;
 const klatkiPuls = [
   `@keyframes pu-tik{0%{opacity:0;transform:scaleY(.3)}2.2%{opacity:1;transform:scaleY(1)}${up(PU_GASNIE)}{opacity:1;transform:scaleY(1)}${up(PU_GASNIE + 0.7)}{opacity:0;transform:scaleY(.3)}100%{opacity:0;transform:scaleY(.3)}}`,
   `@keyframes pu-brak{0%,${up(CISZA)}{opacity:0}${up(CISZA + 0.6)}{opacity:1}${up(PU_GASNIE)}{opacity:1}${up(PU_GASNIE + 0.6)}{opacity:0}100%{opacity:0}}`,
-  `@keyframes pu-cisza{0%,${up(CISZA)}{color:#8b968d}${up(CISZA + 0.5)}{color:#b07524}${up(PU_GASNIE)}{color:#b07524}100%{color:#8b968d}}`,
+  `@keyframes pu-cisza{0%,${up(CISZA)}{color:#637066}${up(CISZA + 0.5)}{color:#b07524}${up(PU_GASNIE)}{color:#b07524}100%{color:#637066}}`,
   `@keyframes pu-stare{0%,${up(CISZA)}{opacity:1}${up(CISZA + 0.35)}{opacity:0}${up(PU_GASNIE)}{opacity:0}100%{opacity:1}}`,
   `@keyframes pu-nowe{0%,${up(CISZA + 0.2)}{opacity:0}${up(CISZA + 0.6)}{opacity:1}${up(PU_GASNIE)}{opacity:1}100%{opacity:0}}`,
   `@keyframes pu-kropka{0%,${up(CISZA)}{background:var(--la-accent,#00CD77);transform:scale(1)}${up(CISZA + 0.25)}{background:#d99a3c;transform:scale(1.5)}${up(CISZA + 0.5)}{background:#d99a3c;transform:scale(1)}${up(PU_GASNIE)}{background:#d99a3c;transform:scale(1)}100%{background:var(--la-accent,#00CD77);transform:scale(1)}}`,
@@ -285,7 +286,7 @@ dane['@graph'].push({
   .pu-row{padding:14px 0;border-bottom:1px solid #f0f3ee}
   .pu-t{display:flex;align-items:baseline;justify-content:space-between;gap:14px}
   .pu-t b{font-size:14px;font-weight:650;color:#16211a}
-  .pu-st{display:inline-flex;align-items:center;gap:7px;flex-shrink:0;font-family:ui-monospace,Menlo,monospace;font-size:11.5px;color:#8b968d}
+  .pu-st{display:inline-flex;align-items:center;gap:7px;flex-shrink:0;font-family:ui-monospace,Menlo,monospace;font-size:11.5px;color:#637066}
   .pu-kropka{display:block;width:7px;height:7px;border-radius:50%;background:var(--la-accent,#00CD77)}
   /* Dwa stany statusu leżą na sobie, żeby wiersz nie skakał przy zmianie. */
   .pu-zmiana{display:grid}
@@ -319,8 +320,8 @@ dane['@graph'].push({
   .pl-row{padding:12px 0;border-top:1px solid #e4ebe2}
   .pl-row:last-of-type{border-bottom:1px solid #e4ebe2}
   .pl-t{display:block;font-size:14.5px;font-weight:700;letter-spacing:-0.01em;line-height:1.3;color:#16211a;text-wrap:balance}
-  .pl-d{display:block;margin-top:3px;font-size:12.5px;color:#8b968d}
-  .pl-nota{margin:13px 0 0;font-size:13px;line-height:1.55;color:#8b968d;text-wrap:pretty}
+  .pl-d{display:block;margin-top:3px;font-size:12.5px;color:#637066}
+  .pl-nota{margin:13px 0 0;font-size:13px;line-height:1.55;color:#637066;text-wrap:pretty}
 
   /* ================= powody ================= */
   .pw-row{display:grid;grid-template-columns:minmax(0,0.95fr) minmax(0,1.15fr);gap:clamp(18px,3vw,48px);align-items:baseline;padding:clamp(20px,2.4vw,28px) 0;border-top:1px solid #e2e9e0}
@@ -342,7 +343,7 @@ dane['@graph'].push({
   .ka-nazwa{padding:17px 18px 3px;font-size:clamp(17px,2vw,20px);font-weight:750;letter-spacing:-0.015em;color:#ffffff}
   .ka-tresc{padding:10px 18px 18px}
   .ka-w{display:grid;grid-template-columns:minmax(120px,0.42fr) minmax(0,1fr);gap:14px;align-items:baseline;padding:11px 0;border-top:1px solid rgba(255,255,255,0.1)}
-  .ka-k{font-size:12.5px;color:rgba(255,255,255,0.45)}
+  .ka-k{font-size:12.5px;color:rgba(255,255,255,0.62)}
   .ka-v{font-size:14px;line-height:1.5;color:rgba(255,255,255,0.86);text-wrap:pretty}
   .ka-w.wazne .ka-k{color:var(--la-accent,#00CD77)}
   .ka-w.wazne .ka-v{color:#ffffff;font-weight:650}
@@ -357,7 +358,7 @@ dane['@graph'].push({
   .dl-d{margin:0;font-size:15px;line-height:1.6;color:#4c5850;text-wrap:pretty}
   .dl-nie{margin:clamp(32px,3.8vw,48px) 0 0 clamp(0px,4vw,64px);padding-left:clamp(18px,2vw,26px);border-left:2px solid #dde7db;max-width:760px}
   .dl-nie h3{margin:0;font-size:15.5px;font-weight:750;letter-spacing:-0.01em;color:#4c5850}
-  .dl-nie p{margin:10px 0 0;font-size:14.5px;line-height:1.6;color:#8b968d;text-wrap:pretty}
+  .dl-nie p{margin:10px 0 0;font-size:14.5px;line-height:1.6;color:#637066;text-wrap:pretty}
   @media (max-width:860px){
     .dl-row{grid-template-columns:34px minmax(0,1fr);gap:12px 14px}
     .dl-row > p:last-child{grid-column:2}
@@ -373,7 +374,7 @@ dane['@graph'].push({
   .px-row{display:grid;grid-template-columns:minmax(190px,0.6fr) minmax(0,1.2fr) minmax(210px,0.8fr);gap:clamp(20px,3.2vw,52px);align-items:start;padding:clamp(26px,3.2vw,40px) 0;border-top:1px solid #dde7db}
   .px-row:last-of-type{border-bottom:1px solid #dde7db}
   .px-f{display:block;margin:0;font-size:clamp(18px,2.1vw,22px);font-weight:750;letter-spacing:-0.018em;color:#16211a}
-  .px-m{display:block;margin-top:4px;font-size:13.5px;color:#8b968d}
+  .px-m{display:block;margin-top:4px;font-size:13.5px;color:#637066}
   .px-p{display:block;margin-top:14px;font-size:14px;font-weight:700;color:#0a7a52}
   .px-d{margin:0;font-size:15px;line-height:1.6;color:#16211a;text-wrap:pretty}
   .px-ile{display:block;font-size:clamp(17px,2vw,20px);font-weight:750;letter-spacing:-0.015em;color:#16211a}
@@ -404,11 +405,19 @@ dane['@graph'].push({
 <div class="hero-split" style="display:grid;grid-template-columns:1fr 1.04fr;gap:clamp(32px,4.5vw,64px);align-items:center;margin-top:clamp(10px,1.5vw,20px)">
 <div>
 <h1 style="margin:0;font-size:clamp(29px,4.4vw,51px);line-height:1.06;letter-spacing:-0.032em;font-weight:800;color:#16211a;text-wrap:balance">Systemy wymieniają dane same, a o awarii wiecie w kilka minut</h1>
-<p style="margin:26px 0 0;max-width:600px;font-size:clamp(16px,2.1vw,19px);line-height:1.6;color:#33413a;text-wrap:pretty">Łączymy CRM, ERP, magazyn i pocztę tak, żeby nikt niczego nie przepisywał. Każde połączenie dostaje kartę, imiennego właściciela i alarm z progiem czasowym — reszta rynku sprzedaje sam scenariusz.</p>
+<p style="margin:26px 0 0;max-width:600px;font-size:clamp(16px,2.1vw,19px);line-height:1.6;color:#33413a;text-wrap:pretty">Łączymy CRM, ERP, magazyn i pocztę tak, żeby nikt niczego nie przepisywał, a dane w każdym z nich zgadzały się bez ręcznego poprawiania. Każde połączenie dostaje kartę, imiennego właściciela i alarm z progiem czasowym.</p>
 <div class="hero-actions" style="display:flex;align-items:center;flex-wrap:wrap;gap:16px 22px;margin-top:34px">
 <a href="#kontakt" class="btn-dark" style="display:inline-flex;align-items:center;gap:10px;background:#16211a;color:#ffffff;padding:18px 32px;border-radius:12px;font-weight:650;font-size:16.5px;box-shadow:0 14px 30px -14px rgba(16,33,26,0.45)">Umów rozmowę <span aria-hidden="true">→</span></a>
 <a href="#karta" class="btn-ghost" style="display:inline-flex;align-items:center;gap:8px;font-size:16.5px;font-weight:700;color:#16211a;background:rgba(255,255,255,0.6);padding:18px 26px;border-radius:12px;border:1px solid rgba(22,33,26,0.16)">Co dostajecie przy każdym →</a>
 </div>
+<!-- Warunki zakupu pod pierwszym ekranem. Każdy wiersz jest skrótem
+     zdania, które stoi niżej na tej stronie (FAQ o cenie i o czasie
+     zespołu) — nic tu nie jest nową obietnicą. -->
+<WarunkiZakupu pozycje={[
+  { t: 'Zaczyna się od', d: 'rozmowy, na której wypisujemy, co z czym i jak często' },
+  { t: 'Pierwsze połączenie', d: '<strong>kilka dni</strong> przy systemach z API, <strong>2–4 tygodnie</strong>, gdy po drodze trzeba uporządkować dane' },
+  { t: 'Wycena', d: 'stała, połączenie po połączeniu, podawana po tej rozmowie' },
+]} />
 </div>
 
 <div>
@@ -584,22 +593,22 @@ dane['@graph'].push({
 <span aria-hidden="true" style="font-size:clamp(46px,5vw,64px);line-height:.72;font-weight:800;color:var(--la-accent,#00CD77)">„</span>
 <div>
 <blockquote style="margin:0;font-size:clamp(20px,2.6vw,29px);line-height:1.35;letter-spacing:-0.02em;font-weight:650;color:#16211a;text-wrap:pretty">Let’s automate wziął pełną odpowiedzialność za projekt i dowiózł go do końca. To dlatego powierzyliśmy im kolejny, znacznie większy.</blockquote>
-<figcaption><span style="display:block;margin-top:clamp(16px,2vw,22px);font-size:15px;font-weight:750;color:#16211a">Jakub Ciołkowski</span><span style="display:block;margin-top:2px;font-size:14px;color:#8b968d">Członek Zarządu, NARS Polska</span></figcaption>
+<figcaption><span style="display:block;margin-top:clamp(16px,2vw,22px);font-size:15px;font-weight:750;color:#16211a">Jakub Ciołkowski</span><span style="display:block;margin-top:2px;font-size:14px;color:#637066">Członek Zarządu, NARS Polska</span></figcaption>
 </div>
 </figure>
 </section>
 
 <GcCta
+  usluga="Automatyzacje i integracje"
   heading="Zacznijmy od jednego połączenia"
   lead="Powiedzcie, co u Was ktoś przenosi z systemu do systemu i jak często. Odpowiemy z pytaniem o to, czy te systemy mają API, i z terminem pierwszej rozmowy."
-  eyebrow="Z pierwszej rozmowy wychodzicie z"
+  eyebrow="Z rozmowy wychodzicie z"
   items={[
     { t: 'Jedną wskazaną pozycją', d: 'tą, od której warto zacząć, i powodem' },
     { t: 'Listą odradzanych', d: 'te, które zrobicie sami albo które się nie zwrócą' },
-    { t: 'Zakresem do wyceny', d: 'systemy po drodze i sposób połączenia' },
+    { t: 'Listą systemów po drodze', d: 'razem ze sposobem, w jaki je połączymy' },
   ]}
   placeholder="Np. zamówienia ze sklepu przepisujemy ręcznie do ERP-a, jest ich około 40 dziennie…"
-  submitLabel="Umów rozmowę"
   badges={[
     { i: 'klodka', t: 'Wasze dane bezpieczne' },
     { i: 'kartka', t: 'NDA przed startem' },

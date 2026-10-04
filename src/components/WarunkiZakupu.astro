@@ -1,0 +1,36 @@
+---
+// WARUNKI ZAKUPU POD PIERWSZYM EKRANEM
+//
+// PO CO: na wszystkich podstronach usługowych odpowiedzi na „od czego się
+// zaczyna", „kiedy poznamy cenę" i „ile to zajmie naszym ludziom" stały
+// w FAQ, czyli dziesięć ekranów niżej. Klient, który porównuje dostawców,
+// nie schodzi po nie tak głęboko.
+//
+// ŻADNEJ NOWEJ OBIETNICY: każdy wiersz jest skrótem zdania, które już stoi
+// gdzieś na tej stronie (zwykle w FAQ o cenie i o czasie zespołu). Jeśli
+// czegoś nie ma w treści strony, nie ma prawa pojawić się tutaj.
+//
+// FORMA: wiersze na liniach, nie kafle. Trójka równych kart powtarzałaby
+// szkielet, który na tych stronach powtarza się już wystarczająco często.
+const { pozycje = [], etykietaSzer = '150px' } = Astro.props;
+---
+{pozycje.length > 0 && (
+<dl class="wz" style={`--lab:${etykietaSzer}`}>
+{pozycje.map((p) => (
+  <div><dt>{p.t}</dt><dd set:html={p.d}></dd></div>
+))}
+</dl>
+)}
+
+<style>
+  .wz{margin:34px 0 0;padding:0;max-width:600px;border-top:1px solid #e4ebe2}
+  .wz > div{display:grid;grid-template-columns:var(--lab) 1fr;gap:14px;padding:11px 0;border-bottom:1px solid #eef1ec}
+  .wz dt{font-size:12px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#6c7a6f;padding-top:2px}
+  /* #6c7a6f na bieli daje 5.1:1 — drobny tekst na stronach usługowych
+     schodził dotąd do #8b968d, czyli poniżej progu 4.5:1. */
+  .wz dd{margin:0;font-size:14.5px;line-height:1.5;color:#33413a}
+  .wz strong{font-weight:700;color:#16211a}
+  @media (max-width:560px){
+    .wz > div{grid-template-columns:1fr;gap:3px}
+  }
+</style>

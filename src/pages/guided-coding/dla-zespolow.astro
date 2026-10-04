@@ -79,6 +79,7 @@
 import LaBase from '../../layouts/LaBase.astro';
 import GcFaq from '../../components/GcFaq.astro';
 import GcCta from '../../components/GcCta.astro';
+import WarunkiZakupu from '../../components/WarunkiZakupu.astro';
 import TeamAvatar from '../../components/TeamAvatar.astro';
 import { zespol } from '../../data/zespol.js';
 
@@ -209,14 +210,25 @@ const REPO = [
 ];
 
 
-// ---- CZTERY LICZBY, PRZED I PO ----------------------------------------
+// ---- CZTERY LICZBY, KTÓRE PRZECHODZIMY CO MIESIĄC ---------------------
 // Pierwsza i druga to miara całej strony. Trzecia mówi, po co to komu.
 // Czwarta pilnuje, żeby „więcej" nie znaczyło „gorzej".
+//
+// ZMIANA 22.09.2026: stały tu cztery pary przed/po (22→78%, 34→81%,
+// 3,1→9,4, 9→3%). Nagłówek tego pliku od początku mówił, że są
+// „proporcją z obserwacji, nie z pomiaru", a sekcja pokazywała je jak
+// zmierzony wynik — obok zdania „stan wyjściowy mierzymy". Zostają
+// definicje wskaźników i kierunek; wartości wracają wtedy, kiedy będzie
+// je z czego policzyć, razem z okresem i liczbą wdrożeń.
 const EFEKT = [
-  { t: 'Zadania prowadzone przez agenta', o: 'udział w zadaniach miesiąca', p: 22, po: 78, pT: '22%', poT: '78%' },
-  { t: 'Wchodzi bez rundy poprawek', o: 'pierwsze podejście', p: 34, po: 81, pT: '34%', poT: '81%' },
-  { t: 'Zmiany dowożone przez jedną osobę', o: 'tygodniowo, mediana', p: 3.1, po: 9.4, pT: '3,1', poT: '9,4' },
-  { t: 'Zmiany wracające z produkcji', o: 'udział wydań', p: 9, po: 3, pT: '9%', poT: '3%' },
+  { t: 'Zadania prowadzone przez agenta', o: 'udział w zadaniach miesiąca', kier: 'rosnie',
+    jak: 'Liczone z Twojego trackera: ile zadań domknął agent, a ile człowiek.' },
+  { t: 'Wchodzi bez rundy poprawek', o: 'pierwsze podejście', kier: 'rosnie',
+    jak: 'Udział zmian przyjętych bez zawracania do przeróbki.' },
+  { t: 'Zmiany dowożone przez jedną osobę', o: 'tygodniowo, mediana', kier: 'rosnie',
+    jak: 'Mediana po zespole, liczona z historii repozytorium.' },
+  { t: 'Zmiany wracające z produkcji', o: 'udział wydań', kier: 'maleje',
+    jak: 'Ile wydań trzeba było cofnąć albo poprawić po wypuszczeniu.' },
 ];
 
 
@@ -436,7 +448,7 @@ const CDN = 'https://cdn.prod.website-files.com/625be9db7e9f071ffb58618a/';
   .ko-i.zwykly b{color:#7f9587}
   .ko-t{display:block;margin-top:9px;font-size:15.5px;font-weight:750;letter-spacing:-0.015em;line-height:1.3;color:#16211a;text-wrap:pretty}
   .ko-i.zwykly .ko-t{color:#4c5850}
-  .ko-o{display:block;margin-top:3px;font-size:13.5px;line-height:1.5;color:#8b968d;text-wrap:pretty}
+  .ko-o{display:block;margin-top:3px;font-size:13.5px;line-height:1.5;color:#637066;text-wrap:pretty}
   @media (max-width:960px){
     .ko{grid-template-columns:minmax(0,0.9fr) minmax(0,1.1fr)}
   }
@@ -531,12 +543,12 @@ const CDN = 'https://cdn.prod.website-files.com/625be9db7e9f071ffb58618a/';
   .rp-w{border-radius:16px;overflow:hidden;background:#0a1f15;border:1px solid rgba(255,255,255,0.11);box-shadow:0 34px 88px -44px rgba(0,0,0,0.7)}
   .rp-b{display:flex;align-items:center;gap:13px;padding:12px 17px;background:rgba(255,255,255,0.045);border-bottom:1px solid rgba(255,255,255,0.08)}
   .rp-b i{display:block;width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,0.17)}
-  .rp-b em{margin-left:6px;font-style:normal;font-family:ui-monospace,Menlo,monospace;font-size:11.5px;color:rgba(255,255,255,0.45)}
+  .rp-b em{margin-left:6px;font-style:normal;font-family:ui-monospace,Menlo,monospace;font-size:11.5px;color:rgba(255,255,255,0.62)}
   .rp-l{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px clamp(16px,2.4vw,32px);padding:clamp(18px,2.2vw,24px) clamp(16px,2vw,24px) clamp(20px,2.4vw,26px)}
   .rp-l b{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;font-weight:600;color:#ffffff;white-space:nowrap}
   .rp-l b.kat{color:var(--la-accent,#00CD77)}
   .rp-l b.plik{padding-left:20px}
-  .rp-l span{font-size:12.5px;line-height:1.5;color:rgba(255,255,255,0.48);text-wrap:pretty}
+  .rp-l span{font-size:12.5px;line-height:1.5;color:rgba(255,255,255,0.62);text-wrap:pretty}
   @media (max-width:980px){ .rp-g{grid-template-columns:1fr;gap:36px} }
   @media (max-width:560px){
     .rp-l{grid-template-columns:1fr;gap:2px}
@@ -548,21 +560,16 @@ const CDN = 'https://cdn.prod.website-files.com/625be9db7e9f071ffb58618a/';
   .ef{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(20px,3vw,44px);margin-top:clamp(34px,4.4vw,56px)}
   .ef-k{min-width:0}
   .ef-t{margin:0;font-size:15px;font-weight:700;letter-spacing:-0.012em;line-height:1.3;color:#16211a;text-wrap:balance}
-  .ef-o{display:block;margin-top:6px;min-height:calc(2 * 1.45em);font-family:ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:0.09em;text-transform:uppercase;color:#a3ada4;line-height:1.45}
-  .ef-r{display:grid;grid-template-columns:44px minmax(0,1fr);gap:10px;align-items:center;margin-top:12px}
-  .ef-r b{font-family:ui-monospace,Menlo,monospace;font-size:9.5px;letter-spacing:0.07em;text-transform:uppercase;color:#a3ada4;font-weight:500}
-  .ef-s{position:relative;display:flex;align-items:center;height:26px}
-  .ef-s i{display:block;height:100%;width:0;min-width:22px;border-radius:5px;background:#dde7dc;transition:width 1s cubic-bezier(.22,.85,.3,1);transition-delay:var(--d)}
-  .ef-r.po .ef-s i{background:linear-gradient(90deg,#22a06b,#0a7a52)}
-  .rv.in .ef-s i{width:var(--w)}
-  .ef-s em{position:absolute;left:calc(var(--w) + 10px);font-style:normal;font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:700;color:#8b968d;white-space:nowrap;opacity:0;transition:opacity .5s ease;transition-delay:calc(var(--d) + .55s)}
-  .ef-r.po .ef-s em{color:#16211a}
-  .rv.in .ef-s em{opacity:1}
+  .ef-o{display:block;margin-top:6px;min-height:calc(2 * 1.45em);font-family:ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:0.09em;text-transform:uppercase;color:#637066;line-height:1.45}
+  .ef-jak{margin:12px 0 0;font-size:13.5px;line-height:1.55;color:#4c5850;text-wrap:pretty}
+  .ef-kier{display:inline-flex;align-items:center;gap:6px;margin-top:14px;padding:5px 11px;border-radius:999px;background:#e4f3ea;color:#0a7a52;font-size:12px;font-weight:700}
+  .ef-kier span{font-size:13px;line-height:1}
+  .ef-kier.dol{background:#f1f4f0;color:#4c5850}
+  .ef-brak{margin:18px 0 0;max-width:66ch;font-size:13.5px;line-height:1.6;color:#637066;text-wrap:pretty}
   .ef-w{margin:clamp(30px,3.6vw,42px) 0 0;max-width:66ch;font-size:15px;line-height:1.62;color:#4c5850;text-wrap:pretty}
   .ef-w strong{font-weight:700;color:#16211a}
   @media (max-width:1000px){ .ef{grid-template-columns:repeat(2,minmax(0,1fr));gap:30px} }
   @media (max-width:560px){ .ef{grid-template-columns:1fr} .ef-o{min-height:0} }
-  @media (prefers-reduced-motion:reduce){ .ef-s i,.ef-s em{transition:none} }
 
   /* ================= 4b · WIERSZ KADENCJI ============================= */
   .kd{display:grid;grid-template-columns:170px minmax(0,1fr);gap:clamp(16px,3vw,44px);align-items:start;margin-top:clamp(34px,4vw,50px);padding-top:clamp(22px,2.6vw,30px);border-top:1px solid #dbe4da}
@@ -588,7 +595,7 @@ const CDN = 'https://cdn.prod.website-files.com/625be9db7e9f071ffb58618a/';
   .na-p{position:absolute;left:var(--x);bottom:var(--y);width:11px;height:11px;border-radius:50%;background:#ffffff;border:2.5px solid #0a7a52;transform:translate(-50%,50%);opacity:0;transition:opacity .5s ease 1.25s}
   .na-p.ostatni{width:15px;height:15px;background:var(--la-accent,#00CD77)}
   .rv.in .na-p{opacity:1}
-  .na-p em{position:absolute;left:50%;bottom:calc(100% + 8px);transform:translateX(-50%);font-style:normal;font-size:12.5px;font-weight:700;color:#8b968d;white-space:nowrap}
+  .na-p em{position:absolute;left:50%;bottom:calc(100% + 8px);transform:translateX(-50%);font-style:normal;font-size:12.5px;font-weight:700;color:#637066;white-space:nowrap}
   .na-p.pierwszy em{left:0;transform:none}
   .na-p.ostatni em{left:auto;right:0;transform:none}
   .na-p.ostatni em{font-size:16px;color:#16211a}
@@ -596,7 +603,7 @@ const CDN = 'https://cdn.prod.website-files.com/625be9db7e9f071ffb58618a/';
   .na-e span{position:absolute;left:var(--x);transform:translateX(-50%);white-space:nowrap;font-family:ui-monospace,Menlo,monospace;font-size:10.5px;color:#a3ada4}
   .na-e span.pierwszy{transform:none}
   .na-e span.ostatni{transform:translateX(-100%)}
-  .na-pod{margin:clamp(18px,2.2vw,24px) 0 0;max-width:72ch;font-size:14px;line-height:1.6;color:#7c877e;text-wrap:pretty}
+  .na-pod{margin:clamp(18px,2.2vw,24px) 0 0;max-width:72ch;font-size:14px;line-height:1.6;color:#637066;text-wrap:pretty}
   .na-l{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(22px,4vw,60px);margin-top:clamp(36px,4.4vw,56px);padding-top:clamp(24px,2.8vw,32px);border-top:1px solid #dbe4da}
   .na-l b{display:block;font-size:clamp(30px,4vw,46px);font-weight:800;letter-spacing:-0.038em;line-height:1;color:#16211a}
   .na-l span{display:block;margin-top:10px;max-width:30ch;font-size:14.5px;line-height:1.5;color:#4c5850;text-wrap:pretty}
@@ -652,7 +659,7 @@ const CDN = 'https://cdn.prod.website-files.com/625be9db7e9f071ffb58618a/';
   .al-r.my{background:#ffffff;border-radius:14px;padding-left:clamp(14px,1.8vw,20px);padding-right:clamp(14px,1.8vw,20px);margin:0 calc(-1 * clamp(14px,1.8vw,20px));border-bottom-color:transparent}
   .al-t{margin:0;font-size:clamp(16.5px,1.9vw,19px);font-weight:750;letter-spacing:-0.015em;color:#16211a}
   .al-r.my .al-t{color:#0a5c3c}
-  .al-d{margin:6px 0 0;max-width:58ch;font-size:14px;line-height:1.55;color:#7c877e;text-wrap:pretty}
+  .al-d{margin:6px 0 0;max-width:58ch;font-size:14px;line-height:1.55;color:#637066;text-wrap:pretty}
   .al-v{font-size:14.5px;line-height:1.45;color:#33413a}
   .al-r.my .al-v{font-weight:650;color:#16211a}
   @media (max-width:920px){
@@ -677,11 +684,18 @@ const CDN = 'https://cdn.prod.website-files.com/625be9db7e9f071ffb58618a/';
 <div>
 <span class="oko-hero">Guided coding dla zespołów technicznych</span>
 <h1 style="margin:18px 0 0;font-size:clamp(30px,4.6vw,52px);line-height:1.05;letter-spacing:-0.034em;font-weight:800;color:#16211a;text-wrap:balance">AI robi u Ciebie ułamek tego, co już potrafi</h1>
-<p style="margin:22px 0 0;max-width:520px;font-size:clamp(16px,2vw,18.5px);line-height:1.6;color:#33413a;text-wrap:pretty">Nie dlatego, że zespół czegoś nie umie. Pierwsze podejście wraca do przeróbki, więc kawałki oddawane agentowi robią się coraz mniejsze. Przenosimy do Twojego repozytorium sposób pracy, którym sami budujemy, i prowadzimy zespół, aż to się odwróci.</p>
+<p style="margin:22px 0 0;max-width:520px;font-size:clamp(16px,2vw,18.5px);line-height:1.6;color:#33413a;text-wrap:pretty">Stałe prowadzenie zespołu inżynieryjnego, miesiąc po miesiącu. Nie dlatego, że zespół czegoś nie umie: pierwsze podejście wraca do przeróbki, więc kawałki oddawane agentowi robią się coraz mniejsze. Przenosimy do Twojego repozytorium sposób pracy, którym sami budujemy, i prowadzimy zespół, aż to się odwróci.</p>
 <div style="display:flex;align-items:center;flex-wrap:wrap;gap:14px 20px;margin-top:clamp(26px,3.2vw,36px)">
 <a href="#kontakt" class="btn-dark" style="display:inline-flex;align-items:center;gap:10px;background:#16211a;color:#ffffff;padding:17px 30px;border-radius:12px;font-weight:650;font-size:16px;box-shadow:0 14px 30px -14px rgba(16,33,26,0.45)">Umów bezpłatną diagnozę <span aria-hidden="true">→</span></a>
 <a href="#czym-jest" class="btn-ghost" style="display:inline-flex;align-items:center;gap:8px;font-size:16px;font-weight:700;color:#16211a;background:rgba(255,255,255,0.6);padding:17px 24px;border-radius:12px;border:1px solid rgba(22,33,26,0.16)">Czym to jest <span aria-hidden="true">↓</span></a>
 </div>
+<!-- Warunki współpracy pod pierwszym ekranem. Stawki nie ma świadomie:
+     na tej stronie nigdzie nie pada i nie wolno jej tu wymyślić. -->
+<WarunkiZakupu etykietaSzer="150px" pozycje={[
+  { t: 'Forma', d: 'stałe prowadzenie miesięczne, cotygodniowa sesja z zespołem' },
+  { t: 'Wycena', d: 'po bezpłatnej diagnozie, kiedy znamy wielkość zespołu i stan repozytorium' },
+  { t: 'Czas zespołu', d: 'około sześciu godzin w miesiącu na osobę: sesja w tygodniu i godzina przeglądu liczb u leadów' },
+]} />
 </div>
 
 <div>
@@ -841,7 +855,7 @@ const CDN = 'https://cdn.prod.website-files.com/625be9db7e9f071ffb58618a/';
 <span aria-hidden="true" style="font-size:clamp(46px,5vw,64px);line-height:.72;font-weight:800;color:var(--la-accent,#00CD77)">„</span>
 <div>
 <blockquote style="margin:0;font-size:clamp(21px,3vw,36px);line-height:1.3;letter-spacing:-0.025em;font-weight:650;color:#16211a;text-wrap:balance">Let’s automate wziął pełną odpowiedzialność za projekt i dowiózł go do końca. To dlatego powierzyliśmy im kolejny, znacznie większy.</blockquote>
-<figcaption><span style="display:block;margin-top:clamp(16px,2vw,22px);font-size:15px;font-weight:750;color:#16211a">Jakub Ciołkowski</span><span style="display:block;margin-top:2px;font-size:14px;color:#8b968d">Członek Zarządu, NARS Polska</span></figcaption>
+<figcaption><span style="display:block;margin-top:clamp(16px,2vw,22px);font-size:15px;font-weight:750;color:#16211a">Jakub Ciołkowski</span><span style="display:block;margin-top:2px;font-size:14px;color:#637066">Członek Zarządu, NARS Polska</span><span style="display:block;margin-top:10px;font-size:13px;line-height:1.5;color:#637066">Opinia dotyczy wdrożenia, które prowadziliśmy dla NARS Polska. Nie jest oceną prowadzenia zespołu — to mierzymy czterema liczbami niżej.</span></figcaption>
 </div>
 </figure>
 </section>
@@ -857,24 +871,20 @@ const CDN = 'https://cdn.prod.website-files.com/625be9db7e9f071ffb58618a/';
 <div>
 <h2 class="b-h">Cztery liczby, które przechodzimy co miesiąc</h2>
 </div>
-<p class="b-p" style="margin:0 0 6px;max-width:400px">Stan wyjściowy mierzymy, zanim cokolwiek ustawimy. Sposób liczenia jest jawny i nie zmienia się między miesiącami.</p>
+<p class="b-p" style="margin:0 0 6px;max-width:430px">Stan wyjściowy mierzymy u Ciebie, zanim cokolwiek ustawimy — to on jest punktem odniesienia. Sposób liczenia jest jawny i nie zmienia się między miesiącami.</p>
 </div>
 
 <div class="ef rv">
-{EFEKT.map((m, i) => {
-  const max = Math.max(m.p, m.po);
-  return (
-    <div class="ef-k">
-      <h3 class="ef-t">{m.t}<span class="ef-o">{m.o}</span></h3>
-      <div role="img" aria-label={`${m.t}: przed ${m.pT}, po ${m.poT}.`}>
-        <div class="ef-r"><b>przed</b><span class="ef-s" style={`--w:${((m.p / max) * 74).toFixed(1)}%;--d:${(i * 0.09).toFixed(2)}s`}><i></i><em>{m.pT}</em></span></div>
-        <div class="ef-r po"><b>po</b><span class="ef-s" style={`--w:${((m.po / max) * 74).toFixed(1)}%;--d:${(i * 0.09 + 0.12).toFixed(2)}s`}><i></i><em>{m.poT}</em></span></div>
-      </div>
-    </div>
-  );
-})}
+{EFEKT.map((m) => (
+  <div class="ef-k">
+    <h3 class="ef-t">{m.t}<span class="ef-o">{m.o}</span></h3>
+    <p class="ef-jak">{m.jak}</p>
+    <span class={m.kier === 'maleje' ? 'ef-kier dol' : 'ef-kier'}><span aria-hidden="true">{m.kier === 'maleje' ? '↓' : '↑'}</span>{m.kier === 'maleje' ? 'ma maleć' : 'ma rosnąć'}</span>
+  </div>
+))}
 </div>
-<p class="ef-w"><strong>Druga liczba ciągnie pierwszą.</strong> Udział zadań oddawanych agentowi rośnie sam, kiedy pierwsze podejście przestaje wracać — i zatrzymuje się w okolicach czterech na pięć. Reszta zostaje przy człowieku: decyzje, których opisanie zajęłoby więcej niż zrobienie ich ręcznie.</p>
+<p class="ef-w"><strong>Druga liczba ciągnie pierwszą.</strong> Udział zadań oddawanych agentowi rośnie sam, kiedy pierwsze podejście przestaje wracać do przeróbki. Czwarta stoi po to, żeby „więcej" nie zaczęło znaczyć „gorzej" — bez niej dwie pierwsze da się poprawić kosztem produkcji.</p>
+<p class="ef-brak">Wartości docelowych tu nie ma. Ustalamy je na pierwszym przeglądzie, na Twoim stanie wyjściowym — wpisana z góry liczba byłaby obietnicą bez pokrycia na stronie, która namawia Cię na mierzenie.</p>
 </section>
 
 <!-- =====================================================================
@@ -1012,6 +1022,8 @@ const CDN = 'https://cdn.prod.website-files.com/625be9db7e9f071ffb58618a/';
 </section>
 
 <GcCta
+  usluga="Guided Coding — dla zespołów"
+  osoba="ty"
   heading="Zobaczmy, ile z tego da się wycisnąć u Ciebie"
   lead="Napisz w dwóch zdaniach, ilu masz inżynierów i co najczęściej wraca do przeróbki. Odezwiemy się z terminem — 30 minut, bez zobowiązań."
   eyebrow="Z diagnozy wychodzisz z"
@@ -1022,7 +1034,6 @@ const CDN = 'https://cdn.prod.website-files.com/625be9db7e9f071ffb58618a/';
   ]}
   fieldLabel="Jak dziś pracujecie z AI?"
   placeholder="Np. dwunastu inżynierów, Claude Code od pół roku, agent robi drobne zadania…"
-  submitLabel="Umów bezpłatną diagnozę"
   badges={[
     { i: 'klodka', t: 'Twoje dane bezpieczne' },
     { i: 'kartka', t: 'NDA przed startem' },

@@ -16,7 +16,8 @@
 // CTA
 // Adres bierze się z propsa: strona główna zjeżdża do własnego formularza
 // (/#diagnoza), a podstrona z własnym formularzem podaje swoją kotwicę,
-// np. <Nawigacja ctaHref="#rozmowa" />. Napis rotuje tak samo wszędzie.
+// np. <Nawigacja ctaHref="#rozmowa" />. Napis jest STAŁY — rotujący maszynopis
+// zostawiał na części klatek sam kursor albo urwany wyraz (przegląd 22.09.2026).
 //
 // JEDNA LISTA LINKÓW, DWA MENU
 // Poniższe stałe zasilają i megamenu (od 901px), i panel mobilny (do 900px).
@@ -203,7 +204,7 @@ const POZOSTALE = [
 {POZOSTALE.map((p) => <a href={p.h} class="nav-lnk" target={p.zew ? '_blank' : null} rel={p.zew ? 'noopener' : null} style="color:#2c3a30">{p.t}</a>)}
 </div>
 <div class="nav-right">
-<a href={ctaHref} class="btn-dark" id="navCta" style="position:relative;display:inline-flex;align-items:center;justify-content:center;background:#16211a;color:#ffffff;padding:12px 22px;border-radius:10px;font-weight:650;font-size:15px;white-space:nowrap"><span class="nav-cta-sizer" aria-hidden="true">Bezpłatna diagnoza</span><span class="nav-cta-live"><span class="nav-cta-text" data-cta-rotate>Bezpłatna diagnoza</span><span class="nav-cta-caret" aria-hidden="true"></span></span></a>
+<a href={ctaHref} class="btn-dark" id="navCta" style="display:inline-flex;align-items:center;justify-content:center;background:#16211a;color:#ffffff;padding:12px 22px;border-radius:10px;font-weight:650;font-size:15px;white-space:nowrap"><span class="cta-pelny">Bezpłatna diagnoza</span><span class="cta-krotki">Diagnoza</span></a>
 <button type="button" class="nav-burger" id="navBurger" aria-label="Menu" aria-expanded="false" aria-controls="navPanel">
 <span class="nb-kreski" aria-hidden="true"><span></span><span></span><span></span></span>
 </button>
@@ -288,15 +289,6 @@ const POZOSTALE = [
   .nav-caret{transition:transform .2s}
   .nav-item:hover .nav-caret,.nav-item:focus-within .nav-caret{transform:rotate(180deg)}
 
-  /* ---- rotujące CTA ----
-     Szerokość przycisku trzyma ukryty .nav-cta-sizer w HTML — musi zawierać
-     NAJDŁUŻSZĄ z fraz ze skryptu na dole, inaczej pigułka skacze. */
-  .nav-cta-sizer{visibility:hidden;pointer-events:none}
-  .nav-cta-live{position:absolute;left:0;right:0;top:0;bottom:0;display:inline-flex;align-items:center;justify-content:center;white-space:nowrap}
-  .nav-cta-caret{display:inline-block;width:2px;height:1.05em;margin-left:1px;background:currentColor;vertical-align:-0.14em;animation:cta-blink 1s steps(1) infinite}
-  @keyframes cta-blink{0%,50%{opacity:1}50.01%,100%{opacity:0}}
-  @media (prefers-reduced-motion:reduce){ .nav-cta-caret{animation:none;opacity:0} }
-
   /* ---- megamenu ---- */
   .mega-wrap{position:absolute;top:calc(100% - 20px);left:50%;transform:translateX(-50%) translateY(6px);width:min(940px,calc(100vw - 40px));padding-top:34px;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .18s ease,transform .18s ease}
   .nav-item:hover .mega-wrap,.nav-item:focus-within .mega-wrap{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0);pointer-events:auto}
@@ -305,7 +297,7 @@ const POZOSTALE = [
   .mega-item:hover{background:#f4f8f2}
   .mega-t{display:block;font-size:14.5px;font-weight:650;color:#16211a;transition:color .15s}
   .mega-item:hover .mega-t{color:#0a7a52}
-  .mega-d{display:block;margin-top:2px;font-size:12.5px;line-height:1.4;color:#8b968d}
+  .mega-d{display:block;margin-top:2px;font-size:12.5px;line-height:1.4;color:#637066}
   .mega-feat{display:flex;flex-direction:column;justify-content:center;background:radial-gradient(120% 120% at 100% 0%, rgba(0,205,119,0.16), transparent 55%), #0e2b1d;border-radius:14px;padding:24px 22px;color:#ffffff;transition:transform .2s,box-shadow .2s}
   .mega-feat:hover{transform:translateY(-2px);box-shadow:0 22px 44px -22px rgba(0,0,0,0.5)}
 
@@ -345,7 +337,7 @@ const POZOSTALE = [
   .usl-top{align-self:start}
   .usl-head{display:block;font-size:24px;font-weight:800;line-height:1.06;letter-spacing:-0.032em;text-wrap:balance;color:#16211a;transition:color .18s}
   .usl-head:hover{color:#0a7a52}
-  .usl-sub{display:block;margin-top:9px;font-size:12.5px;line-height:1.45;color:#8b968d}
+  .usl-sub{display:block;margin-top:9px;font-size:12.5px;line-height:1.45;color:#637066}
   .usl-rule{display:block;width:26px;height:2px;margin:16px 0 15px;border-radius:2px;background:var(--la-accent,#00CD77);transition:width .28s cubic-bezier(.4,0,.2,1)}
   .usl-lane:hover .usl-rule{width:78px}
   .usl-list .mega-item{padding:7px 9px;margin-left:-9px;border-radius:10px}
@@ -376,12 +368,12 @@ const POZOSTALE = [
   .np-tresc{padding:8px 16px 40px}
   .np-grupa{display:block;padding:20px 0;border-bottom:1px solid #eef1ec}
   .np-glowa{display:block;font-size:23px;font-weight:800;line-height:1.1;letter-spacing:-0.03em;color:#16211a}
-  .np-sub{display:block;margin-top:5px;font-size:13px;line-height:1.45;color:#8b968d}
+  .np-sub{display:block;margin-top:5px;font-size:13px;line-height:1.45;color:#637066}
   .np-poz{display:block;margin-top:4px;padding:11px 12px 11px 0;border-radius:11px}
   .np-poz:first-of-type{margin-top:12px}
   .np-poz-ic{display:flex;align-items:center;gap:12px}
   .np-t{display:block;font-size:15.5px;font-weight:650;color:#16211a}
-  .np-d{display:block;margin-top:2px;font-size:12.5px;line-height:1.4;color:#8b968d}
+  .np-d{display:block;margin-top:2px;font-size:12.5px;line-height:1.4;color:#637066}
   .np-glowa-txt{color:#16211a}
   .np-reszta{display:flex;flex-direction:column;padding:12px 0 4px}
   .np-lnk{padding:13px 0;font-size:16px;font-weight:600;color:#2c3a30}
@@ -400,15 +392,14 @@ const POZOSTALE = [
     .nav-menu{display:none !important}
     .nav-burger{display:inline-flex}
   }
-  /* Na wąskim ekranie pigułka nie mieści logo, rotującego CTA i przycisku
-     naraz (przy 390px wychodziła 8px poza kadr) — CTA gubi wtedy animację
-     pisania i zostaje krótkim napisem. */
+  /* Na wąskim ekranie pigułka nie mieści logo, pełnej nazwy CTA i hamburgera
+     naraz (przy 390px wychodziła 8px poza kadr) — zostaje krótszy napis. */
+  .cta-krotki{display:none}
   @media (max-width:560px){
+    .cta-pelny{display:none}
+    .cta-krotki{display:inline}
     .nav-pill{gap:10px;padding:12px 10px 12px 6px}
     #navCta{padding:11px 15px !important;font-size:14px !important}
-    .nav-cta-sizer{display:none}
-    .nav-cta-live{position:static}
-    .nav-cta-caret{display:none}
     .nav-logo img{height:22px !important}
   }
   @media (prefers-reduced-motion:reduce){ .nav-panel{transition:none} }
@@ -492,38 +483,5 @@ const POZOSTALE = [
       });
     })();
 
-    // ---- CTA: rotujący typing ----
-    var el = h.querySelector('[data-cta-rotate]');
-    if(!el) return;
-    var phrases = ['Bezpłatna diagnoza', 'Wyceń projekt', 'Umów rozmowę'];
-    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion:reduce)').matches;
-    var i = 0;
-    // Na wąskim ekranie pigułka nie ma miejsca na najdłuższą frazę, a napis
-    // przycinał się w połowie animacji. Zostaje jedno krótkie słowo.
-    if(window.matchMedia && window.matchMedia('(max-width:560px)').matches){
-      el.textContent = 'Diagnoza';
-      return;
-    }
-    if(reduce){
-      el.textContent = phrases[0];
-      setInterval(function(){ i = (i + 1) % phrases.length; el.textContent = phrases[i]; }, 3200);
-      return;
-    }
-    var ci = 0, deleting = false;
-    function tick(){
-      var full = phrases[i];
-      if(!deleting){
-        ci++;
-        el.textContent = full.slice(0, ci);
-        if(ci >= full.length){ deleting = true; return setTimeout(tick, 1800); }
-        return setTimeout(tick, 60 + Math.random() * 45);
-      }
-      ci--;
-      el.textContent = full.slice(0, ci);
-      if(ci <= 0){ deleting = false; i = (i + 1) % phrases.length; return setTimeout(tick, 300); }
-      return setTimeout(tick, 32);
-    }
-    el.textContent = '';
-    setTimeout(tick, 800);
   })();
 </script>

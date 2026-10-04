@@ -1,21 +1,47 @@
 ---
-// Moduł kontaktowy 1:1 z modułem finałowym strony głównej:
-// ciemna karta + formularz + zdjęcie Szymona + zaplecze Wise Group.
+// Moduł kontaktowy podstron: ciemna karta + formularz + zdjęcie Szymona
+// + zaplecze Wise Group. Stoi na 22 stronach, więc każda zmiana tutaj
+// przechodzi przez cały serwis.
 //
-// UWAGA: formularz nie ma jeszcze endpointu (jak na stronie głównej).
-// Przed publikacją trzeba podpiąć POST — inaczej zgłoszenia przepadają.
+// Formularz jest prawdziwy: POST na /api/kontakt, ten sam endpoint, co
+// w `FormularzLead`. Do zgłoszenia idzie nazwa usługi i adres strony, więc
+// widać, z której podstrony przyszło. Kiedy endpoint nie ma skonfigurowanego
+// odbiorcy, zwraca 503 i karta pokazuje awarię z mailem i telefonem —
+// nigdy fałszywego sukcesu.
+//
+// Kolejność na telefonie: nagłówek → pola → lista korzyści. Na desktopie
+// lista stoi po lewej, przy nagłówku. Robi to `display:contents` w media
+// query; bez tego pola zaczynały się poniżej całego ekranu z opisem.
 const {
   heading,
   lead,
   eyebrow = 'Z przeglądu wychodzisz z',
   items = [],
   teamField = false,
+  // Główna akcja nazywa się wszędzie tak samo, bo wszędzie robi to samo:
+  // wysyła zapytanie. Termin dobieramy dopiero w odpowiedzi, więc „Umów
+  // rozmowę” na przycisku obiecywałoby rezerwację, której tu nie ma.
   submitLabel = 'Wyślij zapytanie',
   // Etykieta pola opisowego. Domyślnie w drugiej osobie liczby mnogiej,
   // bo tak mówi sześć podstron usługowych. Strony pisane do jednej osoby
   // (jak strona główna) podają własną.
   fieldLabel = 'Co macie dzisiaj?',
   placeholder = 'Np. mamy aplikację zbudowaną w Lovable, obsługuje klientów…',
+  // Nazwa usługi w zgłoszeniu. Bez niej zostaje sam adres strony.
+  usluga = '',
+  // Strony pionu AI mówią „Wy", strony Guided Codingu „Ty". Karta kontaktowa
+  // musi iść za stroną, na której stoi — inaczej w jednym pudle stoi
+  // „Napisz, co masz" nad „Odpiszemy Wam".
+  osoba = 'wy',
+  // Strona główna kotwiczy ten moduł jako #diagnoza (tak prowadzi CTA
+  // w nawigacji), podstrony jako #kontakt.
+  id = 'kontakt',
+  wiseLabel = 'Część grupy',
+  // Co się dzieje po wysłaniu. Te trzy fakty są wspólne dla całego serwisu
+  // (`FormularzLead` mówi to samo); strona z innym przebiegiem podstawia swoje.
+  czasRozmowy = '30 minut, online albo telefonicznie',
+  prowadzi = 'Szymon Kita, założyciel',
+  odpowiedz = 'jeden dzień roboczy',
   // Odznaki pod formularzem zależą od usługi: „Kod zostaje Wasz" ma sens
   // przy Guided Codingu, nie przy przeglądzie strategicznym.
   badges = [
@@ -30,38 +56,66 @@ const IKONY = {
   kartka: '<path d="M14 3v5h5"/><path d="M7 3h7l5 5v11a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/>',
   ptaszek: '<circle cx="12" cy="12" r="9"/><path d="M8.5 12.4l2.4 2.4 4.6-5"/>',
 };
+
+const TY = osoba === 'ty';
+const T = {
+  okTytul:   TY ? 'Mam Twoje zapytanie' : 'Mamy Wasze zapytanie',
+  literowka: TY ? 'napisz na' : 'napiszcie na',
+  krok3:     TY ? 'dostajesz na maila' : 'dostajecie na maila',
+  opowiedz:  TY ? 'opowiesz' : 'opowiecie',
+  sprobuj:   TY ? 'spróbuj jeszcze raz za chwilę.' : 'spróbujcie jeszcze raz za chwilę.',
+  mozesz:    TY ? 'Możesz też napisać na' : 'Możecie też napisać na',
+  wolisz:    TY ? 'Wolisz napisać albo zadzwonić?' : 'Wolicie napisać albo zadzwonić?',
+};
+
+const sciezka = Astro.url.pathname;
+const zrodlo = usluga ? `${usluga} · ${sciezka}` : sciezka;
 ---
-<section id="kontakt" style="padding:clamp(72px,10vw,120px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
-<div class="s9-grid" style="background:#0e2b1d;border-radius:26px;overflow:hidden;display:grid;grid-template-columns:1fr 760px;gap:0;align-items:stretch;box-shadow:0 34px 84px -44px rgba(18,38,28,0.4)">
-<div style="display:flex;flex-direction:column;padding:clamp(48px,6vw,84px) clamp(40px,5vw,64px)">
+<section id={id} class="gc-sek">
+<div class="s9-grid gc-grid">
+
+<div class="gc-lewa">
+
+<div class="gc-naglowek">
 <h2 class="h-sec" style="margin:0;color:#ffffff;text-wrap:pretty">{heading}</h2>
-<p style="margin:20px 0 0;max-width:430px;font-size:17px;line-height:1.6;color:rgba(255,255,255,0.75);text-wrap:pretty">{lead}</p>
-<div style="margin-top:30px;max-width:470px">
-<div style="font-weight:700;font-size:11.5px;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.5)">{eyebrow}</div>
-<div style="display:flex;flex-direction:column;gap:11px;margin-top:14px">
+<p class="gc-lead">{lead}</p>
+</div>
+
+{items.length > 0 && (
+<div class="gc-items">
+<div class="gc-eyebrow">{eyebrow}</div>
+<div class="gc-items-lista">
 {items.map((it) => (
-  <div style="display:flex;align-items:flex-start;gap:11px;font-size:14.5px;line-height:1.5;color:rgba(255,255,255,0.85)"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#00CD77" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:2px" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span><strong style="font-weight:700;color:#fff">{it.t}</strong> — {it.d}</span></div>
+  <div class="gc-item"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#00CD77" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:2px" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span><strong style="font-weight:700;color:#fff">{it.t}</strong> — {it.d}</span></div>
 ))}
 </div>
 </div>
-<div class="final-badge-row" style="display:flex;align-items:center;gap:16px;margin-top:auto;padding-top:40px">
-<span style="font-size:11.5px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.5)">Część grupy</span>
+)}
+
+<div class="final-badge-row gc-wise">
+<span style="font-size:11.5px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.62)">{wiseLabel}</span>
 <img src="/uploads/wisegroup_logo_v2.webp" alt="Wise Group" style="height:19px;width:auto;display:block;filter:brightness(0) invert(1);opacity:0.9">
 </div>
+
 </div>
 
-<div class="cta-card" style="display:grid;grid-template-columns:1fr 262px;background:#ffffff">
-<div style="padding:clamp(28px,2.8vw,38px);display:flex;flex-direction:column;justify-content:center">
-<div style="display:flex;flex-direction:column;gap:15px">
-<div>
-<label style="display:block;font-size:12.5px;font-weight:650;color:#4c5850;margin-bottom:7px">E-mail <span style="color:#0a7a52">*</span></label>
-<input type="email" class="inp" placeholder="jan@firma.pl" style="width:100%;box-sizing:border-box;font-family:inherit;font-size:15px;color:#16211a;background:#fbfcfa;border:1px solid #e7ece4;border-radius:10px;padding:13px 15px;outline:none">
+<div class="cta-card gc-karta">
+<div class="gc-kol-form">
+
+<form class="gc-form" data-gc-form data-zrodlo={zrodlo} novalidate>
+<div class="gc-pola">
+
+<div class="gc-field">
+<label class="gc-lab" for="gc-email">E-mail <span class="gc-req">*</span></label>
+<input class="inp gc-inp" id="gc-email" name="email" type="email" inputmode="email" autocomplete="email" placeholder="jan@firma.pl" aria-describedby="gc-err-email">
+<div class="gc-err" id="gc-err-email">Sprawdź adres e-mail.</div>
 </div>
-<div>
-<label style="display:block;font-size:12.5px;font-weight:650;color:#4c5850;margin-bottom:7px">Telefon <span style="color:#0a7a52">*</span></label>
-<div class="phone-field" style="display:flex;align-items:center;background:#f6f9f5;border:1px solid #e4ebe2;border-radius:11px">
+
+<div class="gc-field">
+<label class="gc-lab" for="gc-tel">Telefon <span class="gc-req">*</span></label>
+<div class="phone-field gc-tel">
 <div style="position:relative;display:flex;align-items:center;flex-shrink:0">
-<select aria-label="Numer kierunkowy" style="appearance:none;-webkit-appearance:none;-moz-appearance:none;border:0;background:transparent;font-family:inherit;font-size:15px;font-weight:600;color:#16211a;padding:14px 32px 14px 16px;outline:none;cursor:pointer">
+<select id="gc-prefix" name="kierunkowy" aria-label="Numer kierunkowy" style="appearance:none;-webkit-appearance:none;-moz-appearance:none;border:0;background:transparent;font-family:inherit;font-size:15px;font-weight:600;color:#16211a;padding:14px 32px 14px 16px;outline:none;cursor:pointer">
 <option value="+48">+48</option>
 <option value="+49">+49</option>
 <option value="+44">+44</option>
@@ -72,14 +126,16 @@ const IKONY = {
 <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#8a978c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;right:13px;top:50%;transform:translateY(-50%);pointer-events:none" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
 </div>
 <span style="width:1px;height:22px;background:#e4ebe2;flex-shrink:0"></span>
-<input type="tel" aria-label="Numer telefonu" placeholder="571 000 000" style="flex:1;min-width:0;border:0;background:transparent;font-family:inherit;font-size:15px;color:#16211a;padding:14px 16px 14px 14px;outline:none">
+<input id="gc-tel" name="telefon" type="tel" inputmode="tel" autocomplete="tel-national" placeholder="571 000 000" aria-describedby="gc-err-tel" style="flex:1;min-width:0;border:0;background:transparent;font-family:inherit;font-size:15px;color:#16211a;padding:14px 16px 14px 14px;outline:none">
 </div>
+<div class="gc-err" id="gc-err-tel">Sprawdź numer telefonu.</div>
 </div>
+
 {teamField && (
-<div>
-<label style="display:block;font-size:12.5px;font-weight:650;color:#4c5850;margin-bottom:7px">Wielkość zespołu inżynieryjnego</label>
+<div class="gc-field">
+<label class="gc-lab" for="gc-zespol">Wielkość zespołu inżynieryjnego</label>
 <div style="position:relative">
-<select class="inp" aria-label="Wielkość zespołu inżynieryjnego" style="width:100%;box-sizing:border-box;appearance:none;-webkit-appearance:none;-moz-appearance:none;font-family:inherit;font-size:15px;color:#16211a;background:#fbfcfa;border:1px solid #e7ece4;border-radius:10px;padding:13px 40px 13px 15px;outline:none;cursor:pointer">
+<select class="inp gc-inp" id="gc-zespol" name="zespol" style="width:100%;appearance:none;-webkit-appearance:none;-moz-appearance:none;cursor:pointer;padding-right:40px">
 <option>1–5 osób</option>
 <option>6–15 osób</option>
 <option>16–40 osób</option>
@@ -89,35 +145,360 @@ const IKONY = {
 </div>
 </div>
 )}
-<div>
-<label style="display:block;font-size:12.5px;font-weight:650;color:#4c5850;margin-bottom:7px">{fieldLabel}</label>
-<textarea class="inp" rows="3" placeholder={placeholder} style="width:100%;box-sizing:border-box;font-family:inherit;font-size:15px;color:#16211a;background:#fbfcfa;border:1px solid #e7ece4;border-radius:10px;padding:13px 15px;outline:none;resize:vertical;min-height:80px"></textarea>
+
+<div class="gc-field">
+<label class="gc-lab" for="gc-msg">{fieldLabel} <span class="gc-opt">nieobowiązkowe</span></label>
+<textarea class="inp gc-inp" id="gc-msg" name="wiadomosc" rows="3" placeholder={placeholder} style="resize:vertical;min-height:80px"></textarea>
 </div>
-<label style="display:flex;align-items:flex-start;gap:10px;font-size:12.5px;line-height:1.5;color:#7c877e;cursor:pointer">
-<input type="checkbox" required style="margin-top:1px;width:16px;height:16px;flex-shrink:0;accent-color:#0a7a52;cursor:pointer">
-<span>Wyrażam zgodę na kontakt i przetwarzanie moich danych w celu obsługi zapytania. <a href="#" class="lnk-green" style="font-weight:600;color:#0a7a52">Polityka prywatności</a>.</span>
+
+<label class="gc-zgoda" data-gc-zgoda-row for="gc-zgoda">
+<input type="checkbox" id="gc-zgoda" name="zgoda" data-gc-zgoda>
+<span class="gc-cb"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="#ffffff" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg></span>
+<span>Wyrażam zgodę na kontakt i przetwarzanie moich danych w celu obsługi zapytania. <a href="/polityka-prywatnosci" class="lnk-green gc-lnk">Polityka prywatności</a>.</span>
 </label>
-<a href="#kontakt" class="btn-cta" style="display:flex;align-items:center;justify-content:center;gap:9px;margin-top:2px;background:#0a7a52;color:#ffffff;padding:16px 24px;border-radius:12px;font-weight:700;font-size:16px">{submitLabel} <span aria-hidden="true">→</span></a>
-<div style="display:flex;flex-wrap:wrap;gap:9px 16px;margin-top:6px">
+
+{/* Pułapka na boty — /api/kontakt odrzuca zgłoszenie, jeśli to pole jest wypełnione. */}
+<div class="gc-hp" aria-hidden="true">
+<label for="gc-www">Nie wypełniaj tego pola</label>
+<input id="gc-www" name="firma_www" type="text" tabindex="-1" autocomplete="off">
+</div>
+
+<button type="submit" class="btn-cta gc-submit" data-gc-submit><span data-gc-label>{submitLabel}</span> <span aria-hidden="true">→</span></button>
+
+<div class="gc-po">
+<strong>To zapytanie, nie rezerwacja terminu.</strong>
+Odpisujemy w {odpowiedz} i proponujemy godzinę. Rozmowa trwa {czasRozmowy}; prowadzi {prowadzi}.
+</div>
+
+<div class="gc-awaria" data-gc-awaria data-blad-d={`Wpisane dane zostały w formularzu — ${T.sprobuj}`} hidden>
+<strong data-gc-awaria-t>Zgłoszenie nie doszło.</strong>
+<span data-gc-awaria-d>Wpisane dane zostały w formularzu — {T.sprobuj}</span>
+{T.mozesz} <a href="mailto:hello@letsautomate.pl" data-gc-mailto class="lnk-green gc-lnk">hello@letsautomate.pl</a> albo zadzwonić: <a href="tel:+48571399932" class="lnk-green gc-lnk">+48 571 399 932</a>.
+</div>
+
+<div class="gc-badges">
 {badges.map((b) => (
-  <span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#7c877e"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#0a7a52" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={IKONY[b.i] || IKONY.ptaszek}></svg>{b.t}</span>
+  <span class="gc-badge"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#0a7a52" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={IKONY[b.i] || IKONY.ptaszek}></svg>{b.t}</span>
 ))}
 </div>
+
 </div>
+</form>
+
+<div class="gc-ok" data-gc-ok role="status" tabindex="-1" hidden>
+<div class="gc-ok-ico">
+<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#0a7a52" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
 </div>
-<div class="cta-portrait" style="position:relative;background:#122a1e;min-height:360px">
+<div class="gc-ok-t">{T.okTytul}</div>
+<p class="gc-ok-p">Przyszło z adresu <span data-gc-echo class="gc-ok-mail">podanego w formularzu</span>. Jeśli to literówka, {T.literowka} <a href="mailto:hello@letsautomate.pl" class="lnk-green gc-lnk">hello@letsautomate.pl</a>.</p>
+<div class="gc-ok-kroki">
+<div class="gc-ok-krok"><span class="gc-ok-n">1</span><span>Odpisujemy w <strong>{odpowiedz}</strong> z propozycją terminu.</span></div>
+<div class="gc-ok-krok"><span class="gc-ok-n">2</span><span>Rozmowa trwa <strong>{czasRozmowy}</strong>. Prowadzi {prowadzi}.</span></div>
+<div class="gc-ok-krok"><span class="gc-ok-n">3</span><span>Po rozmowie {T.krok3} <strong>zakres i pierwszy krok</strong>.</span></div>
+</div>
+<p class="gc-ok-note">Do rozmowy nie trzeba się przygotowywać. Wystarczy, że {T.opowiedz}, jak wygląda dziś ten jeden proces.</p>
+</div>
+
+</div>
+
+<div class="cta-portrait gc-portret">
 <img src="/szymon-kita.jpg" alt="Szymon Kita — założyciel Let's automate" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 16%;display:block">
 <div style="position:absolute;left:0;right:0;bottom:0;padding:30px 18px 14px;background:linear-gradient(to top,rgba(6,16,11,0.92),rgba(6,16,11,0.45) 55%,transparent)">
 <div style="font-size:14.5px;font-weight:800;color:#ffffff">Szymon Kita</div>
-<div style="margin-top:2px;font-size:11.5px;color:rgba(255,255,255,0.72)">założyciel, Let's automate</div>
+<div style="margin-top:2px;font-size:11.5px;color:rgba(255,255,255,0.8)">prowadzi te rozmowy</div>
 </div>
 </div>
 </div>
 </div>
-<div style="display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:6px 14px;margin-top:26px;font-size:15px;color:#4c5850">
-<span>Wolisz napisać lub zadzwonić?</span>
+
+<div class="gc-stopka">
+<span>{T.wolisz}</span>
 <a href="mailto:hello@letsautomate.pl" class="lnk-green" style="font-weight:700;color:#0a7a52">hello@letsautomate.pl</a>
 <span style="color:#c3cbc2">·</span>
 <a href="tel:+48571399932" class="lnk-green" style="font-weight:700;color:#0a7a52">+48 571 399 932</a>
 </div>
 </section>
+
+<style>
+  /* Odstęp od przyklejonej nawigacji: pigułka po scrollu ma ok. 66 px
+     wysokości plus 12 px paddingu, więc kotwica `#kontakt` musi zaczynać się
+     niżej — inaczej nagłówek karty chowa się pod nawigacją. */
+  .gc-sek{padding:clamp(72px,10vw,120px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:96px}
+
+  .gc-grid{background:#0e2b1d;border-radius:26px;overflow:hidden;display:grid;grid-template-columns:1fr 760px;gap:0;align-items:stretch;box-shadow:0 34px 84px -44px rgba(18,38,28,0.4)}
+  .gc-lewa{display:flex;flex-direction:column;padding:clamp(48px,6vw,84px) clamp(40px,5vw,64px)}
+  .gc-lead{margin:20px 0 0;max-width:430px;font-size:17px;line-height:1.6;color:rgba(255,255,255,0.78);text-wrap:pretty}
+  .gc-items{margin-top:30px;max-width:470px}
+  .gc-eyebrow{font-weight:700;font-size:11.5px;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.62)}
+  .gc-items-lista{display:flex;flex-direction:column;gap:11px;margin-top:14px}
+  .gc-item{display:flex;align-items:flex-start;gap:11px;font-size:14.5px;line-height:1.5;color:rgba(255,255,255,0.85)}
+  .gc-wise{display:flex;align-items:center;gap:16px;margin-top:auto;padding-top:40px}
+
+  .gc-karta{display:grid;grid-template-columns:1fr 262px;background:#ffffff}
+  .gc-kol-form{padding:clamp(28px,2.8vw,38px);display:flex;flex-direction:column;justify-content:center;min-width:0}
+  .gc-pola{display:flex;flex-direction:column;gap:15px}
+
+  .gc-field{min-width:0}
+  .gc-lab{display:block;font-size:12.5px;font-weight:650;color:#4c5850;margin-bottom:7px}
+  .gc-req{color:#0a7a52}
+  .gc-opt{font-weight:500;color:#637066}
+  .gc-inp{width:100%;box-sizing:border-box;font-family:inherit;font-size:15px;color:#16211a;background:#fbfcfa;border:1px solid #e7ece4;border-radius:10px;padding:13px 15px;outline:none}
+  .gc-tel{display:flex;align-items:center;background:#f6f9f5;border:1px solid #e4ebe2;border-radius:11px}
+
+  .gc-err{display:none;margin-top:7px;font-size:12.5px;font-weight:600;color:#c2402f}
+  .gc-field.err .gc-inp,.gc-field.err .gc-tel{border-color:#d9503c !important;box-shadow:0 0 0 3px rgba(217,80,60,0.14)}
+  .gc-field.err .gc-err{display:block}
+
+  /* Natywny checkbox rysuje chrom systemu — obok pól z własnym promieniem
+     wygląda jak wada. */
+  .gc-zgoda{display:flex;align-items:flex-start;gap:10px;font-size:12.5px;line-height:1.5;color:#637066;cursor:pointer}
+  .gc-zgoda input{position:absolute;width:1px;height:1px;opacity:0}
+  .gc-cb{position:relative;width:17px;height:17px;border-radius:5px;border:1.5px solid #c8d3c6;background:#fff;flex-shrink:0;margin-top:1px;transition:background .16s,border-color .16s,box-shadow .16s}
+  .gc-cb svg{position:absolute;inset:0;margin:auto;opacity:0;transform:scale(.6);transition:opacity .16s,transform .16s}
+  .gc-zgoda input:checked + .gc-cb{background:#0a7a52;border-color:#0a7a52}
+  .gc-zgoda input:checked + .gc-cb svg{opacity:1;transform:scale(1)}
+  .gc-zgoda input:focus-visible + .gc-cb{box-shadow:0 0 0 3px rgba(10,122,82,0.35)}
+  .gc-zgoda.err{color:#c2402f}
+  .gc-zgoda.err .gc-cb{border-color:#d9503c}
+  .gc-lnk{font-weight:600;color:#0a7a52}
+
+  .gc-hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+
+  .gc-submit{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;margin-top:2px;font-family:inherit;background:#0a7a52;color:#ffffff;border:0;padding:16px 24px;border-radius:12px;font-weight:700;font-size:16px;cursor:pointer}
+  .gc-submit:disabled{opacity:.62;cursor:progress}
+  .gc-submit:focus-visible{outline:3px solid #0a7a52;outline-offset:3px}
+
+  /* 12.5 px na #f-owym tle dawało kontrast poniżej 4.5:1 — stąd ciemniejszy
+     odcień i 13 px zamiast dotychczasowego szarego drobiazgu. */
+  .gc-po{font-size:13px;line-height:1.6;color:#5c6a61;text-align:center}
+  .gc-po strong{display:block;color:#16211a;font-weight:700}
+
+  .gc-awaria{padding:13px 15px;border-radius:12px;background:#fff6e8;border:1px solid #f0d9b3;font-size:13.5px;line-height:1.6;color:#6b5117}
+  .gc-awaria strong{display:block;color:#513c11}
+
+  .gc-badges{display:flex;flex-wrap:wrap;gap:9px 16px;margin-top:6px}
+  .gc-badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#637066}
+
+  /* ---- stan po wysłaniu ---- */
+  .gc-ok{padding:clamp(30px,3vw,44px) clamp(24px,2.8vw,38px);text-align:center}
+  .gc-ok:focus{outline:none}
+  .gc-ok-ico{display:flex;align-items:center;justify-content:center;width:58px;height:58px;margin:0 auto;border-radius:50%;background:#e4f3ea}
+  .gc-ok-t{margin-top:18px;font-size:clamp(20px,2vw,24px);font-weight:800;letter-spacing:-0.025em;color:#16211a}
+  .gc-ok-p{margin:9px auto 0;max-width:380px;font-size:14.5px;line-height:1.6;color:#4c5850}
+  .gc-ok-mail{font-weight:700;color:#16211a;word-break:break-word}
+  .gc-ok-kroki{margin-top:22px;text-align:left;background:#f7faf6;border:1px solid #e2e9df;border-radius:14px;padding:16px 18px}
+  .gc-ok-krok{display:flex;align-items:flex-start;gap:11px;font-size:13.5px;line-height:1.5;color:#4c5850}
+  .gc-ok-krok + .gc-ok-krok{margin-top:11px}
+  .gc-ok-krok strong{font-weight:700;color:#16211a}
+  .gc-ok-n{display:inline-block;width:21px;height:21px;line-height:21px;text-align:center;border-radius:7px;background:#e4f3ea;color:#0a7a52;font-family:ui-monospace,Menlo,monospace;font-size:11px;font-weight:800;flex-shrink:0;margin-top:1px}
+  .gc-ok-note{margin:16px 0 0;font-size:12.5px;line-height:1.55;color:#637066}
+
+  .gc-portret{position:relative;background:#122a1e;min-height:360px}
+
+  .gc-stopka{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:6px 14px;margin-top:26px;font-size:15px;color:#4c5850}
+
+  /* ---- telefon: pola przed listą korzyści ----
+     `display:contents` rozpuszcza lewą kolumnę, więc jej dzieci stają się
+     elementami siatki i można im nadać kolejność razem z kartą. */
+  @media (max-width:1024px){
+    .gc-grid{display:flex;flex-direction:column;border-radius:20px}
+    .gc-lewa{display:contents}
+    .gc-naglowek{order:1;padding:clamp(30px,6vw,44px) clamp(22px,5vw,40px) 0}
+    .gc-karta{order:2;margin:clamp(22px,4vw,30px) clamp(14px,3vw,22px) 0;border-radius:18px;overflow:hidden}
+    .gc-items{order:3;max-width:none;margin:clamp(26px,5vw,34px) 0 0;padding:0 clamp(22px,5vw,40px)}
+    .gc-wise{order:4;margin-top:0;padding:clamp(24px,5vw,32px) clamp(22px,5vw,40px) clamp(26px,5vw,36px)}
+    .gc-lead{max-width:none}
+  }
+  @media (max-width:560px){
+    .gc-sek{padding-left:16px;padding-right:16px}
+  }
+  /* iOS Safari powiększa stronę, gdy kursor wchodzi w pole mniejsze niż 16 px. */
+  @media (max-width:900px){
+    .gc-form input,.gc-form select,.gc-form textarea{font-size:16px !important}
+    /* Przy 16 px podpowiedź łamie się na cztery wiersze i ostatni był ucięty. */
+    .gc-form textarea{min-height:112px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .gc-cb,.gc-cb svg{transition:none}
+  }
+</style>
+
+<script>
+  // Formularz kontaktowy podstron. Jeden na stronę, ale skrypt i tak
+  // przechodzi pętlą — komponent bywa wstawiony dwa razy w wariantach roboczych.
+  (function(){
+    var ENDPOINT = '/api/kontakt';
+    var MAIL = 'hello@letsautomate.pl';
+    var formy = document.querySelectorAll('[data-gc-form]');
+    if(!formy.length) return;
+
+    // ---- Zdarzenia pomiarowe -------------------------------------------
+    // Sam serwis nie ma wpiętego żadnego narzędzia analitycznego i ta funkcja
+    // go nie dokłada: wypycha zdarzenie do `window.dataLayer` (konwencja GTM)
+    // i odpala zdarzenie DOM. Kiedy ktoś wepnie menedżera tagów, lejek jest
+    // gotowy; dopóki tego nie zrobi, nic nie wychodzi poza przeglądarkę.
+    //
+    // DO ZDARZEŃ NIE WCHODZI TREŚĆ FORMULARZA ANI DANE KONTAKTOWE — tylko
+    // nazwa usługi i adres strony, czyli to, co i tak jest w URL-u.
+    function pomiar(nazwa, szczegoly){
+      var dane = { event: nazwa, usluga: (szczegoly && szczegoly.usluga) || '', strona: location.pathname };
+      if(szczegoly && szczegoly.powod) dane.powod = szczegoly.powod;
+      try {
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push(dane);
+        document.dispatchEvent(new CustomEvent('la:pomiar', { detail: dane }));
+      } catch(e){}
+    }
+
+    // Kliknięcie w dowolne CTA prowadzące do modułu kontaktowego.
+    document.addEventListener('click', function(e){
+      var a = e.target && e.target.closest ? e.target.closest('a[href*="#kontakt"],a[href*="#diagnoza"]') : null;
+      if(!a) return;
+      pomiar('cta_klik', { usluga: (formy[0].dataset.zrodlo || '') });
+    });
+
+    var REGULY = [
+      { pole: 'email',   msg: 'Sprawdź adres e-mail.',   ok: function(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v); } },
+      { pole: 'telefon', msg: 'Sprawdź numer telefonu.', ok: function(v){ return v.replace(/\D/g, '').length >= 9; } }
+    ];
+
+    // Endpoint rozróżnia „nie ma dokąd wysłać" od „kanał odpadł". Klient
+    // powinien zobaczyć różnicę, bo w pierwszym przypadku ponawianie nic nie da.
+    // Drugie zdanie zależy od osoby, w której pisze strona — komponent
+    // podaje je w `data-blad-d`. Pierwsze rozróżnia „nie ma dokąd wysłać"
+    // od „kanał odpadł": w pierwszym przypadku ponawianie nic nie da.
+    function awarieDla(el){
+      var dalej = el.dataset.bladD || '';
+      return {
+        'brak-konfiguracji': ['Formularz jest chwilowo wyłączony.', 'Zgłoszenie nie zostało wysłane, a ponowna próba nic nie zmieni.'],
+        'dostarczenie':      ['Zgłoszenie nie doszło.', dalej],
+        'domyslna':          ['Zgłoszenie nie doszło.', dalej]
+      };
+    }
+
+    function pole(el){ return el && el.closest ? el.closest('.gc-field') : null; }
+    function bladWl(el, msg){
+      var f = pole(el); if(!f) return;
+      f.classList.add('err');
+      el.setAttribute('aria-invalid', 'true');
+      var box = f.querySelector('.gc-err');
+      if(box && msg) box.textContent = msg;
+    }
+    function bladWyl(el){
+      var f = pole(el); if(!f) return;
+      f.classList.remove('err');
+      el.removeAttribute('aria-invalid');
+    }
+
+    Array.prototype.forEach.call(formy, function(form){
+      var karta = form.parentNode;
+      var btn = form.querySelector('[data-gc-submit]');
+      var etykieta = form.querySelector('[data-gc-label]');
+      var zgoda = form.querySelector('[data-gc-zgoda]');
+      var wierszZgody = form.querySelector('[data-gc-zgoda-row]');
+      var awaria = form.querySelector('[data-gc-awaria]');
+      var okBox = karta.querySelector('[data-gc-ok]');
+      var wysylam = false;
+      var zaczety = false;
+      var usluga = form.dataset.zrodlo || '';
+
+      function sprawdz(){
+        var pierwszy = null;
+        REGULY.forEach(function(r){
+          var el = form.elements[r.pole];
+          var v = (el.value || '').trim();
+          if(v && r.ok(v)) bladWyl(el);
+          else { bladWl(el, v ? r.msg : 'To pole jest wymagane.'); if(!pierwszy) pierwszy = el; }
+        });
+        wierszZgody.classList.toggle('err', !zgoda.checked);
+        if(!zgoda.checked && !pierwszy) pierwszy = zgoda;
+        return pierwszy;
+      }
+
+      form.addEventListener('input', function(e){
+        if(pole(e.target)) bladWyl(e.target);
+        // Pierwsze dotknięcie pola — początek lejka. Bez treści, bez wartości.
+        if(!zaczety){ zaczety = true; pomiar('formularz_start', { usluga: usluga }); }
+      });
+      zgoda.addEventListener('change', function(){ wierszZgody.classList.toggle('err', !zgoda.checked); });
+
+      function telefonPelny(){
+        return (form.elements.kierunkowy.value + ' ' + (form.elements.telefon.value || '').trim()).trim();
+      }
+      function opis(){
+        var t = (form.elements.wiadomosc.value || '').trim();
+        var z = form.elements.zespol;
+        return z && z.value ? ('Zespół inżynieryjny: ' + z.value + '\n\n' + t) : t;
+      }
+
+      function pokazOk(){
+        var echo = okBox.querySelector('[data-gc-echo]');
+        var mail = (form.elements.email.value || '').trim();
+        if(echo && mail) echo.textContent = mail;
+        pomiar('formularz_sukces', { usluga: usluga });
+        form.hidden = true;
+        okBox.hidden = false;
+        okBox.scrollIntoView({ block: 'nearest' });
+        okBox.focus();
+      }
+
+      function pokazAwarie(kod){
+        // Nie udajemy wysyłki — dajemy drogę, którą zgłoszenie naprawdę dojdzie.
+        pomiar('formularz_blad', { usluga: usluga, powod: kod || 'domyslna' });
+        var slownik = awarieDla(awaria);
+        var tresc = slownik[kod] || slownik.domyslna;
+        awaria.querySelector('[data-gc-awaria-t]').textContent = tresc[0];
+        awaria.querySelector('[data-gc-awaria-d]').textContent = tresc[1];
+        var mailto = awaria.querySelector('[data-gc-mailto]');
+        if(mailto){
+          mailto.href = 'mailto:' + MAIL
+            + '?subject=' + encodeURIComponent('Zapytanie ze strony — ' + (form.dataset.zrodlo || ''))
+            + '&body=' + encodeURIComponent(
+                'E-mail: ' + (form.elements.email.value || '').trim()
+                + '\nTelefon: ' + telefonPelny()
+                + '\n\n' + opis()
+              );
+        }
+        awaria.hidden = false;
+        awaria.scrollIntoView({ block: 'nearest' });
+      }
+
+      form.addEventListener('submit', function(e){
+        e.preventDefault();
+        if(wysylam) return;
+        var zly = sprawdz();
+        if(zly){ zly.focus(); return; }
+
+        wysylam = true;
+        btn.disabled = true;
+        var napis = etykieta.textContent;
+        etykieta.textContent = 'Wysyłam…';
+        awaria.hidden = true;
+
+        fetch(ENDPOINT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({
+            email: (form.elements.email.value || '').trim(),
+            telefon: telefonPelny(),
+            wiadomosc: opis(),
+            firma_www: form.elements.firma_www.value || '',
+            zrodlo: form.dataset.zrodlo || 'podstrona'
+          })
+        })
+          .then(function(r){
+            if(r.ok) return pokazOk();
+            return r.json().catch(function(){ return {}; }).then(function(j){
+              throw new Error(j.blad || 'domyslna');
+            });
+          })
+          .catch(function(err){
+            wysylam = false;
+            btn.disabled = false;
+            etykieta.textContent = napis;
+            pokazAwarie(err && err.message);
+          });
+      });
+    });
+  })();
+</script>

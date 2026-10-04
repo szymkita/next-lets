@@ -32,6 +32,7 @@ const STRONY = [
   { u: '/automatyzacja-w-administracji', p: '0.7' },
   { u: '/automatyzacja-w-dashboardach-i-danych', p: '0.7' },
   { u: '/darmowa-konsultacja', p: '0.6' },
+  { u: '/polityka-prywatnosci', p: '0.2' },
 ];
 
 export const GET = async ({ site }) => {
