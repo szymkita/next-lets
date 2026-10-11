@@ -16,8 +16,10 @@
 // CTA
 // Adres bierze się z propsa: strona główna zjeżdża do własnego formularza
 // (/#diagnoza), a podstrona z własnym formularzem podaje swoją kotwicę,
-// np. <Nawigacja ctaHref="#rozmowa" />. Napis jest STAŁY — rotujący maszynopis
-// zostawiał na części klatek sam kursor albo urwany wyraz (przegląd 22.09.2026).
+// np. <Nawigacja ctaHref="#rozmowa" />. Napis rotuje tak samo wszędzie
+// (maszynopis: Bezpłatna diagnoza / Wyceń projekt / Umów rozmowę). Zdjęty
+// w przeglądzie 22.09.2026, przywrócony 11.10.2026. Czytnik ekranu dostaje
+// stałą nazwę z aria-label, a do 560px zostaje krótkie „Diagnoza”.
 //
 // JEDNA LISTA LINKÓW, DWA MENU
 // Poniższe stałe zasilają i megamenu (od 901px), i panel mobilny (do 900px).
@@ -204,7 +206,7 @@ const POZOSTALE = [
 {POZOSTALE.map((p) => <a href={p.h} class="nav-lnk" target={p.zew ? '_blank' : null} rel={p.zew ? 'noopener' : null} style="color:#2c3a30">{p.t}</a>)}
 </div>
 <div class="nav-right">
-<a href={ctaHref} class="btn-dark" id="navCta" style="display:inline-flex;align-items:center;justify-content:center;background:#16211a;color:#ffffff;padding:12px 22px;border-radius:10px;font-weight:650;font-size:15px;white-space:nowrap"><span class="cta-pelny">Bezpłatna diagnoza</span><span class="cta-krotki">Diagnoza</span></a>
+<a href={ctaHref} class="btn-dark" id="navCta" aria-label="Bezpłatna diagnoza" style="position:relative;display:inline-flex;align-items:center;justify-content:center;background:#16211a;color:#ffffff;padding:12px 22px;border-radius:10px;font-weight:650;font-size:15px;white-space:nowrap"><span class="cta-pelny"><span class="nav-cta-sizer" aria-hidden="true">Bezpłatna diagnoza</span><span class="nav-cta-live" aria-hidden="true"><span class="nav-cta-text" data-cta-rotate>Bezpłatna diagnoza</span><span class="nav-cta-caret"></span></span></span><span class="cta-krotki">Diagnoza</span></a>
 <button type="button" class="nav-burger" id="navBurger" aria-label="Menu" aria-expanded="false" aria-controls="navPanel">
 <span class="nb-kreski" aria-hidden="true"><span></span><span></span><span></span></span>
 </button>
@@ -288,6 +290,15 @@ const POZOSTALE = [
   .btn-dark:hover{background:#0a7a52 !important;color:#fff !important}
   .nav-caret{transition:transform .2s}
   .nav-item:hover .nav-caret,.nav-item:focus-within .nav-caret{transform:rotate(180deg)}
+
+  /* ---- rotujące CTA ----
+     Szerokość przycisku trzyma ukryty .nav-cta-sizer w HTML — musi zawierać
+     NAJDŁUŻSZĄ z fraz ze skryptu na dole, inaczej pigułka skacze. */
+  .nav-cta-sizer{visibility:hidden;pointer-events:none}
+  .nav-cta-live{position:absolute;left:0;right:0;top:0;bottom:0;display:inline-flex;align-items:center;justify-content:center;white-space:nowrap}
+  .nav-cta-caret{display:inline-block;width:2px;height:1.05em;margin-left:1px;background:currentColor;vertical-align:-0.14em;animation:cta-blink 1s steps(1) infinite}
+  @keyframes cta-blink{0%,50%{opacity:1}50.01%,100%{opacity:0}}
+  @media (prefers-reduced-motion:reduce){ .nav-cta-caret{animation:none;opacity:0} }
 
   /* ---- megamenu ---- */
   .mega-wrap{position:absolute;top:calc(100% - 20px);left:50%;transform:translateX(-50%) translateY(6px);width:min(940px,calc(100vw - 40px));padding-top:34px;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .18s ease,transform .18s ease}
@@ -483,5 +494,35 @@ const POZOSTALE = [
       });
     })();
 
+    // ---- CTA: rotujący typing ----
+    var el = h.querySelector('[data-cta-rotate]');
+    if(!el) return;
+    var phrases = ['Bezpłatna diagnoza', 'Wyceń projekt', 'Umów rozmowę'];
+    // Do 560px CSS pokazuje samo „Diagnoza” — animacja nie ma czego pisać.
+    if(window.matchMedia && window.matchMedia('(max-width:560px)').matches) return;
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+    var i = 0;
+    if(reduce){
+      setInterval(function(){ i = (i + 1) % phrases.length; el.textContent = phrases[i]; }, 3200);
+      return;
+    }
+    var ci = 0, deleting = false;
+    function tick(){
+      var full = phrases[i];
+      if(!deleting){
+        ci++;
+        el.textContent = full.slice(0, ci);
+        if(ci >= full.length){ deleting = true; return setTimeout(tick, 1800); }
+        return setTimeout(tick, 60 + Math.random() * 45);
+      }
+      ci--;
+      el.textContent = full.slice(0, ci);
+      if(ci <= 0){ deleting = false; i = (i + 1) % phrases.length; return setTimeout(tick, 300); }
+      return setTimeout(tick, 32);
+    }
+    // Start od pełnej frazy (a nie od pustego przycisku): pierwszy ekran
+    // zawsze pokazuje czytelne CTA, kasowanie zaczyna się po chwili.
+    ci = phrases[0].length; deleting = true;
+    setTimeout(tick, 2600);
   })();
 </script>
