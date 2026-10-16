@@ -16,11 +16,15 @@
 // Z 23 linków zostaje 19, a znikają podpisy dróg, kreski i osobny wiersz
 // obszarów.
 import { DROGI, FIRMA, OBSZARY, KONTAKT, SPOLKA, logo, SYGNET, IKONA_LINKEDIN } from './dane';
+import { POKAZ } from '../../data/menu.js';
 const KOL_USLUG = [
   { h: DROGI[0].pas, poz: [...DROGI[0].poz, DROGI[2].poz[0]] }, // + Guided coding
   { h: DROGI[1].pas, poz: DROGI[1].poz },
 ];
-const FIRMA_G = [{ t: 'Produkty', h: '/produkty' }, ...FIRMA];
+// Od 16.10.2026 stopka chowa to samo co menu (src/data/menu.js): w „Firmie”
+// zostają Dlaczego my i Baza wiedzy.
+const SCHOWANE = { '/produkty': !POKAZ.produkty, '/inspiracje': !POKAZ.inspiracje, '/wisestack': !POKAZ.knowhow };
+const FIRMA_G = [{ t: 'Produkty', h: '/produkty' }, ...FIRMA].filter((p) => !SCHOWANE[p.h]);
 ---
 <footer class="sG">
 <div class="sG-in">

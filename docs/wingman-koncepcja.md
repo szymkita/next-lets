@@ -1,9 +1,11 @@
 # Wingman AI — koncepcja strony produktu i nowego wyglądu aplikacji
 
-Strona: `src/pages/produkty/wingman.astro` (`/produkty/wingman`), `noindex`.
+Strona: `src/pages/produkty/wingman.astro` (`/produkty/wingman`).
 Pierwsza wersja 15.10.2026, tego samego dnia dwie rundy poprawek Szymona.
-Menu i stopka nadal prowadzą na `/produkty#wingman`. Do przełączenia, kiedy
-Szymon zatwierdzi stronę.
+Opublikowana 16.10.2026 (bez `noindex`, w sitemapie); menu i stopka prowadzą
+tu zamiast na `/produkty#wingman`, opis w menu jak w stopce („Podpowiedzi
+i notatki w trakcie rozmowy”). Sekcja Wingmana na `/produkty` dalej obiecuje
+ofertowanie i ocenę jakości — do poprawienia.
 
 ---
 

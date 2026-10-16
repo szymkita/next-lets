@@ -1,6 +1,10 @@
 # O nas (`/dlaczego-my`) — koncepcja strony
 
-Strona: `src/pages/dlaczego-my.astro`. **Wersja 5, napisana od zera 08.09.2026.**
+Strona: `src/pages/dlaczego-my.astro`. **Od 16.10.2026 stoi tam dawna v2
+(pięć powodów, opis niżej).** v5 opisana dalej jest w
+`src/robocze/dlaczego-my-old.astro`, v3 w `src/robocze/dlaczego-my-v3.astro`.
+
+Wersja 5, napisana od zera 08.09.2026:
 Adres i linki zostają bez zmian; zmienia się tożsamość strony — z „dlaczego my"
 na **„o nas, pisane o kliencie"**.
 
@@ -27,14 +31,19 @@ po kolei, każdy z **jednym** dowodem:
 |---|---|---|
 | 01 | Za nami ponad 200 wdrożeń | cztery karty liczb ze strony głównej, odznaka OpenAI |
 | 02 | Jeden zespół odpowiada za całość | spoty z v5 na ciemnej scenie, pod nią cytat NARS |
-| 03 | Stała cena za każde uruchomienie | oferta podzielona na trzy uruchomienia z decyzją klienta między nimi |
+| 03 | Zawsze wiecie, co czeka Was dalej | droga projektu dużymi etapami (diagnoza → projektowanie → wykonanie → kolejny moduł) ze znacznikiem „Jesteście tutaj"; cena następnego etapu zawsze znana przed jego startem |
 | 04 | Wszystko stoi na Waszych kontach | konta projektu „w trakcie / po zakończeniu" |
 | 05 | Mówimy, kiedy to nie dla nas | trzy odpowiedzi z pierwszej rozmowy |
 
 Wypadło wszystko, co nie dowodzi żadnego powodu: definicja z indeksem zdań,
 pary fakt → skutek, karta projektu z WiseStackiem, zielony pas, mniejsze
-cytaty, Piotr w hero. Wysokość: 12 300 → 8 750 px. Rzeczy do potwierdzenia
-są w nagłówku pliku. Nie podmieniać bez zgody.
+cytaty, Piotr w hero. Wysokość: 12 300 → 8 750 px.
+
+16.10.2026: powód 03 przepisany z drobnych „uruchomień" na duże etapy — uwaga Szymona: „zawsze znasz cenę przed kolejnym etapem, ale na dużych klockach… narracja, że wiesz, co czeka cię dalej". Rzeczy do potwierdzenia
+są w nagłówku pliku. 16.10.2026 przeszła na `/dlaczego-my` („opublikować
+najnowsze”); przy przenosinach: „WiseGroup” razem, bez „z Warszawy”,
+a zdanie o ludziach z grupy przy sprzedaży i rekrutacji zastąpione
+„Za studiem stoi grupa doradcza WiseGroup” (uwaga Szymona do strony głównej).
 
 Kopie: `docs/_kopie/dlaczego-my-przed-v4.astro` (v1),
 `docs/_kopie/dlaczego-my-v4-uklady.astro` (v4),

@@ -97,3 +97,16 @@ linijka w tej samej kolumnie, bez przestawiania układu. Markup starej wersji
   ostatni wiersz kolumny USŁUGI. Siatka stopki ma teraz pięć kolumn
   i schodzi do trzech poniżej 1180 px.
 - Powody i układ obu podstron: `docs/produkty-koncepcja.md`.
+
+### Menu na start produkcji (16.10.2026)
+
+- **Schowane: Produkty, Know-how i Inspiracje.** Szymon: „schowaj z menu
+  produkty, inspiracje i know-how, zostaw tę samą bazę wiedzy, potem to
+  przywrócimy”. W belce zostały Usługi, Baza wiedzy (`/blog`, osobny link
+  zamiast pozycji w Know-how) i Dlaczego my; tak samo w panelu mobilnym.
+- **Przywrócenie to jedna linijka:** stała `POKAZ` w `src/data/menu.js`
+  (`produkty`, `knowhow`, `inspiracje` na `true`). Markup został w pliku.
+- Strony (`/produkty`, `/produkty/appto`, `/produkty/wingman`, `/inspiracje`,
+  `/wisestack`) działają dalej i są w sitemapie.
+- **Stopka chowa to samo** (ten sam przełącznik): w kolumnie „Firma” zostały
+  Dlaczego my i Baza wiedzy, zeszły Produkty, Inspiracje i WiseStack.

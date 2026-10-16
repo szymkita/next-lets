@@ -1,8 +1,9 @@
 // robots.txt składany z Astro.site, żeby adres sitemapy zawsze zgadzał się
 // z domeną produkcyjną (astro.config.mjs).
 //
-// Bez wpisów Disallow dla wariantów roboczych: każdy z nich ma `noindex`
-// (LaBase), a zablokowany robot nie zobaczyłby tego znacznika i adres mógłby
+// Bez wpisów Disallow: warianty robocze nie wchodzą do builda (src/robocze/,
+// tylko serwer deweloperski), a strony z `noindex` (LaBase) muszą zostać
+// otwarte — zablokowany robot nie zobaczyłby tego znacznika i adres mógłby
 // zostać w indeksie bez opisu.
 export const GET = ({ site }) => {
   const tresc = [

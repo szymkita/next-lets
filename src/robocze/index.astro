@@ -1,0 +1,65 @@
+---
+// SPIS STRON ROBOCZYCH — /robocze, tylko w `npm run dev` (astro.config.mjs).
+// Pliki z src/robocze/ pogrupowane według strony, do której należą. Żywa
+// wersja to adres bez dopisku (-old, -v2, -hero…) i leży w src/pages/.
+const pliki = Object.keys(import.meta.glob('./**/*.astro'))
+  .map((p) => p.slice(2, -'.astro'.length))
+  .filter((p) => p !== 'index' && !/(^|\/)_/.test(p));
+
+// Strony z parametrem w adresie: wartości z getStaticPaths w pliku.
+const PARAMETRY = { 'hero-v2/[w]': ['a', 'b', 'c', 'd'] };
+const adresy = pliki
+  .flatMap((p) => (PARAMETRY[p] || [null]).map((w) => (w ? p.replace(/\[.+\]/, w) : p)))
+  .sort((x, y) => x.localeCompare(y, 'pl', { numeric: true }));
+
+// Strony wchłonięte przez inną (przekierowania w vercel.json).
+const NASTEPCY = {
+  '/guided-coding/bez-dzialu-it': '/guided-coding/biezace-wsparcie',
+  '/guided-coding/dla-zespolow': '/guided-coding/biezace-wsparcie',
+};
+const zywa = (a) => {
+  if (a.startsWith('hero-v2/') || a.startsWith('index-')) return '/';
+  const baza = a.replace(/-(old|v\d+[ab]?|hero(-v2)?)$/, '');
+  if (baza === a || baza === 'stopka') return '';
+  return NASTEPCY[`/${baza}`] || `/${baza}`;
+};
+const grupy = new Map();
+for (const a of adresy) {
+  const z = zywa(a);
+  if (!grupy.has(z)) grupy.set(z, []);
+  grupy.get(z).push(a);
+}
+const kolejne = [...grupy].sort(([x], [y]) => (x === '' ? 1 : y === '' ? -1 : x.localeCompare(y, 'pl')));
+---
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Strony robocze | Let's automate</title>
+<style>
+  body{margin:0;background:#f4f8f2;color:#16211a;font:16px/1.5 system-ui,sans-serif}
+  main{max-width:820px;margin:0 auto;padding:48px 20px 80px}
+  h1{margin:0;font-size:32px;letter-spacing:-0.02em}
+  .lead{margin:10px 0 36px;color:#4a5a50;max-width:640px}
+  section{padding:16px 0;border-top:1px solid rgba(22,33,26,0.12)}
+  h2{margin:0 0 8px;font-size:17px}
+  h2 a,h2 span{color:#0a7a52}
+  ul{margin:0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:6px 10px}
+  li a{display:inline-block;padding:4px 10px;border-radius:8px;background:#fff;border:1px solid rgba(22,33,26,0.14);color:#16211a;text-decoration:none;font-size:14.5px}
+  li a:hover{border-color:#0a7a52}
+</style>
+</head>
+<body>
+<main>
+<h1>Strony robocze</h1>
+<p class="lead">Poprzednie wersje podstron i warianty do porównania ({adresy.length}). Widać je tylko na serwerze deweloperskim. Build ich nie zawiera, więc na produkcji nie mają adresu. Żywa wersja każdej strony stoi pod adresem bez dopisku.</p>
+{kolejne.map(([z, lista]) => (
+  <section>
+    <h2>{z ? <>Żywa: <a href={z}>{z}</a></> : <span>Bez żywej strony</span>}</h2>
+    <ul>{lista.map((a) => <li><a href={`/${a}`}>/{a}</a></li>)}</ul>
+  </section>
+))}
+</main>
+</body>
+</html>

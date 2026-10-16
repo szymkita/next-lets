@@ -51,7 +51,7 @@ export const DROGI = [
 
 export const PRODUKTY = [
   { t: 'Appto', d: 'Agenci AI dla całej firmy', h: '/produkty/appto' },
-  { t: 'Wingman', d: 'Podpowiedzi i notatki w trakcie rozmowy', h: '/produkty#wingman' },
+  { t: 'Wingman', d: 'Podpowiedzi i notatki w trakcie rozmowy', h: '/produkty/wingman' },
 ];
 
 export const FIRMA = [

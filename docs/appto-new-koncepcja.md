@@ -1,8 +1,9 @@
-# Appto — nowa strona produktu (propozycja)
+# Appto — nowa strona produktu
 
-Strona: `src/pages/produkty/appto-new.astro` (`/produkty/appto-new`),
-`noindex`. Obecna `/produkty/appto` (w menu) i `appto-v2` zostają bez zmian,
-dopóki Szymon nie powie „podmień”. Kanon w JSON-LD wskazuje `/produkty/appto`.
+Strona: `src/pages/produkty/appto.astro` (`/produkty/appto`). Do 16.10.2026
+była propozycją pod `/produkty/appto-new`; tego dnia Szymon kazał wystawić
+najnowsze wersje stron. Poprzednie: `src/robocze/produkty/appto-old.astro`
+(strona z kartą agenta) i `appto-v2.astro` — tylko lokalnie.
 
 ## Historia
 

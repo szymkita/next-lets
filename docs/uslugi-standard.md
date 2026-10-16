@@ -9,18 +9,22 @@ innego o układzie, wygrywa ten dokument (lista na końcu).
 
 Wzorzec do podglądania: `src/pages/systemy-procesowe.astro`.
 Od 13.10.2026 wszystkie podstrony usługowe z menu stoją w tym standardzie
-pod właściwymi adresami; poprzednie wersje są pod `<adres>-old` (noindex,
-poza menu i sitemapą).
+pod właściwymi adresami. Poprzednie wersje i warianty leżą od 16.10.2026
+w `src/robocze/` (`<adres>-old.astro`, `-v2` itd.): widać je tylko
+w `npm run dev`, pod dawnymi adresami, spis pod `/robocze`. Build ich nie
+zawiera, więc na produkcji nie mają adresu.
 Wspólne części: `src/components/usluga/`.
 
 ---
 
 ## 1 · Plik strony
 
-Przebudowa istniejącej strony powstaje obok niej jako `<adres>-new.astro`
-z `noindex`; po akceptacji nowa wersja przechodzi na właściwy adres, a stara
-na `<adres>-old.astro` z `noindex` (tak zrobiono 13.10.2026). Nowa usługa
-od razu pod swoim adresem. Szkielet:
+Przebudowa istniejącej strony powstaje jako `src/robocze/<adres>-new.astro`
+(lokalnie pod `/<adres>-new`, poza buildem); po akceptacji nowa wersja
+przechodzi do `src/pages/` pod właściwy adres, a stara do
+`src/robocze/<adres>-old.astro`. Pliki w `src/robocze/` mają ścieżki
+importu o tej samej głębokości co w `src/pages/`, więc przenosi się je bez
+zmian. Nowa usługa od razu pod swoim adresem. Szkielet:
 
 ```astro
 ---
@@ -232,7 +236,7 @@ Wszystko z playbooka §10 i z pamięci projektu:
 | `CtaPasek` | `tytul`, `pod?`, `href?`, `cta?` | w slocie `Dowody` |
 | `Metoda` | `tytul` (HTML), `sub`, `wiersze[{k, ik?, ikSvg?, r, t, m}]`, `typowy?`, `liczba?`, `podpis?`, `stopka?`, `id?`; slot | `ik` = klucz z `HI`, `ikSvg` = własna ścieżka; `podpis` domyślnie „według WiseStacka", `''` chowa |
 | `DlaKogo` | `tytul?`, `sub`, `warunki[{t, d}]`, `nieTytul?`, `nie[]` (HTML), `id?` | odesłanie w „Kiedy to nie ma sensu" może być linkiem |
-| `Kontakt` | `tytul`, `lead`, `zrodlo`, `pytanie`, `podpowiedz`, `osoba?`, `po?` | prawdziwy formularz (`/api/kontakt`); `po` = zdanie pod przyciskiem, domyślnie „Rozmowa trwa 30 minut…” |
+| `Kontakt` | `tytul`, `lead`, `zrodlo`, `pytanie`, `podpowiedz`, `osoba?`, `po?` | prawdziwy formularz (`/api/kontakt`); `po` = zdanie pod przyciskiem, domyślnie „Rozmowa jest bezpłatna i bez zobowiązań…” (czasu rozmowy nie podajemy, 16.10.2026) |
 | `ikony.ts` | `HI`, `SYGNET`, `ZNAK_WS`, `IBELKA` | Heroicons Micro 16; brakującą ikonę dopisać do `HI` (i zgłosić) |
 
 Klasy wspólne do własnych sekcji: `.v3-sek`, `.v3-papier`, `.v8-gl`,
@@ -255,8 +259,11 @@ liczby wymyślone dla kilku firm.
 ### Ton i liczby wspólne dla serwisu
 
 - Do klienta mówimy „Wy" (megamenu, wszystkie podstrony usługowe).
-- Liczba wdrożeń w metodzie musi być ta sama na każdej stronie; dziś
-  rozjeżdża się („140+", „200+", „140+ firm" w logotypach) — DO DECYZJI.
+- Liczby ustalone 16.10.2026 (Szymon): **ponad 200 wdrożeń, 140+ klientów**.
+  „Wdrożenia” w metodzie i w tekstach to 200+, „firmy/klienci” (np. pasek
+  logotypów) to 140+.
+- Czasu pierwszej rozmowy nie podajemy (rzadko kończy się w 30 minut);
+  zamiast tego: bezpłatna i bez zobowiązań.
 - Twarz w zielonym pasie dobrana do usługi; ta sama osoba może stać na kilku
   stronach, ale z prawdziwą rolą.
 
