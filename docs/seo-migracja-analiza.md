@@ -355,7 +355,9 @@ serwisie i jedyny materiał, którego brakuje w formacie „jedna firma, jeden
 proces, przed i po". Nowe `/inspiracje` pokazuje dwanaście ekranów z liczbą
 przy każdym, co jest czymś innym.
 
-### 6. Kategorie bazy wiedzy bez adresów
+### 6. Kategorie bazy wiedzy bez adresów — ZROBIONE 15.10.2026
+
+Kategorie stoją pod starymi adresami `/blog-categories/<adres>`.
 
 Stary blog miał siedem adresów kategorii, razem 46 kliknięć —
 `/blog-categories/narzedzia` rankuje na pozycji 2,6. Nowa `/baza-wiedzy`
@@ -438,6 +440,12 @@ chodzi tylko o to, żeby nie zostawić pięćdziesięciu jeden błędów 404.
 
 ### Gotowe do wklejenia
 
+> **Trzy pierwsze wiersze są nieaktualne od 15.10.2026.** Blog nie jest już
+> przekierowywany: artykuły stoją pod `/post/<slug>`, lista pod `/blog`,
+> kategorie pod `/blog-categories/<adres>` (`docs/baza-wiedzy-koncepcja.md`).
+> Przekierowania idą w drugą stronę: `/baza-wiedzy → /blog`,
+> `/baza-wiedzy/:slug → /post/:slug`.
+
 > **Sześciu adresów `/automatyzacja-w-*` w tym bloku nie ma i nie może być.**
 > Od 10.09.2026 stoją pod nimi prawdziwe strony; przekierowanie przesłoniłoby je
 > i skasowało jedyne miejsce, gdzie intencja niemarkowa spotyka komercyjną.
@@ -498,6 +506,16 @@ treścią: `/darmowa-konsultacja` (jest), `/polityka-prywatnosci` i `/regulamin`
 ---
 
 ## Do zrobienia przed przełączeniem domeny
+
+> **Stan 16.10.2026.** Punkty 1–4 zrobione: `site` wpisany na sztywno jako
+> `https://www.letsautomate.pl` (astro.config.mjs), strona główna
+> i `/darmowa-konsultacja` mają opis, canonical, OG i dane strukturalne
+> (`MetaStrony.astro`), dziesięć obcych obrazów leży w `public/uploads`,
+> `robots.txt` bez wpisów Disallow. Do tego: GTM, GA4 i narzędzia
+> marketingowe ze starego serwisu z banerem zgód (`Zgody.astro`), formularz
+> konsultacji podpięty pod `/api/kontakt`, strona 404, `trailingSlash: false`.
+> Przekierowania wstrzymane — pełna lista starych adresów z decyzjami:
+> `docs/stare-adresy.md`.
 
 Kolejność ma znaczenie — pierwsze cztery punkty psują serwis, jeśli przejdą
 niezauważone.

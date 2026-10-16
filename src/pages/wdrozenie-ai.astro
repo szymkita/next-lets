@@ -1,0 +1,1076 @@
+---
+// WDROŻENIE AI W FIRMIE — /wdrozenie-ai
+// Pozycja menu „Narzędzia AI dla całej firmy" (kolumna „Wdrażamy AI").
+// Do 14.10.2026 prowadziła na /produkty/appto. Szymon: „nie chodzi o Appto,
+// tylko faktycznie o wdrożenie AI do organizacji. Appto może być tam jedną
+// z opcji, po prostu dodatkową propozycją wartości". Strona sprzedaje
+// wdrożenie narzędzia AI dla wszystkich działów i opiekę po nim; Appto stoi
+// w próbie obok Copilota, Gemini, ChatGPT i Claude'a.
+// Standard: docs/uslugi-standard.md, treść: docs/podstrony-uslugowe-playbook.md,
+// koncepcja: docs/wdrozenie-ai-koncepcja.md.
+//
+// Pytania zakupowe (playbook §2), w kolejności: które narzędzie → czy będzie
+// znało firmę → czy nie pokaże komuś płac → co dokładnie dostajemy → czy to
+// działało gdzie indziej → czym to się różni od partnera, który sprzedaje
+// licencje → ile trwa → czy to dla nas.
+//
+// Teza (playbook §3): licencję kupuje się w jeden dzień, a narzędzie
+// odpowiada tak dobrze, jak uporządkowane są dokumenty i dostępy, po które
+// sięga. Niesie ją hero (odpowiedzi z przypisami do dokumentów firmy i jedna
+// bez odpowiedzi, bo plik jest poza dostępem) i dwa bloki „Dlaczego".
+//
+// Sprawdzalne przed umową (playbook §4): próba na zadaniach działów z arkuszem
+// wyników, przegląd udostępnień przed startem, raport miesiąca z tą samą
+// listą zadań. Do tego: bez prowizji od dostawców, Appto nazwane wprost jako
+// nasze.
+//
+// Jeden przykład przez całą stronę: hurtownia instalacyjna, 160 osób,
+// 7 działów i 95 osób z dostępem (magazyn, 62 osoby, poza pierwszym planem),
+// 24 zadania z działów. Liczby się spinają: zadania działów 7+5+4+3+2+2+1 = 24
+// w próbie, w planie i w raporcie; Copilot 17 z 24, ChatGPT 15, Appto 19,
+// w handlu i obsłudze Appto 11 z 12, Copilot 5 z 12; ludzie 38+22+11+9+6+4+5
+// = 95; raport: 18 z 24 zadań robionych z AI; opiekunowie źródeł z hero są
+// tymi samymi osobami w scenie.
+//
+// Rysunki tej usługi (słownik: dokument z przypisami, folder, wyniki
+// wyszukiwania, organigram):
+//   · hero — dokument firmy i kartka z odpowiedzią. Trzy pytania z działów
+//     po kolei: odpowiedź z przypisami, których numery zapalają się przy
+//     zakreślonych miejscach dokumentu; trzecie pytanie trafia na plik poza
+//     dostępem handlowca i zostaje bez odpowiedzi. Pętla stoi poza kadrem;
+//   · trzy wersje cennika w jednym folderze: przed porządkiem odpowiedź
+//     z ceną sprzed podwyżki, po porządku jedno źródło z opiekunem;
+//   · wyniki wyszukiwania „premie" na koncie handlowca przed przeglądem
+//     udostępnień i po nim;
+//   · ciemna scena z czterema dokumentami, które zostają po wdrożeniu;
+//   · trzy firmy z wybranym narzędziem i liczbą zadań z listy;
+//   · organigram firmy, w którym działy zapalają się w tygodniu startu.
+//
+// Układ: standard §2 bez odstępstw (8 = plan sześciu tygodni).
+//
+// DO POTWIERDZENIA PRZED PUBLIKACJĄ:
+//   · kształt usługi: próba na 20–30 zadaniach, przegląd udostępnień, pilot
+//     w jednym dziale przez dwa tygodnie, sześć tygodni do ostatniego działu,
+//     opieka w abonamencie miesięcznym z raportem;
+//   · lista narzędzi, które wdrażamy (Copilot w Microsoft 365, Gemini
+//     w Google Workspace, ChatGPT i Claude w planach dla firm, Appto);
+//   · zdania o dostawcach: brak treningu modeli na danych z planów dla firm,
+//     Copilot i Gemini działają z uprawnieniami użytkownika — sprawdzić
+//     w aktualnych warunkach przed publikacją;
+//   · cały przykład jest PRZYKŁADOWY: hurtownia instalacyjna, osoby, pliki,
+//     wyniki próby, koszty w raporcie (licencja ok. 130 zł na osobę),
+//     daty; trzy firmy w przykładach (producent mebli jak na /strategia-ai);
+//   · zdanie FAQ, że Appto często nie wchodzi wcale albo do jednego działu;
+//   · Piotr Wojciuk jako twarz zielonego pasa;
+//   · cytat X3D — prawdziwy (strona główna), dotyczy współpracy ogólnie;
+//   · „140+ wdrożeń" w metodzie — liczba do ustalenia dla całego serwisu.
+import LaBase from '../layouts/LaBase.astro';
+import GcFaq from '../components/GcFaq.astro';
+import Styl from '../components/usluga/Styl.astro';
+import Anim from '../components/usluga/Anim.astro';
+import Hero from '../components/usluga/Hero.astro';
+import Procesy from '../components/usluga/Procesy.astro';
+import Pas from '../components/usluga/Pas.astro';
+import Cytat from '../components/usluga/Cytat.astro';
+import CtaPasek from '../components/usluga/CtaPasek.astro';
+import Metoda from '../components/usluga/Metoda.astro';
+import DlaKogo from '../components/usluga/DlaKogo.astro';
+import Kontakt from '../components/usluga/Kontakt.astro';
+
+const kanon = new URL('/wdrozenie-ai', Astro.site).href;
+
+const dane = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Service',
+      '@id': `${kanon}#usluga`,
+      name: 'Wdrożenie AI w firmie',
+      alternateName: ['Narzędzia AI dla całej firmy', 'Wdrożenie Copilota w firmie', 'Wdrożenie ChatGPT w firmie'],
+      serviceType: 'Wdrożenie narzędzi sztucznej inteligencji w organizacji',
+      url: kanon,
+      description: 'Wdrożenie narzędzia AI dla wszystkich działów firmy: wybór narzędzia w próbie na zadaniach działów, przegląd udostępnień i porządek w źródłach przed startem, asystenci do czynności działów, uruchomienie dział po dziale i opieka po uruchomieniu z raportem co miesiąc.',
+      provider: { '@id': new URL('/#organizacja', Astro.site).href },
+      areaServed: { '@type': 'Country', name: 'Polska' },
+      audience: { '@type': 'BusinessAudience', name: 'Małe, średnie i duże firmy' },
+    },
+    {
+      '@type': 'BreadcrumbList',
+      '@id': `${kanon}#okruszki`,
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Strona główna', item: new URL('/', Astro.site).href },
+        { '@type': 'ListItem', position: 2, name: 'Wdrożenie AI w firmie', item: kanon },
+      ],
+    },
+  ],
+};
+
+const title = "Wdrożenie AI w firmie — narzędzia AI dla całej firmy | Let's automate";
+const description = 'Wdrażamy narzędzie AI dla wszystkich działów: wybór w próbie na Waszych zadaniach, porządek w dokumentach i dostępach, asystenci dla działów i opieka po starcie. Copilot, Gemini, ChatGPT albo Appto, bez prowizji od dostawców.';
+
+// Ikony rysunków (16 × 16). Kłódka i plik — kształty Heroicons Micro.
+const KLODKA = 'M8 1a3.5 3.5 0 0 0-3.5 3.5V7A1.5 1.5 0 0 0 3 8.5v5A1.5 1.5 0 0 0 4.5 15h7a1.5 1.5 0 0 0 1.5-1.5v-5A1.5 1.5 0 0 0 11.5 7V4.5A3.5 3.5 0 0 0 8 1Zm2 6V4.5a2 2 0 1 0-4 0V7h4Z';
+const PLIK = 'M4.5 1.5h4.6l3.4 3.4v8.1a1.5 1.5 0 0 1-1.5 1.5h-6.5A1.5 1.5 0 0 1 3 13V3a1.5 1.5 0 0 1 1.5-1.5Z';
+const ROG = 'M9 1.6v2.9a.6.6 0 0 0 .6.6h2.8';
+const FOLDER = 'M1.5 4.2A1.7 1.7 0 0 1 3.2 2.5h2.6c.5 0 .9.2 1.2.5l1 1h4.8a1.7 1.7 0 0 1 1.7 1.7v6.6a1.7 1.7 0 0 1-1.7 1.7H3.2a1.7 1.7 0 0 1-1.7-1.7Z';
+
+// ---- PRZYKŁAD: hurtownia instalacyjna (PRZYKŁADOWE) -------------------------
+const FIRMA = 'Hurtownia instalacyjna';
+// Działy w kolejności uruchomienia; z = zadania z listy działu, tyd = tydzień startu.
+const DZIALY = [
+  { n: 'Handel', os: 38, z: 7, nz: ['Copilot', 'Appto'], tyd: 3 },
+  { n: 'Obsługa klienta', os: 22, z: 5, nz: ['Copilot', 'Appto'], tyd: 5 },
+  { n: 'Finanse', os: 11, z: 4, nz: ['Copilot'], tyd: 5 },
+  { n: 'Zakupy', os: 9, z: 3, nz: ['Copilot'], tyd: 5 },
+  { n: 'Marketing', os: 6, z: 2, nz: ['Copilot'], tyd: 6 },
+  { n: 'Kadry', os: 4, z: 2, nz: ['Copilot'], tyd: 6 },
+  { n: 'Zarząd', os: 5, z: 1, nz: ['Copilot'], tyd: 6 },
+];
+const ZADAN = DZIALY.reduce((a, d) => a + d.z, 0);          // 24
+const OSOB = DZIALY.reduce((a, d) => a + d.os, 0);          // 95
+const MAGAZYN = 62;
+const OSOB_FIRMA = OSOB + MAGAZYN + 3;                      // 160 (3 osoby IT)
+
+// ---- HERO: trzy pytania z działów ------------------------------------------
+// a: odpowiedź; liczba w tablicy = numer przypisu. c w punkcie dokumentu =
+// numer przypisu, który na niego wskazuje.
+const WH = [
+  {
+    dz: 'Handel', dok: 'Warunki handlowe · Instal-Pol', meta: 'obowiązują od 1.03.2026 · wersja 3',
+    op: 'Jan Mazur, kierownik handlu',
+    pkt: [
+      { n: '§ 2', t: 'Ceny', d: 'według cennika 2026, bez dopłat za transport palet' },
+      { n: '§ 3', t: 'Rabaty', m: 'armatura 12%', po: ', pompy 8%, rury i kształtki 15%', c: 1 },
+      { n: '§ 4', t: 'Dostawa', d: 'gratis od 3 000 zł netto, w 24 h na terenie województwa' },
+      { n: '§ 5', t: 'Płatności', m: 'przelew 30 dni; zamówienie od 20 000 zł netto po akceptacji kierownika handlu', c: 2 },
+      { n: '§ 6', t: 'Zwroty', d: 'według procedury reklamacji i zwrotów' },
+    ],
+    kto: 'Marta Wójcik', kdz: 'handel',
+    q: 'Jaki rabat i termin płatności ma Instal-Pol na armaturę?',
+    a: ['Rabat na armaturę: 12%.', 1, ' Przelew 30 dni, a zamówienie od 20 000 zł netto musi zaakceptować kierownik handlu.', 2],
+    zr: ['Warunki handlowe Instal-Pol, § 3', 'Warunki handlowe Instal-Pol, § 5'],
+  },
+  {
+    dz: 'Obsługa klienta', dok: 'Procedura reklamacji i zwrotów', meta: 'wersja 5 · 12.06.2026',
+    op: 'Paweł Nowak, obsługa klienta',
+    pkt: [
+      { n: '1.', t: 'Zwrot', d: 'do 14 dni od dostawy, ', m: 'towar niezamontowany', po: ', w oryginalnym opakowaniu', c: 1 },
+      { n: '2.', t: 'Reklamacja', m: 'protokół montażu, zdjęcie tabliczki znamionowej i numer faktury', c: 2 },
+      { n: '3.', t: 'Termin', d: 'odpowiedź dla klienta w 14 dni od kompletu dokumentów' },
+      { n: '4.', t: 'Wymiana', d: 'po akceptacji producenta, bez czekania na zwrot towaru' },
+    ],
+    kto: 'Karolina Zięba', kdz: 'obsługa klienta',
+    q: 'Klient chce zwrócić zawór po montażu. Przyjmujemy?',
+    a: ['Zwrotu nie, bo zawór był zamontowany.', 1, ' Możemy przyjąć reklamację, jeśli klient przyśle protokół montażu, zdjęcie tabliczki i numer faktury.', 2],
+    zr: ['Procedura reklamacji i zwrotów, pkt 1', 'Procedura reklamacji i zwrotów, pkt 2'],
+  },
+  {
+    dz: 'Kadry', dok: 'Premie kwartalne Q3 2026', meta: 'arkusz · 9 zakładek', zamk: true,
+    op: 'Ewa Lis, kadry',
+    kto: 'Marta Wójcik', kdz: 'handel',
+    q: 'Ile wyniosły premie kwartalne w magazynie?',
+    a: ['Nie znalazłem tego w dokumentach, do których masz dostęp.'],
+    zr: [],
+  },
+];
+const WH_ARIA = `Przykład z hurtowni instalacyjnej, która zatrudnia ${OSOB_FIRMA} osób: dokument firmy i kartka z odpowiedzią narzędzia AI na pytanie z działu. Pierwsze pytanie zadaje handlowiec: jaki rabat i termin płatności ma klient Instal-Pol na armaturę. Odpowiedź: rabat 12 procent, przelew 30 dni, a zamówienie od 20 tysięcy złotych akceptuje kierownik handlu. Przypisy wskazują paragrafy 3 i 5 warunków handlowych, których opiekunem jest kierownik handlu. Drugie pytanie zadaje obsługa klienta: czy przyjąć zwrot zaworu po montażu. Odpowiedź: zwrotu nie, reklamację tak, z przypisami do punktów 1 i 2 procedury reklamacji. Trzecie pytanie handlowca dotyczy premii w magazynie. Plik z premiami widzą tylko kadry i zarząd, więc narzędzie odpowiada, że nie znalazło tego w dokumentach, do których pytający ma dostęp.`;
+
+// ---- NARZĘDZIA (indeks pod definicją) ---------------------------------------
+const NARZEDZIA = [
+  { t: 'Copilot w Microsoft 365',
+    a: 'Firma pracuje w Outlooku, Teams i na SharePoincie. Copilot sięga po maile, spotkania i pliki każdej osoby, z jej uprawnieniami, i pracuje w aplikacjach, które ludzie mają otwarte cały dzień.',
+    b: 'Widzi wszystko, do czego pracownik ma dostęp. Przed włączeniem przeglądamy udostępnienia w SharePoincie i OneDrive.' },
+  { t: 'Gemini w Google Workspace',
+    a: 'Poczta w Gmailu, dokumenty i arkusze na Dysku Google. Gemini pracuje w tych samych aplikacjach, w których zespół pisze i liczy.',
+    b: 'Uprawnienia z Dysku. Foldery udostępnione każdemu w organizacji sprawdzamy, zanim narzędzie zacznie po nie sięgać.' },
+  { t: 'ChatGPT albo Claude w planie dla firm',
+    a: 'Praca to głównie pisanie i analiza długich dokumentów, niezależnie od pakietu biurowego. Działy dostają własne projekty z wiedzą i instrukcjami.',
+    b: 'Które źródła da się podpiąć w wybranym planie i gdzie leżą dane. Prywatne konta zastępujemy firmowymi, z jednym administratorem.' },
+  { t: 'Appto, nasz produkt',
+    a: 'Asystent ma sięgać do CRM-u, ERP i poczty, pracować w tle według harmonogramu, a dane mają zostać w Unii Europejskiej. Rozliczenie za zużycie.',
+    b: 'Staje do próby jak każde inne narzędzie. Najczęściej wchodzi obok Copilota albo ChatGPT, do działów, które potrzebują danych z systemów.' },
+  { t: 'Narzędzie, które już macie',
+    a: 'Licencje są kupione, ale narzędzie odpowiada ogólnikami albo korzysta z niego kilka osób.',
+    b: 'Bez nowej licencji. Porządkujemy źródła i dostępy, ustawiamy asystentów i uruchamiamy narzędzie od nowa, dział po dziale.' },
+];
+
+// ---- DLACZEGO · blok 1: trzy cenniki ----------------------------------------
+const WC_PLIKI = [
+  { n: 'Cennik_2024.xlsx', d: 'zmieniony 14.01.2024', st: 'arch' },
+  { n: 'Cennik 2025 poprawiony.xlsx', d: 'zmieniony 3.09.2025', st: 'arch', cyt: true },
+  { n: 'Cennik 2026.xlsx', d: 'zmieniony 1.03.2026', st: 'ok' },
+];
+
+// ---- DLACZEGO · blok 2: wyniki wyszukiwania „premie" -------------------------
+const WD = [
+  { p: 'Premie kwartalne Q3 2026.xlsx', dz: 'Kadry', przed: 'cała firma', po: 'kadry i zarząd' },
+  { p: 'Regulamin premiowania handlowców.pdf', dz: 'Handel', przed: 'handel' },
+  { p: 'Lista płac 09.2026.pdf', dz: 'Księgowość', przed: 'każdy z linkiem', po: 'księgowość i zarząd' },
+  { p: 'Premia za wynik Q3, prezentacja.pptx', dz: 'Handel', przed: 'handel' },
+  { p: 'Umowy o pracę, skany · 212 plików', dz: 'Kadry', przed: 'cała firma', po: 'kadry' },
+];
+
+// ---- JAK WYGLĄDA · cztery dokumenty -----------------------------------------
+const ZAKLADKI = [
+  { t: 'Próba narzędzi', p: 'Każde zadanie z listy przechodzi przez trzy narzędzia, a ocenia je dział, który to zadanie wykonuje. Zarząd decyduje na wynikach, arkusz zostaje w firmie.' },
+  { t: 'Asystenci działów', p: 'Każdy asystent ma opis, źródła, granicę, na której oddaje sprawę człowiekowi, i właściciela po Waszej stronie.' },
+  { t: 'Zasady korzystania', p: 'Jedna strona zatwierdzona przez zarząd. Dostaje ją każda osoba z dostępem, razem z godziną wprowadzenia w swoim dziale.' },
+  { t: 'Raport miesiąca', p: 'Które zadania z listy robi się z AI, ile kosztuje każdy dział i które odpowiedzi były złe. Na końcu decyzje do podjęcia.' },
+];
+// Próba: dobre odpowiedzi na dział i narzędzie (reszta po połowie: do poprawki / źle).
+const PROBA_N = ['Copilot w Microsoft 365', 'ChatGPT w planie dla firm', 'Appto'];
+const PROBA_K = ['Copilot', 'ChatGPT', 'Appto'];   // nagłówki na telefonie
+const PROBA = {
+  Handel: [3, 3, 7], 'Obsługa klienta': [2, 2, 4], Finanse: [4, 3, 3], Zakupy: [3, 2, 2],
+  Marketing: [2, 2, 1], Kadry: [2, 2, 1], Zarząd: [1, 1, 1],
+};
+const kropki = (n, g) => { const zle = Math.floor((n - g) / 2); return [...Array(g).fill('d'), ...Array(n - g - zle).fill('p'), ...Array(zle).fill('z')]; };
+const PROBA_SUMA = PROBA_N.map((_, k) => DZIALY.reduce((a, d) => a + PROBA[d.n][k], 0));   // 17, 15, 19
+const HO = (k) => PROBA.Handel[k] + PROBA['Obsługa klienta'][k];                          // Appto 11, Copilot 5
+const HO_Z = DZIALY[0].z + DZIALY[1].z;                                                  // 12
+const HO_OS = DZIALY[0].os + DZIALY[1].os;                                               // 60
+
+const ASYSTENCI = [
+  { dz: 'Handel', a: [['Zamienniki z kart technicznych', 'Appto', true], ['Notatka do CRM po rozmowie', 'Appto'], ['Odpowiedź na zapytanie z maila', 'Copilot']] },
+  { dz: 'Obsługa klienta', a: [['Odpowiedź na reklamację', 'Appto'], ['Status zamówienia dla klienta', 'Appto']] },
+  { dz: 'Finanse', a: [['Opis faktury kosztowej', 'Copilot'], ['Wezwanie do zapłaty', 'Copilot']] },
+  { dz: 'Zakupy', a: [['Porównanie ofert dostawców', 'Copilot'], ['Pismo do dostawcy o opóźnieniu', 'Copilot']] },
+  { dz: 'Marketing', a: [['Opis produktu do sklepu', 'Copilot'], ['Post o nowości w ofercie', 'Copilot']] },
+  { dz: 'Kadry', a: [['Odpowiedź o regulaminie pracy', 'Copilot'], ['Ogłoszenie o pracę', 'Copilot']] },
+  { dz: 'Zarząd', a: [['Podsumowanie tygodnia z raportów', 'Copilot']] },
+];
+const ASYST_N = ASYSTENCI.reduce((a, g) => a + g.a.length, 0);   // 14
+
+const ZASADY = [
+  { t: 'Gdzie pracujemy z AI', d: 'W firmowym Copilocie i w Appto. Dokumenty firmy i dane klientów nie trafiają do prywatnych kont ani darmowych narzędzi.' },
+  { t: 'Czego nie wklejamy', d: 'Danych z kadr i płac poza działem kadr. Haseł, kluczy dostępu i numerów kart. Umów z klauzulą poufności bez zgody opiekuna umowy.' },
+  { t: 'Zanim coś pójdzie do klienta', d: 'Ceny, rabaty i terminy sprawdzamy w źródle z przypisu. Odpowiedź bez przypisu traktujemy jak szkic.' },
+  { t: 'Kiedy odpowiedź jest zła', d: 'Zgłoszenie na kanale #ai-pomoc z linkiem do odpowiedzi. Opiekun poprawia źródło, a raport miesiąca pokazuje, czy błąd wrócił.' },
+];
+
+// Raport: zadania robione z AI, złe odpowiedzi (zgłoszone i poprawione), koszt w miesiącu.
+const LIC = 130;   // PRZYKŁADOWA licencja na osobę, zł / miesiąc
+const RAPORT = [
+  { dz: 'Handel', zr: 7, zle: 4, appto: 2880 },
+  { dz: 'Obsługa klienta', zr: 4, zle: 2, appto: 1450 },
+  { dz: 'Finanse', zr: 3, zle: 0 },
+  { dz: 'Zakupy', zr: 2, zle: 1 },
+  { dz: 'Marketing', zr: 1, zle: 0 },
+  { dz: 'Kadry', zr: 1, zle: 0 },
+  { dz: 'Zarząd', zr: 0, zle: 0 },
+].map((r) => { const d = DZIALY.find((x) => x.n === r.dz); return { ...r, os: d.os, z: d.z, koszt: d.os * LIC + (r.appto || 0) }; });
+const RAPORT_ZR = RAPORT.reduce((a, r) => a + r.zr, 0);          // 18
+const RAPORT_KOSZT = RAPORT.reduce((a, r) => a + r.koszt, 0);    // 16 680
+// odmiana: 1 osoba, 2–4 osoby (bez 12–14), 5+ osób
+const odm = (n, a, b, c) => (n === 1 ? a : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14) ? b : c);
+const tys = (v) => String(Math.round(v)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+
+// ---- PRZYKŁADY (PRZYKŁADOWE) ------------------------------------------------
+const PRZYKLADY = [
+  { f: FIRMA, m: `${OSOB_FIRMA} osób`, nz: 'Copilot w Microsoft 365 i Appto w dwóch działach',
+    d: `Firma pracuje w Outlooku i Teams. Handel i obsługa klienta potrzebują stanów z ERP i historii z CRM, a w tych zadaniach próba dała Appto ${HO(2)} z ${HO_Z}.`,
+    zr: RAPORT_ZR, z: ZADAN, st: 'Zamówienia do dostawców: ceny i terminy ustala się przez telefon.' },
+  { f: 'Producent mebli', m: '140 osób', nz: 'Gemini w Google Workspace',
+    d: 'Poczta i dokumenty są w Google. Żadne inne narzędzie nie wypadło w próbie na tyle lepiej, żeby opłacał się drugi pakiet.',
+    zr: 12, z: 17, st: 'Wyceny mebli na wymiar: każda jest inna, a pomyłka kosztuje produkcję.' },
+  { f: 'Biuro projektowe', m: '70 osób', nz: 'ChatGPT w planie dla firm',
+    d: 'Praca na długich dokumentach: warunki przetargów, opisy techniczne, normy. Połowa zespołu korzystała z prywatnych kont, więc zmiana była najkrótsza.',
+    zr: 14, z: 18, st: 'Obliczenia konstrukcyjne zostały w programach projektowych.' },
+];
+
+// ---- METODA -----------------------------------------------------------------
+const METODA = [
+  { k: 'Wybór narzędzia', ik: 'scale',
+    r: 'Narzędzie z oferty partnera, który sprzedaje licencje.',
+    t: `Próba na ${ZADAN} zadaniach działów`, m: 'Każde zadanie przechodzi przez dwa albo trzy narzędzia, a wynik ocenia dział, który je wykonuje. Arkusz z wynikami zostaje u Was.' },
+  { k: 'Dostępy', ik: 'shield-check',
+    r: 'Narzędzie włączone na dysku w stanie, w jakim jest.',
+    t: 'Przegląd udostępnień przed startem', m: 'Foldery otwarte dla całej firmy sprawdzamy, zanim narzędzie zacznie po nie sięgać. Płace, umowy i dane osobowe wracają do swoich działów.' },
+  { k: 'Wiedza firmy', ik: 'document-duplicate',
+    r: 'Podpięty cały dysk.',
+    t: 'Źródła z opiekunem', m: 'Do narzędzia trafiają wybrane foldery, po jednej wersji dokumentu. Każde źródło ma osobę, która je aktualizuje.' },
+  { k: 'Asystenci', ik: 'users',
+    r: 'Puste okno i lista przykładowych poleceń.',
+    t: 'Asystenci do czynności działów', m: 'Każdy dział dostaje asystentów do zadań z listy, ze źródłami i z granicą, na której oddają sprawę człowiekowi.' },
+  { k: 'Uruchomienie', ik: 'arrow-path',
+    r: 'Wszyscy naraz, po jednym webinarze.',
+    t: 'Dział po dziale', m: 'Pierwszy dział pracuje z narzędziem przez dwa tygodnie, potem wchodzą kolejne. Każdy dostaje godzinę na swoich sprawach i osobę, do której idzie z pytaniem.' },
+  { k: 'Po uruchomieniu', ik: 'table-cells',
+    r: 'Licencje odnawiają się co rok i nikt nie sprawdza, kto z nich korzysta.',
+    t: 'Raport co miesiąc', m: `Które zadania z listy robi się z AI, ile kosztuje każdy dział i które odpowiedzi były złe. Nowy model sprawdzamy na tych samych ${ZADAN} zadaniach, zanim go włączymy.` },
+  { k: 'Niezależność', ik: 'banknotes',
+    r: 'Prowizja od dostawcy licencji.',
+    t: 'Bez prowizji od dostawców', m: 'Licencje kupujecie bezpośrednio u dostawcy. Konta, dokumenty i dane są Wasze, a opiekę wypowiadacie z miesięcznym terminem.' },
+];
+
+// ---- DLA KOGO -----------------------------------------------------------------
+const DLA_KOGO = [
+  { t: 'Ludzie korzystają z AI na prywatnych kontach', d: 'Wklejają maile klientów, oferty i umowy do darmowych narzędzi, bo firma nie dała im innego. Dane wychodzą wtedy poza firmę bez umowy z dostawcą.' },
+  { t: 'Pracujecie w Microsoft 365 albo Google Workspace i rozważacie Copilota albo Gemini', d: 'Pytanie brzmi, czy kupić licencje dla wszystkich, dla części działów, czy wcale. Próba na zadaniach działów odpowiada na nie liczbą.' },
+  { t: 'Wiedza firmy leży w plikach, mailach i w głowach kilku osób', d: 'Cenniki, warunki klientów, karty techniczne, procedury. Nowa osoba pyta kolegów, bo nie wie, który plik jest aktualny.' },
+  { t: 'Licencje już są, a narzędzie odpowiada ogólnikami', d: 'Kupione na próbę, bez porządku w źródłach i bez asystentów. Zaczynamy wtedy od dokumentów i dostępów, bez nowej licencji.' },
+];
+const NIE = [
+  'Narzędzie zna już dokumenty firmy, a zespół i tak wraca do starego sposobu pracy. Wtedy lepiej sprawdzą się <a href="/szkolenia-ai">szkolenia z AI</a>.',
+  'Zadanie ma się wykonywać bez człowieka, od zgłoszenia do zamknięcia. Wtedy budujemy <a href="/rozwiazania-ai">automatyzację procesu z AI</a>.',
+  'Pomysłów na AI jest kilkanaście, a zarząd chce wiedzieć, od którego zacząć i ile to zwróci. Kolejność ułoży <a href="/strategia-ai">strategia AI</a>.',
+  'Firma ma kilka osób. Plan dla zespołów ustawicie u dostawcy w jedno popołudnie, a na rozmowie podpowiemy, który wybrać.',
+];
+
+const faq = [
+  {
+    q: 'Czy nie wystarczy kupić licencji i rozesłać loginy?',
+    a: 'Narzędzie zadziała od razu, ale odpowiada z tego, co znajdzie. Jeśli w folderze leżą trzy cenniki, zacytuje któryś z nich, a jeśli lista płac jest otwarta dla całej firmy, pokaże ją każdemu, kto zapyta. Po miesiącu zostaje kilka osób, które używają go do maili. Dwa tygodnie porządku w źródłach i dostępach przed startem robią różnicę między tymi dwoma scenariuszami.',
+  },
+  {
+    q: 'Copilot, ChatGPT, Gemini czy Appto — co wybrać?',
+    a: 'To rozstrzyga próba. Zbieramy z działów od dwudziestu do trzydziestu prawdziwych zadań, przepuszczamy je przez dwa albo trzy narzędzia, a wynik ocenia dział, który te zadania wykonuje. Najczęściej wygrywa narzędzie z pakietu, w którym już pracujecie. Tam, gdzie asystent ma sięgać do CRM-u albo ERP, czasem dochodzi drugie narzędzie w jednym czy dwóch działach.',
+  },
+  {
+    q: 'Appto jest Wasze. Skąd mamy wiedzieć, że wybór jest uczciwy?',
+    a: 'Appto staje do próby na tych samych zadaniach co pozostałe narzędzia, a ocenia je Wasz dział. Arkusz z wynikami dostajecie w całości. Od innych dostawców nie bierzemy prowizji, więc nie mamy powodu odwodzić Was od ich narzędzi. Często Appto nie wchodzi wcale albo wchodzi do jednego działu. Jak działa, opisaliśmy na <a href="/produkty/appto">stronie Appto</a>.',
+  },
+  {
+    q: 'Ile kosztuje wdrożenie AI w firmie?',
+    a: 'Wdrożenie wyceniamy stałą kwotą po pierwszej rozmowie. Kwota zależy od liczby działów i źródeł do uporządkowania. Licencje kupujecie bezpośrednio u dostawcy, według jego cennika, a opiekę po uruchomieniu rozliczamy miesięcznie.',
+  },
+  {
+    q: 'Czy nasze dane trafią do trenowania modeli?',
+    a: 'W planach dla firm, które wdrażamy, dostawcy nie trenują modeli na danych klientów. Przed startem sprawdzamy to w warunkach konkretnego planu, podpisujemy umowę powierzenia danych i ustalamy, gdzie dane są przechowywane. Appto trzyma je w Unii Europejskiej.',
+  },
+  {
+    q: 'Ludzie już używają ChatGPT na prywatnych kontach. Co z tym zrobić?',
+    a: 'To najczęstszy punkt wyjścia. Sam zakaz zwykle przenosi to na prywatne telefony. Dajemy firmowe konto w narzędziu, które wygra próbę, i jedną stronę zasad: co wolno wkleić, czego nie, kogo zapytać. Kiedy firmowe narzędzie zna dokumenty firmy, ludzie przestają wracać do prywatnych kont.',
+  },
+  {
+    q: 'Ile czasu zajmie to naszym ludziom?',
+    a: 'W próbie po godzinie z każdego działu na zebranie zadań i drugiej na ocenę wyników. Przy przeglądzie dostępów kilka godzin administratora albo osoby od IT. Przy uruchomieniu godzina dla każdego działu na jego sprawach. Po starcie pół godziny w miesiącu na omówienie raportu.',
+  },
+  {
+    q: 'Czym to się różni od szkoleń z AI?',
+    a: 'Wdrożenie daje całej firmie narzędzie, które zna jej dokumenty, razem z asystentami i zasadami. <a href="/szkolenia-ai">Szkolenia z AI</a> to dwanaście tygodni z jednym zespołem, po których wybrane czynności robi się na stałe nowym sposobem. Zwykle najpierw jest narzędzie, potem szkolenie w dziale, w którym zmiana ma być największa.',
+  },
+  {
+    q: 'Czy nie powinniśmy zacząć od strategii AI?',
+    a: 'Jeśli zarząd chce wiedzieć, które procesy przebudować i ile to zwróci, to tak. Narzędzie dla ludzi i przebudowa procesów to dwie osobne decyzje i często idą równolegle: narzędzie pomaga w codziennej pracy od pierwszego miesiąca, a <a href="/strategia-ai">strategia AI</a> układa większe projekty na rok.',
+  },
+  {
+    q: 'Co się dzieje po wdrożeniu?',
+    a: 'Narzędzie zostaje pod opieką w abonamencie miesięcznym. Co miesiąc dostajecie raport: które zadania z listy robi się z AI, ile kosztuje każdy dział i które odpowiedzi były złe, razem z poprawionym źródłem. Dokładamy asystentów, o których proszą działy, a nowy model sprawdzamy na tej samej liście zadań, zanim go włączymy. Opiekę wypowiadacie z miesięcznym terminem.',
+  },
+];
+dane['@graph'].push({
+  '@type': 'FAQPage',
+  '@id': `${kanon}#faq`,
+  mainEntity: faq.map((f) => ({
+    '@type': 'Question',
+    name: f.q,
+    acceptedAnswer: { '@type': 'Answer', text: f.a.replace(/<[^>]+>/g, '') },
+  })),
+});
+---
+<LaBase topbar={false} title={title} description={description} ctaHref="#kontakt" ctaLabel="Umów rozmowę" nav="uslugi">
+<script type="application/ld+json" is:inline set:html={JSON.stringify(dane)} slot="head"></script>
+<style is:global slot="head">
+  /* Style tej usługi. Wspólny wygląd: src/components/usluga/Styl.astro. */
+
+  /* =====================================================================
+     HERO · dokument firmy i kartka z odpowiedzią (.wh-)
+     Wymiary w em od font-size .wh-sc, więc rysunek skaluje się z kontenerem.
+     ===================================================================== */
+  .wh{margin:0;container-type:inline-size;container-name:wh}
+  .wh-sc{position:relative;font-size:clamp(10.5px,1.95cqi,14.5px);padding:1.4em 0 3em}
+  .wh-doki{position:relative;display:grid;width:64%;margin-left:0.6em}
+  .wh-doki::before,.wh-doki::after{content:"";position:absolute;inset:0;border-radius:0.7em;background:#fbfaf6;box-shadow:0 0 0 1px rgba(15,26,20,0.06),0 18px 40px -26px rgba(15,26,20,0.4)}
+  .wh-doki::before{transform:rotate(2.6deg) translate(1.2em,0.4em)}
+  .wh-doki::after{transform:rotate(-3.4deg) translate(-0.6em,0.9em)}
+  .wh-dok{grid-area:1 / 1;position:relative;z-index:1;display:flex;flex-direction:column;padding:2.2em 6.4em 1.6em 2.4em;border-radius:0.7em;background:#ffffff;box-shadow:0 0 0 1px rgba(15,26,20,0.07),0 30px 60px -32px rgba(15,26,20,0.45);transform:rotate(-1.2deg);
+    opacity:0;visibility:hidden;transition:opacity .45s ease,visibility 0s linear .45s}
+  .wh-dok.on{opacity:1;visibility:visible;transition:opacity .45s ease}
+  .wh-dz{display:inline-flex;align-items:center;gap:0.5em;font-size:0.82em;font-weight:650;color:var(--ziel-c)}
+  .wh-dz svg{width:1.1em;height:1.1em;fill:currentColor}
+  .wh-dok h4{margin:0.6em 0 0;font-size:1.32em;font-weight:700;letter-spacing:-0.02em;line-height:1.2;color:var(--t1)}
+  .wh-dok > small{display:block;margin-top:0.3em;font-size:0.85em;color:var(--t3)}
+  .wh-pk{margin:1.3em 0 0;padding:1.1em 0 0;list-style:none;border-top:1px solid var(--linia);display:grid;gap:0.85em}
+  .wh-pk li{display:grid;grid-template-columns:2.6em minmax(0,1fr);gap:0.4em;font-size:0.95em;line-height:1.5;color:var(--t2)}
+  .wh-pk li > em{font-style:normal;font-weight:600;color:var(--t3)}
+  .wh-pk b{font-weight:700;color:var(--t1)}
+  .wh-pk mark{padding:0.05em 0.1em;color:var(--t1);background:linear-gradient(rgba(0,205,119,0.34),rgba(0,205,119,0.34)) no-repeat 0 62% / 100% 72%;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+  .wh-c{display:inline-grid;place-items:center;width:1.55em;height:1.55em;margin-left:0.3em;border-radius:50%;background:var(--ziel);color:var(--ink);font-size:0.72em;font-weight:800;line-height:1;vertical-align:0.25em}
+  .wh-dok footer{margin-top:auto;padding-top:1.3em;font-size:0.8em;color:var(--t3)}
+  .wh-dok footer b{font-weight:650;color:var(--t2)}
+  /* plik zamknięty: treść zamazana, na niej kłódka */
+  .wh-zam{position:relative;flex:1;margin-top:1.3em;padding-top:1.1em;border-top:1px solid var(--linia)}
+  .wh-zam i{display:block;height:0.62em;margin:0 0 0.95em;border-radius:0.31em;background:rgba(15,26,20,0.08);filter:blur(1.5px)}
+  .wh-zam i:nth-child(2n){width:78%}
+  .wh-zam i:nth-child(3n){width:88%}
+  .wh-zam > div{position:absolute;left:50%;top:50%;width:min(19em,92%);transform:translate(-50%,-46%);padding:1.2em 1.3em;border-radius:0.8em;background:#ffffff;box-shadow:0 0 0 1px rgba(15,26,20,0.08),0 20px 40px -20px rgba(15,26,20,0.35);text-align:center}
+  .wh-zam svg{display:block;width:2.2em;height:2.2em;margin:0 auto 0.6em;padding:0.5em;border-radius:50%;background:var(--ink);fill:#ffffff}
+  .wh-zam b{display:block;font-size:1em;font-weight:700;color:var(--t1)}
+  .wh-zam span{display:block;margin-top:0.35em;font-size:0.82em;line-height:1.45;color:var(--t2)}
+  /* kartka z odpowiedzią */
+  .wh-odp{position:absolute;right:0;top:7.2em;z-index:2;display:grid;width:45%;padding:1.7em 1.8em 1.6em;border-radius:0.9em;background:#ffffff;
+    box-shadow:0 0 0 1px rgba(15,26,20,0.06),0 46px 80px -34px rgba(7,20,13,0.55);transform:rotate(1.1deg)}
+  .wh-st{grid-area:1 / 1;opacity:0;visibility:hidden;transition:opacity .4s ease,visibility 0s linear .4s}
+  .wh-st.on{opacity:1;visibility:visible;transition:opacity .4s ease}
+  .wh-kto{display:flex;align-items:center;gap:0.55em;margin:0;font-size:0.84em;color:var(--t3)}
+  .wh-kto b{font-weight:650;color:var(--t2)}
+  .wh-kto i{width:0.5em;height:0.5em;border-radius:50%;background:var(--ziel)}
+  .wh-q{margin:0.55em 0 0;font-size:1.22em;font-weight:700;letter-spacing:-0.018em;line-height:1.3;color:var(--t1);text-wrap:pretty}
+  .wh-a{margin:1em 0 0;padding-top:1em;border-top:1px solid var(--linia);font-size:1em;line-height:1.55;color:var(--t1);text-wrap:pretty}
+  .wh-zr{margin:1em 0 0;padding:0;list-style:none;display:grid;gap:0.45em}
+  .wh-zr li{display:flex;align-items:center;gap:0.55em;font-size:0.82em;color:var(--t2)}
+  .wh-zr .wh-c{flex-shrink:0;margin:0;vertical-align:0;font-size:0.82em}
+  .wh-brak{margin:1em 0 0;font-size:0.82em;line-height:1.45;color:var(--t3)}
+  /* ruch: odpowiedź po pytaniu, przypisy razem z zakreśleniem w dokumencie */
+  .wh.gra .wh-a,.wh.gra .wh-zr,.wh.gra .wh-brak{opacity:0;transform:translateY(0.4em);transition:opacity .45s ease,transform .45s ease}
+  .wh.gra .wh-st.a .wh-a,.wh.gra .wh-st.z .wh-zr,.wh.gra .wh-st.a .wh-brak{opacity:1;transform:none}
+  /* ukryty przypis nie zostawia dziury w wierszu: szerokość rośnie razem z nim */
+  .wh.gra .wh-st .wh-a .wh-c{width:0;margin-left:0;transform:scale(0);transition:transform .3s cubic-bezier(.3,1.6,.5,1),width .25s ease,margin .25s ease}
+  .wh.gra .wh-st.z .wh-a .wh-c{width:1.55em;margin-left:0.3em;transform:none}
+  .wh.gra .wh-dok mark{background-size:0% 72%;transition:background-size .7s cubic-bezier(.4,0,.2,1)}
+  .wh.gra .wh-dok .wh-c{width:0;margin-left:0;transform:scale(0);transition:transform .3s cubic-bezier(.3,1.6,.5,1) .55s,width .25s ease .5s,margin .25s ease .5s}
+  .wh.gra .wh-dok.c1 li[data-c="1"] mark,.wh.gra .wh-dok.c2 li[data-c="2"] mark{background-size:100% 72%}
+  .wh.gra .wh-dok.c1 li[data-c="1"] .wh-c,.wh.gra .wh-dok.c2 li[data-c="2"] .wh-c{width:1.55em;margin-left:0.3em;transform:none}
+  .wh.gra .wh-zam > div{opacity:0;transform:translate(-50%,-40%);transition:opacity .4s ease,transform .4s ease}
+  .wh.gra .wh-dok.c1 .wh-zam > div{opacity:1;transform:translate(-50%,-46%)}
+  @container wh (max-width:639px){
+    .wh-sc{font-size:clamp(10px,2.6cqi,13px);padding:0.6em 0 0.4em}
+    .wh-doki{width:auto;margin:0 0.6em 0 0.2em}
+    .wh-dok{padding:1.9em 1.9em 1.5em}
+    .wh-odp{position:relative;top:auto;right:auto;width:auto;margin:-1.2em 0 0 2.4em;padding:1.5em 1.6em}
+  }
+  @container wh (max-width:420px){
+    .wh-odp{margin-left:1.2em}
+  }
+
+  /* =====================================================================
+     DLACZEGO · blok 1: trzy cenniki w jednym folderze (.wc-)
+     ===================================================================== */
+  .wc .ts4-licz > b{min-width:0}
+  .wc-uk{display:grid;grid-template-columns:minmax(0,1fr) clamp(56px,7vw,112px) minmax(0,1fr);align-items:stretch;margin:0 clamp(2px,0.8vw,14px)}
+  .wc-p{display:flex;flex-direction:column;min-width:0;padding:clamp(18px,2vw,26px);border-radius:18px;background:#ffffff;box-shadow:0 0 0 1px rgba(15,26,20,0.06)}
+  .wc-p h4{display:flex;align-items:center;gap:9px;margin:0;font-size:13.5px;font-weight:650;color:var(--t2)}
+  .wc-p h4 svg{width:16px;height:16px;fill:var(--t3)}
+  .wc-pl{margin:14px 0 0;padding:0;list-style:none}
+  .wc-pl li{display:grid;grid-template-columns:18px minmax(0,1fr) auto;align-items:center;gap:10px;padding:10px 10px;border-top:1px solid var(--linia2);font-size:14px;color:var(--t1)}
+  .wc-pl li:first-child{border-top:0}
+  .wc-pl li svg{width:16px;height:16px;fill:none;stroke:var(--t3);stroke-width:1.2}
+  .wc-pl li span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
+  .wc-pl li small{font-size:12.5px;color:var(--t3);white-space:nowrap}
+  .wc-pl li.cyt{border-radius:10px}
+  .wc-pl li.op{grid-template-columns:18px minmax(0,1fr)}
+  .wc-pl li.op small{grid-column:2;margin-top:-4px;white-space:normal}
+  .wc-odp{margin-top:auto;padding-top:18px}
+  .wc-odp > div{padding:16px 18px;border-radius:14px;background:var(--papier)}
+  .wc-odp p{margin:0;font-size:13.5px;line-height:1.5;color:var(--t2)}
+  .wc-odp strong{display:block;margin-top:4px;font-size:clamp(24px,2.2vw,30px);font-weight:750;letter-spacing:-0.035em;color:var(--t1)}
+  .wc-odp em{display:flex;align-items:center;gap:8px;margin-top:8px;font-style:normal;font-size:13px;font-weight:600}
+  .wc-odp em::before{content:"";width:8px;height:8px;border-radius:50%;flex-shrink:0}
+  .przed .wc-odp em{color:var(--burs-c)}
+  .przed .wc-odp em::before{background:var(--burs)}
+  .po .wc-odp em{color:var(--ziel-c)}
+  .po .wc-odp em::before{background:var(--ziel)}
+  .wc-arch{margin-top:12px;padding:12px 14px;border-radius:12px;border:1px dashed rgba(15,26,20,0.2)}
+  .wc-arch b{display:block;font-size:12.5px;font-weight:650;color:var(--t3)}
+  .wc-arch span{display:block;margin-top:4px;font-size:13px;color:var(--t3);text-decoration:line-through;text-decoration-color:rgba(15,26,20,0.3)}
+  .wc-str{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center}
+  .wc-str i{display:block;width:100%;height:2px;background:var(--t1);position:relative}
+  .wc-str i::after{content:"";position:absolute;right:-1px;top:50%;width:9px;height:9px;border-top:2px solid var(--t1);border-right:2px solid var(--t1);transform:translateY(-50%) rotate(45deg)}
+  .wc-str span{font-size:12.5px;font-weight:650;line-height:1.35;color:var(--t2)}
+  .wc.gra .wc-str i{transform:scaleX(0);transform-origin:0 50%}
+  .wc.gra .po > *{opacity:0;transform:translateY(8px)}
+  .wc.gra.on .wc-str i{transform:none;transition:transform .6s cubic-bezier(.4,0,.2,1) .5s}
+  .wc.gra.on .po > *{opacity:1;transform:none;transition:opacity .5s ease,transform .5s ease;transition-delay:calc(1s + var(--i) * 0.22s)}
+  @media (max-width:860px){
+    .wc-uk{grid-template-columns:minmax(0,1fr);gap:0}
+    .wc-str{flex-direction:row;padding:16px 0}
+    .wc-str i{width:2px;height:34px}
+    .wc-str i::after{right:auto;left:50%;top:auto;bottom:-1px;transform:translateX(-50%) rotate(135deg)}
+    .wc.gra .wc-str i{transform:scaleY(0);transform-origin:50% 0}
+  }
+
+  /* =====================================================================
+     DLACZEGO · blok 2: wyniki wyszukiwania przed przeglądem i po nim (.wd-)
+     ===================================================================== */
+  .wd-uk{margin:0 clamp(2px,0.8vw,14px);padding:clamp(16px,2vw,24px) clamp(16px,2.2vw,28px);border-radius:18px;background:#ffffff;box-shadow:0 0 0 1px rgba(15,26,20,0.06)}
+  .wd-q{display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:12px;background:var(--papier);font-size:14.5px;color:var(--t2)}
+  .wd-q svg{width:16px;height:16px;fill:var(--t3);flex-shrink:0}
+  .wd-q b{font-weight:700;color:var(--t1)}
+  .wd-q span{margin-left:auto;font-size:12.5px;color:var(--t3)}
+  .wd-gl,.wd-r{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,0.42fr) minmax(0,0.9fr);gap:14px;align-items:center}
+  .wd-gl{margin-top:18px;padding:0 4px 10px;border-bottom:1.5px solid var(--t1);font-size:12.5px;font-weight:650;color:var(--t3)}
+  .wd-r{padding:13px 4px;border-bottom:1px solid var(--linia2);font-size:14px;color:var(--t1)}
+  .wd-p{display:flex;align-items:center;gap:10px;min-width:0;font-weight:600}
+  .wd-p svg{flex-shrink:0;width:16px;height:16px;fill:none;stroke:var(--t3);stroke-width:1.2}
+  .wd-p span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .wd-dz{font-size:13.5px;color:var(--t2)}
+  .wd-kto{display:flex;align-items:center;flex-wrap:wrap;gap:6px 10px;font-size:13px}
+  .wd-kto s{padding:3px 9px;border-radius:7px;color:var(--burs-c);font-weight:600;text-decoration-color:rgba(156,95,20,0.6)}
+  .wd-kto > b{display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border-radius:7px;background:rgba(0,205,119,0.13);color:var(--ziel-c);font-weight:650}
+  .wd-kto > b svg{width:12px;height:12px;fill:currentColor}
+  .wd-kto > span{color:var(--t2)}
+  .wd-r.zam .wd-p span{color:var(--t3);text-decoration:line-through;text-decoration-color:rgba(15,26,20,0.35)}
+  .wd-r.zam .wd-dz{color:var(--t3)}
+  .wd-st{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px 24px;margin-top:14px;font-size:13px;color:var(--t3)}
+  .wd-st b{font-weight:650;color:var(--t2)}
+  .wd.gra .wd-r.zam .wd-p span{text-decoration-color:transparent;color:var(--t1)}
+  .wd.gra .wd-r.zam .wd-dz{color:var(--t2)}
+  .wd.gra .wd-r.zam s{text-decoration-color:transparent}
+  .wd.gra .wd-r.zam .wd-kto > b{opacity:0;transform:translateX(-6px)}
+  .wd.gra.on .wd-r.zam .wd-p span,.wd.gra.on .wd-r.zam .wd-dz,.wd.gra.on .wd-r.zam s{text-decoration-color:rgba(15,26,20,0.35);color:var(--t3);transition:color .4s ease,text-decoration-color .4s ease;transition-delay:calc(1.2s + var(--i) * 0.35s)}
+  .wd.gra.on .wd-r.zam s{color:var(--burs-c);text-decoration-color:rgba(156,95,20,0.6)}
+  .wd.gra.on .wd-r.zam .wd-kto > b{opacity:1;transform:none;transition:opacity .4s ease,transform .4s ease;transition-delay:calc(0.9s + var(--i) * 0.35s)}
+  @media (max-width:760px){
+    .wd-gl{display:none}
+    .wd-r{grid-template-columns:minmax(0,1fr);gap:6px}
+    .wd-dz{font-size:12.5px}
+    .wd-q span{display:none}
+  }
+
+  /* =====================================================================
+     JAK WYGLĄDA · cztery dokumenty na ciemnej scenie (.wj-)
+     ===================================================================== */
+  .wj-ekran{margin-top:clamp(24px,3vw,36px)}
+  .wj-w[hidden]{display:none}
+  .wj-dok{border-radius:clamp(16px,1.6vw,22px);background:#ffffff;color:var(--t1);padding:clamp(22px,3vw,44px) clamp(20px,3.2vw,48px);box-shadow:0 60px 110px -50px rgba(0,0,0,0.75)}
+  .wj-gl{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:10px 32px;padding-bottom:18px;border-bottom:1.5px solid var(--t1)}
+  .wj-gl h3{margin:0;font-size:clamp(20px,1.9vw,26px);font-weight:700;letter-spacing:-0.025em;line-height:1.15}
+  .wj-gl p{margin:6px 0 0;font-size:13.5px;color:var(--t3)}
+  .wj-gl > span{font-size:13px;font-weight:650;color:var(--t2)}
+  /* próba */
+  .wj-pr{display:grid;grid-template-columns:minmax(0,1.15fr) repeat(3,minmax(0,1fr));margin-top:6px}
+  .wj-pr > *{min-width:0;padding:12px 10px 12px 0;border-bottom:1px solid var(--linia2)}
+  .wj-pr .gl{padding-top:16px;font-size:12.5px;font-weight:650;color:var(--t3);border-bottom-color:var(--linia)}
+  .wj-pr .dz{font-size:14.5px;font-weight:650}
+  .wj-pr .dz small{display:block;font-size:12.5px;font-weight:400;color:var(--t3)}
+  .wj-kr{display:flex;align-items:center;flex-wrap:wrap;gap:4px 10px}
+  .wj-kr > span{display:flex;gap:3px}
+  .wj-kr i{display:block;width:10px;height:10px;border-radius:50%;box-shadow:inset 0 0 0 1.5px var(--ziel-c)}
+  .wj-kr i.d{background:var(--ziel);box-shadow:inset 0 0 0 1.5px var(--ziel)}
+  .wj-kr i.p{background:linear-gradient(90deg,var(--ziel) 50%,transparent 50%)}
+  .wj-kr i.z{box-shadow:inset 0 0 0 1.5px rgba(15,26,20,0.25)}
+  .wj-kr b{font-size:13px;font-weight:600;color:var(--t2);white-space:nowrap}
+  .wj-pr .su{padding-top:16px;border-bottom:0;font-size:13px;font-weight:650;color:var(--t2)}
+  .wj-pr .su b{display:block;font-size:clamp(24px,2.4vw,32px);font-weight:750;letter-spacing:-0.035em;line-height:1.05;color:var(--t1)}
+  .wj-pr .su b small{font-size:0.5em;font-weight:600;letter-spacing:0;color:var(--t3)}
+  .wj-dec{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 18px;margin-top:22px;padding:18px 20px;border-radius:14px;background:var(--papier)}
+  .wj-dec > b{grid-row:1 / 3;font-size:13px;font-weight:700;color:var(--ziel-c)}
+  .wj-dec p{margin:0;font-size:14.5px;line-height:1.55;color:var(--t1);text-wrap:pretty}
+  .wj-leg{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font-size:12.5px;color:var(--t3)}
+  .wj-leg span{display:inline-flex;align-items:center;gap:6px}
+  /* asystenci */
+  .wj-as{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:clamp(20px,3vw,44px);margin-top:20px}
+  .wj-gr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 24px;align-content:start}
+  .wj-gr h4{margin:0;font-size:13px;font-weight:700;color:var(--t1)}
+  .wj-gr ul{margin:6px 0 0;padding:0;list-style:none}
+  .wj-gr li{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-top:1px solid var(--linia2);font-size:13.5px;line-height:1.35;color:var(--t2)}
+  .wj-gr li em{flex-shrink:0;font-style:normal;font-size:12px;font-weight:650;color:var(--t3)}
+  .wj-gr li.wyb{color:var(--t1);font-weight:650}
+  .wj-gr li.wyb em{color:var(--ziel-c)}
+  .wj-karta{align-self:start;padding:20px 22px;border-radius:16px;background:var(--papier);box-shadow:inset 3px 0 0 var(--ziel)}
+  .wj-karta > span{font-size:12.5px;font-weight:650;color:var(--ziel-c)}
+  .wj-karta h4{margin:6px 0 0;font-size:19px;font-weight:700;letter-spacing:-0.02em;line-height:1.2}
+  .wj-karta dl{margin:14px 0 0}
+  .wj-karta dt{margin-top:12px;font-size:12.5px;font-weight:650;color:var(--t3)}
+  .wj-karta dd{margin:3px 0 0;font-size:14px;line-height:1.5;color:var(--t1);text-wrap:pretty}
+  .wj-karta footer{margin-top:16px;padding-top:12px;border-top:1px solid var(--linia);font-size:12.5px;color:var(--t3)}
+  /* zasady */
+  .wj-za{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 clamp(24px,4vw,64px);margin-top:4px}
+  .wj-za section{padding:20px 0;border-bottom:1px solid var(--linia2)}
+  .wj-za h4{display:flex;align-items:baseline;gap:12px;margin:0;font-size:16px;font-weight:700;letter-spacing:-0.012em}
+  .wj-za h4 em{font-style:normal;font-size:13px;font-weight:650;color:var(--ziel-c)}
+  .wj-za p{margin:8px 0 0 calc(1ch + 14px);font-size:14.5px;line-height:1.6;color:var(--t2);text-wrap:pretty}
+  .wj-pod{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px 24px;margin-top:20px;font-size:13px;color:var(--t3)}
+  .wj-pod b{font-weight:650;color:var(--t2)}
+  .wj-podp{display:flex;align-items:center;gap:10px}
+  .wj-podp svg{width:96px;height:26px;fill:none;stroke:var(--t1);stroke-width:1.4;stroke-linecap:round}
+  /* raport */
+  .wj-ra-top{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:12px 28px;margin-top:20px}
+  .wj-ra-top strong{font-size:clamp(34px,3.6vw,48px);font-weight:750;letter-spacing:-0.045em;line-height:1}
+  .wj-ra-top strong small{font-size:0.42em;font-weight:600;letter-spacing:0;color:var(--t3)}
+  .wj-ra-top p{margin:0;font-size:14px;line-height:1.5;color:var(--t2)}
+  .wj-ra-pas{display:grid;grid-template-columns:repeat(24,minmax(0,1fr));gap:3px;grid-column:1 / -1}
+  .wj-ra-pas i{height:10px;border-radius:3px;background:rgba(15,26,20,0.1)}
+  .wj-ra-pas i.d{background:var(--ziel)}
+  .wj-ra{display:grid;grid-template-columns:minmax(0,1.3fr) repeat(4,minmax(0,1fr));margin-top:22px}
+  .wj-ra > *{min-width:0;padding:10px 10px 10px 0;border-bottom:1px solid var(--linia2);font-size:14px;color:var(--t1)}
+  .wj-ra .gl{font-size:12.5px;font-weight:650;color:var(--t3);border-bottom:1.5px solid var(--t1)}
+  .wj-ra .dz{font-weight:650}
+  .wj-ra .zero{color:var(--t3)}
+  .wj-ra .su{font-weight:700;border-bottom:0}
+  .wj-ra-dec{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:20px}
+  .wj-ra-dec div{padding:16px 18px;border-radius:14px;background:var(--papier)}
+  .wj-ra-dec b{display:block;font-size:12.5px;font-weight:700;color:var(--ziel-c)}
+  .wj-ra-dec p{margin:6px 0 0;font-size:14px;line-height:1.55;color:var(--t1);text-wrap:pretty}
+  @media (max-width:900px){
+    .wj-as{grid-template-columns:minmax(0,1fr)}
+    .wj-za{grid-template-columns:minmax(0,1fr)}
+    .wj-ra-dec{grid-template-columns:minmax(0,1fr)}
+  }
+  .wj-pr .kr{display:none}
+  @media (max-width:700px){
+    .wj-pr{grid-template-columns:minmax(0,1.3fr) repeat(3,minmax(0,0.7fr))}
+    .wj-pr > *{padding-right:6px}
+    .wj-pr .dl,.wj-kr > span,.wj-leg{display:none}
+    .wj-pr .kr{display:inline}
+    .wj-pr .su b{font-size:24px}
+    .wj-dec{grid-template-columns:minmax(0,1fr)}
+    .wj-dec > b{grid-row:auto}
+    .wo-rt > div{flex-direction:column;align-items:flex-start;gap:2px}
+    .wj-gr{grid-template-columns:minmax(0,1fr)}
+    .wj-ra{grid-template-columns:minmax(0,1.4fr) repeat(2,minmax(0,1fr))}
+    .wj-ra .opt{display:none}
+    .wj-za p{margin-left:0}
+  }
+
+  /* =====================================================================
+     PRZYKŁADY · trzy firmy i narzędzie, które wybrały (.wp-)
+     ===================================================================== */
+  .wp-k{flex-basis:clamp(300px,30vw,420px) !important}
+  .wp-nz{margin-top:16px;padding-top:14px;border-top:1px solid var(--linia);font-size:clamp(18px,1.5vw,21px);font-weight:700;letter-spacing:-0.02em;line-height:1.25;color:var(--t1)}
+  .wp-nz small{display:block;margin-bottom:4px;font-size:12.5px;font-weight:650;letter-spacing:0;color:var(--t3)}
+  .wp-ile{margin-top:18px}
+  .wp-ile > span{display:block;font-size:12.5px;color:var(--t3)}
+  .wp-lb{display:flex;align-items:baseline;gap:8px;margin-top:4px}
+  .wp-ile b{font-size:30px;font-weight:750;letter-spacing:-0.04em;line-height:1}
+  .wp-ile em{font-style:normal;font-size:14px;color:var(--t2)}
+  .wp-pas{display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));gap:3px;margin-top:10px}
+  .wp-pas i{height:9px;border-radius:2px;background:rgba(15,26,20,0.1)}
+  .wp-pas i.d{background:var(--ziel)}
+  .wp-st{margin:16px 0 0;padding-top:12px;border-top:1px solid var(--linia);font-size:13.5px;line-height:1.55;color:var(--t2)}
+  .wp-st b{display:block;font-size:12.5px;font-weight:650;color:var(--t3)}
+  .wp.gra .wp-pas i.d{transform:scaleY(0);transform-origin:50% 100%}
+  .wp.gra.on .wp-pas i.d{transform:none;transition:transform .35s cubic-bezier(.3,1.4,.5,1);transition-delay:calc(0.3s + var(--j) * 0.04s)}
+
+  /* =====================================================================
+     PLAN · organigram, działy zapalają się w tygodniu startu (.wo-)
+     ===================================================================== */
+  .wo{margin:clamp(48px,5vw,72px) 0 0}
+  .wo-os{position:relative;display:grid;grid-template-columns:repeat(6,minmax(0,1fr)) minmax(0,1.3fr);margin-bottom:clamp(28px,3vw,40px);border-top:1.5px solid var(--t1)}
+  .wo-os > div{position:relative;padding:12px 10px 0 0;font-size:12.5px;color:var(--t3)}
+  .wo-os > div b{display:block;font-size:13.5px;font-weight:700;color:var(--t1)}
+  .wo-os > div span{display:block;margin-top:2px;line-height:1.4}
+  .wo-os > div::before{content:"";position:absolute;left:0;top:-5px;width:9px;height:9px;border-radius:50%;background:#ffffff;box-shadow:inset 0 0 0 2px var(--t1)}
+  .wo-os > div.st::before{background:var(--ziel);box-shadow:inset 0 0 0 2px var(--ziel)}
+  .wo-pr{position:absolute;left:0;top:-1.5px;height:1.5px;width:calc(100% / 7.3 * 6);background:var(--ziel);transform-origin:0 50%}
+  .wo-org{position:relative}
+  .wo-rt{display:flex;justify-content:center}
+  .wo-rt > div{display:flex;align-items:center;gap:14px;padding:14px 22px;border-radius:14px;background:var(--ink);color:#ffffff}
+  .wo-rt b{font-size:16px;font-weight:700;letter-spacing:-0.015em}
+  .wo-rt span{font-size:13px;color:rgba(255,255,255,0.66)}
+  .wo-rt + .wo-dz{margin-top:44px}
+  .wo-dz{position:relative;display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:10px}
+  .wo-dz::before{content:"";position:absolute;left:calc(100% / 16);right:calc(100% / 16);top:-22px;height:1.5px;background:rgba(15,26,20,0.25)}
+  .wo-org::after{content:"";position:absolute;left:50%;top:48px;width:1.5px;height:22px;background:rgba(15,26,20,0.25)}
+  .wo-k{position:relative;display:flex;flex-direction:column;min-width:0;padding:14px 12px 13px;border-radius:14px;background:#ffffff;box-shadow:0 0 0 1px rgba(15,26,20,0.1);transition:background .4s ease,box-shadow .4s ease}
+  .wo-k::before{content:"";position:absolute;left:50%;top:-22px;width:1.5px;height:22px;background:rgba(15,26,20,0.25)}
+  .wo-k h3{margin:0;font-size:14.5px;font-weight:700;letter-spacing:-0.01em;line-height:1.2}
+  .wo-k > small{display:block;margin-top:3px;font-size:12.5px;color:var(--t3)}
+  .wo-k ul{margin:12px 0 0;padding:10px 0 0;list-style:none;border-top:1px solid var(--linia2);font-size:12.5px;line-height:1.45;color:var(--t2)}
+  .wo-k li b{font-weight:650;color:var(--t1)}
+  .wo-k > em{margin-top:auto;padding-top:12px;font-style:normal;font-size:12.5px;font-weight:700;color:var(--ziel-c)}
+  .wo-k.on{background:rgba(0,205,119,0.1);box-shadow:inset 0 0 0 1.5px var(--ziel)}
+  .wo-k.poza{background:transparent;box-shadow:none;border:1.5px dashed rgba(15,26,20,0.24)}
+  .wo-k.poza > em{color:var(--t3)}
+  .wo-op{display:flex;align-items:flex-start;flex-wrap:wrap;gap:8px 28px;margin-top:clamp(28px,3vw,40px);padding:18px 22px;border-radius:16px;background:var(--papier)}
+  .wo-op b{font-size:14px;font-weight:700}
+  .wo-op span{font-size:14px;line-height:1.5;color:var(--t2)}
+  .wo.gra .wo-pr{transform:scaleX(0)}
+  .wo.gra .wo-k.on{background:#ffffff;box-shadow:0 0 0 1px rgba(15,26,20,0.1)}
+  .wo.gra .wo-os > div.st::before{background:#ffffff;box-shadow:inset 0 0 0 2px var(--t1)}
+  .wo.gra.on .wo-pr{transform:none;transition:transform 3.2s linear .3s}
+  .wo.gra.on .wo-k.on{background:rgba(0,205,119,0.1);box-shadow:inset 0 0 0 1.5px var(--ziel);transition:background .4s ease,box-shadow .4s ease;transition-delay:calc(0.3s + (var(--t) - 0.5) * 3.2s / 6)}
+  .wo.gra.on .wo-os > div.st::before{background:var(--ziel);box-shadow:inset 0 0 0 2px var(--ziel);transition:background .3s,box-shadow .3s;transition-delay:calc(0.3s + var(--t) * 3.2s / 6)}
+  @media (max-width:1100px){
+    .wo-dz{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .wo-dz::before,.wo-org::after,.wo-k::before{display:none}
+    .wo-rt + .wo-dz{margin-top:14px}
+    .wo-rt{justify-content:flex-start}
+  }
+  @media (max-width:700px){
+    .wo-os{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:18px;border-top:0}
+    .wo-os > div{border-top:1.5px solid var(--t1)}
+    .wo-pr{display:none}
+    .wo-dz{grid-template-columns:repeat(2,minmax(0,1fr))}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .wh-dok,.wh-st{transition:none}
+  }
+</style>
+
+<div class="v3">
+<Styl />
+<Anim />
+
+<!-- ============ 1 · HERO ============
+     Wariant „jasny" jak reszta kolumny „Wdrażamy AI": wynik to zmiana
+     w firmie, nie aplikacja do pokazania. Dokument firmy i kartka
+     z odpowiedzią; opis ruchu w nagłówku pliku. -->
+<Hero wariant="jasny" lead="Wdrożenie AI w organizacji: narzędzie wybieramy w próbie na zadaniach z Waszych działów, a zanim zacznie odpowiadać, porządkujemy dokumenty i dostępy, po które sięga. Copilot, Gemini, ChatGPT albo nasze Appto, bez prowizji od dostawców." link={{ href: '#jak-wyglada', t: 'Zobacz, co zostaje po wdrożeniu →' }}>
+<Fragment slot="h1">Narzędzie AI dla całej firmy, <span>które odpowiada z Waszych dokumentów</span></Fragment>
+
+<figure class="wh hero-wid" role="img" aria-label={WH_ARIA} data-wh>
+<div class="wh-sc" aria-hidden="true">
+<div class="wh-doki">
+{WH.map((s, i) => (
+  <article class={`wh-dok${i === 0 ? ' on c1 c2' : ''}`} data-wh-dok>
+    <span class="wh-dz">{s.zamk ? <svg viewBox="0 0 16 16"><path d={KLODKA} fill-rule="evenodd" clip-rule="evenodd"/></svg> : <svg viewBox="0 0 16 16"><path d={FOLDER}/></svg>}{s.dz}</span>
+    <h4>{s.dok}</h4>
+    <small>{s.meta}</small>
+    {s.zamk
+      ? <div class="wh-zam">{Array.from({ length: 9 }).map(() => <i></i>)}<div><svg viewBox="0 0 16 16"><path d={KLODKA} fill-rule="evenodd" clip-rule="evenodd"/></svg><b>Widzą: kadry i zarząd</b><span>Do przeglądu dostępów 22.09 plik był otwarty dla całej firmy</span></div></div>
+      : <ol class="wh-pk">{s.pkt.map((p) => (<li data-c={p.c}><em>{p.n}</em><span><b>{p.t}</b> {p.d}{p.m && <><mark>{p.m}</mark><span class="wh-c">{p.c}</span></>}{p.po}</span></li>))}</ol>}
+    <footer>opiekun: <b>{s.op}</b></footer>
+  </article>
+))}
+</div>
+<div class="wh-odp">
+{WH.map((s, i) => (
+  <div class={`wh-st${i === 0 ? ' on a z' : ''}`} data-wh-st>
+    <p class="wh-kto"><i></i><b>{s.kto}</b> · {s.kdz}</p>
+    <p class="wh-q">{s.q}</p>
+    <p class="wh-a">{s.a.map((x) => (typeof x === 'number' ? <span class="wh-c">{x}</span> : x))}</p>
+    {s.zr.length
+      ? <ol class="wh-zr">{s.zr.map((z, j) => (<li><span class="wh-c">{j + 1}</span>{z}</li>))}</ol>
+      : <p class="wh-brak">Bez źródła: pliku z premiami dział handlowy nie widzi.</p>}
+  </div>
+))}
+</div>
+</div>
+</figure>
+</Hero>
+
+<!-- ============ 2 · CZYM JEST ============
+     Definicja: podmiot = nazwa usługi, jedno zdanie. Indeks: narzędzia,
+     które wdrażamy, z tym, kiedy pasują i na co patrzymy przy wdrożeniu.
+     Appto stoi na liście jako nasze, piąta pozycja to „zostajecie przy
+     tym, co macie". -->
+<section id="czym-jest" class="v3-sek v3-papier">
+<div class="v3-def">
+<h2 class="v3-h2m">Czym jest wdrożenie AI w firmie?</h2>
+<div>
+<p class="v3-def-duzy rv">Wdrożenie AI w firmie to uruchomienie narzędzia AI dla wszystkich działów, takiego jak Copilot w Microsoft 365, Gemini w Google Workspace, ChatGPT, Claude albo Appto, na dokumentach i danych firmy: z wyborem narzędzia w próbie na zadaniach działów, z dostępami i źródłami uporządkowanymi przed startem, z asystentami do czynności każdego działu i z opieką po uruchomieniu.</p>
+</div>
+</div>
+
+<Procesy tytul="Narzędzia, które wdrażamy" etykietaA="Kiedy pasuje" etykietaB="Na co patrzymy przy wdrożeniu" pozycje={NARZEDZIA} />
+</section>
+
+<!-- ============ 2b · ZIELONY PAS ============
+     DO POTWIERDZENIA: Piotr Wojciuk jako twarz pasa (jak na /strategia-ai). -->
+<Pas tekst="Jeśli licencje, które już macie, wystarczą, powiemy to na pierwszej rozmowie" foto="/piotr-wojciuk.jpg" fotoW={1002} fotoH={1100} alt="Piotr Wojciuk, New Business Lead w Let's automate" imie="Piotr Wojciuk" rola="New Business Lead" />
+
+<!-- ============ 3 · DLACZEGO ============
+     Teza na całą szerokość, dwa bloki: trzy cenniki w jednym folderze
+     (narzędzie bez porządku w źródłach) i plik z premiami w wynikach
+     handlowca (narzędzie bez przeglądu dostępów). -->
+<section id="dlaczego" class="v3-sek">
+<h2 class="v3-h2m">Dlaczego sama licencja nie wystarcza</h2>
+<p class="v3-teza rv"><span>Licencję na narzędzie AI kupuje się w jeden dzień.</span> Narzędzie odpowiada tak dobrze, jak uporządkowane są dokumenty i dostępy, po które sięga</p>
+
+<div class="dl-blok">
+<div class="dl-gl"><h3>Trzy cenniki w jednym folderze</h3><p>Narzędzie sięga po plik, który najlepiej pasuje do pytania, a w folderze działu handlowego leżą trzy wersje cennika. Handlowiec dostaje cenę sprzed podwyżki i wysyła ją klientowi. Przed startem każde źródło dostaje opiekuna, a stare wersje trafiają do archiwum, po które narzędzie nie sięga.</p></div>
+<figure class="dl-kafel wc" data-anim data-gra>
+<div class="ts4-gl"><b>Pytanie o cenę zaworu ZT-25 dla Instal-Pol</b><div class="ts4-licz"><span>W źródłach handlu</span><b>214</b><span>z 1 312 plików na dysku działu</span></div></div>
+<div class="wc-uk" role="img" aria-label="Przed porządkiem w folderze Cenniki leżą trzy pliki: z 2024 roku, poprawiony z 2025 i cennik 2026. Narzędzie odpowiada ceną 38,40 zł z pliku z 2025 roku, sprzed podwyżki z 1 marca 2026. Po porządku w źródłach handlu zostaje jeden cennik 2026 z opiekunem, kierownikiem handlu; dwa starsze pliki leżą w archiwum, po które narzędzie nie sięga. Odpowiedź: 41,90 zł z cennika 2026.">
+<div class="wc-p przed" aria-hidden="true">
+<h4><svg viewBox="0 0 16 16"><path d={FOLDER}/></svg>Dziś: Handel › Cenniki</h4>
+<ul class="wc-pl">
+{WC_PLIKI.map((p) => (<li class={p.cyt ? 'cyt czk-j' : ''}><svg viewBox="0 0 16 16"><path d={PLIK}/><path d={ROG}/></svg><span>{p.n}</span><small>{p.d}</small></li>))}
+</ul>
+<div class="wc-odp"><div><p>ZT-25 DN25 dla Instal-Pol</p><strong>38,40 zł netto</strong><em>z pliku „Cennik 2025 poprawiony”, sprzed podwyżki</em></div></div>
+</div>
+<div class="wc-str" aria-hidden="true"><i></i><span>Porządek w źródłach<br>tydzień 2</span></div>
+<div class="wc-p po" aria-hidden="true">
+<h4 style="--i:0"><svg viewBox="0 0 16 16"><path d={FOLDER}/></svg>W źródłach narzędzia</h4>
+<ul class="wc-pl" style="--i:1">
+<li class="op"><svg viewBox="0 0 16 16"><path d={PLIK}/><path d={ROG}/></svg><span>Cennik 2026.xlsx</span><small>opiekun: Jan Mazur, kierownik handlu · aktualizacja przy każdej zmianie cen</small></li>
+</ul>
+<div class="wc-arch" style="--i:2"><b>Archiwum, poza zasięgiem narzędzia</b>{WC_PLIKI.filter((p) => p.st === 'arch').map((p) => (<span>{p.n}</span>))}</div>
+<div class="wc-odp" style="--i:3"><div><p>ZT-25 DN25 dla Instal-Pol</p><strong>41,90 zł netto</strong><em>z cennika 2026, pozycja 1184</em></div></div>
+</div>
+</div>
+</figure>
+</div>
+
+<div class="dl-blok">
+<div class="dl-gl"><h3>Plik z premiami otwarty dla całej firmy</h3><p>Copilot i Gemini widzą to, co widzi pracownik. W firmie, która rośnie od lat, część folderów jest otwarta dla wszystkich, bo kiedyś tak było szybciej, a zwykła wyszukiwarka nikogo do nich nie prowadziła. Narzędzie AI prowadzi. Zanim po nie sięgnie, przeglądamy udostępnienia i zamykamy to, co nie powinno być wspólne.</p></div>
+<figure class="dl-kafel wd" data-anim data-gra>
+<div class="ts4-gl"><b>Wyniki wyszukiwania na koncie handlowca, przed przeglądem udostępnień i po nim</b><div class="ts4-licz"><span>Pliki z danymi osobowymi otwarte dla całej firmy</span><b>37 → 0</b></div></div>
+<div class="wd-uk" role="img" aria-label="Handlowiec Marta Wójcik szuka słowa premie. Przed przeglądem w wynikach ma pięć plików, w tym trzy, których nie powinna widzieć: premie kwartalne Q3 z kadr, udostępnione całej firmie, listę płac z księgowości, otwartą dla każdego z linkiem, i skany 212 umów o pracę z kadr, udostępnione całej firmie. Przegląd udostępnień 22 września zamyka je dla kadr, księgowości i zarządu. W wynikach handlowca zostają regulamin premiowania handlowców i prezentacja o premii za wynik.">
+<div aria-hidden="true">
+<div class="wd-q"><svg viewBox="0 0 16 16"><path d="M7 1.5a5.5 5.5 0 0 1 4.4 8.8l3 3a.9.9 0 0 1-1.3 1.3l-3-3A5.5 5.5 0 1 1 7 1.5Zm0 1.8a3.7 3.7 0 1 0 0 7.4 3.7 3.7 0 0 0 0-7.4Z"/></svg><span style="margin:0;display:inline;font-size:inherit;color:inherit">Marta Wójcik, handel szuka:</span> <b>„premie”</b><span>przegląd udostępnień · 22.09.2026</span></div>
+<div class="wd-gl"><span>Plik</span><span>Dział</span><span>Kto widzi</span></div>
+{WD.map((r, i) => (
+  <div class={`wd-r${r.po ? ' zam' : ''}`} style={`--i:${WD.slice(0, i).filter((x) => x.po).length}`}>
+    <span class="wd-p"><svg viewBox="0 0 16 16"><path d={PLIK}/><path d={ROG}/></svg><span>{r.p}</span></span>
+    <span class="wd-dz">{r.dz}</span>
+    <span class="wd-kto">{r.po ? <><s class="czk-j">{r.przed}</s><b><svg viewBox="0 0 16 16"><path d={KLODKA} fill-rule="evenodd" clip-rule="evenodd"/></svg>{r.po}</b></> : <span>{r.przed}</span>}</span>
+  </div>
+))}
+<div class="wd-st"><span>W wynikach handlowca zostają <b>2 z 5 plików</b></span><span>zamknięte pliki widzą tylko ich działy i zarząd</span></div>
+</div>
+</div>
+</figure>
+</div>
+</section>
+
+<!-- ============ 4 · JAK WYGLĄDA ============
+     Cztery dokumenty, które zostają po wdrożeniu, w tej samej hurtowni:
+     próba, asystenci, zasady, raport. Liczby spięte z planem w sekcji 8. -->
+<section id="jak-wyglada" class="v3-sek v3-scena v3-ziarno">
+<div class="v8-gl">
+<h2 class="v3-h2 jasny">Co zostaje u Was po wdrożeniu</h2>
+<p class="v3-sub jasny">{FIRMA}, {OSOB_FIRMA} osób: Copilot w siedmiu działach, Appto dodatkowo w handlu i obsłudze klienta.</p>
+</div>
+
+<div class="v3-zak" role="tablist" aria-label="Dokumenty po wdrożeniu">
+{ZAKLADKI.map((z, i) => (<button type="button" role="tab" id={`zak-${i}`} aria-controls={`widok-${i}`} aria-selected={i === 0 ? 'true' : 'false'} tabindex={i === 0 ? 0 : -1} data-zak>{z.t}</button>))}
+</div>
+
+<div class="wj-ekran">
+<!-- próba narzędzi -->
+<div class="wj-w" role="tabpanel" id="widok-0" aria-labelledby="zak-0" data-widok>
+<article class="wj-dok">
+<header class="wj-gl"><div><h3>Próba na zadaniach z działów</h3><p>{FIRMA} · {ZADAN} zadania z {DZIALY.length} działów · oceny działów, 15–19.09.2026</p></div><span>Arkusz wyników · str. 1</span></header>
+<div class="wj-pr">
+<span class="gl">Dział</span>{PROBA_N.map((n, k) => (<span class="gl"><span class="dl">{n}</span><span class="kr">{PROBA_K[k]}</span></span>))}
+{DZIALY.map((d) => (<>
+  <span class="dz">{d.n}<small>{d.z} {odm(d.z, 'zadanie', 'zadania', 'zadań')}</small></span>
+  {PROBA_N.map((n, k) => (<span class="wj-kr"><span>{kropki(d.z, PROBA[d.n][k]).map((c) => <i class={c}></i>)}</span><b>{PROBA[d.n][k]} z {d.z}</b></span>))}
+</>))}
+<span class="su">Razem</span>{PROBA_SUMA.map((s, k) => (<span class="su"><span class="dl">{PROBA_N[k]}</span><b>{s} <small>z {ZADAN}</small></b></span>))}
+</div>
+<div class="wj-leg" aria-hidden="true"><span class="wj-kr"><span><i class="d"></i></span>dobrze</span><span class="wj-kr"><span><i class="p"></i></span>do poprawki</span><span class="wj-kr"><span><i class="z"></i></span>źle</span></div>
+<div class="wj-dec"><b>Decyzja zarządu · 22.09</b>
+<p>Copilot w Microsoft 365 dla {OSOB} osób w {DZIALY.length} działach. W finansach, zakupach, marketingu i kadrach wypadł lepiej albo tak samo jak pozostałe, a działa w Outlooku i Teams, w których ludzie spędzają dzień.</p>
+<p>Appto dodatkowo w handlu i obsłudze klienta ({HO_OS} osób): {HO(2)} z {HO_Z} zadań tych działów, Copilot {HO(0)} z {HO_Z}. Te zadania wymagają stanów z ERP i historii klienta z CRM.</p>
+</div>
+</article>
+</div>
+
+<!-- asystenci działów -->
+<div class="wj-w" role="tabpanel" id="widok-1" aria-labelledby="zak-1" data-widok hidden>
+<article class="wj-dok">
+<header class="wj-gl"><div><h3>Asystenci działów</h3><p>{FIRMA} · {ASYST_N} asystentów · stan na 14.10.2026</p></div><span>Rejestr asystentów</span></header>
+<div class="wj-as">
+<div class="wj-gr">
+{ASYSTENCI.map((g) => (
+  <div><h4>{g.dz}</h4><ul>{g.a.map(([n, nz, wyb]) => (<li class={wyb ? 'wyb' : ''}>{n}<em>{nz}</em></li>))}</ul></div>
+))}
+</div>
+<div class="wj-karta">
+<span>Handel · Appto · wersja 3</span>
+<h4>Zamienniki z kart technicznych</h4>
+<dl>
+<dt>Co robi</dt><dd>Do pozycji, której nie ma na stanie, szuka zamiennika w kartach technicznych producentów i sprawdza jego stan i termin dostawy w ERP.</dd>
+<dt>Źródła</dt><dd>Karty techniczne, 1 840 plików (opiekun: Jan Mazur) · stany i dostawy z ERP · cennik 2026</dd>
+<dt>Oddaje człowiekowi</dt><dd>Zamiennik o innym ciśnieniu roboczym albo innej średnicy. Taki wybór zatwierdza handlowiec.</dd>
+<dt>Właściciel po Waszej stronie</dt><dd>Jan Mazur, kierownik handlu</dd>
+</dl>
+<footer>Zmieniony 6.10.2026: dodane karty techniczne pomp dwóch nowych producentów</footer>
+</div>
+</div>
+</article>
+</div>
+
+<!-- zasady korzystania -->
+<div class="wj-w" role="tabpanel" id="widok-2" aria-labelledby="zak-2" data-widok hidden>
+<article class="wj-dok">
+<header class="wj-gl"><div><h3>Zasady korzystania z AI</h3><p>{FIRMA} · wersja 1 · jedna strona dla każdej osoby z dostępem</p></div><span>Zatwierdził zarząd 22.09.2026</span></header>
+<div class="wj-za">
+{ZASADY.map((z, i) => (<section><h4><em>{i + 1}</em>{z.t}</h4><p>{z.d}</p></section>))}
+</div>
+<div class="wj-pod"><span>Opiekunowie źródeł: <b>handel</b> Jan Mazur · <b>obsługa klienta</b> Paweł Nowak · <b>kadry</b> Ewa Lis</span><span class="wj-podp" aria-hidden="true"><svg viewBox="0 0 96 26"><path d="M3 20c6-9 10-15 13-12s-5 12-2 11 9-11 13-8-1 9 4 8 7-9 11-8-1 8 4 7 10-8 15-7 6 4 30 1"/></svg>zarząd</span></div>
+</article>
+</div>
+
+<!-- raport miesiąca -->
+<div class="wj-w" role="tabpanel" id="widok-3" aria-labelledby="zak-3" data-widok hidden>
+<article class="wj-dok">
+<header class="wj-gl"><div><h3>Raport miesiąca · październik 2026</h3><p>{FIRMA} · {OSOB} osób z dostępem · omówienie z zarządem 3.11</p></div><span>Opieka po uruchomieniu</span></header>
+<div class="wj-ra-top">
+<strong>{RAPORT_ZR} <small>z {ZADAN}</small></strong>
+<p>zadań z listy działów robi się z AI. We wrześniu, po pierwszym miesiącu: 11. Zadanie liczy się, kiedy dział wykonuje je z narzędziem na prawdziwych sprawach.</p>
+<div class="wj-ra-pas" aria-hidden="true">{Array.from({ length: ZADAN }).map((_, i) => <i class={i < RAPORT_ZR ? 'd' : ''}></i>)}</div>
+</div>
+<div class="wj-ra">
+<span class="gl">Dział</span><span class="gl opt">Z dostępem</span><span class="gl">Zadania z AI</span><span class="gl opt">Złe odpowiedzi</span><span class="gl">Koszt w miesiącu</span>
+{RAPORT.map((r) => (<>
+  <span class="dz">{r.dz}</span>
+  <span class="opt">{r.os} os.</span>
+  <span class={r.zr === 0 ? 'zero' : ''}>{r.zr} z {r.z}</span>
+  <span class={`opt${r.zle === 0 ? ' zero' : ''}`}>{r.zle === 0 ? 'brak' : `${r.zle}, poprawione źródła`}</span>
+  <span>{tys(r.koszt)} zł</span>
+</>))}
+<span class="su">Razem</span><span class="su opt">{OSOB} os.</span><span class="su">{RAPORT_ZR} z {ZADAN}</span><span class="su opt">{RAPORT.reduce((a, r) => a + r.zle, 0)}</span><span class="su">{tys(RAPORT_KOSZT)} zł</span>
+</div>
+<div class="wj-ra-dec">
+<div><b>Do decyzji</b><p>Marketing korzysta z 2 z 6 licencji. Proponujemy przenieść 4 licencje do magazynu: kierownicy zmian proszą o asystenta do zamówień od dostawców.</p></div>
+<div><b>Nowy model</b><p>Nowa wersja modelu w Appto przeszła tę samą próbę: 20 z {ZADAN} zadań, wcześniej 19. Włączona 9.10.</p></div>
+</div>
+</article>
+</div>
+</div>
+
+<div class="v3-jw-dol">
+<div>
+{ZAKLADKI.map((z, i) => (<p class="v3-jw-p" data-podpis hidden={i !== 0}><b>{z.t}</b>{z.p}</p>))}
+</div>
+</div>
+</section>
+
+<!-- ============ 5 · PRZYKŁADY ============
+     PRZYKŁADOWE. Miara „Przed / Po" nie pasuje, więc własne karty: narzędzie,
+     powód wyboru, zadania z listy robione z AI po trzech miesiącach i to,
+     co zostało po staremu. Appto tylko w jednej z trzech firm, obok Copilota. -->
+<section id="dowody" class="v3-sek">
+<div class="v8-gl">
+<h2 class="v3-h2">Trzy firmy i&nbsp;narzędzie, które wybrały</h2>
+<p class="v3-sub">Wybór wynikał z próby na zadaniach działów. Przy każdej firmie liczba zadań z listy, które po trzech miesiącach robi się z AI, i to, co zostało po staremu.</p>
+</div>
+<div class="dw-sc wp" data-anim data-gra tabindex="0" role="region" aria-label="Przykłady, przewijane w poziomie">
+{PRZYKLADY.map((x) => (
+  <article class="dw4-k wp-k">
+    <span class="dw4-p">Przykład</span>
+    <h3>{x.f}<small>{x.m}</small></h3>
+    <div class="wp-nz"><small>Wybór</small>{x.nz}</div>
+    <p class="dw4-d">{x.d}</p>
+    <div class="wp-ile">
+      <span>Zadania z listy robione z AI po trzech miesiącach</span>
+      <div class="wp-lb"><b>{x.zr}</b><em>z {x.z}</em></div>
+      <div class="wp-pas" style={`--n:${x.z}`} aria-hidden="true">{Array.from({ length: x.z }).map((_, j) => <i class={j < x.zr ? 'd' : ''} style={`--j:${j}`}></i>)}</div>
+    </div>
+    <p class="wp-st"><b>Po staremu</b>{x.st}</p>
+  </article>
+))}
+</div>
+<Cytat cytat="Korzystamy z usług Let’s automate od roku. Świetna komunikacja, łatwo się dogadać, a jakość usług na wysokim poziomie." logo="/uploads/klienci/x3d.svg" logoAlt="X3D" logoW={143} logoH={88} imie="Dominik Chylewski" rola="Wspólnik, X3D" />
+<CtaPasek tytul="Na pierwszej rozmowie układamy listę zadań do próby i wybieramy narzędzia, które warto porównać." />
+</section>
+
+<!-- ============ 6 · METODA ============
+     Porównanie z typowym wdrożeniem narzędzia AI. Stopka mówi wprost
+     o Appto i prowadzi do jego strony. -->
+<Metoda tytul="Narzędzie wybiera próba na Waszych zadaniach" sub="Typowe wdrożenie zaczyna się od licencji z oferty partnera dostawcy i kończy na szkoleniu z obsługi. Tutaj o wyborze decyduje wynik na zadaniach działów, a po starcie narzędzie zostaje pod opieką." typowy="Typowe wdrożenie<br>narzędzia AI" wiersze={METODA} stopka={'Appto, nasz produkt, staje do próby na tych samych zadaniach co pozostałe narzędzia i trafia tylko do działów, w których wygrywa.<br><a href="/produkty/appto">Jak działa Appto →</a>'} />
+
+<!-- ============ 7 · PLAN SZEŚCIU TYGODNI ============
+     Organigram hurtowni: działy zapalają się w tygodniu startu, nad nimi
+     oś tygodni. Magazyn poza pierwszym planem (raport proponuje go jako
+     następny). Liczby z DZIALY, te same co w próbie i raporcie. -->
+<section id="plan" class="v3-sek">
+<div class="v8-gl">
+<h2 class="v3-h2">Sześć tygodni od próby do ostatniego działu</h2>
+<p class="v3-sub">Pierwszy dział pracuje z narzędziem od trzeciego tygodnia. Po szóstym narzędzie przechodzi pod opiekę w abonamencie miesięcznym.</p>
+</div>
+
+<figure class="wo" data-anim data-gra role="img" aria-label={`Plan wdrożenia w hurtowni instalacyjnej, ${OSOB_FIRMA} osób. Tygodnie 1 i 2: próba ${ZADAN} zadań z działów w trzech narzędziach i przegląd udostępnień. Tydzień 3: handel, ${DZIALY[0].os} osób, jako pierwszy dział przez dwa tygodnie. Tydzień 5: obsługa klienta, finanse i zakupy. Tydzień 6: marketing, kadry i zarząd. Razem ${OSOB} osób z dostępem. Magazyn i logistyka, ${MAGAZYN} osoby, poza pierwszym planem. Od siódmego tygodnia opieka z raportem co miesiąc.`}>
+<div aria-hidden="true">
+<div class="wo-os">
+<span class="wo-pr"></span>
+<div class="st" style="--t:1"><b>Tydzień 1</b><span>zadania z działów, próba w trzech narzędziach</span></div>
+<div class="st" style="--t:2"><b>Tydzień 2</b><span>przegląd udostępnień, źródła z opiekunami</span></div>
+<div class="st" style="--t:3"><b>Tydzień 3</b><span>handel, pierwszy dział</span></div>
+<div class="st" style="--t:4"><b>Tydzień 4</b><span>poprawki po dwóch tygodniach handlu</span></div>
+<div class="st" style="--t:5"><b>Tydzień 5</b><span>obsługa klienta, finanse, zakupy</span></div>
+<div class="st" style="--t:6"><b>Tydzień 6</b><span>marketing, kadry, zarząd</span></div>
+<div><b>Co miesiąc</b><span>raport, nowe źródła i asystenci</span></div>
+</div>
+
+<div class="wo-org">
+<div class="wo-rt"><div><b>{FIRMA}</b><span>{OSOB_FIRMA} osób · {OSOB} z dostępem</span></div></div>
+<div class="wo-dz">
+{DZIALY.map((d) => (
+  <div class="wo-k on" style={`--t:${d.tyd}`}>
+    <h3>{d.n}</h3>
+    <small>{d.os} {odm(d.os, 'osoba', 'osoby', 'osób')}</small>
+    <ul><li><b>{d.z}</b> {odm(d.z, 'zadanie', 'zadania', 'zadań')} z listy</li><li>{d.nz.join(' i ')}</li></ul>
+    <em>od tygodnia {d.tyd}</em>
+  </div>
+))}
+<div class="wo-k poza">
+  <h3>Magazyn i logistyka</h3>
+  <small>{MAGAZYN} osoby</small>
+  <ul><li>praca przy terminalach i na hali</li></ul>
+  <em>poza pierwszym planem</em>
+</div>
+</div>
+</div>
+</div>
+</figure>
+<div class="wo-op rv"><b>Od siódmego tygodnia: opieka</b><span>Raport co miesiąc, nowe źródła i asystenci na prośbę działów, nowy model sprawdzany na tych samych {ZADAN} zadaniach przed włączeniem. Wypowiedzenie z miesięcznym terminem.</span></div>
+</section>
+
+<!-- ============ 8 · DLA KOGO ============ -->
+<DlaKogo sub="Firmy od kilkudziesięciu do kilkuset osób, w których kilka działów pracuje na dokumentach." warunki={DLA_KOGO} nie={NIE} />
+
+<!-- ============ 9 · KONTAKT ============ -->
+<Kontakt tytul="Zacznijmy od tego, na czym pracujecie" lead="Napiszcie, w jakim pakiecie pracuje firma i ile osób ma dostać narzędzie. Odpowiemy w jeden dzień roboczy z propozycją terminu rozmowy." zrodlo="Wdrożenie AI w firmie" pytanie="Na czym dziś pracujecie?" podpowiedz="Np. Microsoft 365, 120 osób, część zespołu korzysta z ChatGPT na prywatnych kontach…" />
+
+</div>
+
+<GcFaq
+  heading="Pytania, które padają przed decyzją"
+  ctaLabel="Zadajcie nam swoje →"
+  items={faq}
+/>
+
+<script>
+  var redukcja = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ---- HERO: trzy pytania z działów ----
+  // Kolejno: dokument i pytanie, po chwili odpowiedź, potem przypisy razem
+  // z zakreśleniem w dokumencie. Trzecie pytanie trafia na plik poza
+  // dostępem. Bez JS i przy ograniczonym ruchu stoi pierwsze pytanie
+  // w stanie końcowym (klasy w HTML). Pętla stoi, kiedy hero nie widać.
+  (function(){
+    var f = document.querySelector('[data-wh]') as HTMLElement | null;
+    if(!f || redukcja || !('IntersectionObserver' in window)) return;
+    var doki = Array.prototype.slice.call(f.querySelectorAll('[data-wh-dok]')) as HTMLElement[];
+    var st = Array.prototype.slice.call(f.querySelectorAll('[data-wh-st]')) as HTMLElement[];
+    var T = { odp: 1100, c1: 2300, c2: 3100, dalej: 7600, zam: 6200 };
+    var biez = 0, timery: number[] = [], widac = false;
+    f.classList.add('gra');
+    function czysc(){ timery.forEach(function(t){ clearTimeout(t); }); timery = []; }
+    function krok(n: number){
+      czysc();
+      biez = n;
+      doki.forEach(function(d, j){ d.classList.toggle('on', j === n); d.classList.remove('c1', 'c2'); });
+      st.forEach(function(s, j){ s.classList.toggle('on', j === n); s.classList.remove('a', 'z'); });
+      var zam = !st[n].querySelector('.wh-zr');
+      timery.push(window.setTimeout(function(){ st[n].classList.add('a'); }, T.odp));
+      timery.push(window.setTimeout(function(){ doki[n].classList.add('c1'); st[n].classList.add('z'); }, zam ? T.odp - 300 : T.c1));
+      timery.push(window.setTimeout(function(){ doki[n].classList.add('c2'); }, T.c2));
+      timery.push(window.setTimeout(function(){ if(widac) krok((n + 1) % st.length); }, zam ? T.zam : T.dalej));
+    }
+    var io = new IntersectionObserver(function(w){
+      var teraz = w[0].isIntersecting;
+      if(teraz && !widac){ widac = true; krok(biez); }
+      else if(!teraz && widac){ widac = false; czysc(); }
+    }, { threshold: 0.25 });
+    io.observe(f);
+  })();
+
+  // ---- Zakładki: próba, asystenci, zasady, raport ----
+  (function(){
+    var zak = Array.prototype.slice.call(document.querySelectorAll('[data-zak]')) as HTMLElement[];
+    if(!zak.length) return;
+    var widoki = Array.prototype.slice.call(document.querySelectorAll('[data-widok]')) as HTMLElement[];
+    var podpisy = Array.prototype.slice.call(document.querySelectorAll('[data-podpis]')) as HTMLElement[];
+    function pokaz(i: number, fokus?: boolean){
+      zak.forEach(function(b, j){ b.setAttribute('aria-selected', i === j ? 'true' : 'false'); b.tabIndex = i === j ? 0 : -1; });
+      widoki.forEach(function(w, j){ w.hidden = i !== j; });
+      podpisy.forEach(function(p, j){ p.hidden = i !== j; });
+      if(fokus) zak[i].focus();
+    }
+    zak.forEach(function(b, i){
+      b.addEventListener('click', function(){ pokaz(i); });
+      b.addEventListener('keydown', function(e){
+        if(e.key === 'ArrowRight'){ e.preventDefault(); pokaz((i + 1) % zak.length, true); }
+        if(e.key === 'ArrowLeft'){ e.preventDefault(); pokaz((i - 1 + zak.length) % zak.length, true); }
+      });
+    });
+  })();
+</script>
+</LaBase>

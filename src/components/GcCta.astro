@@ -475,6 +475,7 @@ Odpisujemy w {odpowiedz} i proponujemy godzinę. Rozmowa trwa {czasRozmowy}; pro
         etykieta.textContent = 'Wysyłam…';
         awaria.hidden = true;
 
+        function polecenie(){ try { return localStorage.getItem('referrer') || ''; } catch(e) { return ''; } }
         fetch(ENDPOINT, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
@@ -483,11 +484,17 @@ Odpisujemy w {odpowiedz} i proponujemy godzinę. Rozmowa trwa {czasRozmowy}; pro
             telefon: telefonPelny(),
             wiadomosc: opis(),
             firma_www: form.elements.firma_www.value || '',
-            zrodlo: form.dataset.zrodlo || 'podstrona'
+            zrodlo: form.dataset.zrodlo || 'podstrona',
+            referrer: polecenie()
           })
         })
           .then(function(r){
-            if(r.ok) return pokazOk();
+            if(r.ok){
+              // Zdarzenie dla GTM — konwersję podpina się w kontenerze (Zgody.astro).
+              window.dataLayer = window.dataLayer || [];
+              window.dataLayer.push({ event: 'formularz_wyslany', zrodlo: form.dataset.zrodlo || 'podstrona' });
+              return pokazOk();
+            }
             return r.json().catch(function(){ return {}; }).then(function(j){
               throw new Error(j.blad || 'domyslna');
             });

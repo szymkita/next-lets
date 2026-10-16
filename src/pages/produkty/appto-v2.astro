@@ -1,0 +1,1554 @@
+---
+// PODSTRONA PRODUKTOWA /produkty/appto — WERSJA 2 (propozycja, 11.10.2026)
+//
+// SKĄD TA WERSJA
+// Pierwsza wersja rysowała własne makiety („karta agenta", okno zadania
+// ZL-118, karty rutyn). Żadna z nich nie istnieje w produkcie. Ta wersja
+// bierze język wizualny appto.ai i WYŁĄCZNIE prawdziwe obiekty z repo
+// ApptoAI/landing-page, które same są wierne aplikacji (docs/appto-product-ui.md,
+// źródło prawdy: ApptoAI/appto-ai):
+//   • okno Inbox AI ze strony głównej appto (.mk-*, src/styles/landing/styles.css)
+//   • okno czatu z kontekstem z /pl/funkcje/kontekst (.k3-*, kontekst.css)
+//   • tryptyk zlecenie → w tle → wynik, trzy okna (appto, Slack, Teams)
+//     i karty model / narzędzia / zasięg z /pl/funkcje/agenci (.ag-*, agenci.css)
+//   • spis dziewięciu zdań i ściana funkcji z /pl/funkcje (.fh-*, funkcje-hub.css)
+//   • szkielet sekcji, szew CTA, żółty pas i FAQ (.fp-*, feature-page.css)
+//   • przełącznik „Jak chcecie wdrożyć appto?" na zdjęciu (roles.css, method.css)
+// Klasy i wartości przepisane, nie „inspirowane". Logotypy marek, logo appto
+// i zdjęcie sekcji wdrożenia skopiowane do public/appto/.
+//
+// TYPOGRAFIA I KOLOR — jak na appto.ai: Schibsted Grotesk w nagłówkach (ten sam
+// krój, który ma cały serwis Let's automate), Geist w tekście, atrament
+// #0A0A0B, tint #F5F5F8, bursztyn #F0CE68 wyłącznie jako znacznik i żółty pas.
+// Zieleń Let's automate zostaje w nawigacji, stopce i karcie kontaktu.
+//
+// DO POTWIERDZENIA PRZED PUBLIKACJĄ
+// — Kohorta: appto.ai podaje „osiem tygodni" na stronie programu
+//   (src/data/kohorta.ts) i „sześć tygodni" w przełączniku na stronie głównej.
+//   Tu stoi osiem. Cena „od 7 900 zł netto za zespół" z wdrozenie-indywidualne.
+// — „Blisko tysiąca integracji" — z komentarza-strażnika w src/data/features/hub.ts
+//   („nie 40+"). FAQ strony głównej appto wciąż mówi „40+ innych".
+// — „Kilka dni pracy" przy zbieraniu kontekstu to nasza obserwacja z wdrożeń.
+// — Nazwy modeli w karcie „Model" są wzięte z /pl/funkcje/agenci.
+import LaBase from '../../layouts/LaBase.astro';
+import GcCta from '../../components/GcCta.astro';
+
+const title = "Appto — agenci AI dla całej firmy | Let's automate";
+const description = 'Appto to platforma AI, w której każdy dział dostaje agenta znającego dokumenty firmy i pracującego w jej narzędziach. Budujemy ją w Let\'s automate i wdrażamy u klientów. Dane w Unii Europejskiej.';
+
+const TRIAL = 'https://chat.appto.ai/sign-up';
+const FN = 'https://appto.ai/pl/funkcje/';
+const B = (n) => `/appto/brands/${n}`;
+const ARR = '<path d="M4 12h14M12.5 6.5 18 12l-5.5 5.5"/>';
+
+// ── SPIS: dziewięć zdań z /pl/funkcje ────────────────────────────────────
+// Kolejność i podział na trzy grupy jak na appto.ai. Fragment w <b> jest tym,
+// co ma zostać w głowie — tylko on ciemnieje. Każdy wiersz prowadzi na
+// podstronę funkcji na appto.ai.
+const ZDANIA = [
+  [
+    { nm: 'Kontekst', href: FN + 'kontekst/', s: 'Zna cennik, procedury i ustalenia z Waszych wątków i <b>sięga po nie sam</b>.' },
+    { nm: 'Inbox AI', href: FN + 'inbox-ai/', s: 'Zadanie zlecone jednym zdaniem wraca jako <b>gotowy dokument do przejrzenia</b>.' },
+    { nm: 'Agenci', href: FN + 'agenci/', s: 'Ma <b>agentów złożonych pod konkretne role</b>, każdego z własnymi granicami.' },
+  ],
+  [
+    { nm: 'Rutyny', href: FN + 'rutyny/', s: '<b>Pracuje w nocy</b>, żeby o siódmej rano coś już na Was czekało.' },
+    { nm: 'Coworker', href: FN + 'coworker/', s: '<b>Odzywa się w Slacku i w Teams</b>, tam, gdzie i tak rozmawiacie.' },
+    { nm: 'Projekty', href: FN + 'projekty/', s: 'Daje zespołowi <b>wspólne pliki i jedną rozmowę</b> przy każdym projekcie.' },
+  ],
+  [
+    { nm: 'Narzędzia', href: FN + 'narzedzia/', s: 'Sięga do <b>blisko tysiąca narzędzi</b> i naprawdę w nich działa.' },
+    { nm: 'Administracja', href: FN + 'administracja/', s: 'Robi to <b>tylko tam, gdzie mu pozwolicie</b>, i za tyle, ile ustalicie.' },
+    { nm: 'Maskowanie danych', href: FN + 'maskowanie-danych/', s: 'Danych osobowych z Waszych plików <b>model nigdy nie zobaczy</b>.' },
+  ],
+];
+
+// ── ŚCIANA FUNKCJI z /pl/funkcje ─────────────────────────────────────────
+// Cztery kolumny jadące w przeciwnych kierunkach. `l` = logotyp narzędzia
+// albo modelu, `lock` = lockup modelu (~4,4:1, bez podpisu). Każdy kafel
+// tekstowy ma pokrycie na podstronie funkcji appto.ai.
+const WALL = [
+  [
+    { nm: 'Baza wiedzy firmy', d: 'cenniki, procedury, ustalenia' },
+    { l: 'googledrive.svg', nm: 'Dysk Google' },
+    { nm: 'Asystenci pod role', d: 'sprzedaż, kadry, obsługa' },
+    { l: 'slack.svg', nm: 'Slack' },
+    { nm: 'Umiejętności', d: 'jeden sposób pracy dla zespołu' },
+    { l: 'hubspot.svg', nm: 'HubSpot' },
+    { nm: 'Rutyny w tle', d: 'gotowe, zanim przyjdziecie' },
+    { l: 'gmail.svg', nm: 'Gmail' },
+    { nm: 'Inbox AI', d: 'zadanie zamiast pytania' },
+    { l: 'notion.svg', nm: 'Notion' },
+    { nm: 'Projekty zespołu', d: 'wspólne pliki i jedna rozmowa' },
+  ],
+  [
+    { l: 'gemini.png', lock: true, nm: 'Gemini' },
+    { nm: 'Wybór modelu', d: 'decyduje twórca asystenta' },
+    { l: 'claude.png', lock: true, nm: 'Claude' },
+    { nm: 'Artefakty', d: 'dokumenty i arkusze' },
+    { l: 'chatgpt.png', lock: true, nm: 'GPT' },
+    { nm: 'Praca w przeglądarce', d: 'także tam, gdzie nie ma API' },
+    { l: 'teams.svg', nm: 'Microsoft Teams' },
+    { nm: 'Wzmianki w wątku', d: '@appto w kanale zespołu' },
+    { l: 'outlook.svg', nm: 'Outlook' },
+    { nm: 'Załączniki', d: 'czyta PDF-y i arkusze' },
+    { l: 'googlesheets.svg', nm: 'Arkusze Google' },
+  ],
+  [
+    { nm: 'Role i uprawnienia', d: 'kto i do czego ma dostęp' },
+    { l: 'salesforce.svg', nm: 'Salesforce' },
+    { nm: 'Sufity kredytów', d: 'limit na osobę i na zespół' },
+    { l: 'jira.svg', nm: 'Jira' },
+    { nm: 'Dziennik zdarzeń', d: 'kto co uruchomił i kiedy' },
+    { l: 'linear.svg', nm: 'Linear' },
+    { nm: 'Analityka użycia', d: 'gdzie AI naprawdę pracuje' },
+    { l: 'asana.svg', nm: 'Asana' },
+    { nm: 'Logowanie firmowe', d: 'Google i dwuskładnikowe' },
+    { l: 'trello.svg', nm: 'Trello' },
+    { nm: 'Maskowanie danych', d: 'PESEL nie wychodzi do modelu' },
+  ],
+  [
+    { l: 'shopify.svg', nm: 'Shopify' },
+    { nm: 'Serwery w Unii', d: 'Irlandia' },
+    { l: 'stripe.svg', nm: 'Stripe' },
+    { nm: 'Bez trenowania', d: 'modele nie uczą się na Waszych danych' },
+    { l: 'googlecalendar.svg', nm: 'Kalendarz Google' },
+    { nm: 'Blisko tysiąca integracji', d: 'i wciąż przybywa' },
+    { l: 'dropbox.svg', nm: 'Dropbox' },
+    { nm: 'Konto w 30 sekund', d: 'bez wdrożenia po stronie IT' },
+    { l: 'sharepoint.svg', nm: 'SharePoint' },
+    { nm: 'Konta narzędzi', d: 'podpina osoba, która ma dostęp' },
+    { l: 'zoom.svg', nm: 'Zoom' },
+  ],
+];
+const WALL_T = ['64s', '78s', '70s', '86s'];   // kolumny nigdy się nie zrównują
+
+// ── KONTEKST: scena z /pl/funkcje/kontekst ───────────────────────────────
+// Pozycje w % sceny, --sc i --o robią plany głębi. Środek zostaje pusty —
+// tam stoi okno. `m` znika poniżej 900 px, `m2` poniżej 640 px.
+const DOCS = [
+  { nm: 'Cennik 2026.xlsx',       x: 12, y: 18, sc: 1,   o: 1,   rot: -4, c: '#12A05C', dur: 15, del: 0,   in: .05, my: 6 },
+  { nm: 'Umowa ramowa.docx',      x: 16, y: 56, sc: .88, o: .85, rot: 3,  c: '#2F6FD8', dur: 18, del: -3,  in: .18, m2: true },
+  { nm: 'Proces reklamacji.pdf',  x: 7,  y: 84, sc: .78, o: .58, rot: -2, c: '#E0555B', dur: 21, del: -7,  in: .3,  m: true },
+  { nm: 'Zasady rabatów.pdf',     x: 87, y: 20, sc: .92, o: .9,  rot: 4,  c: '#E0555B', dur: 17, del: -5,  in: .12, my: 8 },
+  { nm: 'Onboarding.pdf',         x: 84, y: 62, sc: 1,   o: 1,   rot: -3, c: '#E0555B', dur: 14, del: -2,  in: .24, m2: true },
+  { nm: 'Regulamin pracy.docx',   x: 93, y: 88, sc: .74, o: .48, rot: 2,  c: '#2F6FD8', dur: 23, del: -9,  in: .36, m: true },
+  { nm: 'Standard oferty.pdf',    x: 19, y: 33, sc: .7,  o: .45, rot: 5,  c: '#E0555B', dur: 25, del: -11, in: .42, m: true },
+  { nm: 'Notatka ze spotkania',   x: 80, y: 40, sc: .66, o: .4,  rot: -5, c: '#6E6B64', dur: 26, del: -6,  in: .48, m: true },
+];
+const BRANDS = [
+  { i: 'googledrive.svg',    x: 28, y: 7,  w: 42, o: 1,   dur: 16, del: -1,  in: .08 },
+  { i: 'slack.svg',          x: 5,  y: 38, w: 44, o: 1,   dur: 19, del: -4,  in: .14, m2: true },
+  { i: 'hubspot.svg',        x: 95, y: 40, w: 42, o: 1,   dur: 15, del: -6,  in: .2,  m2: true },
+  { i: 'gmail.svg',          x: 21, y: 90, w: 36, o: .9,  dur: 20, del: -2,  in: .26, m: true },
+  { i: 'notion.svg',         x: 72, y: 6,  w: 34, o: .85, dur: 17, del: -8,  in: .32, m: true },
+  { i: 'sharepoint.svg',     x: 42, y: 95, w: 32, o: .68, dur: 22, del: -3,  in: .38, m: true },
+  { i: 'outlook.svg',        x: 60, y: 93, w: 30, o: .58, dur: 18, del: -5,  in: .44, m: true, m2: true },
+  { i: 'googlecalendar.svg', x: 76, y: 86, w: 28, o: .5,  dur: 24, del: -7,  in: .5,  m: true, m2: true },
+  { i: 'dropbox.svg',        x: 6,  y: 12, w: 30, o: .48, dur: 21, del: -4,  in: .56, m: true, m2: true },
+  { i: 'teams.svg',          x: 94, y: 8,  w: 28, o: .42, dur: 19, del: -9,  in: .62, m: true, m2: true },
+  { i: 'googlesheets.svg',   x: 33, y: 88, w: 30, o: .55, dur: 23, del: -6,  in: .68, m: true, m2: true },
+  { i: 'jira.svg',           x: 88, y: 72, w: 26, o: .38, dur: 20, del: -10, in: .74, m: true, m2: true },
+  { i: 'zoom.svg',           x: 11, y: 68, w: 26, o: .34, dur: 27, del: -2,  in: .8,  m: true, m2: true },
+];
+const WIN_STEPS = [
+  { i: 'hubspot.svg',     b: 'CRM przejrzany',    s: 'Nowak Logistics · 50 stanowisk · etap: negocjacje' },
+  { i: 'googledrive.svg', b: 'Cennik wczytany',   s: 'zaktualizowany 12 sierpnia' },
+  { i: 'slack.svg',       b: 'Ustalenia zespołu', s: '#sprzedaz · wątek z czwartku' },
+];
+
+// ── AGENCI: dziennik pracy w tle z /pl/funkcje/agenci ────────────────────
+const RUN_LOG = [
+  { t: 'Przeszukana skrzynka zakupów — 71 wątków', i: 'gmail.svg' },
+  { t: 'Otwarte 24 załączniki: PDF-y, skany, dwa arkusze', i: 'googledrive.svg' },
+  { t: 'Warunki wyciągnięte z 18 ofert' },
+  { t: 'Sześć ofert bez terminu — oznaczone jako braki' },
+  { t: 'Zestawienie złożone w arkuszu: 18 wierszy', i: 'googlesheets.svg' },
+  { t: 'Ceny sprowadzone do jednej jednostki' },
+  { t: 'Trzy oferty odstające — sprawdzone drugi raz' },
+];
+const RES_ROWS = [
+  ['Stalmex', '18 400', '21 dni'],
+  ['Nordvent', '15 100', '42 dni'],
+  ['Polmar', '18 900', '14 dni'],
+];
+
+// Znak agenta obsługi klienta — ten sam rysunek co na /pl/funkcje/agenci.
+const MARK_CLAIM = '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M17 11l-8 8 8 8"/><path d="M9 19h19a11 11 0 0 1 0 22H16"/></svg>';
+
+// ── GRANICE AGENTA: model / narzędzia / zasięg ──────────────────────────
+const CLAUDE_LG = '<svg viewBox="0 0 24 24"><path fill="#D97757" d="M17.3041 3.541h-3.6718l6.696 16.918H24Zm-10.6082 0L0 20.459h3.7442l1.3693-3.5527h7.0052l1.3693 3.5528h3.7442L10.5363 3.541Zm-.3712 10.2232 2.2914-5.9456 2.2914 5.9456Z"/></svg>';
+const OPENAI_LG = '<svg viewBox="0 0 24 24" fill="#141414"><path d="M22.282 9.821a5.985 5.985 0 0 0-.516-4.91 6.046 6.046 0 0 0-6.51-2.9A6.065 6.065 0 0 0 4.981 4.18a5.985 5.985 0 0 0-3.998 2.9 6.046 6.046 0 0 0 .743 7.097 5.98 5.98 0 0 0 .51 4.911 6.051 6.051 0 0 0 6.515 2.9A5.985 5.985 0 0 0 13.26 24a6.056 6.056 0 0 0 5.772-4.206 5.99 5.99 0 0 0 3.997-2.9 6.056 6.056 0 0 0-.747-7.073zM13.26 22.43a4.476 4.476 0 0 1-2.876-1.04l.142-.08 4.778-2.758a.795.795 0 0 0 .393-.681v-6.737l2.02 1.168a.071.071 0 0 1 .038.052v5.583a4.504 4.504 0 0 1-4.495 4.494zM3.6 18.304a4.47 4.47 0 0 1-.535-3.014l.142.085 4.783 2.759a.771.771 0 0 0 .78 0l5.843-3.369v2.332a.08.08 0 0 1-.033.062L9.74 19.95a4.5 4.5 0 0 1-6.14-1.646zM2.34 7.896a4.485 4.485 0 0 1 2.366-1.973V11.6a.766.766 0 0 0 .388.676l5.815 3.355-2.02 1.168a.076.076 0 0 1-.071 0l-4.83-2.786A4.504 4.504 0 0 1 2.34 7.872zm16.597 3.855l-5.833-3.387L15.119 7.2a.076.076 0 0 1 .071 0l4.83 2.791a4.494 4.494 0 0 1-.676 8.105v-5.678a.79.79 0 0 0-.407-.667zm2.01-3.023l-.142-.085-4.774-2.782a.776.776 0 0 0-.785 0L9.409 9.23V6.897a.066.066 0 0 1 .028-.061l4.83-2.787a4.5 4.5 0 0 1 6.68 4.66zM8.307 12.863l-2.02-1.164a.08.08 0 0 1-.038-.057V6.075a4.5 4.5 0 0 1 7.375-3.453l-.142.08L8.704 5.46a.795.795 0 0 0-.393.681zm1.097-2.365l2.602-1.5 2.607 1.5v2.999l-2.597 1.5-2.607-1.5z"/></svg>';
+const GEMINI_LG = '<svg viewBox="0 0 24 24"><path fill="#4285F4" d="M11.04 19.32Q12 21.51 12 24q0-2.49.93-4.68.96-2.19 2.58-3.81t3.81-2.55Q21.51 12 24 12q-2.49 0-4.68-.93a12.3 12.3 0 0 1-3.81-2.58 12.3 12.3 0 0 1-2.58-3.81Q12 2.49 12 0q0 2.49-.96 4.68-.93 2.19-2.55 3.81a12.3 12.3 0 0 1-3.81 2.58Q2.49 12 0 12q2.49 0 4.68.96 2.19.93 3.81 2.55t2.55 3.81"/></svg>';
+const MODELS = [
+  { nm: 'Claude Sonnet 5',  d: 'Anthropic · długie instrukcje',      lg: CLAUDE_LG },
+  { nm: 'Claude Opus 5',    d: 'Anthropic · najtrudniejsze analizy', lg: CLAUDE_LG },
+  { nm: 'GPT-5.6 Luna',     d: 'OpenAI · research i tabele',         lg: OPENAI_LG },
+  { nm: 'GPT-5.6 Sol',      d: 'OpenAI · szybkie odpowiedzi',        lg: OPENAI_LG },
+  { nm: 'Gemini 3.5 Flash', d: 'Google · powtarzalne zadania',       lg: GEMINI_LG },
+  { nm: 'GLM 5.2',          d: 'Z.ai · tani wolumen',                img: B('zai.png') },
+];
+const LIMTOOLS = [
+  { i: 'gmail.svg', on: true }, { i: 'hubspot.svg', on: true }, { i: 'jira.svg', on: true },
+  { i: 'googledrive.svg', on: true }, { i: 'slack.svg' }, { i: 'notion.svg' },
+  { i: 'googlesheets.svg' }, { i: 'teams.svg' }, { i: 'salesforce.svg' },
+  { i: 'asana.svg' }, { i: 'shopify.svg' }, { i: 'outlook.svg' },
+];
+
+// ── DANE: sześć faktów pod kartami granic ───────────────────────────────
+const S = 'fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"';
+const DANE = [
+  { t: 'Serwery w Unii Europejskiej', d: 'Dane firmy leżą w Irlandii i tam są przetwarzane.',
+    ic: `<svg viewBox="0 0 24 24" ${S}><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0C18.5 15.4 12 21 12 21z"/><circle cx="12" cy="10" r="2.4"/></svg>` },
+  { t: 'Modele nie uczą się na Waszych danych', d: 'Rozmowy i dokumenty nie trafiają do trenowania modeli.',
+    ic: `<svg viewBox="0 0 24 24" ${S}><circle cx="12" cy="12" r="8.5"/><path d="M6 6l12 12"/></svg>` },
+  { t: 'Maskowanie danych osobowych', d: 'Imiona, adresy e-mail i numery PESEL z wgrywanych plików zamieniają się w oznaczenia, zanim treść wyjdzie do modelu.',
+    ic: `<svg viewBox="0 0 24 24" ${S}><path d="M3 3l18 18"/><path d="M10.6 5.1A10.4 10.4 0 0 1 12 5c6 0 9.5 7 9.5 7a17 17 0 0 1-2.6 3.4M6.3 6.3C3.9 8 2.5 12 2.5 12S6 19 12 19c1.8 0 3.4-.5 4.8-1.3"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>` },
+  { t: 'Agent widzi tyle, co zlecający', d: 'Pracuje w granicach dostępów osoby, która dała mu zadanie.',
+    ic: `<svg viewBox="0 0 24 24" ${S}><rect x="4.5" y="10.5" width="15" height="10" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg>` },
+  { t: 'Limity wydatków', d: 'Sufit kredytów na osobę i na zespół. W panelu widać, ile zużywa który dział.',
+    ic: `<svg viewBox="0 0 24 24" ${S}><path d="M4 17a8 8 0 1 1 16 0"/><path d="M12 17l4-5"/></svg>` },
+  { t: 'Umowa powierzenia', d: 'DPA podpisujemy przed startem, razem z rejestrem podprocesorów.',
+    ic: `<svg viewBox="0 0 24 24" ${S}><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 14.5l2 2 4-4"/></svg>` },
+];
+
+// ── WDROŻENIE: trzy ścieżki z przełącznika na stronie głównej appto ─────
+const WDR = [
+  { nm: 'Samodzielnie', t: 'Zakładacie konto i od razu pracujecie na gotowych agentach. Narzędzia podpina osoba, która ma do nich dostęp, a za AI płacicie według zużycia. Karta nie jest potrzebna na start.' },
+  { nm: 'Z opiekunem', t: "Wdrażamy appto razem z Wami. Opiekun z Let's automate, który ma za sobą ponad sto wdrożeń AI, zaczyna od pilotażu w jednym dziale i prowadzi wdrożenie aż do codziennej pracy całej firmy." },
+  { nm: 'Kohortowo', t: 'Wdrażacie się w grupie kilku firm. Przez osiem tygodni co tydzień spotykamy się na warsztacie na żywo i budujemy agentów na Waszych procesach. Kohorta startuje od 7 900 zł netto za zespół.' },
+];
+
+const FAQ = [
+  {
+    q: 'Czym appto różni się od ChatGPT albo Copilota?',
+    a: 'Modele są te same: appto pracuje na Claude, GPT i Gemini. Różnica leży w kontekście. W ChatGPT każdy pracuje na własnym koncie i własnych notatkach, Copilot sięga po pliki i maile jednej osoby. W appto kontekst jest wspólny dla całego zespołu: jedna baza wiedzy firmy, agenci pod role, podpięte narzędzia i panel, w którym widać dostępy i koszty.',
+  },
+  {
+    q: 'Ile pracy wymaga uruchomienie?',
+    a: 'Konto zakłada się w 30 sekund i od razu można pracować na gotowych agentach. Narzędzia podpina osoba, która ma do nich dostęp, zwykłym logowaniem. Dobre odpowiedzi na trudne pytania przychodzą po zebraniu kontekstu firmy: dokumentów, procedur i ustaleń. To kilka dni pracy, a przy wdrożeniu z opiekunem robimy ją razem z Wami.',
+  },
+  {
+    q: 'Czy appto wyśle coś do klienta bez naszej wiedzy?',
+    a: 'Nie, jeśli tak tego nie ustawicie. Dla każdego agenta wyznaczacie granicę: co robi sam, a co zatrzymuje się jako szkic do akceptacji. Domyślnie wszystko, co wychodzi na zewnątrz, na przykład mail do klienta albo zmiana kwoty na dealu, czeka na kliknięcie człowieka.',
+  },
+  {
+    q: 'Gdzie są nasze dane?',
+    a: 'Na serwerach w Unii Europejskiej, w Irlandii. Modele nie uczą się na Waszych treściach. Agent widzi dokładnie tyle, co osoba, która zleca mu zadanie, a dane osobowe z wgrywanych plików można zamaskować, zanim trafią do modelu. Umowę powierzenia podpisujemy przed startem.',
+  },
+  {
+    q: 'Ile to kosztuje?',
+    a: 'Płacicie za zużycie, w modelu pay-as-you-go albo z pakietu kredytów. W administracji ustawia się limity na osobę i na zespół, więc koszt da się przypiąć do działu. Aktualne stawki są w cenniku na appto.ai. Wdrożenie z opiekunem wyceniamy osobno, po rozmowie.',
+  },
+  {
+    q: 'Kto stoi za appto?',
+    a: "Appto budujemy w Let's automate, w grupie Wise Group. Pracujemy na nim codziennie u siebie i wdrażamy je u klientów. Funkcja trafia do produktu wtedy, gdy któreś z wdrożeń pokazało, że jest potrzebna.",
+  },
+];
+
+const faqLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: FAQ.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+};
+---
+<LaBase
+  title={title}
+  description={description}
+  ogImage="/og/hub.png"
+  ctaHref="#kontakt"
+  ctaLabel="Umów pokaz"
+  noindex
+>
+<Fragment slot="head">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400..700&display=swap" rel="stylesheet">
+<style is:global>
+  /* =====================================================================
+     TOKENY appto.ai (src/styles/landing/styles.css + feature-page.css)
+     Wszystko pod .ap, żeby nie ruszać reszty serwisu.
+     ===================================================================== */
+  .ap{
+    --ink:#0A0A0B;--ink-2:#26262B;--muted:#63636D;--muted-2:#9A9AA4;
+    --line:rgba(10,10,11,.09);--line-2:rgba(10,10,11,.16);
+    --tint:#F5F5F8;--amber:#F0CE68;--amber-2:#E9C24E;--ok:#1F9D55;
+    --font:'Geist','Schibsted Grotesk',ui-sans-serif,system-ui,-apple-system,sans-serif;
+    --display:'Schibsted Grotesk','Geist',ui-sans-serif,system-ui,sans-serif;
+    --ease-out:cubic-bezier(.16,1,.3,1);
+    --gutter:clamp(20px,5vw,56px);
+    --sec:clamp(76px,7.4vw,128px);
+    background:#fff;color:var(--ink);font-family:var(--font);font-size:17px;line-height:1.55;
+    letter-spacing:-.012em;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;overflow-x:clip;
+  }
+  .ap :where(h1,h2,h3,p,ol,ul,figure,figcaption){margin:0;padding:0}
+  .ap :where(ol,ul){list-style:none}
+  .ap :where(img,svg){display:block;max-width:100%}
+  .ap :where(button){font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;-webkit-appearance:none;appearance:none}
+  .ap :where(kbd){font-family:inherit}
+  .ap-wrap{width:100%;max-width:calc(1440px + 2 * var(--gutter));margin-inline:auto;padding-inline:var(--gutter);position:relative}
+
+  /* ---------- przyciski appto ---------- */
+  .ap-btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:8px;height:44px;padding:0 22px;border-radius:14px;font-family:var(--font);font-size:15px;font-weight:600;letter-spacing:-.014em;border:1px solid transparent;white-space:nowrap;transition:transform .18s cubic-bezier(.2,.7,.2,1),background .2s ease,border-color .2s ease,color .2s ease}
+  .ap-btn svg{width:17px;height:17px}
+  .ap-btn .ap-arr{transition:transform .18s cubic-bezier(.2,.7,.2,1)}
+  .ap-btn:hover .ap-arr{transform:translateX(3px)}
+  .ap-btn--lg{height:52px;padding:0 28px;font-size:16px}
+  .ap-btn--pri{color:#fff;background:#141417;border-color:#141417;box-shadow:0 1px 2px rgba(10,10,11,.14)}
+  .ap-btn--pri:hover{background:#000}
+  .ap-btn--sec{color:#26262B;background:#F1F1F3}
+  .ap-btn--sec:hover{background:#E7E7EA}
+  .ap-acts{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+
+  /* ================================================================ HERO
+     1:1 z hero strony głównej appto: wyśrodkowany nagłówek 68 px, szare lede,
+     para przycisków, cichy podpis. Nad nagłówkiem logo produktu — na stronie
+     Let's automate trzeba najpierw powiedzieć, o czym jest strona. */
+  .ap-hero-c{text-align:center;padding-block:clamp(40px,6.5vw,92px) clamp(30px,4.5vw,56px);display:flex;flex-direction:column;align-items:center}
+  .ap-logo{height:clamp(26px,2.3vw,32px);width:auto;margin-bottom:clamp(24px,2.8vw,36px)}
+  .ap-h1{font-family:var(--display);font-weight:700;font-size:clamp(36px,5.4vw,68px);line-height:1;letter-spacing:-.035em;color:var(--ink);max-width:20ch;text-wrap:balance}
+  .ap-sub{margin-top:20px;font-size:clamp(16px,1.45vw,19px);line-height:1.5;color:var(--muted);max-width:54ch;text-wrap:balance}
+  .ap-hero-c .ap-acts{margin-top:28px;justify-content:center}
+  .ap-micro{margin-top:16px;font-size:13px;color:var(--muted-2);letter-spacing:0}
+
+  /* gradientowy panel ze screenem produktu (.stage-panel) */
+  .ap-stage-p{width:calc(100% - 2 * clamp(16px,5vw,76px));max-width:1640px;margin-inline:auto;border-radius:40px;overflow:hidden;
+    background:
+      radial-gradient(48% 55% at 12% 12%, #E5E3F1 0%, rgba(229,227,241,0) 62%),
+      radial-gradient(50% 55% at 90% 8%,  #DBE6F2 0%, rgba(219,230,242,0) 64%),
+      radial-gradient(55% 60% at 86% 96%, #EFE9E4 0%, rgba(239,233,228,0) 60%),
+      linear-gradient(165deg, #F0EFF5 0%, #EBEEF4 52%, #F4F1ED 100%)}
+  .ap-stage-in{display:flex;justify-content:center;padding:clamp(26px,4.5vw,68px) clamp(20px,4vw,68px) 0}
+
+  /* ---------- OKNO INBOX AI (.mk-*, przepisane ze strony głównej appto) ---------- */
+  .mk{--mk-ink:#14130F;--mk-mut:#8A8681;--mk-mut2:#B4B0A9;--mk-line:rgba(20,19,15,.09);--mk-bg:#FAF9F7;--mk-h:clamp(470px,40vw,528px);
+    width:100%;max-width:1240px;margin-inline:auto;border-radius:18px 18px 0 0;overflow:hidden;background:var(--mk-bg);
+    border:1px solid rgba(10,10,11,.08);border-bottom:0;max-height:var(--mk-h);filter:drop-shadow(0 20px 50px rgba(20,20,23,.25));
+    -webkit-mask-image:linear-gradient(180deg,#000 92%,transparent 100%);mask-image:linear-gradient(180deg,#000 92%,transparent 100%);
+    font-size:14px;color:var(--mk-ink);text-align:left}
+  .mk-app{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,.88fr);background:var(--mk-bg);height:calc(var(--mk-h) - 52px)}
+  .mk-main{position:relative;display:flex;flex-direction:column;min-width:0;min-height:0;overflow:hidden}
+  .mk-top{height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 16px}
+  .mk-top-l{display:inline-flex;align-items:center;gap:11px}
+  .mk-logo{height:16px;width:auto}
+  .mk-sep{color:rgba(20,19,15,.2);font-size:15px}
+  .mk-crumb{font-size:13px;font-weight:450;color:var(--mk-mut);letter-spacing:-.01em}
+  .mk-center{flex:1 1 auto;width:100%;max-width:720px;margin-inline:auto;padding:16px 24px 28px}
+  .mk-hello-h{font-family:var(--font);font-size:23px;font-weight:600;letter-spacing:-.03em;color:var(--mk-ink);margin:4px 0 14px}
+  .mk-card{background:#fff;border:1px solid rgba(20,19,15,.11);border-radius:20px;padding:18px 20px 13px;box-shadow:0 1px 2px rgba(20,19,15,.04)}
+  .mk-input{min-height:62px;font-size:14px;color:var(--mk-mut2)}
+  .mk-caret{display:inline-block;width:1.5px;height:17px;background:var(--mk-ink);margin-left:1px;transform:translateY(3px);animation:mk-blink 1.1s step-end infinite}
+  @keyframes mk-blink{50%{opacity:0}}
+  .mk-card-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:6px}
+  .mk-model{display:inline-flex;align-items:center;gap:6px;height:27px;padding:0 10px;border-radius:999px;border:1px solid rgba(20,19,15,.10);background:#fff;font-size:12px;font-weight:500;color:var(--mk-ink)}
+  .mk-model svg{width:14px;height:14px}
+  .mk-model .chev{width:13px;height:13px;color:var(--mk-mut2)}
+  .mk-card-actions{display:inline-flex;align-items:center;gap:7px}
+  .mk-cic{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;color:var(--mk-mut);border:1px solid rgba(20,19,15,.10)}
+  .mk-cic svg{width:14px;height:14px}
+  .mk-send{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;color:#fff;background:#A1A1A1}
+  .mk-send svg{width:14px;height:14px}
+  .mk-tools{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:13px -20px -13px;padding:6px 16px;background:#F1F0EE;border-radius:0 0 19px 19px}
+  .mk-tools-l{display:inline-flex;align-items:center;gap:8px;font-size:11.5px;color:var(--mk-mut);font-weight:500}
+  .mk-tools-l svg{width:16px;height:16px;color:var(--mk-mut2)}
+  .mk-tools-r{display:inline-flex;align-items:center;gap:7px}
+  .mk-tool{min-width:24px;height:24px;padding:0 5px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;background:#fff;border:1px solid rgba(20,19,15,.07);box-shadow:0 1px 2px rgba(20,19,15,.06)}
+  .mk-tool img{width:13px;height:13px;object-fit:contain}
+  .mk-inbox{margin-top:26px}
+  .mk-grp{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:15px 0 7px}
+  .mk-inbox .mk-grp:first-child{margin-top:0}
+  .mk-grp-h{display:inline-flex;align-items:center;gap:9px;font-size:12.5px;font-weight:550;color:var(--mk-ink);letter-spacing:-.012em}
+  .mk-grp-h b{font-weight:400;color:var(--mk-mut2);margin-left:3px}
+  .mk-grp--old .mk-grp-h{color:var(--mk-mut)}
+  .mk-dot{width:7px;height:7px;border-radius:50%;flex:none}
+  .mk-dot--ok{background:#44B982}
+  .mk-dot--run{background:#F4C36E}
+  .mk-filter{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--mk-mut2)}
+  .mk-filter svg{width:13px;height:13px}
+  .mk-rows{border-radius:12px;overflow:hidden;background:#fff}
+  .mk-rows + .mk-grp{margin-top:15px}
+  .mk-row{position:relative;display:flex;align-items:center;gap:11px;padding:9px 13px;background:#fff}
+  .mk-row + .mk-row{border-top:1px solid rgba(20,19,15,.06)}
+  .mk-row.is-sel{background:#F2F2F2}
+  .mk-row-go{width:15px;height:15px;flex:none;color:var(--mk-mut2);opacity:.8}
+  .mk-row-ic{width:28px;height:28px;border-radius:9px;flex:none;display:grid;place-items:center;background:#F4F4F4;color:#9C9C9C}
+  .mk-row-ic svg{width:15px;height:15px}
+  .mk-row-ic--ok{background:#ECF8F2;color:#35966A}
+  .mk-row-ic--run{background:#FEF6E9;color:#E6B16E}
+  .mk-row-ic--run svg{animation:mk-spin 1.4s linear infinite}
+  @keyframes mk-spin{to{transform:rotate(360deg)}}
+  .mk-row-t{flex:1 1 auto;min-width:0;font-size:13px;color:var(--mk-mut);letter-spacing:-.012em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .mk-row-t.is-new{color:var(--mk-ink)}
+  .mk-row-tx{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;line-height:1.3}
+  .mk-row-tx b{font-size:13px;font-weight:400;color:var(--mk-ink);letter-spacing:-.012em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .mk-row-tx i{font-size:11px;font-style:normal;color:var(--mk-mut2);margin-top:1px}
+  .mk-row-time{flex:none;font-size:11px;color:var(--mk-mut2)}
+  .mk-thread{display:flex;flex-direction:column;min-width:0;min-height:0;margin:4px 14px 0 12px;background:#fff;border:1px solid rgba(20,19,15,.07);border-radius:16px 16px 0 0;box-shadow:0 2px 4px rgba(20,19,15,.04),0 22px 48px -30px rgba(20,19,15,.3)}
+  .mk-th-head{display:flex;align-items:center;gap:11px;padding:13px 15px;border-bottom:1px solid var(--mk-line)}
+  .mk-th-tx{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;line-height:1.3}
+  .mk-th-tx b{font-size:13.5px;font-weight:600;color:var(--mk-ink);letter-spacing:-.012em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .mk-th-tx i{font-size:11.5px;font-style:normal;color:var(--mk-mut2);margin-top:2px}
+  .mk-th-acts{display:inline-flex;align-items:center;gap:10px;flex:none}
+  .mk-th-ic{display:grid;place-items:center;color:var(--mk-mut)}
+  .mk-th-ic svg{width:16px;height:16px}
+  .mk-th-body{position:relative;flex:1 1 auto;min-height:0;overflow:hidden;padding:14px 16px 0;display:flex;flex-direction:column;align-items:flex-start}
+  .mk-bub{align-self:flex-end;max-width:94%;padding:11px 18px;border-radius:20px;background:#272727;color:#fff;font-size:12.5px;line-height:1.45;letter-spacing:-.01em}
+  .mk-ans{margin-top:16px;font-size:12.5px;line-height:1.65;color:var(--mk-ink);letter-spacing:-.01em}
+  .ap .mk-list{margin:11px 0 0;padding-left:20px;display:flex;flex-direction:column;gap:8px;list-style:decimal}
+  .mk-list li{font-size:12.5px;line-height:1.6;color:var(--mk-ink);letter-spacing:-.01em}
+  .mk-list li::marker{color:var(--mk-mut2)}
+  .mk-list b{font-weight:620}
+  .mk-file{display:inline-flex;align-items:center;gap:10px;margin-top:10px;padding:7px 12px 7px 8px;background:#fff;border:1px solid rgba(20,19,15,.11);border-radius:11px;box-shadow:0 1px 2px rgba(20,19,15,.04);max-width:100%}
+  .mk-file-ic{width:28px;height:28px;border-radius:8px;flex:none;display:grid;place-items:center;background:#FDECE8;color:#D2563A}
+  .mk-file-ic svg{width:16px;height:16px}
+  .mk-file-tx{display:flex;flex-direction:column;min-width:0;line-height:1.3}
+  .mk-file-tx b{font-size:12.5px;font-weight:550;color:var(--mk-ink);letter-spacing:-.012em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .mk-file-tx i{font-size:11px;font-style:normal;color:var(--mk-mut2);margin-top:1px}
+  .mk-file-go{width:15px;height:15px;flex:none;color:var(--mk-mut2);margin-left:4px}
+  .mk-time{display:inline-flex;align-items:center;gap:7px;margin-top:8px;font-size:11.5px;color:var(--mk-mut2)}
+  .mk-time svg{width:14px;height:14px}
+  .mk-th-comp{flex:none;margin:8px 12px 12px;padding:11px 13px 8px;border:1px solid rgba(20,19,15,.10);border-radius:18px;background:#fff;box-shadow:0 1px 0 rgba(255,255,255,.7) inset,0 10px 26px -22px rgba(20,19,15,.5)}
+  .mk-th-comp .mk-card-bar{justify-content:flex-end}
+  .mk-th-inp{font-size:12.5px;color:var(--mk-mut2);margin-bottom:20px}
+  .mk-ctx{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:var(--mk-mut2);margin-right:2px}
+  .mk-ring{width:14px;height:14px;border-radius:50%;flex:none;border:1.6px solid rgba(20,19,15,.16)}
+
+  /* ======================================================= CZYM JEST APPTO
+     .reveal-sec ze strony głównej: zdania rozjaśniają się wraz ze scrollem. */
+  .ap-rev{background:#fff;padding-block:clamp(96px,13vw,180px)}
+  .ap-rev-in{max-width:940px;margin-inline:auto}
+  .ap-rev-eb{display:inline-flex;align-items:center;gap:10px;font-size:13px;font-weight:600;letter-spacing:.01em;color:var(--muted);margin-bottom:clamp(28px,4vw,44px)}
+  .ap-rev-eb::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--amber-2);box-shadow:0 0 0 4px rgba(240,206,104,.28)}
+  .ap-rev-tx{font-family:var(--display);font-weight:500;font-size:clamp(26px,3.5vw,46px);line-height:1.34;letter-spacing:-.022em;color:var(--ink);text-wrap:pretty}
+  .ap-rev-tx .s{opacity:.14;transition:opacity .2s linear}
+
+  /* ============================================== SZKIELET SEKCJI (fp-*) */
+  .fp-sec{position:relative;background:#fff;padding:var(--sec) 0}
+  .fp-sec--tint{background:var(--tint)}
+  .fp-head{display:grid;grid-template-columns:minmax(0,1.14fr) minmax(0,.86fr);gap:18px clamp(40px,5vw,90px);align-items:end;margin:0 auto clamp(40px,4.4vw,68px)}
+  .fp-head h2{font-family:var(--display);font-weight:700;font-size:clamp(30px,3.6vw,52px);line-height:1.03;letter-spacing:-.042em;color:var(--ink)}
+  .fp-head h2 span{display:block}
+  .fp-head p{font-size:clamp(15px,1.25vw,17.5px);line-height:1.6;color:var(--muted);max-width:48ch}
+  .fp-head p b{color:var(--ink-2);font-weight:600}
+
+  /* CTA na szwie dwóch sekcji */
+  .fp-seam-w{position:relative;height:0;z-index:5}
+  .fp-seam{position:absolute;left:50%;top:0;translate:-50% -50%;width:min(calc(100% - 40px),1000px);display:grid;grid-template-columns:minmax(0,1fr) 1px auto;align-items:center;gap:clamp(22px,3vw,48px);background:#fff;border:1px solid var(--line-2);border-radius:18px;padding:clamp(20px,2.2vw,26px) clamp(24px,2.8vw,36px);box-shadow:0 1px 0 rgba(10,10,11,.03),0 36px 66px -40px rgba(10,10,11,.4)}
+  .fp-seam-r{display:block;align-self:stretch;width:1px;background:var(--line)}
+  .fp-seam-t{font-family:var(--display);font-weight:700;font-size:clamp(18px,1.85vw,25px);line-height:1.2;letter-spacing:-.034em;color:var(--ink);text-wrap:balance}
+  .fp-seam .ap-acts{flex-wrap:nowrap}
+  .fp-sec--seam-b{padding-bottom:calc(var(--sec) + 66px)}
+  .fp-sec--seam-t{padding-top:calc(var(--sec) + 66px)}
+
+  /* =================================== FUNKCJE: ściana + dziewięć zdań (fh-*) */
+  .fh{--grey:#8B8B95;--lbl:178px;--gut:clamp(24px,3vw,52px)}
+  .fh-hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.04fr);gap:clamp(28px,3.6vw,60px);align-items:center}
+  .fh-h2{font-family:var(--display);font-weight:700;font-size:clamp(34px,3.35vw,50px);line-height:1.02;letter-spacing:-.035em;color:var(--ink);text-wrap:balance}
+  .fh-lede{margin-top:clamp(18px,1.8vw,26px);max-width:42ch;font-size:clamp(16px,1.3vw,19px);line-height:1.6;color:var(--muted)}
+  .fh-lede b{color:var(--ink-2);font-weight:600}
+  .fh-credit{margin-top:clamp(20px,2vw,26px);font-size:12.5px;font-weight:500;color:var(--muted-2)}
+  .fh-wall{position:relative;min-width:0;width:calc(100% + var(--gutter));height:clamp(430px,44vw,600px);overflow:hidden;
+    -webkit-mask-image:linear-gradient(180deg,transparent 0,#000 10%,#000 90%,transparent 100%);mask-image:linear-gradient(180deg,transparent 0,#000 10%,#000 90%,transparent 100%);
+    opacity:0;transition:opacity .9s ease .1s;pointer-events:none}
+  .fh-hero.is-in .fh-wall{opacity:1}
+  .fh-cols{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;align-items:start}
+  .fh-col{display:flex;flex-direction:column;will-change:transform}
+  .fh-col-h{display:flex;flex-direction:column;gap:12px;padding-bottom:12px}
+  .fh-col--up{animation:fhUp var(--t) linear infinite}
+  .fh-col--down{animation:fhDown var(--t) linear infinite}
+  @keyframes fhUp{from{transform:translateY(0)}to{transform:translateY(-50%)}}
+  @keyframes fhDown{from{transform:translateY(-50%)}to{transform:translateY(0)}}
+  .fh-t{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:11px 13px;box-shadow:0 1px 0 rgba(10,10,11,.03),0 16px 26px -22px rgba(10,10,11,.38)}
+  .fh-t img{width:18px;height:18px;object-fit:contain;flex:0 0 auto}
+  .fh-t img.fh-lock{width:auto;height:15px;max-width:78px;margin-block:3px}
+  .fh-t-x{min-width:0}
+  .fh-t b{display:block;font-size:12.5px;font-weight:600;letter-spacing:-.016em;line-height:1.25;color:var(--ink)}
+  .fh-t i{display:block;font-style:normal;margin-top:3px;font-size:11px;line-height:1.35;color:var(--muted-2)}
+  .fh-index-lead{max-width:1120px;margin:clamp(46px,5vw,76px) 0 clamp(-24px,-1.4vw,-14px);padding-left:calc(var(--lbl) + var(--gut));font-size:14.5px;line-height:1.5;color:var(--muted-2)}
+  .fh-index{position:relative;max-width:1120px;margin-top:clamp(40px,4.4vw,68px)}
+  .fh-index::before{content:'';position:absolute;top:4px;bottom:4px;left:calc(var(--lbl) + var(--gut) / 2);width:1px;background:var(--line-2);transform-origin:top center;transform:scaleY(0);transition:transform 1.5s cubic-bezier(.42,0,.12,1) .12s}
+  .fh-index.is-in::before{transform:scaleY(1)}
+  .fh-grp + .fh-grp{margin-top:clamp(30px,3.2vw,48px)}
+  .fh-row{display:grid;grid-template-columns:var(--lbl) minmax(0,1fr);gap:var(--gut);align-items:baseline;padding:clamp(9px,1vw,13px) 0;opacity:0;translate:0 14px;transition:opacity .6s var(--ease-out) calc(var(--i) * 150ms),translate .6s var(--ease-out) calc(var(--i) * 150ms)}
+  .fh-index.is-in .fh-row{opacity:1;translate:0 0}
+  .fh-row:focus-visible{outline:2px solid var(--ink);outline-offset:6px;border-radius:6px}
+  .fh-row-n{justify-self:end;display:inline-flex;align-items:center;gap:7px;font-size:14px;font-weight:600;letter-spacing:-.014em;color:#7C7C87;white-space:nowrap;transition:color .24s ease}
+  .fh-row-n svg{width:13px;height:13px;opacity:0;translate:-5px 0;transition:opacity .26s ease,translate .3s var(--ease-out)}
+  .fh-row:hover .fh-row-n{color:var(--ink)}
+  .fh-row:hover .fh-row-n svg{opacity:1;translate:0 0}
+  .fh-row-s{font-family:var(--display);font-weight:500;font-size:clamp(19px,1.92vw,27px);line-height:1.36;letter-spacing:-.026em;color:var(--grey);text-wrap:pretty}
+  .fh-row-s b{font-weight:inherit;color:var(--grey);background-image:linear-gradient(var(--amber),var(--amber));background-repeat:no-repeat;background-size:0% .34em;background-position:0 88%;box-decoration-break:clone;-webkit-box-decoration-break:clone;transition:color .55s ease calc(var(--i) * 150ms + 300ms),background-size .42s var(--ease-out)}
+  .fh-index.is-in .fh-row-s b{color:var(--ink)}
+  .fh-row:hover .fh-row-s b{background-size:100% .34em;transition-delay:0s}
+
+  /* ============================== KONTEKST: okno w rozsypanych materiałach (k3-*) */
+  .k3-stage{position:relative;height:clamp(430px,44vw,700px);container-type:inline-size}
+  .k3-orbit{position:absolute;inset:0;z-index:1}
+  .k3-obj{position:absolute;left:var(--x);top:var(--y);translate:-50% -50%;scale:var(--sc,1);opacity:0;animation:k3-float var(--dur,15s) ease-in-out infinite;animation-delay:var(--del,0s)}
+  .k3-stage.is-in .k3-obj{opacity:var(--o,1);transition:opacity .9s ease var(--in,0s)}
+  @keyframes k3-float{0%,100%{translate:-50% -50%}50%{translate:-50% calc(-50% - 10px)}}
+  .k3-doc{width:74px}
+  .k3-doc-p{height:96px;border-radius:7px;background:#fff;overflow:hidden;border:1px solid rgba(20,19,15,.11);box-shadow:0 1px 2px rgba(20,18,40,.05),0 14px 26px -14px rgba(20,18,40,.35);transform:rotate(var(--rot,0deg))}
+  .k3-doc-bar{height:16px;background:var(--c,#E0555B)}
+  .k3-doc-b{padding:9px 8px;display:grid;gap:5px;align-content:start}
+  .k3-doc-b i{display:block;height:3px;border-radius:2px;background:rgba(20,19,15,.13)}
+  .k3-doc-b i:nth-child(3){width:62%}
+  .k3-doc-b i:nth-child(5){width:44%}
+  .k3-doc figcaption{margin-top:9px;font-size:10.5px;line-height:1.3;color:var(--muted-2);text-align:center;white-space:nowrap;letter-spacing:-.005em}
+  .k3-brand{width:var(--w,38px);height:var(--w,38px);display:grid;place-items:center}
+  .k3-brand img{width:100%;height:100%;object-fit:contain}
+  .k3-dev{position:absolute;left:50%;top:50%;translate:-50% -50%;z-index:3;width:min(760px,58cqw);opacity:0;transform:translateY(22px)}
+  .k3-stage.is-in .k3-dev{opacity:1;transform:none;transition:opacity .8s ease,transform 1s var(--ease-out)}
+  .k3-win{position:relative;border-radius:18px;overflow:hidden;background:#fff;border:1px solid rgba(10,10,11,.08);box-shadow:0 20px 50px -20px rgba(20,20,23,.25),0 60px 110px -50px rgba(20,20,23,.3);aspect-ratio:760 / 486}
+  .k3-screen{position:absolute;top:0;left:0;width:760px;height:486px;transform-origin:0 0;transform:scale(var(--s,1));display:flex;flex-direction:column;background:#fff}
+  .k3-wtop{height:46px;flex:0 0 auto;display:flex;align-items:center;gap:11px;padding:0 16px}
+  .k3-wtop img{height:16px;width:auto}
+  .k3-wsep{color:rgba(20,19,15,.2);font-size:15px}
+  .k3-wcrumb{font-size:14px;font-weight:600;color:#14130F;letter-spacing:-.01em}
+  .k3-wtop-r{margin-left:auto;display:flex;align-items:center;gap:10px}
+  .k3-wtop-r kbd{font-size:11px;color:#8A8681;border:1px solid rgba(20,19,15,.1);border-radius:6px;padding:2px 7px;background:#fff}
+  .k3-ava{width:28px;height:28px;border-radius:50%;background:linear-gradient(140deg,#FFB07A,#F2896B)}
+  .k3-main{flex:1 1 auto;display:flex;flex-direction:column;min-height:0;padding:22px 24px 20px}
+  .k3-user{align-self:flex-end;max-width:82%;width:fit-content;background:#14131A;color:#fff;padding:11px 15px;border-radius:15px;border-bottom-right-radius:6px;font-size:13.5px;line-height:1.45;margin-bottom:22px}
+  .k3-steps{display:flex;flex-direction:column;gap:15px}
+  .k3-step{display:flex;align-items:center;gap:11px;font-size:13.5px;color:#3A3833}
+  .k3-step .ic{width:24px;height:24px;border-radius:7px;display:grid;place-items:center;flex:0 0 auto}
+  .k3-step .ic img{width:18px;height:18px;object-fit:contain}
+  .k3-step .tx{flex:1 1 auto;min-width:0}
+  .k3-step .tx b{font-weight:600;color:#14130F}
+  .k3-step .tx span{color:#9A968F}
+  .k3-step .ok{color:#12A05C;flex:0 0 auto}
+  .k3-step .ok svg{width:18px;height:18px}
+  .k3-answer{margin-top:15px;font-size:13.5px;line-height:1.62;color:#57534B}
+  .k3-answer p{color:#3A3833}
+  .k3-answer b{font-weight:600;color:#14130F}
+  .k3-answer ul{margin-top:11px;display:flex;flex-direction:column;gap:8px}
+  .k3-answer li{position:relative;padding-left:17px}
+  .k3-answer li::before{content:"";position:absolute;left:3px;top:8px;width:5px;height:5px;border-radius:50%;background:var(--amber-2)}
+  .k3-mark{box-shadow:inset 0 -.5em 0 rgba(240,206,104,.6);font-weight:600;color:#14130F}
+  .k3-composer{flex:0 0 auto;margin-top:auto;display:flex;align-items:center;gap:12px;padding:13px 15px;background:#F5F4F1;border:1px solid rgba(20,19,15,.07);border-radius:14px}
+  .k3-composer .ph{flex:1 1 auto;font-size:14px;color:#B4B0A9}
+  .k3-composer .cb{color:#B4B0A9;display:grid;place-items:center}
+  .k3-composer .cb svg{width:18px;height:18px}
+  .k3-composer .csend{width:32px;height:32px;border-radius:9px;background:#14131A;display:grid;place-items:center;color:#fff;flex:0 0 auto}
+  .k3-composer .csend svg{width:15px;height:15px}
+  @container (max-width:900px){ .k3-dev{width:76cqw} }
+
+  /* ============================== AGENCI: zlecenie → w tle → wynik (ag-*) */
+  .ag-flow{display:grid;grid-template-columns:minmax(0,.92fr) minmax(0,1.06fr) minmax(0,1.12fr);background:#fff;border:1px solid var(--line);border-radius:20px;overflow:hidden;box-shadow:0 26px 56px -36px rgba(20,20,23,.4)}
+  .ag-fl{display:grid;grid-template-rows:auto minmax(0,1fr);gap:16px;padding:clamp(20px,2.2vw,30px);border-left:1px solid var(--line)}
+  .ag-fl:first-child{border-left:0}
+  .ag-fl-b{display:grid;align-content:center;gap:14px}
+  .ag-fl--run{background:#FAFAFB}
+  .ag-fl-l{display:flex;align-items:center;gap:10px;font-size:11.5px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:var(--muted-2)}
+  .ag-fl-l i{font-style:normal;text-transform:none;letter-spacing:0;font-weight:500;color:var(--ink-2);font-variant-numeric:tabular-nums}
+  .ag-fl-l i.is-done{color:var(--ok)}
+  .ag-fl-msg{display:grid;grid-template-columns:30px minmax(0,1fr);gap:12px;align-items:start}
+  .ag-fl-av{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:#EDEDF1;font-size:10.5px;font-weight:700;color:var(--muted)}
+  .ag-fl-msg p{padding:12px 14px;border-radius:14px 14px 14px 4px;background:var(--ink);color:#fff;font-size:clamp(14px,1.2vw,15.5px);line-height:1.45}
+  .ag-fl-note{font-size:12.5px;line-height:1.5;color:var(--muted-2)}
+  .ag-fl-log{height:168px;overflow:hidden;-webkit-mask-image:linear-gradient(180deg,transparent 0,#000 16%,#000 100%);mask-image:linear-gradient(180deg,transparent 0,#000 16%,#000 100%)}
+  .ag-fl-track{transition:transform .5s var(--ease-out)}
+  .ag-fl-r{display:grid;grid-template-columns:20px minmax(0,1fr) 16px;gap:10px;align-items:center;height:42px;opacity:.32;transition:opacity .4s ease}
+  .ag-fl-r.is-done,.ag-fl-r.is-now{opacity:1}
+  .ag-fl-ic{display:grid;place-items:center;width:20px;height:20px}
+  .ag-fl-ic img{width:18px;height:18px;object-fit:contain}
+  .ag-fl-ic i{width:6px;height:6px;border-radius:50%;background:rgba(10,10,11,.22)}
+  .ag-fl-tx{font-size:13px;line-height:1.35;color:var(--ink-2)}
+  .ag-fl-r.is-done .ag-fl-tx{color:var(--muted)}
+  .ag-fl-ck{width:16px;height:16px;color:var(--ok);opacity:0;transition:opacity .3s ease}
+  .ag-fl-ck svg{width:100%;height:100%}
+  .ag-fl-r.is-done .ag-fl-ck{opacity:1}
+  .ag-fl-bar{height:3px;border-radius:3px;background:rgba(10,10,11,.09);overflow:hidden}
+  .ag-fl-bar i{display:block;height:100%;background:var(--ink);transform:scaleX(0);transform-origin:left}
+  .ag-fl-meta{font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .ag-fl-meta b{color:var(--ink);font-weight:700}
+  .ag-res{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#fff}
+  .ag-res-h{display:flex;align-items:center;gap:9px;padding:12px 14px;border-bottom:1px solid var(--line)}
+  .ag-res-h img{width:17px;height:17px}
+  .ag-res-h b{font-size:13.5px;font-weight:600;letter-spacing:-.02em;color:var(--ink)}
+  .ag-res-ok{margin-left:auto;padding:4px 9px;border-radius:999px;background:rgba(31,157,85,.1);font-size:11px;font-weight:600;color:var(--ok)}
+  .ag-res-tb{padding:6px 14px 12px}
+  .ag-res-tr{display:grid;grid-template-columns:minmax(0,1fr) 62px 58px;gap:10px;padding:7px 0;font-size:12.5px;color:var(--ink-2);border-bottom:1px solid rgba(10,10,11,.05)}
+  .ag-res-tr span:nth-child(2),.ag-res-tr span:last-child{text-align:right;font-variant-numeric:tabular-nums;color:var(--muted)}
+  .ag-res-tr--h{font-size:10.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted-2);border-bottom-color:var(--line)}
+  .ag-res-tr--h span{color:var(--muted-2) !important}
+  .ag-res-tr.is-hot{background:rgba(240,206,104,.18);border-radius:6px;padding-inline:6px;margin-inline:-6px;border-bottom-color:transparent}
+  .ag-res-more{display:block;padding-top:9px;font-size:11.5px;color:var(--muted-2)}
+  .ag-res-p{padding:0 14px 14px;font-size:12.5px;line-height:1.5;color:var(--muted)}
+  .ag-res-p b{color:var(--ink-2);font-weight:600}
+
+  /* ten sam agent w trzech miejscach */
+  .ag-mark{display:block;width:52%;color:#fff}
+  .ag-mark svg{display:block;width:100%;height:auto}
+  .ag-surf-g{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(16px,1.8vw,26px);padding-top:8px}
+  .ag-sf{background:#fff;border:1px solid rgba(10,10,11,.08);border-radius:16px;overflow:hidden;box-shadow:0 24px 46px -32px rgba(20,20,23,.5);transition:transform .4s var(--ease-out),box-shadow .4s ease}
+  .ag-sf:nth-child(1){transform:rotate(-1.5deg) translateY(8px)}
+  .ag-sf:nth-child(2){transform:translateY(-6px);z-index:2}
+  .ag-sf:nth-child(3){transform:rotate(1.5deg) translateY(8px)}
+  .ag-sf:hover{transform:translateY(-8px) rotate(0deg);box-shadow:0 34px 60px -34px rgba(20,20,23,.55)}
+  .ag-sf-bar{display:flex;align-items:center;gap:9px;padding:11px 14px;font-size:12.5px;font-weight:600;color:#fff}
+  .ag-sf-bar img{width:15px;height:15px;object-fit:contain}
+  .ag-sf-bar i{margin-left:auto;font-style:normal;font-weight:500;font-size:11.5px;opacity:.66}
+  .ag-sf--appto .ag-sf-bar{background:#14131A}
+  .ag-sf--appto .ag-sf-bar img{filter:brightness(0) invert(1)}
+  .ag-sf--slack .ag-sf-bar{background:#3F0E40}
+  .ag-sf--teams .ag-sf-bar{background:#5B5FC7}
+  .ag-sf-b{padding:15px 14px;display:grid;gap:13px}
+  .ag-sf-u{justify-self:end;max-width:88%;padding:9px 13px;border-radius:13px 13px 4px 13px;background:var(--ink);color:#fff;font-size:13px;line-height:1.45}
+  .ag-sf-a,.ag-sf-m{display:grid;grid-template-columns:30px minmax(0,1fr);gap:10px;align-items:start}
+  .ag-sf-av{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background-color:var(--c,#E4E4EA)}
+  .ag-sf-av .ag-mark{width:58%}
+  .ag-sf-av--ph{font-size:10.5px;font-weight:700;color:var(--muted);letter-spacing:.02em}
+  .ag-sf-nm{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;letter-spacing:-.012em;color:var(--ink)}
+  .ag-sf-nm em{font-style:normal;font-size:9px;font-weight:700;letter-spacing:.06em;padding:2px 5px;border-radius:3px;background:#E4E4EA;color:var(--muted)}
+  .ag-sf-nm time{font-size:11px;font-weight:500;color:var(--muted-2)}
+  .ag-sf-a p,.ag-sf-m p{margin-top:3px;font-size:13px;line-height:1.45;color:var(--ink-2)}
+  .ag-sf-src{display:inline-flex;align-items:center;gap:6px;margin-top:9px;font-size:11.5px;color:var(--muted-2)}
+  .ag-sf-src img{width:14px;height:14px;object-fit:contain}
+  .ag-sf-re{display:inline-flex;align-items:center;gap:5px;margin-top:9px;padding:2px 9px;border-radius:999px;border:1px solid var(--line-2);font-size:11.5px;color:var(--muted)}
+  .ag-sf-re i{font-style:normal;color:var(--ok)}
+
+  /* granice agenta: model / narzędzia / zasięg */
+  .ag-lim{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(14px,1.6vw,24px)}
+  .ag-lim-c{display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:14px;padding:clamp(20px,2vw,28px);background:#fff;border:1px solid var(--line);border-radius:18px}
+  .ag-lim-b{display:grid;align-content:start;gap:14px}
+  .ag-lim-k{font-size:11.5px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:var(--muted-2)}
+  .ag-lim-ms{display:flex;flex-wrap:wrap;gap:10px}
+  .ag-lim-m{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;border:1px solid var(--line);background:#fff;opacity:.34;transition:opacity .35s ease,border-color .35s ease,box-shadow .35s ease,transform .35s var(--ease-out)}
+  .ag-lim-m.is-on{opacity:1;border-color:var(--ink);box-shadow:0 0 0 3px rgba(10,10,11,.06);transform:translateY(-2px)}
+  .ag-lim-lg{display:grid;place-items:center;width:24px;height:24px}
+  .ag-lim-lg svg{width:23px;height:23px}
+  .ag-lim-lg img{width:22px;height:22px;object-fit:contain;border-radius:5px}
+  .ag-lim-ts{display:flex;flex-wrap:wrap;gap:9px}
+  .ag-lim-t{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;border:1px solid var(--line);background:#fff;opacity:.26;filter:grayscale(1)}
+  .ag-lim-t.is-on{opacity:1;filter:none;border-color:var(--line-2)}
+  .ag-lim-t img{width:19px;height:19px;object-fit:contain}
+  .ag-lim-ds{display:flex;flex-wrap:wrap;gap:6px;max-width:260px}
+  .ag-lim-ds i{width:11px;height:11px;border-radius:50%;background:rgba(10,10,11,.11)}
+  .ag-lim-ds i.is-on{background:var(--ink)}
+  .ag-lim-v{margin-top:2px;display:grid;gap:3px}
+  .ag-lim-v b{font-family:var(--display);font-weight:700;font-size:clamp(16px,1.5vw,19px);letter-spacing:-.03em;color:var(--ink)}
+  .ag-lim-v b.is-fresh{animation:agIn .4s var(--ease-out)}
+  @keyframes agIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+  .ag-lim-v span{font-size:13px;color:var(--muted)}
+  .ag-lim-n{padding-top:13px;border-top:1px solid var(--line);font-size:12.5px;line-height:1.55;color:var(--muted-2)}
+
+  /* dane — jedna karta, sześć stref dzielących hairline (jak .ag-flow) */
+  .ap-dane{margin-top:clamp(14px,1.6vw,24px);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));background:#fff;border:1px solid var(--line);border-radius:18px;overflow:hidden}
+  .ap-dane-i{display:grid;grid-template-columns:20px minmax(0,1fr);gap:5px 13px;align-content:start;padding:clamp(18px,1.9vw,26px);border-left:1px solid var(--line);border-top:1px solid var(--line)}
+  .ap-dane-i:nth-child(3n+1){border-left:0}
+  .ap-dane-i:nth-child(-n+3){border-top:0}
+  .ap-dane-i svg{grid-row:span 2;width:19px;height:19px;color:var(--ink);margin-top:1px}
+  .ap-dane-i b{font-family:var(--display);font-weight:700;font-size:15.5px;line-height:1.3;letter-spacing:-.024em;color:var(--ink)}
+  .ap-dane-i span{font-size:13.5px;line-height:1.55;color:var(--muted)}
+
+  /* ============================== WDROŻENIE: przełącznik na zdjęciu (roles.css + method.css) */
+  .ap-roll{position:relative;overflow:hidden;background:#14131B;padding-block:clamp(88px,12vw,168px);scroll-margin-top:16px}
+  .wdr-bg{position:absolute;inset:0;z-index:0;background:#14131B url("/appto/size-bg.jpg") center / cover no-repeat}
+  .wdr-scrim{position:absolute;inset:0;background:linear-gradient(90deg,rgba(13,12,20,.82) 0%,rgba(13,12,20,.52) 30%,rgba(13,12,20,.36) 56%,rgba(13,12,20,.60) 100%),linear-gradient(180deg,rgba(13,12,20,.08) 0%,rgba(13,12,20,0) 45%,rgba(13,12,20,.42) 100%)}
+  .ap-roll > .ap-wrap{z-index:2}
+  .dk-grid{display:grid;grid-template-columns:.82fr 1.18fr;gap:clamp(40px,5vw,84px);align-items:start}
+  .dk-h{font-family:var(--display);font-weight:600;letter-spacing:-.02em;line-height:1.2;font-size:clamp(18px,1.6vw,23px);color:rgba(255,255,255,.76);margin:0 0 clamp(24px,2.8vw,34px);max-width:22ch}
+  .sw-list{display:flex;flex-direction:column;gap:clamp(5px,.8vw,12px)}
+  .sw-item{position:relative;display:flex;align-items:center;width:100%;text-align:left;font-family:var(--display);font-weight:700;letter-spacing:-.03em;line-height:1.08;font-size:clamp(26px,3vw,44px);color:rgba(255,255,255,.26);transition:color .2s ease}
+  .sw-item:hover{color:rgba(255,255,255,.55)}
+  .sw-item.is-active{color:#fff}
+  .sw-item:focus-visible{outline:2px solid #fff;outline-offset:4px;border-radius:6px}
+  .sw-arrow{display:inline-flex;width:0;opacity:0;overflow:hidden;color:#fff;transition:width .26s ease,opacity .2s ease}
+  .sw-arrow svg{width:clamp(28px,2.8vw,40px);height:clamp(28px,2.8vw,40px);flex:none}
+  .sw-item.is-active .sw-arrow{width:clamp(38px,3.8vw,52px);opacity:1}
+  .rl-col{display:flex;flex-direction:column}
+  .rl-text{font-family:var(--display);font-weight:500;font-size:clamp(24px,3vw,42px);line-height:1.34;letter-spacing:-.022em;color:#fff;text-wrap:pretty;min-height:6.2em}
+  .rl-text .w{display:inline-block;opacity:.16;transform:translateY(.14em)}
+  .rl-text.in .w{opacity:1;transform:none;transition:opacity .5s ease,transform .5s cubic-bezier(.2,.7,.2,1)}
+  .wdr-sw-cta{margin-top:clamp(26px,3vw,40px);display:flex;align-items:center;gap:clamp(14px,1.6vw,22px);flex-wrap:wrap}
+  .wdr-btn{display:inline-flex;align-items:center;gap:9px;height:50px;padding:0 26px;border-radius:14px;font-family:var(--font);font-size:15.5px;font-weight:600;letter-spacing:-.014em;color:#14131A;background:#fff;box-shadow:0 12px 34px -14px rgba(0,0,0,.55);transition:transform .18s cubic-bezier(.2,.7,.2,1),background .2s ease}
+  .wdr-btn:hover{background:#F1F1F3;transform:translateY(-1px)}
+  .wdr-btn svg,.wdr-link svg{width:17px;height:17px}
+  .wdr-link{display:inline-flex;align-items:center;gap:8px;height:50px;padding:0 14px;font-family:var(--font);font-size:15px;font-weight:600;color:#fff;border-radius:12px;transition:background .18s ease}
+  .wdr-link:hover{background:rgba(255,255,255,.1)}
+
+  /* ============================================================ ŻÓŁTY PAS */
+  .fp-cta{background:var(--amber);border-block:1px solid var(--amber-2);padding:clamp(56px,5.6vw,92px) 0}
+  .fp-cta-in{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:clamp(24px,3vw,56px);align-items:center}
+  .fp-cta h2{font-family:var(--display);font-weight:700;font-size:clamp(28px,3.2vw,44px);line-height:1.04;letter-spacing:-.04em;color:#14130F}
+  .fp-cta p{margin-top:13px;font-size:clamp(15px,1.25vw,17px);line-height:1.55;color:rgba(20,19,15,.72);max-width:46ch}
+  .fp-cta p b{color:#14130F;font-weight:600}
+  .fp-cta .ap-acts{margin-top:clamp(20px,2.2vw,28px)}
+  .fp-cta .fp-cta-n{margin-top:16px;font-size:13px;line-height:1.5;color:rgba(20,19,15,.5)}
+  .fp-cta .ap-btn--sec{border-color:rgba(20,19,15,.28);color:#14130F;background:transparent}
+  .fp-cta .ap-btn--sec:hover{background:rgba(255,255,255,.4)}
+  .fh-cta-art{display:grid;grid-template-columns:repeat(3,auto);gap:10px 26px;padding-left:clamp(0px,2vw,24px);border-left:1px solid rgba(20,19,15,.18)}
+  .fh-cta-art span{font-family:var(--display);font-weight:600;font-size:14.5px;letter-spacing:-.02em;color:rgba(20,19,15,.62);white-space:nowrap}
+
+  /* ================================================================== FAQ */
+  .fp-faq-in{display:grid;grid-template-columns:minmax(0,.72fr) minmax(0,1.28fr);gap:clamp(34px,4.4vw,88px);align-items:start}
+  .fp-faq-in h2{font-family:var(--display);font-weight:700;font-size:clamp(30px,3.4vw,46px);line-height:1.04;letter-spacing:-.042em;color:var(--ink);max-width:12ch}
+  .fp-faq-in > div > p{margin-top:18px;font-size:clamp(15px,1.2vw,17px);line-height:1.6;color:var(--muted);max-width:34ch}
+  .fp-faq-in a{color:var(--ink-2);font-weight:600;text-decoration:underline;text-decoration-color:var(--line-2);text-underline-offset:3px}
+  .fp-faq-in a:hover{text-decoration-color:var(--amber-2)}
+  .fp-q{border-top:1px solid rgba(10,10,11,.1)}
+  .fp-q:last-child{border-bottom:1px solid rgba(10,10,11,.1)}
+  .fp-q summary{display:grid;grid-template-columns:minmax(0,1fr) 22px;align-items:center;gap:20px;padding:clamp(19px,1.9vw,24px) 0;cursor:pointer;list-style:none;font-family:var(--display);font-weight:600;font-size:clamp(16px,1.35vw,18.5px);letter-spacing:-.022em;color:var(--ink)}
+  .fp-q summary::-webkit-details-marker{display:none}
+  .fp-q summary:hover{color:var(--muted)}
+  .fp-q summary:focus-visible{outline:2px solid var(--ink);outline-offset:3px;border-radius:4px}
+  .fp-q-t{position:relative;width:22px;height:22px}
+  .fp-q-t::before,.fp-q-t::after{content:'';position:absolute;left:50%;top:50%;translate:-50% -50%;background:var(--ink-2);transition:transform .3s var(--ease-out),opacity .25s ease}
+  .fp-q-t::before{width:13px;height:1.5px}
+  .fp-q-t::after{width:1.5px;height:13px}
+  .fp-q[open] .fp-q-t::after{transform:rotate(90deg);opacity:0}
+  .fp-q-a{padding:0 40px clamp(22px,2.2vw,28px) 0;font-size:clamp(14.5px,1.15vw,16px);line-height:1.68;color:var(--muted);max-width:76ch}
+
+  /* ============================================================ RESPONSYWNOŚĆ */
+  @media (min-width:1700px){ .ap-stage-p{border-radius:40px} }
+  @media (max-width:1080px){
+    .fh{--lbl:140px}
+    .fh-wall{height:clamp(360px,46vw,460px)}
+  }
+  @media (max-width:1000px){
+    .mk-thread{display:none}
+    .mk-app{grid-template-columns:minmax(0,1fr)}
+  }
+  @media (max-width:980px){
+    .fh-hero{grid-template-columns:minmax(0,1fr);gap:clamp(30px,5vw,48px)}
+    .fh-wall{height:clamp(360px,52vw,460px)}
+    .fh-cols{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .fh-cols > :nth-child(4){display:none}
+  }
+  @media (max-width:900px){
+    .fp-head,.fp-faq-in,.fp-cta-in{grid-template-columns:minmax(0,1fr);gap:14px}
+    .fp-faq-in{gap:28px}
+    .fp-faq-in h2{max-width:none}
+    .fp-q-a{padding-right:0}
+    .fp-cta-in{gap:26px}
+    .fp-cta-in > [aria-hidden="true"]{display:none}
+    .fp-seam{grid-template-columns:minmax(0,1fr);gap:18px;width:calc(100% - 32px);border-radius:16px;padding:22px 22px 24px}
+    .fp-seam-r{display:none}
+    .fp-seam .ap-acts{flex-wrap:wrap}
+    .fp-sec--seam-b{padding-bottom:calc(var(--sec) + 118px)}
+    .fp-sec--seam-t{padding-top:calc(var(--sec) + 118px)}
+    .ag-flow{grid-template-columns:minmax(0,1fr)}
+    .ag-fl{border-left:0;border-top:1px solid var(--line)}
+    .ag-fl:first-child{border-top:0}
+    .ag-surf-g{grid-template-columns:minmax(0,1fr)}
+    .ag-sf,.ag-sf:nth-child(1),.ag-sf:nth-child(2),.ag-sf:nth-child(3){transform:none}
+    .ag-lim{grid-template-columns:minmax(0,1fr)}
+    .ag-lim-ds{max-width:none}
+    .ap-dane{grid-template-columns:minmax(0,1fr)}
+    .ap-dane-i,.ap-dane-i:nth-child(3n+1){border-left:0}
+    .ap-dane-i:nth-child(-n+3){border-top:1px solid var(--line)}
+    .ap-dane-i:first-child{border-top:0}
+    .dk-grid{grid-template-columns:minmax(0,1fr);gap:clamp(30px,6vw,44px)}
+    .wdr-scrim{background:linear-gradient(180deg,rgba(13,12,20,.78) 0%,rgba(13,12,20,.6) 50%,rgba(13,12,20,.82) 100%)}
+    .rl-text{min-height:0}
+    .k3-stage{height:clamp(400px,62vw,540px)}
+    .k3-obj[data-m="hide"]{display:none}
+    .k3-doc{width:62px}
+    .k3-doc-p{height:80px}
+  }
+  @media (max-width:768px){
+    .mk{--mk-h:528px}
+    .mk-center{padding-top:14px}
+    .mk-input{min-height:56px}
+    .mk-card{padding:18px 18px 12px}
+    .mk-tools{margin:12px -18px -12px;padding:9px 15px}
+    .ap-roll{padding-block:clamp(64px,12vw,88px)}
+    .wdr-sw-cta{flex-direction:column;align-items:stretch;gap:10px}
+    .wdr-btn,.wdr-link{justify-content:center}
+  }
+  @media (max-width:760px){
+    .fh-cols{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .fh-cols > :nth-child(3){display:none}
+    .fh-wall{width:auto;height:340px}
+    .fh-index::before{display:none}
+    .fh-index-lead{padding-left:0;margin-bottom:-10px}
+    .fh-row{grid-template-columns:minmax(0,1fr);gap:7px;padding:13px 0}
+    .fh-row-n{justify-self:start;font-size:12.5px}
+    .fh-row-n svg{opacity:1;translate:0 0}
+    .fh-cta-art{grid-template-columns:repeat(2,auto);gap:8px 20px;padding-left:0;border-left:0}
+  }
+  @media (max-width:640px){
+    .ap .ap-acts{flex-direction:column;align-items:stretch;gap:9px;width:100%}
+    .ap .ap-acts .ap-btn{width:100%;height:48px;font-size:15.5px}
+    .fp-cta .ap-acts .ap-btn--sec{border-color:rgba(20,19,15,.28)}
+    .k3-stage{height:520px}
+    .k3-dev{width:90cqw}
+    .k3-win{aspect-ratio:460 / 520}
+    .k3-screen{width:460px;height:520px;font-size:12px}
+    .k3-obj{left:var(--mx,var(--x));top:var(--my,var(--y))}
+    .k3-obj[data-m2="hide"]{display:none}
+    .k3-doc{width:52px}
+    .k3-doc-p{height:68px}
+    .k3-doc figcaption{font-size:9px}
+  }
+  @media (max-width:620px){
+    .mk-center{padding:18px 14px 24px}
+    .mk-input{min-height:44px}
+    .mk-card-bar .mk-cic{display:none}
+  }
+  @media (max-width:560px){
+    .mk-tools{display:none}
+    .mk-card{padding-bottom:14px}
+    .ap-stage-in{padding-left:12px;padding-right:12px}
+    .ap-stage-p{border-radius:26px}
+  }
+  @media (max-width:480px){
+    .ap-h1{font-size:clamp(30px,8.8vw,36px);letter-spacing:-.03em}
+    .sw-item{font-size:clamp(26px,8.4vw,34px)}
+    .sw-arrow svg{width:26px;height:26px}
+    .sw-item.is-active .sw-arrow{width:34px}
+    .rl-text{font-size:clamp(22px,6.6vw,30px);line-height:1.4}
+    .ap-rev{padding-block:clamp(64px,16vw,120px)}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .mk-caret,.mk-row-ic--run svg{animation:none}
+    .ap-rev-tx .s{opacity:1 !important}
+    .fh-row{opacity:1;translate:none;transition:none}
+    .fh-wall{opacity:1;transition:none}
+    .fh-col--up,.fh-col--down{animation:none}
+    .fh-index::before{transform:scaleY(1);transition:none}
+    .fh-row-s b{color:var(--ink);transition:none}
+    .k3-obj{animation:none}
+    .k3-dev{opacity:1;transform:none}
+    .sw-item,.sw-arrow{transition:none}
+    .rl-text .w{opacity:1;transform:none}
+    .rl-text.in .w{transition:none}
+  }
+</style>
+<script type="application/ld+json" is:inline set:html={JSON.stringify(faqLd)}></script>
+</Fragment>
+
+<div class="ap">
+
+<!-- ═══════════════════════════════════════════════════════ HERO ═══════
+     Logo produktu nad nagłówkiem, dalej 1:1 hero strony głównej appto.
+     Pod spodem gradientowy panel z prawdziwym oknem Inbox AI w stanie
+     „oferta gotowa do przejrzenia". -->
+<section class="ap-hero">
+  <div class="ap-wrap ap-hero-c">
+    <img class="ap-logo" src="/appto/appto-logo-full.svg" alt="appto" width="124" height="32" />
+    <h1 class="ap-h1">Agenci AI dla całej firmy</h1>
+    <p class="ap-sub">Każdy dział dostaje w appto własnego agenta, który zna dokumenty firmy i pracuje w Waszych narzędziach. Zadanie zleca się jednym zdaniem, a gotowy wynik czeka do przejrzenia.</p>
+    <div class="ap-acts">
+      <a class="ap-btn ap-btn--pri ap-btn--lg" href="#kontakt">Umów pokaz <svg class="ap-arr" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={ARR} /></a>
+      <a class="ap-btn ap-btn--sec ap-btn--lg" href={TRIAL} target="_blank" rel="noopener">Załóż konto za darmo</a>
+    </div>
+    <p class="ap-micro">Stworzone w Let's automate, część Wise Group · konto bez karty, w 30 sekund</p>
+  </div>
+</section>
+
+<section class="ap-stage" aria-label="Podgląd Inbox AI w appto">
+  <div class="ap-stage-p">
+    <div class="ap-stage-in">
+      <div class="mk" role="img" aria-label="Inbox AI appto: zadania w toku, oferta dla VeloPol gotowa do przejrzenia">
+        <div class="mk-top">
+          <div class="mk-top-l">
+            <img class="mk-logo" src="/appto/appto-logo.png" alt="" />
+            <span class="mk-sep">/</span>
+            <span class="mk-crumb">Inbox AI</span>
+          </div>
+        </div>
+        <div class="mk-app">
+          <div class="mk-main">
+            <div class="mk-center">
+              <p class="mk-hello-h">Co mogę dla Ciebie zrobić, Szymon?</p>
+              <div class="mk-card">
+                <div class="mk-input">Deleguj zadanie…<span class="mk-caret"></span></div>
+                <div class="mk-card-bar">
+                  <span class="mk-model">
+                    <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="7.5" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="3.4" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r=".6" fill="currentColor"/></svg>
+                    Asystent handlowca
+                    <svg class="chev" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </span>
+                  <span class="mk-card-actions">
+                    <span class="mk-cic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 7h9M17.5 7H20"/><circle cx="15.2" cy="7" r="1.9"/><path d="M4 12h2.5M10.2 12H20"/><circle cx="8.4" cy="12" r="1.9"/><path d="M4 17h9M17.5 17H20"/><circle cx="15.2" cy="17" r="1.9"/></svg></span>
+                    <span class="mk-cic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="9.6" y="3" width="4.8" height="9.6" rx="2.4"/><path d="M6.4 11.2a5.6 5.6 0 0011.2 0M12 16.8V20"/></svg></span>
+                    <span class="mk-cic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M16.4 7.2v8.4a4.4 4.4 0 01-8.8 0V6.4a2.8 2.8 0 015.6 0v9a1.4 1.4 0 01-2.8 0V7.8"/></svg></span>
+                    <span class="mk-send"><svg viewBox="0 0 24 24" fill="none"><path d="M12 19V6M6 11l6-6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                  </span>
+                </div>
+                <div class="mk-tools">
+                  <span class="mk-tools-l">
+                    <svg viewBox="0 0 24 24" fill="none"><circle cx="6" cy="12" r="2.4" stroke="currentColor" stroke-width="1.7"/><circle cx="17" cy="6.5" r="2.4" stroke="currentColor" stroke-width="1.7"/><circle cx="17" cy="17.5" r="2.4" stroke="currentColor" stroke-width="1.7"/><path d="M8.2 10.9l6.6-3.3M8.2 13.1l6.6 3.3" stroke="currentColor" stroke-width="1.5"/></svg>
+                    Podłączone narzędzia
+                  </span>
+                  <span class="mk-tools-r">
+                    <span class="mk-tool"><img src={B('gmail.svg')} alt="" /></span>
+                    <span class="mk-tool"><img src={B('googledrive.svg')} alt="" /></span>
+                    <span class="mk-tool"><img src={B('slack.svg')} alt="" /></span>
+                    <span class="mk-tool"><img src={B('notion.svg')} alt="" /></span>
+                  </span>
+                </div>
+              </div>
+
+              <div class="mk-inbox">
+                <div class="mk-grp"><span class="mk-grp-h"><i class="mk-dot mk-dot--run"></i>W toku<b>1</b></span></div>
+                <div class="mk-rows">
+                  <div class="mk-row">
+                    <span class="mk-row-ic mk-row-ic--run"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-dasharray="34 16"/></svg></span>
+                    <span class="mk-row-tx"><b>Tworzenie nowej umiejętności organizacji</b><i>Agent pracuje · 1m</i></span>
+                    <span class="mk-row-time">przed chwilą</span>
+                  </div>
+                </div>
+                <div class="mk-grp"><span class="mk-grp-h"><i class="mk-dot mk-dot--ok"></i>Do przejrzenia<b>2</b></span></div>
+                <div class="mk-rows">
+                  <div class="mk-row is-sel">
+                    <span class="mk-row-ic mk-row-ic--ok"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3.4l1.9 5.2 5.2 1.9-5.2 1.9-1.9 5.2-1.9-5.2L4.9 10.5l5.2-1.9L12 3.4z" fill="currentColor"/></svg></span>
+                    <span class="mk-row-t is-new">Oferta dla VeloPol</span>
+                    <span class="mk-row-time">teraz</span>
+                    <svg class="mk-row-go" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M6 3.5L10.5 8 6 12.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </div>
+                  <div class="mk-row">
+                    <span class="mk-row-ic mk-row-ic--ok"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3.4l1.9 5.2 5.2 1.9-5.2 1.9-1.9 5.2-1.9-5.2L4.9 10.5l5.2-1.9L12 3.4z" fill="currentColor"/></svg></span>
+                    <span class="mk-row-t is-new">Poprawa umowy — Nordwind</span>
+                    <span class="mk-row-time">9 godzin temu</span>
+                    <svg class="mk-row-go" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M6 3.5L10.5 8 6 12.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </div>
+                </div>
+                <div class="mk-grp mk-grp--old">
+                  <span class="mk-grp-h">Starsze<b>2</b></span>
+                  <span class="mk-filter">Ostatnie 24 godziny <svg viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                </div>
+                <div class="mk-rows">
+                  <div class="mk-row">
+                    <span class="mk-row-ic"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="1.7" stroke-dasharray="3 3.4"/></svg></span>
+                    <span class="mk-row-t">Raport sprzedaży Q3</span>
+                    <span class="mk-row-time">9 godzin temu</span>
+                  </div>
+                  <div class="mk-row">
+                    <span class="mk-row-ic"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="1.7" stroke-dasharray="3 3.4"/></svg></span>
+                    <span class="mk-row-t">Analiza umowy B2B</span>
+                    <span class="mk-row-time">10 godzin temu</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mk-thread">
+            <div class="mk-th-head">
+              <span class="mk-row-ic mk-row-ic--ok"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3.4l1.9 5.2 5.2 1.9-5.2 1.9-1.9 5.2-1.9-5.2L4.9 10.5l5.2-1.9L12 3.4z" fill="currentColor"/></svg></span>
+              <span class="mk-th-tx"><b>Oferta dla VeloPol</b><i>teraz</i></span>
+              <span class="mk-th-acts">
+                <span class="mk-th-ic"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.6"/><path d="M12 7.5V12l3 1.8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span>
+                <span class="mk-th-ic"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                <span class="mk-th-ic"><svg viewBox="0 0 24 24" fill="none"><path d="M14 10l6-6M20 4v5M20 4h-5M10 14l-6 6M4 20v-5M4 20h5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                <span class="mk-th-ic"><svg viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>
+              </span>
+            </div>
+            <div class="mk-th-body">
+              <span class="mk-bub">Przygotuj ofertę dla VeloPol na podstawie ostatniej rozmowy.</span>
+              <p class="mk-ans">Gotowe. Ofertę złożyłem z Waszego cennika i notatek z rozmowy:</p>
+              <ol class="mk-list">
+                <li><b>Zakres</b> — trzy warianty, środkowy rekomendowany (pokrywa ich ERP).</li>
+                <li><b>Wycena</b> — 48 200 zł netto, rabat 8% za płatność z góry.</li>
+                <li><b>Termin</b> — start dwa tygodnie od akceptacji.</li>
+                <li><b>Ryzyko</b> — nie mają potwierdzonego właściciela projektu.</li>
+              </ol>
+              <span class="mk-file">
+                <span class="mk-file-ic"><svg viewBox="0 0 24 24" fill="none"><path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8l-5-5z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M14 3v5h5" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></span>
+                <span class="mk-file-tx"><b>Oferta — VeloPol.pdf</b><i>PDF · 418 kB</i></span>
+                <svg class="mk-file-go" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M5 19h14" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </span>
+              <span class="mk-time">10:24 <svg viewBox="0 0 24 24" fill="none"><rect x="9" y="9" width="11" height="11" rx="2.2" stroke="currentColor" stroke-width="1.6"/><path d="M15 9V6.2A2.2 2.2 0 0012.8 4H6.2A2.2 2.2 0 004 6.2v6.6A2.2 2.2 0 006.2 15H9" stroke="currentColor" stroke-width="1.6"/></svg></span>
+            </div>
+            <div class="mk-th-comp">
+              <div class="mk-th-inp">Napisz wiadomość…</div>
+              <div class="mk-card-bar">
+                <span class="mk-card-actions">
+                  <span class="mk-ctx">3,3%<i class="mk-ring"></i></span>
+                  <span class="mk-cic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 7h9M17.5 7H20"/><circle cx="15.2" cy="7" r="1.9"/><path d="M4 12h2.5M10.2 12H20"/><circle cx="8.4" cy="12" r="1.9"/><path d="M4 17h9M17.5 17H20"/><circle cx="15.2" cy="17" r="1.9"/></svg></span>
+                  <span class="mk-cic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="9.6" y="3" width="4.8" height="9.6" rx="2.4"/><path d="M6.4 11.2a5.6 5.6 0 0011.2 0M12 16.8V20"/></svg></span>
+                  <span class="mk-cic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M16.4 7.2v8.4a4.4 4.4 0 01-8.8 0V6.4a2.8 2.8 0 015.6 0v9a1.4 1.4 0 01-2.8 0V7.8"/></svg></span>
+                  <span class="mk-send"><svg viewBox="0 0 24 24" fill="none"><path d="M12 19V6M6 11l6-6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════════════════════════════════════ CZYM JEST APPTO ═══════
+     Pierwsze zdanie definiuje produkt podmiotem równym nazwie — po ten
+     fragment sięgają modele i wyróżnione odpowiedzi w wyszukiwarce. -->
+<section class="ap-rev">
+  <div class="ap-wrap">
+    <div class="ap-rev-in">
+      <p class="ap-rev-eb">Czym jest appto</p>
+      <p class="ap-rev-tx" id="apRev"><span class="s">Appto to platforma AI dla całej firmy. </span><span class="s">W większości firm AI już jest, tylko każdy korzysta z niego po swojemu i na własnych notatkach. </span><span class="s">W appto cały zespół pracuje na jednym AI, które zna procedury firmy i ustalenia z Waszych wątków, więc nikt nie tłumaczy mu wszystkiego od nowa. </span><span class="s">Zadanie oddaje się mu jak współpracownikowi: oferta dla klienta wraca złożona z Waszego cennika i notatki z ostatniej rozmowy.</span></p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════ FUNKCJE: ściana + spis ═══════
+     Hero strony /pl/funkcje przeniesiony w całości: po lewej zdanie, po
+     prawej cztery kolumny kafli jadące w przeciwnych kierunkach, niżej
+     dziewięć zdań z ciemną frazą. Wiersze prowadzą na appto.ai. -->
+<section class="fp-sec fp-sec--tint fh" id="funkcje">
+  <div class="ap-wrap">
+    <div class="fh-hero" data-reveal>
+      <div>
+        <h2 class="fh-h2">Każda funkcja powstała z konkretnego powodu</h2>
+        <p class="fh-lede">Funkcja trafia do appto dopiero wtedy, gdy któreś wdrożenie pokazało, że jest potrzebna. Dlatego <b>wszystkie są w standardzie i dla całego zespołu</b>, bez modułów i dopłat za funkcję.</p>
+        <p class="fh-credit">Budujemy je w Let's automate na podstawie własnych wdrożeń</p>
+      </div>
+      <div class="fh-wall" aria-hidden="true">
+        <div class="fh-cols">
+          {WALL.map((col, ci) => (
+            <div class={`fh-col fh-col--${ci % 2 ? 'down' : 'up'}`} style={`--t:${WALL_T[ci]}`}>
+              {[0, 1].map(() => (
+                <div class="fh-col-h">
+                  {col.map((t) => (
+                    <div class="fh-t">
+                      {t.l && <img class={t.lock ? 'fh-lock' : ''} src={B(t.l)} alt="" />}
+                      {!t.lock && (
+                        <span class="fh-t-x">
+                          <b>{t.nm}</b>
+                          {t.d && <i>{t.d}</i>}
+                        </span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    <p class="fh-index-lead">Co appto robi w firmie, w dziewięciu zdaniach</p>
+    <ol class="fh-index" data-reveal>
+      {ZDANIA.map((grp, gi) => (
+        <li class="fh-grp">
+          <ol>
+            {grp.map((f, fi) => (
+              <li>
+                <a class="fh-row" href={f.href} target="_blank" rel="noopener" style={`--i:${gi * 3 + fi}`}>
+                  <span class="fh-row-n">{f.nm}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={ARR} /></span>
+                  <span class="fh-row-s" set:html={f.s} />
+                </a>
+              </li>
+            ))}
+          </ol>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<!-- ═════════════════════════════════════════════════ KONTEKST ═══════════
+     Scena z /pl/funkcje/kontekst: okno appto w środku, wokół rozsypane
+     dokumenty firmy i logotypy źródeł. Ekran rysowany w 760 × 486 i
+     skalowany do szerokości okna. -->
+<section class="fp-sec" id="kontekst">
+  <div class="ap-wrap">
+    <div class="fp-head">
+      <h2>appto wie, co wiecie</h2>
+      <p>Cennik leży na dysku, ustalenia na Slacku, karta klienta w CRM. <b>Wszystko zostaje tam, gdzie jest</b>, a appto sięga po to w chwili pytania i pokazuje, z czego skorzystało.</p>
+    </div>
+
+    <div class="k3-stage" data-reveal>
+      <div class="k3-orbit" aria-hidden="true">
+        {DOCS.map((d) => (
+          <figure class="k3-obj k3-doc" data-m={d.m ? 'hide' : null} data-m2={d.m2 ? 'hide' : null}
+            style={`--x:${d.x}%; --y:${d.y}%; ${d.my ? `--my:${d.my}%;` : ''} --sc:${d.sc}; --o:${d.o}; --dur:${d.dur}s; --del:${d.del}s; --in:${d.in}s`}>
+            <div class="k3-doc-p" style={`--rot:${d.rot}deg; --c:${d.c}`}>
+              <div class="k3-doc-bar"></div>
+              <div class="k3-doc-b"><i></i><i></i><i></i><i></i><i></i></div>
+            </div>
+            <figcaption>{d.nm}</figcaption>
+          </figure>
+        ))}
+        {BRANDS.map((b) => (
+          <span class="k3-obj k3-brand" data-m={b.m ? 'hide' : null} data-m2={b.m2 ? 'hide' : null}
+            style={`--x:${b.x}%; --y:${b.y}%; --w:${b.w}px; --o:${b.o}; --dur:${b.dur}s; --del:${b.del}s; --in:${b.in}s`}>
+            <img src={B(b.i)} alt="" />
+          </span>
+        ))}
+      </div>
+
+      <div class="k3-dev">
+        <div class="k3-win" id="k3Win" role="img" aria-label="Rozmowa w appto: rabat dla Nowak Logistics policzony z CRM, cennika i ustaleń zespołu">
+          <div class="k3-screen" id="k3Screen">
+            <div class="k3-wtop">
+              <img src="/appto/appto-logo.png" alt="" />
+              <span class="k3-wsep">/</span>
+              <span class="k3-wcrumb">Oferta dla Nowak Logistics</span>
+              <span class="k3-wtop-r"><kbd>⌘K</kbd><span class="k3-ava"></span></span>
+            </div>
+            <div class="k3-main">
+              <div class="k3-user">Jaki rabat możemy dać Nowak Logistics przy umowie rocznej?</div>
+              <div class="k3-steps">
+                {WIN_STEPS.map((s) => (
+                  <div class="k3-step">
+                    <span class="ic"><img src={B(s.i)} alt="" /></span>
+                    <span class="tx"><b>{s.b}</b> <span>{s.s}</span></span>
+                    <span class="ok"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12l4 4 10-10" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                  </div>
+                ))}
+              </div>
+              <div class="k3-answer">
+                <p>Przy umowie rocznej możecie zejść <span class="k3-mark">do 20%</span> — Nowak mieści się w progu.</p>
+                <ul>
+                  <li>Próg to 30 stanowisk, Nowak ma 50 — rabat w widełkach.</li>
+                  <li>Powyżej 15% potrzebna akceptacja dyrektora sprzedaży.</li>
+                  <li>Decyzję po ich stronie podejmuje <b>Mateusz</b>, nie osoba z formularza.</li>
+                </ul>
+              </div>
+              <div class="k3-composer">
+                <span class="ph">Napisz wiadomość…</span>
+                <span class="cb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M4 8h10M18 8h2M4 16h2M10 16h10"/><circle cx="16" cy="8" r="2.2"/><circle cx="8" cy="16" r="2.2"/></svg></span>
+                <span class="cb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M17 8l-6.5 6.5a2.5 2.5 0 003.5 3.5L21 11a4.5 4.5 0 00-6.4-6.4L7 12"/></svg></span>
+                <span class="csend"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 11l18-8-8 18-2.5-7.5L3 11z"/></svg></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════ AGENCI: PRACA W TLE ═══════
+     Jedna karta, trzy strefy: zlecenie → praca w tle (jedyny ruchomy takt)
+     → wynik. Przebieg z /pl/funkcje/agenci. -->
+<section class="fp-sec fp-sec--tint fp-sec--seam-b" id="agenci">
+  <div class="ap-wrap">
+    <div class="fp-head">
+      <h2>Zlecenie to jedno zdanie<span>Reszta dzieje się w tle</span></h2>
+      <p>Nie każde zadanie da się załatwić jedną odpowiedzią. <b>Agent schodzi w tło</b>, przechodzi źródło po źródle i wraca dopiero z gotowym wynikiem. Zespół w tym czasie zajmuje się swoją pracą.</p>
+    </div>
+
+    <div class="ag-flow" id="agFlow">
+      <div class="ag-fl">
+        <span class="ag-fl-l">Zlecenie<i>18:04</i></span>
+        <div class="ag-fl-b">
+          <div class="ag-fl-msg">
+            <span class="ag-fl-av">MK</span>
+            <p>Zbierz warunki ze wszystkich ofert dostawców z kwartału i złóż z tego jedno porównanie.</p>
+          </div>
+          <span class="ag-fl-note">Wątek powstaje od razu, agent schodzi w tło.</span>
+        </div>
+      </div>
+
+      <div class="ag-fl ag-fl--run">
+        <span class="ag-fl-l">W tle<i id="agState">pracuje</i></span>
+        <div class="ag-fl-b">
+          <div class="ag-fl-log">
+            <div class="ag-fl-track" id="agLog">
+              {RUN_LOG.map((x) => (
+                <div class="ag-fl-r">
+                  <span class="ag-fl-ic">{x.i ? <img src={B(x.i)} alt="" /> : <i></i>}</span>
+                  <span class="ag-fl-tx">{x.t}</span>
+                  <span class="ag-fl-ck"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12l4 4 10-10" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div class="ag-fl-bar"><i id="agBar"></i></div>
+          <span class="ag-fl-meta">źródła: <b id="agSrc">0</b> · narzędzia: <b id="agTls">1</b></span>
+        </div>
+      </div>
+
+      <div class="ag-fl ag-fl--out">
+        <span class="ag-fl-l">Wynik<i>18:45</i></span>
+        <div class="ag-fl-b">
+          <div class="ag-res">
+            <div class="ag-res-h">
+              <img src={B('googlesheets.svg')} alt="" />
+              <b>Porównanie ofert dostawców</b>
+              <span class="ag-res-ok">gotowe</span>
+            </div>
+            <div class="ag-res-tb">
+              <div class="ag-res-tr ag-res-tr--h"><span>Dostawca</span><span>Cena</span><span>Termin</span></div>
+              {RES_ROWS.map((r, n) => (
+                <div class:list={['ag-res-tr', n === 1 && 'is-hot']}>{r.map((c) => <span>{c}</span>)}</div>
+              ))}
+              <span class="ag-res-more">…i 15 kolejnych ofert</span>
+            </div>
+            <p class="ag-res-p">Trzy oferty odstają od reszty — jedna tańsza o <b>18%</b>, ale z terminem dłuższym o trzy tygodnie.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="fp-seam-w">
+  <div class="fp-seam">
+    <p class="fp-seam-t">Ustawcie pierwszego agenta</p>
+    <span class="fp-seam-r" aria-hidden="true"></span>
+    <div class="ap-acts">
+      <a class="ap-btn ap-btn--pri" href="#kontakt">Umów pokaz <svg class="ap-arr" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={ARR} /></a>
+      <a class="ap-btn ap-btn--sec" href={TRIAL} target="_blank" rel="noopener">Załóż konto</a>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ TEN SAM AGENT W TRZECH MIEJSCACH ═════
+     Trzy okna wachlarzem z prawdziwym chromem: appto, Slack, Teams. -->
+<section class="fp-sec fp-sec--seam-t" id="coworker">
+  <div class="ap-wrap">
+    <div class="fp-head">
+      <h2>Ten sam agent w trzech miejscach</h2>
+      <p>Zadanie można zlecić w appto, na kanale w Slacku albo w wątku w Microsoft Teams. Odpowiada ten sam agent, z tą samą wiedzą i <b>tymi samymi uprawnieniami</b>. Nikt nie musi otwierać kolejnej karty.</p>
+    </div>
+
+    <div class="ag-surf-g">
+      <article class="ag-sf ag-sf--appto">
+        <div class="ag-sf-bar"><img src="/appto/sygnet-mark.svg" alt="" /><span>appto</span><i>Wątek · Obsługa klienta</i></div>
+        <div class="ag-sf-b">
+          <span class="ag-sf-u">Zajmij się zgłoszeniem 318.</span>
+          <div class="ag-sf-a">
+            <span class="ag-sf-av" style="--c:#2F8FD8"><span class="ag-mark" set:html={MARK_CLAIM} /></span>
+            <div>
+              <span class="ag-sf-nm">Agent obsługi klienta <em>agent</em></span>
+              <p>Wymiana zamiast zwrotu — jedna naprawa, nie dwie. Odpowiedź gotowa do wysłania.</p>
+              <span class="ag-sf-src"><img src={B('gmail.svg')} alt="" /><img src={B('jira.svg')} alt="" />2 narzędzia</span>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="ag-sf ag-sf--slack">
+        <div class="ag-sf-bar"><img src={B('slack.svg')} alt="" /><span># obsluga</span><i>12 osób</i></div>
+        <div class="ag-sf-b">
+          <div class="ag-sf-m">
+            <span class="ag-sf-av ag-sf-av--ph">MK</span>
+            <div>
+              <span class="ag-sf-nm">Marta K. <time>10:42</time></span>
+              <p>@appto co z reklamacją Zenitu?</p>
+            </div>
+          </div>
+          <div class="ag-sf-m">
+            <span class="ag-sf-av" style="--c:#2F8FD8"><span class="ag-mark" set:html={MARK_CLAIM} /></span>
+            <div>
+              <span class="ag-sf-nm">appto <em>APP</em> <time>10:42</time></span>
+              <p>Wymiana, odbiór we wtorek. Szkic odpowiedzi czeka w wątku.</p>
+              <span class="ag-sf-re"><i>✓</i>1</span>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="ag-sf ag-sf--teams">
+        <div class="ag-sf-bar"><img src={B('teams.svg')} alt="" /><span>Obsługa klienta</span><i>Ogólny</i></div>
+        <div class="ag-sf-b">
+          <div class="ag-sf-m">
+            <span class="ag-sf-av ag-sf-av--ph">TW</span>
+            <div>
+              <span class="ag-sf-nm">Tomek W. <time>17:05</time></span>
+              <p>Podeślij podsumowanie zgłoszeń na jutro.</p>
+            </div>
+          </div>
+          <div class="ag-sf-m">
+            <span class="ag-sf-av" style="--c:#2F8FD8"><span class="ag-mark" set:html={MARK_CLAIM} /></span>
+            <div>
+              <span class="ag-sf-nm">appto <time>17:06</time></span>
+              <p>Siedem zgłoszeń, dwa czekają na decyzję opiekuna.</p>
+            </div>
+          </div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════════════════════════════════════ GRANICE I DANE ═════════
+     Karty model / narzędzia / zasięg z /pl/funkcje/agenci, pod nimi jedna
+     karta z sześcioma faktami o danych — pierwsze pytanie zarządu i działu
+     prawnego. -->
+<section class="fp-sec fp-sec--tint" id="dane">
+  <div class="ap-wrap">
+    <div class="fp-head">
+      <h2>Wy decydujecie,<span>czym agent dysponuje</span></h2>
+      <p>Na jakim modelu pracuje, do których narzędzi sięga i kto go w ogóle ma, ustawia osoba z uprawnieniami. <b>Poza to, co mu zostawicie, agent nie wyjdzie.</b></p>
+    </div>
+
+    <div class="ag-lim">
+      <div class="ag-lim-c">
+        <span class="ag-lim-k">Model</span>
+        <div class="ag-lim-b">
+          <div class="ag-lim-ms" id="agLimMs">
+            {MODELS.map((m, n) => (
+              <span class:list={['ag-lim-m', n === 0 && 'is-on']}>
+                {m.lg ? <span class="ag-lim-lg" set:html={m.lg} /> : <span class="ag-lim-lg"><img src={m.img} alt="" /></span>}
+              </span>
+            ))}
+          </div>
+          <p class="ag-lim-v"><b id="agLimNm">{MODELS[0].nm}</b><span id="agLimD">{MODELS[0].d}</span></p>
+        </div>
+        <p class="ag-lim-n">Przypisany na stałe. Nic nie przełącza się samo w tle.</p>
+      </div>
+
+      <div class="ag-lim-c">
+        <span class="ag-lim-k">Narzędzia</span>
+        <div class="ag-lim-b">
+          <div class="ag-lim-ts">
+            {LIMTOOLS.map((t) => (
+              <span class:list={['ag-lim-t', t.on && 'is-on']}><img src={B(t.i)} alt="" /></span>
+            ))}
+          </div>
+          <p class="ag-lim-v"><b>Cztery z blisko tysiąca</b><span>Gmail, HubSpot, Jira, Dysk</span></p>
+        </div>
+        <p class="ag-lim-n">Agent sięga wyłącznie po te, które sami mu zostawicie.</p>
+      </div>
+
+      <div class="ag-lim-c">
+        <span class="ag-lim-k">Zasięg</span>
+        <div class="ag-lim-b">
+          <div class="ag-lim-ds">
+            {Array.from({ length: 48 }, (_, d) => <i class:list={[d < 11 && 'is-on']}></i>)}
+          </div>
+          <p class="ag-lim-v"><b>Zespół: Obsługa klienta</b><span>11 z 48 osób w firmie</span></p>
+        </div>
+        <p class="ag-lim-n">Zakres zmienia osoba z uprawnieniami, nie każdy użytkownik.</p>
+      </div>
+    </div>
+
+    <div class="ap-dane">
+      {DANE.map((d) => (
+        <div class="ap-dane-i">
+          <Fragment set:html={d.ic} />
+          <b>{d.t}</b>
+          <span>{d.d}</span>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════ WDROŻENIE ═════════
+     Przełącznik ze strony głównej appto na zdjęciu „ludzie przy pracy".
+     To jedyne miejsce strony, w którym mówimy o sobie: wdrożenie z
+     opiekunem i kohorta prowadzi zespół Let's automate. -->
+<section class="ap-roll" id="wdrozenie">
+  <div class="wdr-bg" aria-hidden="true"><div class="wdr-scrim"></div></div>
+  <div class="ap-wrap">
+    <div class="dk-grid">
+      <div>
+        <h2 class="dk-h">Jak chcecie wdrożyć appto?</h2>
+        <ul class="sw-list" id="wdrRail" role="tablist" aria-label="Ścieżka wdrożenia">
+          {WDR.map((w, i) => (
+            <li><button type="button" role="tab" class:list={['sw-item', i === 1 && 'is-active']} aria-selected={i === 1 ? 'true' : 'false'} data-i={i}><span class="sw-arrow"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h15M13 6l6 6-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span>{w.nm}</span></button></li>
+          ))}
+        </ul>
+      </div>
+      <div class="rl-col">
+        <p class="rl-text" id="wdrText" aria-live="polite">{WDR[1].t}</p>
+        <div class="wdr-sw-cta">
+          <a href="#kontakt" class="wdr-btn">Porozmawiajmy o wdrożeniu <svg viewBox="0 0 24 24" fill="none"><path d="M4 12h15M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+          <a href={TRIAL} target="_blank" rel="noopener" class="wdr-link">Załóż konto za darmo <svg viewBox="0 0 24 24" fill="none"><path d="M4 12h15M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════ ŻÓŁTY PAS ═════════ -->
+<section class="fp-cta">
+  <div class="ap-wrap">
+    <div class="fp-cta-in">
+      <div>
+        <h2>Pierwszy agent jeszcze dziś</h2>
+        <p>Weźcie zadanie, które ktoś w zespole robi co tydzień tak samo. <b>Jedno zdanie wystarczy, żeby powstał agent</b>, a resztę zobaczycie po pierwszym wyniku.</p>
+        <div class="ap-acts">
+          <a class="ap-btn ap-btn--pri" href={TRIAL} target="_blank" rel="noopener">Załóż konto za darmo <svg class="ap-arr" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={ARR} /></a>
+          <a class="ap-btn ap-btn--sec" href="#kontakt">Umów pokaz</a>
+        </div>
+        <p class="fp-cta-n">Konto bez karty, zakładane w 30 sekund.</p>
+      </div>
+      <div class="fh-cta-art" aria-hidden="true">
+        {ZDANIA.flat().map((f) => <span>{f.nm}</span>)}
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ FAQ ═════════ -->
+<section class="fp-sec" id="faq">
+  <div class="ap-wrap">
+    <div class="fp-faq-in">
+      <div>
+        <h2>Pytania, które padają przy appto</h2>
+        <p>Najczęstsze z rozmów wdrożeniowych. Pełna lista integracji i cennik stoją na <a href="https://appto.ai/pl/" target="_blank" rel="noopener">appto.ai</a>.</p>
+      </div>
+      <div>
+        {FAQ.map((f) => (
+          <details class="fp-q">
+            <summary>{f.q}<span class="fp-q-t" aria-hidden="true"></span></summary>
+            <p class="fp-q-a">{f.a}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<GcCta
+  usluga="Appto"
+  heading="Pokażemy appto na Waszej sprawie"
+  lead="Weźcie jedno prawdziwe zapytanie ofertowe albo jedno zgłoszenie od klienta. Na nim widać w pół godziny, czy to się u Was spina."
+  eyebrow="Z pokazu wychodzicie z"
+  items={[
+    { t: 'Listą pierwszych zadań dla agentów', d: 'trzy rzeczy, które da się oddać w pierwszym tygodniu' },
+    { t: 'Listą dokumentów do zebrania', d: 'co musi trafić do kontekstu, żeby odpowiedzi były Wasze' },
+    { t: 'Kosztem', d: 'zużycie i koszt wdrożenia, policzone osobno' },
+  ]}
+  fieldLabel="Co chcecie oddać agentom?"
+  placeholder="Np. oferty na konstrukcje stalowe, 40 zapytań miesięcznie, wszystko ręcznie…"
+  badges={[
+    { i: 'klodka', t: 'Dane w Unii Europejskiej' },
+    { i: 'kartka', t: 'DPA przed startem' },
+    { i: 'ptaszek', t: 'Modele nie uczą się na Waszych danych' },
+  ]}
+/>
+
+<script is:inline define:vars={{ MODELS: MODELS.map((m) => ({ nm: m.nm, d: m.d })), WDR }}>
+  /* Wejścia sekcji liczone na scrollu, nie IntersectionObserverem — przy
+     szybkim przewijaniu IO potrafi nie dowieźć wpisu (ta sama pętla co na
+     podstronach funkcji appto). */
+  (function () {
+    var pending = Array.prototype.slice.call(document.querySelectorAll('.ap [data-reveal]'));
+    if (!pending.length) return;
+    var queued = false;
+    function run() {
+      queued = false;
+      pending = pending.filter(function (el) {
+        if (el.getBoundingClientRect().top > innerHeight * 0.85) return true;
+        el.classList.add('is-in');
+        return false;
+      });
+      if (!pending.length) removeEventListener('scroll', onScroll);
+    }
+    function onScroll() { if (!queued) { queued = true; requestAnimationFrame(run); } }
+    addEventListener('scroll', onScroll, { passive: true });
+    addEventListener('resize', onScroll);
+    run();
+  })();
+
+  /* Ekran okna Kontekstu jest rysowany w stałym formacie i skalowany do
+     szerokości okna, więc łamanie tekstu jest takie samo na każdym ekranie. */
+  (function () {
+    var win = document.getElementById('k3Win');
+    var screen = document.getElementById('k3Screen');
+    if (!win || !screen) return;
+    function fit() { screen.style.setProperty('--s', win.clientWidth / screen.offsetWidth); }
+    fit();
+    if ('ResizeObserver' in window) new ResizeObserver(fit).observe(win);
+    else addEventListener('resize', fit);
+  })();
+
+  /* „Czym jest appto" — zdania rozjaśniają się po kolei wraz ze scrollem. */
+  (function () {
+    var box = document.getElementById('apRev');
+    if (!box) return;
+    var s = Array.prototype.slice.call(box.querySelectorAll('.s'));
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var queued = false;
+    function paint() {
+      queued = false;
+      var r = box.getBoundingClientRect();
+      var p = (innerHeight * 0.88 - r.top) / (r.height + innerHeight * 0.3);
+      p = Math.max(0, Math.min(1, p)) * s.length;
+      s.forEach(function (el, i) { el.style.opacity = String(Math.max(0.14, Math.min(1, p - i))); });
+    }
+    function req() { if (!queued) { queued = true; requestAnimationFrame(paint); } }
+    addEventListener('scroll', req, { passive: true });
+    addEventListener('resize', req);
+    paint();
+  })();
+
+  /* Praca w tle: jedna liczba p (0→1) prowadzi odhaczanie kroków,
+     przewijanie dziennika, pasek i liczniki. */
+  (function () {
+    var root = document.getElementById('agFlow');
+    var track = document.getElementById('agLog');
+    var bar = document.getElementById('agBar');
+    var src = document.getElementById('agSrc');
+    var tls = document.getElementById('agTls');
+    var state = document.getElementById('agState');
+    if (!root || !track || !bar) return;
+    var rows = Array.prototype.slice.call(track.children);
+    var RUN_MS = 12000, SRC_MAX = 24, TLS_MAX = 6, VIS = 4, shown = -1;
+    function paint(p) {
+      bar.style.transform = 'scaleX(' + Math.min(p, 1) + ')';
+      src.textContent = String(Math.round(p * SRC_MAX));
+      tls.textContent = String(Math.max(1, Math.round(p * TLS_MAX)));
+      var n = Math.min(rows.length - 1, Math.floor(p * rows.length));
+      state.textContent = p >= 1 ? 'gotowe' : 'pracuje';
+      state.classList.toggle('is-done', p >= 1);
+      if (n === shown) return;
+      shown = n;
+      rows.forEach(function (r, i) { r.classList.toggle('is-done', i < n || p >= 1); r.classList.toggle('is-now', i === n); });
+      var off = Math.max(0, n - (VIS - 1)) * rows[0].offsetHeight;
+      track.style.transform = 'translateY(' + (-off) + 'px)';
+    }
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) { paint(1); return; }
+    var raf = null, t0 = 0;
+    function tick(now) {
+      if (!t0) t0 = now;
+      var q = ((now - t0) % RUN_MS) / RUN_MS;
+      paint(Math.min(q / 0.9, 1));
+      raf = requestAnimationFrame(tick);
+    }
+    paint(0);
+    function play() { if (!raf) { t0 = 0; raf = requestAnimationFrame(tick); } }
+    function stop() { cancelAnimationFrame(raf); raf = null; }
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (e) { e[0].isIntersecting ? play() : stop(); }, { threshold: .2 }).observe(root);
+    } else play();
+  })();
+
+  /* Karta „Model": wybór przechodzi po dopuszczonych modelach. */
+  (function () {
+    var box = document.getElementById('agLimMs');
+    var nm = document.getElementById('agLimNm');
+    var d = document.getElementById('agLimD');
+    if (!box || !nm || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var tiles = Array.prototype.slice.call(box.children), k = 0, timer = null;
+    function set(n) {
+      k = n;
+      tiles.forEach(function (t, i) { t.classList.toggle('is-on', i === n); });
+      nm.textContent = MODELS[n].nm; d.textContent = MODELS[n].d;
+      nm.classList.remove('is-fresh'); void nm.offsetWidth; nm.classList.add('is-fresh');
+    }
+    function play() { if (!timer) timer = setInterval(function () { set((k + 1) % tiles.length); }, 2600); }
+    function stop() { clearInterval(timer); timer = null; }
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (e) { e[0].isIntersecting ? play() : stop(); }, { threshold: .3 }).observe(box);
+    }
+  })();
+
+  /* Wdrożenie: przełącznik ścieżek, tekst „nalewa się" słowami. */
+  (function () {
+    var rail = document.getElementById('wdrRail');
+    var text = document.getElementById('wdrText');
+    if (!rail || !text) return;
+    var items = Array.prototype.slice.call(rail.querySelectorAll('.sw-item'));
+    var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    function render(i) {
+      items.forEach(function (t, k) {
+        var on = k === i;
+        t.classList.toggle('is-active', on);
+        t.setAttribute('aria-selected', on ? 'true' : 'false');
+      });
+      var words = WDR[i].t.split(' ');
+      text.classList.remove('in');
+      text.innerHTML = words.map(function (w, k) {
+        return '<span class="w" style="transition-delay:' + (k * 24) + 'ms">' + w + '</span>';
+      }).join(' ');
+      if (reduce) { text.classList.add('in'); return; }
+      void text.offsetWidth;
+      requestAnimationFrame(function () { text.classList.add('in'); });
+    }
+    items.forEach(function (b, i) { b.addEventListener('click', function () { render(i); }); });
+  })();
+</script>
+</LaBase>

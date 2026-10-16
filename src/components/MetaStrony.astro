@@ -1,0 +1,70 @@
+---
+// META STRONY — opis, canonical, OG, Twitter i dane firmy w <head>.
+//
+// Jedno źródło dla LaBase oraz dwóch stron z własnym <head>: strony głównej
+// i /darmowa-konsultacja. Do 16.10.2026 obie miały sam <title>, bez opisu,
+// canonical i znaczników OG — a strona główna to 62% ruchu z Google.
+//
+// Adres kanoniczny zawsze bez ukośnika na końcu. Build zapisuje strony jako
+// katalogi, więc `pathname` przychodzi z ukośnikiem (`/post/x/`), a stary
+// serwis, sitemapa i linki wewnętrzne używają postaci bez niego (`/post/x`).
+// Z ukośnikiem canonical wskazywałby Google'owi inny adres niż ten, który
+// ma w indeksie.
+const {
+  title,
+  // Pusty opis nie trafia do <head> — strony przeniesione ze starego serwisu
+  // bez opisu meta zostają bez niego, jak tam (Google składa wtedy własny).
+  description,
+  ogImage = '/og/hub.png',
+  noindex = false,
+  // Dodatkowe węzły JSON-LD tylko dla tej strony (np. WebSite na głównej).
+  dane = [],
+} = Astro.props;
+
+// Dane firmy jadą na każdej stronie: wyszukiwarki i modele językowe
+// biorą stąd nazwę, adres i przynależność do grupy.
+const firma = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  '@id': new URL('/#organizacja', Astro.site).href,
+  name: "Let's automate",
+  legalName: "Let's automate sp. z o.o.",
+  url: new URL('/', Astro.site).href,
+  logo: new URL('/uploads/logo-2.svg', Astro.site).href,
+  description: 'Studio transformacji AI. Projektuje i buduje systemy, na których firmy działają po nowemu.',
+  vatID: 'PL5252908405',
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: 'ul. Nowy Świat 33/13',
+    postalCode: '00-029',
+    addressLocality: 'Warszawa',
+    addressCountry: 'PL',
+  },
+  email: 'hello@letsautomate.pl',
+  telephone: '+48571399932',
+  parentOrganization: { '@type': 'Organization', name: 'Wise Group' },
+  areaServed: { '@type': 'Country', name: 'Polska' },
+};
+
+const ogUrl = new URL(ogImage, Astro.site).href;
+const pageUrl = new URL(Astro.url.pathname.replace(/\/+$/, '') || '/', Astro.site).href;
+---
+{description && <meta name="description" content={description}>}
+{noindex && <meta name="robots" content="noindex, nofollow">}
+<link rel="canonical" href={pageUrl}>
+<meta property="og:type" content="website">
+<meta property="og:locale" content="pl_PL">
+<meta property="og:site_name" content="Let's automate">
+<meta property="og:url" content={pageUrl}>
+<meta property="og:title" content={title}>
+{description && <meta property="og:description" content={description}>}
+<meta property="og:image" content={ogUrl}>
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content={title}>
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content={title}>
+{description && <meta name="twitter:description" content={description}>}
+<meta name="twitter:image" content={ogUrl}>
+<script type="application/ld+json" is:inline set:html={JSON.stringify(firma)}></script>
+{dane.map((d) => <script type="application/ld+json" is:inline set:html={JSON.stringify(d)}></script>)}

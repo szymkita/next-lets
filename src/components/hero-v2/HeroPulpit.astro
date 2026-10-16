@@ -1,0 +1,422 @@
+---
+// WARIANT A — „Pulpit firmy" (16.10.2026)
+// Rama jak na podstronach usługowych (wariant „okno"): ciemna plansza,
+// nagłówek u góry, okno wisi na jej dolnej krawędzi.
+//
+// W oknie jest pierwotny pomysł z obecnej strony głównej — pulpit, na którym
+// praca dzieje się sama, a człowiek zatwierdza wyjątki — przerobiony według
+// zasad makiet z podstron: bez kafli z liczbami, bez liczników przy menu,
+// bez pigułek statusu z tłem i bez awatarów z inicjałami. Zamiast tego:
+//   · pięć procesów firmy w jednym rejestrze; przy każdym ostatnia sprawa,
+//     którą system zamknął, i osoba, która wchodzi tylko przy wyjątku,
+//   · jedna decyzja z regułą marży (rabat poza widełkami idzie do zarządu),
+//   · oś „Aktywność", w której system jest jednym z autorów.
+// Przebieg: wpada faktura, Marta zatwierdza rabat swoim kursorem, oferta
+// wychodzi, potem co kilka sekund dochodzi kolejna sprawa w którymś z
+// procesów. Pauza, kiedy okno nie jest w kadrze; przy ograniczonym ruchu
+// zostaje stan z markupu (decyzja czeka).
+//
+// DO POTWIERDZENIA: firma Termo-Bud, osoby i kwoty są zmyślone; zdjęcia
+// zastępcze z public/makieta (jak w Ofertowni na /systemy-procesowe).
+import { IK } from './ikony';
+
+const OS = {
+  mk: { n: 'Marta Król', f: '/makieta/awatar-marta.webp', r: 'zarząd' },
+  es: { n: 'Ewa Sowa', f: '/makieta/awatar-ewa.webp', r: 'księgowość' },
+  ak: { n: 'Anna Kowal', f: '/makieta/awatar-anna.webp', r: 'handel' },
+  mr: { n: 'Michał Rutkowski', f: '/makieta/awatar-michal.webp', r: 'obsługa klienta' },
+  tw: { n: 'Tomasz Wilk', f: '/makieta/awatar-tomasz.webp', r: 'magazyn' },
+  kz: { n: 'Katarzyna Zając', f: '/makieta/awatar-kasia.webp', r: 'kadry' },
+  bn: { n: 'Bartek Nowicki', f: '/makieta/awatar-bartek.webp', r: 'zaopatrzenie' },
+};
+
+// Rejestr procesów: stan z markupu (przed przebiegiem).
+const PROCESY = [
+  { p: 'Obieg faktur', dz: 'Finanse', ik: 'credit-card', os: 'es', s: 'FV 10/412 · Elektro-Hurt', st: 'ok', t: 'zaksięgowana na 402-01', h: '10:42' },
+  { p: 'Ofertowanie', dz: 'Handel', ik: 'briefcase', os: 'ak', s: 'OF-2611 · Nordkam', st: 'cz', t: 'rabat czeka na zgodę zarządu', h: '10:38' },
+  { p: 'Reklamacje', dz: 'Obsługa klienta', ik: 'chat-bubble-left-ellipsis', os: 'mr', s: 'RMA-2190 · Kamex', st: 'ok', t: 'odpowiedź z protokołem wysłana', h: '10:31' },
+  { p: 'Zamówienia z maila', dz: 'Magazyn', ik: 'archive-box', os: 'tw', s: 'ZM-0913 · Hydro-Serwis', st: 'ok', t: '40 zaworów kulowych w ERP', h: '10:29' },
+  { p: 'Zamówienia u dostawców', dz: 'Zaopatrzenie', ik: 'truck', os: 'bn', s: 'ZK-0331 · Kan-Therm', st: 'ok', t: 'stany poniżej minimum, zamówienie wysłane', h: '10:18' },
+  { p: 'Rekrutacja', dz: 'Kadry', ik: 'user-group', os: 'kz', s: 'Magazynier · 3 nowe CV', st: 'ok', t: 'jedna osoba zaproszona na rozmowę', h: '10:12' },
+];
+
+const AKT = [
+  { k: 'sys', t: 'zaksięgował FV 10/412', h: '10:42' },
+  { k: 'ak', t: 'poprosiła o rabat 12% dla Nordkam', h: '10:38' },
+  { k: 'sys', t: 'odpowiedział Kamexowi na RMA-2190', h: '10:31' },
+  { k: 'sys', t: 'wpisał ZM-0913 do ERP', h: '10:29' },
+  { k: 'tw', t: 'potwierdził stany zaworów', h: '10:24' },
+  { k: 'sys', t: 'ocenił 3 nowe CV', h: '10:12' },
+  { k: 'sys', t: 'zaksięgował FV 10/411', h: '10:06' },
+];
+
+// Reguła marży przy rabacie: widełki 20–28%, po rabacie 17,4% — poza nimi,
+// więc decyzja trafia do zarządu.
+const MAR = { od: 20, do: 28, ta: 17.4, max: 40 };
+
+const sys = `<b class="hp-sys"><svg viewBox="0 0 16 16">${IK['fire']}</svg></b>`;
+const ARIA = 'Pulpit systemu firmy: sześć procesów prowadzi system, ludzie zatwierdzają wyjątki. Kierowniczka zatwierdza rabat poza widełkami marży, oferta wychodzi do klienta.';
+---
+<figure class="hp hero-wid" data-hp role="img" aria-label={ARIA}>
+<div class="hp-okno" aria-hidden="true">
+<div class="hp-tyt">
+<span class="hp-sw"><i></i><i></i><i></i></span>
+<span class="hp-tyt-t">Termo-Bud — Pulpit</span>
+</div>
+<div class="hp-uk">
+<nav class="hp-rail">
+<b><svg viewBox="0 0 16 16" set:html={IK['fire']}></svg></b>
+<span class="on"><svg class="hi" viewBox="0 0 16 16" set:html={IK['home']}></svg></span>
+<span><svg class="hi" viewBox="0 0 16 16" set:html={IK['inbox']}></svg></span>
+<span><svg class="hi" viewBox="0 0 16 16" set:html={IK['view-columns']}></svg></span>
+<span><svg class="hi" viewBox="0 0 16 16" set:html={IK['document-text']}></svg></span>
+<span><svg class="hi" viewBox="0 0 16 16" set:html={IK['users']}></svg></span>
+<span class="dol"><svg class="hi" viewBox="0 0 16 16" set:html={IK['cog-6-tooth']}></svg></span>
+</nav>
+
+<section class="hp-gl">
+<div class="hp-pasek">
+<b>Pulpit</b><span class="hp-data">czwartek, 16 października</span>
+<span class="hp-szukaj"><svg class="hi" viewBox="0 0 16 16" set:html={IK['magnifying-glass']}></svg>Szukaj spraw i klientów<kbd>⌘K</kbd></span>
+<span class="hp-obecni">{['mk', 'ak', 'es'].map((k) => (<img src={OS[k].f} alt="" width="24" height="24" loading="lazy">))}</span>
+</div>
+<div class="hp-tresc">
+<div class="hp-pow">
+<div><h3>Dzień dobry, Marto</h3><p data-pow>Od 7:00 system prowadzi sześć procesów. Na Twoją decyzję czekają dwie sprawy.</p></div>
+<span class="hp-seg"><span class="on">Dziś</span><span>Tydzień</span><span>Miesiąc</span></span>
+</div>
+<div class="hp-tab">
+<div class="hp-w n"><span>Proces</span><span>Ostatnia sprawa</span><span>Przy wyjątkach</span><span>Godz.</span></div>
+{PROCESY.map((x, i) => (
+  <div class="hp-w" data-wiersz={i}>
+    <span class="hp-pr"><i><svg class="hi" viewBox="0 0 16 16" set:html={IK[x.ik]}></svg></i><span><b>{x.p}</b><em>{x.dz}</em></span></span>
+    <span class="hp-sp" data-sp><span class="hp-s"><b>{x.s}</b><span class={x.st}>{x.st === 'ok' ? <svg class="hi" viewBox="0 0 16 16" set:html={IK['check-circle']}></svg> : <i class="czk-j"></i>}{x.t}</span></span></span>
+    <span class="hp-os"><img src={OS[x.os].f} alt="" width="20" height="20" loading="lazy">{OS[x.os].n}</span>
+    <span class="hp-cz" data-cz>{x.h}</span>
+  </div>
+))}
+</div>
+</div>
+</section>
+
+<aside class="hp-bok">
+<h4>Do decyzji</h4>
+<div class="hp-decyzje" data-decyzje>
+<div class="hp-dec-w"><div class="hp-dec-in">
+<article class="hp-dec">
+<div class="hp-dec-gl"><img src={OS.ak.f} alt="" width="18" height="18" loading="lazy"><span><b>Anna Kowal</b> prosi o rabat</span><time>10:38</time></div>
+<h5>Rabat 12% dla Nordkam</h5>
+<p>OF-2611 · 14 pozycji · 48 200 zł netto</p>
+<div class="hp-reg">
+<div class="hp-reg-gl"><span>Marża po rabacie</span><b>17,4%</b></div>
+<div class="hp-reg-tor"><i class="pas" style={`left:${MAR.od / MAR.max * 100}%;width:${(MAR.do - MAR.od) / MAR.max * 100}%`}></i><i class="zn" style={`left:${MAR.ta / MAR.max * 100}%`}></i></div>
+<div class="hp-reg-sk"><span>0%</span><span>widełki {MAR.od}–{MAR.do}%</span><span>{MAR.max}%</span></div>
+</div>
+<div class="hp-akc"><span class="hp-b1">Zatwierdź</span><span class="hp-b2">Odrzuć</span></div>
+<p class="hp-dec-ok"><svg class="hi" viewBox="0 0 16 16" set:html={IK['check-circle']}></svg>Zatwierdzone, oferta wysłana</p>
+</article>
+</div></div>
+</div>
+<article class="hp-dec mini">
+<div class="hp-dec-gl"><img src={OS.mr.f} alt="" width="18" height="18" loading="lazy"><span><b>Michał Rutkowski</b> prosi o zwrot</span><time>10:21</time></div>
+<h5>Zwrot 240 zł dla Dachpolu</h5>
+<p>RMA-2192 · zdjęcia nie pokazują uszkodzenia</p>
+</article>
+<h4 class="hp-akt-h">Aktywność</h4>
+<ol class="hp-akt" data-akt role="list">
+{AKT.map((x) => (
+  <li>{x.k === 'sys' ? <Fragment set:html={sys} /> : <img src={OS[x.k].f} alt="" width="18" height="18" loading="lazy">}<span><strong>{x.k === 'sys' ? 'System' : OS[x.k].n.split(' ')[0]}</strong> {x.t}</span><time>{x.h}</time></li>
+))}
+</ol>
+</aside>
+</div>
+</div>
+<span class="hp-kur" data-kur aria-hidden="true"><svg viewBox="0 0 17 21"><path d="M1.5 1.5v15.2l4-3.9 2.9 6.6 2.9-1.3-2.8-6.4h5.6z" /></svg><b><img src={OS.mk.f} alt="" width="16" height="16" loading="lazy">Marta · zarząd</b></span>
+<template data-sys set:html={sys}></template>
+<template data-ok set:html={`<svg class="hi" viewBox="0 0 16 16">${IK['check-circle']}</svg>`}></template>
+</figure>
+
+<script is:inline>
+(function(){
+  var fig = document.querySelector('[data-hp]');
+  if (!fig || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var q = function(s){ return fig.querySelector(s); };
+  var rows = fig.querySelectorAll('[data-wiersz]');
+  var akt = q('[data-akt]');
+  var kur = q('[data-kur]');
+  var lista = q('[data-decyzje]');
+  var SYS = q('template[data-sys]').innerHTML;
+  var OK = q('template[data-ok]').innerHTML;
+  var FOTO = { mk: '/makieta/awatar-marta.webp', ak: '/makieta/awatar-anna.webp' };
+  var IMIE = { mk: 'Marta', ak: 'Anna' };
+
+  // Zegar sceny: minuty rosną razem ze sprawami.
+  var min = 10 * 60 + 46;
+  function godz(){ return Math.floor(min / 60) + ':' + String(min % 60).padStart(2, '0'); }
+  function po2(f){ requestAnimationFrame(function(){ requestAnimationFrame(f); }); }
+
+  // Wiersz rejestru: nowa sprawa wjeżdża od dołu, stara wyjeżdża w górę.
+  function sprawa(i, s, typ, t){
+    var w = rows[i], sp = w.querySelector('[data-sp]'), stara = sp.firstElementChild;
+    var n = document.createElement('span');
+    n.className = 'hp-s wch';
+    n.innerHTML = '<b>' + s + '</b><span class="' + typ + '">' + (typ === 'ok' ? OK : '<i class="czk-j"></i>') + t + '</span>';
+    sp.appendChild(n);
+    stara.classList.add('wyj');
+    po2(function(){ n.classList.remove('wch'); });
+    setTimeout(function(){ stara.remove(); }, 560);
+    w.querySelector('[data-cz]').textContent = godz();
+    w.classList.remove('blysk'); void w.offsetWidth; w.classList.add('blysk');
+  }
+  function wpis(kto, t){
+    var li = document.createElement('li');
+    li.className = 'nowy';
+    li.innerHTML = (kto === 'sys' ? SYS : '<img src="' + FOTO[kto] + '" alt="" width="18" height="18">') +
+      '<span><strong>' + (kto === 'sys' ? 'System' : IMIE[kto]) + '</strong> ' + t + '</span><time>' + godz() + '</time>';
+    akt.insertBefore(li, akt.firstChild);
+    po2(function(){ li.classList.remove('nowy'); });
+    while (akt.children.length > 10) akt.lastElementChild.remove();
+  }
+  // Na decyzję czeka rabat (jeśli jest) i zwrot dla Dachpolu, który stoi cały czas.
+  var rabatow = 1;
+  function powitanie(){
+    q('[data-pow]').textContent = 'Od 7:00 system prowadzi sześć procesów. Na Twoją decyzję ' + (rabatow > 0 ? 'czekają dwie sprawy.' : 'czeka jedna sprawa.');
+  }
+  function kursorNa(el, dx, dy){
+    var f = fig.getBoundingClientRect(), r = el.getBoundingClientRect();
+    kur.style.left = (r.left - f.left + r.width * dx) + 'px';
+    kur.style.top = (r.top - f.top + r.height * dy) + 'px';
+  }
+
+  // Prośba o rabat poza widełkami 20–28%: karta wjeżdża na górę listy
+  // decyzji, a wiersz ofertowania przechodzi w „czeka".
+  function decyzja(d){
+    min += 1;
+    var w = document.createElement('div');
+    w.className = 'hp-dec-w zw';
+    w.dataset.of = d.of; w.dataset.kl = d.kl; w.dataset.r = d.r;
+    w.innerHTML = '<div class="hp-dec-in"><article class="hp-dec">' +
+      '<div class="hp-dec-gl"><img src="' + FOTO.ak + '" alt="" width="18" height="18"><span><b>Anna Kowal</b> prosi o rabat</span><time>' + godz() + '</time></div>' +
+      '<h5>Rabat ' + d.r + '% dla ' + d.kl + '</h5><p>' + d.of + ' · ' + d.poz + ' · ' + d.kw + ' zł netto</p>' +
+      '<div class="hp-reg"><div class="hp-reg-gl"><span>Marża po rabacie</span><b>' + String(d.m).replace('.', ',') + '%</b></div>' +
+      '<div class="hp-reg-tor"><i class="pas" style="left:50%;width:20%"></i><i class="zn" style="left:' + (d.m / 40 * 100) + '%"></i></div>' +
+      '<div class="hp-reg-sk"><span>0%</span><span>widełki 20–28%</span><span>40%</span></div></div>' +
+      '<div class="hp-akc"><span class="hp-b1">Zatwierdź</span><span class="hp-b2">Odrzuć</span></div>' +
+      '<p class="hp-dec-ok">' + OK + 'Zatwierdzone, oferta wysłana</p></article></div>';
+    lista.insertBefore(w, lista.firstChild);
+    rabatow += 1;
+    po2(function(){ w.classList.remove('zw'); });
+    sprawa(1, d.of + ' · ' + d.kl, 'cz', 'rabat czeka na zgodę zarządu');
+    wpis('ak', 'poprosiła o rabat ' + d.r + '% dla ' + d.kl);
+    powitanie();
+  }
+  // Marta zatwierdza najstarszą prośbę z rabatem: kursor, klik, oferta wychodzi.
+  function zatwierdz(){
+    var w = lista.querySelector('.hp-dec-w:not(.zw)');
+    if (!w) return;
+    rabatow -= 1;
+    var btn = w.querySelector('.hp-b1'), dec = w.querySelector('.hp-dec');
+    var of = w.dataset.of || 'OF-2611', kl = w.dataset.kl || 'Nordkam', r = w.dataset.r || '12';
+    kur.classList.add('on'); kursorNa(btn, 0.42, 0.55);
+    setTimeout(function(){ btn.classList.add('wcis'); }, 1350);
+    setTimeout(function(){
+      btn.classList.remove('wcis'); dec.classList.add('ok');
+      min += 1; sprawa(1, of + ' · ' + kl, 'ok', 'wysłana z rabatem ' + r + '%');
+      wpis('mk', 'zatwierdziła rabat ' + r + '% dla ' + kl);
+      setTimeout(function(){ wpis('sys', 'wysłał ' + of + ' do ' + kl); }, 380);
+    }, 1610);
+    setTimeout(function(){ w.classList.add('zw'); powitanie(); kursorNa(q('.hp-akt-h'), 0.3, 2.6); }, 3100);
+    setTimeout(function(){ kur.classList.remove('on'); }, 4000);
+    setTimeout(function(){ w.remove(); }, 4200);
+  }
+
+  // Sprawy, które dochodzą same — po kolei, w kółko, z rosnącymi numerami.
+  var nr = { fv: 414, zm: 914, rma: 2193, of: 2612, zk: 332, cv: 2 };
+  var KLIENCI = ['Termex', 'Instal-Pol', 'Elektro-Hurt', 'Aquatech', 'Wod-Kan', 'Bud-Instal', 'Grzejtech', 'Hydro-Serwis'];
+  var RABATY = [
+    { r: 9, kl: 'Grzejtechu', poz: '9 pozycji', kw: '21 650', m: 18.9 },
+    { r: 15, kl: 'Bud-Instalu', poz: '22 pozycje', kw: '96 400', m: 16.1 },
+    { r: 10, kl: 'Aquatechu', poz: '6 pozycji', kw: '14 980', m: 19.2 }
+  ];
+  var k = 0, rb = 0;
+  function klient(){ return KLIENCI[k++ % KLIENCI.length]; }
+  function faktura(){ var n = nr.fv++, kl = klient(); sprawa(0, 'FV 10/' + n + ' · ' + kl, 'ok', 'zaksięgowana na 402-0' + (1 + n % 3)); wpis('sys', 'zaksięgował FV 10/' + n); }
+  var DOPLYW = [
+    faktura,
+    function(){ var n = nr.zm++, kl = klient(); var co = ['120 m rury PEX', '18 grzejników', '6 pomp obiegowych', '60 złączek zaciskowych'][n % 4]; sprawa(3, 'ZM-0' + n + ' · ' + kl, 'ok', co + ' w ERP'); wpis('sys', 'wpisał ZM-0' + n + ' do ERP'); },
+    function(){ var d = RABATY[rb++ % RABATY.length]; decyzja({ of: 'OF-' + (nr.of++), kl: d.kl, r: d.r, poz: d.poz, kw: d.kw, m: d.m }); },
+    function(){ var n = nr.rma++, kl = klient(); sprawa(2, 'RMA-' + n + ' · ' + kl, 'ok', 'odpowiedź z protokołem wysłana'); wpis('sys', 'odpowiedział na RMA-' + n); },
+    zatwierdz,
+    function(){ var n = nr.zk++; sprawa(4, 'ZK-0' + n + ' · ' + ['Kan-Therm', 'Purmo', 'Grundfos'][n % 3], 'ok', 'stany poniżej minimum, zamówienie wysłane'); wpis('sys', 'zamówił towar u dostawcy, ZK-0' + n); },
+    faktura,
+    function(){ nr.cv += 1; sprawa(5, 'Magazynier · ' + nr.cv + ' nowe CV', 'ok', 'ocenione, bez zaproszeń'); wpis('sys', 'ocenił ' + nr.cv + ' nowe CV'); }
+  ];
+
+  // Najpierw: wpada faktura, potem Marta zatwierdza czekający rabat dla
+  // Nordkam. Dalej dopływ co ~4 s. Pauza poza kadrem.
+  var KROKI = [
+    [900, function(){ min += 1; sprawa(0, 'FV 10/413 · Termex', 'ok', 'zaksięgowana na 402-03'); wpis('sys', 'zaksięgował FV 10/413'); }],
+    [1500, zatwierdz],
+    [5200, function(){ min += 2; DOPLYW[1](); }]
+  ];
+  var i = 0, d = 2, widac = false, czeka = false;
+  function krok(){
+    if (!widac) { czeka = true; return; }
+    if (i < KROKI.length) { KROKI[i++][1](); }
+    else { min += 1 + (d % 3); var f = DOPLYW[d % DOPLYW.length]; d++; f(); }
+    var po = i < KROKI.length ? KROKI[i][0] : (DOPLYW[(d - 1) % DOPLYW.length] === zatwierdz ? 5200 : 4000);
+    setTimeout(krok, po);
+  }
+  var start = false;
+  new IntersectionObserver(function(w){
+    widac = w[0].isIntersecting;
+    if (widac && !start) { start = true; setTimeout(krok, KROKI[0][0]); }
+    else if (widac && czeka) { czeka = false; setTimeout(krok, 1200); }
+  }, { threshold: 0.25 }).observe(fig);
+})();
+</script>
+
+<style is:global>
+  .hp{--t1:#18181b;--t2:#52525b;--t3:#71717a;--t4:#a1a1aa;--lin:rgba(9,9,11,0.08);--lin2:rgba(9,9,11,0.05);
+    position:relative;margin:0;container-type:inline-size;font-size:12.5px;line-height:1.4;color:var(--t1);letter-spacing:-0.004em;-webkit-font-smoothing:antialiased}
+  .hp .hi{display:block;flex-shrink:0;width:16px;height:16px;fill:currentColor}
+  .hp-okno{position:relative;overflow:hidden;border-radius:12px;background:#ffffff;
+    box-shadow:0 0 0 1px rgba(255,255,255,0.14),0 0 0 1.5px rgba(0,0,0,0.3),0 50px 100px -40px rgba(0,0,0,0.9),0 18px 36px -20px rgba(0,0,0,0.55)}
+  .hp-tyt{position:relative;display:flex;align-items:center;height:36px;padding:0 12px;background:#f7f7f6;border-bottom:1px solid var(--lin)}
+  .hp-sw{display:flex;gap:7px}
+  .hp-sw i{display:block;width:11px;height:11px;border-radius:50%;background:#ff5f57;box-shadow:inset 0 0 0 0.5px rgba(0,0,0,0.18)}
+  .hp-sw i:nth-child(2){background:#febc2e}
+  .hp-sw i:nth-child(3){background:#28c840}
+  .hp-tyt-t{position:absolute;left:50%;transform:translateX(-50%);font-size:12px;font-weight:550;color:var(--t2);white-space:nowrap}
+
+  .hp-uk{display:grid;grid-template-columns:52px minmax(0,1fr) 332px;height:536px}
+  .hp-rail{display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 0;background:#fafaf9;border-right:1px solid var(--lin)}
+  .hp-rail > b{display:grid;place-items:center;width:26px;height:26px;margin-bottom:10px;border-radius:7px;background:#0f1a14;box-shadow:inset 0 1px 0 rgba(255,255,255,0.12)}
+  .hp-rail > b svg{width:13px;height:13px;fill:#00cd77}
+  .hp-rail > span{display:grid;place-items:center;width:32px;height:32px;border-radius:8px;color:var(--t4)}
+  .hp-rail > span.on{background:#ffffff;color:var(--t1);box-shadow:0 0 0 1px var(--lin),0 1px 2px rgba(0,0,0,0.05)}
+  .hp-rail > span.dol{margin-top:auto}
+
+  .hp-gl{display:flex;flex-direction:column;min-width:0;min-height:0}
+  .hp-pasek{display:flex;align-items:center;gap:10px;flex-shrink:0;height:48px;padding:0 14px 0 22px;border-bottom:1px solid var(--lin);white-space:nowrap}
+  .hp-pasek > b{font-size:13.5px;font-weight:600;letter-spacing:-0.01em}
+  .hp-data{color:var(--t4)}
+  .hp-szukaj{margin-left:auto;display:flex;align-items:center;gap:7px;width:min(250px,34%);height:30px;padding:0 9px;border-radius:8px;box-shadow:inset 0 0 0 1px var(--lin);font-size:12px;color:var(--t4)}
+  .hp-szukaj .hi{width:14px;height:14px}
+  .hp-szukaj kbd{margin-left:auto;font-family:inherit;font-size:10.5px;color:var(--t4)}
+  .hp-obecni{display:flex;padding-left:6px}
+  .hp-obecni img{display:block;width:24px;height:24px;margin-left:-6px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 2px #ffffff;outline:1px solid rgba(0,0,0,0.06);outline-offset:-1px}
+
+  .hp-tresc{flex:1;min-height:0;overflow:hidden;padding:24px 26px}
+  .hp-pow{display:flex;align-items:flex-end;justify-content:space-between;gap:16px}
+  .hp-pow h3{margin:0;font-size:20px;line-height:1.2;font-weight:600;letter-spacing:-0.025em}
+  .hp-pow p{margin:5px 0 0;font-size:12.5px;color:var(--t3)}
+  .hp-seg{display:inline-flex;flex-shrink:0;padding:2px;border-radius:8px;background:#f4f4f5}
+  .hp-seg span{padding:4px 10px;border-radius:6px;font-size:12px;color:var(--t3)}
+  .hp-seg span.on{background:#ffffff;color:var(--t1);font-weight:550;box-shadow:0 0 0 1px var(--lin),0 1px 2px rgba(0,0,0,0.05)}
+
+  .hp-tab{margin-top:20px}
+  .hp-w{position:relative;display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1.7fr) minmax(0,0.95fr) 38px;gap:16px;align-items:center;min-height:55px;border-top:1px solid var(--lin2)}
+  .hp-w.n{min-height:30px;border-top:0;border-bottom:1px solid var(--lin);font-size:11.5px;color:var(--t4)}
+  .hp-w.n + .hp-w{border-top:0}
+  .hp-w.n span:last-child{text-align:right}
+  .hp-w::before{content:"";position:absolute;inset:0 -10px;border-radius:8px;background:rgba(16,185,129,0.07);opacity:0;pointer-events:none}
+  .hp-w.blysk::before{animation:hp-blysk 1.8s ease-out}
+  @keyframes hp-blysk{0%{opacity:0}15%{opacity:1}100%{opacity:0}}
+  .hp-pr{display:flex;align-items:center;gap:11px;min-width:0}
+  .hp-pr > i{display:grid;place-items:center;flex-shrink:0;width:30px;height:30px;border-radius:8px;background:#f4f4f5;color:var(--t2);box-shadow:inset 0 0 0 1px var(--lin2)}
+  .hp-pr > i .hi{width:15px;height:15px}
+  .hp-pr > span{min-width:0}
+  .hp-pr b{display:block;font-size:13px;font-weight:550;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .hp-pr em{display:block;font-style:normal;font-size:11.5px;color:var(--t4)}
+  .hp-sp{position:relative;display:block;height:38px;overflow:hidden}
+  .hp-s{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;gap:2px;transition:opacity .4s ease,transform .5s cubic-bezier(.2,.8,.2,1)}
+  .hp-s.wch{opacity:0;transform:translateY(10px)}
+  .hp-s.wyj{opacity:0;transform:translateY(-10px)}
+  .hp-s > b{font-weight:550;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .hp-s > span{display:flex;align-items:center;gap:6px;min-width:0;font-size:12px;color:var(--t3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .hp-s > span.ok .hi{width:14px;height:14px;color:#10b981}
+  .hp-s > span.cz{color:#9c5f14}
+  .hp-s > span.cz i{display:block;flex-shrink:0;width:14px;height:10px;border-radius:2px}
+  .hp-os{display:flex;align-items:center;gap:8px;min-width:0;font-size:12px;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .hp-os img{flex-shrink:0;width:20px;height:20px;border-radius:50%;object-fit:cover;outline:1px solid rgba(0,0,0,0.06);outline-offset:-1px}
+  .hp-cz{font-size:11.5px;color:var(--t4);text-align:right}
+
+  .hp-bok{display:flex;flex-direction:column;min-width:0;min-height:0;overflow:hidden;padding:18px 16px 0;border-left:1px solid var(--lin);background:#fafaf9}
+  .hp-bok h4{margin:0 0 10px;font-size:12px;font-weight:600}
+  .hp-dec-w{display:grid;grid-template-rows:1fr;transition:grid-template-rows .55s cubic-bezier(.4,0,.2,1),opacity .4s ease,margin .55s cubic-bezier(.4,0,.2,1);margin-bottom:8px}
+  .hp-dec-w.zw .hp-dec{transform:translateY(-6px)}
+  .hp-dec-in > .hp-dec{transition:transform .5s cubic-bezier(.2,.8,.2,1)}
+  .hp-dec-in{min-height:0;overflow:hidden;padding:1px 1px 12px;margin:-1px -1px -12px}
+  .hp-dec-w.zw{grid-template-rows:0fr;opacity:0;margin-bottom:0}
+  .hp-dec{position:relative;padding:12px 13px 13px;border-radius:10px;background:#ffffff;box-shadow:0 0 0 1px var(--lin),0 1px 3px rgba(0,0,0,0.05)}
+  .hp-dec-in > .hp-dec{box-shadow:0 0 0 1px var(--lin),0 6px 16px -10px rgba(0,0,0,0.22)}
+  .hp-dec-gl{display:grid;grid-template-columns:18px minmax(0,1fr) auto;gap:7px;align-items:center;font-size:11.5px;color:var(--t3)}
+  .hp-dec-gl img{width:18px;height:18px;border-radius:50%;object-fit:cover;outline:1px solid rgba(0,0,0,0.06);outline-offset:-1px}
+  .hp-dec-gl span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .hp-dec-gl b{font-weight:550;color:var(--t1)}
+  .hp-dec-gl time{font-size:10.5px;color:var(--t4)}
+  .hp-dec h5{margin:10px 0 0;font-size:14px;line-height:1.3;font-weight:600;letter-spacing:-0.015em}
+  .hp-dec > p{margin:2px 0 0;font-size:11.5px;color:var(--t3)}
+  .hp-dec.mini{padding:11px 13px}
+  .hp-dec.mini h5{margin-top:8px;font-size:13px}
+  .hp-reg{margin-top:12px;padding:10px 11px 9px;border-radius:8px;background:#fafaf9;box-shadow:inset 0 0 0 1px var(--lin2)}
+  .hp-reg-gl{display:flex;align-items:baseline;justify-content:space-between;font-size:11.5px;color:var(--t3)}
+  .hp-reg-gl b{font-size:13px;font-weight:600;color:#9c5f14}
+  .hp-reg-tor{position:relative;height:6px;margin-top:8px;border-radius:3px;background:#ececec}
+  .hp-reg-tor .pas{position:absolute;top:0;bottom:0;border-radius:3px;background:rgba(16,185,129,0.45)}
+  .hp-reg-tor .zn{position:absolute;top:-4px;width:2px;height:14px;margin-left:-1px;border-radius:1px;background:#e3962f;box-shadow:0 0 0 2px #fafaf9}
+  .hp-reg-sk{display:flex;justify-content:space-between;margin-top:6px;font-size:10.5px;color:var(--t4)}
+  .hp-akc{display:flex;gap:6px;margin-top:12px;transition:opacity .25s ease}
+  .hp-b1{flex:1;display:flex;align-items:center;justify-content:center;height:30px;border-radius:8px;background:#18181b;color:#ffffff;font-size:12.5px;font-weight:550;box-shadow:inset 0 1px 0 rgba(255,255,255,0.12),0 1px 2px rgba(0,0,0,0.2);transition:transform .12s ease,background .12s ease}
+  .hp-b1.wcis{transform:scale(0.96);background:#000000}
+  .hp-b2{display:flex;align-items:center;height:30px;padding:0 13px;border-radius:8px;font-size:12.5px;font-weight:550;color:var(--t2);box-shadow:inset 0 0 0 1px var(--lin),0 1px 2px rgba(0,0,0,0.04)}
+  .hp-dec-ok{position:absolute;left:13px;right:13px;bottom:13px;display:flex;align-items:center;justify-content:center;gap:6px;height:30px;margin:0;border-radius:8px;background:#ecfdf5;font-size:12.5px;font-weight:550;color:#047857;opacity:0;transform:translateY(4px);transition:opacity .3s ease,transform .4s cubic-bezier(.2,.8,.2,1)}
+  .hp-dec-ok .hi{width:14px;height:14px}
+  .hp-dec.ok .hp-akc{opacity:0}
+  .hp-dec.ok .hp-dec-ok{opacity:1;transform:none}
+
+  .hp-akt-h{margin-top:18px !important}
+  .hp-akt{margin:0;padding:0;list-style:none}
+  .hp-akt li{display:grid;grid-template-columns:18px minmax(0,1fr) auto;gap:8px;align-items:center;height:27px;font-size:11.5px;color:var(--t3);transition:height .45s cubic-bezier(.2,.8,.2,1),opacity .4s ease .1s}
+  .hp-akt li.nowy{height:0;opacity:0}
+  .hp-akt li > img,.hp-akt li > .hp-sys{width:18px;height:18px;border-radius:50%;object-fit:cover}
+  .hp-akt li > img{outline:1px solid rgba(0,0,0,0.06);outline-offset:-1px}
+  .hp-sys{display:grid;place-items:center;border-radius:5px !important;background:#0f1a14}
+  .hp-sys svg{width:10px;height:10px;fill:#00cd77}
+  .hp-akt li > span{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .hp-akt li strong{font-weight:550;color:var(--t1)}
+  .hp-akt li time{font-size:10.5px;color:var(--t4)}
+
+  .hp-kur{position:absolute;left:88%;top:96%;z-index:9;opacity:0;pointer-events:none;transition:left 1.1s cubic-bezier(.45,.05,.25,1),top 1.1s cubic-bezier(.45,.05,.25,1),opacity .35s ease}
+  .hp-kur.on{opacity:1}
+  .hp-kur svg{display:block;width:16px;height:20px;overflow:visible;filter:drop-shadow(0 1px 2px rgba(0,0,0,0.25))}
+  .hp-kur svg path{fill:#2f6fed;stroke:#ffffff;stroke-width:1.3;stroke-linejoin:round}
+  .hp-kur b{position:absolute;left:12px;top:16px;display:flex;align-items:center;gap:5px;padding:2px 7px 2px 2px;border-radius:999px;background:#2f6fed;font-size:11px;font-weight:550;color:#ffffff;white-space:nowrap;box-shadow:0 4px 10px -4px rgba(0,0,0,0.35)}
+  .hp-kur b img{width:16px;height:16px;border-radius:50%;object-fit:cover}
+
+  /* Węższe okno: najpierw znika kolumna osób, potem panel decyzji;
+     na telefonie zostaje sam rejestr procesów. */
+  @container (max-width:1120px){
+    .hp-uk{grid-template-columns:52px minmax(0,1fr) 300px}
+    .hp-w{grid-template-columns:minmax(0,1fr) minmax(0,1.6fr) 38px}
+    .hp-w > .hp-os,.hp-w.n > span:nth-child(3){display:none}
+  }
+  @container (max-width:860px){
+    .hp-uk{grid-template-columns:52px minmax(0,1fr)}
+    .hp-bok,.hp-kur{display:none}
+    .hp-szukaj{display:none}
+  }
+  @container (max-width:560px){
+    .hp-uk{grid-template-columns:minmax(0,1fr);height:440px}
+    .hp-rail,.hp-seg,.hp-obecni{display:none}
+    .hp-tresc{padding:18px 16px}
+    .hp-pasek{padding:0 16px}
+    .hp-w{grid-template-columns:minmax(0,1fr) 34px;row-gap:2px;padding:10px 0;min-height:0}
+    .hp-w > .hp-pr{grid-column:1}
+    .hp-w > .hp-sp{grid-column:1;grid-row:2;margin-left:41px}
+    .hp-w > .hp-cz{grid-column:2;grid-row:1}
+    .hp-w.n{display:none}
+    .hp-pow h3{font-size:17px}
+  }
+</style>

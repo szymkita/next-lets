@@ -17,7 +17,7 @@ Wbrew pozorom każdy kryzys stanowi dla przedsiębiorcy najlepszą szkołę bizn
 
 W tym artykule dowiesz się, w jaki sposób automatyzacja może wesprzeć Twoją firmę w trudnych czasach. Poznasz jej możliwości w zakresie oszczędzania czasu, rozwoju pracowników, budowania zespołu, minimalizacji kosztów, obsługi klientów, eliminacji tzw. papierologii i błędów oraz optymalizacji procesów. Każdy z tych obszarów zostanie przedstawiony w praktycznej i przystępnej formie, która może stanowić dla Ciebie inspirację i alternatywę do wdrażanych dotychczas procesów.
 
-### **Odzyskasz cenny czas**
+#### Odzyskasz cenny czas
 
 „Brakuje mi na to czasu”, „Zrobię to później”, „Gdybym miał/-a więcej czasu na pewno zrobiłbym/-abym to lepiej”. Znasz to? To właśnie czas stanowi największe ograniczenie dla wszystkich procesów przebiegających w firmie. Jego nieustanny brak powoduje, że poszczególne czynności są odkładane na później, kumulują się, a Ty i Twoi pracownicy nie możecie „wyrobić się” z nadmiarem obowiązków.
 
@@ -25,13 +25,13 @@ Zadania, których nie zdąży się wykonać w terminie, są często dopracowywan
 
 Okazuje się, że w prosty sposób możesz odzyskać część czasu, którą pochłania wykonywanie codziennych czynności w firmie, poprzez ich automatyzację. Usprawniając najbardziej czasochłonne i powtarzalne zadania, **zaoszczędzisz nawet kilkanaście godzin w skali miesiąca**, a w skrajnych przypadkach nawet kilkadziesiąt.
 
-### **Jakie procesy można przyspieszyć?**
+#### Jakie procesy można przyspieszyć?
 
 Na liście takich czynności może się znaleźć zarządzanie płatnościami, organizowanie spotkań służbowych, obsługa delegacji, zarządzanie treściami w mediach społecznościowych, proces reklamacji, zatwierdzanie zadań, proces komunikacji wewnętrznej, obsługa techniczna, mailing, odzyskiwanie należności.
 
 To tylko kilka propozycji procesów, które pomogą Ci **zaoszczędzić mnóstwo cennego czasu**. Im większa złożoność procesu, tym więcej zyskasz dodatkowych godzin, które z powodzeniem możesz wykorzystać na rozwój swojej firmy. Mimo wszystko warto rozpocząć przygodę z automatyzacją od najprostszych czynności, które pozwolą Ci zrozumieć sposób działania i odzyskać niespodziewanie dużo czasu.
 
-## **W jaki sposób automatyzacja oszczędza Twój czas?**
+## W jaki sposób automatyzacja oszczędza Twój czas?
 
 Aby zrozumieć, jakie oszczędności niesie za sobą usprawnianie poszczególnych procesów, warto przejść do przykładów, które przedstawią **możliwości automatyzacji w praktyce**. Na początku porównaj sposób określania czasu, w którym wykonywany jest dany proces przez człowieka oraz nowe technologie.
 
@@ -41,7 +41,7 @@ Co jeżeli pracownik popełni błąd i wprowadzi do systemu nieprawidłowe dane 
 
 Natomiast **zautomatyzowane procesy przebiegają 24 godziny na dobę**, 7 dni w tygodniu, 365 dni w roku ze 100% dokładnością. Wniosek jest prosty: wszystkie czynności poddane automatyzacji, wykonywane są bezbłędnie oraz na bieżąco i bez przerwy, zgodnie z harmonogramem Twojej firmy.
 
-### **Zautomatyzowany obieg dokumentów**
+#### Zautomatyzowany obieg dokumentów
 
 Przeanalizuj konkretne możliwości automatyzacji. Jednym z najczęściej wykonywanych procesów w firmie, które można nazwać „pochłaniaczem czasu”, jest obieg dokumentów, zajmujący średnio kilka godzin miesięcznie. W tym obszarze może śmiało wkroczyć automatyzacja, dzięki której:
 
@@ -51,7 +51,7 @@ Przeanalizuj konkretne możliwości automatyzacji. Jednym z najczęściej wykony
 - wygenerujesz okresowy raport, wykorzystując dane pochodzące z różnych systemów i narzędzi, z których korzysta Twoja firma;
 - automatycznie posegregujesz dokumenty do odpowiednich folderów, a na koniec miesiąca wyślesz gotowy plik księgowej.
 
-### Zarządzanie mediami społecznościowymi na autopilocie
+#### Zarządzanie mediami społecznościowymi na autopilocie
 
 Zarządzanie firmą to również zarządzanie mediami społecznościowymi, które zajmuje zdecydowanie za dużo czasu. W jaki sposób możesz usprawnić ten proces?
 
@@ -65,9 +65,9 @@ Automatyzując obsługę mediów społecznościowych, zaoszczędzisz czas poświ
 
 Dzięki temu rozwiązaniu **zarządzanie treściami stanie się szybsze i prostsze**. Obsługa mediów społecznościowych zazwyczaj łączy się z ich przeglądaniem, które rozprasza i odciąga uwagę od codziennych obowiązków, jednocześnie „odliczając” Twój czas. Jeden prosty interfejs, łączący wszystkie Twoje konta pozwoli Ci skupić się na wykonywanym zadaniu.
 
-Chcesz dowiedzieć się więcej o możliwościach automatyzacji marketingu? Sprawdź [9 propozycji automatyzacji](/baza-wiedzy/automatyzacja-w-marketingu-jakie-sa-mozliwosci-9-propozycji) w jednym z poprzednich wpisów!
+Chcesz dowiedzieć się więcej o możliwościach automatyzacji marketingu? Sprawdź [9 propozycji automatyzacji](/post/automatyzacja-w-marketingu-jakie-sa-mozliwosci-9-propozycji) w jednym z poprzednich wpisów!
 
-### **Zoptymalizowane zarządzanie zespołem**
+#### Zoptymalizowane zarządzanie zespołem
 
 Zarządzanie zadaniami to następny przykład procesu, który po zautomatyzowaniu pozwoli Ci odzyskać znaczną część firmowego czasu. W jaki sposób? Usprawniając:
 
@@ -77,7 +77,7 @@ Zarządzanie zadaniami to następny przykład procesu, który po zautomatyzowani
 
 To rozwiązanie ułatwi Ci **delegowanie zadań i bieżące monitorowanie postępów**. Dzięki synchronizacji z innymi narzędziami zadbasz o odpowiedni przepływ informacji. W efekcie czas poświęcony na nadzorowanie i wykonanie poszczególnych zadań zostanie automatycznie skrócony.
 
-### Zadbasz o rozwój pracowników
+#### Zadbasz o rozwój pracowników
 
 Automatyzacja procesów spowoduje, że Twoi pracownicy nie będą już odpowiedzialni za wykonywanie części rutynowych i powtarzalnych obowiązków, które zwykle powodowały opóźnienia w wypełnianiu głównych zadań i wzrost niezadowolenia ze żmudnego charakteru czynności.
 
@@ -85,29 +85,27 @@ W jaki sposób możesz wypełnić powstałą „lukę czasową” w obowiązkach
 
 Patrząc na korzyści wdrożenia automatyzacji z dłuższej perspektywy, to przede wszystkim umożliwia pracownikowi rozwój zawodowy, wykorzystanie swojego potencjału, wzrost produktywności i generowanie dla Twojej firmy zdecydowanie wyższych przychodów.
 
-### Skupisz się na swoim zespole
+#### Skupisz się na swoim zespole
 
 Automatyzując najbardziej czasochłonne i powtarzalne czynności i jednocześnie delegując swoim pracownikom coraz ambitniejsze zadania, stworzysz silny i trwały zespół złożony wyłącznie z zaufanych osób, z którymi będziesz podejmował/-a wspólne działania ukierunkowane na rozwój firmy. Dzięki współpracy z zespołem zbudujesz **długotrwałe i wartościowe relacje**. Pamiętaj, że posiadanie zgranego zespołu zwiększa szansę na przetrwanie kryzysu.
 
 Dla porównania, jeżeli Twoi pracownicy oprócz głównych obowiązków muszą zajmować się dodatkowo generowaniem raportów, odpisywaniem na maile czy umieszczaniem postów w mediach społecznościowych, to w ten sposób ograniczasz im możliwość realizacji wspólnych projektów, prowadzenia dyskusji czy omówienia przyszłej strategii rozwoju ze względu na brak czasu. Nadmiar codziennych obowiązków sprowadzi się do utrzymywania raczej obojętnych relacji.
 
-### Zmniejszysz koszty operacyjne
+#### Zmniejszysz koszty operacyjne
 
 Funkcjonowanie firmy wiąże się z generowaniem kosztów operacyjnych. Zautomatyzowane procesy pozwolą Ci zaoszczędzić rocznie nawet kilkadziesiąt tysięcy złotych, zaczynając od kosztów materiałów, urządzeń, amortyzacji czy energii.
 
-- ‍**Niższe koszty stałe:** przenosząc wykonywanie określonej czynności na odpowiednio zaprojektowany system, możesz zredukować zbędne koszty wynajmu oraz utrzymania dodatkowej przestrzeni w firmie. Najprostszym przykładem jest przejście na elektroniczny obieg dokumentów, który nie będzie wymagał specjalnie wydzielonego pomieszczenia czy chociaż części pokoju do ich przechowywania i segregowania. Innym przykładem może być rezygnacja z przestrzeni, przeznaczonej dotychczas dla pracowników, których zadania zostały teraz zautomatyzowane.
-- ‍**Ograniczenie rekrutacji i poziomu zatrudnienia:** wprowadzając automatyzację zmniejszysz również sumę wypłacanych wynagrodzeń dla pracowników, co ma związek z całkowitą zmianą dotychczasowych warunków pracy lub zaoferowaniem niepełnego wymiaru czasu pracy w zależności od danego procesu.
-- ‍**Minimalizacja strat i kosztów dzięki analizie:** automatyzacja dostarcza Twojej firmie szeroko pojęte dane oraz narzędzia, służące do ich analizy. Co więcej, pozwala na bieżące monitorowanie wyników oraz pomaga opracować środki naprawcze w przypadku zauważonych nieprawidłowości. Dzięki temu Ty minimalizujesz straty i koszty, ponieważ jesteś w stanie szybko reagować na każde odchylenie i podejmować odpowiednie decyzje na podstawie rzetelnych informacji.
+- **Niższe koszty stałe:** przenosząc wykonywanie określonej czynności na odpowiednio zaprojektowany system, możesz zredukować zbędne koszty wynajmu oraz utrzymania dodatkowej przestrzeni w firmie. Najprostszym przykładem jest przejście na elektroniczny obieg dokumentów, który nie będzie wymagał specjalnie wydzielonego pomieszczenia czy chociaż części pokoju do ich przechowywania i segregowania. Innym przykładem może być rezygnacja z przestrzeni, przeznaczonej dotychczas dla pracowników, których zadania zostały teraz zautomatyzowane.
+- **Ograniczenie rekrutacji i poziomu zatrudnienia:** wprowadzając automatyzację zmniejszysz również sumę wypłacanych wynagrodzeń dla pracowników, co ma związek z całkowitą zmianą dotychczasowych warunków pracy lub zaoferowaniem niepełnego wymiaru czasu pracy w zależności od danego procesu.
+- **Minimalizacja strat i kosztów dzięki analizie:** automatyzacja dostarcza Twojej firmie szeroko pojęte dane oraz narzędzia, służące do ich analizy. Co więcej, pozwala na bieżące monitorowanie wyników oraz pomaga opracować środki naprawcze w przypadku zauważonych nieprawidłowości. Dzięki temu Ty minimalizujesz straty i koszty, ponieważ jesteś w stanie szybko reagować na każde odchylenie i podejmować odpowiednie decyzje na podstawie rzetelnych informacji.
 
-‍
-
-### Szybciej obsłużysz klientów
+#### Szybciej obsłużysz klientów
 
 Proces obsługi klienta to najważniejszy, a zarazem najtrudniejszy proces, ponieważ od niego zależy sposób postrzegania firmy przez odbiorcę, który jest wyjątkowo wymagający i zabiegany. W związku z tym musisz dążyć do szybkiej i jednocześnie profesjonalnej obsługi. Jak tego dokonać? Spójrz na te przykłady:
 
 Pomyśl ile pracy musi mieć osoba, zajmująca się obsługą klienta. Codzienne filtrowanie i odpisywanie na powtarzające się wiadomości, zarówno na poczcie, stronie, jak i na komunikatorze powoduje chaos i może doprowadzić do pomyłek, które klient może odebrać w negatywny sposób.
 
-### **Oszczędności dzięki sztucznej inteligencji**
+#### Oszczędności dzięki sztucznej inteligencji
 
 Wystarczy skorzystać ze wsparcia technicznego oferowanego przez zaprogramowane boty, które na podstawie przygotowanej listy pytań i wyczerpujących odpowiedzi pozwolą klientowi rozwiać wszelkie wątpliwości, związane z produktem.
 
@@ -115,7 +113,7 @@ Zastanów się, ile możesz stracić na relacji z klientem, jeżeli nie zareaguj
 
 Automatyzacja procesów w firmie, związanych z obsługą klienta spowoduje, że będą oni usatysfakcjonowani z ekspresowej obsługi na wysokim poziomie, a Ty **szybciej sfinalizujesz transakcję**. W dłuższej perspektywie spowoduje to stworzenie własnej bazy stałych i lojalnych klientów, która z czasem będzie się jedynie powiększać.
 
-### Ograniczysz papierologię
+#### Ograniczysz papierologię
 
 Obieg dokumentacji w firmie to żmudny i czasochłonny proces. Generuje duże koszty, związane z wykorzystaniem materiałów (papier, toner, teczki, segregatory itp.), urządzeń (drukarka, ksero, skaner), czy zużyciem energii elektrycznej. Zajmuje również przestrzeń, którą mógłbyś zaprojektować i wykorzystać w efektywniejszy sposób.
 
@@ -125,7 +123,7 @@ Praca z fizyczną dokumentacją to też narażenie na niebezpieczeństwo poufnyc
 
 Wdrażając technologię, która będzie zarządzać dokumentacją w specjalnie zaprojektowanym systemie, ograniczysz niepotrzebne koszty, oszczędzisz czas, zyskasz wygodę oraz bezbłędność i bezpieczeństwo procesu.
 
-### Wyeliminujesz błędy
+#### Wyeliminujesz błędy
 
 Rutynowe i powtarzalne procesy wykonywane przez ludzi są szczególnie podatne na błędy, które mogą powodować straty finansowe, niezadowolenie klienta czy mniejszą produktywność. Wszelkie poprawy czy korekty pochłaniają również mnóstwo czasu.
 
@@ -135,23 +133,23 @@ Stworzenie sprawozdania finansowego, raportu czy faktury zawierającej błędy w
 
 Wdrażając automatyzację nie musisz kontrolować pojawienia się błędów, ponieważ wszystkie procesy przebiegają prawidłowo w tle. To sprawia, że wszystkie zadania są wykonywane sprawnie, a obsługa klienta jest zawsze na najwyższym poziomie.
 
-### Lepiej poznasz i zoptymalizujesz procesy w firmie
+#### Lepiej poznasz i zoptymalizujesz procesy w firmie
 
 Każde wdrożenie automatyzacji poprzedza tzw. mapowanie procesów. Polega ono na uporządkowaniu wszystkich etapów, opisaniu sposobów działania, sprawdzeniu, w jaki sposób przebiega dany proces w praktyce. Dodatkowo mogą być prowadzone rozmowy z twórcami procesów czy pracownikami odpowiedzialnymi za wykonywanie zadań.
 
-### **Mapowanie procesów biznesowych**
+#### Mapowanie procesów biznesowych
 
 Następnie istniejące procesy przedstawione są w formie mapy, za pomocą której łatwiej znajdziesz wszelkie niedociągnięcia i słabe punkty procesów oraz z powodzeniem je zoptymalizujesz, dzięki czemu będą przebiegały poprawnie. Jeśli zdecydujesz się na automatyzację, to dzięki wcześniejszemu mapowaniu oraz optymalizacji procesy będą przebiegały sprawnie i bezbłędnie.
 
 Przykład? Proces zatrudniania i wdrażania nowych pracowników obejmuje wiele czynności, takich jak uzupełnienie formularzy, organizowanie szkoleń, gromadzenie odpowiednich dokumentów, przydzielanie mentorów czy przygotowanie stanowiska.
 
-### **Analiza biznesowa, czyli klucz do skutecznej automatyzacji**
+#### Analiza biznesowa, czyli klucz do skutecznej automatyzacji
 
 Aby te etapy przebiegały sprawnie, należy je najpierw przeanalizować, a jeżeli występują niedociągnięcia, zoptymalizować. To stanowi podstawę do wdrożenia automatyzacji. Pamiętaj, że wyłącznie poprawnie działający proces można skutecznie zautomatyzować.
 
 Etap kompleksowej analizy wszystkich procesów w firmie oraz przedstawienia ich w postaci przystępnej mapy stanowi dla firmy istotną wartość. Pozwala **poukładać wszystkie czynności w logiczną całość** oraz wskazać te obszary, które wymagają natychmiastowego zoptymalizowania oraz zautomatyzowania. To szczególnie ważne z punktu widzenia kryzysu, ponieważ wyłącznie poprawnie działający oraz sprawny proces może generować zyski i „zatrzymać” klientów.
 
-## **Jakie korzyści zapewnia wdrożenie automatyzacji?**
+## Jakie korzyści zapewnia wdrożenie automatyzacji?
 
 Podsumowując, automatyzacja stanowi jedno z najlepszych rozwiązań, które umożliwi Ci przezwyciężenie kryzysu. Pozwala usprawnić powtarzalne i rutynowe czynności w Twojej firmie. Dzięki niej możesz:
 

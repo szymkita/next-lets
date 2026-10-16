@@ -31,6 +31,9 @@ export default async function handler(req, res) {
   const telefon = CZYSC(dane.telefon, 40);
   const wiadomosc = CZYSC(dane.wiadomosc, 4000);
   const zrodlo = CZYSC(dane.zrodlo, 120) || 'nieznane';
+  // Kod polecającego z `?ref=` w adresie (zapamiętany w przeglądarce, jak
+  // na starym serwisie) — puste, gdy nikt nie polecił.
+  const referrer = CZYSC(dane.referrer, 120);
 
   if (!MAIL_OK.test(email)) return res.status(422).json({ blad: 'email' });
   if (telefon && telefon.replace(/\D/g, '').length < 9) return res.status(422).json({ blad: 'telefon' });
@@ -40,10 +43,11 @@ export default async function handler(req, res) {
     `E-mail: ${email}`,
     telefon ? `Telefon: ${telefon}` : 'Telefon: —',
     `Skąd: ${zrodlo}`,
+    referrer ? `Polecenie (ref): ${referrer}` : null,
     `Kiedy: ${kiedy}`,
     '',
     wiadomosc || '(bez wiadomości)',
-  ].join('\n');
+  ].filter((x) => x !== null).join('\n');
 
   const wysylki = [];
 
@@ -52,7 +56,7 @@ export default async function handler(req, res) {
       fetch(process.env.WEBHOOK_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, telefon, wiadomosc, zrodlo, kiedy }),
+        body: JSON.stringify({ email, telefon, wiadomosc, zrodlo, referrer, kiedy }),
       })
     );
   }

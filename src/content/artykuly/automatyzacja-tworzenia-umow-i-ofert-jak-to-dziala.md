@@ -15,7 +15,7 @@ Czy można stworzyć w kilka sekund profesjonalną umowę lub ofertę, zgodną z
 
 W poniższym artykule dowiesz się w jaki sposób może działać automatyczne generowanie umów i ofert, w porównaniu do standardowego procesu, a także dlaczego to rozwiązanie warto wykorzystać w Twojej firmie.
 
-## **Jak działa automatyzacja tworzenia umów i ofert?**
+## Jak działa automatyzacja tworzenia umów i ofert?
 
 Standardowy proces składa się z najczęściej z takich kroków jak:
 
@@ -25,19 +25,18 @@ Standardowy proces składa się z najczęściej z takich kroków jak:
 4. Wyszukanie i wprowadzenie niezbędnych danych;
 5. Ręczna edycja szablonu, uzupełnienie pól, modyfikacja zapisów;
 6. Zapisanie oraz wysłanie oferty/umowy klientowi do akceptacji i podpisu.
-‍
 
 Wykonywanie powyższych czynności bez wsparcia technologii oznacza **ręczne i żmudne przeklikiwanie oraz przełączanie się między wieloma oknami**, a sporządzona w ten sposób umowa lub oferta może okazać się niesatysfakcjonująca (błędy, niewłaściwe formatowanie itp.). Co więcej, cały proces trwa przynajmniej kilka minut, nawet przy bardzo prostym dokumencie.
 
 Jeśli postawisz na zautomatyzowany proces tworzenia umów i ofert **ograniczysz do minimum liczbę wykonywanych czynności.** W tym zakresie automatyzacja może przebiegać na kilku poziomach zaawansowania:
 
-### 1. Wielofunkcyjny dashboard firmowy i uzupełnianie dedykowanych formularzy
+#### 1\. Wielofunkcyjny dashboard firmowy i uzupełnianie dedykowanych formularzy
 
 Pierwszym poziomem zautomatyzowanego generowania umów może być wewnętrzny, firmowy dashboard. Z jego pomocą łatwo odnajdziesz interesujący Cię rodzaj dokumentu oraz uzupełnisz niezbędne informacje w formularzu (typ umowy/oferty, data zawarcia, strony, wynagrodzenie, warunki itp.).
 
 Dane kontrahenta są automatycznie wprowadzane na podstawie NIP, bez konieczności ich wyszukiwania w KRS. Wystarczy zatwierdzenie formularza przyciskiem i umowa jest gotowa.
 
-### 2. Generowanie na podstawie zmiany statusu w CRM
+#### 2\. Generowanie na podstawie zmiany statusu w CRM
 
 Kolejny poziom, to zintegrowanie generowania umów z firmowym systemem CRM.
 
@@ -47,9 +46,7 @@ W CRM znajdują się wszystkie dane dotyczące kontrahentów i produktów, któr
 
 <div class="film"><iframe src="https://www.youtube-nocookie.com/embed/FQML-2nFGIc" title="Nagranie na YouTube" loading="lazy" allowfullscreen></iframe></div>
 
-‍
-
-### 3. Dodatkowe możliwości rozszerzania
+#### 3\. Dodatkowe możliwości rozszerzania
 
 W zakresie przygotowywania umów i ofert automatyzacja oferuje wiele dodatkowych możliwości, które z powodzeniem dopasujesz do profilu swojej działalności. Z poziomu CRM możesz łatwo wysłać dokument do klienta, otrzymać powiadomienie o akceptacji, a nawet wprowadzić podpis elektroniczny. Oprócz tego automatyzacja umożliwi Ci **zintegrowanie z całym procesem sprzedaży!**
 
@@ -64,12 +61,11 @@ Korzystanie na co dzień ze wsparcia technologii w procesie tworzenia powyższyc
 - skrócisz czas oczekiwania klienta na otrzymanie umowy/oferty i tym samym zwiększysz jakość obsługi;
 - skorzystasz z dodatkowych opcji automatyzacji, takich jak wysyłanie i elektroniczne podpisywanie czy akceptacja dokumentów;
 - otrzymasz możliwość zintegrowania z całym procesem sprzedaży.
-‍
 
 ## Automatyzacja w dokumentacji, czyli sposób na przyspieszenie firmy
 
-Podsumowując, **automatyzacja tworzenia umów i ofert jest świetną alternatywą dla ręcznego przeklikiwania**w celu wyszukania i uzupełnienia potrzebnych danych. Za pomocą formularza lub na podstawie zmiany statusu w CRM możesz w prosty sposób wygenerować odpowiedni dokument. Zautomatyzowany proces tworzenia umów i ofert można dowolnie rozszerzać i dopasowywać do aktualnych potrzeb Twojej firmy.
+Podsumowując, **automatyzacja tworzenia umów i ofert jest świetną alternatywą dla ręcznego przeklikiwania** w celu wyszukania i uzupełnienia potrzebnych danych. Za pomocą formularza lub na podstawie zmiany statusu w CRM możesz w prosty sposób wygenerować odpowiedni dokument. Zautomatyzowany proces tworzenia umów i ofert można dowolnie rozszerzać i dopasowywać do aktualnych potrzeb Twojej firmy.
 
-Pamiętaj, że generowanie umów i ofert **to tylko jedna z wielu możliwości automatyzacji**. O tym, jakie inne obszary możesz usprawnić w swojej firmie, przeczytasz we wpisie [*„Co można zautomatyzować w firmie? 12 uniwersalnych propozycji”.*](/baza-wiedzy/co-mozna-zautomatyzowac-w-firmie-12-uniwersalnych-propozycji)
+Pamiętaj, że generowanie umów i ofert **to tylko jedna z wielu możliwości automatyzacji**. O tym, jakie inne obszary możesz usprawnić w swojej firmie, przeczytasz we wpisie [*„Co można zautomatyzować w firmie? 12 uniwersalnych propozycji”.*](/post/co-mozna-zautomatyzowac-w-firmie-12-uniwersalnych-propozycji)
 
-Chcesz dowiedzieć się o możliwościach wprowadzenia podobnych automatyzacji w Twojej firmie?**Zapraszamy do umówienia się na bezpłatną konsultację!** Wypełnij znajdujący się poniżej formularz, a nasz ekspert skontaktuje się z Tobą telefonicznie.
+Chcesz dowiedzieć się o możliwościach wprowadzenia podobnych automatyzacji w Twojej firmie? **Zapraszamy do umówienia się na bezpłatną konsultację!** Wypełnij znajdujący się poniżej formularz, a nasz ekspert skontaktuje się z Tobą telefonicznie.

@@ -1,0 +1,1035 @@
+---
+// STRONA GŁÓWNA — WERSJA DRUGA — /index-v2 (noindex, do porównania z /)
+// Powstała 15.10.2026 po analizie spójności serwisu. Obecna strona główna
+// zostaje pod / bez zmian, dopóki Szymon nie powie „podmień".
+//
+// NARRACJA (szerzej: docs/index-v2-koncepcja.md)
+// Stara strona główna sprzedawała cel („firma napędzana AI", krzywa na
+// 12 miesięcy, „to nie zespół, który używa ChatGPT"). Oferta jest dziś
+// ułożona według sytuacji klienta (trzy drogi z menu), a każda podstrona
+// usługowa kończy się liczbą zmierzoną na danych klienta. Strona główna
+// robi więc dwie rzeczy: pozwala w półtora ekranu rozpoznać własną
+// sytuację (trzy obiekty w hero, zdania z pierwszych rozmów pod
+// definicją) i pokazuje, że w każdej drodze pracujemy tak samo (liczba
+// przed i po, werdykt na pierwszej rozmowie, wszystko po stronie klienta).
+// Liczby, terminy i ceny na tej stronie są przepisane z podstron
+// usługowych — strona główna nie obiecuje niczego, czego nie ma u nich.
+//
+// RAMA ZE STANDARDU (docs/uslugi-standard.md): hero na planszy, zielony pas
+// po pierwszej sekcji, „Dlaczego" z dwoma blokami, metoda, przykłady
+// z cytatem i krótkim wezwaniem, „Dla kogo", kontakt, FAQ. Kolejność
+// zmieniona względem wzorca: metoda przed przykładami (najpierw „czym się
+// różnicie", potem dowód), a zamiast sceny z produktem ciemna sekcja
+// z ludźmi — strona główna nie ma jednego produktu do pokazania.
+// Pasek Wise Group nad menu zostaje (tylko strona główna go ma).
+//
+// RYSUNKI TEJ STRONY
+//   · hero: trzy obiekty, po jednym na drogę — strona dokumentu strategii
+//     (dane z /strategia-ai), okno systemu „Ofertownia" (dane z hero
+//     /systemy-procesowe) i przegląd zmiany z plikiem zasad (dane z hero
+//     /guided-coding). Pod każdym nazwa drogi z menu;
+//   · „Dlaczego", blok 1: trzy tory — gdzie wdrożenie staje (bursztyn,
+//     czekanie) i co dalej (zieleń). Liczby z podstron: 7 i 12 z 14
+//     (/szkolenia-ai), 78% (/rozwiazania-ai), co ósma wersja
+//     (/guided-coding/biezace-wsparcie);
+//   · „Dlaczego", blok 2: protokół przekazania — wszystko po stronie
+//     klienta (zdania z /dlaczego-my i FAQ usług).
+//
+// DO POTWIERDZENIA PRZED PODMIANĄ:
+//   · liczba wdrożeń: tu „200+ wdrożeń" i „140+ firm" (jak na obecnej
+//     stronie głównej, /dlaczego-my i w guided codingu); pięć podstron
+//     usługowych ma w metodzie „140+ wdrożeń";
+//   · cztery wyniki w „Przykładach" (99,7%, −80%, 65 h, −90%) są przepisane
+//     z obecnej strony głównej, gdzie stoją jako realne wdrożenia;
+//   · zdania w „Od czego zaczynają się rozmowy": dwa są z /dlaczego-my,
+//     reszta to parafrazy sytuacji opisanych na podstronach;
+//   · role osób w sekcji „Zespół" (Szymon Kita jako założyciel, jak
+//     w module kontaktu; /dlaczego-my ma „CEO & współwłaściciel");
+//   · Szymon Negacz jako twarz zielonego pasa;
+//   · firmy i osoby w obiektach hero i w protokole są zmyślone, liczby
+//     w torach są przykładowe (te same, co na podstronach).
+import LaBase from '../layouts/LaBase.astro';
+import GcFaq from '../components/GcFaq.astro';
+import Styl from '../components/usluga/Styl.astro';
+import Anim from '../components/usluga/Anim.astro';
+import Loga from '../components/usluga/Loga.astro';
+import Pas from '../components/usluga/Pas.astro';
+import Cytat from '../components/usluga/Cytat.astro';
+import CtaPasek from '../components/usluga/CtaPasek.astro';
+import Metoda from '../components/usluga/Metoda.astro';
+import DlaKogo from '../components/usluga/DlaKogo.astro';
+import Kontakt from '../components/usluga/Kontakt.astro';
+import { HI, SYGNET, IBELKA } from '../components/usluga/ikony';
+
+const title = "Let's automate — studio transformacji AI";
+const description = 'Wprowadzamy AI do codziennej pracy firm, które zatrudniają od kilkudziesięciu do kilkuset osób: strategia AI, narzędzia AI dla całej firmy, szkolenia, systemy dopasowane do procesów, automatyzacja z AI, integracje i wsparcie zespołów, które tworzą aplikacje same.';
+
+// =====================================================================
+// HERO · trzy obiekty, po jednym na drogę z menu
+// =====================================================================
+// Strona 7 z dokumentu strategii producenta mebli (/strategia-ai, KOLEJNOSC).
+const PLAN = [
+  { nr: '01', t: 'Wycena nietypowych zleceń', c: 'cel 2', st: 'miesiąc 1', zw: '2,1×' },
+  { nr: '02', t: 'Zamówienia z maila do ERP', c: 'cel 3', st: 'miesiąc 2', zw: '1,2×' },
+  { nr: '03', t: 'Zlecenia, które zjadają marżę', c: 'cel 1', st: 'kwartał 2', zw: '1,6×' },
+  { nr: '04', t: 'Termin w dniu zamówienia', c: 'cel 3', st: 'kwartał 2', zw: '0,9×' },
+  { nr: '05', t: 'Odpowiedź na zapytanie ofertowe', c: 'cel 2', st: 'kwartał 3', zw: '1,4×' },
+  { nr: '06', t: 'Parametry produkcji pod marżę', c: 'cel 1', st: 'kwartał 4', zw: '0,5×' },
+];
+// Sprawa ZP-2484 z hero /systemy-procesowe. Suma pozycji = 23 666 zł.
+const LUDZIE = {
+  mr: { f: '/makieta/awatar-michal.webp', n: 'Michał · technologia', c: '#2f6fed' },
+  tw: { f: '/makieta/awatar-tomasz.webp', n: 'Tomasz · magazyn', c: '#8b5cf6' },
+  ak: { f: '/makieta/awatar-anna.webp', n: 'Anna · handel', c: '#e0457b' },
+};
+const POZYCJE = [
+  { p: 'BLA 2400×1200×8', i: '12 szt.', w: '10 860 zł', s: 'na stanie' },
+  { p: 'CEO 160 S355', i: '48 mb', w: '5 376 zł', s: 'na stanie' },
+  { p: 'RUR 88,9×4', i: '30 mb', w: '1 920 zł', s: 'dostawa 22.09', cz: true },
+  { p: 'Robocizna i spawanie', i: '38 h', w: '5 510 zł', s: '—', nic: true },
+];
+const ETAPY = ['Wycena', 'Dostępność', 'Akceptacja', 'Wysłane'];
+// Wpisy aplikacji bez nazwy autora (mówi o nim znak), wpisy ludzi z imieniem.
+const AKTYWNOSC = [
+  { k: 'sys', t: 'Sprawa założona z maila', h: '14:02' },
+  { k: 'sys', t: 'Odczytane 4 pozycje z rysunku', h: '14:02' },
+  { k: 'sys', t: 'Ceny z ERP, stany z magazynu', h: '14:03' },
+  { k: 'tw', t: 'dostawa rury 22.09', h: '14:07' },
+  { k: 'mr', t: 'robocizna 38 h', h: '14:26' },
+  { k: 'sys', t: 'Oferta złożona z szablonu', h: '14:27', nowa: true },
+];
+// Przegląd zmiany z hero /guided-coding: zmiana Anny, uwaga Marcela, zasada 19.
+const DIFF = [
+  { k: 'c', t: 'const plik = await csv(zamowienia)' },
+  { k: 'u', t: 'mail.wyslij(ksiegowosc, { plik })' },
+  { k: 'p', t: "const link = await zapisz(plik, '24h')" },
+  { k: 'p', t: 'mail.wyslij(ksiegowosc, { link })' },
+];
+const DROGI = [
+  { id: 'wdrazamy', t: 'Wdrażamy AI', s: 'Gdy firma zaczyna pracować z AI' },
+  { id: 'budujemy', t: 'Budujemy za Was', s: 'Gdy gotowe programy nie pasują' },
+  { id: 'budujecie', t: 'Budujecie sami z AI', s: 'Gdy Wasz zespół tworzy własne aplikacje' },
+];
+
+// =====================================================================
+// CZYM JEST · zdania, od których zaczynają się rozmowy
+// =====================================================================
+// Nazwy usług jak w megamenu; terminy i ceny słowo w słowo z podstron.
+const GRUPY = [
+  { ...DROGI[0], w: [
+    { q: 'Pomysłów na AI mamy kilkanaście i nie wiemy, od którego zacząć', u: 'Strategia AI', d: 'Trzy tygodnie, zwykle od 5 do 20\u00a0tys.\u00a0zł', h: '/strategia-ai' },
+    { q: 'Chcemy dać AI całej firmie, tylko nie wiemy, które narzędzie wybrać', u: 'Narzędzia AI dla całej firmy', d: 'Sześć tygodni od próby do ostatniego działu', h: '/wdrozenie-ai' },
+    { q: 'Ludzie mają licencje, a pracują tak samo jak rok temu', u: 'Szkolenia z AI', d: 'Program na dwanaście tygodni', h: '/szkolenia-ai' },
+  ] },
+  { ...DROGI[1], w: [
+    { q: 'Oferta przechodzi przez trzy działy i pięć arkuszy', u: 'Systemy dopasowane do firmy', d: 'Pierwsza wersja na produkcji po sześciu tygodniach', h: '/systemy-procesowe' },
+    { q: 'Większość zgłoszeń wygląda tak samo, a każde czyta człowiek', u: 'Automatyzacja procesów z AI', d: 'Dziewięć tygodni od warsztatu do produkcji', h: '/rozwiazania-ai' },
+    { q: 'Mamy siedem narzędzi i żadne nie rozmawia z pozostałymi', u: 'Integracje systemów', d: 'Pierwsze połączenie na produkcji w kilka dni', h: '/automatyzacje-integracje' },
+  ] },
+  { ...DROGI[2], w: [
+    { q: 'Zespół zbudował aplikację z AI. Działa, tylko nikt nie wie, czy jest bezpieczna', u: 'Audyt aplikacji', d: 'Raport z kolejnością poprawek po pięciu dniach', h: '/guided-coding/audyt-aplikacji' },
+    { q: 'Każda kolejna zmiana w aplikacji psuje coś, co już działało', u: 'Bieżące wsparcie', d: 'Abonament od 2900\u00a0zł miesięcznie', h: '/guided-coding/biezace-wsparcie' },
+    { q: 'Chcemy, żeby nasi ludzie budowali z AI sami i robili to porządnie', u: 'Warsztaty dla zespołu', d: 'Cotygodniowe sesje na Waszym kodzie', h: '/guided-coding/transfer-know-how' },
+  ] },
+];
+
+// =====================================================================
+// DLACZEGO · trzy tory i protokół przekazania
+// =====================================================================
+const TORY = [
+  { d: 'Wdrażamy AI', ds: 'narzędzia i zespół', start: 'Licencje dla całej firmy',
+    stop: 'W 3. tygodniu nowym sposobem pracuje 7 z 14 osób',
+    fix: 'Próba na Waszych zadaniach i program dla zespołu',
+    w: '12 z 14', wd: 'osób pracuje nowym sposobem w 12. tygodniu' },
+  { d: 'Budujemy za Was', ds: 'systemy i automatyzacje', start: 'Pilot zrobił wrażenie na pokazie',
+    stop: 'Bez progu jakości i bez właściciela nie wchodzi na produkcję',
+    fix: 'Próg zmierzony na Waszych sprawach i zapisany w umowie',
+    w: '78%', wd: 'spraw zamyka system, resztę prowadzi człowiek' },
+  { d: 'Budujecie sami z AI', ds: 'Wasz zespół i kod', start: 'Pierwsza wersja w weekend',
+    stop: 'Dziesiąta zmiana zajmuje miesiąc i psuje to, co działało',
+    fix: 'Zasady w Waszym repozytorium i przegląd zmian',
+    w: '1 z 8', wd: 'wersji wraca z uwagą po pół roku' },
+];
+const TORY_ARIA = 'Trzy tory, po jednym na drogę. Wdrażamy AI: licencje dla całej firmy, w trzecim tygodniu nowym sposobem pracuje 7 z 14 osób; po próbie na zadaniach i programie dla zespołu w dwunastym tygodniu 12 z 14. Budujemy za Was: pilot robi wrażenie na pokazie, ale bez progu jakości i właściciela nie wchodzi na produkcję; z progiem zmierzonym na sprawach i zapisanym w umowie system zamyka 78% spraw. Budujecie sami z AI: pierwsza wersja powstaje w weekend, dziesiąta zmiana zajmuje miesiąc; z zasadami w repozytorium i przeglądem zmian po pół roku z uwagą wraca co ósma wersja.';
+
+const PROTOKOL = [
+  { t: 'Dokument strategii AI (22 strony) i arkusz wyliczeń', g: 'dysk firmowy, z prawami do treści' },
+  { t: 'Konta i licencje narzędzi AI dla 95 osób', g: 'u dostawców, faktury na Stalprofil' },
+  { t: 'Repozytorium systemu „Ofertownia” z dokumentacją', g: 'organizacja Stalprofil w GitHubie' },
+  { t: 'Klucze i dostępy do ERP, poczty i modeli', g: 'menedżer haseł Stalprofil' },
+  { t: 'Zasady dla AI w pliku .agents/zasady.md, 19 pozycji', g: 'w repozytorium, czyta je AI przy każdej zmianie' },
+];
+const PROT_ARIA = 'Protokół przekazania między Let’s automate a przykładową firmą Stalprofil. Pięć pozycji: dokument strategii AI i arkusz wyliczeń, konta i licencje narzędzi AI dla 95 osób, repozytorium systemu z dokumentacją, klucze i dostępy, zasady dla AI w repozytorium. Przy każdej pozycji właścicielem jest Stalprofil. Pod spodem dwa podpisy i pieczątka „Przyjęto bez uwag”.';
+
+// =====================================================================
+// METODA · typowa firma „od AI" i my
+// =====================================================================
+const METODA = [
+  { k: 'Pierwsza rozmowa', ik: 'phone', r: 'Prezentacja możliwości AI, na koniec oferta.',
+    t: 'Werdykt, od czego zacząć', m: 'Także wtedy, gdy wystarczą licencje, które już macie, albo gotowy program.' },
+  { k: 'Plan', ik: 'document-text', r: 'Dokument od konsultantów, wdrożenie u innego wykonawcy.',
+    t: 'Plan liczy zespół, który go potem buduje', m: 'Zwrot z każdej pozycji szacują ludzie, którzy ją wdrażają, więc liczby z planu wytrzymują budowę.' },
+  { k: 'Wybór narzędzia', ik: 'scale', r: 'Narzędzie, które wykonawca akurat odsprzedaje.',
+    t: 'Próba na Waszych zadaniach', m: 'Porównujemy dwa albo trzy narzędzia na liście Waszych zadań. Licencje kupujecie u dostawcy, bez naszej prowizji.' },
+  { k: 'Wycena', ik: 'banknotes', r: 'Roboczogodziny, a budżet rośnie razem z projektem.',
+    t: 'Stała kwota za etap', m: 'Podajemy ją po warsztacie na Waszym procesie. Płacicie etapami, po odbiorze.' },
+  { k: 'Pomiar', ik: 'calculator', r: 'Ankieta po szkoleniu albo liczba logowań.',
+    t: 'Ta sama liczba przed i po', m: 'Na przykład czas sprawy albo liczba osób, które pracują z AI na co dzień, liczone na Waszych danych.' },
+  { k: 'Po uruchomieniu', ik: 'wrench-screwdriver', r: 'Projekt się kończy, poprawki idą jako nowe zlecenie.',
+    t: 'Opieka z miesięcznym wypowiedzeniem', m: 'Monitoring i poprawki w jednej umowie, rozwój wyceniany etapami.' },
+];
+
+// =====================================================================
+// PRZYKŁADY · cztery wyniki z obecnej strony głównej (realne wdrożenia)
+// =====================================================================
+const WYNIKI = [
+  { dz: 'Finanse', p: 'Obieg faktur kosztowych', l: '99,7%', ld: 'skuteczności księgowania',
+    przed: 'Trzy osoby przepisują faktury z maili, zaległości rosną.',
+    po: 'Faktury z maili księgują się same, zespół zajmuje się wyjątkami.',
+    u: 'Automatyzacja procesów z AI', h: '/rozwiazania-ai' },
+  { dz: 'Sprzedaż', p: 'Przygotowanie oferty', l: '−80%', ld: 'czasu przygotowania oferty',
+    przed: 'Oferta sklejana z CRM, cenników i maili zajmuje pół dnia.',
+    po: 'Szkic oferty powstaje z danych CRM w kilka minut, handlowiec go dopina.',
+    u: 'Systemy dopasowane do firmy', h: '/systemy-procesowe' },
+  { dz: 'Operacje', p: 'Raport tygodniowy', l: '65 h', ld: 'odzyskanych co miesiąc',
+    przed: 'Raport klejony z czterech arkuszy, decyzje na danych sprzed miesiąca.',
+    po: 'Dane spływają same, raport czeka w poniedziałek o 7:00.',
+    u: 'Integracje systemów', h: '/automatyzacje-integracje' },
+  { dz: 'Obsługa klienta', p: 'Pytania o zamówienia', l: '−90%', ld: 'zapytań obsługiwanych ręcznie',
+    przed: 'Zespół odpisuje na te same pytania kilkanaście razy dziennie.',
+    po: 'Agent AI odpowiada w kilka minut, z danymi zamówienia.',
+    u: 'Automatyzacja procesów z AI', h: '/rozwiazania-ai' },
+];
+
+// =====================================================================
+// ZESPÓŁ
+// =====================================================================
+const ZESPOL = [
+  { f: '/szymon-kita.jpg', w: 870, h: 1210, n: 'Szymon Kita', r: 'Założyciel', pos: '50% 18%' },
+  { f: '/szymon-negacz-spot.jpg', w: 1100, h: 888, n: 'Szymon Negacz', r: 'Współwłaściciel', pos: '58% 20%' },
+  { f: '/piotr-wojciuk.jpg', w: 1002, h: 1100, n: 'Piotr Wojciuk', r: 'New Business Lead', pos: '40% 20%' },
+  { f: '/marcel-bilski.jpg', w: 1200, h: 2526, n: 'Marcel Bilski', r: 'Tech Lead', pos: '50% 14%' },
+  { f: '/jakub-markiewicz.jpg', w: 512, h: 500, n: 'Jakub Markiewicz', r: 'AI Consultant & Developer', pos: '50% 20%' },
+];
+
+// =====================================================================
+// DLA KOGO
+// =====================================================================
+const DLA_KOGO = [
+  { t: 'Zatrudniacie od kilkudziesięciu do kilkuset osób', d: 'Na tej skali sprawa przechodzi przez kilka działów i kilka narzędzi, a godzina oszczędzona na jednej sprawie wraca przy setkach spraw w miesiącu.' },
+  { t: 'Zarząd chce zobaczyć zmianę w liczbach', d: 'Zaczynamy od liczby, którą chcecie ruszyć, na przykład czasu od zapytania do oferty. Po wdrożeniu liczymy ją tak samo i na tych samych danych.' },
+  { t: 'Ktoś u Was będzie właścicielem zmiany', d: 'Najczęściej kierownik działu: zna wyjątki w procesie i może zdecydować, że od przyszłego tygodnia pracujecie inaczej.' },
+];
+const NIE_TERAZ = [
+  'Firma ma kilka osób. Wystarczą gotowe narzędzia w planie dla firm, a na rozmowie powiemy, które.',
+  'Szukacie samych licencji. Kupcie je bezpośrednio u dostawcy, prowizji od dostawców nie bierzemy.',
+  'Chcecie jednodniowego kursu pisania promptów. Takich szkoleń nie prowadzimy.',
+  'Proces obsługuje kilkanaście spraw miesięcznie i każda jest inna. Automat się nie zwróci, wystarczy dobrze prowadzony rejestr.',
+];
+
+// =====================================================================
+// FAQ
+// =====================================================================
+const L = 'style="color:#0a7a52;font-weight:650;text-decoration:underline;text-underline-offset:2px"';
+const faq = [
+  { q: 'Nie wiemy, której drogi potrzebujemy. Od czego zacząć?',
+    a: `Od rozmowy. Trwa 30 minut, online albo telefonicznie, i kończy się wskazaniem pierwszego kroku z ceną. Kiedy pomysłów na AI jest kilkanaście, tym krokiem bywa <a href="/strategia-ai" ${L}>strategia AI</a>, a kiedy wiecie, który proces boli, warsztat na tym procesie. Zespołom, które budują aplikacje same, proponujemy zwykle <a href="/guided-coding/audyt-aplikacji" ${L}>audyt aplikacji</a>.` },
+  { q: 'Ile to kosztuje?',
+    a: 'Strategia AI trwa trzy tygodnie i kosztuje zwykle od 5 do 20 tys. zł. Systemy i automatyzacje wyceniamy stałą kwotą po warsztacie na Waszym procesie, integracje stałą kwotą za każde połączenie. Rozliczamy etapami, po odbiorze. Bieżące wsparcie zespołów bez działu IT to abonament od 2900 zł miesięcznie. Licencje narzędzi AI kupujecie bezpośrednio u dostawcy.' },
+  { q: 'Wdrażacie Copilota i ChatGPT czy budujecie własne rozwiązania?',
+    a: `Jedno i drugie. Kiedy firma potrzebuje narzędzia AI dla ludzi, porównujemy na liście Waszych zadań Copilota, Gemini, ChatGPT albo Claude w planie dla firm i <a href="/produkty/appto" ${L}>Appto</a>, nasz produkt, a wdrażamy to, które wygrało. Kiedy proces wymaga więcej niż narzędzia, budujemy pod niego system. Od dostawców nie bierzemy prowizji.` },
+  { q: 'Co się dzieje z naszymi danymi?',
+    a: 'Umowę o poufności podpisujemy przed pierwszym dostępem. Pracujemy na kontach firmowych z wyłączonym uczeniem modeli, a tam, gdzie się da, na kopii danych bez danych osobowych. Razem z Wami ustalamy, co i na jakim etapie wychodzi poza Waszą infrastrukturę, i zapisujemy to w umowie.' },
+  { q: 'Kiedy zobaczymy pierwszy efekt?',
+    a: 'Najszybciej przy integracji: pierwsze połączenie działa po kilku dniach. Narzędzie AI pracuje w pierwszym dziale od trzeciego tygodnia, a system pod proces wchodzi na produkcję po sześciu tygodniach. Automatyzacja z AI potrzebuje dziewięciu tygodni, bo próg jakości mierzymy na Waszych sprawach przed uruchomieniem.' },
+  { q: 'Co zostaje u nas, jeśli przestaniemy współpracować?',
+    a: 'Wszystko, co powstało, bo od pierwszego dnia leży na Waszych kontach. Wyjście nie wymaga migracji ani licencji od nas. Po strategii specyfikację wdrożeń wyceni każdy wykonawca, a arkusz wyliczeń liczy dalej bez nas.' },
+  { q: 'Nasi ludzie budują aplikacje sami. Czy to dla nas?',
+    a: `Tak, to trzecia droga: <a href="/guided-coding" ${L}>Budujecie sami z AI</a>. Kod piszą Wasi ludzie. Zaczynamy od audytu aplikacji, a potem prowadzimy zespół w abonamencie albo w cyklu warsztatów. Zasady, które AI czyta przy każdej zmianie, zostają w Waszym repozytorium.` },
+  { q: 'Kim jesteście?',
+    a: `Studiem z Warszawy, które należy do Wise Group. Mamy za sobą ponad dwieście wdrożeń dla ponad stu czterdziestu firm, a sposób budowania oprogramowania z AI spisaliśmy w <a href="/wisestack" ${L}>WiseStacku</a>. Więcej o zespole na stronie <a href="/dlaczego-my" ${L}>Dlaczego my</a>.` },
+];
+
+const dane = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faq.map((x) => ({ '@type': 'Question', name: x.q, acceptedAnswer: { '@type': 'Answer', text: x.a.replace(/<[^>]+>/g, '') } })),
+};
+---
+<LaBase title={title} description={description} ctaHref="#kontakt" ctaLabel="Umów rozmowę" noindex={true}>
+<script type="application/ld+json" is:inline set:html={JSON.stringify(dane)} slot="head"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" slot="head">
+<style is:global slot="head">
+  /* Style strony głównej v2. Wspólny wygląd: src/components/usluga/Styl.astro.
+     Prefiks hp- (strona), hk- (kartka strategii), ho- (okno systemu),
+     hc- (przegląd kodu), tr- (tory), pr- (protokół). */
+
+  /* =====================================================================
+     HERO · plansza jak na podstronach, pod nią trzy obiekty
+     Obiekty mają rozmiary w em, a em liczy się od szerokości kolumny
+     (100cqw / 133), więc kompozycja skaluje się w całości. Plansza kończy
+     się mniej więcej w połowie obiektów; pod nimi nazwy dróg z menu.
+     ===================================================================== */
+  .hp-hero .v4-hero-in{--zwis:min(calc(11.05vw + 101px),272px)}
+  .hp-hero .v3-etyk{margin:0 0 clamp(20px,2.6vw,34px)}
+  .hp-hero .v3-h1{max-width:1060px}
+  .hp-komp{container-type:inline-size}
+  .hp-sk{position:relative;height:calc(52em + 112px);font-size:calc(100cqw / 133)}
+  .hp-ob{position:absolute;top:0;bottom:0;display:flex;flex-direction:column;color:var(--t1)}
+  .hp-ob:focus-visible{outline:none}
+  .hp-ob:focus-visible .hp-dr{outline:2px solid var(--ziel);outline-offset:6px;border-radius:4px}
+  .hp-ob-1{left:0;width:33em;z-index:1}
+  .hp-ob-2{left:32em;width:70em;z-index:2}
+  .hp-ob-3{left:101em;width:32em;z-index:3}
+  .hp-obj{--y:0px;position:relative;transform:translateY(var(--y)) rotate(var(--r,0deg));transform-origin:50% 100%;transition:transform .55s cubic-bezier(.2,.8,.2,1),opacity .6s ease}
+  .hp-ob-1 .hp-obj{--r:-2.4deg;margin-top:4.4em}
+  .hp-ob-3 .hp-obj{--r:2.2deg;margin-top:5.2em}
+  .hp-ob:hover .hp-obj{--y:-10px}
+  /* wejście: obiekty podnoszą się po kolei (stan startowy tylko pod .gra) */
+  .hp-komp.gra .hp-obj{--y:46px;opacity:0}
+  .hp-komp.gra.on .hp-obj{--y:0px;opacity:1}
+  .hp-komp.gra.on .hp-ob-1 .hp-obj{transition-delay:.05s}
+  .hp-komp.gra.on .hp-ob-2 .hp-obj{transition-delay:.18s}
+  .hp-komp.gra.on .hp-ob-3 .hp-obj{transition-delay:.32s}
+  .hp-komp.gra.on .hp-ob:hover .hp-obj{--y:-10px;transition-delay:0s}
+  /* nazwy dróg pod obiektami */
+  .hp-dr{display:block;margin-top:auto;height:98px;padding-top:16px;border-top:1.5px solid var(--t1)}
+  .hp-ob-1 .hp-dr{width:28em}
+  .hp-ob-2 .hp-dr{width:52em;margin-left:8em}
+  .hp-ob-3 .hp-dr{width:27em;margin-left:5em}
+  .hp-dr b{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:750;letter-spacing:-0.022em;transition:color .15s}
+  .hp-dr b i{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--ink);color:var(--ziel);transition:transform .25s,background .2s}
+  .hp-dr b i svg{width:12px;height:12px;fill:currentColor}
+  .hp-dr span{display:block;margin-top:6px;font-size:14.5px;line-height:1.45;color:var(--t2)}
+  .hp-ob:hover .hp-dr b{color:var(--ziel-c)}
+  .hp-ob:hover .hp-dr b i{transform:translateX(3px);background:var(--ziel);color:var(--ink)}
+
+  /* ---- kartka: strona 7 dokumentu strategii ---- */
+  .hk{position:relative;width:33em;height:47em}
+  .hk-tyl{position:absolute;inset:0;border-radius:.5em;background:#f3f1ea;transform:rotate(3.4deg) translate(1.1em,.5em);box-shadow:0 2.4em 5em -2.4em rgba(0,0,0,0.6)}
+  .hk-str{position:absolute;inset:0;overflow:hidden;padding:2.6em 2.8em 0;border-radius:.5em;background:#fffefb;color:#0f1a14;
+    box-shadow:0 0 0 1px rgba(15,26,20,0.06),0 3.2em 6.4em -2.8em rgba(0,0,0,0.75),0 1em 2em -1.2em rgba(0,0,0,0.35)}
+  .hk-meta{display:flex;justify-content:space-between;gap:1em;font-size:1.05em;color:#7b867f}
+  .hk-meta b{font-weight:650;color:#0f1a14}
+  .hk-h{margin:1.5em 0 0;font-size:2.4em;font-weight:700;letter-spacing:-0.045em;line-height:1.02}
+  .hk-sub{margin:.5em 0 0;font-size:1.15em;color:#46524b}
+  .hk-tab{position:relative;margin-top:1.8em;border-top:.16em solid #0f1a14}
+  .hk-n{display:flex;justify-content:space-between;padding:.8em 0 .6em;font-size:.98em;color:#7b867f;border-bottom:1px solid rgba(15,26,20,0.12)}
+  .hk-w{display:grid;grid-template-columns:2.6em minmax(0,1fr) auto;column-gap:.6em;align-items:center;padding:.82em 0;border-bottom:1px solid rgba(15,26,20,0.09)}
+  .hk-w i{grid-row:1 / 3;align-self:start;padding-top:.15em;font-style:normal;font-size:1.02em;font-weight:600;color:#0a7a52;font-variant-numeric:tabular-nums}
+  .hk-w b{font-size:1.2em;font-weight:600;letter-spacing:-0.015em;line-height:1.22;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .hk-w span{grid-column:2;margin-top:.25em;font-size:.98em;color:#7b867f}
+  .hk-w em{grid-row:1 / 3;grid-column:3;font-style:normal;font-size:1.55em;font-weight:700;letter-spacing:-0.035em;color:#0f1a14;font-variant-numeric:tabular-nums}
+  .hk-w.dalej b,.hk-w.dalej em{color:#46524b}
+  /* klamra ołówkiem przy 01–02 */
+  .hk-kl{position:absolute;left:-1.9em;top:3em;width:1.5em;height:9.4em;overflow:visible}
+  .hk-kl path{fill:none;stroke:#0a7a52;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+  /* kartka z decyzją zarządu, przyklejona taśmą */
+  .hk-not{position:absolute;right:1.6em;bottom:2em;width:15.6em;padding:1.5em 1.5em 1.1em;border-radius:.3em;background:#ffffff;transform:rotate(4.5deg);
+    box-shadow:0 0 0 1px rgba(15,26,20,0.07),0 1.6em 3em -1.4em rgba(0,0,0,0.5)}
+  .hk-not::before{content:"";position:absolute;left:50%;top:-.8em;width:5.4em;height:1.6em;margin-left:-2.7em;background:linear-gradient(90deg,rgba(255,255,255,0.35),rgba(255,255,255,0) 30%,rgba(255,255,255,0) 70%,rgba(255,255,255,0.35)),rgba(222,226,218,0.62);transform:rotate(-4deg);box-shadow:0 0 0 1px rgba(15,26,20,0.04)}
+  .hk-not b{display:block;font-size:1.12em;font-weight:700;letter-spacing:-0.01em}
+  .hk-not p{margin:.4em 0 0;font-size:1.06em;line-height:1.42;color:#46524b}
+  .hk-not svg{display:block;width:8.4em;height:2.6em;margin-top:.5em}
+  .hk-not svg path{fill:none;stroke:#1d3c8c;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+
+  /* ---- okno systemu „Ofertownia" (dane z hero /systemy-procesowe) ---- */
+  .ho{--t1:#18181b;--t2:#52525b;--t3:#71717a;--t4:#a1a1aa;--lin:rgba(9,9,11,0.08);--lin2:rgba(9,9,11,0.05);
+    position:relative;width:70em;height:47em;overflow:hidden;border-radius:1.2em;background:#ffffff;color:var(--t1);letter-spacing:-0.004em;
+    box-shadow:0 0 0 1px rgba(255,255,255,0.14),0 0 0 1.5px rgba(0,0,0,0.3),0 5em 10em -4em rgba(0,0,0,0.9),0 1.8em 3.6em -2em rgba(0,0,0,0.55)}
+  .ho .hi{display:block;flex-shrink:0;width:1.6em;height:1.6em;fill:currentColor}
+  .ho-tyt{position:relative;display:flex;align-items:center;height:3.6em;padding:0 1.2em;background:#f7f7f6;border-bottom:1px solid var(--lin)}
+  .ho-sw{display:flex;gap:.7em}
+  .ho-sw i{display:block;width:1.1em;height:1.1em;border-radius:50%;background:#ff5f57;box-shadow:inset 0 0 0 .05em rgba(0,0,0,0.18)}
+  .ho-sw i:nth-child(2){background:#febc2e}
+  .ho-sw i:nth-child(3){background:#28c840}
+  .ho-tyt-t{position:absolute;left:50%;transform:translateX(-50%);font-size:1.2em;font-weight:550;color:var(--t2)}
+  .ho-twarze{display:flex;margin-left:auto}
+  .ho-twarze img{display:block;width:2.2em;height:2.2em;margin-left:-.6em;border-radius:50%;object-fit:cover;box-shadow:0 0 0 .2em #f7f7f6}
+  .ho-uk{display:grid;grid-template-columns:5.2em minmax(0,1fr);height:43.4em}
+  .ho-rail{display:flex;flex-direction:column;align-items:center;gap:.4em;padding:1.2em 0;background:#fafaf9;border-right:1px solid var(--lin)}
+  .ho-rail > b{display:grid;place-items:center;width:2.6em;height:2.6em;margin-bottom:1em;border-radius:.7em;background:#0f1a14}
+  .ho-rail > b svg{width:1.3em;height:1.3em;fill:#00cd77}
+  .ho-rail > span{display:grid;place-items:center;width:3.2em;height:3.2em;border-radius:.8em;color:var(--t4)}
+  .ho-rail > span.on{background:#ffffff;color:var(--t1);box-shadow:0 0 0 1px var(--lin),0 1px 2px rgba(0,0,0,0.05)}
+  .ho-gl{display:flex;flex-direction:column;min-width:0}
+  .ho-pas{display:flex;align-items:center;gap:1em;height:4.6em;padding:0 1.6em 0 2.2em;border-bottom:1px solid var(--lin)}
+  .ho-bc{display:flex;align-items:center;gap:.6em;font-size:1.2em;color:var(--t3)}
+  .ho-bc .hi{width:1.3em;height:1.3em;color:var(--t4)}
+  .ho-bc b{font-weight:550;color:var(--t1)}
+  .ho-akc{display:flex;align-items:center;gap:.9em;margin-left:auto}
+  .ho-ib{display:grid;place-items:center;width:2.9em;height:2.9em;border-radius:.7em;color:var(--t2);box-shadow:inset 0 0 0 1px var(--lin)}
+  .ho-ib .hi{width:1.4em;height:1.4em}
+  .ho-btn{display:flex;align-items:center;gap:.6em;height:2.9em;padding:0 1.1em;border-radius:.7em;background:#18181b;color:#ffffff;font-size:1.15em;font-weight:550;white-space:nowrap}
+  .ho-btn .hi{width:1.25em;height:1.25em}
+  .ho-det{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 24em}
+  .ho-l{min-width:0;padding:1.9em 2.2em 0}
+  .ho-l h3{margin:0;font-size:1.8em;line-height:1.2;font-weight:600;letter-spacing:-0.022em}
+  .ho-l > p{display:flex;align-items:center;gap:.6em;margin:.5em 0 0;font-size:1.2em;color:var(--t3);white-space:nowrap}
+  .ho-l > p .hi{width:1.3em;height:1.3em;color:var(--t4)}
+  .ho-et{display:flex;margin:1.7em 0 0;padding:0;list-style:none}
+  .ho-et li{flex:1 1 auto;display:flex;align-items:center;gap:.45em;padding-right:.6em;font-size:1.08em;color:var(--t2);white-space:nowrap}
+  .ho-et li:last-child{flex:0 0 auto;padding-right:0}
+  .ho-et li::after{content:"";flex:1;min-width:.8em;height:.16em;border-radius:1px;background:#10b981}
+  .ho-et li:last-child::after{display:none}
+  .ho-et li i{flex-shrink:0;width:1.45em;height:1.45em;border-radius:50%;background:#10b981 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M5 8.2l2 1.9 4-4.3' fill='none' stroke='%23fff' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/100% no-repeat}
+  .ho-et li.tu{color:var(--t1);font-weight:550}
+  .ho-et li.tu i{background:radial-gradient(circle,#10b981 0 .32em,transparent .36em);box-shadow:inset 0 0 0 .14em #10b981,0 0 0 .38em rgba(16,185,129,0.15)}
+  .ho-zakl{display:flex;gap:1.8em;margin-top:1.7em;border-bottom:1px solid var(--lin)}
+  .ho-zakl span{display:flex;align-items:center;gap:.4em;height:2.7em;font-size:1.2em;color:var(--t3)}
+  .ho-zakl span.on{color:var(--t1);font-weight:550;box-shadow:inset 0 -.17em 0 #18181b}
+  .ho-zakl em{font-style:normal;font-size:.88em;color:var(--t4)}
+  .ho-dw{display:grid;grid-template-columns:minmax(0,1fr) 5.6em 7.6em 8.4em;gap:.9em;align-items:center;height:3.25em;border-bottom:1px solid var(--lin2)}
+  .ho-dw > *{min-width:0;font-size:1.2em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ho-dw > :nth-child(n+2):nth-child(-n+3){text-align:right}
+  .ho-dw > :nth-child(2){color:var(--t3)}
+  .ho-dw > :nth-child(3){font-weight:550}
+  .ho-dw > :nth-child(4){padding-left:.5em;color:#047857}
+  .ho-dw > .cz{color:#a15c07}
+  .ho-dw > .nic{color:#d4d4d8}
+  .ho-dw.n{height:2.9em}
+  .ho-dw.n > *{font-size:1.08em;color:var(--t4)}
+  .ho-dw.n em{font-style:normal;color:#d4d4d8}
+  .ho-pan{margin-top:1.6em;padding:1.2em 1.4em;border-radius:1em;box-shadow:inset 0 0 0 1px var(--lin)}
+  .ho-pan h5{display:flex;justify-content:space-between;margin:0 0 .5em;font-size:1.2em;font-weight:600}
+  .ho-pan h5 span{font-weight:400;color:var(--t4)}
+  .ho-zad{display:grid;grid-template-columns:2.2em minmax(0,1fr) auto;gap:1em;align-items:center;padding:.65em 0;border-top:1px solid var(--lin2)}
+  .ho-zad:first-of-type{border-top:0}
+  .ho-zad img{width:2.2em;height:2.2em;border-radius:50%;object-fit:cover}
+  .ho-zad strong{display:block;font-size:1.22em;font-weight:550;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ho-zad small{display:block;font-size:1.06em;color:var(--t4)}
+  .ho-zad > div{min-width:0}
+  .ho-zad > span{display:inline-flex;align-items:center;gap:.4em;height:2.3em;padding:0 .8em 0 .6em;border-radius:99em;font-size:1.1em;font-weight:550;color:#047857;background:rgba(16,185,129,0.1);white-space:nowrap}
+  .ho-zad > span .hi{width:1.2em;height:1.2em}
+  .ho-p{min-width:0;padding:1.9em 1.9em 0;border-left:1px solid var(--lin);background:#fcfcfb}
+  .ho-p small{display:block;font-size:1.12em;color:var(--t3)}
+  .ho-p > b{display:block;margin-top:.15em;font-size:2.6em;font-weight:600;letter-spacing:-0.035em}
+  .ho-p .ho-br{display:block;margin-top:.3em;font-size:1.08em;color:var(--t4)}
+  .ho-meta{display:grid;grid-template-columns:6.4em minmax(0,1fr);gap:.75em 0;margin:1.7em 0 0;padding:1.5em 0 0;border-top:1px solid var(--lin);font-size:1.12em}
+  .ho-meta dt{color:var(--t3)}
+  .ho-meta dd{margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ho-ak{margin-top:1.8em;padding-top:1.5em;border-top:1px solid var(--lin)}
+  .ho-ak h5{margin:0 0 .6em;font-size:1.2em;font-weight:600}
+  .ho-a{display:grid;grid-template-columns:1.8em minmax(0,1fr) auto;gap:.8em;align-items:center;padding:.48em 0;font-size:1.08em}
+  .ho-a > i{display:grid;place-items:center;width:1.65em;height:1.65em;border-radius:.45em;background:#0f1a14}
+  .ho-a > i svg{width:1em;height:1em;fill:#00cd77}
+  .ho-a > img{width:1.7em;height:1.7em;border-radius:50%;object-fit:cover}
+  .ho-a span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--t2)}
+  .ho-a span b{font-weight:600;color:var(--t1)}
+  .ho-a time{color:var(--t4);font-variant-numeric:tabular-nums}
+  /* kursory zespołów */
+  .ho-kur{position:absolute;z-index:4;display:flex;align-items:flex-start;pointer-events:none;transition:transform 1.4s cubic-bezier(.2,.8,.2,1),opacity .4s}
+  .ho-kur svg{width:1.6em;height:1.6em;filter:drop-shadow(0 1px 1px rgba(0,0,0,0.25))}
+  .ho-kur span{margin:1.2em 0 0 -.3em;padding:.3em .7em .35em .4em;border-radius:99em;font-size:1.1em;font-weight:600;color:#ffffff;white-space:nowrap;display:flex;align-items:center;gap:.45em;box-shadow:0 .4em .9em -.3em rgba(0,0,0,0.35)}
+  .ho-kur span img{width:1.6em;height:1.6em;border-radius:50%;object-fit:cover;box-shadow:0 0 0 .12em rgba(255,255,255,0.7)}
+  .ho-kur-a{left:56.6em;top:5.4em}
+  .ho-kur-m{left:27em;top:30.4em}
+  .hp-komp.gra .ho-kur-a{transform:translate(-7em,6em);opacity:0}
+  .hp-komp.gra .ho-kur-m{transform:translate(6em,4em);opacity:0}
+  .hp-komp.gra.on .ho-kur{transform:none;opacity:1;transition-delay:.9s}
+  .hp-komp.gra .ho-a.nowa{opacity:0;transform:translateY(.6em)}
+  .hp-komp.gra.on .ho-a.nowa{opacity:1;transform:none;transition:opacity .4s ease 1.5s,transform .5s cubic-bezier(.2,.8,.2,1) 1.5s}
+
+  /* ---- przegląd zmiany z plikiem zasad (dane z hero /guided-coding) ---- */
+  .hc{position:relative;width:32em;height:44em;overflow:hidden;border-radius:1.2em;background:#0e1a14;color:#d9e2dc;
+    box-shadow:0 0 0 1px rgba(255,255,255,0.12),0 4em 8em -3em rgba(0,0,0,0.85),0 1.4em 3em -1.6em rgba(0,0,0,0.5)}
+  .hc .hi{display:block;flex-shrink:0;width:1.4em;height:1.4em;fill:currentColor}
+  .hc-tyt{position:relative;display:flex;align-items:center;height:3.6em;padding:0 1.2em;border-bottom:1px solid rgba(255,255,255,0.07);background:rgba(255,255,255,0.03)}
+  .hc-tyt .ho-sw i{background:rgba(255,255,255,0.16);box-shadow:none}
+  .hc-tyt-t{position:absolute;left:50%;transform:translateX(-50%);font-size:1.12em;color:rgba(255,255,255,0.55);white-space:nowrap}
+  .hc-gl{display:grid;grid-template-columns:3em minmax(0,1fr);gap:1em;padding:1.7em 2em 0}
+  .hc-gl img{width:3em;height:3em;border-radius:50%;object-fit:cover}
+  .hc-gl b{display:block;font-size:1.45em;font-weight:600;letter-spacing:-0.02em;line-height:1.25;color:#ffffff}
+  .hc-gl small{display:block;margin-top:.3em;font-size:1.08em;color:rgba(255,255,255,0.5)}
+  .hc-st{display:flex;align-items:center;gap:1.2em;margin:1.3em 2em 0;padding:.9em 1.1em;border-radius:.8em;background:rgba(255,255,255,0.04);font-size:1.1em}
+  .hc-st span{display:flex;align-items:center;gap:.45em}
+  .hc-st .uw{color:#ffc879}
+  .hc-st .ok{color:#5fe3a7;margin-left:auto}
+  .hc-diff{margin:1.1em 2em 0;overflow:hidden;border-radius:.8em;box-shadow:inset 0 0 0 1px rgba(255,255,255,0.08);font-family:var(--mono);font-size:1.02em;line-height:1.75}
+  .hc-diff > div{display:grid;grid-template-columns:1.6em minmax(0,1fr);padding:0 .9em;white-space:nowrap}
+  .hc-diff > div > i{font-style:normal;color:rgba(255,255,255,0.3)}
+  .hc-diff > div > span{overflow:hidden;text-overflow:ellipsis}
+  .hc-diff .f{display:block;padding:.45em .9em;border-bottom:1px solid rgba(255,255,255,0.07);font-family:'Schibsted Grotesk',system-ui,sans-serif;font-size:1.04em;color:rgba(255,255,255,0.6)}
+  .hc-diff .c{color:rgba(255,255,255,0.62)}
+  .hc-diff .u{background:rgba(240,163,58,0.13);color:#f6cf93}
+  .hc-diff .u > i{color:#f0a33a}
+  .hc-diff .p{background:rgba(0,205,119,0.12);color:#9df2c8}
+  .hc-diff .p > i{color:#00cd77}
+  .hc-uw{display:grid;grid-template-columns:2.6em minmax(0,1fr);gap:.9em;margin:1.2em 2em 0;padding:1.1em 1.2em;border-radius:.9em;background:rgba(255,255,255,0.06)}
+  .hc-uw img{width:2.6em;height:2.6em;border-radius:50%;object-fit:cover;object-position:50% 12%}
+  .hc-uw b{display:block;font-size:1.12em;font-weight:600;color:#ffffff}
+  .hc-uw b em{font-style:normal;font-weight:400;color:rgba(255,255,255,0.5)}
+  .hc-uw p{margin:.35em 0 0;font-size:1.1em;line-height:1.45;color:rgba(255,255,255,0.78)}
+  .hc-zas{position:absolute;left:0;right:0;bottom:0;padding:1.1em 2em 1.4em;border-top:1px solid rgba(255,255,255,0.08);background:rgba(0,0,0,0.18)}
+  .hc-zas > span{display:flex;align-items:center;gap:.5em;font-size:1.05em;color:rgba(255,255,255,0.5)}
+  .hc-zas > span b{font-weight:600;color:rgba(255,255,255,0.82)}
+  .hc-zas > span em{margin-left:auto;font-style:normal}
+  .hc-zas code{display:block;margin-top:.6em;padding:.55em .8em;border-radius:.6em;background:rgba(0,205,119,0.12);box-shadow:inset 0 0 0 1px rgba(0,205,119,0.3);font-family:var(--mono);font-size:1.02em;line-height:1.45;color:#9df2c8;white-space:normal}
+  .hp-komp.gra.on .hc-zas code{animation:hc-blysk 1.6s ease 1.9s both}
+  @keyframes hc-blysk{0%{box-shadow:inset 0 0 0 1px rgba(0,205,119,0.3),0 0 0 0 rgba(0,205,119,0)}40%{box-shadow:inset 0 0 0 1px rgba(0,205,119,0.8),0 0 0 .5em rgba(0,205,119,0.18)}100%{box-shadow:inset 0 0 0 1px rgba(0,205,119,0.3),0 0 0 0 rgba(0,205,119,0)}}
+
+  /* ---- hero na węższych ekranach: obiekty w poziomym rzędzie ---- */
+  @media (max-width:1059px){
+    .hp-hero .v4-hero-in{--zwis:clamp(210px,40vw,330px)}
+    .hp-sk{display:flex;gap:14px;height:auto;font-size:16px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;scrollbar-width:none;
+      margin:0 calc((var(--pin) + var(--ram)) * -1);padding:6px calc(var(--pin) + var(--ram)) 4px;scroll-padding-inline:calc(var(--pin) + var(--ram))}
+    .hp-sk::-webkit-scrollbar{display:none}
+    .hp-ob{position:relative;left:auto;flex:0 0 min(78vw,400px);width:auto;scroll-snap-align:start;container-type:inline-size}
+    .hp-ram{height:calc(100cqw * 1.12);overflow:hidden;border-radius:12px}
+    .hp-obj{--r:0deg !important;margin-top:0 !important;font-size:calc(100cqw / 33.6)}
+    .hp-ob-2 .hp-obj{font-size:calc(100cqw / 44)}
+    .hp-ob-3 .hp-obj{font-size:calc(100cqw / 32.6)}
+    .hk-tyl{display:none}
+    .hk-kl{display:none}
+    .hk-not{right:.8em;bottom:1.2em}
+    .hp-dr{width:auto !important;margin:20px 0 0 !important;height:auto;padding-top:14px}
+    .hp-dr b{font-size:17px}
+    .hp-dr span{font-size:14px}
+    .hp-ob:hover .hp-obj{--y:0px}
+  }
+
+  /* =====================================================================
+     CZYM JEST · zdania z pierwszych rozmów, po trzy na drogę
+     ===================================================================== */
+  .hp-roz{margin-top:clamp(72px,9vw,136px)}
+  .hp-roz-gl{padding-bottom:18px;border-bottom:1.5px solid var(--t1)}
+  .hp-roz-gl h3{margin:0;font-size:15px;font-weight:700}
+  .hp-gr{display:grid;grid-template-columns:minmax(0,3.6fr) minmax(0,8.4fr);gap:20px clamp(24px,4vw,64px);padding:clamp(30px,3.4vw,48px) 0;border-bottom:1px solid var(--linia);scroll-margin-top:96px}
+  .hp-gr-gl{align-self:start;position:sticky;top:110px}
+  .hp-gr-gl span{display:block;font-size:13px;font-weight:600;color:var(--ziel-c)}
+  .hp-gr-gl h3{margin:10px 0 0;font-size:clamp(28px,3vw,42px);line-height:1.02;font-weight:700;letter-spacing:-0.045em;text-wrap:balance}
+  .hp-gr-gl p{margin:12px 0 0;max-width:300px;font-size:15px;line-height:1.55;color:var(--t2)}
+  .hp-gr ul{margin:0;padding:0;list-style:none}
+  .hp-gr li + li{border-top:1px solid var(--linia)}
+  .hp-w{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,15.5em) 40px;gap:12px clamp(20px,2.4vw,36px);align-items:center;margin:0 -18px;padding:clamp(18px,1.9vw,24px) 18px;border-radius:18px;transition:background .2s}
+  .hp-w q{font-size:clamp(19px,1.75vw,25px);line-height:1.24;font-weight:600;letter-spacing:-0.028em;color:var(--t1);text-wrap:pretty;quotes:"„" "”" "‚" "’";transition:transform .4s cubic-bezier(.2,.7,.2,1)}
+  .hp-w q::before{color:var(--ziel-c)}
+  .hp-w-u b{display:block;font-size:15.5px;font-weight:700;letter-spacing:-0.012em;color:var(--t1)}
+  .hp-w-u em{display:block;margin-top:3px;font-style:normal;font-size:14px;line-height:1.45;color:var(--t2)}
+  .hp-w > i{justify-self:end;display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:var(--ink);color:#ffffff;transition:background .2s,color .2s,transform .25s}
+  .hp-w > i svg{width:15px;height:15px;fill:currentColor}
+  .hp-w:hover{background:#ffffff}
+  .hp-w:hover q{transform:translateX(8px)}
+  .hp-w:hover > i{background:var(--ziel);color:var(--ink);transform:translateX(3px)}
+  .hp-w:focus-visible{outline:2px solid var(--ziel);outline-offset:2px}
+  @media (prefers-reduced-motion:reduce){ .hp-w q,.hp-w > i{transition:none} .hp-w:hover q{transform:none} }
+  @media (max-width:900px){
+    .hp-gr{grid-template-columns:1fr}
+    .hp-gr-gl{position:static}
+    .hp-w{grid-template-columns:minmax(0,1fr) 40px;margin:0 -12px;padding:18px 12px}
+    .hp-w q{grid-column:1 / -1}
+    .hp-w:hover q{transform:none}
+  }
+
+  /* =====================================================================
+     DLACZEGO · blok 1: trzy tory
+     Bursztyn kreskowany = miejsce, w którym wdrożenie stoi (czekanie),
+     zieleń = to, co dzieje się dalej z nami. Kropka idzie po torze,
+     staje w bursztynie, potem rusza zieloną linią do wyniku. Stan
+     w markupie to stan końcowy; ruch tylko pod .gra.
+     ===================================================================== */
+  .tr{display:grid;margin:0 clamp(2px,0.8vw,14px)}
+  .tr-w{--x:100%;display:grid;grid-template-columns:minmax(0,2.3fr) minmax(0,7fr) minmax(0,2.4fr);gap:20px clamp(24px,3vw,48px);align-items:center;padding:clamp(22px,2.4vw,30px) 0;border-top:1px solid var(--linia)}
+  .tr-w:first-child{border-top:0;padding-top:0}
+  .tr-l b{display:block;font-size:17px;font-weight:700;letter-spacing:-0.02em}
+  .tr-l span{display:block;margin-top:3px;font-size:13.5px;color:var(--t3)}
+  .tr-tor{position:relative;height:118px}
+  .tr-lin{position:absolute;left:0;right:0;top:50%;height:2px;margin-top:-1px;border-radius:1px;background:rgba(15,26,20,0.16)}
+  .tr-lin::before{content:"";position:absolute;left:-1px;top:50%;width:10px;height:10px;margin-top:-5px;border-radius:50%;background:#ffffff;box-shadow:inset 0 0 0 2px rgba(15,26,20,0.3)}
+  .tr-st{position:absolute;left:36%;width:17%;top:50%;height:18px;margin-top:-9px;border-radius:4px}
+  .tr-po{position:absolute;left:53%;right:0;top:50%;height:3px;margin-top:-1.5px;border-radius:2px;background:var(--ziel);transform-origin:0 50%}
+  .tr-k{position:absolute;left:var(--x);top:50%;width:16px;height:16px;margin:-8px 0 0 -8px;border-radius:50%;background:var(--ziel);box-shadow:0 0 0 4px #ffffff,0 0 0 5px rgba(15,26,20,0.12);z-index:2}
+  .tr-k::after{content:"";position:absolute;inset:-7px;border-radius:50%;box-shadow:0 0 0 2px var(--burs);opacity:0}
+  .tr-t{position:absolute;max-width:45%;font-size:13.5px;line-height:1.38;text-wrap:pretty}
+  .tr-t em{display:block;font-style:normal;font-size:12px;font-weight:600}
+  .tr-t.start{left:0;top:calc(50% + 16px);color:var(--t2)}
+  .tr-t.start em{color:var(--t3)}
+  .tr-t.stop{left:36%;bottom:calc(50% + 20px);max-width:56%;color:var(--burs-c);font-weight:600}
+  .tr-t.stop em{color:var(--burs-c);opacity:0.75}
+  .tr-t.fix{left:53%;top:calc(50% + 16px);color:var(--t1);font-weight:600}
+  .tr-t.fix em{color:var(--ziel-c)}
+  .tr-wy b{display:block;font-size:clamp(30px,3vw,44px);font-weight:700;letter-spacing:-0.045em;word-spacing:0.12em;line-height:1;color:var(--t1);white-space:nowrap}
+  .tr-wy span{display:block;margin-top:8px;font-size:13.5px;line-height:1.45;color:var(--t2)}
+  /* ruch: k1 — kropka jedzie do bursztynu; k2 — stoi i czeka; k3 — zieleń
+     rośnie, kropka jedzie do końca; k4 — wynik */
+  .tr-f.gra .tr-k{--x:0%;background:var(--ink);transition:left 1.3s cubic-bezier(.45,0,.25,1) calc(var(--i) * .25s),background .3s}
+  .tr-f.gra .tr-po{transform:scaleX(0);transition:transform 1.5s cubic-bezier(.45,0,.25,1) calc(var(--i) * .25s)}
+  .tr-f.gra .tr-t.fix,.tr-f.gra .tr-wy{opacity:0;transform:translateY(6px);transition:opacity .45s ease,transform .5s cubic-bezier(.2,.8,.2,1)}
+  .tr-f.gra .tr-t.stop{opacity:0.35;transition:opacity .4s ease}
+  .tr-f.gra.k1 .tr-k{--x:36%}
+  .tr-f.gra.k2 .tr-k{background:var(--burs)}
+  .tr-f.gra.k2 .tr-k::after{animation:tr-puls 1.2s ease-out calc(var(--i) * .25s) 2}
+  .tr-f.gra.k2 .tr-t.stop{opacity:1}
+  .tr-f.gra.k3 .tr-k{--x:100%;background:var(--ziel);transition:left 1.5s cubic-bezier(.45,0,.25,1) calc(var(--i) * .25s),background .3s calc(var(--i) * .25s)}
+  .tr-f.gra.k3 .tr-po{transform:none}
+  .tr-f.gra.k3 .tr-t.fix{opacity:1;transform:none;transition-delay:calc(.3s + var(--i) * .25s)}
+  .tr-f.gra.k4 .tr-wy{opacity:1;transform:none;transition-delay:calc(var(--i) * .25s)}
+  @keyframes tr-puls{0%{opacity:0.9;transform:scale(.6)}100%{opacity:0;transform:scale(1.5)}}
+  @media (max-width:900px){
+    .tr-w{grid-template-columns:minmax(0,1fr);gap:8px}
+    .tr-tor{height:132px}
+    .tr-t{font-size:13px;max-width:48%}
+    .tr-t.stop{left:30%;max-width:70%}
+    .tr-st{left:30%;width:20%}
+    .tr-po{left:50%}
+    .tr-t.fix{left:52%}
+    .tr-f.gra.k1 .tr-k{--x:30%}
+    .tr-wy{display:flex;align-items:baseline;gap:12px}
+    .tr-wy span{margin:0}
+  }
+
+  /* =====================================================================
+     DLACZEGO · blok 2: protokół przekazania
+     ===================================================================== */
+  .pr{position:relative;max-width:1080px;margin:0 auto;padding:clamp(26px,3.4vw,52px) clamp(20px,3.8vw,60px) clamp(28px,3.4vw,48px);border-radius:6px;background:#ffffff;
+    box-shadow:0 0 0 1px rgba(15,26,20,0.06),0 40px 80px -48px rgba(7,20,13,0.55),0 12px 24px -16px rgba(7,20,13,0.18)}
+  .pr-gl{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:10px 32px;padding-bottom:20px;border-bottom:1.5px solid var(--t1)}
+  .pr-gl h4{margin:0;font-size:clamp(22px,2.2vw,30px);font-weight:700;letter-spacing:-0.035em}
+  .pr-gl span{font-size:13.5px;color:var(--t3)}
+  .pr-str{display:grid;grid-template-columns:1fr 1fr;gap:16px 40px;padding:18px 0;border-bottom:1px solid var(--linia);font-size:14.5px}
+  .pr-str small{display:block;font-size:12.5px;color:var(--t3)}
+  .pr-str b{display:block;margin-top:2px;font-weight:650}
+  .pr-tab{margin-top:6px}
+  .pr-w{display:grid;grid-template-columns:34px minmax(0,1.5fr) minmax(0,1.25fr) minmax(0,0.75fr);gap:6px 20px;align-items:baseline;padding:14px 0;border-bottom:1px solid var(--linia2);font-size:15px;line-height:1.45}
+  .pr-w.n{padding:12px 0 10px;border-bottom-color:var(--linia);font-size:12.5px;color:var(--t3)}
+  .pr-w > i{font-style:normal;font-size:13px;color:var(--t3)}
+  .pr-w.n > span:nth-child(2){font-weight:400;color:var(--t3)}
+  .pr-w > span:nth-child(2){font-weight:600;color:var(--t1)}
+  .pr-w > span:nth-child(3){color:var(--t2)}
+  .pr-w > b{display:flex;align-items:center;gap:7px;font-weight:650;color:var(--ziel-c)}
+  .pr-w > b svg{flex-shrink:0;width:15px;height:15px;padding:2px;border-radius:50%;background:var(--ziel);fill:var(--ink)}
+  .pr-w.n > b{color:var(--t3);font-weight:400}
+  .pr-pod{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:32px 56px;margin-top:clamp(30px,3.4vw,44px)}
+  .pr-pod > div{padding-top:8px}
+  .pr-pod svg{display:block;width:150px;height:46px;overflow:visible}
+  .pr-pod svg path{fill:none;stroke:#1d3c8c;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:0}
+  .pr-pod p{margin:6px 0 0;padding-top:8px;border-top:1px solid rgba(15,26,20,0.35);font-size:13px;line-height:1.45;color:var(--t2)}
+  .pr-pod p b{display:block;font-size:14px;color:var(--t1)}
+  .pr-piecz{position:absolute;right:clamp(0px,4vw,60px);top:-18px;display:grid;place-items:center;width:118px;height:118px;border-radius:50%;
+    box-shadow:inset 0 0 0 2.5px rgba(10,122,82,0.7),inset 0 0 0 6px #ffffff,inset 0 0 0 7.5px rgba(10,122,82,0.5);color:rgba(10,122,82,0.85);text-align:center;transform:rotate(-14deg);mix-blend-mode:multiply}
+  .pr-piecz span{font-size:12px;font-weight:700;line-height:1.25;letter-spacing:0.02em}
+  .pr-piecz small{display:block;margin-top:3px;font-size:10.5px;font-weight:600}
+  .pr-f.gra .pr-w:not(.n){opacity:0;transform:translateY(8px)}
+  .pr-f.gra.on .pr-w:not(.n){opacity:1;transform:none;transition:opacity .45s ease calc(.15s + var(--i) * .16s),transform .5s cubic-bezier(.2,.8,.2,1) calc(.15s + var(--i) * .16s)}
+  .pr-f.gra .pr-pod svg path{stroke-dashoffset:1}
+  .pr-f.gra.on .pr-pod svg path{stroke-dashoffset:0;transition:stroke-dashoffset 1.1s ease 1.2s}
+  .pr-f.gra.on .pr-pod > div + div svg path{transition-delay:1.9s}
+  .pr-f.gra .pr-piecz{opacity:0;transform:rotate(-14deg) scale(1.5)}
+  .pr-f.gra.on .pr-piecz{opacity:1;transform:rotate(-14deg) scale(1);transition:opacity .2s ease 2.9s,transform .35s cubic-bezier(.3,1.4,.5,1) 2.9s}
+  @media (max-width:760px){
+    .pr-str{grid-template-columns:1fr}
+    .pr-w{grid-template-columns:28px minmax(0,1fr);gap:4px 10px}
+    .pr-w > span:nth-child(3),.pr-w > b{grid-column:2}
+    .pr-w.n{display:none}
+    .pr-pod{grid-template-columns:1fr 1fr;gap:24px}
+    .pr-pod svg{width:110px}
+    .pr-piecz{width:96px;height:96px;top:-34px;right:0}
+    .pr-piecz span{font-size:10.5px}
+  }
+
+  /* =====================================================================
+     PRZYKŁADY · cztery wyniki; na szerokim ekranie w jednym rzędzie
+     ===================================================================== */
+  .hp-dw{margin-top:clamp(40px,4.4vw,64px)}
+  .hp-dk{flex:1 0 250px;scroll-snap-align:start;display:flex;flex-direction:column;padding:24px 24px 22px;border-radius:22px;background:var(--papier)}
+  .hp-dk h3{margin:8px 0 0;font-size:17px;font-weight:700;letter-spacing:-0.02em;line-height:1.25}
+  .hp-dk-l{margin:clamp(22px,2.4vw,34px) 0 0;padding-bottom:20px;border-bottom:1px solid var(--linia)}
+  .hp-dk-l b{display:block;font-size:clamp(46px,4.4vw,68px);line-height:0.95;font-weight:700;letter-spacing:-0.06em;color:var(--ziel-c);white-space:nowrap}
+  .hp-dk-l span{display:block;margin-top:8px;font-size:14px;color:var(--t2)}
+  .hp-dk dl{display:grid;gap:12px;margin:18px 0 0}
+  .hp-dk dl div{display:grid;grid-template-columns:52px minmax(0,1fr);gap:8px}
+  .hp-dk dt{display:flex;align-items:center;gap:6px;height:21px;font-size:12.5px;color:var(--t3)}
+  .hp-dk dd{margin:0;font-size:14px;line-height:1.5;color:var(--t2);text-wrap:pretty}
+  .hp-dk dt i{flex-shrink:0;display:block;width:10px;height:10px;border-radius:2.5px}
+  .hp-dk dl div:not(.po) dt{color:var(--burs-c)}
+  .hp-dk dl div.po dt i{background:var(--ziel)}
+  .hp-dk dl div.po dt{color:var(--t1);font-weight:650}
+  .hp-dk dl div.po dd{color:var(--t1)}
+  .hp-dk-u{display:inline-flex;align-items:center;gap:8px;align-self:flex-start;margin-top:auto;padding-top:22px;font-size:13.5px;font-weight:650;color:var(--ziel-c)}
+  .hp-dk-u span{transition:transform .2s}
+  .hp-dk-u:hover span{transform:translateX(3px)}
+  @media (max-width:1180px){ .hp-dk{flex:0 0 clamp(272px,40vw,340px)} }
+  @media (max-width:600px){ .hp-dk{flex-basis:84%} }
+
+  /* =====================================================================
+     ZESPÓŁ · ciemna sekcja z ludźmi
+     Zdjęcia z różnych sesji (jasne studio, ciemna ściana z neonem) — na
+     ciemnym tle wyrównuje je jeden ton: jasność zdjęcia na zieleni tła.
+     Pod kursorem wraca kolor.
+     ===================================================================== */
+  .hp-os{display:grid;grid-template-columns:1.32fr 1fr 1fr 1fr 1fr;gap:14px;margin-top:clamp(48px,5vw,72px)}
+  .hp-os figure{position:relative;margin:0;height:clamp(300px,31vw,450px);overflow:hidden;border-radius:20px;background:#173527;isolation:isolate}
+  .hp-os img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:grayscale(1) contrast(1.06);mix-blend-mode:luminosity;opacity:0.94;transition:filter .5s ease,opacity .5s ease,transform .8s cubic-bezier(.2,.8,.2,1)}
+  .hp-os figure::after{content:"";position:absolute;left:0;right:0;bottom:0;height:42%;background:linear-gradient(to top,rgba(7,20,13,0.82),rgba(7,20,13,0));pointer-events:none}
+  .hp-os figure:hover img{filter:none;mix-blend-mode:normal;opacity:1;transform:scale(1.02)}
+  .hp-os figcaption{position:absolute;left:18px;right:16px;bottom:16px;z-index:1}
+  .hp-os figcaption b{display:block;font-size:16px;font-weight:700;letter-spacing:-0.015em;color:#ffffff}
+  .hp-os figcaption span{display:block;margin-top:2px;font-size:13px;color:rgba(255,255,255,0.72)}
+  .hp-fk{display:grid;grid-template-columns:minmax(0,5.4fr) minmax(0,6.6fr);gap:40px clamp(32px,5vw,96px);margin-top:clamp(48px,5.4vw,80px);padding-top:clamp(28px,3vw,40px);border-top:1px solid rgba(255,255,255,0.12)}
+  .hp-lz{display:flex;flex-wrap:wrap;gap:28px clamp(28px,3.4vw,56px)}
+  .hp-lz div b{display:block;font-size:clamp(46px,5vw,76px);line-height:0.95;font-weight:700;letter-spacing:-0.055em;color:var(--ziel)}
+  .hp-lz div span{display:block;margin-top:10px;font-size:14px;color:rgba(255,255,255,0.66)}
+  .hp-fk-t p{margin:0;max-width:600px;font-size:16px;line-height:1.64;color:rgba(255,255,255,0.74);text-wrap:pretty}
+  .hp-fk-t p + p{margin-top:18px}
+  .hp-fk-t a{font-weight:650;color:#ffffff;border-bottom:1px solid rgba(0,205,119,0.5);transition:border-color .15s,color .15s}
+  .hp-fk-t a:hover{color:var(--ziel);border-color:var(--ziel)}
+  @media (prefers-reduced-motion:reduce){ .hp-os img{transition:none} .hp-os figure:hover img{transform:none} }
+  @media (max-width:1000px){
+    .hp-os{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;margin-left:calc(var(--pad) * -1);margin-right:calc(var(--pad) * -1);padding:0 var(--pad);scroll-padding-inline:var(--pad)}
+    .hp-os::-webkit-scrollbar{display:none}
+    .hp-os figure{flex:0 0 min(62vw,300px);height:min(82vw,400px);scroll-snap-align:start}
+    .hp-fk{grid-template-columns:1fr}
+  }
+</style>
+
+<div class="v3">
+<Styl />
+<Anim />
+
+<!-- ============ 1 · HERO ============
+     Plansza z nagłówkiem jak na podstronach. Zamiast jednego okna trzy
+     obiekty, bo strona główna prowadzi do trzech dróg: kartka z dokumentu
+     strategii, okno systemu i przegląd zmiany w repozytorium klienta.
+     Cała kolumna z obiektem i nazwą drogi jest linkiem do tej drogi
+     w sekcji niżej. -->
+<section class="v4-hero hp-hero">
+<div class="v4-hero-in">
+<div class="v4-gl">
+<div>
+<p class="v3-etyk"><i aria-hidden="true"></i>Studio transformacji AI z Warszawy</p>
+<h1 class="v3-h1">Wprowadzamy AI do codziennej pracy firm <span>i mierzymy, co to zmieniło</span></h1>
+</div>
+<div class="v4-lewa">
+<p class="v3-lead">Zaczynamy od Waszej sytuacji i od jednej liczby, którą chcecie zmienić. Tę samą liczbę sprawdzamy na Waszych danych przed startem i po wdrożeniu.</p>
+<div class="v3-akcje">
+<a href="#kontakt" class="v3-btn">Umów rozmowę <span aria-hidden="true">→</span></a>
+<a href="#oferta" class="v3-lnk">Od czego zacząć →</a>
+</div>
+</div>
+</div>
+
+<div class="hero-wid hp-komp" data-anim data-gra>
+<div class="hp-sk">
+
+<a class="hp-ob hp-ob-1" href={`#${DROGI[0].id}`}>
+<div class="hp-ram"><div class="hp-obj" aria-hidden="true">
+<div class="hk">
+<div class="hk-tyl"></div>
+<div class="hk-str">
+<div class="hk-meta"><span><b>Strategia AI</b> · Producent mebli, 140 osób</span><span>s. 7 / 22</span></div>
+<p class="hk-h">Kolejność wdrożeń</p>
+<p class="hk-sub">Dwanaście miesięcy, trzy cele zarządu</p>
+<div class="hk-tab">
+<div class="hk-n"><span>Pozycja w planie</span><span>zwrot w 1. roku</span></div>
+{PLAN.map((x, i) => (
+  <div class={`hk-w${i > 1 ? ' dalej' : ''}`}><i>{x.nr}</i><b>{x.t}</b><span>{x.c} · start: {x.st}</span><em>{x.zw}</em></div>
+))}
+<svg class="hk-kl" viewBox="0 0 15 94" preserveAspectRatio="none"><path d="M13 1.5 C 6 2, 7 10, 7 22 C 7 36, 6 44, 1.5 47 C 6 50, 7 58, 7 72 C 7 84, 6 92, 13 92.5"/></svg>
+</div>
+<div class="hk-not">
+<b>Decyzja zarządu</b>
+<p>Start 01 i 02 w I kwartale. Przed 01 jeden cennik w ERP.</p>
+<svg viewBox="0 0 84 26"><path d="M2 18 C 8 4, 12 4, 12 14 C 12 22, 9 22, 10 15 C 12 8, 18 8, 19 16 C 20 21, 23 12, 26 11 C 29 10, 28 18, 31 17 C 35 15, 37 6, 40 9 C 43 12, 41 20, 45 18 C 50 15, 54 10, 58 13 C 61 15, 63 18, 68 14 L 82 9"/></svg>
+</div>
+</div>
+</div>
+</div></div>
+<span class="hp-dr"><b>{DROGI[0].t} <i><svg viewBox="0 0 16 16" set:html={HI['arrow-right']}></svg></i></b><span>{DROGI[0].s}</span></span>
+</a>
+
+<a class="hp-ob hp-ob-2" href={`#${DROGI[1].id}`}>
+<div class="hp-ram"><div class="hp-obj" aria-hidden="true">
+<div class="ho">
+<div class="ho-tyt">
+<span class="ho-sw"><i></i><i></i><i></i></span>
+<span class="ho-tyt-t">Ofertownia</span>
+<span class="ho-twarze">{Object.values(LUDZIE).map((x) => (<img src={x.f} alt="" width="22" height="22" loading="lazy">))}</span>
+</div>
+<div class="ho-uk">
+<nav class="ho-rail">
+<b><svg viewBox="0 0 16 16" set:html={IBELKA}></svg></b>
+<span><svg class="hi" viewBox="0 0 16 16" set:html={HI['inbox']}></svg></span>
+<span class="on"><svg class="hi" viewBox="0 0 16 16" set:html={HI['view-columns']}></svg></span>
+<span><svg class="hi" viewBox="0 0 16 16" set:html={HI['document-text']}></svg></span>
+<span><svg class="hi" viewBox="0 0 16 16" set:html={HI['users']}></svg></span>
+<span><svg class="hi" viewBox="0 0 16 16" set:html={HI['tag']}></svg></span>
+<span><svg class="hi" viewBox="0 0 16 16" set:html={HI['adjustments-horizontal']}></svg></span>
+</nav>
+<div class="ho-gl">
+<div class="ho-pas">
+<span class="ho-bc"><svg class="hi" viewBox="0 0 16 16" set:html={HI['view-columns']}></svg>Zapytania<svg class="hi" viewBox="0 0 16 16" set:html={HI['chevron-right']}></svg><b>ZP-2484</b></span>
+<span class="ho-akc"><span class="ho-ib"><svg class="hi" viewBox="0 0 16 16" set:html={HI['arrow-down-tray']}></svg></span><span class="ho-btn"><svg class="hi" viewBox="0 0 16 16" set:html={HI['document-text']}></svg>Podgląd oferty</span></span>
+</div>
+<div class="ho-det">
+<div class="ho-l">
+<h3>Stalprofil — hala 42 × 18 m</h3>
+<p><svg class="hi" viewBox="0 0 16 16" set:html={HI['envelope']}></svg>mail od Jana Nowaka · pon 14:02 · hala_42x18_rysunki.pdf</p>
+<ol class="ho-et">{ETAPY.map((e, i) => (<li class={i === ETAPY.length - 1 ? 'tu' : ''}><i></i>{e}</li>))}</ol>
+<div class="ho-zakl"><span class="on">Pozycje <em>4</em></span><span>Zadania <em>2</em></span><span>Dokumenty <em>2</em></span><span>Historia</span></div>
+<div class="ho-dw n"><span>Pozycja <em>· z rysunku</em></span><span>Ilość</span><span>Wartość <em>· ERP</em></span><span>Stan <em>· magazyn</em></span></div>
+{POZYCJE.map((x) => (<div class="ho-dw"><span>{x.p}</span><span>{x.i}</span><span>{x.w}</span><span class={x.cz ? 'cz' : x.nic ? 'nic' : ''}>{x.s}</span></div>))}
+<div class="ho-pan">
+<h5>Zadania<span>2 z 2 zrobione</span></h5>
+<div class="ho-zad"><img src={LUDZIE.tw.f} alt="" width="22" height="22" loading="lazy"><div><strong>Termin dostawy rury 88,9 × 4</strong><small>Magazyn · Tomasz Wilk</small></div><span><svg class="hi" viewBox="0 0 16 16" set:html={HI['check']}></svg>dostawa 22.09</span></div>
+<div class="ho-zad"><img src={LUDZIE.mr.f} alt="" width="22" height="22" loading="lazy"><div><strong>Wycena robocizny i spawania</strong><small>Technologia · Michał Rutkowski</small></div><span><svg class="hi" viewBox="0 0 16 16" set:html={HI['check']}></svg>38 h × 145 zł</span></div>
+</div>
+</div>
+<aside class="ho-p">
+<small>Wartość oferty</small>
+<b>23 666 zł</b>
+<span class="ho-br">netto · brutto 29 109,18 zł</span>
+<dl class="ho-meta"><dt>Klient</dt><dd>Stalprofil sp. z o.o.</dd><dt>Kontakt</dt><dd>Jan Nowak, zaopatrzenie</dd><dt>Opiekun</dt><dd>Anna Kowal</dd></dl>
+<div class="ho-ak">
+<h5>Aktywność</h5>
+{AKTYWNOSC.map((a) => (
+  <div class={`ho-a${a.nowa ? ' nowa' : ''}`}>
+    {a.k === 'sys' ? <i><svg viewBox="0 0 16 16" set:html={IBELKA}></svg></i> : <img src={LUDZIE[a.k].f} alt="" width="17" height="17" loading="lazy">}
+    <span>{a.k !== 'sys' && <b>{LUDZIE[a.k].n.split(' · ')[0]} </b>}{a.t}</span>
+    <time>{a.h}</time>
+  </div>
+))}
+</div>
+</aside>
+</div>
+</div>
+</div>
+<span class="ho-kur ho-kur-a"><svg viewBox="0 0 16 16"><path d="M2 1.5 13 7.2 7.6 8.4 5 13.6Z" fill={LUDZIE.ak.c} stroke="#fff" stroke-width="1.2" stroke-linejoin="round"/></svg><span style={`background:${LUDZIE.ak.c}`}><img src={LUDZIE.ak.f} alt="" width="16" height="16" loading="lazy">{LUDZIE.ak.n}</span></span>
+<span class="ho-kur ho-kur-m"><svg viewBox="0 0 16 16"><path d="M2 1.5 13 7.2 7.6 8.4 5 13.6Z" fill={LUDZIE.mr.c} stroke="#fff" stroke-width="1.2" stroke-linejoin="round"/></svg><span style={`background:${LUDZIE.mr.c}`}><img src={LUDZIE.mr.f} alt="" width="16" height="16" loading="lazy">{LUDZIE.mr.n}</span></span>
+</div>
+</div></div>
+<span class="hp-dr"><b>{DROGI[1].t} <i><svg viewBox="0 0 16 16" set:html={HI['arrow-right']}></svg></i></b><span>{DROGI[1].s}</span></span>
+</a>
+
+<a class="hp-ob hp-ob-3" href={`#${DROGI[2].id}`}>
+<div class="hp-ram"><div class="hp-obj" aria-hidden="true">
+<div class="hc">
+<div class="hc-tyt"><span class="ho-sw"><i></i><i></i><i></i></span><span class="hc-tyt-t">panel-zamowien · przegląd zmiany</span></div>
+<div class="hc-gl">
+<img src={LUDZIE.ak.f} alt="" width="30" height="30" loading="lazy">
+<div><b>Eksport zamówień do CSV dla księgowości</b><small>Anna · operacje · wersja 50 · 11:08</small></div>
+</div>
+<div class="hc-st"><span class="uw"><svg class="hi" viewBox="0 0 16 16" set:html={HI['eye']}></svg>Zasady: 1 uwaga</span><span class="ok"><svg class="hi" viewBox="0 0 16 16" set:html={HI['check-circle']}></svg>poprawiona · 11:21</span></div>
+<div class="hc-diff">
+<span class="f">eksport.ts</span>
+{DIFF.map((x) => (<div class={x.k}><i>{x.k === 'u' ? '−' : x.k === 'p' ? '+' : ''}</i><span>{x.t}</span></div>))}
+</div>
+<div class="hc-uw">
+<img src="/marcel-bilski.jpg" alt="" width="26" height="26" loading="lazy">
+<div><b>Marcel Bilski <em>· prowadzący</em></b><p>Plik z danymi klientów idzie mailem jako załącznik i zostaje w skrzynkach. Zapiszcie go i wyślijcie link, który wygasa po dobie.</p></div>
+</div>
+<div class="hc-zas">
+<span><svg class="hi" viewBox="0 0 16 16" set:html={HI['document-text']}></svg>.agents / <b>zasady.md</b><em>19 zasad</em></span>
+<code>+ 19. Pliki z danymi klientów wysyłamy linkiem, który wygasa</code>
+</div>
+</div>
+</div></div>
+<span class="hp-dr"><b>{DROGI[2].t} <i><svg viewBox="0 0 16 16" set:html={HI['arrow-right']}></svg></i></b><span>{DROGI[2].s}</span></span>
+</a>
+
+</div>
+</div>
+</div>
+</section>
+<Loga />
+
+<!-- ============ 2 · CZYM JEST · zdania z pierwszych rozmów ============
+     Definicja pod modele językowe (podmiot = nazwa firmy), pod nią
+     rozdzielnia: dziewięć zdań, które padają na początku rozmów, po trzy
+     na drogę. Przy każdym usługa z menu i jej termin albo cena z podstrony.
+     Kotwice dróg (#wdrazamy, #budujemy, #budujecie) łapią linki z hero. -->
+<section id="oferta" class="v3-sek v3-papier">
+<div class="v3-def">
+<h2 class="v3-h2m">Czym jest Let’s automate?</h2>
+<p class="v3-def-duzy rv">Let’s automate to studio transformacji AI z Warszawy, część Wise Group. Wprowadzamy AI do pracy firm, które zatrudniają od kilkudziesięciu do kilkuset osób, od strategii i narzędzi dla zespołów po systemy pod procesy, na których firma zarabia. Prowadzimy też zespoły klientów, które tworzą aplikacje z AI same.</p>
+</div>
+
+<div class="hp-roz">
+<div class="hp-roz-gl"><h3>Zdania, od których zaczynają się nasze rozmowy</h3></div>
+{GRUPY.map((g, gi) => (
+  <div class="hp-gr" id={g.id}>
+    <div class="hp-gr-gl">
+      <span>{String(gi + 1).padStart(2, '0')}</span>
+      <h3>{g.t}</h3>
+      <p>{g.s}</p>
+    </div>
+    <ul>
+      {g.w.map((x) => (
+        <li><a class="hp-w" href={x.h}>
+          <q>{x.q}</q>
+          <span class="hp-w-u"><b>{x.u}</b><em>{x.d}</em></span>
+          <i aria-hidden="true"><svg viewBox="0 0 16 16" set:html={HI['arrow-right']}></svg></i>
+        </a></li>
+      ))}
+    </ul>
+  </div>
+))}
+</div>
+</section>
+
+<!-- ============ 2b · ZIELONY PAS ============ -->
+<Pas tekst="Jeśli wystarczy Wam to, co już macie, powiemy to na pierwszej rozmowie" foto="/szymon-negacz-spot.jpg" fotoW={1100} fotoH={888} alt="Szymon Negacz, współwłaściciel Let's automate" imie="Szymon Negacz" rola="Współwłaściciel" />
+
+<!-- ============ 3 · DLACZEGO ============
+     Teza o tym, gdzie wdrożenia AI stają, i dwa bloki: trzy tory (po
+     jednym na drogę) oraz protokół przekazania. -->
+<section id="dlaczego" class="v3-sek">
+<h2 class="v3-h2m">Dlaczego AI w firmach utyka</h2>
+<p class="v3-teza rv"><span>Licencje są kupione, pilot zrobił wrażenie na zarządzie.</span> Kwartał później praca idzie tak samo, a kod i konta zostały u wykonawcy</p>
+
+<div class="dl-blok">
+<div class="dl-gl"><h3>Trzy miejsca, w których wdrożenie staje</h3><p>Każda z naszych dróg zaczyna się w jednym z nich. Kończy się liczbą zmierzoną na Waszych danych, tą samą, którą zapisaliśmy przed startem.</p></div>
+<figure class="dl-kafel tr-f" data-anim data-gra data-tory role="img" aria-label={TORY_ARIA}>
+<div class="ts4-gl"><b>Gdzie staje i co dalej</b><button type="button" class="ts4-znow" data-tory-znow aria-label="Odtwórz jeszcze raz"><svg viewBox="0 0 16 16" set:html={HI['arrow-path']}></svg></button></div>
+<div class="tr" aria-hidden="true">
+{TORY.map((x, i) => (
+  <div class="tr-w" style={`--i:${i}`}>
+    <div class="tr-l"><b>{x.d}</b><span>{x.ds}</span></div>
+    <div class="tr-tor">
+      <span class="tr-lin"></span>
+      <span class="tr-st czk-j"></span>
+      <span class="tr-po"></span>
+      <span class="tr-t start"><em>Start</em>{x.start}</span>
+      <span class="tr-t stop"><em>Tu staje</em>{x.stop}</span>
+      <span class="tr-t fix"><em>Z nami</em>{x.fix}</span>
+      <span class="tr-k"></span>
+    </div>
+    <div class="tr-wy"><b>{x.w}</b><span>{x.wd}</span></div>
+  </div>
+))}
+</div>
+</figure>
+</div>
+
+<div class="dl-blok">
+<div class="dl-gl"><h3>Wszystko, co powstaje, jest Wasze od pierwszego dnia</h3><p>Dokumenty, konta, repozytorium i klucze zakładamy po Waszej stronie. Wyjście ze współpracy nie wymaga migracji ani licencji od nas, a utrzymanie wypowiadacie z miesięcznym terminem.</p></div>
+<figure class="dl-kafel pr-f" data-anim data-gra role="img" aria-label={PROT_ARIA}>
+<div class="ts4-gl"><b>Protokół przekazania po roku współpracy</b></div>
+<div class="pr" aria-hidden="true">
+<div class="pr-gl"><h4>Protokół przekazania</h4><span>nr 7/2026 · Warszawa, 30.09.2026</span></div>
+<div class="pr-str">
+<div><small>Przekazuje</small><b>Let’s automate sp. z o.o.</b></div>
+<div><small>Przyjmuje</small><b>Stalprofil sp. z o.o.</b></div>
+</div>
+<div class="pr-tab">
+<div class="pr-w n"><i>Lp.</i><span>Przedmiot</span><span>Gdzie jest</span><b>Właściciel</b></div>
+{PROTOKOL.map((x, i) => (
+  <div class="pr-w" style={`--i:${i}`}><i>{i + 1}.</i><span>{x.t}</span><span>{x.g}</span><b><svg viewBox="0 0 16 16" set:html={HI['check']}></svg>Stalprofil</b></div>
+))}
+</div>
+<div class="pr-pod">
+<div>
+<svg viewBox="0 0 150 46"><path pathLength="1" d="M4 34 C 14 10, 22 6, 22 22 C 22 34, 16 34, 19 24 C 23 12, 31 14, 32 26 C 33 34, 38 18, 44 18 C 50 18, 47 30, 53 28 C 60 26, 63 12, 70 16 C 76 20, 72 32, 80 28 C 90 22, 98 20, 106 24 L 146 14"/></svg>
+<p><b>Marcel Bilski</b>Tech Lead, Let’s automate</p>
+</div>
+<div>
+<svg viewBox="0 0 150 46"><path pathLength="1" d="M6 30 C 12 18, 20 8, 26 10 C 32 12, 24 30, 30 30 C 36 30, 40 16, 46 18 C 52 20, 50 32, 58 30 C 66 28, 70 20, 78 22 C 84 24, 82 32, 90 30 C 100 27, 110 18, 120 20 C 128 22, 134 26, 146 22"/></svg>
+<p><b>Katarzyna Wróbel</b>członek zarządu, Stalprofil</p>
+</div>
+<span class="pr-piecz"><span>Przyjęto<br>bez uwag</span><small>30.09.2026</small></span>
+</div>
+</div>
+</figure>
+</div>
+</section>
+
+<!-- ============ 4 · METODA ============
+     Przed przykładami: najpierw czym różnimy się od typowej firmy „od AI”,
+     potem liczby z wdrożeń. -->
+<Metoda tytul={'Własne <span style="white-space:nowrap">know-how</span> z&nbsp;ponad dwustu wdrożeń'} sub="Typowa firma „od AI” kończy pracę na dokumencie albo na wdrożeniu jednego narzędzia. U nas plan i pomiar robi ten sam zespół, który wdraża, według zasad spisanych w WiseStacku." wiersze={METODA} typowy={'Typowa firma<br>„od AI”'} liczba="200+ wdrożeń" />
+
+<!-- ============ 5 · PRZYKŁADY ============
+     Cztery wyniki z obecnej strony głównej, przy każdym usługa, która za
+     nim stoi. Pod spodem cytat i krótkie wezwanie. -->
+<section id="dowody" class="v3-sek">
+<div class="v8-gl">
+<h2 class="v3-h2">Cztery procesy po wdrożeniu</h2>
+<p class="v3-sub">Wyniki z wdrożeń u naszych klientów, liczone na tym samym procesie przed startem i po.</p>
+</div>
+<div class="dw-sc hp-dw" tabindex="0" role="region" aria-label="Wyniki wdrożeń, przewijane w poziomie">
+{WYNIKI.map((x) => (
+  <article class="hp-dk">
+    <span class="dw4-p">{x.dz}</span>
+    <h3>{x.p}</h3>
+    <p class="hp-dk-l"><b>{x.l}</b><span>{x.ld}</span></p>
+    <dl>
+      <div><dt><i class="czk-j"></i>Przed</dt><dd>{x.przed}</dd></div>
+      <div class="po"><dt><i></i>Po</dt><dd>{x.po}</dd></div>
+    </dl>
+    <a class="hp-dk-u" href={x.h}>{x.u} <span aria-hidden="true">→</span></a>
+  </article>
+))}
+</div>
+<Cytat cytat="Let’s automate wziął pełną odpowiedzialność za projekt i dowiózł go do końca. To dlatego powierzyliśmy im kolejny, znacznie większy." logo="/uploads/klienci/nars.svg" logoAlt="NARS Polska" imie="Jakub Ciołkowski" rola="Członek Zarządu, NARS Polska" />
+<CtaPasek tytul="Na pierwszej rozmowie wskazujemy proces, od którego warto zacząć, i podajemy cenę pierwszego kroku." />
+</section>
+
+<!-- ============ 6 · ZESPÓŁ ============
+     Ciemna sekcja zamiast sceny z produktem. Ludzie ze zdjęciami, liczby
+     o studiu i dwa zdania: Wise Group i własne produkty. -->
+<section id="zespol" class="v3-sek v3-scena v3-ziarno">
+<div class="v8-gl">
+<h2 class="v3-h2 jasny">Rozmawiacie z ludźmi, którzy potem budują</h2>
+<p class="v3-sub jasny">Analitycy, programiści, projektanci i konsultanci pracują w jednym studiu w Warszawie. Nie podnajmujemy zespołów na czas zlecenia.</p>
+</div>
+<div class="hp-os">
+{ZESPOL.map((x) => (
+  <figure>
+    <img src={x.f} alt={`${x.n}, ${x.r} w Let's automate`} width={x.w} height={x.h} loading="lazy" decoding="async" style={`object-position:${x.pos}`}>
+    <figcaption><b>{x.n}</b><span>{x.r}</span></figcaption>
+  </figure>
+))}
+</div>
+<div class="hp-fk">
+<div class="hp-lz">
+<div><b>200+</b><span>wdrożeń</span></div>
+<div><b>140+</b><span>firm</span></div>
+<div><b>30+</b><span>osób w studiu</span></div>
+</div>
+<div class="hp-fk-t">
+<p>Należymy do Wise Group, razem z SellWise, HireWise, AdWise, Finerto i IRSM. Kiedy proces do przebudowy okazuje się procesem sprzedaży albo rekrutacji, obok siada ktoś, kto zajmuje się tym na co dzień.</p>
+<p>Budujemy też własne produkty: <a href="/produkty/appto">Appto</a>, agentów AI dla całej firmy, i <a href="/produkty#wingman">Wingmana</a>, asystenta rozmów handlowych na Maca. Skutki naszych decyzji technicznych ponosimy na własnym rachunku.</p>
+</div>
+</div>
+</section>
+
+<!-- ============ 7 · DLA JAKICH FIRM ============ -->
+<DlaKogo sub="Najczęściej produkcja, dystrybucja i usługi, także firmy z własnym działem IT." warunki={DLA_KOGO} nie={NIE_TERAZ} />
+
+<!-- ============ 8 · KONTAKT ============ -->
+<Kontakt tytul="Zacznijmy od Waszej sytuacji" lead="Napiszcie w dwóch zdaniach, co chcecie zmienić. Odpowiemy w jeden dzień roboczy z propozycją terminu rozmowy." zrodlo="Strona główna v2" pytanie="Co chcecie zmienić?" podpowiedz="Np. oferta przechodzi przez trzy działy albo licencje Copilota leżą nieużywane…" />
+
+</div>
+
+<GcFaq heading="Pytania, które padają przed decyzją" ctaLabel="Zadajcie nam swoje →" items={faq} />
+
+<script>
+  var redukcja = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ---- Trzy tory: kropka do bursztynu, postój, zieleń do wyniku ----
+  // Odgrywa się raz po wejściu w kadr; przycisk „jeszcze raz" puszcza od
+  // nowa. Bez JS i przy ograniczonym ruchu figura nie ma .gra, więc od razu
+  // widać stan końcowy.
+  (function(){
+    var fig = document.querySelector('[data-tory]');
+    if(!fig || redukcja || !('IntersectionObserver' in window)) return;
+    var znow = fig.querySelector('[data-tory-znow]');
+    var timery = [];
+    function czysc(){ timery.forEach(clearTimeout); timery = []; fig.classList.remove('k1', 'k2', 'k3', 'k4'); }
+    function graj(){
+      czysc();
+      void fig.offsetWidth;
+      if(znow) znow.disabled = true;
+      timery.push(setTimeout(function(){ fig.classList.add('k1'); }, 150));
+      timery.push(setTimeout(function(){ fig.classList.add('k2'); }, 1750));
+      timery.push(setTimeout(function(){ fig.classList.add('k3'); }, 3700));
+      timery.push(setTimeout(function(){ fig.classList.add('k4'); }, 5100));
+      timery.push(setTimeout(function(){ if(znow) znow.disabled = false; }, 5900));
+    }
+    var io = new IntersectionObserver(function(w){
+      if(w[0].isIntersecting){ graj(); io.disconnect(); }
+    }, { threshold: 0.45 });
+    io.observe(fig);
+    if(znow) znow.addEventListener('click', graj);
+  })();
+</script>
+</LaBase>

@@ -1,0 +1,895 @@
+---
+// HERO /systemy-procesowe — CZTERY WARIANTY DO PORÓWNANIA
+// /systemy-procesowe-hero · noindex, poza sitemapą (12.10.2026).
+//
+// SKĄD: po v4 Szymon chciał zobaczyć kilka wersji hero obok siebie.
+// Podobał mu się układ nagłówka z v3 (tytuł po lewej, podtytuł po prawej),
+// a pas warunków zakupu pod planszą (warsztat / wycena / po Waszej stronie)
+// uznał za zbędny albo do zrobienia ładniej.
+//
+// WARIANTY (ten sam nagłówek i lead wszędzie, zmienia się układ i rysunek):
+//   A · nagłówek z v3 + wątek z v4; czas sprawy wyjęty z nagłówka wątku
+//       i postawiony obok jako duża liczba. Warunki: usunięte z hero.
+//   B · nagłówek z v3 + nowy rysunek: tydzień jednej oferty w widoku
+//       kalendarza (7 dni roboczych × 8–16). Czekanie wypełnia dni, maile
+//       wpadają o swoich godzinach, na końcu zostają dwa bloki systemu.
+//       Warunki: jedno zdanie pod przyciskami.
+//   C · układ dzielony: tekst po lewej, wątek po prawej w pierwszym
+//       ekranie. Warunki: metryczka (trzy wiersze) pod przyciskami.
+//   D · kompozycja strony głównej: wszystko na osi, wątek wisi na krawędzi
+//       planszy, liczniki pływają obok jak powiadomienia. Warunki: usunięte.
+//
+// Dane wątku i osi 1:1 z /systemy-procesowe-v4. Stos maili siedzi
+// w _hero-stos.astro, bo stoi tu w trzech wariantach.
+import LaBase from '../layouts/LaBase.astro';
+import Stos from './_hero-stos.astro';
+
+const GODZ_DNIA = 8;
+const KROKI = [
+  { p: true, min: 12, t: 'Handlowiec zakłada sprawę', k: 'zakłada sprawę' },
+  { p: false, dni: 2, t: 'Czeka na wycenę technologa', k: 'czeka na wycenę' },
+  { p: true, min: 24, t: 'Technolog liczy koszt', k: 'liczy koszt' },
+  { p: false, dni: 1.5, t: 'Czeka na dostępność z magazynu', k: 'czeka na magazyn' },
+  { p: true, min: 18, t: 'Przepisanie do arkusza i złożenie oferty', k: 'przepisuje do arkusza' },
+  { p: false, dni: 2.5, t: 'Czeka na akceptację marży', k: 'czeka na akceptację' },
+  { p: true, min: 6, t: 'Wysyłka do klienta', k: 'wysyła' },
+];
+const kd = (x) => (x.p ? x.min / 60 / GODZ_DNIA : x.dni);
+const DZIS_DNI = KROKI.reduce((a, x) => a + kd(x), 0);
+const PRACA_MIN = KROKI.filter((x) => x.p).reduce((a, x) => a + x.min, 0);
+const PO_GODZ = 4;
+const PO_DNI = PO_GODZ / GODZ_DNIA;
+const PRACA_PO_MIN = 42;
+
+const KARTA_POZYCJE = [
+  { i: 'BLA 2400×1200×8', n: '12 szt.', st: 'na stanie', ok: true },
+  { i: 'CEO 160 S355', n: '48 mb', st: 'na stanie', ok: true },
+  { i: 'RUR 88,9×4', n: '30 mb', st: 'brak · dostawa 22.09', ok: false },
+];
+
+// ---- WĄTEK (A, C, D) — jak w v4 ----
+const START = new Date(2026, 8, 7, 14, 2);
+const poRoboczych = (od, min) => {
+  const d = new Date(od);
+  let zostalo = min;
+  while (zostalo > 0) {
+    if (d.getDay() === 0 || d.getDay() === 6 || d.getHours() >= 16) { d.setDate(d.getDate() + 1); d.setHours(8, 0, 0, 0); continue; }
+    if (d.getHours() < 8) { d.setHours(8, 0, 0, 0); continue; }
+    const krok = Math.min((16 - d.getHours()) * 60 - d.getMinutes(), zostalo);
+    d.setMinutes(d.getMinutes() + krok);
+    zostalo -= krok;
+  }
+  return d;
+};
+const DNI_TYG = ['nd', 'pon', 'wt', 'śr', 'czw', 'pt', 'sob'];
+const godz = (d) => `${d.getHours()}:${String(d.getMinutes()).padStart(2, '0')}`;
+const poIlu = (d) => (d === 1 ? 'po dniu' : Number.isInteger(d) ? `po ${d} dniach` : `po ${String(d).replace('.', ',')} dnia`);
+const TEMAT = 'Zapytanie – hala 42 × 18 m';
+const WATEK_TRESC = [
+  { po: 0, od: 'Anna Kowal', dz: 'handel', do: 'Michał Rutkowski', re: 'FW: ', t: 'Michał, nowe zapytanie od Stalprofilu. Rysunki w załączniku, klient prosi o ofertę do 14.09.', zal: 'hala_42x18_rysunki.pdf' },
+  { po: 2, od: 'Michał Rutkowski', dz: 'technolog', do: 'Tomasz Wilk', re: 'RE: FW: ', t: 'Koszt policzony. Panie Tomku, mamy 30 mb rury 88,9 × 4? Bez tego nie zamknę wyceny.', zal: 'wycena_ZP-2484.xlsx' },
+  { po: 3, od: 'Tomasz Wilk', dz: 'magazyn', do: 'Michał Rutkowski', re: 'RE: RE: FW: ', t: 'Nie ma. Najbliższa dostawa 22.09.' },
+  { po: 4, od: 'Anna Kowal', dz: 'handel', do: 'Paweł Mazur', re: 'RE: RE: RE: FW: ', t: 'Wycena przepisana do arkusza oferty, marża 16%. Proszę o akceptację.', zal: 'oferta_stalprofil_v3.xlsx' },
+  { po: 5, od: 'Paweł Mazur', dz: 'zarząd', do: 'Anna Kowal', re: 'RE: RE: RE: RE: FW: ', t: 'Akceptuję.' },
+  { po: 6, od: 'Anna Kowal', dz: 'handel', do: 'Stalprofil', re: '', t: 'Dzień dobry, w załączniku oferta na halę. Przepraszamy, że dopiero dziś.', zal: 'Oferta_ZP-2484.pdf', klient: true },
+];
+let zegar = START, upl = 0, prac = 0, odKroku = 0;
+const WATEK = WATEK_TRESC.map((m) => {
+  const kroki = KROKI.slice(odKroku, m.po + 1);
+  kroki.forEach((x) => { zegar = poRoboczych(zegar, x.p ? x.min : x.dni * GODZ_DNIA * 60); upl += kd(x); if (x.p) prac += x.min; });
+  odKroku = m.po + 1;
+  const czeka = kroki.find((x) => !x.p);
+  return {
+    ...m,
+    dzien: zegar.getDate(), dt: DNI_TYG[zegar.getDay()], h: godz(zegar),
+    upl, prac,
+    chip: czeka ? poIlu(czeka.dni) : '',
+    sekw: kroki.map((x) => ({ p: x.p, d: kd(x), s: x.t })),
+  };
+});
+const PO_KONIEC = poRoboczych(START, PO_GODZ * 60);
+const WATEK_KONIEC = `${DNI_TYG[PO_KONIEC.getDay()]} ${PO_KONIEC.getDate()}.09, ${godz(PO_KONIEC)}`;
+const trwaOpis = (d) => {
+  const dd = Math.floor(d + 1e-9), h = Math.floor((d - dd) * GODZ_DNIA + 1e-9);
+  if (dd === 0 && h === 0) return `${Math.round(d * GODZ_DNIA * 60)} min`;
+  return [dd ? `${dd} ${dd === 1 ? 'dzień' : 'dni'}` : '', h ? `${h} h` : ''].filter(Boolean).join(' ');
+};
+const SYS_OBIEG = [
+  { t: 'Rejestracja', k: 'Anna K. · 12 min' },
+  { t: 'Wycena', k: 'Michał R. · 24 min' },
+  { t: 'Dostępność', k: 'z magazynu, sama' },
+  { t: 'Akceptacja', k: 'pominięta regułą', pom: true },
+  { t: 'Wysyłka', k: 'Anna K. · 6 min' },
+];
+const STOS = { watek: WATEK, temat: TEMAT, poGodz: PO_GODZ, pracaPo: PRACA_PO_MIN, koniec: WATEK_KONIEC, pozycje: KARTA_POZYCJE, obieg: SYS_OBIEG };
+const WT_ARIA = `Wątek mailowy jednej oferty: ${WATEK.length} wiadomości między handlem, technologiem, magazynem i zarządem, od poniedziałku 7 września do wtorku 15 września. Sprawa trwa sześć dni roboczych, pracy jest w niej ${PRACA_MIN} minut, a resztę czasu zajmują trzy przerwy: 2 dni, 1,5 dnia i 2,5 dnia. Ta sama sprawa prowadzona przez system zamyka się w ${PO_GODZ} godziny.`;
+
+// ---- KALENDARZ (B) ----
+// x = dni robocze od pon 7.09, 8:00. Dzień roboczy to 8:00–16:00, tak jak
+// w poRoboczych, więc godzina wynika z x wprost: dzień = floor(x),
+// godzina = 8 + 8 · (x − dzień). Te same KROKI i START co w wątku.
+const KAL_DNI = [];
+for (let d = new Date(2026, 8, 7); KAL_DNI.length < 7; d.setDate(d.getDate() + 1)) {
+  if (d.getDay() === 0 || d.getDay() === 6) continue;
+  KAL_DNI.push({ i: KAL_DNI.length, dt: DNI_TYG[d.getDay()], d: d.getDate(), poWeekendzie: d.getDay() === 1 && KAL_DNI.length > 0 });
+}
+const KAL_X0 = (START.getHours() - 8 + START.getMinutes() / 60) / GODZ_DNIA;
+let kx = KAL_X0;
+const KAL_OS = KROKI.map((s, i) => {
+  const a = kx, b = kx + kd(s);
+  kx = b;
+  return { p: s.p, a: +a.toFixed(5), b: +b.toFixed(5), s: s.t, m: WATEK_TRESC.some((w) => w.po === i) };
+});
+// Odcinek [a, b] pocięty na dni — każdy kawałek to prostokąt w jednej kolumnie.
+const kawalki = (a, b, typ) => {
+  const out = [];
+  for (let i = Math.floor(a); i < b - 1e-9; i++) {
+    const x0 = Math.max(a, i), x1 = Math.min(b, i + 1);
+    if (x1 - x0 > 1e-9) out.push({ dzien: i, a: +x0.toFixed(5), b: +x1.toFixed(5), y: (x0 - i).toFixed(4), h: (x1 - x0).toFixed(4), typ });
+  }
+  return out;
+};
+const KAL_DZIS = KAL_OS.flatMap((k) => kawalki(k.a, k.b, k.p ? 'prc' : 'kc'));
+const KAL_PO = kawalki(KAL_X0, KAL_X0 + PO_DNI, 'sys');
+// Karty maili: przypięte do godziny, a jeśli dwie nachodzą na siebie,
+// następna zjeżdża pod poprzednią; gdy grupa wychodzi za 16:00, cała
+// podnosi się do góry. Kropka na krawędzi kolumny zostaje w dokładnej
+// godzinie, czas jest też na karcie.
+const KH = 320, KAR = 50, KAR_ODST = 4;
+const KAL = KAL_DNI.map((d) => {
+  const maile = WATEK.map((m) => ({ ...m, x: KAL_X0 + m.upl })).filter((m) => Math.floor(m.x + 1e-9) === d.i);
+  let dol = -Infinity;
+  maile.forEach((m) => { m.top = Math.max((m.x - d.i) * KH, dol + KAR_ODST); dol = m.top + KAR; });
+  const nad = dol - KH;
+  if (nad > 0) maile.forEach((m) => { m.top -= nad; });
+  return {
+    ...d,
+    dzis: KAL_DZIS.filter((k) => k.dzien === d.i),
+    po: KAL_PO.filter((k) => k.dzien === d.i),
+    maile,
+  };
+});
+const KAL_GODZ = [8, 10, 12, 14, 16];
+const OST = WATEK[WATEK.length - 1];
+const KAL_OK_TOP = Math.round((KAL_X0 + PO_DNI - 1) * KH) + 6;
+const KAL_ARIA = `Tydzień jednej oferty w widoku kalendarza: siedem dni roboczych od poniedziałku 7 do wtorku 15 września, każdy od 8 do 16. Czekanie wypełnia prawie cały tydzień, praca to cztery krótkie odcinki, razem ${PRACA_MIN} minut. Oferta wychodzi we wtorek 15 września o ${OST.h}. Prowadzona przez system wychodzi we wtorek 8 września o ${godz(PO_KONIEC)}.`;
+
+const LOGA = [
+  ['682b89c78adefdc7985c534c_sports%20med_black.svg', 'Sports Med'],
+  ['682b89c78adefdc7985c5353_nars_black.svg', 'NARS'],
+  ['682b89c78adefdc7985c534e_sevium_black.svg', 'Sevium'],
+  ['682b89c78adefdc7985c5352_odo%2024_black.svg', 'ODO 24'],
+  ['682b89c78adefdc7985c534f_x3d_black.svg', 'X3D'],
+];
+
+const WARIANTY = [
+  { id: 'a', l: 'A', t: 'Podtytuł po prawej, czas sprawy jako duża liczba', war: 'usunięte z hero' },
+  { id: 'b', l: 'B', t: 'Podtytuł po prawej, tydzień oferty w kalendarzu', war: 'jedno zdanie pod przyciskami' },
+  { id: 'c', l: 'C', t: 'Tekst po lewej, wątek po prawej', war: 'metryczka pod przyciskami' },
+  { id: 'd', l: 'D', t: 'Na osi, jak strona główna', war: 'usunięte z hero' },
+];
+const KONTAKT = '/systemy-procesowe-v4#kontakt';
+const H1 = 'Procesy, na których zarabiacie, prowadzi system zbudowany';
+const LEAD = 'Kluczowe procesy biegną przez kilka działów i kilka narzędzi, a większość ich czasu to czekanie na przekazanie. Budujemy system, który prowadzi je od początku do końca i zamyka w sobie to, co Wasza firma robi inaczej niż reszta rynku.';
+---
+<LaBase noindex title="Hero systemów procesowych — warianty | Let's automate" description="Cztery warianty hero podstrony systemów dla kluczowych procesów, do porównania." ctaHref={KONTAKT} ctaLabel="Umów rozmowę" nav="uslugi">
+
+<style is:global slot="head">
+  .v3{
+    --ink:#07140d; --ink2:#0d2118;
+    --papier:#f4f3ee;
+    --t1:#0f1a14; --t2:#46524b; --t3:#7b867f;
+    --linia:rgba(15,26,20,0.13); --linia2:rgba(15,26,20,0.07);
+    --ziel:#00CD77; --ziel-c:#0a7a52;
+    --burs:#f0a33a; --burs-c:#9c5f14; --burs-j:#ffc879;
+    --mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
+    --pad:max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));
+    --ram:clamp(6px,0.9vw,14px);
+    --pin:max(16px,calc(max(clamp(20px,5vw,56px),calc((100vw - 1440px) / 2)) - clamp(6px,0.9vw,14px)));
+    color:var(--t1);
+  }
+  .v3 .czk-j{background:repeating-linear-gradient(135deg,rgba(214,134,30,0.55) 0 1.5px,rgba(214,134,30,0) 1.5px 6px),rgba(240,163,58,0.18);box-shadow:inset 0 2px 0 #e3962f}
+  .v3 .prc{background:var(--ziel)}
+
+  /* ---- typografia i przyciski (z v4) ---- */
+  .v3-h1{margin:0;font-size:clamp(40px,5.7vw,84px);line-height:0.97;letter-spacing:-0.05em;font-weight:700;color:#ffffff;text-wrap:balance}
+  .v3-h1 span{color:var(--ziel)}
+  .v3-etyk{display:inline-flex;align-items:center;gap:11px;margin:0 0 clamp(22px,3vw,38px);font-size:14px;font-weight:600;color:rgba(255,255,255,0.7)}
+  .v3-etyk i{display:block;width:7px;height:7px;border-radius:50%;background:var(--ziel);box-shadow:0 0 0 4px rgba(0,205,119,0.16),0 0 14px rgba(0,205,119,0.7)}
+  .v3-lead{margin:0;font-size:clamp(16px,1.25vw,18px);line-height:1.62;color:rgba(255,255,255,0.7);text-wrap:pretty}
+  .v3-akcje{display:flex;flex-wrap:wrap;align-items:center;gap:14px 24px;margin-top:30px}
+  .v3-btn{display:inline-flex;align-items:center;gap:14px;background:var(--ziel);color:var(--ink);font-weight:700;font-size:16px;letter-spacing:-0.01em;padding:9px 9px 9px 24px;border-radius:999px;transition:background .2s,transform .2s;white-space:nowrap}
+  .v3-btn span{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;background:var(--ink);color:var(--ziel);font-size:15px;transition:transform .25s}
+  .v3-btn:hover{background:#25dd8b}
+  .v3-btn:hover span{transform:translateX(3px)}
+  @media (max-width:400px){ .v3-btn{white-space:normal;line-height:1.25;padding-left:20px} }
+  .v3-lnk{display:inline-flex;align-items:center;gap:8px;font-weight:650;font-size:16px;color:#ffffff;padding:8px 2px;border-bottom:1px solid rgba(255,255,255,0.28);transition:border-color .2s}
+  .v3-lnk:hover{border-color:var(--ziel)}
+  /* Nagłówek z v3: tytuł po lewej, podtytuł i przyciski po prawej, dosunięte do dołu */
+  .v3-hero-grid{display:grid;grid-template-columns:minmax(0,8.4fr) minmax(0,3.6fr);gap:clamp(28px,4vw,64px);align-items:end}
+  @media (max-width:1060px){ .v3-hero-grid{grid-template-columns:1fr} .v3-hero-grid .v3-lead{max-width:620px} }
+
+  /* =====================================================================
+     STRONA PORÓWNANIA · spis i podpisy wariantów (poza designem)
+     ===================================================================== */
+  .hw-intro{padding:clamp(36px,4.4vw,64px) var(--pad) 0}
+  .hw-intro h1{margin:0;font-size:clamp(28px,3vw,40px);line-height:1.05;letter-spacing:-0.035em;font-weight:700}
+  .hw-intro > p{margin:14px 0 0;max-width:760px;font-size:16px;line-height:1.6;color:var(--t2);text-wrap:pretty}
+  .hw-intro > p a{color:var(--ziel-c);font-weight:650;border-bottom:1px solid currentColor}
+  .hw-spis{list-style:none;margin:26px 0 0;padding:0;border-top:1px solid var(--linia)}
+  .hw-spis a{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:14px;align-items:center;padding:13px 0;border-bottom:1px solid var(--linia);font-size:15.5px;color:var(--t1);transition:color .2s}
+  .hw-spis a:hover{color:var(--ziel-c)}
+  .hw-spis b{display:grid;place-items:center;width:30px;height:30px;border-radius:9px;background:var(--t1);color:#ffffff;font-size:14px}
+  .hw-spis em{font-style:normal;font-size:13.5px;color:var(--t3)}
+  @media (max-width:640px){ .hw-spis a{grid-template-columns:34px minmax(0,1fr)} .hw-spis em{grid-column:2} }
+  .hw-lab{display:grid;grid-template-columns:auto minmax(0,1fr);gap:16px;align-items:start;margin-top:clamp(72px,8vw,128px);padding:22px var(--pad) 26px;border-top:2px dashed var(--linia)}
+  .hw-lab > b{display:grid;place-items:center;width:44px;height:44px;border-radius:12px;background:var(--t1);color:#ffffff;font-size:20px;font-weight:700}
+  .hw-lab h2{margin:2px 0 0;font-size:20px;line-height:1.25;letter-spacing:-0.02em;font-weight:700}
+  .hw-lab p{margin:6px 0 0;max-width:860px;font-size:15px;line-height:1.55;color:var(--t2);text-wrap:pretty}
+  .hw-lab p.war{font-size:13.5px;color:var(--t3)}
+  .hw-lab p.war strong{color:var(--t1);font-weight:650}
+  .hw-loga{padding:0 var(--pad)}
+
+  /* =====================================================================
+     PLANSZA · ciemne tło jako element siatki (jak w v4). --tlo mówi, które
+     wiersze zakrywa; wszystko, co ma ujemny margines dolny, wisi pod nią.
+     ===================================================================== */
+  .hv{padding:0 var(--ram)}
+  .hp{--zwis:clamp(110px,11vw,170px);--hgap:clamp(28px,4.4vw,80px);position:relative;display:grid;color:#ffffff}
+  .hp::before,.hp::after{content:"";grid-column:1 / -1;grid-row:var(--tlo);border-radius:clamp(20px,2.2vw,32px);pointer-events:none}
+  .hp::before{background:
+      radial-gradient(820px 520px at 80% 104%,rgba(0,205,119,0.2),rgba(0,205,119,0) 70%),
+      radial-gradient(700px 420px at 6% -10%,rgba(0,205,119,0.07),rgba(0,205,119,0) 70%),
+      var(--ink)}
+  .hp::after{opacity:0.09;mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+  .hp > *{position:relative;z-index:1}
+  .hp > .v3-etyk{margin-top:clamp(44px,6vw,92px)}
+  .hv-pod{margin:0;padding:clamp(22px,2.4vw,30px) 0 0;font-size:15px;line-height:1.6;color:var(--t2);text-wrap:pretty}
+  .hv-pod strong{font-weight:700;color:var(--t1)}
+  .hv-pod b{font-weight:700;color:var(--ziel-c)}
+
+  /* ---- logotypy (z v4) ---- */
+  .v3-loga{display:flex;align-items:center;gap:36px;margin-top:clamp(40px,4.6vw,64px);padding:26px 0 0;border-top:1px solid var(--linia)}
+  .v3-loga > span{flex-shrink:0;max-width:200px;font-size:13.5px;line-height:1.45;color:var(--t2)}
+  .v3-loga > span strong{color:var(--t1);font-weight:700}
+  .v3-loga-o{flex:1;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+  .v3-loga-t{display:flex;align-items:center;gap:64px;width:max-content;animation:v3-loga 34s linear infinite}
+  .v3-loga-t img{width:110px;height:26px;object-fit:contain;filter:grayscale(1);opacity:0.55;mix-blend-mode:multiply}
+  @keyframes v3-loga{from{transform:translateX(0)}to{transform:translateX(calc(-50% - 32px))}}
+  @media (max-width:700px){ .v3-loga{flex-direction:column;align-items:flex-start;gap:18px} .v3-loga-o{width:100%} }
+  @media (prefers-reduced-motion:reduce){ .v3-loga-t{animation:none} }
+
+  /* =====================================================================
+     WĄTEK · 1:1 z v4 (nagłówek, stos, karta systemu, stany animacji)
+     ===================================================================== */
+  .wt{position:relative;--krok:54px;--karta:188px}
+  .wt-gl{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px 20px;margin-bottom:16px}
+  .wt-temat{min-width:0}
+  .wt-temat b{display:block;font-size:15px;font-weight:700;letter-spacing:-0.01em;color:#ffffff}
+  .wt-temat > span{display:block;margin-top:5px;font-size:13px;color:rgba(255,255,255,0.55)}
+  .wt-stan{display:flex;align-items:center;gap:9px;margin-top:5px;font-size:13px;color:rgba(255,255,255,0.55);min-height:18px}
+  .wt-stan i{flex-shrink:0;display:block;width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.35)}
+  .wt-stan.czeka{color:var(--burs-j)}
+  .wt-stan.czeka i{background:var(--burs);box-shadow:0 0 0 3px rgba(240,163,58,0.2);animation:v4-mig 1.1s ease-in-out infinite}
+  .wt-stan.praca{color:var(--ziel)}
+  .wt-stan.praca i{background:var(--ziel);box-shadow:0 0 0 3px rgba(0,205,119,0.2)}
+  @keyframes v4-mig{50%{opacity:0.35}}
+  .wt-licz{display:flex;gap:8px}
+  .wt-licz > span{display:flex;flex-direction:column;gap:3px;min-width:112px;padding:9px 13px 10px;border-radius:12px;background:rgba(255,255,255,0.06);box-shadow:inset 0 0 0 1px rgba(255,255,255,0.08);font-size:11.5px;color:rgba(255,255,255,0.5)}
+  .wt-licz b{font-family:var(--mono);font-size:16px;font-weight:600;color:#ffffff;font-variant-numeric:tabular-nums;white-space:nowrap;transition:color .4s}
+  .wt-licz .tr b{color:var(--burs-j)}
+  .wt-licz .pr b{color:var(--ziel)}
+  .wt.zwin .wt-licz .tr b,.kal.sys .wt-licz .tr b{color:var(--ziel)}
+  .wt-stos{position:relative;height:calc(var(--krok) * 5 + var(--karta))}
+  .wt-m{position:absolute;left:0;right:0;top:calc(var(--j) * var(--krok));height:var(--karta);border-radius:16px;background:#ffffff;color:var(--t1);
+    transform-origin:50% 0;transform:scale(calc(1 - var(--k) * 0.03));
+    box-shadow:0 -1px 0 rgba(255,255,255,0.5),0 22px 44px -20px rgba(0,0,0,0.6);
+    transition:transform .8s cubic-bezier(.2,.8,.2,1),opacity .28s ease}
+  .wt-m::after{content:"";position:absolute;inset:0;border-radius:inherit;background:#0b1d14;opacity:calc(var(--k) * 0.075);pointer-events:none;transition:opacity .8s}
+  .wt-mh{display:grid;grid-template-columns:38px minmax(0,1fr) auto auto;gap:12px;align-items:center;height:var(--krok);padding:0 16px 0 12px}
+  .wt-d{display:flex;flex-direction:column;width:38px;height:40px;border-radius:7px;overflow:hidden;box-shadow:inset 0 0 0 1px #e1e5de;text-align:center}
+  .wt-d i{display:block;padding:2px 0 1px;font-style:normal;font-size:9px;font-weight:700;line-height:1.2;color:#ffffff;background:var(--t1)}
+  .wt-d b{display:block;font-size:17px;font-weight:750;line-height:25px;letter-spacing:-0.03em}
+  .wt-kto{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:13.5px;color:var(--t2)}
+  .wt-kto b{font-weight:700;color:var(--t1)}
+  .wt-kto em{font-style:normal;color:var(--t3)}
+  .wt-czk{display:inline-flex;align-items:center;gap:7px;padding:4px 9px 4px 6px;border-radius:7px;background:#fdf3e3;font-family:var(--mono);font-size:11.5px;font-weight:500;color:var(--burs-c);white-space:nowrap}
+  .wt-czk i{display:block;width:16px;height:11px;border-radius:3px}
+  .wt-mh time{font-family:var(--mono);font-size:12px;color:var(--t3)}
+  .wt-mb{padding:2px 18px 0 62px}
+  .wt-tem{display:block;font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .wt-tem span{font-weight:500;color:var(--t3)}
+  .wt-mb p{margin:6px 0 0;font-size:14px;line-height:1.5;color:var(--t2);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .wt-zal{display:inline-flex;align-items:center;gap:8px;margin-top:11px;padding:6px 10px 6px 7px;border-radius:8px;background:#f4f5f2;font-family:var(--mono);font-size:11.5px;color:var(--t2)}
+  .wt-zal i{position:relative;display:block;width:14px;height:17px;border-radius:2px;background:var(--plik,#7b867f)}
+  .wt-zal i::after{content:"";position:absolute;right:0;top:0;width:5px;height:5px;background:#f4f5f2;border-bottom-left-radius:2px}
+  .wt-kl{font-family:inherit;font-size:11px;font-weight:700;color:var(--ziel-c);background:#e2f5ea;border-radius:5px;padding:2px 6px;margin-left:6px}
+  .wt-sys{position:absolute;z-index:20;left:0;right:0;top:0;bottom:0;display:flex;flex-direction:column;border-radius:18px;overflow:hidden;background:#ffffff;color:var(--t1);
+    box-shadow:0 0 0 1px rgba(0,205,119,0.5),0 30px 70px -26px rgba(0,0,0,0.7),0 0 90px -20px rgba(0,205,119,0.45);
+    opacity:0;transform:translateY(26px) scale(0.98);pointer-events:none;transition:opacity .6s ease,transform .8s cubic-bezier(.2,.8,.2,1)}
+  .ws-pas{display:flex;align-items:center;gap:10px;padding:11px 18px;background:#f6f7f4;border-bottom:1px solid #eaece7;font-size:12.5px;color:var(--t3)}
+  .ws-pas i{position:relative;display:block;width:18px;height:18px;border-radius:5px;background:var(--ink)}
+  .ws-pas i::after{content:"";position:absolute;left:5px;top:5px;width:8px;height:8px;border-radius:2px;background:var(--ziel)}
+  .ws-pas b{font-weight:700;color:var(--t1)}
+  .ws-gl{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;padding:18px 20px 0}
+  .ws-gl span{display:block;font-family:var(--mono);font-size:11.5px;color:var(--t3)}
+  .ws-gl h3{margin:3px 0 0;font-size:18px;font-weight:750;letter-spacing:-0.02em}
+  .ws-chip{flex-shrink:0;display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:700;color:var(--ziel-c);background:#e2f5ea;border-radius:8px;padding:6px 10px}
+  .ws-chip::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--ziel)}
+  .ws-czas{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 12px;padding:14px 20px 0;line-height:1}
+  .ws-czas b{font-size:46px;font-weight:750;letter-spacing:-0.05em}
+  .ws-czas b span{font-size:20px;letter-spacing:-0.02em;color:var(--ziel-c);margin-left:5px}
+  .ws-czas em{font-style:normal;font-size:13px;color:var(--t3)}
+  .ws-poz{margin:18px 20px 0}
+  .ws-poz > span{display:grid;grid-template-columns:minmax(0,1fr) 64px 132px;gap:10px;align-items:center;padding:7px 0;border-bottom:1px solid #f0f2ee;font-size:12.5px}
+  .ws-poz > span.n{padding-top:0;font-size:11px;font-weight:650;color:#9aa39c}
+  .ws-poz > span > :nth-child(2){text-align:right;color:var(--t3)}
+  .ws-poz em{font-style:normal;font-size:11.5px;color:var(--ziel-c)}
+  .ws-poz em.brak{color:var(--burs-c);font-weight:600}
+  .ws-ob{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));margin:auto 20px 20px;padding-top:16px;border-top:1px solid #eef0ec}
+  .ws-k{position:relative;padding-top:20px;padding-right:8px}
+  .ws-k::before{content:"";position:absolute;left:0;right:0;top:6px;height:2px;background:var(--ziel)}
+  .ws-k::after{content:"";position:absolute;left:0;top:1px;width:12px;height:12px;border-radius:50%;background:var(--ziel);box-shadow:0 0 0 3px #ffffff}
+  .ws-k:last-child::before{right:auto;width:12px}
+  .ws-k.pom::after{background:#ffffff;box-shadow:inset 0 0 0 2px var(--ziel),0 0 0 3px #ffffff}
+  .ws-k b{display:block;font-size:12.5px;font-weight:700}
+  .ws-k span{display:block;margin-top:2px;font-size:11px;line-height:1.35;color:var(--t3)}
+  .ws-k.pom span{color:var(--ziel-c);font-weight:600}
+  .wt.gra .wt-m.ukr{opacity:0;transform:translateY(30px)}
+  .wt.zwin .wt-m{opacity:0;transform:translateY(8px) scale(0.95);transition-duration:.55s,.45s}
+  .wt.zwin .wt-sys{opacity:1;transform:none;transition-delay:.2s}
+  .wt.gas .wt-sys{opacity:0;transform:translateY(-10px) scale(0.98);transition-delay:0s}
+  @media (max-width:640px){
+    .wt{--krok:50px;--karta:178px}
+    .wt-gl{flex-direction:column;align-items:stretch}
+    .wt-licz > span{flex:1;min-width:0}
+    .wt-mh{grid-template-columns:36px minmax(0,1fr) auto;gap:10px;padding:0 12px 0 10px}
+    .wt-mh time{display:none}
+    .wt-kto em,.wt-kto .do{display:none}
+    .wt-mb{padding:2px 14px 0 14px}
+    .wt-czk{padding:3px 7px 3px 5px;font-size:11px}
+    .wt-czk i{width:12px}
+    .ws-ob{grid-template-columns:1fr 1fr;row-gap:12px}
+    .ws-k:nth-child(2n)::before,.ws-k:last-child::before{right:auto;width:12px}
+    .ws-czas b{font-size:38px}
+    .ws-poz{display:none}
+  }
+
+  /* =====================================================================
+     A · nagłówek z v3, pod nim odczyt (duża liczba) i stos
+     ===================================================================== */
+  .ha{--tlo:1 / 4;grid-template-columns:var(--pin) minmax(0,1fr) var(--pin)}
+  .ha > .v3-etyk{grid-column:2;grid-row:1;justify-self:start}
+  .ha > .v3-hero-grid{grid-column:2;grid-row:2}
+  .ha-sc{grid-column:2;grid-row:3;display:grid;grid-template-columns:minmax(0,4.3fr) minmax(0,7.7fr);gap:var(--hgap);margin:clamp(64px,7vw,112px) 0 calc(var(--zwis) * -1)}
+  .ha > .hv-pod{grid-column:2;grid-row:4;max-width:calc((100% - var(--hgap)) * 4.3 / 12);min-height:var(--zwis)}
+  .ha-odczyt{display:flex;flex-direction:column;align-items:flex-start;padding-top:4px}
+  .ha-odczyt > .l{font-size:14px;font-weight:600;color:rgba(255,255,255,0.6)}
+  .ha-odczyt > .tr{margin-top:14px;font-size:clamp(52px,5.6vw,92px);line-height:0.9;font-weight:750;letter-spacing:-0.055em;color:var(--burs-j);font-variant-numeric:tabular-nums;white-space:nowrap;transition:color .5s}
+  .ha-sc.zwin .ha-odczyt > .tr{color:var(--ziel)}
+  .ha-odczyt > .pr{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 12px;width:100%;margin-top:28px;padding-top:18px;border-top:1px solid rgba(255,255,255,0.14);font-size:14px;color:rgba(255,255,255,0.6)}
+  .ha-odczyt > .pr b{font-size:30px;font-weight:700;letter-spacing:-0.035em;color:var(--ziel);font-variant-numeric:tabular-nums;white-space:nowrap}
+  .ha-odczyt > .wt-stan{margin-top:16px;font-size:14px}
+  @media (max-width:1060px){
+    .ha-sc{grid-template-columns:minmax(0,1fr);gap:28px}
+    .ha > .hv-pod{max-width:640px}
+    .ha-odczyt{display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:28px;align-items:end}
+    .ha-odczyt > .l,.ha-odczyt > .wt-stan{grid-column:1 / -1}
+    .ha-odczyt > .pr{margin:0;padding:0 0 4px;border:0;width:auto}
+  }
+  @media (max-width:520px){
+    .ha-odczyt{display:flex;align-items:flex-start}
+    .ha-odczyt > .pr{margin-top:16px}
+  }
+
+  /* =====================================================================
+     B · nagłówek z v3, pod nim tydzień oferty w kalendarzu
+     ===================================================================== */
+  .hb{--tlo:1 / 4;grid-template-columns:var(--pin) minmax(0,1fr) var(--pin)}
+  .hb > .v3-etyk{grid-column:2;grid-row:1;justify-self:start}
+  .hb > .v3-hero-grid{grid-column:2;grid-row:2}
+  .hb > .kal{grid-column:2;grid-row:3;margin:clamp(64px,7vw,112px) 0 clamp(40px,4.6vw,64px)}
+  .hb-war{margin:26px 0 0;padding-top:18px;border-top:1px solid rgba(255,255,255,0.12);font-size:14px;line-height:1.55;color:rgba(255,255,255,0.55);text-wrap:pretty}
+  .hb-war b{font-weight:600;color:rgba(255,255,255,0.9)}
+
+  .kal{--kh:320px;--gut:50px;--wk:26px;margin:0}
+  .kal-leg{display:flex;flex-wrap:wrap;gap:8px 18px;align-self:center;font-size:12.5px;color:rgba(255,255,255,0.6)}
+  .kal-leg span{display:inline-flex;align-items:center;gap:8px}
+  .kal-leg i{display:block;width:18px;height:11px;border-radius:3px}
+  .kal-leg .sw{background:rgba(0,205,119,0.22);box-shadow:inset 3px 0 0 var(--ziel)}
+  .kal-kc,.kal-leg .kc{background:repeating-linear-gradient(135deg,rgba(240,163,58,0.48) 0 1.5px,rgba(240,163,58,0) 1.5px 6px),rgba(240,163,58,0.13)}
+  .kal-gl{flex-wrap:nowrap}
+  .kal-gl .wt-temat{flex:1}
+  .kal-siatka{display:grid;grid-template-columns:var(--gut) repeat(5,minmax(0,1fr)) var(--wk) repeat(2,minmax(0,1fr));border-radius:16px;background:rgba(255,255,255,0.03);box-shadow:inset 0 0 0 1px rgba(255,255,255,0.09)}
+  .kal-k{display:grid;grid-template-rows:54px var(--kh);min-width:0;border-left:1px solid rgba(255,255,255,0.08)}
+  .kal-k.gz{border-left:0}
+  .kal-dh{display:flex;align-items:baseline;gap:7px;padding:16px 12px 0;border-bottom:1px solid rgba(255,255,255,0.09);font-size:12.5px;color:rgba(255,255,255,0.5);white-space:nowrap}
+  .kal-dh b{font-size:21px;font-weight:700;letter-spacing:-0.03em;color:#ffffff}
+  .kal-k.wk .kal-dh{flex-direction:column;align-items:center;gap:0;padding:14px 0 0;font-size:10px;line-height:1.25;color:rgba(255,255,255,0.38)}
+  .kal-db{position:relative;background-image:linear-gradient(rgba(255,255,255,0.055) 1px,transparent 1px);background-size:100% 25%}
+  .kal-k.wk .kal-db{background:repeating-linear-gradient(135deg,rgba(255,255,255,0.06) 0 1px,rgba(255,255,255,0) 1px 6px)}
+  .kal-k.gz .kal-db{background:none}
+  .kal-k.gz .kal-db span{position:absolute;right:10px;top:calc(var(--y) * 100%);transform:translateY(4px);font-family:var(--mono);font-size:10.5px;color:rgba(255,255,255,0.38)}
+  .kal-k.gz .kal-db span.kon{transform:translateY(calc(-100% - 4px))}
+  .kal-k:last-child .kal-db{border-bottom-right-radius:16px}
+  .kal-kw{position:absolute;left:0;right:0;top:calc(var(--y) * 100%);height:calc(var(--h) * 100%);clip-path:inset(0 0 calc((1 - var(--p, 1)) * 100%) 0);transition:opacity .6s ease}
+  .kal-kw.prc{min-height:3px;box-shadow:0 0 14px rgba(0,205,119,0.55);z-index:1}
+  .kal-pin{position:absolute;left:-5px;top:calc(var(--y) * 100%);z-index:3;width:9px;height:9px;margin-top:-4px;border-radius:50%;background:#ffffff;box-shadow:0 0 0 2px var(--ink);transition:opacity .3s}
+  .kal-m{position:absolute;left:10px;right:7px;z-index:2;height:50px;padding:8px 10px 0;border-radius:9px;background:#ffffff;color:var(--t1);
+    box-shadow:0 14px 28px -14px rgba(0,0,0,0.8);transition:opacity .35s ease,transform .5s cubic-bezier(.2,.8,.2,1)}
+  .kal-m > span{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:12px}
+  .kal-m b{min-width:0;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .kal-m time{flex-shrink:0;font-family:var(--mono);font-size:11px;color:var(--t3)}
+  .kal-m p{margin:3px 0 0;font-size:12px;line-height:1.4;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .kal-m.kl{box-shadow:inset 3px 0 0 var(--ziel),0 14px 28px -14px rgba(0,0,0,0.8)}
+  .kal-m.kl p{color:var(--ziel-c);font-weight:650}
+  .kal-sys{position:absolute;left:0;right:0;top:calc(var(--y) * 100%);height:calc(var(--h) * 100%);z-index:1;background:rgba(0,205,119,0.2);box-shadow:inset 3px 0 0 var(--ziel),inset 0 1px 0 rgba(0,205,119,0.7);
+    opacity:0;clip-path:inset(0 0 100% 0);transition:opacity .4s ease,clip-path 1s cubic-bezier(.3,.7,.2,1)}
+  .kal-sys span{position:absolute;left:12px;top:9px;font-style:normal;font-size:11.5px;font-weight:650;color:var(--ziel);white-space:nowrap}
+  .kal-ok{position:absolute;left:10px;right:7px;z-index:2;padding:9px 11px 10px;border-radius:10px;background:#ffffff;color:var(--t1);
+    box-shadow:0 0 0 1px rgba(0,205,119,0.6),0 16px 36px -14px rgba(0,0,0,0.8),0 0 40px -10px rgba(0,205,119,0.5);
+    opacity:0;transform:translateY(8px);transition:opacity .5s ease,transform .6s cubic-bezier(.2,.8,.2,1)}
+  .kal-ok > span{display:flex;justify-content:space-between;gap:8px;font-size:12px}
+  .kal-ok b{font-weight:750;color:var(--ziel-c)}
+  .kal-ok time{font-family:var(--mono);font-size:11px;color:var(--t3)}
+  .kal-ok p{margin:3px 0 0;font-size:12px;color:var(--t2)}
+  .kal-teraz{position:absolute;left:0;right:0;top:calc(var(--ty, 0) * 100%);z-index:4;height:2px;margin-top:-1px;background:#ffffff;box-shadow:0 0 10px rgba(255,255,255,0.6);opacity:0;pointer-events:none}
+  .kal-teraz::before{content:"";position:absolute;left:-5px;top:-4px;width:10px;height:10px;border-radius:50%;background:#ffffff}
+  .kal-pod{margin:22px 0 0;max-width:780px;font-size:15.5px;line-height:1.6;color:rgba(255,255,255,0.66);text-wrap:pretty}
+  .kal-pod strong{font-weight:700;color:#ffffff}
+  .kal-pod b{font-weight:700;color:var(--ziel)}
+  /* animacja (JS): .gra ukrywa to, czego zegar jeszcze nie dogonił */
+  .kal.gra .kal-m.ukr,.kal.gra .kal-pin.ukr{opacity:0;transform:translateY(6px)}
+  .kal.gra .kal-d.teraz .kal-teraz{opacity:1}
+  .kal.sys .kal-kw{opacity:0.16}
+  .kal.sys .kal-kw.prc{opacity:0}
+  .kal.sys .kal-m,.kal.sys .kal-pin{opacity:0}
+  .kal.sys .kal-teraz{opacity:0 !important}
+  .kal.sys .kal-sys{opacity:1;clip-path:inset(0 0 0 0)}
+  .kal.sys .kal-sys.dalej{transition-delay:0s,.8s}
+  .kal.sys .kal-ok{opacity:1;transform:none;transition-delay:1.6s}
+  .kal.gas .kal-kw,.kal.gas .kal-sys,.kal.gas .kal-ok{opacity:0;transition-delay:0s}
+  @media (max-width:1180px){ .kal-m time{display:none} .kal-m{padding:8px 8px 0;left:9px;right:5px} }
+  @media (max-width:1060px){ .kal-gl{flex-wrap:wrap} .kal-leg{order:3;flex-basis:100%} }
+  @media (max-width:900px){
+    .kal{--kh:250px;--gut:36px;--wk:12px}
+    .kal-m,.kal-ok,.kal-sys span{display:none}
+    .kal-dh{flex-direction:column;gap:1px;padding:9px 0 0 7px;font-size:11px}
+    .kal-dh b{font-size:16px}
+    .kal-k.wk .kal-dh{padding:12px 0 0;font-size:0}
+    .kal-k.gz .kal-db span{right:6px;font-size:9.5px}
+    .kal-k{grid-template-rows:50px var(--kh)}
+  }
+  @media (max-width:640px){
+    .kal-gl{flex-direction:column;align-items:stretch}
+  }
+
+  /* =====================================================================
+     C · tekst po lewej, wątek po prawej, metryczka warunków
+     ===================================================================== */
+  .hc{--tlo:1 / 2;grid-template-columns:var(--pin) minmax(0,5.2fr) minmax(0,6.8fr) var(--pin)}
+  .hc-lewa{grid-column:2;grid-row:1;padding:clamp(44px,6vw,92px) 0 clamp(48px,5vw,80px)}
+  .hc-lewa .v3-etyk{margin-bottom:clamp(20px,2.4vw,30px)}
+  .hc .v3-h1{font-size:clamp(38px,4.3vw,64px);line-height:0.98}
+  .hc-lewa .v3-lead{margin-top:clamp(22px,2.4vw,30px);max-width:520px}
+  .hc > .wt{grid-column:3;grid-row:1;align-self:center;margin:clamp(44px,4.6vw,72px) 0 clamp(44px,4.6vw,72px) var(--hgap)}
+  .hc-war{display:grid;margin:clamp(34px,3.6vw,52px) 0 0;max-width:500px}
+  .hc-war > div{display:grid;grid-template-columns:96px minmax(0,1fr);gap:16px;padding:12px 0;border-top:1px solid rgba(255,255,255,0.12);font-size:14px;line-height:1.5}
+  .hc-war > div:last-child{border-bottom:1px solid rgba(255,255,255,0.12)}
+  .hc-war dt{color:rgba(255,255,255,0.48)}
+  .hc-war dd{margin:0;color:rgba(255,255,255,0.86)}
+  @media (max-width:1060px){
+    .hc{--tlo:1 / 3;grid-template-columns:var(--pin) minmax(0,1fr) var(--pin)}
+    .hc-lewa{padding-bottom:0}
+    .hc > .wt{grid-column:2;grid-row:2;margin:clamp(44px,6vw,64px) 0 clamp(36px,6vw,56px)}
+  }
+  @media (max-width:520px){ .hc-war > div{grid-template-columns:1fr;gap:2px} }
+
+  /* =====================================================================
+     D · wszystko na osi, liczniki pływają obok stosu
+     ===================================================================== */
+  .hd{--tlo:1 / 5;grid-template-columns:var(--pin) minmax(0,1fr) var(--pin);text-align:center}
+  .hd > .v3-etyk{grid-column:2;grid-row:1;justify-self:center}
+  .hd > .v3-h1{grid-column:2;grid-row:2;justify-self:center;max-width:1120px}
+  .hd-lead{grid-column:2;grid-row:3;justify-self:center;max-width:680px;margin-top:clamp(22px,2.6vw,34px)}
+  .hd-lead .v3-akcje{justify-content:center}
+  .hd-sc{grid-column:2;grid-row:4;justify-self:center;width:100%;max-width:1140px;margin:clamp(60px,6.4vw,100px) 0 calc(var(--zwis) * -1);text-align:left}
+  .hd-st{width:min(640px,100%);margin:0 auto}
+  .hd > .hv-pod{grid-column:2;grid-row:5;justify-self:center;max-width:620px;padding-top:calc(var(--zwis) + clamp(24px,2.6vw,36px));text-align:center}
+  .hd-f{position:absolute;z-index:30;width:236px;padding:16px 18px 18px;border-radius:16px;background:#ffffff;color:var(--t1);
+    box-shadow:0 0 0 1px rgba(15,26,20,0.06),0 28px 56px -22px rgba(0,0,0,0.65)}
+  .hd-f.l{left:0;top:40%}
+  .hd-f.r{right:0;top:14%}
+  .hd-f > .l{display:block;font-size:12.5px;font-weight:600;color:var(--t3)}
+  .hd-f > b{display:block;margin-top:6px;font-size:40px;line-height:1;font-weight:750;letter-spacing:-0.045em;color:var(--burs-c);font-variant-numeric:tabular-nums;white-space:nowrap;transition:color .5s}
+  .hd-f.r > b{color:var(--ziel-c)}
+  .hd-sc.zwin .hd-f.l > b{color:var(--ziel-c)}
+  .hd-f .wt-stan{margin-top:12px;padding-top:11px;border-top:1px solid #eef0ec;font-size:12.5px;color:var(--t3)}
+  .hd-f .wt-stan.czeka{color:var(--burs-c)}
+  .hd-f .wt-stan.praca{color:var(--ziel-c)}
+  .hd-f > em{display:block;margin-top:12px;padding-top:11px;border-top:1px solid #eef0ec;font-style:normal;font-size:12.5px;line-height:1.45;color:var(--t3)}
+  @media (max-width:1180px){ .hd-f{width:220px} .hd-f > b{font-size:34px} }
+  @media (max-width:1060px){
+    .hd-sc{display:flex;flex-wrap:wrap;gap:12px}
+    .hd-f{position:static;flex:1 1 200px;width:auto}
+    .hd-f.r{order:-1}
+    .hd-f.l{order:-2}
+    .hd-st{flex-basis:100%;margin-top:16px}
+  }
+  @media (max-width:520px){ .hd-f > b{font-size:30px} .hd-f{padding:14px 14px 15px} }
+</style>
+
+<div class="v3">
+
+<header class="hw-intro">
+<h1>Hero systemów procesowych — cztery warianty</h1>
+<p>We wszystkich czterech jest ten sam nagłówek i ten sam lead. Zmienia się układ, rysunek pod nagłówkiem i miejsce warunków zakupu (warsztat, wycena, czas po Waszej stronie). Reszta strony zostaje jak w <a href="/systemy-procesowe-v4">v4</a>, a przyciski prowadzą do jej formularza.</p>
+<ol class="hw-spis">
+{WARIANTY.map((w) => (<li><a href={`#${w.id}`}><b>{w.l}</b><span>{w.t}</span><em>warunki: {w.war}</em></a></li>))}
+</ol>
+</header>
+
+<!-- ============ A ============ -->
+<div class="hw-lab" id="a">
+<b>A</b>
+<div>
+<h2>Podtytuł po prawej, czas sprawy jako duża liczba</h2>
+<p>Nagłówek ułożony jak w v3: tytuł po lewej, podtytuł i przyciski po prawej. Pod spodem wątek z v4, ale czas sprawy wychodzi z nagłówka wątku i staje obok stosu jako duża liczba, która rośnie razem z wątkiem i na końcu zmienia się w 4 godziny.</p>
+<p class="war"><strong>Warunki:</strong> usunięte z hero. Te same informacje są w FAQ; skrót może stanąć przy formularzu kontaktowym.</p>
+</div>
+</div>
+<section class="hv">
+<div class="hp ha">
+<p class="v3-etyk"><i aria-hidden="true"></i>Systemy dla kluczowych procesów</p>
+<div class="v3-hero-grid">
+<h2 class="v3-h1">{H1} <span>pod Wasz sposób pracy</span></h2>
+<div>
+<p class="v3-lead">{LEAD}</p>
+<div class="v3-akcje">
+<a href={KONTAKT} class="v3-btn">Policzmy czas Waszej sprawy <span aria-hidden="true">→</span></a>
+<a href="/systemy-procesowe-v4#jak-wyglada" class="v3-lnk">Zobacz, jak to wygląda →</a>
+</div>
+</div>
+</div>
+<figure class="ha-sc wt" data-wt data-po-trwa={`${PO_GODZ} godziny`} data-po-praca={`${PRACA_PO_MIN} min`} role="img" aria-label={WT_ARIA}>
+<div class="ha-odczyt" aria-hidden="true">
+<span class="l">ZP-2484 · od zapytania do oferty</span>
+<b class="tr" data-trwa>{trwaOpis(DZIS_DNI)}</b>
+<span class="pr"><b data-praca>{PRACA_MIN} min</b>pracy w tym czasie</span>
+<span class="wt-stan" data-stan><i></i><span data-stan-t>{WATEK.length} wiadomości, cztery osoby i klient</span></span>
+</div>
+<div>
+<div class="wt-gl" aria-hidden="true"><div class="wt-temat"><b>RE: RE: FW: {TEMAT}</b><span>Stalprofil · skrzynka działu handlowego</span></div></div>
+<Stos {...STOS} />
+</div>
+</figure>
+<p class="hv-pod"><strong>Ta sama oferta prowadzona przez system zamyka się w <b>{PO_GODZ} godziny</b>.</strong> Praca skraca się o osiemnaście minut, bo znika przepisywanie do arkusza. Cała reszta różnicy to czekanie, którego nikt nigdy nie policzył.</p>
+</div>
+</section>
+<div class="hw-loga">
+<div class="v3-loga">
+<span><strong>140+ firm</strong> zmienia z nami sposób działania</span>
+<div class="v3-loga-o"><div class="v3-loga-t">{[0, 1].map((k) => LOGA.map(([p, n]) => (<img src={`https://cdn.prod.website-files.com/625be9db7e9f071ffb58618a/${p}`} alt={k ? '' : n} aria-hidden={k ? 'true' : undefined}>)))}</div></div>
+</div>
+</div>
+
+<!-- ============ B ============ -->
+<div class="hw-lab" id="b">
+<b>B</b>
+<div>
+<h2>Podtytuł po prawej, tydzień oferty w kalendarzu</h2>
+<p>Nagłówek jak w v3, rysunek nowy: siedem dni roboczych od zapytania do wysłanej oferty, każdy od 8 do 16. Czekanie zalewa kalendarz dzień po dniu, maile wpadają o swoich godzinach, praca to cztery cienkie kreski. Na końcu tydzień blednie i zostają dwa zielone bloki: ta sama oferta w systemie wychodzi we wtorek rano, tydzień wcześniej.</p>
+<p class="war"><strong>Warunki:</strong> jedno zdanie pod przyciskami, tam, gdzie ktoś decyduje, czy kliknąć.</p>
+</div>
+</div>
+<section class="hv">
+<div class="hp hb">
+<p class="v3-etyk"><i aria-hidden="true"></i>Systemy dla kluczowych procesów</p>
+<div class="v3-hero-grid">
+<h2 class="v3-h1">{H1} <span>pod Wasz sposób pracy</span></h2>
+<div>
+<p class="v3-lead">{LEAD}</p>
+<div class="v3-akcje">
+<a href={KONTAKT} class="v3-btn">Policzmy czas Waszej sprawy <span aria-hidden="true">→</span></a>
+<a href="/systemy-procesowe-v4#jak-wyglada" class="v3-lnk">Zobacz, jak to wygląda →</a>
+</div>
+<p class="hb-war">Zaczynamy od <b>dwóch dni warsztatu</b> z osobami, które prowadzą proces. Po nim podajemy <b>stałą cenę pierwszego uruchomienia</b>.</p>
+</div>
+</div>
+
+<figure class="kal" data-kal data-os={JSON.stringify(KAL_OS)} data-po-trwa={trwaOpis(PO_DNI)} data-po-praca={`${PRACA_PO_MIN} min`} role="img" aria-label={KAL_ARIA}>
+<div class="wt-gl kal-gl" aria-hidden="true">
+<div class="wt-temat">
+<b>ZP-2484 · {TEMAT}</b>
+<span class="wt-stan" data-stan><i></i><span data-stan-t>Od zapytania do oferty, tydzień 7–15 września</span></span>
+</div>
+<div class="kal-leg"><span><i class="kc"></i>czekanie</span><span><i class="prc"></i>praca</span><span><i class="sw"></i>w systemie</span></div>
+<div class="wt-licz">
+<span class="tr">trwa<b data-trwa>{trwaOpis(DZIS_DNI)}</b></span>
+<span class="pr">pracy<b data-praca>{PRACA_MIN} min</b></span>
+</div>
+</div>
+<div class="kal-siatka" aria-hidden="true">
+<div class="kal-k gz"><div class="kal-dh"></div><div class="kal-db">{KAL_GODZ.map((g) => (<span class={g === 16 ? 'kon' : ''} style={`--y:${(g - 8) / 8}`}>{g}:00</span>))}</div></div>
+{KAL.map((d) => (
+  <>
+  {d.poWeekendzie && <div class="kal-k wk"><div class="kal-dh"><span>sb</span><span>nd</span></div><div class="kal-db"></div></div>}
+  <div class="kal-k kal-d" data-kd>
+    <div class="kal-dh"><span>{d.dt}</span><b>{d.d}</b></div>
+    <div class="kal-db">
+      {d.dzis.map((k) => (<i class={`kal-kw ${k.typ === 'kc' ? 'kal-kc' : 'prc'}`} data-kw data-a={k.a} data-b={k.b} style={`--y:${k.y};--h:${k.h}`}></i>))}
+      {d.po.map((k, j) => (<i class={`kal-sys${d.i > 0 ? ' dalej' : ''}`} style={`--y:${k.y};--h:${k.h}`}>{d.i === 0 && <span>w systemie od 14:02</span>}</i>))}
+      {d.maile.map((m) => (<i class="kal-pin" data-kp data-x={m.x.toFixed(5)} style={`--y:${(m.x - d.i).toFixed(4)}`}></i>))}
+      {d.maile.map((m) => (
+        <div class={`kal-m${m.klient ? ' kl' : ''}`} data-km data-x={m.x.toFixed(5)} style={`top:${Math.round(m.top)}px`}>
+          <span><b>{m.od}</b><time>{m.h}</time></span>
+          <p>{m.klient ? 'Oferta do klienta' : m.t}</p>
+        </div>
+      ))}
+      {d.i === 1 && (
+        <div class="kal-ok" style={`top:${KAL_OK_TOP}px`}>
+          <span><b>Oferta wysłana</b><time>{godz(PO_KONIEC)}</time></span>
+          <p>{PO_GODZ} h od zapytania</p>
+        </div>
+      )}
+      <i class="kal-teraz"></i>
+    </div>
+  </div>
+  </>
+))}
+</div>
+<p class="kal-pod">Dziś oferta wychodzi do klienta we <strong>wtorek {OST.dzien}.09 o {OST.h}</strong>. Prowadzona przez system ta sama oferta wychodzi we <b>wtorek {PO_KONIEC.getDate()}.09 o {godz(PO_KONIEC)}</b>, tydzień wcześniej.</p>
+</figure>
+</div>
+</section>
+<div class="hw-loga">
+<div class="v3-loga">
+<span><strong>140+ firm</strong> zmienia z nami sposób działania</span>
+<div class="v3-loga-o"><div class="v3-loga-t">{[0, 1].map((k) => LOGA.map(([p, n]) => (<img src={`https://cdn.prod.website-files.com/625be9db7e9f071ffb58618a/${p}`} alt={k ? '' : n} aria-hidden={k ? 'true' : undefined}>)))}</div></div>
+</div>
+</div>
+
+<!-- ============ C ============ -->
+<div class="hw-lab" id="c">
+<b>C</b>
+<div>
+<h2>Tekst po lewej, wątek po prawej</h2>
+<p>Układ dzielony: wątek jest widoczny od razu w pierwszym ekranie, obok tekstu. Nagłówek jest mniejszy, żeby zmieścił się w połowie szerokości. Plansza zamyka się pod wątkiem, bez wiszenia na krawędzi.</p>
+<p class="war"><strong>Warunki:</strong> metryczka pod przyciskami, trzy wiersze z cienką linią, na ciemnym tle.</p>
+</div>
+</div>
+<section class="hv">
+<div class="hp hc">
+<div class="hc-lewa">
+<p class="v3-etyk"><i aria-hidden="true"></i>Systemy dla kluczowych procesów</p>
+<h2 class="v3-h1">{H1} <span>pod Wasz sposób pracy</span></h2>
+<p class="v3-lead">{LEAD}</p>
+<div class="v3-akcje">
+<a href={KONTAKT} class="v3-btn">Policzmy czas Waszej sprawy <span aria-hidden="true">→</span></a>
+<a href="/systemy-procesowe-v4#jak-wyglada" class="v3-lnk">Zobacz, jak to wygląda →</a>
+</div>
+<dl class="hc-war">
+<div><dt>Start</dt><dd>dwa dni warsztatu z osobami, które prowadzą proces dzisiaj</dd></div>
+<div><dt>Wycena</dt><dd>stała za pierwsze uruchomienie, podana po warsztacie</dd></div>
+<div><dt>Od Was</dt><dd>godzina w tygodniu i kilka dni testów na prawdziwych sprawach</dd></div>
+</dl>
+</div>
+<figure class="wt" data-wt data-po-trwa={trwaOpis(PO_DNI)} data-po-praca={`${PRACA_PO_MIN} min`} role="img" aria-label={WT_ARIA}>
+<div class="wt-gl" aria-hidden="true">
+<div class="wt-temat">
+<b>{TEMAT}</b>
+<span class="wt-stan" data-stan><i></i><span data-stan-t>{WATEK.length} wiadomości, cztery osoby i klient</span></span>
+</div>
+<div class="wt-licz">
+<span class="tr">trwa<b data-trwa>{trwaOpis(DZIS_DNI)}</b></span>
+<span class="pr">pracy<b data-praca>{PRACA_MIN} min</b></span>
+</div>
+</div>
+<Stos {...STOS} />
+</figure>
+</div>
+</section>
+<div class="hw-loga">
+<div class="v3-loga">
+<span><strong>140+ firm</strong> zmienia z nami sposób działania</span>
+<div class="v3-loga-o"><div class="v3-loga-t">{[0, 1].map((k) => LOGA.map(([p, n]) => (<img src={`https://cdn.prod.website-files.com/625be9db7e9f071ffb58618a/${p}`} alt={k ? '' : n} aria-hidden={k ? 'true' : undefined}>)))}</div></div>
+</div>
+</div>
+
+<!-- ============ D ============ -->
+<div class="hw-lab" id="d">
+<b>D</b>
+<div>
+<h2>Na osi, jak strona główna</h2>
+<p>Kompozycja strony głównej: etykieta, nagłówek, lead i przyciski na środku, a pod nimi wątek jak makieta aplikacji, wiszący na krawędzi planszy. Liczniki wychodzą ze stosu i pływają obok jako dwie karty, tak jak powiadomienia przy pulpicie na stronie głównej.</p>
+<p class="war"><strong>Warunki:</strong> usunięte z hero.</p>
+</div>
+</div>
+<section class="hv">
+<div class="hp hd">
+<p class="v3-etyk"><i aria-hidden="true"></i>Systemy dla kluczowych procesów</p>
+<h2 class="v3-h1">{H1} <span>pod Wasz sposób pracy</span></h2>
+<div class="hd-lead">
+<p class="v3-lead">{LEAD}</p>
+<div class="v3-akcje">
+<a href={KONTAKT} class="v3-btn">Policzmy czas Waszej sprawy <span aria-hidden="true">→</span></a>
+<a href="/systemy-procesowe-v4#jak-wyglada" class="v3-lnk">Zobacz, jak to wygląda →</a>
+</div>
+</div>
+<figure class="hd-sc wt" data-wt data-po-trwa={`${PO_GODZ} godziny`} data-po-praca={`${PRACA_PO_MIN} min`} role="img" aria-label={WT_ARIA}>
+<div class="hd-f l" aria-hidden="true">
+<span class="l">Od zapytania do oferty</span>
+<b data-trwa>{trwaOpis(DZIS_DNI)}</b>
+<span class="wt-stan" data-stan><i></i><span data-stan-t>Oferta u klienta</span></span>
+</div>
+<div class="hd-f r" aria-hidden="true">
+<span class="l">Pracy w tej sprawie</span>
+<b data-praca>{PRACA_MIN} min</b>
+<em>Reszta czasu to czekanie na kolejną osobę</em>
+</div>
+<div class="hd-st">
+<div class="wt-gl" aria-hidden="true"><div class="wt-temat"><b>RE: RE: FW: {TEMAT}</b><span>{WATEK.length} wiadomości, cztery osoby i klient</span></div></div>
+<Stos {...STOS} />
+</div>
+</figure>
+<p class="hv-pod"><strong>Ta sama oferta prowadzona przez system zamyka się w <b>{PO_GODZ} godziny</b>.</strong> Praca skraca się o osiemnaście minut, bo znika przepisywanie do arkusza. Cała reszta różnicy to czekanie, którego nikt nigdy nie policzył.</p>
+</div>
+</section>
+<div class="hw-loga">
+<div class="v3-loga">
+<span><strong>140+ firm</strong> zmienia z nami sposób działania</span>
+<div class="v3-loga-o"><div class="v3-loga-t">{[0, 1].map((k) => LOGA.map(([p, n]) => (<img src={`https://cdn.prod.website-files.com/625be9db7e9f071ffb58618a/${p}`} alt={k ? '' : n} aria-hidden={k ? 'true' : undefined}>)))}</div></div>
+</div>
+</div>
+<div style="height:clamp(80px,9vw,140px)"></div>
+
+</div>
+
+<script>
+  var redukcja = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var GODZ = 8;
+  function fmt(d){
+    var dd = Math.floor(d + 1e-9), h = Math.floor((d - dd) * GODZ + 1e-9);
+    if(dd === 0 && h === 0) return Math.round(d * GODZ * 60) + ' min';
+    return [dd ? dd + (dd === 1 ? ' dzień' : ' dni') : '', h ? h + ' h' : ''].filter(Boolean).join(' ');
+  }
+  // Pętla rAF z pauzą poza kadrem; po powrocie rusza od miejsca, w którym stanęła.
+  function petla(el, T, rysuj){
+    var start = null, przesun = 0, raf = null;
+    function klatka(ts){
+      if(start === null) start = ts - przesun * 1000;
+      var tau = ((ts - start) / 1000) % T;
+      przesun = tau;
+      rysuj(tau);
+      raf = requestAnimationFrame(klatka);
+    }
+    rysuj(0);
+    new IntersectionObserver(function(w){
+      if(w[0].isIntersecting){ if(raf === null){ start = null; raf = requestAnimationFrame(klatka); } }
+      else if(raf !== null){ cancelAnimationFrame(raf); raf = null; }
+    }, { threshold: 0.05 }).observe(el);
+  }
+  function stanUstaw(stan, stanT, klasa, s){
+    stan.className = 'wt-stan' + (klasa ? ' ' + klasa : '');
+    stanT.textContent = s.charAt(0).toUpperCase() + s.slice(1);
+  }
+
+  // ---- Wątek (A, C, D) — logika z v4, na wiele instancji ----
+  document.querySelectorAll('[data-wt]').forEach(function(wt){
+    if(redukcja || !window.requestAnimationFrame) return;
+    var msgs = Array.prototype.slice.call(wt.querySelectorAll('[data-m]'));
+    var trwa = wt.querySelector('[data-trwa]'), praca = wt.querySelector('[data-praca]');
+    var stan = wt.querySelector('[data-stan]'), stanT = wt.querySelector('[data-stan-t]');
+    var poTrwa = wt.dataset.poTrwa, poPraca = wt.dataset.poPraca;
+    var os = [], t = 0, d = 0, p = 0;
+    function dodaj(o, dur){ o.t0 = t; o.t1 = t + dur; os.push(o); t += dur; }
+    msgs.forEach(function(m, i){
+      JSON.parse(m.dataset.sekw).forEach(function(x){
+        var min = x.p ? x.d * GODZ * 60 : 0;
+        dodaj({ typ: x.p ? 'praca' : 'czeka', d0: d, d1: d + x.d, p0: p, p1: p + min, s: x.s }, x.p ? 0.6 : 0.8 + x.d * 0.5);
+        d += x.d; p += min;
+      });
+      dodaj({ typ: 'msg', i: i, d0: d, d1: d, p0: p, p1: p, s: 'nowa wiadomość w wątku' }, 0.9);
+    });
+    dodaj({ typ: 'stoi', d0: d, d1: d, p0: p, p1: p, s: 'oferta u klienta po ' + fmt(d) }, 1.8);
+    dodaj({ typ: 'zwin', s: 'ta sama sprawa prowadzona przez system' }, 5.4);
+    dodaj({ typ: 'gas', s: 'ta sama sprawa prowadzona przez system' }, 0.9);
+    var T = t;
+    wt.classList.add('gra');
+    var stare = {};
+    function ustaw(klucz, wartosc, fn){ if(stare[klucz] !== wartosc){ stare[klucz] = wartosc; fn(wartosc); } }
+    petla(wt, T, function(tau){
+      var seg = os[0];
+      for(var i = 0; i < os.length; i++){ if(tau >= os[i].t0) seg = os[i]; else break; }
+      var widac = 0;
+      os.forEach(function(o){ if(o.typ === 'msg' && tau >= o.t0) widac = o.i + 1; });
+      msgs.forEach(function(m, j){
+        var k = j < widac ? widac - 1 - j : 0;
+        ustaw('k' + j, k + '|' + (j < widac), function(){
+          m.style.setProperty('--k', k);
+          m.classList.toggle('ukr', j >= widac);
+        });
+      });
+      var koniec = seg.typ === 'zwin' || seg.typ === 'gas';
+      ustaw('zwin', koniec, function(v){ wt.classList.toggle('zwin', v); });
+      ustaw('gas', seg.typ === 'gas', function(v){ wt.classList.toggle('gas', v); });
+      if(koniec){
+        ustaw('trwa', poTrwa, function(v){ trwa.textContent = v; });
+        ustaw('praca', poPraca, function(v){ praca.textContent = v; });
+      } else {
+        var u = seg.t1 > seg.t0 ? Math.min(1, (tau - seg.t0) / (seg.t1 - seg.t0)) : 1;
+        if(seg.typ === 'czeka') u = u * u * (3 - 2 * u);
+        ustaw('trwa', fmt(seg.d0 + (seg.d1 - seg.d0) * u), function(v){ trwa.textContent = v; });
+        ustaw('praca', Math.round(seg.p0 + (seg.p1 - seg.p0) * u) + ' min', function(v){ praca.textContent = v; });
+      }
+      var klasa = seg.typ === 'czeka' ? 'czeka' : (seg.typ === 'praca' || koniec) ? 'praca' : '';
+      ustaw('stan', klasa + '|' + seg.s, function(){ stanUstaw(stan, stanT, klasa, seg.s); });
+    });
+  });
+
+  // ---- Kalendarz (B) ----
+  // Zegar x (dni robocze od pon 8:00) idzie po krokach z data-os: czekanie
+  // wolno, praca szybko, po kroku z mailem krótka pauza. Kawałek czekania
+  // odsłania się od góry (clip-path przez --p), kreska „teraz" stoi w dniu
+  // i godzinie zegara. Potem tydzień blednie i wchodzą bloki systemu.
+  // Bez JS i przy reduced-motion stoi pełny tydzień z mailami.
+  document.querySelectorAll('[data-kal]').forEach(function(kal){
+    if(redukcja || !window.requestAnimationFrame) return;
+    var kroki = JSON.parse(kal.dataset.os);
+    var sl = function(q){ return Array.prototype.slice.call(kal.querySelectorAll(q)); };
+    var kw = sl('[data-kw]').map(function(el){ return { el: el, a: +el.dataset.a, b: +el.dataset.b }; });
+    var znaczniki = sl('[data-km],[data-kp]').map(function(el){ return { el: el, x: +el.dataset.x }; });
+    var dni = sl('[data-kd]').map(function(el){ return { el: el, teraz: el.querySelector('.kal-teraz') }; });
+    var trwa = kal.querySelector('[data-trwa]'), praca = kal.querySelector('[data-praca]');
+    var stan = kal.querySelector('[data-stan]'), stanT = kal.querySelector('[data-stan-t]');
+    var x0 = kroki[0].a, x1 = kroki[kroki.length - 1].b;
+    var os = [], t = 0;
+    function dodaj(o, dur){ o.t0 = t; o.t1 = t + dur; os.push(o); t += dur; }
+    kroki.forEach(function(k){
+      dodaj({ typ: k.p ? 'praca' : 'czeka', xa: k.a, xb: k.b, s: k.s }, k.p ? 0.6 : 0.8 + (k.b - k.a) * 0.5);
+      if(k.m) dodaj({ typ: 'msg', xa: k.b, xb: k.b, s: 'nowa wiadomość w wątku' }, 0.9);
+    });
+    dodaj({ typ: 'stoi', xa: x1, xb: x1, s: 'oferta u klienta po ' + fmt(x1 - x0) }, 1.8);
+    dodaj({ typ: 'sys', xa: x1, xb: x1, s: 'ta sama sprawa prowadzona przez system' }, 5.6);
+    dodaj({ typ: 'gas', xa: x1, xb: x1, s: 'ta sama sprawa prowadzona przez system' }, 0.9);
+    var T = t;
+    kal.classList.add('gra');
+    var stare = {};
+    function ustaw(klucz, wartosc, fn){ if(stare[klucz] !== wartosc){ stare[klucz] = wartosc; fn(wartosc); } }
+    petla(kal, T, function(tau){
+      var seg = os[0];
+      for(var i = 0; i < os.length; i++){ if(tau >= os[i].t0) seg = os[i]; else break; }
+      var u = seg.t1 > seg.t0 ? Math.min(1, (tau - seg.t0) / (seg.t1 - seg.t0)) : 1;
+      if(seg.typ === 'czeka') u = u * u * (3 - 2 * u);
+      var X = seg.xa + (seg.xb - seg.xa) * u;
+      kw.forEach(function(k, j){
+        var p = Math.max(0, Math.min(1, (X - k.a) / (k.b - k.a)));
+        ustaw('kw' + j, p.toFixed(3), function(v){ k.el.style.setProperty('--p', v); });
+      });
+      znaczniki.forEach(function(z, j){
+        ustaw('z' + j, X >= z.x - 1e-6, function(v){ z.el.classList.toggle('ukr', !v); });
+      });
+      var dz = Math.min(dni.length - 1, Math.floor(X + 1e-9));
+      dni.forEach(function(d, j){
+        ustaw('d' + j, j === dz, function(v){ d.el.classList.toggle('teraz', v); });
+      });
+      dni[dz].teraz.style.setProperty('--ty', (X - dz).toFixed(4));
+      var koniec = seg.typ === 'sys' || seg.typ === 'gas';
+      ustaw('sys', koniec, function(v){ kal.classList.toggle('sys', v); });
+      ustaw('gas', seg.typ === 'gas', function(v){ kal.classList.toggle('gas', v); });
+      if(koniec){
+        ustaw('trwa', kal.dataset.poTrwa, function(v){ trwa.textContent = v; });
+        ustaw('praca', kal.dataset.poPraca, function(v){ praca.textContent = v; });
+      } else {
+        var pr = 0;
+        kroki.forEach(function(k){ if(k.p) pr += Math.max(0, Math.min(X, k.b) - k.a) * GODZ * 60; });
+        ustaw('trwa', fmt(X - x0), function(v){ trwa.textContent = v; });
+        ustaw('praca', Math.round(pr) + ' min', function(v){ praca.textContent = v; });
+      }
+      var klasa = seg.typ === 'czeka' ? 'czeka' : (seg.typ === 'praca' || koniec) ? 'praca' : '';
+      ustaw('stan', klasa + '|' + seg.s, function(){ stanUstaw(stan, stanT, klasa, seg.s); });
+    });
+  });
+</script>
+</LaBase>

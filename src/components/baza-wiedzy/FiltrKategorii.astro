@@ -1,0 +1,39 @@
+---
+// Pasek kategorii nad listą artykułów.
+//
+// Każda pozycja jest linkiem do własnego adresu (`/blog`,
+// `/blog-categories/<adres>`), więc kategorie da się podlinkować i są
+// widoczne dla wyszukiwarki. Na /blog skrypt strony przechwytuje kliknięcie
+// i filtruje listę na miejscu, bez przeładowania — kliknięcie z klawiszem
+// modyfikującym dalej otwiera adres kategorii.
+//
+// Pokazuje tylko kategorie, w których coś jest — pusta zakładka wygląda
+// jak błąd.
+import { getCollection } from 'astro:content';
+import { KATEGORIE } from '../../content/config';
+import { adresKategorii } from './wspolne.js';
+
+const { aktywna = 'wszystkie' } = Astro.props;
+
+const wszystkie = await getCollection('artykuly', (a) => !a.data.szkic);
+const pozycje = [
+  { klucz: 'wszystkie', nazwa: 'Wszystkie', h: '/blog', ile: wszystkie.length },
+  ...Object.entries(KATEGORIE).map(([k, v]) => ({
+    klucz: k, nazwa: v.nazwa, h: adresKategorii(k),
+    ile: wszystkie.filter((a) => a.data.kategoria === k).length,
+  })),
+].filter((p) => p.ile > 0);
+---
+<nav class="bw-filtry" aria-label="Kategorie">
+{pozycje.map((p) => (
+  <a class="bw-f" href={p.h} data-kat={p.klucz} aria-current={p.klucz === aktywna ? 'page' : undefined}>{p.nazwa} <em>{p.ile}</em></a>
+))}
+</nav>
+
+<style>
+  .bw-filtry{display:flex;flex-wrap:wrap;gap:4px 6px}
+  .bw-f{display:inline-block;padding:8px 2px;margin:0 12px 0 0;font-size:14.5px;font-weight:600;color:#637066;border-bottom:2px solid transparent;transition:color .15s,border-color .15s}
+  .bw-f:hover{color:#16211a}
+  .bw-f[aria-current]{color:#16211a;border-bottom-color:var(--la-accent,#00CD77)}
+  .bw-f em{font-style:normal;font-size:12px;color:#b3bcb3;margin-left:5px}
+</style>

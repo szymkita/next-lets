@@ -1,13 +1,17 @@
 // Sitemapa pisana ręcznie zamiast @astrojs/sitemap: lista jest krótka,
 // a warianty robocze mają z niej wypaść bez dodatkowej konfiguracji.
 //
-// Wyjątkiem są artykuły z bazy wiedzy — tych przybywa, więc dopisują się same
-// z kolekcji. Szkice (`szkic: true`) zostają poza sitemapą.
+// Wyjątkiem są artykuły z bazy wiedzy i jej kategorie oraz strony przeniesione
+// ze starego serwisu — dopisują się same z kolekcji i ze słownika KATEGORIE. Szkice (`szkic: true`) zostają poza
+// sitemapą. Adresy (/blog, /post/*, /blog-categories/*) są ze starego bloga.
 import { getCollection } from 'astro:content';
+import { KATEGORIE } from '../content/config';
+import { adresArtykulu, adresKategorii } from '../components/baza-wiedzy/wspolne.js';
 
 const STRONY = [
   { u: '/', p: '1.0' },
   { u: '/strategia-ai', p: '0.9' },
+  { u: '/wdrozenie-ai', p: '0.9' },
   { u: '/rozwiazania-ai', p: '0.9' },
   { u: '/szkolenia-ai', p: '0.9' },
   { u: '/systemy-procesowe', p: '0.9' },
@@ -16,10 +20,10 @@ const STRONY = [
   { u: '/produkty', p: '0.9' },
   { u: '/produkty/appto', p: '0.8' },
   { u: '/inspiracje', p: '0.9' },
-  { u: '/baza-wiedzy', p: '0.8' },
+  { u: '/blog', p: '0.8' },
   { u: '/guided-coding', p: '0.8' },
-  { u: '/guided-coding/bez-dzialu-it', p: '0.7' },
-  { u: '/guided-coding/dla-zespolow', p: '0.7' },
+  { u: '/guided-coding/audyt-aplikacji', p: '0.7' },
+  { u: '/guided-coding/biezace-wsparcie', p: '0.7' },
   { u: '/guided-coding/transfer-know-how', p: '0.7' },
   { u: '/wisestack', p: '0.8' },
   { u: '/dlaczego-my', p: '0.7' },
@@ -38,13 +42,16 @@ const STRONY = [
 export const GET = async ({ site }) => {
   const dzis = new Date().toISOString().slice(0, 10);
   const artykuly = (await getCollection('artykuly', (a) => !a.data.szkic)).map((a) => ({
-    u: `/baza-wiedzy/${a.slug}`,
+    u: adresArtykulu(a.slug),
     p: '0.6',
     // Przy artykule `lastmod` to data publikacji, nie data wygenerowania
     // sitemapy — inaczej każdy build odświeżałby wszystkie wpisy naraz.
     d: a.data.data.toISOString().slice(0, 10),
   }));
-  const lista = [...STRONY, ...artykuly];
+  const kategorie = Object.keys(KATEGORIE).map((k) => ({ u: adresKategorii(k), p: '0.5' }));
+  // Strony przeniesione 1:1 ze starego serwisu, dopóki nie dostaną następców.
+  const stare = (await getCollection('stare-strony')).map((s) => ({ u: s.data.adres, p: s.data.adres.startsWith('/pd-') ? '0.2' : '0.5' }));
+  const lista = [...STRONY, ...kategorie, ...artykuly, ...stare];
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${lista.map((s) => `  <url><loc>${new URL(s.u, site).href}</loc><lastmod>${s.d || dzis}</lastmod><priority>${s.p}</priority></url>`).join('\n')}

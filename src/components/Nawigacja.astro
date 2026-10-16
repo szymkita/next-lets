@@ -28,7 +28,9 @@
 // bierze te same dane, więc dopisanie usługi wchodzi od razu w obie wersje.
 import TopbarWiseGroup from './TopbarWiseGroup.astro';
 
-const { ctaHref = '/#diagnoza' } = Astro.props;
+// topbar={false} chowa pasek Wise Group (docelowo zostaje tylko na
+// stronie głównej; podstrony wyłączają go pojedynczo).
+const { ctaHref = '/#diagnoza', topbar = true } = Astro.props;
 
 // Triaż po sytuacji klienta: trzy pasy, w każdym trzy usługi.
 // `krok` przełącza warstwę w sekcji #oferta na stronie głównej (index.astro).
@@ -41,7 +43,7 @@ const USLUGI = [
     sub: 'Gdy firma zaczyna pracować z AI',
     poz: [
       { t: 'Strategia AI', d: 'Od czego zacząć i ile to zwróci', h: '/strategia-ai' },
-      { t: 'Narzędzia AI dla całej firmy', d: 'Gotowa platforma, np. Appto, na Waszych dokumentach i danych', h: '/produkty/appto' },
+      { t: 'Narzędzia AI dla całej firmy', d: 'Gotowa platforma, np. Appto, na Waszych dokumentach i danych', h: '/wdrozenie-ai' },
       { t: 'Szkolenia z AI', d: 'AI zostaje w codziennej pracy zespołu', h: '/szkolenia-ai' },
     ],
   },
@@ -50,7 +52,7 @@ const USLUGI = [
     pas: 'Budujemy za Was', href: '/#oferta', krok: 'budujemy',
     sub: 'Gdy gotowe programy nie pasują',
     poz: [
-      { t: 'Systemy dopasowane do firmy', d: 'Jedno miejsce na pracę, którą dziś trzyma Excel', h: '/systemy-procesowe' },
+      { t: 'Systemy dopasowane do firmy', d: 'Proces, na którym zarabiacie, w jednym systemie', h: '/systemy-procesowe' },
       { t: 'Automatyzacja procesów z AI', d: 'AI prowadzi sprawy, ludzie decydują o wyjątkach', h: '/rozwiazania-ai' },
       { t: 'Integracje systemów', d: 'CRM, ERP i magazyn wymieniają dane same', h: '/automatyzacje-integracje' },
     ],
@@ -61,8 +63,8 @@ const USLUGI = [
     pas: 'Budujecie sami z AI', href: '/guided-coding', krok: null,
     sub: 'Gdy Wasz zespół tworzy własne aplikacje',
     poz: [
-      { t: 'Audyt aplikacji', d: 'Co grozi awarią i co poprawić najpierw', h: '/guided-coding/bez-dzialu-it#start' },
-      { t: 'Bieżące wsparcie', d: 'Abonament: przegląd zmian i pomoc, gdy utkniecie', h: '/guided-coding#rozwidlenie' },
+      { t: 'Audyt aplikacji', d: 'Co grozi awarią i co poprawić najpierw', h: '/guided-coding/audyt-aplikacji' },
+      { t: 'Bieżące wsparcie', d: 'Abonament: przegląd zmian i pomoc, gdy utkniecie', h: '/guided-coding/biezace-wsparcie' },
       { t: 'Warsztaty dla zespołu', d: 'Zamknięty cykl sesji na Waszym kodzie', h: '/guided-coding/transfer-know-how' },
     ],
   },
@@ -86,7 +88,7 @@ const KNOWHOW = [
     sciezki: ['M3.2 20.3h5.2v-5.2h5.2v-5.2h5.2V4.7', 'M16.9 6.6 18.8 4.7l1.9 1.9'] },
   { t: 'Wise AI Score', d: 'Test dojrzałości AI w 3 minuty', h: '/#diagnoza',
     sciezki: ['M3.8 18.3a8.2 8.2 0 1 1 16.4 0', 'M12 18.3 16.1 12.6'], kropka: { cx: 12, cy: 18.3, r: 1.15 } },
-  { t: 'Baza wiedzy', d: 'Artykuły i analizy', h: '/baza-wiedzy',
+  { t: 'Baza wiedzy', d: 'Artykuły i analizy', h: '/blog',
     sciezki: ['M12 7c-1.5-1.4-3.4-2.1-5.7-2.1H4v12.6h2.3c2.3 0 4.2.7 5.7 2.1', 'M12 7c1.5-1.4 3.4-2.1 5.7-2.1H20v12.6h-2.3c-2.3 0-4.2.7-5.7 2.1', 'M12 7v12.6'] },
 ];
 
@@ -96,7 +98,7 @@ const POZOSTALE = [
 ];
 ---
 
-<TopbarWiseGroup current="letsautomate" />
+{topbar && <TopbarWiseGroup current="letsautomate" />}
 
 <header class="site-header">
 <div class="nav-pill">
@@ -418,6 +420,13 @@ const POZOSTALE = [
     .nav-pill{gap:10px;padding:12px 10px 12px 6px}
     #navCta{padding:11px 15px !important;font-size:14px !important}
     .nav-logo img{height:22px !important}
+    /* po przewinięciu pigułka dostaje szersze wcięcie z lewej; przy 320 px
+       przycisk i burger wychodziły wtedy 3 px poza ekran */
+    .site-header.scrolled .nav-pill{padding:8px 10px 8px 14px}
+  }
+  @media (max-width:360px){
+    .site-header{padding-left:10px;padding-right:10px}
+    .nav-logo img{height:20px !important}
   }
   @media (prefers-reduced-motion:reduce){ .nav-panel{transition:none} }
 </style>

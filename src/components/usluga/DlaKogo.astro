@@ -1,0 +1,36 @@
+---
+// DLA KOGO: lewa kolumna przyklejona (tytuł i jedno zdanie), po prawej
+// warunki duże z numerami, pod nimi „Kiedy to nie ma sensu" — jedyne
+// miejsce na stronie, gdzie odsyłamy klienta gdzie indziej. Granica musi
+// być prawdziwa. Stoi tuż przed kontaktem.
+interface Props {
+  tytul?: string;
+  sub: string;
+  warunki: { t: string; d: string }[];
+  nieTytul?: string;
+  nie: string[];            // HTML dozwolony (np. odesłanie linkiem)
+  id?: string;
+}
+const { tytul = 'Dla jakich firm to jest', sub, warunki, nieTytul = 'Kiedy to nie ma sensu', nie, id = 'dla-kogo' } = Astro.props;
+---
+<section id={id} class="v3-sek v3-papier">
+<div class="v3-dk">
+<div class="dk-lewa">
+<h2 class="v3-h2">{tytul}</h2>
+<p class="v3-sub">{sub}</p>
+</div>
+<div>
+{warunki.map((x, i) => (
+  <div class="dk-w rv">
+    <span class="dk-n">{String(i + 1).padStart(2, '0')}</span>
+    <h3>{x.t}</h3>
+    <p>{x.d}</p>
+  </div>
+))}
+<aside class="dk-nie rv">
+<h3>{nieTytul}</h3>
+<ul>{nie.map((t) => (<li set:html={t}></li>))}</ul>
+</aside>
+</div>
+</div>
+</section>

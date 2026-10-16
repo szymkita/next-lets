@@ -21,13 +21,11 @@ Wyobraź sobie, że **większość rutynowych zadań związanych ze sprzedażą 
 
 Zautomatyzowany system CRM otwiera przed firmami nowe możliwości, zwiększając nie tylko efektywność operacyjną, ale także podnosząc jakość świadczonych usług. Dzięki wdrożeniu takich rozwiązań firmy mogą szybciej gromadzić i analizować dane, co pozwala sztucznej inteligencji tworzyć **spersonalizowane oferty w kilka sekund**.
 
-### Automatyzacja w CRM: najważniejsze korzyści
+#### Automatyzacja w CRM: najważniejsze korzyści
 
 - **Oszczędność czasu i zasobów**: automatyzacja pozwala na lepsze wykorzystanie czasu pracy, skupiając uwagę zespołu na zadaniach faktycznie wymagających kreatywności, wiedzy i doświadczenia.
 - **Zwiększenie sprzedaży**: dzięki automatycznej ocenie leadów, przydzielaniu sprzedawców na bazie ich doświadczenia, spersonalizowanej komunikacji i znacznemu skróceniu czasu oczekiwania na kontakt, wdrożenie takich rozwiązań znacząco zwiększa szanse zamknięcia sprzedaży.
 - **Poprawa jakości danych**: wykorzystanie algorytmów i sztucznej inteligencji pozwala lepiej i szybciej dopasowywać oferty do potrzeb klientów, co jest kluczowe dla zwiększenia ich satysfakcji.
-
-‍
 
 ## Jak działa zautomatyzowany system CRM?
 
@@ -35,7 +33,7 @@ W pierwszej kolejności należy podkreślić, że wdrożenie automatyzacji, wyma
 
 Idealnie obrazuje to przyspieszenie pracy w systemie CRM. Co ważne, **wdrożenie takiego rozwiązania wcale nie musi oznaczać zmiany oprogramowania** i układania wszystkiego na nowo. W naszym przykładzie posługujemy się popularnym systemem Pipedrive, który po zintegrowaniu z dosłownie kilkoma narzędziami dostaje wiatru w żagle i staje się centralą do pracy w zautomatyzowanym środowisku. Jak to działa? Przeanalizujemy to krok po kroku:
 
-### Pierwszy kontakt i uruchomienie zautomatyzowanego procesu
+#### Pierwszy kontakt i uruchomienie zautomatyzowanego procesu
 
 Zdarzeniem rozpoczynającym zautomatyzowany proces może być formularz kontaktowy wypełniany przez potencjalnych klientów. W momencie kliknięcia przycisku „wyślij” system pobiera wprowadzone dane, a następnie przystępuje do weryfikacji nowego leda.
 
@@ -47,17 +45,15 @@ Na podstawie zebranych danych sztuczna inteligencja:
 - **określa kategorię firmy i ocenia leada**, a na podstawie scoringu przypisuje mu etykietę – na przykład „mocny lead”,
 - **przenosi leada do straconych jeśli jego scoring będzie zbyt niski**, a następnie wysyła wiadomość z informacją o braku chęci podjęcia współpracy.
 
-‍
-
 Jednak automatyzacja CRM to nie tylko szybkość działania, ale również precyzja. Na podstawie zgromadzonych danych, system automatycznie przypisuje branżę, a także **dopasowuje odpowiedniego sprzedawcę** – na przykład bazując na jego wiedzy i doświadczeniu w branży leada.
 
-### Automatyzacja i personalizacja procesu sprzedaży
+#### Automatyzacja i personalizacja procesu sprzedaży
 
 Na tej podstawie zebranych danych w systemie tworzy się nowa szansa sprzedaży, dzięki czemu wszystkie najważniejsze informacje znajdują się w jednym miejscu. Jeśli scoring jest odpowiednio wysoki, do potencjalnego klienta trafia automatyczna wiadomość z podziękowaniem oraz informacją o przydzielonym opiekunie. Treść może zostać spersonalizowana – np. uzupełniona o link do case studies z branży leada.
 
 Automatyczne alerty i powiadomienia znacząco skracają czas reakcji zespołu, co pozwala **szybciej reagować na nowe zgłoszenia**. Na Slacku zostaje opublikowany post o nowym leadzie, a bezpośrednie powiadomienie jest wysyłane do przypisanego sprzedawcy. Dzięki temu znacząco podnosi się response time.
 
-### Automatyzacja obsługi leadów: od kwalifikacji do zamknięcia sprzedaży
+#### Automatyzacja obsługi leadów: od kwalifikacji do zamknięcia sprzedaży
 
 Po rozmowie kwalifikacyjnej i wypełnieniu odpowiedniego formularza przez sprzedawcę lead automatycznie przechodzi na kolejny etap.
 
@@ -65,17 +61,17 @@ System samodzielnie generuje umowę NDA uzupełnioną wszystkimi potrzebnymi dan
 
 Potencjalny klient otrzymuje kolejną spersonalizowaną **wiadomość** – tym razem **z gotową umową oraz linkiem do interaktywnego kalendarza**, w którym umówi kolejne spotkanie z konsultantem – na przykład w celu dalszego badania potrzeb. Po wybraniu terminu w systemie utworzy się nowe wydarzenie, o czym zostaną powiadomione zaangażowani w obsługę leada członkowie zespołu.
 
-### Generowanie spersonalizowanej oferty oraz umów
+#### Generowanie spersonalizowanej oferty oraz umów
 
 Gdy szansa sprzedaży przechodzi na kolejny etap, system jest gotowy do wygenerowania oferty. Aby to zrobić, wystarczy wybrać z menu produkty, a następnie kliknąć jeden przycisk – wtedy **sztuczna inteligencja w kilka sekund przygotuje kompletną, obrandowaną ofertę w pliku PDF**. Dokument zostanie dostosowany do rodzaju klienta, jego branży i specyficznych wymagań. Co więcej, w ofercie zostaną zawarte nawet dane opiekuna – przydzielonego automatycznie na podstawie scoringu i doświadczenia!
 
 Po zaakceptowaniu oferty, automatyzacja samodzielnie generuje gotową umowę, która zostaje wysłana do klienta. Jeśli klient ma uwagi, wystarczy, że naniesie je w komentarzach, a wtedy automatyzacja powiadomi odpowiednie osoby – np. w dziale prawnym. Powiadomienie może też trafić do odpowiedzialnej osoby na Slacku.
 
-### Automatyzacja w CRM to nie koniec możliwości
+#### Automatyzacja w CRM to nie koniec możliwości
 
 Ostatnim etapem jest zamknięcie sprzedaży, po którym system automatycznie generuje fakturę i wysyła ją klientowi wraz z podziękowaniami. Cały zespół zostaje poinformowany o nowym kliencie przez Sales Alert na Slacku, co wzmacnia morale i buduje zaangażowanie.
 
-Brzmi dobrze? Pamiętaj o tym, że zautomatyzowanie procesu obsługi nowej szansy sprzedaży to nie koniec możliwości automatyzacji. Taki system zoptymalizuje także dalsze kroki, a w tym **codzienną pracę zespołu w projektach, monitorowanie i raportowanie efektów**, a nawet ewentualne **działania windykacyjne**. Zautomatyzować możnawiększość powtarzalnych i czasochłonnych zadań, które zajmują dużo czasu lub generują wysokie koszty.
+Brzmi dobrze? Pamiętaj o tym, że zautomatyzowanie procesu obsługi nowej szansy sprzedaży to nie koniec możliwości automatyzacji. Taki system zoptymalizuje także dalsze  kroki, a w tym **codzienną pracę zespołu w projektach, monitorowanie i raportowanie efektów**, a nawet ewentualne **działania windykacyjne**. Zautomatyzować można większość powtarzalnych i czasochłonnych zadań, które zajmują dużo czasu lub generują wysokie koszty.
 
 ## Darmowy webinar: zautomatyzowany dział sprzedaży
 

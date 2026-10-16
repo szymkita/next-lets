@@ -1,6 +1,7 @@
 # Baza wiedzy — koncepcja
 
-`/baza-wiedzy` + `/baza-wiedzy/<slug>` (08.09.2026).
+`/blog` + `/post/<slug>` + `/blog-categories/<adres>` (08.09.2026, adresy
+przestawione na stare 15.10.2026 — patrz niżej).
 
 Prośba brzmiała: „baza wiedzy z artykułami, ale też z linkami do filmów na
 YouTube, przede wszystkim na razie artykuły — ładnie, prosto, zgodnie z resztą
@@ -8,7 +9,69 @@ brandingu".
 
 ---
 
+## Tylko wpisy ze starego bloga, filmy z kanału (16.10.2026)
+
+**Sześć tekstów napisanych w studiu usuniętych** (koszt procesu, pilot AI,
+umowa na wdrożenie, dołek adopcji, gotowe narzędzie czy własna aplikacja,
+aplikacja z Lovable). Były przykładowe, a na starym blogu ich nie było. Na
+`/blog` zostaje 49 wpisów przeniesionych z Webflow; na górze stoi najnowszy
+z nich, tak jak na starym serwisie. Pięć tekstów jest w historii gita
+(commit 8af6a20), szósty miał jeszcze niezacommitowane zmiany w `powiazane`.
+
+**Pas nagrań podpięty do kanału Automatyzacja Biznesu**
+(`@automatyzacjabiznesu` — ten sam, do którego linkował stary serwis).
+W `src/data/filmy.js` stoją wszystkie 23 filmy od najnowszego, z długością
+z YouTube'a. Tytuły są te z kanału, bez wersalików i emoji; zdania pod nimi
+napisane z opisów filmów. Strona pokazuje osiem klatek, resztę odsłania
+przycisk. Klatka linkuje do filmu na YouTubie, w nowej karcie.
+
+---
+
+## Adresy ze starego bloga (15.10.2026)
+
+Baza wiedzy stoi pod tymi samymi adresami co blog na Webflow, zamiast
+przekierowywać na nowe:
+
+| co | adres |
+|---|---|
+| lista | `/blog` |
+| artykuł | `/post/<slug>` |
+| kategoria | `/blog-categories/<adres>` — adres ze słownika `KATEGORIE`, łącznie z `podstawy-copy` |
+
+Przekierowania 301 idą teraz w drugą stronę: `/baza-wiedzy → /blog`,
+`/baza-wiedzy/:slug → /post/:slug`, a `/blog-categories/wszystko` (duplikat
+listy na starym serwisie) → `/blog`. Nazwa w menu zostaje „Baza wiedzy" —
+tak samo było na starym serwisie.
+
+**Treść 49 wpisów przekonwertowana drugi raz.** Pierwsza konwersja obcinała
+spacje wewnątrz pogrubień i linków, przez co w ok. 100 miejscach słowa się
+skleiły. Druga zachowuje też poziomy nagłówków, linki wewnętrzne i numerację
+tak jak w oryginale. Zweryfikowana na zbudowanym serwisie: tekst, nagłówki,
+pogrubienia, linki i obrazy zgadzają się z żywą stroną we wszystkich 49
+wpisach (`docs/_migracja/README.md`).
+
+**Kotwice `#toc-…` jak na starym blogu.** Google pokazuje je w wynikach jako
+„Przejdź do" (sam wpis o automatyzacji procesów biznesowych ma na nich ponad
+100 tys. wyświetleń rocznie). Nadaje je `src/lib/rehype-artykuly.mjs` wzorem
+przepisanym ze skryptu Webflow.
+
+**`smartypants` wyłączony**, bo zamieniał proste „Let's" i "cudzysłowy" na
+drukarskie. Nowe teksty wpisują typografię wprost („…”).
+
+**Canonical bez ukośnika na końcu** (`LaBase`). Build zapisuje strony jako
+katalogi, więc wcześniej canonical wskazywał `/post/x/` — inny adres niż ten
+w indeksie Google i niż w sitemapie.
+
+**Kolejność listy jak na starym `/blog`.** Siedem odtworzonych dat
+przesuniętych o kilka dni, żeby lista szła w tej samej kolejności co na
+starym serwisie (paginacja `?1a7e265b_page=N`).
+
+---
+
 ## Migracja bloga z letsautomate.pl (08.09.2026)
+
+> Adresy i treść z tej sekcji są nieaktualne od 15.10.2026 (sekcja wyżej).
+> Zostaje jako zapis pierwszej migracji.
 
 Czterdzieści dziewięć wpisów ze starego serwisu (Webflow, adresy `/post/<slug>`)
 przeniesionych do kolekcji. Razem z sześcioma tekstami napisanymi w studiu daje
@@ -84,7 +147,7 @@ brak rysunku byłby wadą, przy spisie tekstów rysunek byłby ozdobą.
 | 1 | hero | biel | nagłówek, zdanie, trzy liczby |
 | 2 | wyróżniony artykuł | biel | wcięcie + duży stopień pisma + kartka ze spisem treści |
 | 3 | lista | `#f4f8f2` | wiersze na liniach, filtr kategorii w jednej linii, przycisk rozwijający |
-| 4 | nagrania | `#0e2b1d` | cztery klatki 16:9 |
+| 4 | nagrania | `#0e2b1d` | osiem klatek 16:9, reszta przyciskiem |
 | 5 | kontakt | biel | wspólny `GcCta` |
 
 Rytm tła zgodny z playbookiem: ciemny pas pada raz i bierze rzecz najcięższą
@@ -112,11 +175,14 @@ cudzysłowów.
 ## Architektura
 
 ```
-src/content/config.ts          schemat + słownik KATEGORIE
-src/content/artykuly/*.md      treść (nazwa pliku = adres)
-src/data/filmy.js              lista nagrań + identyfikatory YouTube
-src/pages/baza-wiedzy/index.astro
-src/pages/baza-wiedzy/[slug].astro
+src/content/config.ts                       schemat + słownik KATEGORIE (z adresami)
+src/content/artykuly/*.md                   treść (nazwa pliku = adres)
+src/data/filmy.js                           lista nagrań + identyfikatory YouTube
+src/lib/rehype-artykuly.mjs                 kotwice #toc-…, numeracja list, linki zewnętrzne
+src/components/baza-wiedzy/                 lista, filtr kategorii, adresy, czas czytania
+src/pages/blog/index.astro                  /blog
+src/pages/blog-categories/[kategoria].astro /blog-categories/<adres>
+src/pages/post/[slug].astro                 /post/<slug>
 ```
 
 Decyzje, które warto pamiętać:
@@ -136,10 +202,10 @@ Decyzje, które warto pamiętać:
 ## Filmy
 
 Nagrania nie są kolekcją treści, bo cała zawartość leży na YouTubie. Zostają
-tytuł, zdanie, długość i identyfikator. Miniatura leci z serwera YouTube'a
-dopiero wtedy, gdy identyfikator przejdzie test `jestId()` — dopóki go nie ma,
-klatka rysuje się sama (ciemna, ze znakiem odtwarzania) i kafel nie jest
-linkiem. Dzięki temu pas wygląda skończenie, zanim padną prawdziwe adresy.
+tytuł, zdanie, długość i identyfikator; miniatura leci z serwera YouTube'a
+(`hqdefault.jpg`, przycięta do 16:9). Nowy film dopisuje się na początek
+tablicy w `src/data/filmy.js` — licznik w hero i przycisk „Pokaż starsze
+nagrania” przeliczają się same.
 
 ## Czego świadomie nie ma
 
@@ -147,10 +213,10 @@ linkiem. Dzięki temu pas wygląda skończenie, zanim padną prawdziwe adresy.
   pole wyszukiwania dokładać, gdy wpisów będzie ponad sto
 - **paginacji z osobnymi adresami** — lista pokazuje dwanaście najnowszych
   wierszy i rośnie na miejscu przyciskiem. Adres zostaje jeden, a wyszukiwarki
-  widzą w źródle wszystkie 55 wierszy naraz
-- **miniatur przy wierszach listy** — sześć tekstów studia nie ma obrazu,
-  a czterdzieści dziewięć przeniesionych ma grafiki z trzech różnych okresów;
-  rząd niedobranych miniatur wygląda gorzej niż sam tekst
+  widzą w źródle wszystkie wiersze naraz
+- **miniatur przy wierszach listy** — przeniesione wpisy mają grafiki
+  z trzech różnych okresów; rząd niedobranych miniatur wygląda gorzej niż sam
+  tekst
 - **siatki kafli z artykułami** — spis czyta się wierszami; kafle zostały tam,
   gdzie służą porównaniu wzrokiem, czyli przy wideo
 - **tagów obok kategorii** — cztery kategorie na kilkanaście tekstów to i tak
@@ -163,14 +229,8 @@ linkiem. Dzięki temu pas wygląda skończenie, zanim padną prawdziwe adresy.
 - **Daty 49 przeniesionych wpisów** — odtworzone z metadanych plików Webflow
   (patrz sekcja o migracji). To one ustawiają kolejność na liście.
 - **Dopasowania linków wewnętrznych** do podstron ofertowych — tabela wyżej.
-- **Treść sześciu artykułów** jest napisana przez studio na podstawie tez
-  z podstron usługowych i playbooka. Liczby w nich (65 vs 40 minut, dołek
-  w trzecim tygodniu, „dwie osoby zostaną przy starym sposobie") pochodzą
-  z tych samych źródeł co teksty na `/szkolenia-ai` — do przejrzenia razem
-  z zespołem, zanim staną się materiałem publicznym.
-- **Identyfikatory filmów** w `src/data/filmy.js` są zaślepkami (`yt: null`).
-  Tytuły i opisy nagrań też są robocze.
-- **Adres kanału** `KANAL_YT` — do sprawdzenia, czy istnieje.
+- **Zdania pod filmami** w `src/data/filmy.js` — napisane z opisów na
+  YouTubie, do przejrzenia.
 - **`/og/baza-wiedzy.png`** — strona i artykuły dziedziczą `/og/hub.png`.
   Docelowo artykuł powinien mieć własny obrazek z tytułem.
 - **Autor** — wszystkie teksty są podpisane Szymonem Kitą (pole `autor`
@@ -186,7 +246,7 @@ adresem. Front:
 tytul: "Tytuł bez kropki na końcu"
 lead: "Zdanie, które musi się obronić bez reszty tekstu — idzie na listę i do meta description."
 data: 2026-09-08
-kategoria: wdrozenia    # wdrozenia | aplikacje | guided-coding | zarzadzanie
+kategoria: firma    # podstawy | firma | poradniki | sprzedaz | marketing | obsluga-klienta | narzedzia
 powiazane:
   - { t: "Nazwa usługi", h: "/adres" }
 ---

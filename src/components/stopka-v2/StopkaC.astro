@@ -1,0 +1,158 @@
+---
+// WARIANT C — „Neon"
+// Stopka zaczyna się od kontaktu ustawionego w skali nagłówka: mail jako
+// największy element, pod nim telefon i adres. Obok świeci sygnet zrobiony
+// jak neon z biura (ten ze zdjęcia w sekcji #dlaczego-my na stronie głównej):
+// sam kontur znaku, biała rurka, zielona poświata. Linki niżej są gęstym
+// indeksem w pięciu kolumnach — mniejsze, bo tu pierwszy plan ma kontakt.
+import { DROGI, PRODUKTY, FIRMA, OBSZARY, GRUPA, KONTAKT, SPOLKA, logo, SYGNET, IKONA_LINKEDIN } from './dane';
+const KOLUMNY = [
+  ...DROGI.map((d) => ({ h: d.pas, poz: d.poz })),
+  { h: 'Produkty i firma', poz: [...PRODUKTY, ...FIRMA] },
+];
+---
+<footer class="sC">
+<div class="sC-in">
+
+<div class="sC-gora">
+<div class="sC-kontakt">
+<p class="sC-lab">Napiszcie albo zadzwońcie, odpisujemy w&nbsp;jeden dzień roboczy</p>
+<a href={`mailto:${KONTAKT.email}`} class="sC-mail">{KONTAKT.email}</a>
+<div class="sC-wiersz">
+<a href={KONTAKT.telHref} class="sC-tel">{KONTAKT.tel}</a>
+<span class="sC-adres">{SPOLKA.ulica}, Warszawa</span>
+<a href={KONTAKT.linkedin} class="sC-li" aria-label="LinkedIn"><svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor" aria-hidden="true"><path d={IKONA_LINKEDIN}/></svg></a>
+</div>
+</div>
+<div class="sC-neon" aria-hidden="true">
+<svg viewBox="-3 -2.5 46 46" class="sC-znak">
+<path d={SYGNET} class="sC-rurka-cien"/>
+<path d={SYGNET} class="sC-rurka"/>
+</svg>
+</div>
+</div>
+
+<nav class="sC-indeks" aria-label="Mapa serwisu">
+{KOLUMNY.map((k) => (
+<div>
+<p class="sC-h">{k.h}</p>
+<ul>{k.poz.map((p) => <li><a href={p.h}>{p.t}</a></li>)}</ul>
+</div>
+))}
+</nav>
+
+<div class="sC-obszary">
+<p class="sC-h">Automatyzacja w działach</p>
+<ul>{OBSZARY.map((o) => <li><a href={o.h}>{o.t}</a></li>)}</ul>
+</div>
+
+<div class="sC-dol">
+<a href="/" class="sC-logo" aria-label="Let's automate — strona główna" set:html={logo('#ffffff', 'sC')}></a>
+<div class="sC-grupa">
+<img src="/uploads/wisegroup_logo_v2.webp" alt="Wise Group" width="442" height="52" class="sC-wg" loading="lazy" decoding="async">
+<ul class="sC-marki">
+{GRUPA.map((m) => <li><a href={m.url} target="_blank" rel="noopener"><img src={m.logo} alt={m.nazwa} loading="lazy" decoding="async"></a></li>)}
+</ul>
+</div>
+<img src="/uploads/openai-select-partner.png" alt="OpenAI Select Partner" width="1125" height="531" class="sC-openai" loading="lazy" decoding="async">
+</div>
+
+<div class="sC-prawne">
+<span>© 2026 {SPOLKA.nazwa} · NIP {SPOLKA.nip} · KRS {SPOLKA.krs}</span>
+<a href="/polityka-prywatnosci">Polityka prywatności</a>
+</div>
+
+</div>
+</footer>
+
+<script>
+  // Neon zapala się raz, kiedy stopka wchodzi w kadr. Bez ruchu, jeśli
+  // system prosi o ograniczenie animacji — wtedy świeci od razu.
+  const neon = document.querySelector('.sC-neon');
+  if (neon) {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) {
+      neon.classList.add('sC-on');
+    } else {
+      const io = new IntersectionObserver((w) => {
+        if (w[0].isIntersecting) { neon.classList.add('sC-on', 'sC-zapal'); io.disconnect(); }
+      }, { threshold: 0.4 });
+      io.observe(neon);
+    }
+  }
+</script>
+
+<style>
+  .sC,.sC *{box-sizing:border-box}
+  :global(.sC :where(a)){color:inherit;text-decoration:none}
+  :global(.sC :where(ul)){list-style:none;margin:0;padding:0}
+  :global(.sC :where(p)){margin:0}
+
+  .sC{position:relative;overflow:hidden;color:#ffffff;
+    background:radial-gradient(640px 460px at 84% 30%, rgba(0,205,119,0.10), transparent 70%), #07140d;
+    padding:clamp(64px,7vw,104px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) 30px}
+
+  .sC-gora{display:grid;grid-template-columns:minmax(0,1fr) clamp(220px,24vw,340px);gap:40px;align-items:center}
+  .sC-lab{font-size:15px;color:rgba(255,255,255,0.55)}
+  .sC-mail{display:inline-block;margin-top:14px;font-size:clamp(30px,5.6vw,80px);line-height:1.02;font-weight:750;letter-spacing:-0.035em;white-space:nowrap;
+    background:linear-gradient(#00CD77,#00CD77) left 100% / 0 3px no-repeat;padding-bottom:10px;transition:background-size .45s cubic-bezier(.4,0,.2,1),color .2s}
+  .sC-mail:hover{background-size:100% 3px}
+  .sC-wiersz{display:flex;align-items:center;flex-wrap:wrap;gap:10px 28px;margin-top:22px;font-size:clamp(17px,1.5vw,21px);font-weight:550}
+  .sC-tel:hover{color:#00CD77}
+  .sC-adres{color:rgba(255,255,255,0.55);font-weight:450}
+  .sC-li{display:inline-flex;width:38px;height:38px;align-items:center;justify-content:center;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(255,255,255,0.22);color:rgba(255,255,255,0.8);transition:box-shadow .2s,color .2s}
+  .sC-li:hover{color:#ffffff;box-shadow:inset 0 0 0 1px #00CD77}
+
+  /* Neon: dwie warstwy tego samego konturu — szeroka, rozmyta zieleń pod
+     spodem i cienka, prawie biała rurka na wierzchu. */
+  .sC-neon{justify-self:end;width:100%;max-width:340px;opacity:.18;transition:opacity .4s}
+  .sC-neon.sC-on{opacity:1}
+  .sC-zapal{animation:sC-mig 1.1s steps(1,end) 1}
+  @keyframes sC-mig{0%{opacity:.18}12%{opacity:1}18%{opacity:.3}30%{opacity:1}36%{opacity:.5}44%,100%{opacity:1}}
+  .sC-znak{display:block;width:100%;height:auto;overflow:visible}
+  .sC-rurka-cien{fill:none;stroke:#00CD77;stroke-width:1.5;stroke-linejoin:round;filter:blur(3px);opacity:.75}
+  .sC-rurka{fill:none;stroke:#d9ffec;stroke-width:.55;stroke-linejoin:round;filter:drop-shadow(0 0 1.2px #00CD77) drop-shadow(0 0 4px rgba(0,205,119,0.85))}
+
+  .sC-indeks{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:36px clamp(24px,3vw,48px);margin-top:clamp(56px,6vw,88px);padding-top:clamp(32px,3.5vw,44px);border-top:1px solid rgba(255,255,255,0.1)}
+  .sC-h{font-size:13.5px;font-weight:650;color:rgba(255,255,255,0.5);margin-bottom:14px}
+  .sC-indeks ul{display:flex;flex-direction:column;gap:8px;font-size:14.5px;line-height:1.35;color:#d3ddd6}
+  .sC-indeks a,.sC-obszary a,.sC-prawne a{transition:color .15s,text-decoration-color .15s;text-decoration:underline !important;text-decoration-color:transparent !important;text-decoration-thickness:1.5px !important;text-underline-offset:4px}
+  .sC-indeks a:hover,.sC-obszary a:hover,.sC-prawne a:hover{color:#ffffff;text-decoration-color:#00CD77 !important}
+
+  .sC-obszary{margin-top:40px;padding-top:26px;border-top:1px solid rgba(255,255,255,0.1)}
+  .sC-obszary ul{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px clamp(24px,3vw,48px);font-size:14.5px;line-height:1.35;color:#d3ddd6}
+
+  .sC-dol{display:flex;align-items:center;gap:20px 40px;flex-wrap:wrap;margin-top:clamp(48px,5vw,64px);padding-top:26px;border-top:1px solid rgba(255,255,255,0.1)}
+  .sC-logo :global(svg){display:block;height:24px;width:auto}
+  .sC-grupa{display:flex;align-items:center;gap:12px 24px;flex-wrap:wrap;margin-left:auto;padding-left:24px;border-left:1px solid rgba(255,255,255,0.12)}
+  .sC-wg{display:block;height:15px;width:auto;filter:brightness(0) invert(1);opacity:.75}
+  .sC-marki{display:flex;align-items:center;gap:6px 22px;flex-wrap:wrap}
+  .sC-marki a{display:block;padding:6px 0}
+  .sC-marki img{display:block;height:auto;width:auto;max-height:13px;max-width:92px;filter:brightness(0) invert(1);opacity:.38;transition:opacity .2s}
+  .sC-marki a:hover img{opacity:1}
+  .sC-openai{display:block;height:40px;width:auto;border-radius:8px}
+
+  .sC-prawne{display:flex;justify-content:space-between;gap:12px 24px;flex-wrap:wrap;margin-top:22px;font-size:12.5px;color:rgba(255,255,255,0.42)}
+
+  @media (max-width:1100px){
+    .sC-indeks{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .sC-obszary ul{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .sC-grupa{margin-left:0;padding-left:0;border-left:0}
+  }
+  /* Na wąskim ekranie neon nie mieści się obok maila, a pod tekstem
+     przeszkadzałby w czytaniu — staje nad kontaktem jako mały szyld. */
+  @media (max-width:760px){
+    .sC-gora{grid-template-columns:1fr;gap:28px}
+    .sC-neon{order:-1;justify-self:start;width:84px}
+  }
+  @media (max-width:520px){
+    .sC-mail{font-size:7vw;letter-spacing:-0.03em}
+    .sC-wiersz{flex-direction:column;align-items:flex-start;gap:8px}
+    .sC-indeks,.sC-obszary ul{grid-template-columns:1fr}
+    .sC-indeks{gap:30px}
+    .sC-indeks ul,.sC-obszary ul{gap:2px}
+    .sC-indeks a,.sC-obszary a{display:inline-block;padding-block:5px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .sC-zapal{animation:none}
+  }
+</style>

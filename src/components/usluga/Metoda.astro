@@ -1,0 +1,52 @@
+---
+// METODA (USP): porównanie z typowym projektem faza po fazie. Nasza
+// kolumna na ciemnej karcie z sygnetem Let's automate, dopiskiem
+// „według WiseStacka" i liczbą wdrożeń; odpowiedzi z ptaszkiem, fazy
+// z ikoną (klucz z HI). Na telefonie wiersz pod wierszem: „Typowo: …"
+// szarym drukiem, nasza odpowiedź na ciemnym polu.
+import { HI, SYGNET } from './ikony';
+// ik = klucz z HI; ikSvg = własna ścieżka (viewBox 0 0 16 16), gdy w HI jej nie ma
+interface Wiersz { k: string; ik?: string; ikSvg?: string; r: string; t: string; m: string }
+interface Props {
+  tytul: string;           // HTML (np. no-break przy „know-how")
+  sub: string;
+  wiersze: Wiersz[];
+  typowy?: string;         // nagłówek kolumny porównania, HTML
+  liczba?: string;         // plakietka w nagłówku naszej kolumny
+  podpis?: string;         // pod „Let’s automate"; '' chowa
+  stopka?: string;         // HTML pod kartą
+  id?: string;
+}
+const {
+  tytul, sub, wiersze,
+  typowy = 'Typowy projekt<br>na zamówienie',
+  liczba = '140+ wdrożeń',
+  podpis = 'według WiseStacka',
+  stopka = 'WiseStack to nasz sposób budowania oprogramowania z AI: dwanaście decyzji podjętych raz i wnoszonych do każdego projektu.<br><a href="/wisestack">Cała metoda →</a>',
+  id = 'metoda',
+} = Astro.props;
+---
+<section id={id} class="v3-sek v3-papier">
+<div class="v8-gl">
+<h2 class="v3-h2" set:html={tytul}></h2>
+<p class="v3-sub">{sub}</p>
+</div>
+
+<div class="mt-por" style={`grid-template-rows:repeat(${wiersze.length + 2},auto)`}>
+<span class="mt-tlo" style={`grid-row:1 / ${wiersze.length + 3}`} aria-hidden="true"></span>
+<span style="grid-column:1;grid-row:1"></span>
+<span class="mt-gl-r" style="grid-column:2;grid-row:1" set:html={typowy}></span>
+<div class="mt-gl-m" style="grid-column:3;grid-row:1">
+<i aria-hidden="true"><svg viewBox="0 0 40 41" set:html={SYGNET}></svg></i>
+<span><b>Let’s automate</b>{podpis && <small>{podpis}</small>}</span>
+{liczba && <em>{liczba}</em>}
+</div>
+{wiersze.map((w, i) => (<>
+  <h3 class={`mt-k${i === 0 ? ' p1' : ''}`} style={`grid-column:1;grid-row:${i + 2}`}><i><svg class="hi" viewBox="0 0 16 16" set:html={w.ikSvg || HI[w.ik || 'check']} aria-hidden="true"></svg></i>{w.k}</h3>
+  <p class={`mt-r${i === 0 ? ' p1' : ''}`} style={`grid-column:2;grid-row:${i + 2}`}>{w.r}</p>
+  <p class={`mt-m${i === 0 ? ' p1' : ''}`} style={`grid-column:3;grid-row:${i + 2}`}><b><svg viewBox="0 0 16 16" set:html={HI['check']} aria-hidden="true"></svg>{w.t}</b>{w.m}</p>
+</>))}
+<p class="mt-st" style={`grid-column:3;grid-row:${wiersze.length + 2}`} set:html={stopka}></p>
+</div>
+<slot />
+</section>

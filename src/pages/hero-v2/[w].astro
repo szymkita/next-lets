@@ -1,0 +1,88 @@
+---
+// Warianty hero strony głównej do porównania (16.10.2026): /hero-v2/a, b, c.
+// Strony robocze, noindex, poza sitemapą. Strona główna (/) zostaje bez
+// zmian, dopóki Szymon nie powie „podmień".
+//
+// Każdy wariant stoi w tym samym otoczeniu co dzisiejsze hero na /: pasek
+// WiseGroup, nawigacja, pod planszą logotypy. Tekst jest wspólny
+// (hero-v2/Tekst.astro), różni się rama i rysunek:
+//   A — pulpit firmy w oknie, które wisi na krawędzi planszy,
+//   B — jedno zamówienie przechodzi przez całą firmę (okno obok tekstu),
+//   C — studio: zdjęcie z biura z neonem obok tekstu,
+//   D — pulpit z A na jasnej planszy (obecna strona główna zaczyna się jasno).
+// Na dole przełącznik między wariantami i link do obecnej strony głównej.
+import LaBase from '../../layouts/LaBase.astro';
+import Styl from '../../components/usluga/Styl.astro';
+import Anim from '../../components/usluga/Anim.astro';
+import Loga from '../../components/usluga/Loga.astro';
+import Tekst from '../../components/hero-v2/Tekst.astro';
+import HeroPulpit from '../../components/hero-v2/HeroPulpit.astro';
+import HeroZamowienie from '../../components/hero-v2/HeroZamowienie.astro';
+import HeroStudio from '../../components/hero-v2/HeroStudio.astro';
+
+export function getStaticPaths() {
+  return ['a', 'b', 'c', 'd'].map((w) => ({ params: { w } }));
+}
+const { w } = Astro.params;
+const WARIANTY = [
+  { w: 'a', t: 'A · Pulpit firmy' },
+  { w: 'b', t: 'B · Zamówienie przez firmę' },
+  { w: 'c', t: 'C · Studio' },
+  { w: 'd', t: 'D · Pulpit na jasnym' },
+];
+const ten = WARIANTY.find((x) => x.w === w);
+---
+<LaBase title={`Hero strony głównej — ${ten.t}`} description="Wariant roboczy hero strony głównej." noindex ctaHref="/#diagnoza" nav={null}>
+<div class="v3">
+<Styl />
+<Anim />
+<section class="v4-hero">
+{w === 'a' && (
+<div class="v4-hero-in">
+<Tekst />
+<HeroPulpit />
+</div>
+)}
+{w === 'b' && (
+<div class="v4-hero-in obok">
+<Tekst />
+<HeroZamowienie />
+</div>
+)}
+{w === 'c' && (
+<div class="v4-hero-in obok hs-in">
+<Tekst />
+<HeroStudio />
+</div>
+)}
+{w === 'd' && (
+<div class="v4-hero-in jasny hv-jasny">
+<Tekst />
+<HeroPulpit />
+</div>
+)}
+</section>
+<Loga />
+</div>
+
+<nav class="hv-przel" aria-label="Warianty hero">
+{WARIANTY.map((x) => (<a href={`/hero-v2/${x.w}`} class={x.w === w ? 'on' : ''}>{x.t}</a>))}
+<a href="/">Obecne</a>
+</nav>
+
+<style is:global>
+  /* Etykieta nad nagłówkiem: w ramie „okno" nagłówek i lead stoją w jednym
+     rzędzie, więc etykieta idzie razem z nagłówkiem w lewej kolumnie. */
+  .hv-gl .v3-etyk{margin-bottom:clamp(20px,2.4vw,30px)}
+  /* D: rama „okno" na papierze. W Stylu „jasny" jest opisany tylko razem
+     z „obok", więc tu kolory tekstu i lżejszy cień okna. */
+  .v4-hero .hv-jasny .v3-etyk{color:var(--t2)}
+  .v4-hero .hv-jasny .v3-etyk i{box-shadow:0 0 0 4px rgba(0,205,119,0.18)}
+  .v4-hero .hv-jasny .hp-okno{box-shadow:0 0 0 1px rgba(15,26,20,0.1),0 50px 90px -46px rgba(15,26,20,0.45),0 18px 36px -24px rgba(15,26,20,0.3)}
+  .hv-przel{position:fixed;left:50%;bottom:18px;z-index:80;transform:translateX(-50%);display:flex;gap:4px;padding:5px;border-radius:999px;background:rgba(15,26,20,0.88);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 14px 40px -12px rgba(0,0,0,0.5);font-size:13px;white-space:nowrap}
+  .hv-przel a{padding:8px 14px;border-radius:999px;color:rgba(255,255,255,0.72);transition:background .15s,color .15s}
+  .hv-przel a:hover{color:#ffffff}
+  .hv-przel a.on{background:#00CD77;color:#07140d;font-weight:650}
+  @media (max-width:520px){ .hv-przel{font-size:12px} .hv-przel a{padding:7px 10px} }
+</style>
+</LaBase>

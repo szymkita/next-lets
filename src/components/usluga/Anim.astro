@@ -1,0 +1,27 @@
+---
+// WEJŚCIE W KADR: każdy element z [data-anim] dostaje .on, kiedy wejdzie
+// w kadr (raz). Element z [data-anim][data-gra] dostaje dodatkowo .gra od
+// razu po załadowaniu — jego CSS chowa stan startowy tylko wtedy, gdy
+// animacja naprawdę się odbędzie. Przy prefers-reduced-motion i bez
+// IntersectionObservera wszystko dostaje .on od razu (stan końcowy).
+---
+<script>
+  var redukcja = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // ---- Wejście w kadr: [data-anim] dostaje .on (krzywa, okna, schody, kafle) ----
+  (function(){
+    var els = document.querySelectorAll('.v3 [data-anim]');
+    if(!els.length) return;
+    if(redukcja || !('IntersectionObserver' in window)){
+      els.forEach(function(el){ el.classList.add('on'); });
+      return;
+    }
+    els.forEach(function(el){ if(el.hasAttribute('data-gra')) el.classList.add('gra'); });
+    var io = new IntersectionObserver(function(wpisy){
+      wpisy.forEach(function(w){
+        if(w.isIntersecting){ w.target.classList.add('on'); io.unobserve(w.target); }
+      });
+    }, { threshold: 0.3 });
+    els.forEach(function(el){ io.observe(el); });
+  })();
+
+</script>

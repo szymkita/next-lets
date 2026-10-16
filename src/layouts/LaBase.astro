@@ -1,6 +1,8 @@
 ---
 import Nawigacja from '../components/Nawigacja.astro';
 import Stopka from '../components/Stopka.astro';
+import MetaStrony from '../components/MetaStrony.astro';
+import Zgody from '../components/Zgody.astro';
 // Wspólne rusztowanie podstron Guided Coding: head, style bazowe, nawigacja,
 // stopka i skrypty (sticky header + akordeon FAQ).
 // Design 1:1 ze stroną główną — te same tokeny, ta sama nawigacja.
@@ -17,35 +19,10 @@ const {
   nav = 'uslugi',
   // Warianty robocze trzymamy poza indeksem wyszukiwarek.
   noindex = false,
+  // Pasek Wise Group nad nawigacją; podstrona może go wyłączyć.
+  topbar = true,
 } = Astro.props;
 
-// Dane firmy jadą w każdej podstronie: wyszukiwarki i modele językowe
-// biorą stąd nazwę, adres i przynależność do grupy.
-const firma = {
-  '@context': 'https://schema.org',
-  '@type': 'Organization',
-  '@id': new URL('/#organizacja', Astro.site).href,
-  name: "Let's automate",
-  legalName: "Let's automate sp. z o.o.",
-  url: new URL('/', Astro.site).href,
-  logo: new URL('/uploads/logo-2.svg', Astro.site).href,
-  description: 'Studio transformacji AI. Projektuje i buduje systemy, na których firmy działają po nowemu.',
-  vatID: 'PL5252908405',
-  address: {
-    '@type': 'PostalAddress',
-    streetAddress: 'ul. Nowy Świat 33/13',
-    postalCode: '00-029',
-    addressLocality: 'Warszawa',
-    addressCountry: 'PL',
-  },
-  email: 'hello@letsautomate.pl',
-  telephone: '+48571399932',
-  parentOrganization: { '@type': 'Organization', name: 'Wise Group' },
-  areaServed: { '@type': 'Country', name: 'Polska' },
-};
-
-const ogUrl = new URL(ogImage, Astro.site).href;
-const pageUrl = new URL(Astro.url.pathname, Astro.site).href;
 ---
 <!DOCTYPE html>
 <html lang="pl">
@@ -53,25 +30,9 @@ const pageUrl = new URL(Astro.url.pathname, Astro.site).href;
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{title}</title>
-<meta name="description" content={description}>
-{noindex && <meta name="robots" content="noindex, nofollow">}
+<MetaStrony title={title} description={description} ogImage={ogImage} noindex={noindex} />
 <meta name="theme-color" content="#0e2b1d">
 <link rel="icon" href="/uploads/logo-2.svg">
-<link rel="canonical" href={pageUrl}>
-<meta property="og:type" content="website">
-<meta property="og:locale" content="pl_PL">
-<meta property="og:site_name" content="Let's automate">
-<meta property="og:url" content={pageUrl}>
-<meta property="og:title" content={title}>
-<meta property="og:description" content={description}>
-<meta property="og:image" content={ogUrl}>
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content={title}>
-<meta name="twitter:description" content={description}>
-<meta name="twitter:image" content={ogUrl}>
-<meta property="og:image:alt" content={title}>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
 <link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
@@ -218,14 +179,14 @@ const pageUrl = new URL(Astro.url.pathname, Astro.site).href;
 
   /* nawigacja przeniesiona ze strony głównej (31.08.2026) */
 </style>
-<script type="application/ld+json" is:inline set:html={JSON.stringify(firma)}></script>
 <slot name="head" />
 </head>
 <body>
+<Zgody />
 
 <div class="page">
 
-<Nawigacja ctaHref={ctaHref} />
+<Nawigacja ctaHref={ctaHref} topbar={topbar} />
 
 <slot />
 

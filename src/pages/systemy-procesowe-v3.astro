@@ -1,0 +1,1607 @@
+---
+// SYSTEMY DLA KLUCZOWYCH PROCESÓW — WARIANT v3 — /systemy-procesowe-v3
+// noindex, poza sitemapą, stoi obok v1 i v2 do porównania (11.10.2026).
+//
+// SKĄD v3: v2 podniosła poziom wykonania tymi samymi środkami co strona
+// główna, ale Szymon ocenił, że całość dalej „wygląda jak wygenerowana
+// z AI". Zadanie: zupełnie nowy styl wizualny, lekko trzymający się strony
+// głównej (zieleń, krój, ekrany produktu, duże liczby), ale mocniejszy.
+//
+// KONCEPCJA: PRZYRZĄD POMIAROWY. Strona sprzedaje zmierzenie czasu sprawy,
+// więc język graficzny bierze się z instrumentu, nie z szablonu landingu:
+//   · podziałka, linijka i liczby w kroju mono — tylko tam, gdzie są dane
+//   · dwie barwy z twardą rolą, te same w każdym rysunku:
+//       bursztyn w ukośnym kreskowaniu = czekanie, zieleń = praca i system
+//   · ciemna scena z ziarnem tam, gdzie pokazujemy produkt (hero, ekrany),
+//     ciepły papier tam, gdzie się czyta
+//   · skala typografii skrajna: nagłówki do 92 px, tekst 16–18 px
+//   · zero siatek równych kart; każda sekcja ma inny szkielet
+//
+// UKŁAD (tła): hero na ciemnej planszy → definicja na papierze → dlaczego
+// na bieli → produkt na ciemnej scenie → dla kogo na papierze → uruchomienia
+// na bieli → zielony pas z twarzą → konfiguracja na papierze → dowody na
+// bieli → cytat na papierze → kontakt i FAQ (komponenty wspólne).
+//
+// RYSUNKI (każdy niesie argument, żaden się nie powtarza gatunkiem):
+//   · PRZYRZĄD (hero) — oś sześciu dni w skali, praca jako zielone drzazgi,
+//     czekanie kreskowane; głowica jedzie ze stałą prędkością, więc krótka
+//     oś po przebudowie kończy się w ułamku czasu. Animacja w JS (licznik
+//     czasu w nagłówku); bez JS i przy reduced-motion stoi stan końcowy.
+//   · KRZYWA (dlaczego) — rozkład rynku, pasmo „granic, które przewidział
+//     producent", a Wasz sposób pracy w ogonie, poza pasmem. Wszystkie
+//     podpisy to cytaty z tekstu sekcji.
+//   · TRASA (dlaczego) — pięć narzędzi jak stacje, przerwy bursztynowe.
+//   · APLIKACJA (jak wygląda) — jedno okno z zakładkami zamiast pasa.
+//   · SCHODY (uruchomienia) — ten sam czas sprawy cztery razy w jednej skali;
+//     pasek kurczy się przy wejściu w kadr, ucięta część zostaje jako duch.
+//   · EKRAN Z ADNOTACJAMI (konfiguracja) — cztery obszary oznaczone numerem,
+//     legenda pod spodem; ten sam układ co rysunek techniczny.
+//
+// TREŚĆ: teksty 1:1 z /systemy-procesowe. Nowe są tylko napisy wewnątrz
+// rysunków i ekranów (np. „upłynęło", nazwy pól w ustawieniach).
+//
+// DO POTWIERDZENIA: wszystko z listy v1 niżej, plus Marcel jako twarz
+// zielonego pasa (formularz mówi, że rozmowę prowadzi Szymon).
+//
+// ---------------------------------------------------------------------
+// Dane poniżej są skopiowane z v1 bez zmian (komentarz v1 w tamtym pliku).
+import LaBase from '../layouts/LaBase.astro';
+import GcFaq from '../components/GcFaq.astro';
+import GcCta from '../components/GcCta.astro';
+
+const kanon = new URL('/systemy-procesowe', Astro.site).href;
+
+const dane = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Service',
+      '@id': `${kanon}#usluga`,
+      name: 'Systemy dla kluczowych procesów',
+      alternateName: ['Dedykowany system dla firmy', 'Aplikacja pod proces', 'Oprogramowanie na zamówienie'],
+      serviceType: 'Projektowanie i budowa dedykowanych aplikacji prowadzących procesy biznesowe',
+      url: kanon,
+      description: 'Aplikacje budowane pod przebiegi pracy, na których firma zarabia. Zamykają w oprogramowaniu sposób pracy wypracowany przez firmę, prowadzą sprawę przez wszystkie działy i zdejmują przekazania między nimi. Powstają etapami — pierwsze uruchomienie wchodzi na produkcję po sześciu tygodniach.',
+      provider: { '@id': new URL('/#organizacja', Astro.site).href },
+      areaServed: { '@type': 'Country', name: 'Polska' },
+      audience: { '@type': 'BusinessAudience', name: 'Średnie i duże firmy' },
+    },
+    {
+      '@type': 'BreadcrumbList',
+      '@id': `${kanon}#okruszki`,
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Strona główna', item: new URL('/', Astro.site).href },
+        { '@type': 'ListItem', position: 2, name: 'Systemy dla kluczowych procesów', item: kanon },
+      ],
+    },
+  ],
+};
+
+const title = "Systemy dla kluczowych procesów — przewaga zamknięta w oprogramowaniu | Let's automate";
+const description = 'Systemy dla procesów, na których zarabiacie. Zamykają w oprogramowaniu Wasz sposób pracy i prowadzą sprawę przez wszystkie działy. Powstają etapami — pierwsze uruchomienie po sześciu tygodniach.';
+
+
+// ---- OŚ CZASU SPRAWY (hero) --------------------------------------------
+// Przykład: od zapytania klienta do wysłanej oferty. Kroki pracy są liczone
+// w minutach, postoje w dniach roboczych (osiem godzin). Wszystkie szerokości
+// i wszystkie czasy animacji wynikają z tej jednej tablicy.
+//
+// UWAGA techniczna: paski pracy mają min-width 3 px, więc przy tej skali
+// zabierają około trzech procent szerokości ponad swój udział. Bez tego
+// byłyby niewidoczne — a to one są pointą rysunku.
+const GODZ_DNIA = 8;
+const KROKI = [
+  { p: true, min: 12, t: 'Handlowiec zakłada sprawę', k: 'zakłada sprawę' },
+  { p: false, dni: 2, t: 'Czeka na wycenę technologa', k: 'czeka na wycenę' },
+  { p: true, min: 24, t: 'Technolog liczy koszt', k: 'liczy koszt' },
+  { p: false, dni: 1.5, t: 'Czeka na dostępność z magazynu', k: 'czeka na magazyn' },
+  { p: true, min: 18, t: 'Przepisanie do arkusza i złożenie oferty', k: 'przepisuje do arkusza' },
+  { p: false, dni: 2.5, t: 'Czeka na akceptację marży', k: 'czeka na akceptację' },
+  { p: true, min: 6, t: 'Wysyłka do klienta', k: 'wysyła' },
+];
+const kd = (x) => (x.p ? x.min / 60 / GODZ_DNIA : x.dni);   // długość kroku w dniach
+const DZIS_DNI = KROKI.reduce((a, x) => a + kd(x), 0);       // 6,125 dnia
+const PRACA_MIN = KROKI.filter((x) => x.p).reduce((a, x) => a + x.min, 0);   // 60
+const PO_GODZ = 4;
+const PO_DNI = PO_GODZ / GODZ_DNIA;
+// Odmiana po liczbie: 2-4 biora forme mnoga, ulamki i reszta pojedyncza.
+const dniOpis = (d) => (Number.isInteger(d) && d >= 2 && d <= 4 ? d + ' dni' : String(d).replace('.', ',') + ' dnia');
+const PRACA_PO_MIN = 42;   // znika przepisywanie do arkusza
+const UDZIAL_PO = PO_DNI / DZIS_DNI;
+
+
+
+// ---- SILOSY (sekcja o gotowych narzędziach) -----------------------------
+// Narzędzia stoją w pionie, proces biegnie w poprzek. Przerwy między nimi
+// są bursztynowe i podpisane — tam siedzi cały czas sprawy.
+const NARZEDZIA = ['CRM', 'ERP', 'Magazyn', 'Arkusz', 'Poczta'];
+const PRZERWY = ['przepisanie', 'telefon', 'kopiuj-wklej', 'e-mail'];
+
+const POWODY = [
+  {
+    t: 'Każdy dział kupuje swoje narzędzie osobno',
+    d: 'Handel dostaje CRM, finanse ERP, reszta pracuje w arkuszu. Każde z nich jest dobre w swoim pudełku. Sprawa przechodzi przez wszystkie i w każdej przerwie czeka, aż ktoś ją przeniesie dalej.',
+  },
+  {
+    t: 'Stan sprawy nie leży w żadnym z nich w całości',
+    d: 'Żeby odpowiedzieć klientowi, na czym stoi jego zapytanie, ktoś musi zajrzeć w trzy miejsca i zadzwonić w czwarte. Dlatego „sprawdzę i oddzwonię" jest w tych firmach zdaniem etatowym.',
+  },
+  {
+    t: 'Wasza przewaga zwykle nie mieści się w konfiguracji',
+    d: 'Gotowy system da się ustawić w granicach, które przewidział producent, a te granice są średnią z jego rynku. To, co robicie inaczej i na czym zarabiacie więcej, leży zwykle poza nimi i ląduje w arkuszu obok. Im mocniejsza przewaga, tym większy ten arkusz.',
+  },
+];
+
+
+// ---- ODCINKI (ciemny pas) -----------------------------------------------
+// Ten sam pasek, co w hero, kurczący się po każdym uruchomieniu. To, że
+// wartość ląduje co kilka tygodni, odróżnia to od projektu na dwa lata.
+const URUCHOMIENIA = [
+  {
+    e: 'Pierwsze uruchomienie', tyg: 'po 6 tygodniach', t: 'Rejestr zapytań i wycena w jednym miejscu',
+    d: 'Zapytanie wpada do rejestru prosto z poczty, technolog dostaje je z kompletem załączników, a stan sprawy widzi każdy, kto ma do niej dostęp.',
+    zn: 'Znika przepisywanie oferty do arkusza',
+    dni: 3,
+  },
+  {
+    e: 'Drugie uruchomienie', tyg: '5 tygodni później', t: 'Dostępność z magazynu wpięta na żywo',
+    d: 'Wycena sięga po stany i terminy dostaw bez pytania człowieka. Pozycje, których nie ma, wychodzą na wierzch od razu.',
+    zn: 'Znika telefon do magazynu przy każdej wycenie',
+    dni: 1.5,
+  },
+  {
+    e: 'Trzecie uruchomienie', tyg: '4 tygodnie później', t: 'Akceptacja marży jako reguła',
+    d: 'Oferty w widełkach idą do klienta same. Do zarządu trafiają tylko te, które z widełek wychodzą, razem z wyliczeniem, dlaczego.',
+    zn: 'Znika czekanie na akceptację przy ofertach w widełkach',
+    dni: PO_DNI,
+  },
+];
+
+
+// ---- CO ZMIENIA WASZ CZŁOWIEK -------------------------------------------
+const KONFIG = [
+  { t: 'Progi i widełki', d: 'Kwota, powyżej której wchodzi akceptacja zarządu. Terminy, po których sprawa się podświetla.' },
+  { t: 'Kroki obiegu i akceptacje', d: 'Kolejność kroków, osoby odpowiedzialne i to, które kroki da się pominąć.' },
+  { t: 'Słowniki i formularze', d: 'Typy spraw, kategorie, pola na formularzu i to, które z nich są wymagane.' },
+  { t: 'Szablony i treści', d: 'Wzory dokumentów, treść powiadomień i to, kto je dostaje.' },
+];
+
+
+// ---- PRZYKŁADY ----------------------------------------------------------
+// PRZYKŁADOWE wdrożenia — do podmiany na potwierdzone przypadki.
+// Liczba przy każdym to czas sprawy, czyli ta sama miara, co w hero.
+const PRZYKLADY = [
+  {
+    f: 'Producent konstrukcji stalowych', m: '260 osób', p: 'Od zapytania do oferty',
+    d: 'Zapytania z poczty i z portalu wpadają do jednego rejestru. Wycena sięga po cennik materiału i obłożenie produkcji, a oferta w widełkach wychodzi bez akceptacji.',
+    przed: '6 dni', po: '4 godziny', przedD: 6.1, poD: 0.5,
+    ludzie: 'nietypowe konstrukcje wyceniane ręcznie przez technologa',
+  },
+  {
+    f: 'Sieć serwisów', m: '180 osób', p: 'Obieg zlecenia serwisowego',
+    d: 'Zgłoszenie, wycena, zamówienie części i rozliczenie idą jednym obiegiem. Klient widzi status sam, a serwisant dostaje komplet danych przed wyjazdem.',
+    przed: '9 dni', po: '2 dni', przedD: 9, poD: 2,
+    ludzie: 'reklamacje i sprawy z ubezpieczycielem',
+  },
+  {
+    f: 'Dystrybutor spożywczy', m: '410 osób', p: 'Reklamacje i zwroty',
+    d: 'Zgłoszenie od klienta łączy się z dokumentem sprzedaży i partią towaru. Decyzja o uznaniu zapada na regule, a księgowanie korekty idzie do ERP-a samo.',
+    przed: '11 dni', po: '3 dni', przedD: 11, poD: 3,
+    ludzie: 'sprawy powyżej progu wartości i spory z dostawcą',
+  },
+];
+
+
+// ---- WIDOKI SYSTEMU -----------------------------------------------------
+// Interfejs zbudowany w HTML, nie zrzut ekranu: skaluje się, da się go
+// poprawić w minutę i nie udaje cudzego wdrożenia. Wszystkie trzy widoki
+// pokazują TEN SAM proces, który idzie przez całą stronę — ofertowanie
+// u producenta konstrukcji stalowych. Numer sprawy z karty (ZP-2484) stoi
+// też w pierwszym wierszu rejestru, więc dwa widoki się ze sobą trzymają.
+//
+// Każdy opis przy karcie dowodzi tezy, która pada gdzie indziej na stronie:
+// dane z systemów (sekcja o silosach), licznik czekania (hero), właściciel
+// kroku (definicja), reguła przy decyzji (sekcja o konfiguracji).
+const KARTA_POZYCJE = [
+  { i: 'BLA 2400×1200×8', n: '12 szt.', st: 'na stanie', ok: true },
+  { i: 'CEO 160 S355', n: '48 mb', st: 'na stanie', ok: true },
+  { i: 'RUR 88,9×4', n: '30 mb', st: 'brak · dostawa 22.09', ok: false },
+];
+const KARTA_OBIEG = [
+  { t: 'Rejestracja zapytania', s: 'ok', kto: 'automatycznie · 14:02' },
+  { t: 'Wycena techniczna', s: 'teraz', kto: 'Michał R. · od 4 godzin', nr: 3 },
+  { t: 'Akceptacja marży', s: 'pomin', kto: 'pominięta regułą', nr: 4 },
+  { t: 'Wysyłka do klienta', s: 'czeka', kto: '' },
+];
+const REJESTR = [
+  { nr: 'ZP-2484', kl: 'Stalprofil', kr: 'Wycena techniczna', cz: '4 godziny', zle: false },
+  { nr: 'ZP-2483', kl: 'Mostostal Wschód', kr: 'Akceptacja marży', cz: '1 dzień', zle: false },
+  { nr: 'ZP-2481', kl: 'Budimex Industrial', kr: 'Wycena techniczna', cz: '3 dni', zle: true },
+  { nr: 'ZP-2478', kl: 'Hala-Bud', kr: 'Wysyłka', cz: '2 godziny', zle: false },
+  { nr: 'ZP-2476', kl: 'Zakład Konstrukcji', kr: 'Wysyłka', cz: '3 godziny', zle: false },
+  { nr: 'ZP-2475', kl: 'Termo-Instal', kr: 'Wycena techniczna', cz: '1 dzień', zle: false },
+  { nr: 'ZP-2473', kl: 'Panattoni Park', kr: 'Akceptacja marży', cz: '4 dni', zle: true },
+  { nr: 'ZP-2470', kl: 'Stalprofil', kr: 'Zamknięte', cz: '—', zle: false },
+  { nr: 'ZP-2469', kl: 'Metalbud', kr: 'Zamknięte', cz: '—', zle: false },
+];
+const REGULY = [
+  { t: 'Akceptacja zarządu powyżej', v: '120 000 zł' },
+  { t: 'Przypomnienie, gdy krok stoi dłużej niż', v: '2 dni' },
+  { t: 'Domyślna marża w widełkach', v: '18%' },
+  { t: 'Rysunek techniczny wymagany', v: 'tak' },
+  { t: 'Ważność oferty', v: '30 dni' },
+  { t: 'Kopia oferty do opiekuna klienta', v: 'tak' },
+];
+const KOKPIT = [
+  { t: 'Wycena techniczna', v: '9 godzin', u: 100 },
+  { t: 'Akceptacja marży', v: '3 godziny', u: 33 },
+  { t: 'Potwierdzenie dostępności', v: '2 godziny', u: 22 },
+  { t: 'Wysyłka do klienta', v: '25 minut', u: 5 },
+  { t: 'Rejestracja zapytania', v: '12 minut', u: 3 },
+];
+
+
+// ---- KTÓRE PROCESY ------------------------------------------------------
+// Kolumna obok definicji. Trzecia z rzędu figura „czego nie robimy" stała
+// wcześniej w tym miejscu i była zmarnowaną przestrzenią: to samo mówi blok
+// „kiedy to nie ma sensu" w sekcji o firmach oraz odpowiedź w FAQ.
+// Zamiast tego lista nazwanych procesów z działami, przez które biegną —
+// czytelnik ma tu rozpoznać swój, a przy okazji widzi tezę o przechodzeniu
+// w poprzek działów, zanim dojdzie do rysunku silosów.
+const PROCESY = [
+  { t: 'Od zapytania do oferty', d: 'handel · technolog · magazyn' },
+  { t: 'Od zamówienia do wysyłki', d: 'sprzedaż · produkcja · logistyka' },
+  { t: 'Obieg zlecenia serwisowego', d: 'serwis · części · rozliczenia' },
+  { t: 'Reklamacje i zwroty', d: 'obsługa · jakość · finanse' },
+  { t: 'Od projektu do rozliczenia', d: 'sprzedaż · realizacja · finanse' },
+];
+
+// ---- DLA JAKICH FIRM ----------------------------------------------------
+// Kwalifikacja postawiona na przewadze, nie na wielkości firmy. Liczba osób
+// niczego tu nie rozstrzyga — rozstrzyga to, czy firma ma czym się różnić
+// i czy ta różnica siedzi dziś w kilku głowach.
+const DLA_KOGO = [
+  {
+    t: 'Zarabiacie na procesie, który przechodzi przez kilka działów',
+    d: 'Zapytanie idzie przez handel, technologa i magazyn. Zlecenie przez serwis, części i rozliczenie. Nikt nie widzi całej ścieżki od początku do końca, a klient ocenia Was po jej długości.',
+  },
+  {
+    t: 'Robicie w nim coś, czego konkurencja nie robi',
+    d: 'Nietypowe wyceny, krótsze terminy albo przypadki, których inni nie biorą. Dziś ta wiedza siedzi w kilku głowach i firma rośnie tylko tak szybko, jak te głowy zdążą.',
+  },
+  {
+    t: 'Wolumen jest na tyle duży, że dzień czekania widać w wyniku',
+    d: 'Setki spraw miesięcznie. Przy takiej skali doba stracona na akceptację przestaje być drobiazgiem operacyjnym i zaczyna być liczbą, o którą pyta zarząd.',
+  },
+  {
+    t: 'Sprzedaż rośnie szybciej niż zespół, który to obsługuje',
+    d: 'Każde kolejne kilkanaście procent obrotu wymaga kolejnych etatów w tym samym tempie. To jest moment, w którym proces przestaje się skalować, i zwykle wtedy do nas piszecie.',
+  },
+];
+const NIE_TERAZ = [
+  'Proces mieści się w jednym dziale i w jednym narzędziu — wtedy gotowe rozwiązanie wychodzi taniej.',
+  'Chodzi o księgowość, kadry albo płace. Tam liczy się zgodność z przepisami, a nie Wasz sposób pracy, więc gotowego rozwiązania nie przebijemy.',
+  'Firma jest w środku wymiany ERP-a. Proces za kwartał wygląda inaczej, więc lepiej zmierzyć go po zmianie.',
+  'Model biznesowy jeszcze się szuka i proces zmienia się co miesiąc. Utrwalanie go w systemie byłoby przedwczesne.',
+];
+
+const faq = [
+  {
+    q: 'Dlaczego nie kupić gotowego systemu?',
+    a: 'Bo gotowe systemy są kupowane po dziale, a proces biegnie w poprzek działów. Granica biegnie po przewadze: przy księgowości, kadrach czy płacach liczy się zgodność z przepisami i gotowe rozwiązanie zawsze wygra, więc powiemy to na pierwszej rozmowie. Tam, gdzie proces jest Waszą przewagą, budowanie zwykle się opłaca — i czasem oznacza to, że przejmujemy rolę CRM-a albo tę część ERP-a, która ten proces prowadzi.',
+  },
+  {
+    q: 'Ile kosztuje taki system?',
+    a: 'Wyceniamy uruchomienie po uruchomieniu. Kwota za pierwsze jest stała i podajemy ją po warsztacie, na którym proces jest rozłożony na kroki. Cenę ruszają trzy rzeczy: liczba systemów, do których trzeba się wpiąć, liczba kroków z akceptacją oraz to, ile wyjątków ma trafić do systemu, a ile zostaje przy ludziach. Następne wyceniamy osobno, kiedy przychodzi ich czas.',
+  },
+  {
+    q: 'Co, jeśli wymagania zmienią się w trakcie?',
+    a: 'Dlatego droga do uruchomienia trwa kilka tygodni. Zmiana zgłoszona po drodze wchodzi do następnego, chyba że wywraca to, co właśnie budujemy — wtedy przerywamy i przeliczamy zakres razem z Wami. Przy projekcie rozpisanym na rok zmiana wymagań jest katastrofą; przy sześciotygodniowym etapie jest zwykłą decyzją.',
+  },
+  {
+    q: 'Co, jeśli po pierwszym uruchomieniu stwierdzimy, że to nie to?',
+    a: 'Kończycie. To, co powstało, pracuje na produkcji i zostaje Wasze razem z kodem i dokumentacją. Zakres pierwszego uruchomienia jest tak wyznaczony, żeby sam z siebie miał sens — zwykle skraca czas sprawy o połowę, nawet jeśli nigdy nie powstanie drugie. Nie ma tu etapu, po którym zostaje połowa systemu i faktura.',
+  },
+  {
+    q: 'Czy nie uzależnimy się od Was?',
+    a: 'Repozytorium, dokumentacja i dostęp do infrastruktury są Wasze od pierwszego dnia. Reguły, progi, kroki obiegu i formularze siedzą w konfiguracji, więc zmienia je Wasz człowiek bez naszego udziału. Umowa utrzymaniowa jest osobna od budowy i wypowiadalna z miesięcznym terminem. Piszemy na powszechnych technologiach, żeby przejęcie przez inny zespół było zwykłą rekrutacją.',
+  },
+  {
+    q: 'Co z danymi z obecnych systemów?',
+    a: 'Sprawy w toku przenosimy razem ze stanem, historia zwykle zostaje tam, gdzie jest, i podpinamy do niej podgląd. Migracja całej historii bywa droższa od reszty uruchomienia i rzadko się zwraca, więc za każdym razem liczymy ją osobno i pokazujemy rachunek przed decyzją.',
+  },
+  {
+    q: 'Ile czasu zajmie to naszym ludziom?',
+    a: 'Najwięcej na starcie: dwa dni warsztatu z osobami, które prowadzą proces dzisiaj, i dostęp do systemów. Potem godzina w tygodniu na pokaz tego, co powstało, i decyzje przy wyjątkach. Przed uruchomieniem dochodzi kilka dni testów na prawdziwych sprawach po Waszej stronie — to jedyny moment, w którym potrzebujemy więcej niż jednej osoby naraz.',
+  },
+  {
+    q: 'Czy taki system ma w środku AI?',
+    a: 'Tylko tam, gdzie zarabia na siebie. Większość tego, co skraca czas sprawy, to rejestr, obieg i integracje — bez modelu. Jeśli w procesie jest krok, który wymaga odczytania treści albo oceny, wchodzi <a href="/rozwiazania-ai" style="font-weight:700;color:#0a7a52">indywidualne rozwiązanie AI</a> jako element systemu, z własnym progiem pewności i ścieżką wyjątku.',
+  },
+  {
+    q: 'Na czym budujecie?',
+    a: 'Na powszechnych technologiach webowych i na bazie, którą utrzyma każdy zespół. Połączenia z Waszymi systemami idą przez ich API, a tam gdzie API nie ma — przez wymianę plików albo bezpośrednio przez bazę, po ustaleniu tego z Waszym IT. Przy każdym elemencie zapisujemy, na czym stoi i ile kosztuje jego utrzymanie przez rok.',
+  },
+  {
+    q: 'Kto to utrzymuje po uruchomieniu?',
+    a: 'Wasz zespół, my albo inna firma. Jeśli utrzymujemy my, umowa obejmuje czas reakcji, poprawki i aktualizacje zależności, a rozliczenie idzie miesięcznie. Zmiany w konfiguracji nie wchodzą do tej umowy, bo robi je Wasz człowiek — dlatego przy odbiorze pokazujemy dokładnie, co da się zmienić bez nas.',
+  },
+];
+dane['@graph'].push({
+  '@type': 'FAQPage',
+  '@id': `${kanon}#faq`,
+  mainEntity: faq.map((f) => ({
+    '@type': 'Question',
+    name: f.q,
+    acceptedAnswer: { '@type': 'Answer', text: f.a.replace(/<[^>]+>/g, '') },
+  })),
+});
+
+// =====================================================================
+// v3 · DANE RYSUNKÓW
+// =====================================================================
+
+// ---- PRZYRZĄD (hero) ----
+// Położenie każdego kroku na osi jako ułamek całego czasu sprawy.
+let biegDni = 0;
+const kroki = KROKI.map((x, i) => {
+  const od = biegDni / DZIS_DNI;
+  biegDni += kd(x);
+  return { ...x, i, od, do: biegDni / DZIS_DNI, udzial: kd(x) / DZIS_DNI };
+});
+// Etykiety pracy stoją nad osią, na środku swojego kroku. Pierwsza
+// przyklejona do lewej krawędzi, ostatnia do prawej — inaczej wyjeżdżają.
+const PRACA = kroki.filter((x) => x.p).map((x, i, a) => ({
+  ...x,
+  srodek: (x.od + x.do) / 2,
+  kotwica: i === 0 ? 'l' : i === a.length - 1 ? 'r' : 'c',
+}));
+const PZ = { jazda: 9, przerwa: 0.8, cykl: 16.5, gasnie: 1.2 };
+const minOpis = (m) => `${m} min`;
+const dniKrotko = (d) => String(d).replace('.', ',') + (d === 1 ? ' dzień' : Number.isInteger(d) ? ' dni' : ' dnia');
+
+// ---- KRZYWA (dlaczego) ----
+// Rozkład „jak firmy prowadzą ten proces". Środek przesunięty w lewo, żeby
+// prawy ogon był długi — tam stoi Wasz sposób pracy. Pasmo konfiguracji to
+// ±1,5 odchylenia: tyle, ile przewidział producent.
+const KW = { w: 1200, h: 400, x0: 30, x1: 1170, y0: 330, mu: 450, s: 118, wys: 236 };
+const gauss = (x) => Math.exp(-0.5 * ((x - KW.mu) / KW.s) ** 2);
+const kwY = (x) => KW.y0 - gauss(x) * KW.wys;
+const KW_PKT = Array.from({ length: Math.round((KW.x1 - KW.x0) / 6) + 1 }, (_, i) => KW.x0 + i * 6);
+const KRZYWA_D = 'M' + KW_PKT.map((x) => `${x},${kwY(x).toFixed(1)}`).join(' L');
+const PASMO = [KW.mu - 1.5 * KW.s, KW.mu + 1.5 * KW.s];
+const PASMO_PKT = KW_PKT.filter((x) => x >= PASMO[0] && x <= PASMO[1]);
+const PASMO_D = `M${PASMO[0]},${KW.y0} L` + PASMO_PKT.map((x) => `${x},${kwY(x).toFixed(1)}`).join(' L') + ` L${PASMO[1]},${KW.y0} Z`;
+const KROPKA = { x: 940, y: KW.y0 };
+const proc = (v, z) => `${(v / z * 100).toFixed(2)}%`;
+
+// ---- TRASA (dlaczego) ----
+const STACJE = [
+  { n: 'CRM', z: 'C' },
+  { n: 'ERP', z: 'E' },
+  { n: 'Magazyn', z: 'M' },
+  { n: 'Arkusz', z: 'A' },
+  { n: 'Poczta', z: 'P' },
+];
+
+// ---- SCHODY (uruchomienia) ----
+// Ten sam czas sprawy cztery razy, w skali osi z hero. Delta liczona od
+// wartości nominalnych (6 → 3 → 1,5 → pół dnia), bo tak mówi tekst.
+const NOMINAL = [6, 3, 1.5, PO_DNI];
+const SCHODY = URUCHOMIENIA.map((o, i) => ({
+  ...o,
+  u: o.dni / DZIS_DNI,
+  prev: (i === 0 ? DZIS_DNI : URUCHOMIENIA[i - 1].dni) / DZIS_DNI,
+  delta: NOMINAL[i] - NOMINAL[i + 1],
+  wartosc: o.dni >= 1 ? dniOpis(o.dni) : `${PO_GODZ} godziny`,
+}));
+
+// ---- APLIKACJA (jak wygląda) ----
+const ZAKLADKI = [
+  { t: 'Karta sprawy', nav: 'Zapytania', p: 'Komplet danych do decyzji w jednym miejscu, wciągnięty z CRM-a, ERP-a i magazynu. Widać, kto trzyma sprawę teraz i od ilu godzin.' },
+  { t: 'Rejestr spraw', nav: 'Rejestr', p: 'Stan wszystkich zapytań z czasem oczekiwania przy każdym. Sprawa, która stoi za długo, sama wychodzi na wierzch.' },
+  { t: 'Kokpit', nav: 'Kokpit', p: 'Czas sprawy liczony na żywo, razem z krokiem, na którym sprawy stoją najdłużej. To on wskazuje następne uruchomienie do zbudowania.' },
+  { t: 'Reguły', nav: 'Ustawienia', p: 'Ekran, na którym Wasz człowiek przesuwa próg akceptacji albo termin przypomnienia. Zmiana wchodzi od razu, bez wdrożenia.' },
+];
+// Czas sprawy tydzień po tygodniu w kokpicie — schodki w dniach uruchomień.
+// Poglądowe, spięte z ciemnym pasem: 6 → 3 → 1,5 dnia.
+const TYGODNIE = [6.1, 6.0, 6.2, 5.9, 6.1, 6.0, 3.2, 3.0, 2.9, 3.1, 2.8, 1.7, 1.5, 1.6, 1.5];
+const TYG_W = 300, TYG_H = 86;
+const TYG_D = 'M' + TYGODNIE.map((v, i) => `${(i / (TYGODNIE.length - 1) * TYG_W).toFixed(1)},${(TYG_H - v / 6.5 * TYG_H).toFixed(1)}`).join(' L');
+
+// ---- EKRAN Z ADNOTACJAMI (konfiguracja) ----
+const OBIEG_USTAWIENIA = [
+  { t: 'Rejestracja zapytania', kto: 'automatycznie' },
+  { t: 'Wycena techniczna', kto: 'technolog' },
+  { t: 'Potwierdzenie dostępności', kto: 'magazyn · automatycznie' },
+  { t: 'Akceptacja marży', kto: 'zarząd · tylko poza widełkami', zm: true },
+  { t: 'Wysyłka do klienta', kto: 'opiekun klienta' },
+];
+
+// ---- DOWODY ----
+const rozbij = (s) => { const i = s.indexOf(' '); return [s.slice(0, i), s.slice(i + 1)]; };
+---
+<LaBase noindex title={title} description={description} ctaHref="#kontakt" ctaLabel="Umów rozmowę" nav="uslugi">
+<script type="application/ld+json" is:inline set:html={JSON.stringify(dane)} slot="head"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" slot="head">
+<style is:global slot="head">
+  /* =====================================================================
+     v3 · TOKENY
+     Dwie barwy z rolą: bursztyn = czekanie, zieleń = praca i system.
+     Nigdzie na tej stronie nie znaczą niczego innego.
+     ===================================================================== */
+  .v3{
+    --ink:#07140d; --ink2:#0d2118;
+    --papier:#f4f3ee;
+    --t1:#0f1a14; --t2:#46524b; --t3:#7b867f;
+    --linia:rgba(15,26,20,0.13); --linia2:rgba(15,26,20,0.07);
+    --ziel:#00CD77; --ziel-c:#0a7a52;
+    --burs:#f0a33a; --burs-c:#9c5f14; --burs-j:#ffc879;
+    --mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
+    --pad:max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));
+    --ram:clamp(6px,0.9vw,14px);
+    --pin:max(16px,calc(max(clamp(20px,5vw,56px),calc((100vw - 1440px) / 2)) - clamp(6px,0.9vw,14px)));
+    color:var(--t1);
+  }
+  .v3 .czk{background:repeating-linear-gradient(135deg,rgba(240,163,58,0.5) 0 1.5px,rgba(240,163,58,0) 1.5px 6px),rgba(240,163,58,0.16);box-shadow:inset 0 2px 0 rgba(240,163,58,0.95)}
+  .v3 .czk-j{background:repeating-linear-gradient(135deg,rgba(214,134,30,0.55) 0 1.5px,rgba(214,134,30,0) 1.5px 6px),rgba(240,163,58,0.18);box-shadow:inset 0 2px 0 #e3962f}
+  .v3 .prc{background:var(--ziel)}
+  .v3-mono{font-family:var(--mono)}
+
+  /* ---- typografia ---- */
+  .v3-h1{margin:0;font-size:clamp(40px,5.7vw,84px);line-height:0.97;letter-spacing:-0.05em;font-weight:700;color:#ffffff;text-wrap:balance}
+  .v3-h1 span{color:var(--ziel)}
+  .v3-h2{margin:0;font-size:clamp(34px,5vw,70px);line-height:0.99;letter-spacing:-0.046em;font-weight:700;color:var(--t1);text-wrap:balance}
+  .v3-h2.jasny{color:#ffffff}
+  .v3-h2m{display:flex;align-items:center;gap:12px;margin:0;font-size:clamp(15px,1.25vw,17px);line-height:1.35;font-weight:650;letter-spacing:-0.005em;color:var(--t1)}
+  .v3-h2m::before{content:"";flex-shrink:0;width:22px;height:2px;background:var(--ziel)}
+  .v3-sub{margin:0;font-size:clamp(16px,1.3vw,18px);line-height:1.62;color:var(--t2);max-width:560px;text-wrap:pretty}
+  .v3-sub.jasny{color:rgba(255,255,255,0.66)}
+  .v3-sek{padding:clamp(88px,11vw,164px) var(--pad);scroll-margin-top:16px}
+  .v3-papier{background:var(--papier)}
+
+  /* ---- przyciski ---- */
+  .v3-btn{display:inline-flex;align-items:center;gap:14px;background:var(--ziel);color:var(--ink);font-weight:700;font-size:16px;letter-spacing:-0.01em;padding:9px 9px 9px 24px;border-radius:999px;transition:background .2s,transform .2s;white-space:nowrap}
+  .v3-btn span{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;background:var(--ink);color:var(--ziel);font-size:15px;transition:transform .25s}
+  .v3-btn:hover{background:#25dd8b}
+  .v3-btn:hover span{transform:translateX(3px)}
+  .v3-btn.ciemny{background:var(--ink);color:#ffffff}
+  .v3-btn.ciemny span{background:var(--ziel);color:var(--ink)}
+  .v3-btn.ciemny:hover{background:#163126}
+  .v3-lnk{display:inline-flex;align-items:center;gap:8px;font-weight:650;font-size:16px;color:#ffffff;padding:8px 2px;border-bottom:1px solid rgba(255,255,255,0.28);transition:border-color .2s}
+  .v3-lnk:hover{border-color:var(--ziel)}
+
+  /* =====================================================================
+     HERO · ciemna plansza wcięta w ekran
+     ===================================================================== */
+  .v3-hero{padding:0 var(--ram)}
+  .v3-hero-in{position:relative;overflow:hidden;border-radius:clamp(20px,2.2vw,32px);color:#ffffff;
+    background:
+      radial-gradient(1200px 520px at 50% 112%,rgba(0,205,119,0.24),rgba(0,205,119,0) 70%),
+      radial-gradient(760px 460px at 92% -14%,rgba(0,205,119,0.11),rgba(0,205,119,0) 70%),
+      var(--ink);
+    padding:clamp(44px,6vw,92px) var(--pin) 0}
+  .v3-ziarno::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:0.09;mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+  .v3-siatka{position:absolute;top:0;bottom:0;left:var(--pin);right:var(--pin);display:grid;grid-template-columns:repeat(12,minmax(0,1fr));pointer-events:none;
+    -webkit-mask-image:linear-gradient(to bottom,#000 0%,rgba(0,0,0,0.5) 40%,transparent 72%);mask-image:linear-gradient(to bottom,#000 0%,rgba(0,0,0,0.5) 40%,transparent 72%)}
+  .v3-siatka span{border-left:1px solid rgba(255,255,255,0.05)}
+  .v3-siatka span:last-child{border-right:1px solid rgba(255,255,255,0.05)}
+  .v3-hero-in > *:not(.v3-siatka){position:relative;z-index:1}
+  .v3-etyk{display:inline-flex;align-items:center;gap:11px;margin:0 0 clamp(22px,3vw,38px);font-size:14px;font-weight:600;color:rgba(255,255,255,0.7)}
+  .v3-etyk i{display:block;width:7px;height:7px;border-radius:50%;background:var(--ziel);box-shadow:0 0 0 4px rgba(0,205,119,0.16),0 0 14px rgba(0,205,119,0.7)}
+  .v3-hero-grid{display:grid;grid-template-columns:minmax(0,8.4fr) minmax(0,3.6fr);gap:clamp(28px,4vw,64px);align-items:end}
+  .v3-lead{margin:0;font-size:clamp(16px,1.25vw,18px);line-height:1.62;color:rgba(255,255,255,0.7);text-wrap:pretty}
+  .v3-akcje{display:flex;flex-wrap:wrap;align-items:center;gap:14px 24px;margin-top:30px}
+  @media (max-width:1060px){ .v3-hero-grid{grid-template-columns:1fr} .v3-lead{max-width:620px} }
+
+  /* ---- przyrząd ---- */
+  .v3-pz{margin:clamp(52px,6.4vw,92px) 0 0;padding:clamp(18px,2vw,26px) clamp(16px,2.2vw,30px) clamp(24px,2.6vw,34px);border-radius:22px;
+    background:linear-gradient(180deg,rgba(255,255,255,0.06),rgba(255,255,255,0.025));border:1px solid rgba(255,255,255,0.09);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,0.07),0 50px 90px -46px rgba(0,0,0,0.7)}
+  .pz-gl{display:flex;justify-content:space-between;align-items:center;gap:12px 24px;flex-wrap:wrap;padding-bottom:16px;margin-bottom:clamp(64px,6vw,78px);border-bottom:1px solid rgba(255,255,255,0.08);font-family:var(--mono);font-size:12px;color:rgba(255,255,255,0.5)}
+  .pz-gl b{font-weight:500;color:#ffffff}
+  .pz-leg{display:flex;flex-wrap:wrap;gap:8px 20px}
+  .pz-leg span{display:inline-flex;align-items:center;gap:8px}
+  .pz-leg i{display:block;width:20px;height:11px;border-radius:3px}
+  .pz-licz{display:inline-flex;align-items:center;gap:9px}
+  .pz-licz b{display:inline-block;min-width:92px;padding:4px 9px;border-radius:7px;background:rgba(255,255,255,0.08);color:#ffffff;font-weight:600;text-align:center;font-variant-numeric:tabular-nums}
+  .pz-w{display:grid;grid-template-columns:clamp(92px,9.4vw,148px) minmax(0,1fr) clamp(124px,12.4vw,184px);gap:clamp(14px,2vw,30px);align-items:center}
+  .pz-w + .pz-w{margin-top:clamp(30px,3.4vw,44px)}
+  .pz-kto b{display:block;font-size:15px;font-weight:700;color:#ffffff}
+  .pz-kto span{display:block;margin-top:3px;font-size:12.5px;line-height:1.35;color:rgba(255,255,255,0.48)}
+  .pz-tor{position:relative}
+  .pz-os{position:relative;display:flex;gap:2px;height:clamp(42px,4vw,58px)}
+  .pz-seg{position:relative;flex:var(--f) 1 0;min-width:4px;overflow:hidden;background:rgba(255,255,255,0.05)}
+  .pz-seg.pierwszy{border-radius:10px 0 0 10px}
+  .pz-seg.ostatni{border-radius:0 10px 10px 0}
+  .pz-seg > i{position:absolute;left:0;top:0;bottom:0;width:100%}
+  .pz-seg b{position:absolute;left:13px;right:10px;top:50%;transform:translateY(-50%);z-index:2;font-size:13px;font-weight:600;color:#ffffff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 8px rgba(7,20,13,0.85)}
+  .pz-seg b em{font-style:normal;font-family:var(--mono);font-size:11.5px;font-weight:500;color:var(--burs-j);margin-left:8px}
+  .pz-seg .kr{display:none}
+  .pz-etyk{position:absolute;left:0;right:0;bottom:calc(100% + 2px);height:54px;pointer-events:none}
+  .pz-etyk span{position:absolute;bottom:0;padding-bottom:16px;font-family:var(--mono);font-size:11.5px;line-height:1.3;color:rgba(255,255,255,0.78);white-space:nowrap}
+  .pz-etyk span em{font-style:normal;color:var(--ziel)}
+  .pz-etyk span::after{content:"";position:absolute;bottom:0;width:1px;height:12px;background:var(--ziel)}
+  .pz-etyk .l{transform:translateX(-1px)}
+  .pz-etyk .l::after{left:1px}
+  .pz-etyk .c{transform:translateX(-50%)}
+  .pz-etyk .c::after{left:50%}
+  .pz-etyk .r{transform:translateX(-100%)}
+  .pz-etyk .r::after{right:1px}
+  .pz-skala{position:relative;height:26px;margin-top:6px;font-family:var(--mono);font-size:10.5px;color:rgba(255,255,255,0.38)}
+  .pz-skala span{position:absolute;top:10px;transform:translateX(-50%)}
+  .pz-skala span::before{content:"";position:absolute;left:50%;top:-10px;width:1px;height:6px;background:rgba(255,255,255,0.28)}
+  .pz-skala em{position:absolute;left:0;top:10px;font-style:normal}
+  .pz-duch{position:absolute;inset:0;border:1px dashed rgba(255,255,255,0.14);border-radius:10px}
+  .pz-po{position:absolute;left:0;top:0;bottom:0;width:var(--u);border-radius:10px;overflow:hidden;background:rgba(255,255,255,0.05)}
+  .pz-po > i{position:absolute;left:0;top:0;bottom:0;width:100%;box-shadow:0 0 24px rgba(0,205,119,0.5)}
+  .pz-g{position:absolute;top:-9px;bottom:-9px;left:0;width:2px;margin-left:-1px;background:#ffffff;z-index:4;opacity:0;box-shadow:0 0 14px rgba(255,255,255,0.7);border-radius:1px}
+  .pz-wyn{line-height:1}
+  .pz-wyn b{font-size:clamp(36px,3.8vw,56px);font-weight:700;letter-spacing:-0.05em;color:#ffffff}
+  .pz-wyn span{margin-left:7px;font-size:clamp(15px,1.35vw,19px);font-weight:650;letter-spacing:-0.01em}
+  .pz-wyn em{display:block;margin-top:8px;font-style:normal;font-family:var(--mono);font-size:11px;line-height:1.4;color:rgba(255,255,255,0.5)}
+  .pz-wyn.d span{color:var(--burs-j)}
+  .pz-wyn.p span{color:var(--ziel)}
+  /* tryb animacji (JS) — bez niego stoi stan końcowy */
+  .v3-pz.gra .pz-wyn{opacity:0;transform:translateY(6px);transition:opacity .45s ease,transform .45s ease}
+  .v3-pz.gra .pz-wyn.on{opacity:1;transform:none}
+  .v3-pz.gra .pz-seg > i,.v3-pz.gra .pz-po > i{transition:opacity .7s ease}
+  .v3-pz.gra.gas .pz-seg > i,.v3-pz.gra.gas .pz-po > i,.v3-pz.gra.gas .pz-wyn.on{opacity:0}
+  .v3-pod{max-width:660px;margin:clamp(22px,2.6vw,30px) 0 0;font-size:15.5px;line-height:1.6;color:rgba(255,255,255,0.62);text-wrap:pretty}
+  .v3-pod strong{font-weight:700;color:#ffffff}
+  @media (max-width:820px){
+    .pz-w{grid-template-columns:1fr;gap:12px}
+    .pz-w + .pz-w{margin-top:34px}
+    .pz-gl{margin-bottom:22px}
+    .pz-etyk{display:none}
+    .pz-seg b{left:8px;right:6px;font-size:11.5px}
+    .pz-seg .dl{display:none}
+    .pz-seg .kr{display:inline}
+    .pz-seg b em{margin-left:0}
+    .pz-wyn{display:flex;align-items:baseline;flex-wrap:wrap;gap:0 4px}
+    .pz-wyn em{margin:0 0 0 10px}
+  }
+
+  /* ---- warunki zakupu i pas logotypów, na dole planszy ---- */
+  .v3-war{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(18px,3vw,48px);margin:clamp(48px,5.6vw,80px) 0 0;padding:clamp(22px,2.4vw,30px) 0 0;border-top:1px solid rgba(255,255,255,0.1)}
+  .v3-war dt{font-size:13px;font-weight:600;color:var(--ziel)}
+  .v3-war dd{margin:8px 0 0;font-size:15px;line-height:1.55;color:rgba(255,255,255,0.68);text-wrap:pretty}
+  .v3-war dd strong{font-weight:650;color:#ffffff}
+  @media (max-width:820px){ .v3-war{grid-template-columns:1fr;gap:20px} }
+  .v3-loga{display:flex;align-items:center;gap:36px;margin-top:clamp(40px,4.6vw,64px);padding:26px 0 30px;border-top:1px solid rgba(255,255,255,0.08)}
+  .v3-loga > span{flex-shrink:0;max-width:200px;font-size:13.5px;line-height:1.45;color:rgba(255,255,255,0.55)}
+  .v3-loga > span strong{color:#ffffff;font-weight:700}
+  .v3-loga-o{flex:1;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+  .v3-loga-t{display:flex;align-items:center;gap:64px;width:max-content;animation:v3-loga 34s linear infinite}
+  .v3-loga-t img{width:110px;height:26px;object-fit:contain;filter:grayscale(1) invert(1);mix-blend-mode:screen;opacity:0.62}
+  @keyframes v3-loga{from{transform:translateX(0)}to{transform:translateX(calc(-50% - 32px))}}
+  @media (max-width:700px){ .v3-loga{flex-direction:column;align-items:flex-start;gap:18px} .v3-loga-o{width:100%} }
+  @media (prefers-reduced-motion:reduce){ .v3-loga-t{animation:none} }
+
+  /* =====================================================================
+     CZYM SĄ · definicja i indeks procesów
+     ===================================================================== */
+  .v3-def{display:grid;grid-template-columns:minmax(0,3.6fr) minmax(0,8.4fr);gap:clamp(24px,4vw,64px)}
+  .v3-def-duzy{margin:0;font-size:clamp(22px,2.5vw,36px);line-height:1.26;letter-spacing:-0.026em;font-weight:500;color:var(--t1);text-wrap:pretty}
+  .v3-def-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(20px,3vw,48px);margin-top:clamp(28px,3.2vw,44px)}
+  .v3-def-2 p{margin:0;font-size:16.5px;line-height:1.66;color:var(--t2);text-wrap:pretty}
+  @media (max-width:900px){ .v3-def,.v3-def-2{grid-template-columns:1fr} }
+  .v3-ix{margin-top:clamp(72px,9vw,136px)}
+  .ix-gl{display:flex;justify-content:space-between;align-items:end;flex-wrap:wrap;gap:12px 48px;padding-bottom:18px;border-bottom:1.5px solid var(--t1)}
+  .ix-gl h3{margin:0;font-size:15px;font-weight:700}
+  .ix-gl p{margin:0;max-width:470px;font-size:14.5px;line-height:1.55;color:var(--t2)}
+  .ix-w{display:grid;grid-template-columns:clamp(40px,5vw,72px) minmax(0,1fr) auto;gap:16px;align-items:center;padding:clamp(18px,2vw,28px) 0;border-bottom:1px solid var(--linia)}
+  .ix-n{font-family:var(--mono);font-size:12px;color:var(--t3)}
+  .ix-t{font-size:clamp(26px,3.5vw,50px);font-weight:650;letter-spacing:-0.04em;line-height:1.04;transition:transform .4s cubic-bezier(.2,.7,.2,1),color .2s}
+  .ix-d{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:12.5px;color:var(--t2);transition:color .2s}
+  .ix-d i{display:block;width:26px;height:1px;background:currentColor;opacity:0.45}
+  .ix-w:hover .ix-t{transform:translateX(12px);color:var(--ziel-c)}
+  .ix-w:hover .ix-d{color:var(--ziel-c)}
+  @media (max-width:760px){
+    .ix-w{grid-template-columns:30px minmax(0,1fr);row-gap:8px}
+    .ix-d{grid-column:2;flex-wrap:wrap;gap:6px 8px;font-size:11.5px}
+    .ix-d i{width:14px}
+  }
+
+  /* =====================================================================
+     DLACZEGO · teza, krzywa, trasa
+     ===================================================================== */
+  .v3-teza{margin:clamp(22px,2.6vw,34px) 0 0;max-width:1260px;font-size:clamp(30px,4.6vw,68px);line-height:1.03;letter-spacing:-0.047em;font-weight:650;color:var(--t1);text-wrap:balance}
+  .v3-teza span{color:var(--t3)}
+  .v3-kw{margin:clamp(56px,7vw,104px) 0 0;padding:clamp(18px,2vw,26px) 0 clamp(14px,1.6vw,20px);border-top:1px solid var(--linia);border-bottom:1px solid var(--linia)}
+  .kw-ram{position:relative;aspect-ratio:1200 / 400}
+  .kw-ram svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+  .kw-l{position:absolute;font-family:var(--mono);font-size:12px;line-height:1.35;color:var(--t2);white-space:nowrap}
+  .kw-l.c{transform:translate(-50%,-100%)}
+  .kw-pasmo-l{transform:translateX(-50%);top:0;text-align:center}
+  .kw-kropka-l{width:clamp(210px,19vw,260px);transform:translateY(-100%);white-space:normal;font-family:inherit}
+  .kw-kropka-l b{display:block;font-size:clamp(14px,1.25vw,16.5px);line-height:1.3;font-weight:700;letter-spacing:-0.012em;color:var(--t1)}
+  .kw-kropka-l span{display:inline-flex;align-items:center;gap:8px;margin-top:8px;font-family:var(--mono);font-size:12px;color:var(--burs-c)}
+  .kw-kropka-l span i{display:grid;grid-template-columns:repeat(3,5px);grid-auto-rows:4px;gap:1px;padding:2px;border:1px solid var(--burs-c);border-radius:2px}
+  .kw-kropka-l span i u{display:block;background:rgba(156,95,20,0.35)}
+  .kw-krzywa{fill:none;stroke:var(--t1);stroke-width:1.6;stroke-dasharray:1600;stroke-dashoffset:1600;transition:stroke-dashoffset 1.8s cubic-bezier(.5,0,.2,1)}
+  .kw-pas,.kw-kr,.kw-ogon{opacity:0;transition:opacity .8s ease .9s}
+  .kw-dot{transform-box:fill-box;transform-origin:center;transform:scale(0);transition:transform .5s cubic-bezier(.3,1.6,.5,1) 1.5s}
+  .kw-l{opacity:0;transition:opacity .6s ease 1.2s}
+  .v3-kw.on .kw-krzywa{stroke-dashoffset:0}
+  .v3-kw.on .kw-pas,.v3-kw.on .kw-kr,.v3-kw.on .kw-ogon,.v3-kw.on .kw-l{opacity:1}
+  .v3-kw.on .kw-dot{transform:none}
+  .kw-puls{transform-box:fill-box;transform-origin:center;animation:v3-puls 2.4s ease-out infinite}
+  @keyframes v3-puls{0%{transform:scale(0.6);opacity:0.7}100%{transform:scale(2.4);opacity:0}}
+  /* Telefon: zamiast przewijania w bok plansza robi się wyższa (SVG się
+     rozciąga, podpisy stoją w procentach), a podpis kropki przykleja się
+     do prawej krawędzi. */
+  @media (max-width:1000px){
+    .kw-kropka-l{left:auto !important;right:0;width:min(210px,52%);text-align:right}
+    .kw-kropka-l span{justify-content:flex-end}
+  }
+  @media (max-width:760px){
+    .kw-ram{aspect-ratio:1200 / 720}
+    .kw-l{font-size:10.5px}
+    .kw-kropka-l span i{display:none}
+  }
+
+  .v3-trasa{margin-top:clamp(72px,8vw,120px)}
+  .ts-rz{display:flex;align-items:flex-start;padding:30px 0 0}
+  .ts-st{flex:0 0 auto;width:clamp(72px,7vw,104px);display:flex;flex-direction:column;align-items:center;gap:12px}
+  .ts-kolo{display:flex;align-items:center;justify-content:center;width:58px;height:58px;border-radius:50%;background:#ffffff;border:2px solid var(--ziel);font-size:16px;font-weight:750;color:var(--t1);box-shadow:0 0 0 6px #ffffff,0 10px 24px -12px rgba(15,26,20,0.35)}
+  .ts-st b{font-size:14.5px;font-weight:700}
+  .ts-pr{flex:1;position:relative;height:58px}
+  .ts-pr::before{content:"";position:absolute;left:0;right:0;top:50%;height:3px;margin-top:-1.5px;background:repeating-linear-gradient(90deg,var(--burs) 0 9px,transparent 9px 15px)}
+  .ts-pr span{position:absolute;left:50%;bottom:calc(50% + 12px);transform:translateX(-50%);font-family:var(--mono);font-size:12px;color:var(--burs-c);white-space:nowrap}
+  .ts-leg{display:flex;flex-wrap:wrap;gap:10px 30px;margin-top:28px;font-size:13.5px;color:var(--t2)}
+  .ts-leg span{display:inline-flex;align-items:center;gap:10px}
+  .ts-leg i{display:block}
+  /* Telefon: trasa staje pionowo, podpis przerwy obok linii. */
+  @media (max-width:760px){
+    .ts-rz{flex-direction:column;align-items:flex-start;padding:0}
+    .ts-st{flex-direction:row;width:auto;gap:16px}
+    .ts-pr{flex:none;width:58px;height:58px}
+    .ts-pr::before{left:50%;right:auto;top:0;bottom:0;width:3px;height:auto;margin:0 0 0 -1.5px;background:repeating-linear-gradient(180deg,var(--burs) 0 9px,transparent 9px 15px)}
+    .ts-pr span{left:calc(100% + 16px);bottom:auto;top:50%;transform:translateY(-50%)}
+  }
+  .v3-pw{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(24px,3vw,52px);margin-top:clamp(56px,6.4vw,92px)}
+  .pw-k{padding-top:20px;border-top:1.5px solid var(--t1)}
+  .pw-k > span{font-family:var(--mono);font-size:12px;color:var(--t3)}
+  .pw-k h3{margin:16px 0 0;font-size:clamp(19px,1.75vw,24px);font-weight:700;letter-spacing:-0.024em;line-height:1.2;text-wrap:balance}
+  .pw-k p{margin:12px 0 0;font-size:15.5px;line-height:1.64;color:var(--t2);text-wrap:pretty}
+  @media (max-width:900px){ .v3-pw{grid-template-columns:1fr} }
+
+  /* =====================================================================
+     JAK WYGLĄDA · ciemna scena z aplikacją
+     ===================================================================== */
+  .v3-scena{position:relative;overflow:hidden;color:#ffffff;
+    background:radial-gradient(1100px 620px at 50% 104%,rgba(0,205,119,0.2),rgba(0,205,119,0) 70%),var(--ink)}
+  .v3-scena > *{position:relative;z-index:1}
+  .v3-jw-gl{display:flex;justify-content:space-between;align-items:end;flex-wrap:wrap;gap:20px 56px}
+  .v3-zak{display:inline-flex;flex-wrap:wrap;gap:4px;padding:5px;margin-top:clamp(36px,4.4vw,56px);border-radius:999px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.09)}
+  .v3-zak button{appearance:none;border:0;background:transparent;color:rgba(255,255,255,0.66);font:inherit;font-size:14px;font-weight:600;padding:10px 18px;border-radius:999px;cursor:pointer;transition:background .2s,color .2s}
+  .v3-zak button:hover{color:#ffffff}
+  .v3-zak button[aria-selected="true"]{background:#ffffff;color:var(--ink)}
+  .v3-app{display:grid;grid-template-columns:212px minmax(0,1fr);height:clamp(540px,42vw,600px);margin-top:22px;border-radius:16px;overflow:hidden;background:#ffffff;color:var(--t1);
+    box-shadow:0 0 0 1px rgba(255,255,255,0.14),0 70px 130px -50px rgba(0,0,0,0.8),0 0 140px -30px rgba(0,205,119,0.32)}
+  .ap-bok{display:flex;flex-direction:column;padding:16px 12px;background:#f6f7f4;border-right:1px solid #eaece7}
+  .ap-logo{display:flex;align-items:center;gap:10px;padding:4px 8px 18px;font-size:14px;font-weight:750;letter-spacing:-0.01em}
+  .ap-logo i{position:relative;display:block;width:24px;height:24px;border-radius:7px;background:var(--ink)}
+  .ap-logo i::after{content:"";position:absolute;left:7px;top:7px;width:10px;height:10px;border-radius:3px;background:var(--ziel)}
+  .ap-nav{display:flex;flex-direction:column;gap:2px}
+  .ap-nav span{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-radius:8px;font-size:13.5px;color:#4a564f}
+  .ap-nav span.on{background:#ffffff;color:var(--t1);font-weight:650;box-shadow:0 0 0 1px #e6e9e3,0 1px 2px rgba(0,0,0,0.04)}
+  .ap-nav em{font-style:normal;font-family:var(--mono);font-size:11px;color:#8a948d}
+  .ap-sekcja{margin:20px 10px 8px;font-size:11px;font-weight:600;color:#9aa39c}
+  .ap-pr{display:flex;align-items:center;gap:8px;padding:5px 10px;font-size:12.5px;color:#4a564f}
+  .ap-pr i{display:block;width:7px;height:7px;border-radius:2px}
+  .ap-kto{display:flex;align-items:center;gap:10px;margin-top:auto;padding:12px 8px 2px;border-top:1px solid #eaece7;font-size:12.5px;font-weight:600}
+  .ap-kto .av{display:flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:#dcefe2;color:var(--ziel-c);font-size:10px;font-weight:800}
+  .ap-kto em{display:block;font-style:normal;font-weight:400;font-size:11px;color:#8a948d}
+  .ap-gl{display:flex;flex-direction:column;min-width:0}
+  .ap-gora{display:flex;align-items:center;gap:12px;padding:12px 22px;border-bottom:1px solid #eaece7;font-size:13px;color:#7b867f}
+  .ap-gora b{font-weight:600;color:var(--t1)}
+  .ap-szukaj{margin-left:auto;display:flex;align-items:center;gap:8px;width:min(240px,34%);padding:7px 12px;border-radius:8px;background:#f3f4f1;font-size:12.5px;color:#9aa39c}
+  .ap-szukaj kbd{margin-left:auto;font-family:var(--mono);font-size:10.5px;color:#9aa39c;border:1px solid #e3e6e0;border-radius:4px;padding:1px 5px;background:#ffffff}
+  .ap-widok{flex:1;min-height:0;overflow:hidden;padding:22px 24px 20px}
+  .ap-widok[hidden]{display:none}
+  .aw-gl{display:flex;align-items:flex-start;flex-wrap:wrap;gap:10px 14px}
+  .aw-gl h3{margin:2px 0 0;font-size:20px;font-weight:750;letter-spacing:-0.025em}
+  .aw-nr{display:block;font-family:var(--mono);font-size:11.5px;color:#8a948d}
+  .aw-chip{margin-top:6px;font-size:11.5px;font-weight:700;color:var(--ziel-c);background:#e2f5ea;border-radius:6px;padding:4px 9px}
+  .aw-czeka{display:inline-flex;align-items:center;gap:7px;margin:7px 0 0 auto;font-size:12.5px;font-weight:650;color:var(--burs-c)}
+  .aw-czeka i{display:block;width:7px;height:7px;border-radius:50%;background:var(--burs);box-shadow:0 0 0 3px rgba(240,163,58,0.22)}
+  .aw-kol{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:26px;margin-top:20px}
+  .aw-et{display:block;margin-bottom:8px;font-size:11px;font-weight:650;color:#9aa39c}
+  .aw-blok + .aw-blok{margin-top:18px}
+  .aw-pole{display:flex;align-items:baseline;gap:8px;padding:8px 0;border-bottom:1px solid #f0f2ee;font-size:13px}
+  .aw-pole b{font-weight:650}
+  .aw-pole .pr{margin-left:auto}
+  .aw-zr{font-size:10.5px;font-weight:600;color:var(--ziel-c);background:#eef7f1;border-radius:4px;padding:2px 6px}
+  .aw-poz{display:grid;grid-template-columns:minmax(0,1fr) 64px 118px;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid #f0f2ee;font-size:12.5px}
+  .aw-poz span:nth-child(2){color:#7b867f;text-align:right}
+  .aw-poz em{font-style:normal;font-size:11.5px;color:var(--ziel-c)}
+  .aw-poz em.brak{color:var(--burs-c);font-weight:600}
+  .aw-ob{position:relative;padding-left:2px}
+  .aw-krok{position:relative;display:grid;grid-template-columns:16px minmax(0,1fr);gap:12px;padding:0 0 18px}
+  .aw-krok::before{content:"";position:absolute;left:7px;top:16px;bottom:0;width:2px;background:#eef1ec}
+  .aw-krok:last-child::before{display:none}
+  .aw-pkt{position:relative;z-index:1;width:16px;height:16px;border-radius:50%;border:2px solid #dfe5dc;background:#ffffff}
+  .aw-krok.ok .aw-pkt{border-color:var(--ziel);background:var(--ziel)}
+  .aw-krok.ok::before{background:var(--ziel)}
+  .aw-krok.teraz .aw-pkt{border-color:var(--ziel);box-shadow:0 0 0 4px rgba(0,205,119,0.18)}
+  .aw-krok b{display:block;font-size:13px;font-weight:650}
+  .aw-krok.czeka b{color:#a9b3aa}
+  .aw-krok span{display:block;margin-top:2px;font-size:11.5px;color:#7b867f}
+  .aw-krok.pomin span{color:var(--ziel-c);font-weight:600}
+  .aw-akcje{display:flex;gap:8px;margin-top:20px;padding-top:16px;border-top:1px solid #eef1ec}
+  .aw-b{font-size:12.5px;font-weight:700;padding:9px 15px;border-radius:8px;background:var(--ink);color:#ffffff}
+  .aw-b.c{background:#f1f3ef;color:#46524b}
+  .aw-filtry{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 14px}
+  .aw-filtry span{font-size:12px;font-weight:600;padding:6px 11px;border-radius:7px;border:1px solid #e6e9e3;color:#46524b}
+  .aw-filtry span.on{background:var(--ink);border-color:var(--ink);color:#ffffff}
+  .aw-filtry span.uw{border-color:rgba(240,163,58,0.5);color:var(--burs-c);background:#fdf5e8}
+  .aw-filtry em{font-style:normal;font-family:var(--mono);margin-left:6px;opacity:0.7}
+  .aw-rej{display:grid;grid-template-columns:82px minmax(0,1.2fr) minmax(0,1fr) 92px;gap:12px;align-items:center;padding:9px 10px;border-bottom:1px solid #f0f2ee;font-size:13px}
+  .aw-rej.ng{font-size:11px;font-weight:650;color:#9aa39c;padding-top:0}
+  .aw-rej b{font-family:var(--mono);font-size:11.5px;font-weight:500;color:#46524b}
+  .aw-rej span:nth-child(2){font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .aw-rej span:nth-child(3){color:#46524b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .aw-rej i{font-style:normal;text-align:right;color:#7b867f;font-variant-numeric:tabular-nums}
+  .aw-rej.zle{background:#fdf6ea;border-radius:8px;border-bottom-color:transparent}
+  .aw-rej.zle i{color:var(--burs-c);font-weight:700}
+  .aw-kafle{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:12px;margin-top:18px}
+  .aw-kafel{padding:14px 16px;border:1px solid #eceee9;border-radius:12px}
+  .aw-kafel span{display:block;font-size:11.5px;color:#8a948d}
+  .aw-kafel b{display:block;margin-top:6px;font-size:28px;font-weight:750;letter-spacing:-0.035em;line-height:1}
+  .aw-kafel em{display:block;margin-top:6px;font-style:normal;font-size:11.5px;color:var(--ziel-c);font-weight:600}
+  .aw-kafel.uw b{color:var(--burs-c)}
+  .aw-kp{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:24px;margin-top:20px}
+  .aw-wyk{position:relative;padding:14px 16px 10px;border:1px solid #eceee9;border-radius:12px}
+  .aw-wyk svg{display:block;width:100%;height:auto;margin-top:10px;overflow:visible}
+  .aw-os{position:relative;height:16px;margin-top:6px;font-family:var(--mono);font-size:10px;color:#9aa39c}
+  .aw-os span{position:absolute;top:0;white-space:nowrap}
+  .aw-stoi{display:grid;grid-template-columns:minmax(0,1fr) 70px;gap:7px 12px;align-items:center;padding:7px 0;font-size:12.5px}
+  .aw-stoi span:last-of-type{text-align:right;color:#7b867f;font-variant-numeric:tabular-nums}
+  .aw-stoi i{grid-column:1 / -1;display:block;height:6px;border-radius:3px;background:#eef1ec}
+  .aw-stoi i b{display:block;height:100%;width:var(--u);border-radius:3px;background:var(--burs)}
+  .aw-reg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 22px;margin-top:20px}
+  .aw-r{padding:12px 14px;border:1px solid #eceee9;border-radius:11px}
+  .aw-r span{display:block;font-size:12px;color:#7b867f}
+  .aw-r b{display:inline-block;margin-top:8px;font-size:14px;font-weight:700;padding:6px 10px;border-radius:7px;background:#f4f6f2;border:1px solid #e3e7e0}
+  .v3-jw-dol{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px 48px;margin-top:24px}
+  .v3-jw-p{margin:0;max-width:620px;font-size:15.5px;line-height:1.6;color:rgba(255,255,255,0.78)}
+  .v3-jw-p b{color:#ffffff;font-weight:700;margin-right:8px}
+  .v3-jw-p[hidden]{display:none}
+  .v3-jw-nota{margin:0;max-width:460px;font-size:13.5px;line-height:1.55;color:rgba(255,255,255,0.45)}
+  @media (max-width:900px){
+    .v3-app{grid-template-columns:1fr;height:auto}
+    .ap-bok{display:none}
+    .ap-szukaj{display:none}
+    .aw-kol,.aw-kp,.aw-reg{grid-template-columns:1fr}
+    .aw-kafle{grid-template-columns:1fr 1fr}
+    .aw-kafel:first-child{grid-column:1 / -1}
+    .ap-widok{padding:18px 16px}
+  }
+  @media (max-width:560px){
+    .aw-rej{grid-template-columns:64px minmax(0,1fr) 70px}
+    .aw-rej span:nth-child(3){display:none}
+    .aw-poz{grid-template-columns:minmax(0,1fr) 54px}
+    .aw-poz em{grid-column:1 / -1;margin-top:-4px}
+    .v3-zak{display:flex;flex-wrap:nowrap;overflow-x:auto;max-width:100%;scrollbar-width:none}
+    .v3-zak::-webkit-scrollbar{display:none}
+    .v3-zak button{flex-shrink:0;padding:9px 13px;font-size:13px}
+  }
+
+  /* =====================================================================
+     DLA KOGO · lewa kolumna przyklejona, warunki duże
+     ===================================================================== */
+  .v3-dk{display:grid;grid-template-columns:minmax(0,4.6fr) minmax(0,7.4fr);gap:clamp(32px,5vw,104px);align-items:start}
+  .dk-lewa{position:sticky;top:110px}
+  .dk-lewa .v3-sub{margin-top:24px}
+  .dk-w{display:grid;grid-template-columns:clamp(40px,4vw,60px) minmax(0,1fr);gap:10px 14px;padding:clamp(26px,3vw,38px) 0;border-top:1px solid var(--linia)}
+  .dk-w:first-child{border-top:1.5px solid var(--t1)}
+  .dk-n{padding-top:9px;font-family:var(--mono);font-size:12.5px;color:var(--ziel-c)}
+  .dk-w h3{margin:0;font-size:clamp(22px,2.3vw,32px);font-weight:700;letter-spacing:-0.034em;line-height:1.1;text-wrap:balance}
+  .dk-w p{grid-column:2;margin:0;max-width:580px;font-size:16px;line-height:1.64;color:var(--t2);text-wrap:pretty}
+  .dk-nie{margin-top:clamp(28px,3.6vw,48px);padding:clamp(22px,2.6vw,32px);border-radius:20px;background:#ffffff;border:1px solid var(--linia2)}
+  .dk-nie h3{margin:0 0 8px;font-size:16px;font-weight:700}
+  .dk-nie p{display:flex;gap:14px;margin:0;padding:12px 0;border-top:1px solid var(--linia2);font-size:15px;line-height:1.55;color:var(--t2)}
+  .dk-nie p::before{content:"—";flex-shrink:0;color:var(--t3)}
+  @media (max-width:900px){ .v3-dk{grid-template-columns:1fr} .dk-lewa{position:static} }
+
+  /* =====================================================================
+     URUCHOMIENIA · schody w jednej skali
+     ===================================================================== */
+  .v3-ur-gl{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:24px clamp(32px,5vw,96px);align-items:end}
+  @media (max-width:900px){ .v3-ur-gl{grid-template-columns:1fr} }
+  .v3-sch{margin-top:clamp(56px,6.4vw,96px)}
+  .sch-w{display:grid;grid-template-columns:minmax(0,3.9fr) minmax(0,6.1fr) minmax(0,2fr);gap:clamp(18px,2.6vw,44px);align-items:center;padding:clamp(24px,2.8vw,34px) 0;border-top:1px solid var(--linia)}
+  .sch-w.skala{padding:0 0 12px;border-top:0}
+  .sch-w.dzis{border-top:1.5px solid var(--t1)}
+  .sch-e{display:block;font-size:14px;font-weight:700;color:var(--t1)}
+  .sch-tyg{display:block;margin-top:3px;font-family:var(--mono);font-size:11.5px;color:var(--t3)}
+  .sch-opis h3{margin:14px 0 0;font-size:clamp(18px,1.6vw,21px);font-weight:700;letter-spacing:-0.022em;line-height:1.25}
+  .sch-opis p{margin:8px 0 0;font-size:14.5px;line-height:1.6;color:var(--t2);text-wrap:pretty}
+  .sch-zn{display:inline-flex;align-items:center;gap:8px;margin-top:12px;font-size:13.5px;font-weight:650;color:var(--ziel-c)}
+  .sch-zn::before{content:"";width:14px;height:2px;background:currentColor}
+  .sch-skala{position:relative;height:22px;font-family:var(--mono);font-size:10.5px;color:var(--t3)}
+  .sch-skala span{position:absolute;bottom:0;transform:translateX(-50%)}
+  .sch-skala span::after{content:"";position:absolute;left:50%;top:calc(100% + 4px);width:1px;height:6px;background:var(--linia)}
+  .sch-bar{position:relative;height:clamp(30px,2.8vw,40px)}
+  .sch-bar > i{position:absolute;left:0;top:0;bottom:0;width:var(--u);border-radius:8px;background:var(--ziel)}
+  .sch-bar > s{position:absolute;top:0;bottom:0;left:var(--u);width:calc(var(--prev) - var(--u));border:1.5px dashed rgba(15,26,20,0.24);border-left:0;border-radius:0 8px 8px 0;text-decoration:none}
+  .sch-bar > s em{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-style:normal;font-family:var(--mono);font-size:11.5px;color:var(--t3);white-space:nowrap}
+  .sch-w.dzis .sch-bar > i{width:100%}
+  .sch-l{line-height:1;text-align:right}
+  .sch-l b{font-size:clamp(34px,3.6vw,54px);font-weight:700;letter-spacing:-0.05em}
+  .sch-l span{margin-left:6px;font-size:clamp(14px,1.3vw,18px);font-weight:650;color:var(--ziel-c)}
+  .sch-w.dzis .sch-l span{color:var(--burs-c)}
+  /* wejście w kadr: pasek startuje z długości poprzedniego i się kurczy */
+  .v3-sch.gra .sch-bar > i{width:var(--prev);transition:width 1.1s cubic-bezier(.65,0,.2,1) var(--d)}
+  .v3-sch.gra .sch-bar > s{opacity:0;transition:opacity .5s ease calc(var(--d) + 0.8s)}
+  .v3-sch.gra.on .sch-bar > i{width:var(--u)}
+  .v3-sch.gra.on .sch-bar > s{opacity:1}
+  .v3-sch.gra .sch-w.dzis .sch-bar > i{width:100%}
+  .v3-ur-dol{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(22px,3.4vw,64px);margin-top:clamp(40px,4.6vw,64px);max-width:1080px}
+  .v3-ur-dol p{margin:0;font-size:15.5px;line-height:1.66;color:var(--t2);text-wrap:pretty}
+  .v3-ur-dol a{font-weight:650;color:var(--t1);text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--ziel)}
+  @media (max-width:900px){
+    .sch-w{grid-template-columns:minmax(0,1fr) auto;row-gap:16px}
+    .sch-opis{grid-column:1 / -1}
+    .sch-w.skala{grid-template-columns:minmax(0,1fr) auto}
+    .sch-w.skala > :first-child{display:none}
+    .v3-ur-dol{grid-template-columns:1fr}
+  }
+  @media (max-width:560px){ .sch-bar > s em{display:none} }
+
+  /* =====================================================================
+     ZIELONY PAS · twarz w duotonie
+     ===================================================================== */
+  .v3-zl{padding:0 var(--ram)}
+  .v3-zl-in{position:relative;overflow:hidden;display:grid;grid-template-columns:minmax(0,7.2fr) minmax(0,4.8fr);min-height:clamp(380px,34vw,500px);border-radius:clamp(20px,2.2vw,32px);background:var(--ziel)}
+  .zl-t{position:relative;z-index:2;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:clamp(26px,3vw,40px);padding:clamp(40px,5vw,80px) var(--pin)}
+  .zl-t p{margin:0;max-width:820px;font-size:clamp(28px,3.7vw,54px);line-height:1.04;letter-spacing:-0.045em;font-weight:700;color:var(--ink);text-wrap:balance}
+  .zl-foto{position:relative;min-height:300px}
+  .zl-foto img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 17%;filter:grayscale(1) contrast(1.12) brightness(1.04);mix-blend-mode:multiply;
+    -webkit-mask-image:linear-gradient(to right,transparent 0%,rgba(0,0,0,0.6) 16%,#000 36%);mask-image:linear-gradient(to right,transparent 0%,rgba(0,0,0,0.6) 16%,#000 36%)}
+  .zl-podpis{position:absolute;right:clamp(18px,2.2vw,30px);bottom:clamp(18px,2.2vw,28px);z-index:2;text-align:right}
+  .zl-podpis b{display:block;font-size:15px;font-weight:800;color:#ffffff}
+  .zl-podpis span{display:block;margin-top:2px;font-family:var(--mono);font-size:11.5px;color:rgba(255,255,255,0.75)}
+  @media (max-width:820px){
+    .v3-zl-in{grid-template-columns:1fr}
+    .zl-foto{order:-1;height:300px}
+    .zl-foto img{-webkit-mask-image:linear-gradient(to bottom,#000 70%,transparent 100%);mask-image:linear-gradient(to bottom,#000 70%,transparent 100%)}
+    .zl-t{padding-top:8px}
+  }
+
+  /* =====================================================================
+     CO ZMIENIA WASZ CZŁOWIEK · ekran z adnotacjami
+     ===================================================================== */
+  .v3-zm{display:grid;grid-template-columns:minmax(0,4.3fr) minmax(0,7.7fr);gap:clamp(32px,5vw,88px);align-items:start}
+  .zm-t .v3-sub{margin-top:22px}
+  .zm-t .v3-sub + .v3-sub{margin-top:16px}
+  .zm-okno{position:relative;background:#ffffff;border-radius:18px;border:1px solid var(--linia2);box-shadow:0 50px 90px -56px rgba(15,26,20,0.45),0 2px 6px -2px rgba(15,26,20,0.06)}
+  .zm-pasek{display:flex;align-items:center;gap:10px;padding:13px 18px;border-bottom:1px solid #eceee9;font-size:13px;color:#7b867f}
+  .zm-pasek b{color:var(--t1);font-weight:650}
+  .zm-pasek i{display:block;width:14px;height:14px;border-radius:4px;background:var(--ziel)}
+  .zm-pasek u{margin-left:auto;text-decoration:none;font-size:12px;font-weight:700;padding:7px 13px;border-radius:8px;background:var(--ink);color:#ffffff}
+  .zm-uk{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(0,1fr);gap:18px;padding:22px}
+  .zm-ob{position:relative;padding:16px 14px 10px;border-radius:12px;border:1px solid #eceee9;background:#fbfbf9}
+  .zm-pr > .zm-ob + .zm-ob{margin-top:16px}
+  .zm-nr{position:absolute;left:-11px;top:-11px;display:flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:var(--ziel);color:var(--ink);font-size:12px;font-weight:800;box-shadow:0 0 0 4px #ffffff}
+  .zm-et{display:block;margin-bottom:8px;font-size:11.5px;font-weight:650;color:#8a948d}
+  .zm-pole{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:7px 0;font-size:12.5px;color:#46524b}
+  .zm-pole + .zm-pole{border-top:1px solid #f0f2ee}
+  .zm-pole b{flex-shrink:0;font-size:12.5px;font-weight:700;color:var(--t1);padding:5px 9px;border-radius:7px;background:#ffffff;border:1px solid #e3e7e0}
+  .zm-krok{display:grid;grid-template-columns:10px 14px minmax(0,1fr) auto;gap:10px;align-items:center;padding:9px 8px;border-radius:9px}
+  .zm-krok + .zm-krok{margin-top:2px}
+  .zm-chwyt{display:block;width:10px;height:14px;background:radial-gradient(circle,#c3ccc2 1.2px,transparent 1.7px) 0 0 / 5px 5px}
+  .zm-krok > em{font-style:normal;font-family:var(--mono);font-size:11px;color:#a9b3aa}
+  .zm-krok b{display:block;font-size:12.5px;font-weight:650}
+  .zm-krok small{display:block;margin-top:1px;font-size:11px;color:#7b867f}
+  .zm-krok.zm{background:#ecf8f1;box-shadow:inset 0 0 0 1px rgba(0,205,119,0.35)}
+  .zm-krok.zm small{color:var(--ziel-c);font-weight:650}
+  .zm-prz{position:relative;display:block;width:30px;height:18px;border-radius:9px;background:var(--ziel)}
+  .zm-prz::after{content:"";position:absolute;right:2px;top:2px;width:14px;height:14px;border-radius:50%;background:#ffffff;box-shadow:0 1px 2px rgba(0,0,0,0.2)}
+  .zm-tagi{display:flex;flex-wrap:wrap;gap:6px;padding:4px 0 8px}
+  .zm-tagi span{font-size:12px;padding:5px 9px;border-radius:7px;background:#ffffff;border:1px solid #e3e7e0;color:#46524b}
+  .zm-tagi span.dod{border-style:dashed;color:#8a948d}
+  .zm-plik{display:flex;align-items:center;gap:10px;padding:8px 10px;margin:2px 0 6px;border-radius:9px;background:#ffffff;border:1px solid #e3e7e0;font-size:12.5px;font-weight:600}
+  .zm-plik i{display:block;width:20px;height:24px;border-radius:3px;background:linear-gradient(135deg,#3f78d8,#2b5fb8);position:relative}
+  .zm-plik i::after{content:"";position:absolute;right:0;top:0;width:7px;height:7px;background:#ffffff;opacity:0.5;border-bottom-left-radius:3px}
+  .zm-plik em{margin-left:auto;font-style:normal;font-family:var(--mono);font-size:10.5px;color:#9aa39c;font-weight:400}
+  .zm-tost{position:absolute;right:clamp(14px,2vw,26px);bottom:-22px;display:flex;align-items:center;gap:11px;padding:12px 16px;border-radius:12px;background:var(--ink);color:#ffffff;box-shadow:0 22px 40px -18px rgba(7,20,13,0.6)}
+  .zm-tost i{display:flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:var(--ziel);color:var(--ink);font-style:normal;font-size:12px;font-weight:800}
+  .zm-tost b{display:block;font-size:13px;font-weight:650}
+  .zm-tost span{display:block;margin-top:1px;font-size:11.5px;color:rgba(255,255,255,0.6)}
+  .zm-leg{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(18px,2.4vw,40px);margin:clamp(64px,7vw,104px) 0 0;padding:0;list-style:none}
+  .zm-leg li{padding-top:18px;border-top:1.5px solid var(--t1)}
+  .zm-leg li > span{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:var(--ziel);color:var(--ink);font-size:12px;font-weight:800}
+  .zm-leg h3{margin:14px 0 0;font-size:18px;font-weight:700;letter-spacing:-0.02em}
+  .zm-leg p{margin:8px 0 0;font-size:15px;line-height:1.6;color:var(--t2);text-wrap:pretty}
+  @media (max-width:1000px){ .v3-zm{grid-template-columns:1fr} .zm-leg{grid-template-columns:repeat(2,minmax(0,1fr))} }
+  @media (max-width:640px){ .zm-uk{grid-template-columns:1fr;padding:18px 16px} .zm-leg{grid-template-columns:1fr} .zm-tost{position:relative;right:auto;bottom:auto;margin:0 16px 16px} }
+
+  /* =====================================================================
+     DOWODY · jedna sprawa wyróżniona, dwie obok
+     ===================================================================== */
+  .v3-dw-gl{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:24px clamp(32px,5vw,96px);align-items:end}
+  .v3-dw{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:clamp(12px,1.4vw,20px);margin-top:clamp(44px,5vw,72px)}
+  .dw-k{display:flex;flex-direction:column;padding:clamp(24px,2.8vw,38px);border-radius:24px;background:var(--papier)}
+  .dw-k.duza{grid-row:1 / span 2;background:var(--ink);color:#ffffff;position:relative;overflow:hidden}
+  .dw-k.duza::before{content:"";position:absolute;inset:auto -20% -40% -20%;height:70%;background:radial-gradient(closest-side,rgba(0,205,119,0.22),transparent);pointer-events:none}
+  .dw-k > *{position:relative}
+  .dw-sr{display:block}
+  .dw-k.duza .dw-sr{margin:auto 0}
+  .dw-k.duza .dw-pas i{height:18px;border-radius:5px}
+  .dw-k.duza .dw-pas > div + div{margin-top:10px}
+  .dw-k.duza .dw-op{font-size:14px}
+  .dw-p{font-size:13px;font-weight:700;color:var(--ziel-c)}
+  .dw-k.duza .dw-p{color:var(--ziel)}
+  .dw-cap{display:block;margin-top:clamp(22px,3vw,44px);font-family:var(--mono);font-size:11.5px;color:var(--t3)}
+  .dw-k.duza .dw-cap{color:rgba(255,255,255,0.5)}
+  .dw-l{display:flex;align-items:baseline;gap:10px;margin-top:10px;line-height:0.86}
+  .dw-l b{font-size:clamp(56px,6vw,96px);font-weight:700;letter-spacing:-0.06em}
+  .dw-k.duza .dw-l b{font-size:clamp(96px,13vw,210px)}
+  .dw-l span{font-size:clamp(20px,2vw,28px);font-weight:700;letter-spacing:-0.025em;color:var(--ziel-c)}
+  .dw-k.duza .dw-l span{color:var(--ziel);font-size:clamp(26px,2.8vw,40px)}
+  .dw-pas{margin-top:clamp(20px,2.4vw,30px)}
+  .dw-pas > div{display:grid;grid-template-columns:44px minmax(0,1fr);gap:12px;align-items:center}
+  .dw-pas > div + div{margin-top:7px}
+  .dw-pas small{font-family:var(--mono);font-size:11px;color:var(--t3)}
+  .dw-k.duza .dw-pas small{color:rgba(255,255,255,0.5)}
+  .dw-pas i{display:block;height:12px;border-radius:4px}
+  .dw-pas i.po{width:var(--u);min-width:6px}
+  .dw-op{display:block;margin-top:12px;font-size:13px;color:var(--t3)}
+  .dw-k.duza .dw-op{color:rgba(255,255,255,0.5)}
+  .dw-dol{margin-top:auto;padding-top:clamp(22px,2.6vw,32px)}
+  .dw-dol > div{padding-top:20px;border-top:1px solid var(--linia)}
+  .dw-k.duza .dw-dol > div{border-top-color:rgba(255,255,255,0.12)}
+  .dw-dol h3{margin:0;font-size:clamp(18px,1.7vw,22px);font-weight:700;letter-spacing:-0.022em}
+  .dw-m{display:block;margin-top:3px;font-family:var(--mono);font-size:11.5px;color:var(--t3)}
+  .dw-k.duza .dw-m{color:rgba(255,255,255,0.5)}
+  .dw-dol p{margin:12px 0 0;font-size:14.5px;line-height:1.6;color:var(--t2);text-wrap:pretty}
+  .dw-k.duza .dw-dol p{color:rgba(255,255,255,0.72);font-size:15.5px}
+  .dw-dol p.lu{font-size:13.5px}
+  .dw-dol p.lu b{display:block;margin-bottom:2px;font-size:12px;font-weight:600;color:var(--t3)}
+  .dw-k.duza .dw-dol p.lu b{color:rgba(255,255,255,0.45)}
+  @media (max-width:900px){ .v3-dw-gl,.v3-dw{grid-template-columns:1fr} .dw-k.duza{grid-row:auto} }
+
+  /* =====================================================================
+     CYTAT
+     ===================================================================== */
+  .v3-cyt{padding:clamp(88px,10vw,150px) var(--pad);background:var(--papier)}
+  .v3-cyt blockquote{margin:0;max-width:1220px;font-size:clamp(28px,3.9vw,58px);line-height:1.08;letter-spacing:-0.042em;font-weight:650;color:var(--t1);text-wrap:balance}
+  .v3-cyt blockquote span{color:var(--ziel)}
+  .v3-cyt figcaption{display:flex;align-items:center;gap:18px;margin-top:clamp(28px,3.4vw,44px)}
+  .v3-cyt figcaption img{display:block;width:104px;height:28px;object-fit:contain;object-position:left center;opacity:0.85;mix-blend-mode:multiply}
+  .v3-cyt figcaption > i{width:1px;height:34px;background:var(--linia)}
+  .v3-cyt figcaption b{display:block;font-size:15px;font-weight:750}
+  .v3-cyt figcaption span span{display:block;margin-top:2px;font-size:14px;color:var(--t2)}
+</style>
+
+<div class="v3">
+
+<!-- ============ 1 · HERO ============ -->
+<section class="v3-hero">
+<div class="v3-hero-in v3-ziarno">
+<div class="v3-siatka" aria-hidden="true">{Array.from({ length: 12 }).map(() => <span></span>)}</div>
+
+<p class="v3-etyk"><i aria-hidden="true"></i>Systemy dla kluczowych procesów</p>
+<div class="v3-hero-grid">
+<h1 class="v3-h1">Procesy, na których zarabiacie, prowadzi system zbudowany <span>pod Wasz sposób pracy</span></h1>
+<div>
+<p class="v3-lead">Kluczowe procesy biegną przez kilka działów i kilka narzędzi, a większość ich czasu to czekanie na przekazanie. Budujemy system, który prowadzi je od początku do końca i zamyka w sobie to, co Wasza firma robi inaczej niż reszta rynku.</p>
+<div class="v3-akcje">
+<a href="#kontakt" class="v3-btn">Umów rozmowę <span aria-hidden="true">→</span></a>
+<a href="#jak-wyglada" class="v3-lnk">Zobacz, jak to wygląda →</a>
+</div>
+</div>
+</div>
+
+<figure class="v3-pz" data-pz data-jazda={PZ.jazda} data-przerwa={PZ.przerwa} data-cykl={PZ.cykl} data-gasnie={PZ.gasnie} data-udzial={UDZIAL_PO.toFixed(5)} data-dni={DZIS_DNI} role="img" aria-label={`Jedna oferta na osi czasu. Dziś od zapytania do wysyłki mija ponad sześć dni roboczych, z czego pracy jest ${PRACA_MIN} minut; reszta to trzy postoje. Po przebudowie ta sama sprawa zamyka się w cztery godziny, a pracy jest ${PRACA_PO_MIN} minut.`} style="margin-left:0;margin-right:0">
+<div class="pz-gl" aria-hidden="true">
+<span><b>ZP-2484</b> · od zapytania do oferty</span>
+<span class="pz-leg"><span><i class="czk"></i>czekanie</span><span><i class="prc"></i>praca</span></span>
+<span class="pz-licz">upłynęło <b data-licznik>6 dni</b></span>
+</div>
+
+<div class="pz-w" aria-hidden="true">
+<div class="pz-kto"><b>Dziś</b><span>od zapytania do oferty</span></div>
+<div class="pz-tor">
+<div class="pz-etyk">
+{PRACA.map((x) => (<span class={x.kotwica} style={`left:${(x.srodek * 100).toFixed(2)}%`}>{x.k} · <em>{minOpis(x.min)}</em></span>))}
+</div>
+<div class="pz-os">
+{kroki.map((x, i) => (
+  <span class={`pz-seg${i === 0 ? ' pierwszy' : ''}${i === kroki.length - 1 ? ' ostatni' : ''}`} style={`--f:${(x.udzial * 1000).toFixed(3)}`} data-od={x.od.toFixed(5)} data-ud={x.udzial.toFixed(5)}>
+    <i class={x.p ? 'prc' : 'czk'}></i>
+    {!x.p && <b><span class="dl">{x.t}</span><span class="kr">{x.k}</span><em>{dniKrotko(x.dni)}</em></b>}
+  </span>
+))}
+<span class="pz-g" data-g1></span>
+</div>
+<div class="pz-skala">
+<em>dni robocze</em>
+{Array.from({ length: 6 }).map((_, d) => (<span style={`left:${((d + 1) / DZIS_DNI * 100).toFixed(2)}%`}>{d + 1}</span>))}
+</div>
+</div>
+<div class="pz-wyn d" data-w1><b>6</b><span>dni</span><em>roboczych · pracy {PRACA_MIN} min</em></div>
+</div>
+
+<div class="pz-w" aria-hidden="true">
+<div class="pz-kto"><b>Po przebudowie</b><span>ta sama sprawa</span></div>
+<div class="pz-tor">
+<div class="pz-os">
+<span class="pz-duch"></span>
+<span class="pz-po" style={`--u:${(UDZIAL_PO * 100).toFixed(2)}%`}><i class="prc" data-f2></i></span>
+<span class="pz-g" data-g2></span>
+</div>
+</div>
+<div class="pz-wyn p" data-w2><b>{PO_GODZ}</b><span>godziny</span><em>pracy {PRACA_PO_MIN} min</em></div>
+</div>
+</figure>
+<p class="v3-pod">Praca skraca się o osiemnaście minut, bo znika przepisywanie do arkusza. <strong>Cała reszta różnicy to czekanie</strong>, którego nikt nigdy nie policzył.</p>
+
+<dl class="v3-war">
+<div><dt>Zaczyna się od</dt><dd>dwóch dni warsztatu z osobami, które prowadzą proces dzisiaj</dd></div>
+<div><dt>Wycena</dt><dd><strong>stała za pierwsze uruchomienie</strong>, podawana po warsztacie; kolejne wyceniamy osobno</dd></div>
+<div><dt>Po Waszej stronie</dt><dd>godzina w tygodniu, a przed uruchomieniem kilka dni testów na prawdziwych sprawach</dd></div>
+</dl>
+
+<!-- Logotypy wiszą na CDN-ie starej strony — do przeniesienia razem
+     z kopiami na stronie głównej i na /guided-coding/bez-dzialu-it. -->
+<div class="v3-loga">
+<span><strong>140+ firm</strong> zmienia z nami sposób działania</span>
+<div class="v3-loga-o">
+<div class="v3-loga-t">
+{[0, 1].map((k) => (
+  <>
+    <img src="/uploads/klienci/sports-med.svg" alt={k ? '' : 'Sports Med'} aria-hidden={k ? 'true' : undefined}>
+    <img src="/uploads/klienci/nars.svg" alt={k ? '' : 'NARS'} aria-hidden={k ? 'true' : undefined}>
+    <img src="/uploads/klienci/sevium.svg" alt={k ? '' : 'Sevium'} aria-hidden={k ? 'true' : undefined}>
+    <img src="/uploads/klienci/odo-24.svg" alt={k ? '' : 'ODO 24'} aria-hidden={k ? 'true' : undefined}>
+    <img src="/uploads/klienci/x3d.svg" alt={k ? '' : 'X3D'} aria-hidden={k ? 'true' : undefined}>
+  </>
+))}
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- ============ 2 · CZYM SĄ ============
+     Definicja dla modeli językowych stoi jako pierwsze zdanie dużym
+     stopniem pisma. Pod nią indeks procesów — duża typografia zamiast
+     listy w karcie; czytelnik ma tu rozpoznać swój proces. -->
+<section id="czym-jest" class="v3-sek v3-papier">
+<div class="v3-def">
+<h2 class="v3-h2m">Czym są systemy dla kluczowych procesów?</h2>
+<div>
+<p class="v3-def-duzy rv">Systemy dla kluczowych procesów to aplikacje budowane pod te przebiegi pracy, na których firma zarabia — takie, które dziś biegną przez kilka działów i kilka narzędzi. Taki system prowadzi sprawę od wejścia do zamknięcia i trzyma jej stan w jednym miejscu.</p>
+<div class="v3-def-2">
+<p>Dane bierze z systemów, w których leżą, a kolejny krok podaje sam: właściwej osobie, we właściwej chwili, z kompletem tego, co jest jej potrzebne do decyzji. Przekazanie z działu do działu przestaje być czyjąś robotą.</p>
+<p>Kluczowe procesy to te, po których klient ocenia firmę i na których stoi marża.</p>
+</div>
+</div>
+</div>
+
+<div class="v3-ix">
+<div class="ix-gl">
+<h3>Procesy, o których mówimy</h3>
+<p>Przy każdym z nich sprawa przechodzi przez kilka działów, zanim klient dostanie odpowiedź. Wasz nazywa się pewnie inaczej.</p>
+</div>
+{PROCESY.map((x, i) => (
+  <div class="ix-w rv">
+    <span class="ix-n">{String(i + 1).padStart(2, '0')}</span>
+    <span class="ix-t">{x.t}</span>
+    <span class="ix-d">{x.d.split(' · ').map((d, j) => (<>{j > 0 && <i aria-hidden="true"></i>}<span>{d}</span></>))}</span>
+  </div>
+))}
+</div>
+</section>
+
+<!-- ============ 3 · DLACZEGO ============
+     Teza jako zdanie na całą szerokość: pierwsza połowa przygaszona,
+     druga mocna. Krzywa dowodzi tezy, trasa dowodzi dwóch pierwszych
+     powodów, trzy powody stoją pod spodem jako tekst. -->
+<section id="dlaczego" class="v3-sek">
+<h2 class="v3-h2m">Dlaczego gotowe narzędzia tego nie domykają</h2>
+<p class="v3-teza rv"><span>Gotowe narzędzie zawiera średnią rynku.</span> Wasza przewaga leży dokładnie w tym, czym się od tej średniej różnicie</p>
+<p class="v3-sub rv" style="margin-top:clamp(22px,2.4vw,30px);max-width:620px">Nie chodzi o to, że są słabe. Chodzi o to, że są kupowane wzdłuż innej osi niż ta, po której biegnie sprawa, a ich producent nie zna Waszych wyjątków.</p>
+
+<figure class="v3-kw" data-anim style="margin-left:0;margin-right:0">
+<div class="kw-ram" role="img" aria-label="Rozkład tego, jak firmy na rynku prowadzą ten sam proces. Gotowy system da się ustawić w paśmie wokół średniej, które przewidział producent. Wasz sposób pracy leży daleko w ogonie, poza tym pasmem, i ląduje w arkuszu obok.">
+<svg viewBox={`0 0 ${KW.w} ${KW.h}`} preserveAspectRatio="none" aria-hidden="true">
+  <defs>
+    <pattern id="kw-kreska" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="1.4" height="7" fill="rgba(15,26,20,0.16)"/></pattern>
+  </defs>
+  <rect class="kw-pas" x={PASMO[0]} y="34" width={PASMO[1] - PASMO[0]} height={KW.y0 - 34} fill="rgba(15,26,20,0.035)"/>
+  <path class="kw-pas" d={PASMO_D} fill="url(#kw-kreska)"/>
+  <line class="kw-kr" x1={PASMO[0]} y1="34" x2={PASMO[0]} y2={KW.y0} stroke="rgba(15,26,20,0.4)" stroke-width="1" stroke-dasharray="4 5" vector-effect="non-scaling-stroke"/>
+  <line class="kw-kr" x1={PASMO[1]} y1="34" x2={PASMO[1]} y2={KW.y0} stroke="rgba(15,26,20,0.4)" stroke-width="1" stroke-dasharray="4 5" vector-effect="non-scaling-stroke"/>
+  <line x1={KW.x0} y1={KW.y0} x2={KW.x1} y2={KW.y0} stroke="rgba(15,26,20,0.28)" stroke-width="1" vector-effect="non-scaling-stroke"/>
+  <path class="kw-krzywa" d={KRZYWA_D} pathLength="1600" vector-effect="non-scaling-stroke"/>
+  <line class="kw-kr" x1={KW.mu} y1={KW.y0 - KW.wys - 10} x2={KW.mu} y2={KW.y0 - KW.wys - 26} stroke="rgba(15,26,20,0.5)" stroke-width="1" vector-effect="non-scaling-stroke"/>
+  <line class="kw-ogon" x1={KROPKA.x} y1={KROPKA.y} x2={KROPKA.x} y2="190" stroke="#00CD77" stroke-width="1.2" vector-effect="non-scaling-stroke"/>
+</svg>
+<span class="kw-l c" style={`left:${proc(KW.mu, KW.w)};top:${proc(KW.y0 - KW.wys - 30, KW.h)}`}>średnia rynku</span>
+<span class="kw-l kw-pasmo-l" style={`left:${proc(KW.mu, KW.w)}`}>granice, które przewidział producent</span>
+<span class="kw-l kw-kropka-l" style={`left:calc(${proc(KROPKA.x, KW.w)} - 1px);top:${proc(184, KW.h)}`}><b>To, co robicie inaczej i na czym zarabiacie więcej</b><span><i aria-hidden="true">{Array.from({ length: 9 }).map(() => <u></u>)}</i>ląduje w arkuszu obok</span></span>
+<span class="kw-dot" style={`position:absolute;left:${proc(KROPKA.x, KW.w)};top:${proc(KROPKA.y, KW.h)};width:0;height:0`}>
+  <svg width="40" height="40" viewBox="-20 -20 40 40" style="position:absolute;left:-20px;top:-20px;overflow:visible" aria-hidden="true">
+    <circle class="kw-puls" r="9" fill="none" stroke="#00CD77" stroke-width="1.5"/>
+    <circle r="8" fill="#00CD77" stroke="#ffffff" stroke-width="3"/>
+  </svg>
+</span>
+</div>
+</figure>
+
+<div class="v3-trasa">
+<div class="ts-rz" role="img" aria-label="Pięć narzędzi jak stacje na jednej linii: CRM, ERP, magazyn, arkusz i poczta. Między każdymi dwoma sprawę przenosi człowiek: przepisaniem, telefonem, kopiuj-wklej i e-mailem.">
+{STACJE.map((s, i) => (
+  <>
+    <div class="ts-st"><span class="ts-kolo">{s.z}</span><b>{s.n}</b></div>
+    {i < PRZERWY.length && <div class="ts-pr"><span>{PRZERWY[i]}</span></div>}
+  </>
+))}
+</div>
+<div class="ts-leg">
+<span><i style="width:14px;height:14px;border-radius:50%;border:2px solid #00CD77"></i>proces, którym idzie sprawa</span>
+<span><i style="width:26px;height:3px;background:repeating-linear-gradient(90deg,#f0a33a 0 7px,transparent 7px 12px)"></i>przerwa, w której przenosi ją człowiek</span>
+</div>
+</div>
+
+<div class="v3-pw">
+{POWODY.map((p, i) => (
+  <div class="pw-k rv">
+    <span>{String(i + 1).padStart(2, '0')}</span>
+    <h3>{p.t}</h3>
+    <p>{p.d}</p>
+  </div>
+))}
+</div>
+</section>
+
+<!-- ============ 4 · JAK WYGLĄDA ============
+     Jedno okno z zakładkami zamiast pasa czterech ekranów: zakładka
+     przełącza też pozycję w bocznym menu aplikacji, więc to czyta się
+     jak jeden system. Bez JS widać pierwszy widok. -->
+<section id="jak-wyglada" class="v3-sek v3-scena v3-ziarno">
+<div class="v3-jw-gl">
+<h2 class="v3-h2 jasny" style="max-width:640px">Jak taki system wygląda</h2>
+<p class="v3-sub jasny" style="max-width:460px">Cztery widoki poglądowe z systemu ofertowania — tego samego procesu, który idzie przez całą tę stronę.</p>
+</div>
+
+<div class="v3-zak" role="tablist" aria-label="Widoki systemu">
+{ZAKLADKI.map((z, i) => (<button type="button" role="tab" id={`zak-${i}`} aria-controls={`widok-${i}`} aria-selected={i === 0 ? 'true' : 'false'} tabindex={i === 0 ? 0 : -1} data-zak>{z.t}</button>))}
+</div>
+
+<div class="v3-app">
+<aside class="ap-bok" aria-hidden="true">
+<div class="ap-logo"><i></i>Ofertowanie</div>
+<div class="ap-nav">
+{ZAKLADKI.map((z, i) => (<span class={i === 0 ? 'on' : ''} data-nav>{z.nav}{i === 0 && <em>34</em>}{i === 1 && <em>3</em>}</span>))}
+</div>
+<span class="ap-sekcja">Połączone systemy</span>
+<span class="ap-pr"><i style="background:#3f78d8"></i>CRM</span>
+<span class="ap-pr"><i style="background:#7b5fd0"></i>ERP</span>
+<span class="ap-pr"><i style="background:#c7822e"></i>Magazyn</span>
+<span class="ap-pr"><i style="background:#d0573f"></i>Poczta</span>
+<div class="ap-kto"><span class="av">MR</span><span>Michał Rutkowski<em>technolog</em></span></div>
+</aside>
+
+<div class="ap-gl">
+<div class="ap-gora" aria-hidden="true"><span>Ofertowanie</span><span>/</span><b data-okruch>{ZAKLADKI[0].t}</b><span class="ap-szukaj">Szukaj sprawy<kbd>⌘K</kbd></span></div>
+
+<!-- karta sprawy -->
+<div class="ap-widok" role="tabpanel" id="widok-0" aria-labelledby="zak-0" data-widok>
+<div class="aw-gl">
+<div><span class="aw-nr">ZP-2484 · zapytanie z 14:02</span><h3>Stalprofil · hala 42 × 18 m</h3></div>
+<span class="aw-chip">Wycena techniczna</span>
+<span class="aw-czeka"><i aria-hidden="true"></i>czeka 4 godziny</span>
+</div>
+<div class="aw-kol">
+<div>
+<div class="aw-blok">
+<span class="aw-et">Sprawa</span>
+<span class="aw-pole"><b>Stalprofil sp. z o.o.</b><span class="aw-zr">z CRM</span></span>
+<span class="aw-pole">Termin oczekiwany <b class="pr">14.09</b></span>
+<span class="aw-pole">Wartość wyceny <b class="pr">86 400 zł</b></span>
+</div>
+<div class="aw-blok">
+<span class="aw-et">Pozycje · ceny z ERP, stany z magazynu</span>
+{KARTA_POZYCJE.map((x) => (<span class="aw-poz"><span>{x.i}</span><span>{x.n}</span><em class={x.ok ? '' : 'brak'}>{x.st}</em></span>))}
+</div>
+</div>
+<div>
+<span class="aw-et">Obieg sprawy</span>
+<div class="aw-ob">
+{KARTA_OBIEG.map((k) => (
+  <div class={`aw-krok ${k.s === 'ok' ? 'ok' : ''} ${k.s === 'teraz' ? 'teraz' : ''} ${k.s === 'czeka' ? 'czeka' : ''} ${k.s === 'pomin' ? 'pomin' : ''}`}>
+    <span class="aw-pkt" aria-hidden="true"></span>
+    <span><b>{k.t}</b>{k.kto && <span>{k.kto}</span>}</span>
+  </div>
+))}
+</div>
+</div>
+</div>
+<div class="aw-akcje"><span class="aw-b">Zatwierdź wycenę</span><span class="aw-b c">Zwróć do handlu</span></div>
+</div>
+
+<!-- rejestr -->
+<div class="ap-widok" role="tabpanel" id="widok-1" aria-labelledby="zak-1" data-widok hidden>
+<div class="aw-gl"><div><span class="aw-nr">ofertowanie</span><h3>Zapytania w toku</h3></div></div>
+<div class="aw-filtry" aria-hidden="true"><span class="on">Wszystkie<em>34</em></span><span class="uw">Stoją dłużej niż 2 dni<em>3</em></span><span>Moje<em>6</em></span><span>Zamknięte w tym tygodniu<em>21</em></span></div>
+<span class="aw-rej ng"><span>Numer</span><span>Klient</span><span>Krok</span><i>Czeka</i></span>
+{REJESTR.map((r) => (<span class={r.zle ? 'aw-rej zle' : 'aw-rej'}><b>{r.nr}</b><span>{r.kl}</span><span>{r.kr}</span><i>{r.cz}</i></span>))}
+</div>
+
+<!-- kokpit -->
+<div class="ap-widok" role="tabpanel" id="widok-2" aria-labelledby="zak-2" data-widok hidden>
+<div class="aw-gl"><div><span class="aw-nr">ostatnie 30 dni</span><h3>Kokpit procesu</h3></div></div>
+<div class="aw-kafle">
+<div class="aw-kafel"><span>Czas sprawy</span><b>1,5 dnia</b><em>z 6 dni przed startem</em></div>
+<div class="aw-kafel"><span>Sprawy w toku</span><b>34</b></div>
+<div class="aw-kafel uw"><span>Stoją dłużej niż 2 dni</span><b>3</b></div>
+</div>
+<div class="aw-kp">
+<div class="aw-wyk">
+<span class="aw-et" style="margin:0">Czas sprawy, tydzień po tygodniu</span>
+<svg viewBox={`0 0 ${TYG_W} ${TYG_H}`} aria-hidden="true">
+  <path d={`${TYG_D} L${TYG_W},${TYG_H} L0,${TYG_H} Z`} fill="rgba(0,205,119,0.1)"/>
+  <path d={TYG_D} fill="none" stroke="#00CD77" stroke-width="2" stroke-linejoin="round"/>
+  <line x1={(6 / 14 * TYG_W).toFixed(1)} y1="0" x2={(6 / 14 * TYG_W).toFixed(1)} y2={TYG_H} stroke="rgba(15,26,20,0.25)" stroke-dasharray="3 3"/>
+  <line x1={(11 / 14 * TYG_W).toFixed(1)} y1="0" x2={(11 / 14 * TYG_W).toFixed(1)} y2={TYG_H} stroke="rgba(15,26,20,0.25)" stroke-dasharray="3 3"/>
+</svg>
+<div class="aw-os" aria-hidden="true"><span style="left:0">start</span><span style={`left:${(6 / 14 * 100).toFixed(1)}%`}>1. uruchomienie</span><span style={`left:${(11 / 14 * 100).toFixed(1)}%`}>2.</span><span style="right:0">dziś</span></div>
+</div>
+<div>
+<span class="aw-et">Gdzie sprawy stoją najdłużej · średnia</span>
+{KOKPIT.map((k) => (<span class="aw-stoi"><span>{k.t}</span><span>{k.v}</span><i><b style={`--u:${k.u}%`}></b></i></span>))}
+</div>
+</div>
+</div>
+
+<!-- reguły -->
+<div class="ap-widok" role="tabpanel" id="widok-3" aria-labelledby="zak-3" data-widok hidden>
+<div class="aw-gl"><div><span class="aw-nr">ustawienia</span><h3>Reguły procesu</h3></div><span class="aw-b" style="margin-left:auto">Zapisz</span></div>
+<div class="aw-reg">
+{REGULY.map((r) => (<div class="aw-r"><span>{r.t}</span><b>{r.v}</b></div>))}
+</div>
+</div>
+</div>
+</div>
+
+<div class="v3-jw-dol">
+<div>
+{ZAKLADKI.map((z, i) => (<p class="v3-jw-p" data-podpis hidden={i !== 0}><b>{z.t}</b>{z.p}</p>))}
+</div>
+<p class="v3-jw-nota">Widoki są poglądowe. U Was będą wyglądać inaczej, bo nazwy pól, kroki obiegu i to, co widać na pierwszym ekranie, biorą się z Waszego procesu — projektujemy je na warsztacie przed pierwszym uruchomieniem.</p>
+</div>
+</section>
+
+<!-- ============ 5 · DLA JAKICH FIRM ============
+     Lewa kolumna przyklejona przy przewijaniu, warunki duże po prawej.
+     „Kiedy to nie ma sensu" w białej karcie na papierze — jedyne
+     miejsce na stronie, które niczego nie sprzedaje. -->
+<section id="dla-kogo" class="v3-sek v3-papier">
+<div class="v3-dk">
+<div class="dk-lewa">
+<h2 class="v3-h2">Dla jakich firm to jest</h2>
+<p class="v3-sub">Najczęściej produkcja, dystrybucja i usługi — wszędzie tam, gdzie sprawa przechodzi przez kilka działów, zanim klient dostanie odpowiedź. Wielkość firmy rozstrzyga tu mniej niż cztery rzeczy poniżej.</p>
+</div>
+<div>
+{DLA_KOGO.map((x, i) => (
+  <div class="dk-w rv">
+    <span class="dk-n">{String(i + 1).padStart(2, '0')}</span>
+    <h3>{x.t}</h3>
+    <p>{x.d}</p>
+  </div>
+))}
+<aside class="dk-nie rv">
+<h3>Kiedy to nie ma sensu</h3>
+{NIE_TERAZ.map((t) => (<p>{t}</p>))}
+</aside>
+</div>
+</div>
+</section>
+
+<!-- ============ 6 · URUCHOMIENIA ============
+     Schody: ten sam czas sprawy cztery razy w jednej skali. Przy wejściu
+     w kadr każdy pasek startuje z długości poprzedniego i się kurczy;
+     ucięta część zostaje jako przerywany duch z różnicą w dniach. -->
+<section id="uruchomienia" class="v3-sek">
+<div class="v3-ur-gl">
+<h2 class="v3-h2">Każde uruchomienie skraca czas sprawy</h2>
+<p class="v3-sub">Nie budujemy całego procesu naraz. Pierwsze uruchomienie wchodzi na produkcję po sześciu tygodniach i od tego dnia sprawa idzie szybciej. Kolejne dokładają następny kawałek.</p>
+</div>
+
+<div class="v3-sch" data-anim>
+<div class="sch-w skala" aria-hidden="true">
+<span></span>
+<div class="sch-skala">
+{Array.from({ length: 7 }).map((_, d) => (<span style={`left:${(d / DZIS_DNI * 100).toFixed(2)}%`}>{d === 0 ? '0' : d}</span>))}
+</div>
+<span class="sch-tyg" style="text-align:right">dni robocze</span>
+</div>
+
+<div class="sch-w dzis">
+<div class="sch-opis"><span class="sch-e">Dziś</span><span class="sch-tyg">przed pierwszym uruchomieniem</span></div>
+<div class="sch-bar" aria-hidden="true"><i class="czk-j"></i></div>
+<div class="sch-l"><b>6</b><span>dni</span></div>
+</div>
+
+{SCHODY.map((o, i) => {
+  const [l, j] = rozbij(o.wartosc);
+  return (
+  <div class="sch-w">
+    <div class="sch-opis">
+      <span class="sch-e">{o.e}</span><span class="sch-tyg">{o.tyg}</span>
+      <h3>{o.t}</h3>
+      <p>{o.d}</p>
+      <span class="sch-zn">{o.zn}</span>
+    </div>
+    <div class="sch-bar" aria-hidden="true" style={`--u:${(o.u * 100).toFixed(2)}%;--prev:${(o.prev * 100).toFixed(2)}%;--d:${(0.15 + i * 0.35).toFixed(2)}s`}>
+      <i></i>
+      <s><em>−{dniKrotko(o.delta)}</em></s>
+    </div>
+    <div class="sch-l"><b>{l}</b><span>{j}</span></div>
+  </div>
+  );
+})}
+</div>
+
+<div class="v3-ur-dol">
+<p>Wyceniamy jedno uruchomienie naraz, a następne dopiero wtedy, kiedy poprzednie pracuje i wiadomo, co pokazało. Po każdym możecie się zatrzymać — to, co działa, zostaje Wasze razem z kodem. Nie ma tu etapu, po którym zostaje połowa systemu i faktura.</p>
+<p>Kiedy szkielet procesu już stoi, wokół niego domykamy procesy wspierające — raporty, powiadomienia, wystawianie dokumentów, przekazywanie danych do księgowości — <a href="/#oferta">automatyzacjami i integracjami</a>, które wpinają się w ten sam rejestr.</p>
+</div>
+</section>
+
+<!-- ============ 7 · ZIELONY PAS ============
+     Jedyny pas w kolorze marki. Zdjęcie w skali szarości mnożone przez
+     zieleń daje duoton bez osobnego pliku.
+     DO POTWIERDZENIA: Marcel jako twarz rozmowy o systemach. -->
+<section class="v3-zl">
+<div class="v3-zl-in">
+<div class="zl-t">
+<p>Opowiedzcie o jednej sprawie, która przechodzi u Was przez najwięcej rąk — policzymy jej czas razem</p>
+<a href="#kontakt" class="v3-btn ciemny">Umów rozmowę <span aria-hidden="true">→</span></a>
+</div>
+<div class="zl-foto">
+<img src="/marcel-bilski.jpg" alt="Marcel Bilski, Tech Lead w Let's automate" width="1200" height="2526" loading="lazy" decoding="async">
+<div class="zl-podpis"><b>Marcel Bilski</b><span>Tech Lead</span></div>
+</div>
+</div>
+</section>
+
+<!-- ============ 8 · CO ZMIENIA WASZ CZŁOWIEK ============
+     Ekran ustawień z czterema obszarami oznaczonymi numerem — numery
+     odpowiadają legendzie pod spodem, jak w rysunku technicznym. Zmieniony
+     krok to trzecie uruchomienie: akceptacja marży tylko poza widełkami. -->
+<section id="zmiany" class="v3-sek v3-papier">
+<div class="v3-zm">
+<div class="zm-t">
+<h2 class="v3-h2">Co zmienia Wasz człowiek bez nas</h2>
+<p class="v3-sub">Firma zmienia się szybciej niż jej oprogramowanie. Dlatego to, co zmienia się najczęściej, siedzi w konfiguracji i ma własny ekran — kod zmieniamy dopiero wtedy, kiedy zmienia się kształt procesu.</p>
+<p class="v3-sub">Przy odbiorze przechodzimy tę listę na żywo, na Waszym systemie, i zostaje z niej instrukcja. Jeśli po pół roku okaże się, że po każdą drobną zmianę trzeba dzwonić do nas, znaczy to, że granica została postawiona źle.</p>
+</div>
+
+<div class="zm-okno rv" aria-hidden="true">
+<div class="zm-pasek"><i></i><b>Ustawienia procesu</b><span>· zapytanie ofertowe</span><u>Zapisz</u></div>
+<div class="zm-uk">
+<div class="zm-ob">
+<span class="zm-nr">2</span>
+<span class="zm-et">Kroki obiegu i akceptacje</span>
+{OBIEG_USTAWIENIA.map((k, i) => (
+  <div class={k.zm ? 'zm-krok zm' : 'zm-krok'}>
+    <span class="zm-chwyt"></span>
+    <em>{i + 1}</em>
+    <span><b>{k.t}</b><small>{k.kto}</small></span>
+    <span class="zm-prz"></span>
+  </div>
+))}
+</div>
+<div class="zm-pr">
+<div class="zm-ob">
+<span class="zm-nr">1</span>
+<span class="zm-et">Progi i widełki</span>
+<div class="zm-pole">Akceptacja zarządu powyżej <b>120 000 zł</b></div>
+<div class="zm-pole">Przypomnienie, gdy krok stoi dłużej niż <b>2 dni</b></div>
+<div class="zm-pole">Domyślna marża w widełkach <b>18%</b></div>
+</div>
+<div class="zm-ob">
+<span class="zm-nr">3</span>
+<span class="zm-et">Słowniki i formularze · typ sprawy</span>
+<div class="zm-tagi"><span>Hala stalowa</span><span>Antresola</span><span>Konstrukcja wsporcza</span><span class="dod">+ dodaj</span></div>
+<div class="zm-pole">Rysunek techniczny wymagany <span class="zm-prz"></span></div>
+</div>
+<div class="zm-ob">
+<span class="zm-nr">4</span>
+<span class="zm-et">Szablony i treści</span>
+<div class="zm-plik"><i></i>Oferta_hala_v4.docx<em>szablon oferty</em></div>
+<div class="zm-pole">Kopia oferty do opiekuna klienta <span class="zm-prz"></span></div>
+</div>
+</div>
+</div>
+<div class="zm-tost"><i>✓</i><span><b>Zmiana zapisana</b><span>obowiązuje od następnej sprawy</span></span></div>
+</div>
+</div>
+
+<ol class="zm-leg">
+{KONFIG.map((k, i) => (
+  <li class="rv"><span aria-hidden="true">{i + 1}</span><h3>{k.t}</h3><p>{k.d}</p></li>
+))}
+</ol>
+</section>
+
+<!-- ============ 9 · DOWODY ============
+     PRZYKŁADOWE wdrożenia — do podmiany na potwierdzone przypadki.
+     Pierwsza sprawa jest tą samą, którą mierzy hero (6 dni → 4 godziny),
+     więc dostaje ciemną kartę i największą liczbę na stronie. -->
+<section id="dowody" class="v3-sek">
+<div class="v3-dw-gl">
+<h2 class="v3-h2">Trzy procesy i ich czas sprawy</h2>
+<p class="v3-sub">Czas liczony od wejścia sprawy do jej zamknięcia, razem z całym czekaniem po drodze. Pierwsza liczba przy każdym to pomiar sprzed pierwszego uruchomienia.</p>
+</div>
+<div class="v3-dw">
+{PRZYKLADY.map((x, i) => {
+  const [l, j] = rozbij(x.po);
+  return (
+  <article class={i === 0 ? 'dw-k duza rv' : 'dw-k rv'}>
+    <span class="dw-p">{x.p}</span>
+    <div class="dw-sr">
+    <span class="dw-cap">Czas sprawy</span>
+    <div class="dw-l"><b>{l}</b><span>{j}</span></div>
+    <div class="dw-pas" aria-hidden="true">
+      <div><small>przed</small><i class="czk-j"></i></div>
+      <div><small>po</small><i class="po prc" style={`--u:${(x.poD / x.przedD * 100).toFixed(1)}%`}></i></div>
+    </div>
+    <span class="dw-op">{x.przed} → {x.po} · tyle zostało z pierwotnego czasu sprawy</span>
+    </div>
+    <div class="dw-dol"><div>
+      <h3>{x.f}</h3>
+      <span class="dw-m">{x.m}</span>
+      <p>{x.d}</p>
+      <p class="lu"><b>Zostało u ludzi</b>{x.ludzie}</p>
+    </div></div>
+  </article>
+  );
+})}
+</div>
+</section>
+
+<!-- ============ 10 · CYTAT ============ -->
+<figure class="v3-cyt rv" style="margin:0">
+<blockquote><span>„</span>Let’s automate wziął pełną odpowiedzialność za projekt i dowiózł go do końca. To dlatego powierzyliśmy im kolejny, znacznie większy.</blockquote>
+<figcaption>
+<img src="/uploads/klienci/nars.svg" alt="NARS Polska" width="104" height="28" loading="lazy">
+<i aria-hidden="true"></i>
+<span><b>Jakub Ciołkowski</b><span>Członek Zarządu, NARS Polska</span></span>
+</figcaption>
+</figure>
+
+</div>
+
+<GcCta
+  usluga="Systemy procesowe"
+  heading="Zacznijmy od jednego procesu"
+  lead="Napiszcie w dwóch zdaniach, która sprawa przechodzi u Was przez najwięcej rąk i ile jej się zdarza w miesiącu. Odpowiemy z pytaniem o systemy po drodze i z terminem pierwszej rozmowy."
+  eyebrow="Z pierwszej rozmowy wychodzicie z"
+  items={[
+    { t: 'Policzonym czasem sprawy', d: 'ile trwa dzisiaj i ile z tego jest pracą' },
+    { t: 'Granicą pierwszego uruchomienia', d: 'co ma pracować na produkcji po kilku tygodniach' },
+    { t: 'Werdyktem', d: 'czy gotowe narzędzie nie zamknie tego taniej' },
+  ]}
+  placeholder="Np. zapytanie ofertowe przechodzi przez handel, technologa i magazyn, miesięcznie jest ich około 300…"
+  badges={[
+    { i: 'klodka', t: 'Wasze dane bezpieczne' },
+    { i: 'kartka', t: 'NDA przed startem' },
+    { i: 'ptaszek', t: 'Kod zostaje Wasz' },
+  ]}
+/>
+
+<GcFaq
+  heading="Pytania, które padają przed decyzją"
+  ctaLabel="Zadajcie nam swoje →"
+  items={faq}
+/>
+
+<script>
+  var redukcja = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ---- Wejście w kadr: [data-anim] dostaje .on (krzywa, schody) ----
+  (function(){
+    var els = document.querySelectorAll('.v3 [data-anim]');
+    if(!els.length) return;
+    if(redukcja || !('IntersectionObserver' in window)){
+      els.forEach(function(el){ el.classList.add('on'); });
+      return;
+    }
+    els.forEach(function(el){ if(el.classList.contains('v3-sch')) el.classList.add('gra'); });
+    var io = new IntersectionObserver(function(wpisy){
+      wpisy.forEach(function(w){
+        if(w.isIntersecting){ w.target.classList.add('on'); io.unobserve(w.target); }
+      });
+    }, { threshold: 0.3 });
+    els.forEach(function(el){ io.observe(el); });
+  })();
+
+  // ---- Przyrząd w hero ----
+  // Głowica jedzie przez obie osie z tą samą prędkością, więc krótka oś
+  // kończy się w ułamku czasu długiej. Bez JS i przy reduced-motion
+  // zostaje stan końcowy z markupu.
+  (function(){
+    var pz = document.querySelector('[data-pz]');
+    if(!pz || redukcja || !window.requestAnimationFrame) return;
+    var J = +pz.dataset.jazda, P = +pz.dataset.przerwa, T = +pz.dataset.cykl, G = +pz.dataset.gasnie;
+    var U = +pz.dataset.udzial, D = +pz.dataset.dni;
+    var J2 = J * U, S2 = J + P;
+    var segs = Array.prototype.slice.call(pz.querySelectorAll('[data-od]')).map(function(s){
+      return { od: +s.dataset.od, ud: +s.dataset.ud, i: s.firstElementChild };
+    });
+    var g1 = pz.querySelector('[data-g1]'), g2 = pz.querySelector('[data-g2]');
+    var f2 = pz.querySelector('[data-f2]');
+    var w1 = pz.querySelector('[data-w1]'), w2 = pz.querySelector('[data-w2]');
+    var licz = pz.querySelector('[data-licznik]');
+    function fmt(d){
+      var dd = Math.floor(d + 1e-6), h = Math.round((d - dd) * 8);
+      if(h === 8){ dd++; h = 0; }
+      var s = dd > 0 ? dd + (dd === 1 ? ' dzień' : ' dni') : '';
+      if(h > 0 || dd === 0) s += (s ? ' ' : '') + h + ' h';
+      return s;
+    }
+    var cl = function(v){ return v < 0 ? 0 : v > 1 ? 1 : v; };
+    pz.classList.add('gra');
+    var start = null, przesun = 0, raf = null, ostatni = '';
+    function klatka(ts){
+      if(start === null) start = ts - przesun * 1000;
+      var t = ((ts - start) / 1000) % T;
+      przesun = t;
+      var p1 = cl(t / J);
+      segs.forEach(function(s){ s.i.style.width = (cl((p1 - s.od) / s.ud) * 100) + '%'; });
+      g1.style.left = (p1 * 100) + '%';
+      g1.style.opacity = t < J + 0.25 ? '1' : '0';
+      var p2 = cl((t - S2) / J2);
+      f2.style.width = (p2 * 100) + '%';
+      g2.style.left = (p2 * U * 100) + '%';
+      g2.style.opacity = (t > S2 - 0.1 && t < S2 + J2 + 0.25) ? '1' : '0';
+      w1.classList.toggle('on', t >= J);
+      w2.classList.toggle('on', t >= S2 + J2);
+      pz.classList.toggle('gas', t > T - G);
+      var tekst = t < S2 ? fmt(p1 * D) : fmt(p2 * U * D);
+      if(tekst !== ostatni){ licz.textContent = tekst; ostatni = tekst; }
+      raf = requestAnimationFrame(klatka);
+    }
+    // Pauza poza kadrem — po powrocie animacja rusza od miejsca, w którym stanęła.
+    var io = new IntersectionObserver(function(w){
+      if(w[0].isIntersecting){ if(raf === null){ start = null; raf = requestAnimationFrame(klatka); } }
+      else if(raf !== null){ cancelAnimationFrame(raf); raf = null; }
+    }, { threshold: 0.05 });
+    io.observe(pz);
+  })();
+
+  // ---- Zakładki widoków systemu ----
+  (function(){
+    var zak = Array.prototype.slice.call(document.querySelectorAll('[data-zak]'));
+    if(!zak.length) return;
+    var widoki = document.querySelectorAll('[data-widok]');
+    var podpisy = document.querySelectorAll('[data-podpis]');
+    var nav = document.querySelectorAll('[data-nav]');
+    var okruch = document.querySelector('[data-okruch]');
+    function pokaz(i, fokus){
+      zak.forEach(function(b, j){ b.setAttribute('aria-selected', i === j ? 'true' : 'false'); b.tabIndex = i === j ? 0 : -1; });
+      widoki.forEach(function(w, j){ w.hidden = i !== j; });
+      podpisy.forEach(function(p, j){ p.hidden = i !== j; });
+      nav.forEach(function(n, j){ n.classList.toggle('on', i === j); });
+      if(okruch) okruch.textContent = zak[i].textContent;
+      if(fokus) zak[i].focus();
+    }
+    zak.forEach(function(b, i){
+      b.addEventListener('click', function(){ pokaz(i); });
+      b.addEventListener('keydown', function(e){
+        if(e.key === 'ArrowRight'){ e.preventDefault(); pokaz((i + 1) % zak.length, true); }
+        if(e.key === 'ArrowLeft'){ e.preventDefault(); pokaz((i - 1 + zak.length) % zak.length, true); }
+      });
+    });
+  })();
+</script>
+</LaBase>

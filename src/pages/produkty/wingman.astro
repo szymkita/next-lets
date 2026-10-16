@@ -1,0 +1,1145 @@
+---
+// WINGMAN AI — /produkty/wingman (propozycja, 15.10.2026, noindex)
+// Strona produktu w standardzie podstron usługowych (docs/uslugi-standard.md),
+// koncepcja: docs/wingman-koncepcja.md. Do tej pory Wingman miał tylko sekcję
+// na /produkty; menu i stopka nadal prowadzą na /produkty#wingman.
+//
+// SKĄD FAKTY
+// gowingman.app (strona licencji) i film „Wprowadzenie do Wingman AI"
+// (youtu.be/2QVSDz-aANY, 9:40). Z filmu: pasek nad spotkaniem z przyciskami
+// Odpowiedź (⇧⌘↵), Follow up, Fact check i polem „Zadaj pytanie", nagrywanie
+// z czasem, ikony: mikrofon, ekran, zapis, plan rozmowy, notatka, ustawienia;
+// karta rozwijana pod paskiem; zapis mikrofonu i dźwięku połączenia;
+// podsumowania co 5 minut albo na żądanie; HubSpot i Pipedrive (deale,
+// karta deala, notatka); asystenci pod typy rozmów; kontekst przed rozmową
+// (asystent, klient, plan rozmowy i informacje o kliencie generowane,
+// „O mnie", „Informacje o spotkaniu"); modele osobno dla każdego zadania
+// (domyślnie Gemini 3 Flash, generacja Gemini 3.1 Pro, dłuższe myślenie
+// per zadanie); przezroczystość paska i ukrywanie przy udostępnianiu ekranu;
+// skróty do przesuwania paska; zapisy rozmów lokalnie; BYOK: OpenRouter
+// i Soniox; my przechowujemy e-mail, klucz licencji i ID płyty głównej.
+// Z gowingman.app: macOS 26.2+, licencje 149 zł netto na rok, zamówienia na
+// hello@letsautomate.pl. Od Szymona (15.10.2026): jest już wersja na Windows
+// (wymagań wersji nie znamy, strona ich nie podaje). Bezpłatnej licencji dla
+// uczestników szkolenia AI Sales strona celowo nie wspomina (decyzja Szymona).
+//
+// NOWY WYGLĄD APLIKACJI (propozycja, makiety w HTML)
+// Układ zostaje ten sam co w aplikacji: pasek nad spotkaniem, karta pod nim,
+// okno ustawień z bocznym menu. Zmienia się warstwa wizualna:
+//   · pasek i karta w grafitowym szkle, znak Wingmana w zieleni Let's automate;
+//   · „Odpowiedź" jako jedyny zielony przycisk (główna akcja i skrót),
+//     Follow-up i Fact-check jako przyciski drugiego planu;
+//   · nagrywanie jako czerwona kapsuła z czasem, aktywny widok na pasku
+//     oznaczony zieloną kreską pod ikoną;
+//   · karta: tryb i model w nagłówku, pytanie klienta cytatem, odpowiedź
+//     dużym stopniem, źródła jako znaczniki;
+//   · ustawienia: jasne okno, jednokolorowe ikony zamiast kolorowych kafli,
+//     wiersze pogrupowane w panele, zieleń tylko dla stanu „włączone".
+// Hero i widok „Po rozmowie" stoją na pulpicie Maca (pasek menu, tapeta,
+// Dock), bo tam aplikacja naprawdę żyje.
+//
+// DOSTAWCY (uwaga Szymona, 15.10.2026): OpenRouter pada tam, gdzie mówimy,
+// czego aplikacja wymaga (cennik, FAQ, schemat danych); Soniox tylko raz,
+// w FAQ „Czego potrzeba". Gdzie indziej: „dostawcy modeli", „Wasze klucze API".
+//
+// Jedna rozmowa przez całą stronę: Anna Kowal (handlowiec, firma od
+// ogrzewania hal) i Michał Rudnik z Nordisu, pon 14.09.2026, 11:16–11:48,
+// 32:14. Pytanie o serwis (18:10) i odpowiedź 1 850 zł za linię są te same
+// w hero i w sekcji „Skąd Wingman wie, co odpowiedzieć?". Plan rozmowy:
+// sześć punktów w hero i w ustawieniach.
+//
+// Teza (15.10.2026, z filmu): odpowiedź jest tak dobra, jak kontekst
+// ustawiony przed rozmową — w filmie Fact-check bez kontekstu pomylił
+// Wingmana z innym produktem. Zastąpiła rysunek z dziewięcioma ustaleniami
+// (notatka Wingmana jako karta z polami była wymyślonym formatem) i schemat
+// drogi danych (prywatność została w porównaniu i w FAQ).
+//
+// DO POTWIERDZENIA PRZED PUBLIKACJĄ:
+//   · ofertowanie i ocena jakości rozmów — stoją w opisie Wingmana w menu,
+//     ale nie ma ich w filmie ani na gowingman.app, więc strona ich nie
+//     obiecuje; opis w Nawigacja.astro do wyrównania;
+//   · rozmowy telefoniczne — Wingman zapisuje dźwięk z komputera, więc
+//     obejmuje rozmowy prowadzone przez Maca; strona nie pisze o telefonie;
+//   · „działa z każdym komunikatorem, bez bota na liście uczestników" —
+//     wniosek z „transkrybuje głos systemowy" (film), nie wprost z filmu;
+//   · plan rozmowy w makiecie ma odhaczone punkty, strona nie mówi, kto je
+//     odhacza; notatka do HubSpota (film pokazuje dodanie do Pipedrive'a,
+//     mówi ogólnie o „wysyłaniu notatek do CRM-a");
+//   · FAQ: „o nagrywaniu trzeba poinformować rozmówcę" — do sprawdzenia
+//     prawnie, nie jest to fakt o produkcie;
+//   · Claude Sonnet w Fact-checku — przykład z filmu, nie ustawienie domyślne;
+//   · Szymon Kita w zielonym pasie przy zdaniu o prowadzeniu rozmowy
+//     (nie przy cenie — uwaga Szymona), Piotr Wojciuk w kontakcie;
+//     zamówienie licencji przez formularz (dziś: e-mail);
+//   · cała rozmowa, firmy, osoby, ceny i sprawności w makietach są zmyślone.
+import LaBase from '../../layouts/LaBase.astro';
+import GcFaq from '../../components/GcFaq.astro';
+import Styl from '../../components/usluga/Styl.astro';
+import Anim from '../../components/usluga/Anim.astro';
+import Hero from '../../components/usluga/Hero.astro';
+import Procesy from '../../components/usluga/Procesy.astro';
+import Pas from '../../components/usluga/Pas.astro';
+import Metoda from '../../components/usluga/Metoda.astro';
+import DlaKogo from '../../components/usluga/DlaKogo.astro';
+import Kontakt from '../../components/usluga/Kontakt.astro';
+import { HI } from '../../components/usluga/ikony';
+
+const kanon = new URL('/produkty/wingman', Astro.site).href;
+const GW = 'https://gowingman.app';
+
+const title = "Wingman AI — asystent AI do rozmów handlowych | Let's automate";
+const description = 'Wingman AI to pasek nad spotkaniem, który zna klienta z Pipedrive’a albo HubSpota i w trakcie rozmowy podsuwa odpowiedź albo sprawdza fakt. Po rozmowie notatka trafia do CRM-a. Działa na macOS i Windows, na Waszych kluczach API. Licencja 149 zł netto rocznie.';
+
+// ---- ZNAK ------------------------------------------------------------------
+// Przerys znaku z gowingman.app/wingman-logo.png (skrzydło z trzech piór
+// i druga linia pod nim), viewBox 0 0 512 512; w kwadratach przycinany do
+// 40 40 432 432.
+const ZNAK = '<path d="M75 148H298C316 148 326 158 330 176L357 300H152C140 300 130 292 124 282L118 262H240V242H116C108 242 102 236 99 228L95 205H218V186H96C88 186 82 180 80 172Z"/><path d="M362 192H380C393 192 402 200 405 214L437 362H232C216 362 203 354 196 342L188 326H391Z"/>';
+
+// ---- IKONY spoza HI (16 × 16, wypełnienie) ---------------------------------
+const IK = {
+  mic: '<path d="M8 1a2 2 0 0 0-2 2v4a2 2 0 1 0 4 0V3a2 2 0 0 0-2-2Z"/><path d="M4.5 7A.75.75 0 0 0 3 7a5 5 0 0 0 4.25 4.944V13.5h-1.5a.75.75 0 0 0 0 1.5h4.5a.75.75 0 0 0 0-1.5h-1.5v-1.556A5 5 0 0 0 13 7a.75.75 0 0 0-1.5 0 3.5 3.5 0 1 1-7 0Z"/>',
+  kamera: '<path d="M2 4.5A1.5 1.5 0 0 1 3.5 3h5A1.5 1.5 0 0 1 10 4.5v7A1.5 1.5 0 0 1 8.5 13h-5A1.5 1.5 0 0 1 2 11.5v-7ZM11 6.3l2.4-1.6a.6.6 0 0 1 .93.5v5.6a.6.6 0 0 1-.93.5L11 9.7V6.3Z"/>',
+  ekran: '<path fill-rule="evenodd" d="M1.5 3.75A1.75 1.75 0 0 1 3.25 2h9.5c.97 0 1.75.78 1.75 1.75v6.5A1.75 1.75 0 0 1 12.75 12H9.5l.4 1.5h1.35a.75.75 0 0 1 0 1.5h-6.5a.75.75 0 0 1 0-1.5H6.1l.4-1.5H3.25A1.75 1.75 0 0 1 1.5 10.25v-6.5Zm1.75-.25a.25.25 0 0 0-.25.25v6.5c0 .14.11.25.25.25h9.5a.25.25 0 0 0 .25-.25v-6.5a.25.25 0 0 0-.25-.25h-9.5Z" clip-rule="evenodd"/>',
+  fala: '<path d="M8 2a.75.75 0 0 1 .75.75v10.5a.75.75 0 0 1-1.5 0V2.75A.75.75 0 0 1 8 2ZM5 4.5a.75.75 0 0 1 .75.75v5.5a.75.75 0 0 1-1.5 0v-5.5A.75.75 0 0 1 5 4.5ZM11 4.5a.75.75 0 0 1 .75.75v5.5a.75.75 0 0 1-1.5 0v-5.5A.75.75 0 0 1 11 4.5ZM2 6.5a.75.75 0 0 1 .75.75v1.5a.75.75 0 0 1-1.5 0v-1.5A.75.75 0 0 1 2 6.5ZM14 6.5a.75.75 0 0 1 .75.75v1.5a.75.75 0 0 1-1.5 0v-1.5A.75.75 0 0 1 14 6.5Z"/>',
+  plan: '<path d="M2.3 3.2a.6.6 0 0 1 .85 0l.6.6 1.5-1.5a.6.6 0 1 1 .85.85L4.17 5.08a.6.6 0 0 1-.85 0L2.3 4.05a.6.6 0 0 1 0-.85ZM7.25 3.5a.75.75 0 0 0 0 1.5h6a.75.75 0 0 0 0-1.5h-6ZM2.3 9.2a.6.6 0 0 1 .85 0l.6.6 1.5-1.5a.6.6 0 1 1 .85.85l-1.93 1.93a.6.6 0 0 1-.85 0L2.3 10.05a.6.6 0 0 1 0-.85ZM7.25 9.5a.75.75 0 0 0 0 1.5h6a.75.75 0 0 0 0-1.5h-6Z"/>',
+  zebatka: '<path fill-rule="evenodd" d="M6.46 1.5a1 1 0 0 0-.98.8l-.19.95a5 5 0 0 0-.86.5l-.92-.31a1 1 0 0 0-1.19.45L1.78 5.2a1 1 0 0 0 .21 1.25l.73.64a5 5 0 0 0 0 1l-.73.64a1 1 0 0 0-.21 1.25l.54.93a1 1 0 0 0 1.19.45l.92-.31c.27.2.56.37.86.5l.19.95a1 1 0 0 0 .98.8h1.08a1 1 0 0 0 .98-.8l.19-.95c.3-.13.59-.3.86-.5l.92.31a1 1 0 0 0 1.19-.45l.54-.93a1 1 0 0 0-.21-1.25l-.73-.64a5 5 0 0 0 0-1l.73-.64a1 1 0 0 0 .21-1.25l-.54-.93a1 1 0 0 0-1.19-.45l-.92.31a5 5 0 0 0-.86-.5l-.19-.95a1 1 0 0 0-.98-.8H6.46ZM8 10a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z" clip-rule="evenodd"/>',
+  klucz: '<path fill-rule="evenodd" d="M10.5 1a4.5 4.5 0 0 0-4.38 5.53L1.44 11.2a1.5 1.5 0 0 0-.44 1.06V14a1 1 0 0 0 1 1h1.75a.75.75 0 0 0 .75-.75V13h1.25a.75.75 0 0 0 .75-.75V11h1.25l1.12-1.12A4.5 4.5 0 1 0 10.5 1Zm1 4.5a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" clip-rule="evenodd"/>',
+  uwaga: '<path fill-rule="evenodd" d="M15 8A7 7 0 1 1 1 8a7 7 0 0 1 14 0ZM8 4a.75.75 0 0 1 .75.75v3a.75.75 0 0 1-1.5 0v-3A.75.75 0 0 1 8 4Zm0 8a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" clip-rule="evenodd"/>',
+  kopiuj: '<path d="M5.5 3.5A1.5 1.5 0 0 1 7 2h5.5A1.5 1.5 0 0 1 14 3.5V9a1.5 1.5 0 0 1-1.5 1.5H11V7a2.5 2.5 0 0 0-2.5-2.5H5.5v-1Z"/><path d="M3.5 5.5A1.5 1.5 0 0 0 2 7v5.5A1.5 1.5 0 0 0 3.5 14H9a1.5 1.5 0 0 0 1.5-1.5V7A1.5 1.5 0 0 0 9 5.5H3.5Z"/>',
+  kosz: '<path fill-rule="evenodd" d="M5 3.25V4H2.75a.75.75 0 0 0 0 1.5h.3l.815 8.15A1.5 1.5 0 0 0 5.357 15h5.285a1.5 1.5 0 0 0 1.493-1.35l.815-8.15h.3a.75.75 0 0 0 0-1.5H11v-.75A2.25 2.25 0 0 0 8.75 1h-1.5A2.25 2.25 0 0 0 5 3.25Zm2.25-.75a.75.75 0 0 0-.75.75V4h3v-.75a.75.75 0 0 0-.75-.75h-1.5Z" clip-rule="evenodd"/>',
+  start: '<path d="M8.54 1.97a.75.75 0 0 0-1.08 0L1.97 7.47a.75.75 0 0 0 .53 1.28H3v4.5A1.75 1.75 0 0 0 4.75 15h1.5a.75.75 0 0 0 .75-.75V11h2v3.25c0 .41.34.75.75.75h1.5A1.75 1.75 0 0 0 13 13.25v-4.5h.5a.75.75 0 0 0 .53-1.28l-5.5-5.5Z"/>',
+  pedzel: '<path d="M13.47 1.66a1.25 1.25 0 0 1 1.77 1.77L9.6 9.07 7.03 6.5l6.44-4.84ZM6.1 7.24l2.66 2.66-.4.53a2.5 2.5 0 0 1-2.06 1.02 2.5 2.5 0 0 1-2.24 3.05H1.75a.75.75 0 0 1-.6-1.2c.38-.5.6-1.12.6-1.8 0-1.38 1.12-2.5 2.5-2.5h.03a2.5 2.5 0 0 1 1.3-1.55l.52-.21Z"/>',
+  skroty: '<path fill-rule="evenodd" d="M2 4.75A2.75 2.75 0 0 1 4.75 2h6.5A2.75 2.75 0 0 1 14 4.75v6.5A2.75 2.75 0 0 1 11.25 14h-6.5A2.75 2.75 0 0 1 2 11.25v-6.5Zm2.5 1a.75.75 0 0 1 .75-.75h.5a.75.75 0 0 1 0 1.5h-.5a.75.75 0 0 1-.75-.75Zm3 0A.75.75 0 0 1 8.25 5h.5a.75.75 0 0 1 0 1.5h-.5a.75.75 0 0 1-.75-.75Zm3 0a.75.75 0 0 1 .75-.75h.5a.75.75 0 0 1 0 1.5h-.5a.75.75 0 0 1-.75-.75ZM5 10.25a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1-.75-.75Z" clip-rule="evenodd"/>',
+  folder: '<path d="M1.5 4.2A1.7 1.7 0 0 1 3.2 2.5h2.6c.5 0 .9.2 1.2.5l1 1h4.8a1.7 1.7 0 0 1 1.7 1.7v6.6a1.7 1.7 0 0 1-1.7 1.7H3.2a1.7 1.7 0 0 1-1.7-1.7Z"/>',
+  chmura: '<path d="M4.5 13A3.5 3.5 0 0 1 4.03 6.03a4.5 4.5 0 0 1 8.73 1.03A3 3 0 0 1 12 13H4.5Z"/>',
+};
+
+// ---- OSOBY (makiety; awatary z public/makieta) -----------------------------
+const OS = {
+  a: { n: 'Anna Kowal', k: 'Anna', f: '/makieta/awatar-anna.webp' },
+  m: { n: 'Michał Rudnik', k: 'Michał', f: '/makieta/awatar-michal.webp' },
+};
+
+// ---- ROZMOWA Z NORDISEM ------------------------------------------------------
+const mmss = (s) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+
+// Plan rozmowy (sześć punktów) — t = kiedy temat padł.
+const PLAN = [
+  { p: 'Obecne ogrzewanie i jego koszt', t: 412 },
+  { p: 'Budżet', t: 521 },
+  { p: 'Zakres i montaż', t: 725 },
+  { p: 'Termin uruchomienia', t: 1050 },
+  { p: 'Kto decyduje i kiedy', t: 1265 },
+  { p: 'Następny krok z terminem', t: 1850 },
+];
+
+// Zapis w karcie „Zapis rozmowy" (hero). Fragmenty w [[…]] podświetlają się.
+const ZAPIS = [
+  { k: 'm', t: 725, s: '[[Montaż zrobimy sami]], mamy własną ekipę od instalacji.' },
+  { k: 'a', t: 742, s: 'Dobrze, to policzę bez montażu, z projektem i uruchomieniem.' },
+  { k: 'm', t: 930, s: 'Hala ma dwie strefy: rampy i regały wysokiego składowania.' },
+  { k: 'a', t: 1000, s: 'Wtedy dwie linie promienników, każda z własnym sterowaniem.' },
+  { k: 'm', t: 1050, s: 'Ogrzewanie musi ruszyć [[od pierwszego listopada]].' },
+  { k: 'm', t: 1090, s: 'A ile kosztuje serwis po okresie gwarancji?' },
+  { k: 'a', t: 1111, s: 'Przegląd to 1 850 zł rocznie za linię, pierwsze dwa lata w cenie.' },
+  { k: 'a', t: 1248, s: 'Kto u Państwa podejmie decyzję?' },
+  { k: 'm', t: 1265, s: '[[Zarząd, posiedzenie jest osiemnastego września.]]' },
+  { k: 'm', t: 1660, s: 'Konkurencja obiecuje [[o trzydzieści procent niższe rachunki]] za gaz.' },
+];
+const zaznacz = (s) => s.replace(/\[\[(.+?)\]\]/g, '<mark>$1</mark>');
+const T0 = 1072;                          // start pętli w hero: 17:52
+
+// Podsumowania co 5 minut (scena, „Po rozmowie").
+const PODS = [
+  ['0:00', 'Nordis, centrum logistyczne w Strykowie. Hala 4 200 m², dwie strefy, dziś nagrzewnice olejowe.'],
+  ['5:00', 'Ogrzewanie kosztuje ok. 23 tys. zł miesięcznie zimą. Budżet do 180 tys. zł netto.'],
+  ['10:00', 'Montaż po stronie Nordisu. Wycena bez montażu, z projektem i uruchomieniem.'],
+  ['15:00', 'Ogrzewanie od 1 listopada. Serwis: przegląd 1 850 zł rocznie za linię.'],
+  ['20:00', 'Decyzja na zarządzie 18 września. Warunek: referencja z podobnej hali.'],
+  ['25:00', 'Konkurencja: 195 tys. zł z montażem, obiecuje 30% niższe rachunki.'],
+  ['30:00', 'Oferta do środy 16.09, 12:00.'],
+];
+
+// ---- SCENA: modele (z filmu; Fact-check przełączony na Claude Sonnet) -------
+const MODELE = [
+  { z: 'Odpowiedź', m: 'Gemini 3 Flash', my: false },
+  { z: 'Follow-up', m: 'Gemini 3 Flash', my: false },
+  { z: 'Fact-check', m: 'Claude Sonnet', my: true },
+  { z: 'Zadaj pytanie', m: 'Gemini 3 Flash', my: false },
+];
+const MENU_UST = [
+  { t: 'Start', i: IK.start },
+  { t: 'Kontekst', i: HI['document-text'] },
+  { t: 'Asystent', i: HI['user'] },
+  { t: 'Wygląd', i: IK.pedzel },
+  { t: 'Modele', i: HI['cube'] },
+  { t: 'Klucze', i: IK.klucz },
+  { t: 'Skróty', i: IK.skroty },
+  { t: 'Transkrypcje', i: IK.folder },
+  { t: 'Aktualizacje', i: HI['arrow-path'] },
+];
+
+// Pulpit Maca: pasek menu i Dock. Dwie aplikacje uruchomione (kropka pod
+// ikoną): komunikator i Wingman. Ikony ogólne, bez znaków cudzych marek.
+const DOK = [
+  { bg: 'linear-gradient(180deg,#7cc0f7,#2e7fd4)', i: IK.folder },
+  { bg: 'linear-gradient(180deg,#6ad4c8,#178a80)', i: HI['magnifying-glass'] },
+  { bg: 'linear-gradient(180deg,#78b3ff,#2563eb)', i: HI['envelope'] },
+  { kal: true },
+  { bg: 'linear-gradient(180deg,#ffe58a,#f2c230)', i: HI['pencil-square'], c: true },
+  { bg: 'linear-gradient(180deg,#58e0a0,#12a15d)', i: IK.kamera, dz: true },
+  { wm: true, dz: true },
+  { bg: 'linear-gradient(180deg,#d3d8d4,#8c948e)', i: IK.zebatka },
+];
+const WIFI = '<path d="M1.5 4.2a9.5 9.5 0 0 1 13 0"/><path d="M4 6.9a6 6 0 0 1 8 0"/><path d="M6.4 9.4a2.5 2.5 0 0 1 3.2 0"/>';
+const BAT = '<rect x="0.75" y="0.75" width="21.5" height="10.5" rx="3" fill="none" stroke="currentColor" stroke-opacity="0.5" stroke-width="1.2"/><rect x="2.5" y="2.5" width="15" height="7" rx="1.6" fill="currentColor"/><path d="M23.6 4.2v3.6a1.8 1.8 0 0 0 0-3.6Z" fill="currentColor" fill-opacity="0.5"/>';
+
+const ZAKLADKI = [
+  { t: 'Przed rozmową', p: 'Asystent i klient z Pipedrive’a w jednym widoku. Plan rozmowy i informacje o kliencie Wingman generuje sam, a Wy dopisujecie, na czym Wam zależy na tym spotkaniu.' },
+  { t: 'Po rozmowie', p: 'Podsumowania powstają co pięć minut i na żądanie. Po rozmowie notatka jednym przyciskiem trafia do karty deala.' },
+  { t: 'Modele', p: 'Każde zadanie ma swój model: szybki do odpowiedzi w trakcie rozmowy, mocniejszy do planu i sprawdzania faktów. Dłuższe myślenie włącza się tam, gdzie jest na nie czas.' },
+];
+
+// ---- CZYM JEST: indeks --------------------------------------------------------
+const PROCESY = [
+  {
+    t: 'Kontekst przed rozmową',
+    a: 'Przed spotkaniem handlowiec przegląda kartę klienta w CRM-ie i notatkę z poprzedniej rozmowy, jeśli zdąży.',
+    b: 'Wybiera asystenta i klienta z Pipedrive’a albo HubSpota. Plan rozmowy i informacje o kliencie Wingman generuje sam.',
+  },
+  {
+    t: 'Odpowiedź na pytanie klienta',
+    a: 'Na pytanie spoza głowy pada „sprawdzę i wrócę z odpowiedzią”, a odpowiedź wychodzi mailem następnego dnia.',
+    b: 'Przycisk albo skrót ⇧⌘↵ daje odpowiedź z kontekstu klienta i z bieżącej rozmowy. Follow-up podsuwa następne pytanie.',
+  },
+  {
+    t: 'Sprawdzenie faktu',
+    a: 'Twierdzenie o konkurencji albo o kosztach zostaje bez komentarza, bo w trakcie rozmowy nie ma jak go sprawdzić.',
+    b: 'Fact-check porównuje to, co padło, z kontekstem asystenta i z wynikami z sieci, zanim temat się zamknie.',
+  },
+  {
+    t: 'Notatka w CRM-ie',
+    a: 'Notatka powstaje wieczorem, z pamięci, i ma tyle ustaleń, ile handlowiec zapamiętał.',
+    b: 'Podsumowanie powstaje co pięć minut i na żądanie. Po rozmowie trafia jednym przyciskiem do karty deala.',
+  },
+];
+
+// ---- METODA: porównanie z notatnikiem AI w chmurze ----------------------------
+const METODA = [
+  { k: 'Jak słucha', ikSvg: IK.mic,
+    r: 'Bot dołącza do spotkania jako dodatkowy uczestnik.',
+    t: 'Dźwięk z komputera', m: 'Wingman zapisuje mikrofon i dźwięk połączenia, więc działa z każdym komunikatorem, bez bota na liście uczestników.' },
+  { k: 'W trakcie rozmowy', ik: 'clock',
+    r: 'Zapis na żywo, wnioski po spotkaniu.',
+    t: 'Odpowiedź i fact-check na żądanie', m: 'Każdy przycisk na pasku korzysta z kontekstu klienta i z bieżącej rozmowy, a fact-check także z wyszukiwania w sieci.' },
+  { k: 'Kontekst', ik: 'user',
+    r: 'Zwykle tylko to, co padło na spotkaniu.',
+    t: 'Klient z CRM-a i plan rozmowy', m: 'Przed spotkaniem wybieracie asystenta i klienta z Pipedrive’a albo HubSpota. Na życzenie Wingman widzi też ekran.' },
+  { k: 'Dane', ik: 'shield-check',
+    r: 'Nagrania i zapisy na serwerach dostawcy notatnika.',
+    t: 'Rozmowy poza naszymi serwerami', m: 'Wingman działa na Waszych kluczach API, a zapisy rozmów zostają na Waszym komputerze. My znamy tylko e-mail, klucz licencji i ID płyty głównej.' },
+  { k: 'Model', ik: 'cube',
+    r: 'Ten, który wybrał dostawca notatnika.',
+    t: 'Model pod każde zadanie', m: 'Domyślnie Gemini 3 Flash do odpowiedzi i Gemini 3.1 Pro do planu rozmowy. Do sprawdzania faktów można wybrać mocniejszy model.' },
+  { k: 'Cena', ik: 'banknotes',
+    r: 'Abonament miesięczny za osobę.',
+    t: '149 zł netto na rok', m: 'Do tego zużycie modeli, płacone bezpośrednio z Waszych kont u dostawców.' },
+];
+
+// ---- DLA KOGO -----------------------------------------------------------------
+const DLA_KOGO = [
+  { t: 'Prowadzicie dużo rozmów z klientami online', d: 'Rozmowy wstępne i prezentacje u klientów. Im więcej spotkań w tygodniu, tym więcej ustaleń ginie między rozłączeniem a notatką w CRM-ie.' },
+  { t: 'Klienci dopytują o szczegóły i porównują Was z konkurencją', d: 'Parametry, warunki serwisu, ceny innych dostawców. Tam odpowiedź z kontekstu i sprawdzenie faktu w trakcie rozmowy robią największą różnicę.' },
+  { t: 'Macie czas przygotować kontekst', d: 'Asystenta ustawia się raz, a przed rozmową wybiera klienta i dopisuje, na czym Wam zależy. Bez tego Wingman odpowiada ogólnikami.' },
+  { t: 'Macie Pipedrive’a albo HubSpota', d: 'Wingman działa też bez CRM-a, ale z nim sam pobiera klienta przed rozmową i odkłada notatkę po niej.' },
+];
+const NIE_TERAZ = [
+  'Firma nie pozwala zakładać kont u zewnętrznych dostawców modeli AI. Wingman działa tylko na własnych kluczach API.',
+  'Sprzedajecie bez rozmów, z koszyka albo formularza. Wtedy więcej da <a href="/rozwiazania-ai" style="font-weight:700;color:#0a7a52">automatyzacja procesu z AI</a> niż asystent rozmów.',
+];
+
+// ---- FAQ ----------------------------------------------------------------------
+const faq = [
+  {
+    q: 'Ile kosztuje Wingman?',
+    a: 'Licencja kosztuje 149 zł netto na rok. Do tego dochodzi zużycie modeli i transkrypcji, opłacane bezpośrednio z Waszych kont u dostawców.',
+  },
+  {
+    q: 'Czego potrzeba, żeby zacząć?',
+    a: 'Komputera z macOS 26.2 lub nowszym albo z Windowsem i dwóch kluczy API: do OpenRoutera, przez który działają modele, i do Soniox, który robi transkrypcję. Aplikację i klucz licencyjny pobiera się na <a href="https://gowingman.app" style="font-weight:700;color:#0a7a52">gowingman.app</a>, podając ten sam adres e-mail co przy zakupie. Na Macu przy pierwszym uruchomieniu system pyta o zgodę na mikrofon i na nagrywanie ekranu; drugą możecie pominąć, jeśli Wingman nie ma widzieć ekranu.',
+  },
+  {
+    q: 'Czy nasze rozmowy przechodzą przez Wasze serwery?',
+    a: 'Nie. Wingman działa na Waszych kluczach API, więc dźwięk i tekst idą do dostawców modeli bez naszego pośrednictwa, a zapisy rozmów zostają na Waszym komputerze. Przechowujemy tylko adres e-mail, klucz licencyjny i ID płyty głównej, żeby sprawdzić licencję. Za przetwarzanie rozmów odpowiadają dostawcy, u których macie klucze.',
+  },
+  {
+    q: 'Czy klient widzi Wingmana?',
+    a: 'Nie ma go na liście uczestników, bo Wingman zapisuje dźwięk z Waszego komputera. Pasek można ukryć przy udostępnianiu ekranu i ustawić jego przezroczystość. O nagrywaniu rozmowy trzeba jednak poinformować rozmówcę, tak jak przy każdym innym nagraniu.',
+  },
+  {
+    q: 'Skąd Wingman bierze odpowiedzi?',
+    a: 'Z kontekstu, który ustawiacie przed rozmową: asystenta, danych klienta z CRM-a, planu rozmowy, informacji o Was i o spotkaniu. Do tego z bieżącej rozmowy, a jeśli pozwolicie, także z ekranu i z wyszukiwania w sieci. Odpowiedź bez pokrycia w kontekście warto sprawdzić Fact-checkiem.',
+  },
+  {
+    q: 'Jakich modeli używa?',
+    a: 'Dowolnych dostępnych w OpenRouterze, osobno dla każdego zadania. Domyślnie Gemini 3 Flash do odpowiedzi, follow-upu, sprawdzania faktów i pytań, bo w trakcie rozmowy liczy się czas, oraz Gemini 3.1 Pro do planu rozmowy i informacji o kliencie. Do sprawdzania faktów warto wybrać mocniejszy model, na przykład Claude Sonnet, i włączyć dłuższe myślenie.',
+  },
+  {
+    q: 'Z jakimi CRM-ami działa?',
+    a: 'Z Pipedrive’em i HubSpotem. Po wpisaniu klucza albo tokenu Wingman pobiera deale i generuje z nich plan rozmowy oraz informacje o kliencie. W trakcie rozmowy otwiera kartę deala, a notatkę z rozmowy wysyła do CRM-a. Bez CRM-a też działa, tylko kontekst klienta wpisujecie sami.',
+  },
+  {
+    q: 'Czy można mieć kilku asystentów?',
+    a: 'Tak. Asystent to zestaw ustawień pod typ rozmowy: sprzedaż, spotkanie wewnętrzne, konkretny typ klienta. Każdy ma własne informacje, plany rozmowy i decyzję, czy korzysta z CRM-a. Przed rozmową wybieracie, z którym ją prowadzicie.',
+  },
+  {
+    q: 'Czy Wingman działa na Windowsie?',
+    a: 'Tak. Wingman ma wersję na macOS (26.2 lub nowszy) i na Windows.',
+  },
+  {
+    q: 'Gdzie zgłaszać uwagi?',
+    a: 'Na <a href="mailto:hello@letsautomate.pl" style="font-weight:700;color:#0a7a52">hello@letsautomate.pl</a>. Wingmana piszemy sami, więc zgłoszenie trafia do zespołu, który go rozwija.',
+  },
+];
+
+// ---- JSON-LD ------------------------------------------------------------------
+const dane = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'SoftwareApplication',
+      '@id': `${kanon}#aplikacja`,
+      name: 'Wingman AI',
+      alternateName: ['Wingman', 'Asystent rozmów handlowych Wingman'],
+      applicationCategory: 'BusinessApplication',
+      operatingSystem: 'macOS 26.2 lub nowszy, Windows',
+      url: kanon,
+      sameAs: [GW],
+      description: 'Asystent rozmów handlowych na komputer (macOS i Windows). Pasek nad spotkaniem zna klienta z Pipedrive’a albo HubSpota i w trakcie rozmowy podsuwa odpowiedź, follow-up albo sprawdzenie faktu; po rozmowie notatka trafia do CRM-a. Działa na kluczach API klienta.',
+      publisher: { '@id': new URL('/#organizacja', Astro.site).href },
+      offers: {
+        '@type': 'Offer',
+        price: '149',
+        priceCurrency: 'PLN',
+        priceSpecification: { '@type': 'UnitPriceSpecification', price: '149', priceCurrency: 'PLN', valueAddedTaxIncluded: false, unitText: 'licencja na rok' },
+      },
+    },
+    {
+      '@type': 'BreadcrumbList',
+      '@id': `${kanon}#okruszki`,
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Strona główna', item: new URL('/', Astro.site).href },
+        { '@type': 'ListItem', position: 2, name: 'Produkty', item: new URL('/produkty', Astro.site).href },
+        { '@type': 'ListItem', position: 3, name: 'Wingman AI', item: kanon },
+      ],
+    },
+    {
+      '@type': 'FAQPage',
+      '@id': `${kanon}#faq`,
+      mainEntity: faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a.replace(/<[^>]+>/g, '') } })),
+    },
+  ],
+};
+
+const HERO_ARIA = 'Pulpit Maca w trakcie spotkania Anny Kowal z Michałem Rudnikiem z Nordisu. Nad oknem spotkania wisi pasek Wingmana z przyciskami Odpowiedź, Follow-up i Fact-check, polem pytania i czasem nagrania. Karta pod paskiem pokazuje kolejno zapis rozmowy, odpowiedź na pytanie klienta o koszt serwisu z kontekstu asystenta, plan rozmowy z odhaczonymi punktami i sprawdzenie twierdzenia o 30% niższych rachunkach, którego nie da się potwierdzić.';
+---
+<LaBase noindex topbar={false} title={title} description={description} ctaHref="#kontakt" ctaLabel="Zamów licencje" nav={null}>
+<script type="application/ld+json" is:inline set:html={JSON.stringify(dane)} slot="head"></script>
+
+<style is:global slot="head">
+  /* Style tej strony. Wspólny wygląd: src/components/usluga/Styl.astro. */
+
+  /* =====================================================================
+     WINGMAN · nowy wygląd aplikacji (propozycja)
+     Ten sam układ co w aplikacji: pasek, karta pod nim, okno ustawień.
+     Pasek i karta w grafitowym szkle, ustawienia jasne. Zieleń tylko dla
+     głównej akcji, aktywnego widoku i stanu „włączone".
+     ===================================================================== */
+  .wm{--s1:#f3f6f4;--s2:rgba(243,246,244,0.62);--s3:rgba(243,246,244,0.4);--sl:rgba(255,255,255,0.09);
+    --j1:#151b17;--j2:#4e5751;--j3:#838b86;--j4:#b4bab6;--jl:rgba(21,27,23,0.08);--jl2:rgba(21,27,23,0.05);
+    --wz:#00CD77;--wzc:#0a7a52;--wa:#f2b44f;--wr:#ff5f57;
+    position:relative;margin:0;font-size:12.5px;line-height:1.45;letter-spacing:-0.004em;color:var(--j1);-webkit-font-smoothing:antialiased}
+  .wm .hi{display:block;flex-shrink:0;width:16px;height:16px;fill:currentColor}
+  .wm img{display:block}
+  .wm-mono{font-family:var(--mono);letter-spacing:0}
+  .wm-sw{display:flex;gap:7px}
+  .wm-sw i{display:block;width:11px;height:11px;border-radius:50%;background:#ff5f57;box-shadow:inset 0 0 0 0.5px rgba(0,0,0,0.18)}
+  .wm-sw i:nth-child(2){background:#febc2e}
+  .wm-sw i:nth-child(3){background:#28c840}
+  .wm-znak{display:grid;place-items:center;flex-shrink:0;width:28px;height:28px;border-radius:8px;background:#0b100d;box-shadow:inset 0 0 0 1px rgba(255,255,255,0.08)}
+  .wm-znak svg{display:block;width:22px;height:22px;fill:var(--wz,#00CD77)}
+
+  /* ---- pulpit: tapeta i okna na nim ---- */
+  .wm-pulpit{position:relative;overflow:hidden;border-radius:18px;background:#dfe9e1 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 680' preserveAspectRatio='xMidYMax slice'%3E%3Cdefs%3E%3ClinearGradient id='n' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23cfe0d5'/%3E%3Cstop offset='0.55' stop-color='%23eaf0e9'/%3E%3Cstop offset='1' stop-color='%23f3f5ef'/%3E%3C/linearGradient%3E%3CradialGradient id='s' cx='0.72' cy='0.3' r='0.42'%3E%3Cstop offset='0' stop-color='%23fdfdf7'/%3E%3Cstop offset='1' stop-color='%23fdfdf7' stop-opacity='0'/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect width='1200' height='680' fill='url%28%23n%29'/%3E%3Crect width='1200' height='680' fill='url%28%23s%29'/%3E%3Cpath d='M0 352C190 300 360 336 560 304S910 246 1200 306V680H0Z' fill='%23c3d8c9'/%3E%3Cpath d='M0 430C180 388 360 424 610 382S1010 352 1200 402V680H0Z' fill='%239fc1ab'/%3E%3Cpath d='M0 520C240 468 430 520 720 474S1060 452 1200 488V680H0Z' fill='%2373a487'/%3E%3Cpath d='M0 606C300 566 610 618 920 576S1110 566 1200 586V680H0Z' fill='%234b8566'/%3E%3C/svg%3E") center bottom / cover no-repeat;
+    box-shadow:0 0 0 1px rgba(255,255,255,0.16),0 0 0 1.5px rgba(0,0,0,0.3),0 50px 100px -40px rgba(0,0,0,0.9),0 18px 36px -20px rgba(0,0,0,0.55)}
+  /* pasek menu i Dock — żeby pulpit czytał się jak ekran Maca */
+  .wm-mb{position:absolute;z-index:5;left:0;right:0;top:0;display:flex;align-items:center;gap:17px;height:28px;padding:0 14px 0 18px;font-size:12.5px;color:#18201b;white-space:nowrap;
+    background:rgba(244,247,243,0.6);-webkit-backdrop-filter:blur(18px) saturate(1.4);backdrop-filter:blur(18px) saturate(1.4);box-shadow:0 1px 0 rgba(255,255,255,0.35)}
+  .wm-mb b{font-weight:700}
+  .wm-mb-p{display:flex;align-items:center;gap:14px;margin-left:auto}
+  .wm-mb-p svg{display:block;height:11px;width:auto}
+  .wm-dok{position:absolute;z-index:5;left:50%;bottom:10px;transform:translateX(-50%);display:flex;align-items:flex-end;gap:7px;padding:6px 8px;border-radius:18px;
+    background:rgba(240,244,240,0.4);-webkit-backdrop-filter:blur(22px) saturate(1.5);backdrop-filter:blur(22px) saturate(1.5);box-shadow:inset 0 0 0 1px rgba(255,255,255,0.45),0 14px 34px -14px rgba(7,20,13,0.45)}
+  .wm-dok > span{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;width:40px;height:40px;border-radius:10px;box-shadow:inset 0 1px 0 rgba(255,255,255,0.35),0 2px 4px rgba(7,20,13,0.18)}
+  .wm-dok > span > svg{display:block;width:20px;height:20px;fill:#ffffff}
+  .wm-dok > span > svg.c{fill:rgba(70,52,0,0.72)}
+  .wm-dok > span.dz::after{content:"";position:absolute;left:50%;bottom:-5px;width:4px;height:4px;margin-left:-2px;border-radius:50%;background:rgba(20,26,22,0.55)}
+  .wm-dok > span.kal{background:#ffffff}
+  .wm-dok > span.kal em{font-style:normal;font-size:8.5px;font-weight:700;line-height:1;color:#e5484d}
+  .wm-dok > span.kal b{margin-top:1px;font-size:18px;font-weight:600;line-height:1;color:#18201b}
+  .wm-dok > span.wmi{background:#0b100d}
+  .wm-dok > span.wmi svg{width:30px;height:30px;fill:var(--wz,#00CD77)}
+
+  /* ---- PASEK ---- */
+  .wb{position:relative;z-index:3;display:flex;align-items:center;gap:5px;height:50px;padding:0 8px 0 9px;border-radius:15px;color:var(--s1);
+    background:rgba(14,19,16,0.86);-webkit-backdrop-filter:blur(22px) saturate(1.5);backdrop-filter:blur(22px) saturate(1.5);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,0.07),inset 0 0 0 1px var(--sl),0 26px 60px -26px rgba(5,12,8,0.75),0 8px 18px -10px rgba(5,12,8,0.5)}
+  .wb .wm-znak{width:32px;height:32px;margin-right:4px;border-radius:9px;background:rgba(255,255,255,0.05)}
+  .wb-b{display:inline-flex;align-items:center;gap:8px;height:32px;padding:0 12px;border-radius:9px;background:rgba(255,255,255,0.07);font-size:12.5px;font-weight:600;white-space:nowrap;color:var(--s1);transition:background .2s,transform .15s,box-shadow .2s}
+  .wb-b.gl{background:var(--wz);color:#06120b}
+  .wb-b kbd{font-family:inherit;font-size:11px;font-weight:600;letter-spacing:0.04em;opacity:0.55}
+  .wb-b.wcis{transform:scale(.95);box-shadow:0 0 0 3px rgba(0,205,119,0.35)}
+  .wb-b:not(.gl).wcis{background:rgba(255,255,255,0.2)}
+  .wb-pyt{flex:1;min-width:0;display:flex;align-items:center;height:32px;padding:0 12px;border-radius:9px;background:rgba(0,0,0,0.28);box-shadow:inset 0 0 0 1px rgba(255,255,255,0.06);font-size:12.5px;color:var(--s3);white-space:nowrap;overflow:hidden}
+  .wb-rec{display:inline-flex;align-items:center;gap:7px;height:28px;margin-left:4px;padding:0 10px 0 9px;border-radius:999px;background:rgba(255,95,87,0.14);color:#ffd6d3}
+  .wb-rec i{width:7px;height:7px;border-radius:50%;background:var(--wr);box-shadow:0 0 0 3px rgba(255,95,87,0.22);animation:wm-puls 1.4s ease-in-out infinite}
+  .wb-rec b{font-family:var(--mono);font-size:11.5px;font-weight:500;letter-spacing:0}
+  @keyframes wm-puls{50%{opacity:.3}}
+  .wb-ik{position:relative;display:grid;place-items:center;width:28px;height:32px;border-radius:8px;color:var(--s3);transition:color .2s}
+  .wb-ik .hi{width:15px;height:15px}
+  .wb-ik.on{color:var(--s1)}
+  .wb-ik.on::after{content:"";position:absolute;left:50%;bottom:2px;width:12px;height:2px;margin-left:-6px;border-radius:1px;background:var(--wz)}
+  .wb-ik.zie{color:var(--wz)}
+  .wb-sep{width:1px;height:20px;margin:0 3px;background:rgba(255,255,255,0.1)}
+
+  /* ---- KARTA pod paskiem ---- */
+  .wk{position:relative;z-index:2;overflow:hidden;border-radius:15px;color:var(--s1);
+    background:rgba(14,19,16,0.84);-webkit-backdrop-filter:blur(22px) saturate(1.5);backdrop-filter:blur(22px) saturate(1.5);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,0.06),inset 0 0 0 1px var(--sl),0 40px 80px -36px rgba(5,12,8,0.8)}
+  .wk-gl{display:flex;align-items:center;gap:10px;height:44px;padding:0 10px 0 16px;border-bottom:1px solid rgba(255,255,255,0.07)}
+  .wk-gl b{font-size:13px;font-weight:650;letter-spacing:-0.01em;white-space:nowrap}
+  .wk-mod{display:inline-flex;align-items:center;gap:6px;min-width:0;height:22px;padding:0 8px;border-radius:6px;background:rgba(255,255,255,0.06);font-size:11px;color:var(--s2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .wk-mod i{flex-shrink:0}
+  .wh .wk-gl > [data-wh-gl]{min-width:0}
+  .wk-mod i{width:6px;height:6px;border-radius:50%;background:var(--wz)}
+  .wk-akc{display:flex;gap:2px;margin-left:auto;color:var(--s3)}
+  .wk-akc span{display:grid;place-items:center;width:26px;height:26px;border-radius:7px}
+  .wk-akc .hi{width:14px;height:14px}
+  .wk-tr{padding:16px 18px 18px}
+  .wk-cyt{margin:0;padding-left:12px;border-left:2px solid rgba(255,255,255,0.18);font-size:12.5px;line-height:1.5;color:var(--s2)}
+  .wk-cyt em{display:block;margin-bottom:2px;font-style:normal;font-size:11px;color:var(--s3)}
+  .wk-odp{margin:14px 0 0;font-size:15.5px;line-height:1.5;font-weight:500;letter-spacing:-0.012em;color:#ffffff;text-wrap:pretty}
+  .wk-odp b{font-weight:700;color:#ffffff}
+  .wk-zr{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+  .wk-zr span{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 9px;border-radius:7px;background:rgba(255,255,255,0.06);font-size:11.5px;color:var(--s2);white-space:nowrap}
+  .wk-zr span::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--wz)}
+  .wk-wyn{display:grid;grid-template-columns:18px minmax(0,1fr);gap:10px;margin-top:14px;padding:12px 14px;border-radius:11px;background:rgba(242,180,79,0.1);box-shadow:inset 0 0 0 1px rgba(242,180,79,0.22)}
+  .wk-wyn .hi{width:16px;height:16px;margin-top:1px;color:var(--wa)}
+  .wk-wyn b{display:block;font-size:13px;font-weight:650;color:#ffe2b0}
+  .wk-wyn p{margin:3px 0 0;font-size:12.5px;line-height:1.5;color:var(--s2);text-wrap:pretty}
+  .wk-wyn.ok{background:rgba(0,205,119,0.08);box-shadow:inset 0 0 0 1px rgba(0,205,119,0.2)}
+  .wk-wyn.ok .hi{color:var(--wz)}
+  .wk-wyn.ok b{color:#c6f5df}
+  .wk-dop{display:flex;align-items:center;gap:8px;margin-top:12px;font-size:12.5px;color:var(--s2)}
+  .wk-dop b{color:#ffffff;font-weight:600}
+  /* zapis rozmowy */
+  .wk-zap{display:flex;flex-direction:column;justify-content:flex-end;height:100%;overflow:hidden;padding:0 18px 16px;
+    -webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 54px);mask-image:linear-gradient(to bottom,transparent 0,#000 54px)}
+  .wk-w{display:grid;grid-template-rows:1fr;transition:grid-template-rows .5s cubic-bezier(.2,.8,.2,1),opacity .4s ease}
+  .wk-w > div{min-height:0;overflow:hidden}
+  .wk-w.ukr{grid-template-rows:0fr;opacity:0}
+  .wk-wi{display:grid;grid-template-columns:22px minmax(0,1fr);gap:10px;padding-top:12px}
+  .wk-wi img{width:22px;height:22px;border-radius:50%;object-fit:cover}
+  .wk-kto{display:flex;align-items:baseline;gap:8px;margin:0;font-size:11.5px;color:var(--s3)}
+  .wk-kto b{font-weight:600;color:var(--s2)}
+  .wk-kto time{font-family:var(--mono);font-size:10.5px;letter-spacing:0}
+  .wk-t{margin:2px 0 0;font-size:13.5px;line-height:1.5;color:var(--s1);text-wrap:pretty}
+  .wk-t mark{background:none;color:inherit;border-radius:3px;box-shadow:inset 0 -1.5px 0 rgba(0,205,119,0.7);padding:0 1px}
+  /* plan rozmowy */
+  .wk-plan{margin:0;padding:6px 10px 12px;list-style:none}
+  .wk-plan li{display:grid;grid-template-columns:20px minmax(0,1fr);gap:10px;align-items:center;height:38px;padding:0 8px;border-radius:9px;font-size:13.5px;color:var(--s1);transition:background .3s,color .3s}
+  .wk-plan li + li{box-shadow:0 -1px 0 rgba(255,255,255,0.05)}
+  .wk-plan li > i{position:relative;width:18px;height:18px;border-radius:6px;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,0.28);transition:background .3s,box-shadow .3s}
+  .wk-plan li > i::after{content:"";position:absolute;left:5.5px;top:2.5px;width:5px;height:9px;border:solid #06120b;border-width:0 2px 2px 0;transform:rotate(45deg) scale(0);transition:transform .3s cubic-bezier(.3,1.6,.5,1)}
+  .wk-plan li.ok > i{background:var(--wz);box-shadow:none}
+  .wk-plan li.ok > i::after{transform:rotate(45deg) scale(1)}
+  .wk-plan li.ok > span{color:var(--s2)}
+  /* ładowanie odpowiedzi */
+  .wk-lad{display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--s3)}
+  .wk-lad i{width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,0.15);border-top-color:var(--wz);animation:wm-krec .8s linear infinite}
+  @keyframes wm-krec{to{transform:rotate(360deg)}}
+
+  /* ---- okno spotkania (jasne) ---- */
+  .ws-spot{position:absolute;z-index:1;display:flex;flex-direction:column;overflow:hidden;border-radius:12px;background:#ffffff;
+    box-shadow:0 0 0 1px rgba(21,27,23,0.1),0 40px 80px -40px rgba(7,20,13,0.55),0 12px 24px -16px rgba(7,20,13,0.3)}
+  .ws-spot-tyt{position:relative;display:flex;align-items:center;height:36px;padding:0 12px;background:#f4f5f3;border-bottom:1px solid var(--jl)}
+  .ws-spot-tyt .okno-t{position:absolute;left:50%;transform:translateX(-50%);font-size:12px;font-weight:550;color:var(--j2);white-space:nowrap}
+  .ws-spot-sc{position:relative;flex:1;min-height:0;background:#eceeea}
+  .ws-kafel{position:absolute;inset:12px;display:grid;place-items:center;border-radius:12px;background:#dfe4e0;transition:box-shadow .3s}
+  .ws-kafel.maly{inset:auto;left:24px;bottom:24px;width:184px;height:118px;background:#cfd6d1;box-shadow:0 10px 24px -12px rgba(7,20,13,0.4)}
+  .ws-kafel > img{width:96px;height:96px;border-radius:50%;object-fit:cover;transition:box-shadow .3s}
+  .ws-kafel.maly > img{width:72px;height:72px}
+  .ws-kafel.mowi{box-shadow:inset 0 0 0 2px rgba(0,205,119,0.75)}
+  .ws-kafel.mowi > img{box-shadow:0 0 0 4px #dfe4e0,0 0 0 7px rgba(0,205,119,0.55)}
+  .ws-pod{position:absolute;left:10px;bottom:10px;display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 9px;border-radius:7px;background:rgba(255,255,255,0.85);font-size:11.5px;font-weight:600;color:var(--j1);white-space:nowrap}
+  .ws-pod .hi{width:12px;height:12px;color:var(--j3)}
+  .ws-spot-dol{display:flex;justify-content:center;gap:10px;padding:10px;background:#ffffff;border-top:1px solid var(--jl)}
+  .ws-spot-dol span{display:grid;place-items:center;width:36px;height:36px;border-radius:50%;background:#eef0ed;color:var(--j2)}
+  .ws-spot-dol span.kon{width:48px;border-radius:18px;background:#e5484d;color:#ffffff}
+  .ws-spot-dol span.kon .hi{transform:rotate(135deg)}
+
+  /* =====================================================================
+     HERO · pulpit z oknem spotkania; pasek i karta nachodzą na okno
+     ===================================================================== */
+  .wh{container-type:inline-size}
+  .wh .wm-pulpit{height:670px}
+  .wh .ws-spot{left:34px;top:64px;bottom:84px;width:calc(100% - 34px - 790px + 250px)}
+  .wh-prawa{position:absolute;z-index:3;top:46px;right:34px;width:790px;display:flex;flex-direction:column;gap:8px}
+  .wh-tryb{display:none}
+  .wh-tryb.on{display:block}
+  .wh .wk-zap{height:262px}
+  .wh .wk-gl > [data-wh-gl]{display:none;align-items:center;gap:10px}
+  .wh .wk-gl > [data-wh-gl].on{display:flex}
+  @container (max-width:1060px){
+    .wh .ws-spot{width:calc(100% - 34px - 560px + 120px)}
+    .wh-prawa{width:560px}
+    .wb-pyt,.wb .wb-ik:not([data-wh-ik]){display:none}
+    .wh .wm-mb > span:not(.wm-mb-p){display:none}
+  }
+  @container (max-width:760px){
+    .wh .wm-pulpit{height:auto;padding:42px 14px 14px}
+    .wh .ws-spot,.wh .wm-dok{display:none}
+    .wh-prawa{position:static;width:auto}
+    .wh .wm-mb-p > :not(:last-child){display:none}
+    .wb{gap:5px}
+    .wb .wm-znak{display:none}
+    .wb-b{padding:0 9px;font-size:12px}
+    .wb-b kbd,.wb .wb-ik,.wb-sep{display:none}
+    .wb-rec{margin-left:auto}
+    .wh .wk-akc{display:none}
+    .wh .wk-zap{height:270px}
+    .wk-odp{font-size:14.5px}
+  }
+  @container (max-width:420px){
+    .wb-b[data-wh-b="fu"]{display:none}
+  }
+
+  /* =====================================================================
+     DLACZEGO · to samo pytanie bez kontekstu i z kontekstem
+     Ten sam model w obu wierszach; różni się tylko to, co dostał przed
+     rozmową. Wiersz „z kontekstem" odsłania wejścia po kolei, potem
+     odpowiedź.
+     ===================================================================== */
+  .kx-pyt{display:flex;align-items:center;gap:12px;max-width:620px;margin:0 clamp(2px,0.8vw,14px) clamp(20px,2.4vw,30px);padding:14px 20px 14px 14px;border-radius:18px;background:#ffffff;box-shadow:0 0 0 1px rgba(15,26,20,0.06),0 20px 40px -30px rgba(7,20,13,0.4)}
+  .kx-pyt img{flex-shrink:0;width:36px;height:36px;border-radius:50%;object-fit:cover}
+  .kx-pyt p{margin:0;font-size:clamp(16px,1.4vw,19px);font-weight:600;letter-spacing:-0.015em;line-height:1.35}
+  .kx-pyt p small{display:block;margin-bottom:2px;font-size:12.5px;font-weight:500;letter-spacing:0;color:var(--t3)}
+  .kx-w{display:grid;grid-template-columns:minmax(0,150px) minmax(0,1fr) 32px minmax(0,1.3fr);gap:18px;align-items:center;margin:0 clamp(2px,0.8vw,14px);padding:22px 0;border-top:1px solid var(--linia)}
+  .kx-w:first-of-type{border-top:1.5px solid var(--t1)}
+  .kx-lab b{display:block;font-size:15px;font-weight:700;letter-spacing:-0.01em}
+  .kx-lab span{display:block;margin-top:3px;font-size:13px;color:var(--t3)}
+  .kx-we{display:flex;flex-direction:column;gap:7px}
+  .kx-we > span{display:flex;align-items:center;gap:10px;min-height:40px;padding:0 12px;border-radius:11px;background:#ffffff;box-shadow:0 0 0 1px rgba(15,26,20,0.07);font-size:13.5px;font-weight:600;color:var(--t1)}
+  .kx-we > span i{display:grid;place-items:center;flex-shrink:0;width:24px;height:24px;border-radius:7px;background:var(--papier);color:var(--ziel-c)}
+  .kx-we > span i svg{width:13px;height:13px;fill:currentColor}
+  .kx-we > span em{margin-left:auto;font-style:normal;font-size:12px;font-weight:500;color:var(--t3)}
+  .kx-we > span.pus{background:transparent;box-shadow:inset 0 0 0 1.5px rgba(15,26,20,0.12);border:0;color:var(--t3);font-weight:500;background-image:repeating-linear-gradient(135deg,rgba(15,26,20,0.04) 0 1px,transparent 1px 6px)}
+  .kx-we > span.pus i{background:transparent;color:var(--t3)}
+  .kx-str{display:block;width:32px;height:16px;color:var(--t3)}
+  .kx-odp{padding:16px 18px 18px;border-radius:15px;background:#141a16;color:#f3f6f4;box-shadow:0 26px 50px -30px rgba(7,20,13,0.7)}
+  .kx-odp-gl{display:flex;align-items:center;gap:10px;margin-bottom:10px;font-size:13px;font-weight:650}
+  .kx-odp-gl span{display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 8px;border-radius:6px;background:rgba(255,255,255,0.06);font-size:11px;font-weight:500;color:rgba(243,246,244,0.62)}
+  .kx-odp-gl span::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--ziel)}
+  .kx-odp p{margin:0;font-size:15px;line-height:1.55;text-wrap:pretty}
+  .kx-odp p b{font-weight:700;color:#ffffff}
+  .kx-w.bez .kx-odp p{color:rgba(243,246,244,0.72)}
+  /* ruch: w wierszu „z kontekstem" wejścia zapalają się po kolei, potem odpowiedź */
+  .kx.gra .kx-w.z .kx-we > span,.kx.gra .kx-w.z .kx-odp,.kx.gra .kx-w.z .kx-str{opacity:0;translate:0 6px}
+  .kx.gra.on .kx-w.z .kx-we > span{opacity:1;translate:0 0;transition:opacity .4s ease calc(0.5s + var(--j) * 0.45s),translate .5s cubic-bezier(.2,.8,.2,1) calc(0.5s + var(--j) * 0.45s)}
+  .kx.gra.on .kx-w.z .kx-str{opacity:1;translate:0 0;transition:opacity .4s ease 2s,translate .4s ease 2s}
+  .kx.gra.on .kx-w.z .kx-odp{opacity:1;translate:0 0;transition:opacity .5s ease 2.4s,translate .6s cubic-bezier(.2,.8,.2,1) 2.4s}
+  .bez,.bez *{transition:none !important}
+  @media (max-width:900px){
+    .kx-w{grid-template-columns:minmax(0,1fr);gap:12px}
+    .kx-str{display:none}
+  }
+
+  /* =====================================================================
+     SCENA · jasne okno ustawień i pulpit z kartą podsumowania
+     ===================================================================== */
+  .sc-wid{position:relative;margin-top:28px}
+  .sc-wid > [data-widok][hidden]{display:none}
+  .wu{display:grid;grid-template-rows:38px minmax(0,1fr);height:620px;overflow:hidden;border-radius:14px;background:#ffffff;
+    box-shadow:0 0 0 1px rgba(255,255,255,0.14),0 0 0 1.5px rgba(0,0,0,0.3),0 50px 100px -40px rgba(0,0,0,0.9)}
+  .wu-tyt{position:relative;display:flex;align-items:center;padding:0 14px;background:#f6f6f3;border-bottom:1px solid var(--jl)}
+  .wu-tyt .okno-t{position:absolute;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;color:var(--j2);white-space:nowrap}
+  .wu-tyt .wm-znak{width:18px;height:18px;border-radius:5px}
+  .wu-tyt .wm-znak svg{width:14px;height:14px}
+  .wu-uk{display:grid;grid-template-columns:200px minmax(0,1fr);min-height:0}
+  .wu-menu{display:flex;flex-direction:column;gap:2px;padding:14px 10px;background:#f6f6f3;border-right:1px solid var(--jl)}
+  .wu-menu span{display:flex;align-items:center;gap:10px;height:32px;padding:0 10px;border-radius:8px;font-size:13px;color:var(--j2)}
+  .wu-menu span .hi{width:15px;height:15px;color:var(--j3)}
+  .wu-menu span.on{background:#ffffff;color:var(--j1);font-weight:600;box-shadow:0 0 0 1px var(--jl),0 1px 2px rgba(0,0,0,0.05)}
+  .wu-menu span.on .hi{color:var(--wzc)}
+  .wu-tr{min-width:0;min-height:0;overflow:hidden;padding:22px 26px}
+  .wu-gl{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:16px}
+  .wu-gl h3{margin:0;font-size:19px;font-weight:650;letter-spacing:-0.022em}
+  .wu-btn{display:inline-flex;align-items:center;gap:7px;height:32px;padding:0 14px;border-radius:9px;background:var(--j1);color:#ffffff;font-size:12.5px;font-weight:600;white-space:nowrap}
+  .wu-btn2{display:inline-flex;align-items:center;height:28px;padding:0 11px;border-radius:8px;background:#ffffff;box-shadow:0 0 0 1px var(--jl),0 1px 2px rgba(0,0,0,0.04);font-size:12px;font-weight:600;color:var(--j1);white-space:nowrap}
+  .wu-2{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:18px}
+  .wu-gr{margin-bottom:16px}
+  .wu-gr > h4{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 7px;font-size:12px;font-weight:600;color:var(--j2)}
+  .wu-gr > h4 em{font-style:normal;font-weight:500;font-size:11.5px;color:var(--wzc)}
+  .wu-pan{border-radius:11px;background:#fafaf8;box-shadow:inset 0 0 0 1px var(--jl)}
+  .wu-sel{display:flex;align-items:center;gap:10px;height:40px;padding:0 12px;font-size:13px;font-weight:550}
+  .wu-sel img{width:20px;height:20px;border-radius:50%;object-fit:cover}
+  .wu-sel > i{display:grid;place-items:center;width:20px;height:20px;border-radius:6px;background:var(--j1);color:var(--wz)}
+  .wu-sel > i svg{width:12px;height:12px;fill:currentColor}
+  .wu-sel em{margin-left:auto;font-style:normal;font-size:11.5px;font-weight:500;color:var(--j3)}
+  .wu-sel .hi{width:14px;height:14px;color:var(--j4)}
+  .wu-pl{margin:0;padding:4px 0;list-style:none;counter-reset:pl}
+  .wu-pl li{display:grid;grid-template-columns:22px minmax(0,1fr);gap:8px;align-items:center;min-height:34px;padding:0 12px;font-size:13px;counter-increment:pl}
+  .wu-pl li + li{box-shadow:0 -1px 0 var(--jl2)}
+  .wu-pl li::before{content:counter(pl);font-family:var(--mono);font-size:11px;color:var(--j3)}
+  .wu-txt{margin:0;padding:11px 13px;font-size:13px;line-height:1.55;color:var(--j1);text-wrap:pretty}
+  .wu-txt.gen{background:linear-gradient(180deg,rgba(0,205,119,0.05),rgba(0,205,119,0))}
+  .wu-txt.pus{color:var(--j1)}
+  .wu-txt mark{background:none;font-weight:600;color:var(--j1)}
+  /* modele */
+  .wu-row{display:flex;align-items:center;gap:12px;min-height:42px;padding:0 14px;font-size:13px}
+  .wu-row + .wu-row{box-shadow:0 -1px 0 var(--jl2)}
+  .wu-row > span:first-child{flex:1;min-width:0}
+  .wu-row small{display:block;font-size:11.5px;color:var(--j3)}
+  .wu-mod{display:inline-flex;align-items:center;gap:8px;height:28px;padding:0 10px;border-radius:8px;background:#ffffff;box-shadow:0 0 0 1px var(--jl);font-size:12.5px;font-weight:550;white-space:nowrap}
+  .wu-mod.my{box-shadow:0 0 0 1.5px var(--wz)}
+  .wu-mod .hi{width:12px;height:12px;color:var(--j4)}
+  .wu-tg{position:relative;flex-shrink:0;width:34px;height:20px;border-radius:999px;background:#dfe2df;transition:background .2s}
+  .wu-tg::after{content:"";position:absolute;left:2px;top:2px;width:16px;height:16px;border-radius:50%;background:#ffffff;box-shadow:0 1px 2px rgba(0,0,0,0.2);transition:transform .2s}
+  .wu-tg.on{background:var(--wz)}
+  .wu-tg.on::after{transform:translateX(14px)}
+  .wu-kl{display:flex;align-items:center;gap:10px;min-height:42px;padding:0 14px;font-size:13px}
+  .wu-kl + .wu-kl{box-shadow:0 -1px 0 var(--jl2)}
+  .wu-kl b{font-weight:600}
+  .wu-kl code{font-family:var(--mono);font-size:11.5px;color:var(--j3)}
+  .wu-kl em{display:inline-flex;align-items:center;gap:5px;margin-left:auto;font-style:normal;font-size:12px;font-weight:600;color:var(--wzc)}
+  .wu-kl em::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--wz)}
+  .wu-suw{display:flex;align-items:center;gap:12px;min-height:42px;padding:0 14px;font-size:13px}
+  .wu-suw > span:first-child{flex:1}
+  .wu-suw i{position:relative;width:120px;height:4px;border-radius:2px;background:linear-gradient(90deg,var(--wz) 0 85%,#dfe2df 85%)}
+  .wu-suw i::after{content:"";position:absolute;left:85%;top:50%;width:16px;height:16px;margin:-8px 0 0 -8px;border-radius:50%;background:#ffffff;box-shadow:0 0 0 1px rgba(0,0,0,0.12),0 1px 3px rgba(0,0,0,0.2)}
+  .wu-suw b{font-family:var(--mono);font-size:11.5px;font-weight:500;color:var(--j2)}
+  /* pulpit „Po rozmowie": karta podsumowania i karta deala */
+  .sp .wm-pulpit{height:640px}
+  .sp-lewa{position:absolute;z-index:3;left:34px;top:46px;width:560px;display:flex;flex-direction:column;gap:8px}
+  .sp .wk{height:auto}
+  .wk-pods{margin:0;padding:6px 8px 4px;list-style:none}
+  .wk-pods li{display:grid;grid-template-columns:44px minmax(0,1fr);gap:10px;padding:9px 10px;font-size:13px;line-height:1.45;color:var(--s1)}
+  .wk-pods li + li{box-shadow:0 -1px 0 rgba(255,255,255,0.05)}
+  .wk-pods time{font-family:var(--mono);font-size:11px;letter-spacing:0;color:var(--s3);padding-top:2px}
+  .wk-dol{display:flex;align-items:center;gap:8px;padding:12px 14px 14px;border-top:1px solid rgba(255,255,255,0.07)}
+  .wk-dol span{display:inline-flex;align-items:center;gap:7px;height:32px;padding:0 12px;border-radius:9px;background:rgba(255,255,255,0.07);font-size:12.5px;font-weight:600;white-space:nowrap}
+  .wk-dol span.gl{margin-left:auto;background:var(--wz);color:#06120b}
+  .wk-dol span .hi{width:14px;height:14px}
+  .sp-crm{position:absolute;right:34px;top:64px;bottom:84px;width:calc(100% - 34px - 560px - 34px + 70px);display:flex;flex-direction:column;overflow:hidden;border-radius:12px;background:#ffffff;
+    box-shadow:0 0 0 1px rgba(21,27,23,0.1),0 40px 80px -40px rgba(7,20,13,0.55)}
+  .sp-crm-tyt{position:relative;display:flex;align-items:center;height:36px;padding:0 12px;background:#f4f5f3;border-bottom:1px solid var(--jl)}
+  .sp-crm-tyt .okno-t{position:absolute;left:50%;transform:translateX(-50%);font-size:12px;font-weight:550;color:var(--j2);white-space:nowrap}
+  .sp-crm-in{flex:1;min-height:0;overflow:hidden;padding:18px 20px 0 92px}
+  .sp-deal{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding-bottom:14px;border-bottom:1px solid var(--jl)}
+  .sp-deal h3{margin:0;font-size:17px;font-weight:650;letter-spacing:-0.02em}
+  .sp-deal p{display:flex;align-items:center;gap:8px;margin:5px 0 0;font-size:12px;color:var(--j3);white-space:nowrap}
+  .sp-deal p img{width:18px;height:18px;border-radius:50%;object-fit:cover}
+  .sp-deal > b{font-size:17px;font-weight:650;letter-spacing:-0.02em;white-space:nowrap}
+  .sp-not-gl{margin:14px 0 8px;font-size:12px;font-weight:600;color:var(--j2)}
+  .sp-not{padding:13px 15px;border-radius:11px;background:#fafaf8;box-shadow:inset 0 0 0 1px var(--jl);font-size:12.5px;line-height:1.5}
+  .sp-not + .sp-not{margin-top:10px}
+  .sp-not.nowa{background:#f3fbf7;box-shadow:inset 0 0 0 1px rgba(0,205,119,0.3),inset 3px 0 0 var(--wz)}
+  .sp-not-m{display:flex;align-items:center;gap:8px;margin-bottom:7px;font-size:11.5px;color:var(--j3)}
+  .sp-not-m b{color:var(--j1);font-weight:600}
+  .sp-not-m .wm-znak{width:18px;height:18px;border-radius:5px}
+  .sp-not-m .wm-znak svg{width:14px;height:14px}
+  .sp-not-t{margin:0;color:var(--j1)}
+  .sp-not-t + .sp-not-t{margin-top:6px}
+  @media (max-width:1100px){
+    .wu-2{grid-template-columns:minmax(0,1fr)}
+    .wu{height:auto}
+    .wu-tr{overflow:visible}
+    .sp .wm-pulpit{height:auto;padding:46px 18px 18px;display:flex;flex-direction:column;gap:16px}
+    .sp .wm-dok,.sp .wm-mb > span:not(.wm-mb-p){display:none}
+    .sp-lewa,.sp-crm{position:relative;left:auto;right:auto;top:auto;bottom:auto;width:auto}
+    .sp-lewa{order:-1}
+    .sp-crm-in{padding:16px 18px 18px}
+  }
+  @media (max-width:760px){
+    .wu-uk{grid-template-columns:minmax(0,1fr)}
+    .wu-menu{display:none}
+    .wu-tr{padding:18px 16px}
+    .wk-dol{flex-wrap:wrap}
+    .wk-dol span.gl{margin-left:0}
+  }
+
+  /* =====================================================================
+     CENNIK · dwie licencje i koszty u dostawców
+     ===================================================================== */
+  .cn{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(24px,4vw,72px);align-items:start;margin-top:clamp(48px,5vw,72px)}
+  .cn-k{display:flex;flex-direction:column;padding:clamp(24px,2.6vw,34px);border-radius:24px;background:var(--papier)}
+  .cn-k > span{font-size:13px;font-weight:700;color:var(--ziel-c)}
+  .cn-k h3{margin:8px 0 0;font-size:clamp(19px,1.7vw,23px);font-weight:700;letter-spacing:-0.024em;line-height:1.2;text-wrap:balance}
+  .cn-c{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 10px;margin:clamp(26px,3vw,40px) 0 0}
+  .cn-c b{font-size:clamp(48px,5vw,72px);font-weight:750;letter-spacing:-0.05em;line-height:0.9;color:var(--t1)}
+  .cn-c em{font-style:normal;font-size:14.5px;color:var(--t2)}
+  .cn-k p{margin:16px 0 0;font-size:15px;line-height:1.6;color:var(--t2);text-wrap:pretty}
+  .cn-k .v3-btn,.cn-k .cn-lnk{margin-top:auto}
+  .cn-k > :nth-last-child(2){margin-bottom:28px}
+  .cn-lnk{align-self:flex-start;display:inline-flex;align-items:center;gap:8px;padding:8px 2px;font-size:16px;font-weight:650;color:var(--t1);border-bottom:1px solid rgba(15,26,20,0.25);transition:border-color .2s}
+  .cn-lnk:hover{border-color:var(--ziel-c)}
+  .cn-k .v3-btn{align-self:flex-start}
+  .cn-dod{padding-top:clamp(4px,1vw,10px)}
+  .cn-dod h3{margin:0;padding-bottom:14px;font-size:15px;font-weight:700;border-bottom:1.5px solid var(--t1)}
+  .cn-dw{display:grid;grid-template-columns:36px minmax(0,1fr);gap:12px;padding:16px 0;border-bottom:1px solid var(--linia)}
+  .cn-dw > i{display:grid;place-items:center;width:36px;height:36px;border-radius:10px;background:var(--papier);color:var(--t1)}
+  .cn-dw > i svg{width:16px;height:16px;fill:currentColor}
+  .cn-dw b{display:block;font-size:15.5px;font-weight:700;letter-spacing:-0.01em}
+  .cn-dw span{display:block;margin-top:3px;font-size:14px;line-height:1.55;color:var(--t2)}
+  .cn-dod > p{margin:16px 0 0;font-size:14px;line-height:1.6;color:var(--t2);text-wrap:pretty}
+  @media (max-width:860px){ .cn{grid-template-columns:minmax(0,1fr)} }
+
+  @media (prefers-reduced-motion:reduce){
+    .wb-rec i,.wk-lad i{animation:none}
+  }
+</style>
+
+<div class="v3">
+<Styl />
+<Anim />
+
+<!-- ============ 1 · HERO ============
+     Pulpit Maca z oknem spotkania. Pasek Wingmana i karta pod nim nachodzą
+     na prawą krawędź okna. Pętla: zapis rozmowy → klient pyta o serwis →
+     Odpowiedź → plan rozmowy → pytanie o decyzję → twierdzenie o 30% →
+     Fact-check. Markup trzyma stan końcowy (Fact-check), skrypt na dole
+     odgrywa przebieg. -->
+<Hero lead="Wingman AI to pasek nad każdym spotkaniem na komputerze. Na jedno kliknięcie podsuwa handlowcowi odpowiedź na pytanie klienta albo sprawdza, czy to, co klient mówi, się zgadza. Dane klienta bierze z Pipedrive’a albo HubSpota." cta={{ href: '#kontakt', t: 'Zamów licencje' }} link={{ href: '#jak-wyglada', t: 'Zobacz, jak działa →' }}>
+<Fragment slot="h1">Odpowiedź na pytanie klienta <span>w trakcie rozmowy</span></Fragment>
+
+<figure class="wm wh hero-wid" data-wh role="img" aria-label={HERO_ARIA}>
+<div class="wm-pulpit" aria-hidden="true">
+<div class="wm-mb"><b>Wingman</b><span>Plik</span><span>Edycja</span><span>Widok</span><span>Okno</span><span>Pomoc</span><span class="wm-mb-p"><svg viewBox="0 0 16 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" set:html={WIFI}></svg><svg viewBox="0 0 26 12" set:html={BAT}></svg><span>pon 14 wrz</span><span>11:43</span></span></div>
+<div class="ws-spot">
+<div class="ws-spot-tyt"><span class="wm-sw"><i></i><i></i><i></i></span><span class="okno-t">Nordis · rozmowa wstępna</span></div>
+<div class="ws-spot-sc">
+<div class="ws-kafel" data-wh-mow="m"><img src={OS.m.f} alt="" width="96" height="96" loading="lazy"><span class="ws-pod">{OS.m.n} · Nordis</span></div>
+<div class="ws-kafel maly" data-wh-mow="a"><img src={OS.a.f} alt="" width="96" height="96" loading="lazy"><span class="ws-pod"><svg class="hi" viewBox="0 0 16 16" set:html={IK.mic}></svg>{OS.a.n}</span></div>
+</div>
+<div class="ws-spot-dol"><span><svg class="hi" viewBox="0 0 16 16" set:html={IK.mic}></svg></span><span><svg class="hi" viewBox="0 0 16 16" set:html={IK.kamera}></svg></span><span><svg class="hi" viewBox="0 0 16 16" set:html={IK.ekran}></svg></span><span class="kon"><svg class="hi" viewBox="0 0 16 16" set:html={HI['phone']}></svg></span></div>
+</div>
+
+<div class="wh-prawa">
+<div class="wb">
+<span class="wm-znak"><svg viewBox="40 40 432 432" set:html={ZNAK}></svg></span>
+<span class="wb-b gl" data-wh-b="odp">Odpowiedź<kbd>⇧⌘↵</kbd></span>
+<span class="wb-b" data-wh-b="fu">Follow-up</span>
+<span class="wb-b" data-wh-b="fc">Fact-check</span>
+<span class="wb-pyt">Zadaj pytanie…</span>
+<span class="wb-rec"><i></i><b data-wh-czas>{mmss(1672)}</b></span>
+<span class="wb-sep"></span>
+<span class="wb-ik zie"><svg class="hi" viewBox="0 0 16 16" set:html={IK.mic}></svg></span>
+<span class="wb-ik"><svg class="hi" viewBox="0 0 16 16" set:html={IK.ekran}></svg></span>
+<span class="wb-ik" data-wh-ik="zap"><svg class="hi" viewBox="0 0 16 16" set:html={IK.fala}></svg></span>
+<span class="wb-ik" data-wh-ik="plan"><svg class="hi" viewBox="0 0 16 16" set:html={IK.plan}></svg></span>
+<span class="wb-ik" data-wh-ik="pods"><svg class="hi" viewBox="0 0 16 16" set:html={HI['document-text']}></svg></span>
+<span class="wb-ik"><svg class="hi" viewBox="0 0 16 16" set:html={IK.zebatka}></svg></span>
+</div>
+
+<div class="wk">
+<div class="wk-gl">
+<span data-wh-gl="zap"><b>Zapis rozmowy</b><span class="wk-mod"><i></i>na żywo</span></span>
+<span data-wh-gl="odp"><b>Odpowiedź</b><span class="wk-mod"><i></i>Gemini 3 Flash</span></span>
+<span data-wh-gl="plan"><b>Plan rozmowy</b><span class="wk-mod"><i></i>asystent: Sprzedaż projektowa</span></span>
+<span data-wh-gl="fc" class="on"><b>Fact-check</b><span class="wk-mod"><i></i>Claude Sonnet · dłuższe myślenie</span></span>
+<span class="wk-akc"><span><svg class="hi" viewBox="0 0 16 16" set:html={IK.kopiuj}></svg></span><span><svg class="hi" viewBox="0 0 16 16" set:html={IK.kosz}></svg></span><span><svg class="hi" viewBox="0 0 16 16" set:html={HI['x-mark']}></svg></span></span>
+</div>
+
+<div class="wh-tryb" data-wh-tryb="zap">
+<div class="wk-zap">
+{ZAPIS.map((x) => (
+  <div class="wk-w" data-wh-w data-t={x.t} data-k={x.k}><div><div class="wk-wi">
+    <img src={OS[x.k].f} alt="" width="22" height="22" loading="lazy">
+    <div><p class="wk-kto"><b>{OS[x.k].k}</b><time>{mmss(x.t)}</time></p><p class="wk-t" set:html={zaznacz(x.s)}></p></div>
+  </div></div></div>
+))}
+</div>
+</div>
+
+<div class="wh-tryb" data-wh-tryb="odp">
+<div class="wk-tr">
+<p class="wk-cyt"><em>Michał, 18:10</em>„A ile kosztuje serwis po okresie gwarancji?”</p>
+<div data-wh-lad hidden><p class="wk-lad" style="margin:16px 0 0"><i></i>Szukam w kontekście asystenta…</p></div>
+<div data-wh-tresc>
+<p class="wk-odp">Przegląd roczny kosztuje <b>1 850 zł netto za linię</b>. Dwa pierwsze lata są w cenie instalacji, potem umowa serwisowa na rok albo trzy lata.</p>
+</div>
+</div>
+</div>
+
+<div class="wh-tryb" data-wh-tryb="plan">
+<ol class="wk-plan">
+{PLAN.map((p) => (<li class={p.t < 1200 ? 'ok' : ''}><i></i><span>{p.p}</span></li>))}
+</ol>
+</div>
+
+<div class="wh-tryb on" data-wh-tryb="fc">
+<div class="wk-tr">
+<p class="wk-cyt"><em>Michał, 27:40</em>„Konkurencja obiecuje o trzydzieści procent niższe rachunki za gaz.”</p>
+<div data-wh-lad hidden><p class="wk-lad" style="margin:16px 0 0"><i></i>Sprawdzam w kontekście i w sieci…</p></div>
+<div data-wh-tresc>
+<div class="wk-wyn"><svg class="hi" viewBox="0 0 16 16" set:html={IK.uwaga}></svg><div><b>Nie da się potwierdzić</b><p>Karty katalogowe w kontekście podają podobną sprawność obu typów promienników, 91 i 92%. Trzydzieści procent wychodzi dopiero przy porównaniu z obecnymi nagrzewnicami olejowymi.</p></div></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="wm-dok">{DOK.map((d) => (<span class={[d.dz && 'dz', d.kal && 'kal', d.wm && 'wmi'].filter(Boolean).join(' ')} style={d.bg ? `background:${d.bg}` : undefined}>{d.kal ? <><em>wrz</em><b>14</b></> : d.wm ? <svg viewBox="40 40 432 432" set:html={ZNAK}></svg> : <svg class={d.c ? 'c' : undefined} viewBox="0 0 16 16" set:html={d.i}></svg>}</span>))}</div>
+</div>
+</figure>
+</Hero>
+
+<!-- ============ 2 · CZYM JEST ============ -->
+<section id="czym-jest" class="v3-sek v3-papier">
+<div class="v3-def">
+<h2 class="v3-h2m">Czym jest Wingman AI?</h2>
+<div>
+<p class="v3-def-duzy rv">Wingman AI to asystent rozmów handlowych na komputer, w wersji na macOS i Windows. Działa jako pasek nad spotkaniem: w trakcie rozmowy podpowiada handlowcowi na podstawie kontekstu klienta, a po rozłączeniu odkłada notatkę do CRM-a. Pracuje na Waszych kluczach API, więc rozmowy nie przechodzą przez nasze serwery.</p>
+</div>
+</div>
+
+<Procesy tytul="Co robi Wingman" pozycje={PROCESY} etykietaB="Z Wingmanem" />
+</section>
+
+<!-- ============ 2b · ZIELONY PAS ============ -->
+<Pas tekst="Wingman pomaga prowadzić klienta przez całą rozmowę, a po spotkaniu zostawia gotową notatkę" foto="/szymon-kita.jpg" fotoW={870} fotoH={1210} alt="Szymon Kita, założyciel Let's automate" imie="Szymon Kita" rola="Założyciel" cta="Zamów licencje" />
+
+<!-- ============ 3 · DLACZEGO ============
+     Teza z filmu: odpowiedź jest tak dobra, jak kontekst ustawiony przed
+     rozmową (w filmie Fact-check bez kontekstu pomylił Wingmana z innym
+     produktem). Jeden rysunek: to samo pytanie i ten sam model, raz bez
+     kontekstu, raz z asystentem i dealem z CRM-a. Odpowiedź z kontekstem
+     jest tą samą, którą pokazuje hero. -->
+<section id="dlaczego" class="v3-sek">
+<h2 class="v3-h2m">Skąd Wingman wie, co odpowiedzieć?</h2>
+<p class="v3-teza rv"><span>Asystent, który nie zna klienta, odpowiada ogólnikami.</span> Wingman zna klienta z CRM-a i plan rozmowy, zanim padnie pierwsze pytanie</p>
+
+<div class="dl-blok">
+<div class="dl-gl"><h3>To samo pytanie bez kontekstu i z kontekstem</h3><p>Michał z Nordisu pyta o koszt serwisu po gwarancji. Bez kontekstu model zna tylko to pytanie i odpowiada tym, co wie o branży. Z asystentem, który ma warunki serwisu, i z dealem z Pipedrive’a odpowiedź ma kwotę, którą handlowiec może podać od razu. Model w obu przypadkach jest ten sam.</p></div>
+<figure class="dl-kafel kx" data-anim data-gra>
+<div class="ts4-gl"><b>Rozmowa z Nordisem, 18:10</b><button type="button" class="ts4-znow" data-znow aria-label="Odtwórz rysunek jeszcze raz"><svg viewBox="0 0 16 16" set:html={HI['arrow-path']}></svg></button></div>
+<div class="kx-pyt"><img src={OS.m.f} alt="" width="36" height="36" loading="lazy"><p><small>Michał Rudnik, Nordis</small>„A ile kosztuje serwis po okresie gwarancji?”</p></div>
+
+<div class="kx-w bez">
+<div class="kx-lab"><b>Bez kontekstu</b><span>tylko pytanie z rozmowy</span></div>
+<div class="kx-we">
+<span><i><svg viewBox="0 0 16 16" set:html={IK.fala}></svg></i>Pytanie z rozmowy</span>
+<span class="pus"><i><svg viewBox="0 0 16 16" set:html={HI['user']}></svg></i>bez asystenta</span>
+<span class="pus"><i><svg viewBox="0 0 16 16" set:html={HI['users']}></svg></i>bez klienta z CRM-a</span>
+</div>
+<svg class="kx-str" viewBox="0 0 32 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 8h26M22 3l6 5-6 5"/></svg>
+<div class="kx-odp"><div class="kx-odp-gl">Odpowiedź<span>Gemini 3 Flash</span></div><p>Koszt serwisu zależy od producenta i mocy instalacji. Zwykle to przegląd raz w roku, a jego cenę warto sprawdzić w warunkach gwarancji.</p></div>
+</div>
+
+<div class="kx-w z">
+<div class="kx-lab"><b>Z kontekstem</b><span>ustawionym przed rozmową</span></div>
+<div class="kx-we">
+<span style="--j:0"><i><svg viewBox="0 0 16 16" set:html={IK.fala}></svg></i>Pytanie z rozmowy</span>
+<span style="--j:1"><i><svg viewBox="0 0 16 16" set:html={HI['user']}></svg></i>Asystent<em>warunki serwisu 2026</em></span>
+<span style="--j:2"><i><svg viewBox="0 0 16 16" set:html={HI['users']}></svg></i>Klient z Pipedrive’a<em>Nordis, dwie linie</em></span>
+</div>
+<svg class="kx-str" viewBox="0 0 32 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 8h26M22 3l6 5-6 5"/></svg>
+<div class="kx-odp"><div class="kx-odp-gl">Odpowiedź<span>Gemini 3 Flash</span></div><p>Przegląd roczny kosztuje <b>1 850 zł netto za linię</b>. Dwa pierwsze lata są w cenie instalacji, potem umowa serwisowa na rok albo trzy lata.</p></div>
+</div>
+</figure>
+</div>
+</section>
+
+<!-- ============ 4 · JAK WYGLĄDA ============
+     Trzy widoki poza paskiem: kontekst przed rozmową (okno ustawień),
+     podsumowanie i notatka w karcie deala (pulpit), modele (okno
+     ustawień). Bez JS widać pierwszy. -->
+<section id="jak-wyglada" class="v3-sek v3-scena v3-ziarno">
+<div class="v8-gl">
+<h2 class="v3-h2 jasny">Przed rozmową i po niej</h2>
+<p class="v3-sub jasny">Pasek nad spotkaniem to jedna część Wingmana. Druga to ustawienia, w których przygotowujecie rozmowę, i notatka, która z niej zostaje.</p>
+</div>
+
+<div class="v3-zak" role="tablist" aria-label="Widoki Wingmana">
+{ZAKLADKI.map((z, i) => (<button type="button" role="tab" id={`zak-${i}`} aria-controls={`widok-${i}`} aria-selected={i === 0 ? 'true' : 'false'} tabindex={i === 0 ? 0 : -1} data-zak>{z.t}</button>))}
+</div>
+
+<div class="sc-wid wm">
+<!-- widok 0: kontekst -->
+<div class="wu" id="widok-0" role="tabpanel" aria-labelledby="zak-0" data-widok>
+<div class="wu-tyt" aria-hidden="true"><span class="wm-sw"><i></i><i></i><i></i></span><span class="okno-t"><span class="wm-znak"><svg viewBox="40 40 432 432" set:html={ZNAK}></svg></span>Kontekst</span></div>
+<div class="wu-uk" aria-hidden="true">
+<nav class="wu-menu">{MENU_UST.map((m) => (<span class={m.t === 'Kontekst' ? 'on' : ''}><svg class="hi" viewBox="0 0 16 16" set:html={m.i}></svg>{m.t}</span>))}</nav>
+<div class="wu-tr">
+<div class="wu-gl"><h3>Kontekst rozmowy</h3><span class="wu-btn">Zapisz kontekst</span></div>
+<div class="wu-2">
+<div>
+<div class="wu-gr"><h4>Asystent</h4><div class="wu-pan"><div class="wu-sel"><i><svg viewBox="0 0 16 16" set:html={HI['user']}></svg></i>Sprzedaż projektowa<em>3 asystentów</em><svg class="hi" viewBox="0 0 16 16" set:html={HI['chevron-down']}></svg></div></div></div>
+<div class="wu-gr"><h4>Klient</h4><div class="wu-pan"><div class="wu-sel"><img src={OS.m.f} alt="" width="20" height="20" loading="lazy">Nordis sp. z o.o. — Ogrzewanie hali<em>Pipedrive</em><svg class="hi" viewBox="0 0 16 16" set:html={HI['chevron-down']}></svg></div></div></div>
+<div class="wu-gr"><h4>Plan rozmowy<em>wygenerowany z asystenta i deala</em></h4><div class="wu-pan"><ol class="wu-pl">{PLAN.map((p) => (<li>{p.p}</li>))}</ol></div></div>
+</div>
+<div>
+<div class="wu-gr"><h4>Informacje o kliencie<em>wygenerowane</em></h4><div class="wu-pan"><p class="wu-txt gen">Centrum logistyczne w Strykowie, hala magazynowa <mark>4 200 m²</mark> ogrzewana nagrzewnicami olejowymi. Deal „Ogrzewanie hali” na etapie rozmowy wstępnej, zapytanie z formularza 11.09. Kontakt: Michał Rudnik, kierownik techniczny.</p></div></div>
+<div class="wu-gr"><h4>O mnie</h4><div class="wu-pan"><p class="wu-txt pus">Chcę ustalić budżet, termin i to, kto decyduje. Na pierwszej rozmowie nie schodzę z ceny.</p></div></div>
+<div class="wu-gr"><h4>Informacje o spotkaniu</h4><div class="wu-pan"><p class="wu-txt pus">Pierwsza rozmowa po zapytaniu. 30 minut w Teams, po stronie klienta jedna osoba.</p></div></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- widok 1: po rozmowie -->
+<div class="sp" id="widok-1" role="tabpanel" aria-labelledby="zak-1" data-widok hidden>
+<div class="wm-pulpit" aria-hidden="true">
+<div class="wm-mb"><b>Wingman</b><span>Plik</span><span>Edycja</span><span>Widok</span><span>Okno</span><span>Pomoc</span><span class="wm-mb-p"><svg viewBox="0 0 16 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" set:html={WIFI}></svg><svg viewBox="0 0 26 12" set:html={BAT}></svg><span>pon 14 wrz</span><span>11:49</span></span></div>
+<div class="sp-crm">
+<div class="sp-crm-tyt"><span class="wm-sw"><i></i><i></i><i></i></span><span class="okno-t">Pipedrive · Deal</span></div>
+<div class="sp-crm-in">
+<div class="sp-deal"><div><h3>Ogrzewanie hali — Nordis</h3><p><img src={OS.a.f} alt="" width="18" height="18" loading="lazy">Anna Kowal · etap: rozmowa wstępna</p></div><b>180 000 zł</b></div>
+<p class="sp-not-gl">Notatki</p>
+<div class="sp-not nowa">
+<div class="sp-not-m"><span class="wm-znak"><svg viewBox="40 40 432 432" set:html={ZNAK}></svg></span><b>Notatka z rozmowy</b>· Wingman · pon 14.09, 11:49</div>
+<p class="sp-not-t">Nordis, centrum logistyczne w Strykowie: hala 4 200 m², dwie strefy, dziś nagrzewnice olejowe za ok. 23 tys. zł miesięcznie zimą. Budżet do 180 tys. zł netto, montaż po stronie Nordisu, ogrzewanie ma działać od 1 listopada.</p>
+<p class="sp-not-t">Decyzja na zarządzie 18 września, warunek: referencja z podobnej hali. Konkurencja: 195 tys. zł z montażem. Oferta do środy 16.09, 12:00.</p>
+</div>
+<div class="sp-not">
+<div class="sp-not-m"><b>Zapytanie z formularza</b>· czw 11.09</div>
+Hala magazynowa ok. 4 000 m², prośba o kontakt w sprawie ogrzewania.
+</div>
+</div>
+</div>
+<div class="sp-lewa">
+<div class="wb">
+<span class="wm-znak"><svg viewBox="40 40 432 432" set:html={ZNAK}></svg></span>
+<span class="wb-b gl">Odpowiedź<kbd>⇧⌘↵</kbd></span>
+<span class="wb-b">Follow-up</span>
+<span class="wb-b">Fact-check</span>
+<span class="wb-sep"></span>
+<span class="wb-ik"><svg class="hi" viewBox="0 0 16 16" set:html={IK.fala}></svg></span>
+<span class="wb-ik"><svg class="hi" viewBox="0 0 16 16" set:html={IK.plan}></svg></span>
+<span class="wb-ik on"><svg class="hi" viewBox="0 0 16 16" set:html={HI['document-text']}></svg></span>
+<span class="wb-ik"><svg class="hi" viewBox="0 0 16 16" set:html={IK.zebatka}></svg></span>
+</div>
+<div class="wk">
+<div class="wk-gl"><b>Podsumowanie</b><span class="wk-mod"><i></i>co 5 minut · rozmowa zakończona 32:14</span><span class="wk-akc"><span><svg class="hi" viewBox="0 0 16 16" set:html={IK.kopiuj}></svg></span><span><svg class="hi" viewBox="0 0 16 16" set:html={HI['x-mark']}></svg></span></span></div>
+<ol class="wk-pods">{PODS.map(([t, s]) => (<li><time>{t}</time><span>{s}</span></li>))}</ol>
+<div class="wk-dol"><span>Otwórz deal</span><span class="gl"><svg class="hi" viewBox="0 0 16 16" set:html={HI['check']}></svg>Dodano do Pipedrive’a</span></div>
+</div>
+</div>
+<div class="wm-dok">{DOK.map((d) => (<span class={[d.dz && 'dz', d.kal && 'kal', d.wm && 'wmi'].filter(Boolean).join(' ')} style={d.bg ? `background:${d.bg}` : undefined}>{d.kal ? <><em>wrz</em><b>14</b></> : d.wm ? <svg viewBox="40 40 432 432" set:html={ZNAK}></svg> : <svg class={d.c ? 'c' : undefined} viewBox="0 0 16 16" set:html={d.i}></svg>}</span>))}</div>
+</div>
+</div>
+
+<!-- widok 2: modele -->
+<div class="wu" id="widok-2" role="tabpanel" aria-labelledby="zak-2" data-widok hidden>
+<div class="wu-tyt" aria-hidden="true"><span class="wm-sw"><i></i><i></i><i></i></span><span class="okno-t"><span class="wm-znak"><svg viewBox="40 40 432 432" set:html={ZNAK}></svg></span>Modele</span></div>
+<div class="wu-uk" aria-hidden="true">
+<nav class="wu-menu">{MENU_UST.map((m) => (<span class={m.t === 'Modele' ? 'on' : ''}><svg class="hi" viewBox="0 0 16 16" set:html={m.i}></svg>{m.t}</span>))}</nav>
+<div class="wu-tr">
+<div class="wu-gl"><h3>Modele</h3></div>
+<div class="wu-2">
+<div>
+<div class="wu-gr"><h4>Modele w trakcie rozmowy</h4><div class="wu-pan">
+{MODELE.map((m) => (<div class="wu-row"><span>{m.z}</span><span class={`wu-mod${m.my ? ' my' : ''}`}>{m.m}<svg class="hi" viewBox="0 0 16 16" set:html={HI['chevron-down']}></svg></span></div>))}
+</div></div>
+<div class="wu-gr"><h4>Generacja</h4><div class="wu-pan"><div class="wu-row"><span>Plan rozmowy i informacje o kliencie</span><span class="wu-mod">Gemini 3.1 Pro<svg class="hi" viewBox="0 0 16 16" set:html={HI['chevron-down']}></svg></span></div></div></div>
+</div>
+<div>
+<div class="wu-gr"><h4>Dłuższe myślenie</h4><div class="wu-pan">
+{[['Odpowiedź', false], ['Follow-up', false], ['Fact-check', true], ['Zadaj pytanie', false], ['Generacja planu i klienta', true]].map(([t, on]) => (<div class="wu-row"><span>{t}</span><span class={`wu-tg${on ? ' on' : ''}`}></span></div>))}
+</div></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="v3-jw-dol">
+<div>
+{ZAKLADKI.map((z, i) => (<p class="v3-jw-p" data-podpis hidden={i !== 0}><b>{z.t}</b>{z.p}</p>))}
+</div>
+</div>
+</section>
+
+<!-- ============ 5 · PORÓWNANIE ============ -->
+<Metoda tytul="Czym Wingman różni się od notatnika AI" sub="Notatnik w chmurze zapisuje spotkanie i streszcza je po fakcie. Wingman pracuje w trakcie rozmowy, zna klienta z CRM-a, a rozmowy idą przez Wasze konta u dostawców modeli." wiersze={METODA} typowy="Notatnik AI<br>w chmurze" liczba="" podpis="Wingman AI" stopka={`Wingmana piszemy i rozwijamy w Let’s automate. Uwagi trafiają do zespołu, który zna jego kod.<br><a href="mailto:hello@letsautomate.pl">hello@letsautomate.pl →</a>`} id="porownanie" />
+
+<!-- ============ 6 · LICENCJA I WYMAGANIA ============
+     Jedna cena i lista tego, co trzeba mieć. Dostawcy padają tu raz,
+     jako wymaganie (uwaga Szymona: nie artykułować ich co chwilę). -->
+<section id="cennik" class="v3-sek">
+<div class="v8-gl">
+<h2 class="v3-h2">Licencja i wymagania</h2>
+<p class="v3-sub">Licencja jest roczna. Modele AI opłacacie osobno, według zużycia, z własnych kont u dostawców.</p>
+</div>
+<div class="cn">
+<article class="cn-k rv">
+<span>Licencja roczna</span>
+<h3>Dla siebie albo całego zespołu</h3>
+<p class="cn-c"><b>149 zł</b><em>netto za licencję na rok</em></p>
+<p>Napiszcie, ile osób ma korzystać z Wingmana. Licencje zamawia się u nas, mailem albo formularzem.</p>
+<a href="#kontakt" class="v3-btn">Zamów licencje <span aria-hidden="true">→</span></a>
+</article>
+<aside class="cn-dod rv">
+<h3>Czego potrzeba</h3>
+<div class="cn-dw"><i><svg viewBox="0 0 16 16" set:html={IK.ekran}></svg></i><div><b>Komputer z macOS albo Windows</b><span>Na Macu macOS 26.2 lub nowszy.</span></div></div>
+<div class="cn-dw"><i><svg viewBox="0 0 16 16" set:html={IK.klucz}></svg></i><div><b>Własne klucze API do modeli</b><span>Modele działają przez OpenRouter. Za zużycie płacicie dostawcom bezpośrednio.</span></div></div>
+<div class="cn-dw"><i><svg viewBox="0 0 16 16" set:html={HI['users']}></svg></i><div><b>Pipedrive albo HubSpot</b><span>Nieobowiązkowe. Z CRM-em Wingman sam pobiera klienta przed rozmową i wysyła notatkę po niej.</span></div></div>
+</aside>
+</div>
+</section>
+
+<!-- ============ 7 · DLA KOGO ============ -->
+<DlaKogo tytul="Dla kogo jest Wingman" sub="Najczęściej handlowcy i osoby, które prowadzą rozmowy z klientami." warunki={DLA_KOGO} nie={NIE_TERAZ} />
+
+<!-- ============ 8 · KONTAKT ============ -->
+<Kontakt tytul="Zamówcie licencje dla zespołu" lead="Napiszcie, ile osób ma korzystać z Wingmana i jakiego CRM-a używacie. Odpowiemy w jeden dzień roboczy." zrodlo="Wingman" pytanie="Ile licencji i jaki CRM?" podpowiedz="Np. pięć licencji, Pipedrive…" osoba={{ foto: '/piotr-wojciuk.jpg', w: 1002, h: 1100, imie: 'Piotr Wojciuk', rola: 'New Business Lead' }} />
+</div>
+
+<GcFaq heading="Pytania przed zakupem" ctaLabel="Zadajcie nam swoje →" items={faq} />
+
+<script>
+  var redukcja = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ---- HERO: pętla rozmowy nad paskiem Wingmana ----
+  // Markup trzyma stan końcowy (Fact-check). przebieg() cofa do 17:52.
+  // Karta zmienia wysokość płynnie przy każdej zmianie trybu i treści.
+  (function(){
+    var fig = document.querySelector('[data-wh]');
+    if(!fig || redukcja || !('IntersectionObserver' in window)) return;
+    var T0 = 1072, bieg = 0, widoczny = false, gra = false;
+    var karta = fig.querySelector('.wk');
+    var linie = [].slice.call(fig.querySelectorAll('[data-wh-w]'));
+    var tryby = [].slice.call(fig.querySelectorAll('[data-wh-tryb]'));
+    var naglowki = [].slice.call(fig.querySelectorAll('[data-wh-gl]'));
+    var ikony = [].slice.call(fig.querySelectorAll('[data-wh-ik]'));
+    var przyciski = [].slice.call(fig.querySelectorAll('[data-wh-b]'));
+    var kafle = [].slice.call(fig.querySelectorAll('[data-wh-mow]'));
+    var czas = fig.querySelector('[data-wh-czas]');
+    var teraz = T0;
+    function fmt(s){ s = Math.round(s); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }
+    function mowi(k){ kafle.forEach(function(x){ x.classList.toggle('mowi', x.dataset.whMow === k); }); }
+    function ustawCzas(s){
+      teraz = s; czas.textContent = fmt(s);
+      linie.forEach(function(l){
+        if(+l.dataset.t <= s && l.classList.contains('ukr')){ l.classList.remove('ukr'); mowi(l.dataset.k); }
+      });
+    }
+    function plynnie(zmiana){
+      var h0 = karta.offsetHeight; zmiana(); var h1 = karta.offsetHeight;
+      if(h0 && h0 !== h1) karta.animate([{ height: h0 + 'px' }, { height: h1 + 'px' }], { duration: 360, easing: 'cubic-bezier(.2,.8,.2,1)' });
+    }
+    function tryb(n){
+      plynnie(function(){
+        tryby.forEach(function(t){ t.classList.toggle('on', t.dataset.whTryb === n); });
+        naglowki.forEach(function(g){ g.classList.toggle('on', g.dataset.whGl === n); });
+        ikony.forEach(function(k){ k.classList.toggle('on', k.dataset.whIk === n); });
+      });
+      var t = tryby.filter(function(x){ return x.dataset.whTryb === n; })[0];
+      t.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 320, easing: 'ease' });
+    }
+    function czekaj(ms, nr){ return new Promise(function(r){ setTimeout(function(){ r(nr === bieg); }, ms); }); }
+    function dociagnij(cel, ms, nr){
+      var od = teraz, t0 = performance.now();
+      return new Promise(function(r){
+        (function klatka(){
+          if(nr !== bieg) return r(false);
+          var p = Math.min(1, (performance.now() - t0) / ms);
+          ustawCzas(od + (cel - od) * p);
+          if(p < 1) requestAnimationFrame(klatka); else r(true);
+        })();
+      });
+    }
+    function wcisnij(b){ var p = przyciski.filter(function(x){ return x.dataset.whB === b; })[0]; p.classList.add('wcis'); setTimeout(function(){ p.classList.remove('wcis'); }, 420); }
+    function laduj(n, ms, nr){
+      var t = tryby.filter(function(x){ return x.dataset.whTryb === n; })[0];
+      var lad = t.querySelector('[data-wh-lad]'), tr = t.querySelector('[data-wh-tresc]');
+      lad.hidden = false; tr.hidden = true; tryb(n);
+      return czekaj(ms, nr).then(function(ok){
+        if(ok){
+          plynnie(function(){ lad.hidden = true; tr.hidden = false; });
+          tr.animate([{ opacity: 0, transform: 'translateY(6px)' }, { opacity: 1, transform: 'none' }], { duration: 450, easing: 'cubic-bezier(.2,.8,.2,1)' });
+        }
+        return ok;
+      });
+    }
+    function reset(){
+      linie.forEach(function(l){ l.classList.toggle('ukr', +l.dataset.t > T0); });
+      fig.querySelectorAll('[data-wh-lad]').forEach(function(x){ x.hidden = true; });
+      fig.querySelectorAll('[data-wh-tresc]').forEach(function(x){ x.hidden = false; });
+      ustawCzas(T0); tryb('zap'); mowi(null);
+    }
+    async function przebieg(){
+      var nr = ++bieg; reset();
+      if(!await czekaj(1400, nr)) return;
+      if(!await dociagnij(1090, 1500, nr)) return;
+      if(!await czekaj(900, nr)) return; wcisnij('odp');
+      if(!await czekaj(250, nr)) return;
+      if(!await laduj('odp', 900, nr)) return;
+      if(!await dociagnij(1111, 3600, nr)) return;
+      tryb('zap');
+      if(!await czekaj(1600, nr)) return;
+      tryb('plan'); mowi(null);
+      if(!await czekaj(2600, nr)) return;
+      tryb('zap');
+      if(!await dociagnij(1248, 1000, nr)) return;
+      if(!await dociagnij(1265, 1300, nr)) return;
+      if(!await czekaj(1500, nr)) return;
+      if(!await dociagnij(1660, 1600, nr)) return;
+      if(!await czekaj(1300, nr)) return; wcisnij('fc');
+      if(!await czekaj(250, nr)) return;
+      if(!await laduj('fc', 1500, nr)) return;
+      mowi(null);
+      if(!await dociagnij(1690, 6500, nr)) return;
+      if(widoczny) przebieg(); else gra = false;
+    }
+    new IntersectionObserver(function(w){
+      widoczny = w[0].isIntersecting;
+      if(widoczny && !gra){ gra = true; przebieg(); }
+    }, { threshold: 0.25 }).observe(fig);
+  })();
+
+  // ---- „Jeszcze raz" w kaflach z ruchem jednorazowym ----
+  document.querySelectorAll('[data-znow]').forEach(function(b){
+    b.addEventListener('click', function(){
+      var f = b.closest('[data-anim]');
+      f.classList.add('bez'); f.classList.remove('on');
+      void f.offsetWidth;
+      f.classList.remove('bez');
+      requestAnimationFrame(function(){ f.classList.add('on'); });
+    });
+  });
+
+  // ---- Zakładki widoków ----
+  (function(){
+    var zak = [].slice.call(document.querySelectorAll('[data-zak]'));
+    if(!zak.length) return;
+    var widoki = document.querySelectorAll('[data-widok]');
+    var podpisy = document.querySelectorAll('[data-podpis]');
+    function pokaz(i, fokus){
+      zak.forEach(function(b, j){ b.setAttribute('aria-selected', i === j ? 'true' : 'false'); b.tabIndex = i === j ? 0 : -1; });
+      widoki.forEach(function(w, j){ w.hidden = i !== j; });
+      podpisy.forEach(function(p, j){ p.hidden = i !== j; });
+      if(fokus) zak[i].focus();
+    }
+    zak.forEach(function(b, i){
+      b.addEventListener('click', function(){ pokaz(i); });
+      b.addEventListener('keydown', function(e){
+        if(e.key === 'ArrowRight'){ e.preventDefault(); pokaz((i + 1) % zak.length, true); }
+        if(e.key === 'ArrowLeft'){ e.preventDefault(); pokaz((i - 1 + zak.length) % zak.length, true); }
+      });
+    });
+  })();
+</script>
+</LaBase>

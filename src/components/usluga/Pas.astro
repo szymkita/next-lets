@@ -1,0 +1,31 @@
+---
+// ZIELONY PAS: jedno zdanie, przycisk i twarz w duotonie (zdjęcie w skali
+// szarości mnożone przez zieleń). Plansza wpuszczona w stronę, z równą
+// białą ramą nad i pod. Stoi zaraz po pierwszej sekcji treści — to
+// pierwsze wezwanie po hero. Zdanie to werdykt albo obietnica z pierwszej
+// rozmowy, nie prośba o kontakt.
+interface Props {
+  tekst: string;
+  foto: string;
+  fotoW: number;
+  fotoH: number;
+  alt: string;
+  imie: string;
+  rola: string;
+  href?: string;
+  cta?: string;
+}
+const { tekst, foto, fotoW, fotoH, alt, imie, rola, href = '#kontakt', cta = 'Umów rozmowę' } = Astro.props;
+---
+<section class="v3-zl">
+<div class="v3-zl-in">
+<div class="zl-t">
+<p>{tekst}</p>
+<a href={href} class="v3-btn ciemny">{cta} <span aria-hidden="true">→</span></a>
+</div>
+<div class="zl-foto">
+<img src={foto} alt={alt} width={fotoW} height={fotoH} loading="lazy" decoding="async">
+<div class="zl-podpis"><b>{imie}</b><span>{rola}</span></div>
+</div>
+</div>
+</section>

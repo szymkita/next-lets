@@ -1,7 +1,7 @@
 ---
 tytul: "Automatyzacja w marketingu - jakie są możliwości? 9 propozycji"
 lead: "Sprawna i równocześnie wydajna współpraca zespołu marketingowego jest kluczowa w rozwoju firmy. Sprawdź, w jaki sposób działa automatyzacja w marketingu i dlaczego warto ją wdrażać!"
-data: 2022-05-07
+data: 2022-07-18
 kategoria: marketing
 autor: "Zespół Let's automate"
 obraz: "/uploads/blog/automatyzacja-w-marketingu-jakie-sa-mozliwosci-9-propozycji.webp"
@@ -25,13 +25,13 @@ Na automatyzację w marketingu warto również spojrzeć z perspektywy zespołu,
 
 Można powiedzieć, że świat marketingu nie ma przed automatyzacją żadnych tajemnic i możliwe jest niemal całkowite usprawnienie lejka sprzedażowego. Rola **pracowników działu marketingu** na każdym etapie jest nieoceniona, ale dzięki automatyzacji efekty jego działań są natychmiast zauważalne. Automatyzacja marketingu może przejawiać się w takich obszarach jak:
 
-### Tworzenie raportów z wyników płatnych kampanii reklamowych
+#### Tworzenie raportów z wyników płatnych kampanii reklamowych
 
 Tworzenie raportów uwzględniających wyniki płatnych kampanii, takie jak konwersje, wyświetlenia, zasięg czy sprzedaż, z reguły wymaga wprowadzenia szeregu danych. Dzięki automatyzacji nie musisz ręcznie kopiować wyników z Facebook Ads, Google Ads, czy danych pochodzących z wewnętrznych systemów do zarządzania relacjami.
 
 Wszystkie niezbędne wartości są automatycznie pobierane, a na ich podstawie generowane są raporty, w zależności od Twoich potrzeb - dzienne, tygodniowe lub miesięczne. Automatyzacja raportowania pozwoli Ci szybko uzyskać aktualne podsumowania prowadzonych kampanii reklamowych i sprawnie reagować na ewentualne odchylenia.
 
-### Współpraca zespołu social media
+#### Współpraca zespołu social media
 
 Prowadzenie mediów społecznościowych wymaga ścisłej współpracy poszczególnych specjalistów zajmujących się planowaniem i publikowaniem postów oraz tworzeniem tekstów czy grafik. Przeniesienie bieżącego wykonywania **powtarzalnych** zadań oraz komunikacji zespołu do jednego narzędzia pozwoli łatwo zarządzać social mediami na każdym etapie oraz usprawnić działania zespołu.
 
@@ -43,7 +43,7 @@ W ten sposób zespół oszczędza czas oraz energię, wykonując znacznie mniejs
 
 Dzięki automatyzacji marketingu możesz również zaplanować republikację wybranych treści, które ponownie pojawią się w określonym przez Ciebie czasie oraz kolejności w mediach społecznościowych.
 
-### Zbieranie leadów
+#### Zbieranie leadów
 
 Każdy pozyskany **płatne kampanie reklamowe** kontakt (lead) jest dla Twojej firmy wartościowy, ponieważ w przyszłości osoba znajdująca się w bazie może stać się klientem. Z tego powodu proces ten wymaga maksymalnego usprawnienia.
 
@@ -51,11 +51,11 @@ Wyobraź sobie, że prowadzisz kampanię reklamową i użytkownik po kliknięciu
 
 To nie wszystko. Odbiorca, który znajduje się w wewnętrznej bazie otrzyma automatyczną wiadomość powitalną z podziękowaniem za zainteresowanie produktem oraz ankietą do wypełnienia, dotyczącą aktualnych potrzeb i oczekiwań.
 
-Wyniki ankiety pozwolą odpowiednim pracownikom zidentyfikować odbiorców, lepiej dobrać ofertę i dokładniej przygotować się do przeprowadzenia rozmowy sprzedażowej. Automatyczne zarządzanie lead'ami umożliwi Ci sprawną komunikację z odbiorcami, opartą na indywidualnym podejściu.
+Wyniki ankiety pozwolą odpowiednim pracownikom zidentyfikować odbiorców, lepiej dobrać ofertę i dokładniej przygotować się do przeprowadzenia rozmowy sprzedażowej.  Automatyczne zarządzanie lead'ami umożliwi Ci sprawną komunikację z odbiorcami, opartą na indywidualnym podejściu.
 
-### Automatyczne generowanie grafik oraz tekstów na media społecznościowe
+#### Automatyczne generowanie grafik oraz tekstów na media społecznościowe
 
-Tworzenie za każdym razem nowej grafiki przeznaczonej na media społecznościowe to czasochłonny proces. Dzięki **automatyzacji działań marketingowych** możesz wykorzystać gotowe schematy, które będą zawierały jedno ze zdefiniowanych wcześniej teł oraz uwzględniały branding Twojej firmy, czyli wszystkie elementy wpływające na rozpoznawalność marki.
+Tworzenie za każdym razem nowej grafiki przeznaczonej na media społecznościowe to czasochłonny proces. Dzięki **automatyzacji działań marketingowych** możesz wykorzystać gotowe schematy,  które będą zawierały jedno ze zdefiniowanych wcześniej teł oraz uwzględniały branding Twojej firmy, czyli wszystkie elementy wpływające na rozpoznawalność marki.
 
 Wystarczy, że wybierzesz interesujący Cię szablon, wskażesz jakie dodatkowe elementy powinny znajdować się na grafice oraz wprowadzisz do formularza lub bazy danych odpowiedni slogan. Na tej podstawie wygeneruje się grafika zgodna z wcześniejszymi ustawieniami, którą możesz z powodzeniem opublikować na social mediach również w sposób automatyczny, wykorzystując system opisany w punkcie drugim.
 
@@ -63,7 +63,7 @@ Zlecenie specjaliście pisania tekstów zgodnych z zasadami SEO, przeznaczonych 
 
 Wprowadzając do algorytmu odpowiednio dobrane słowa kluczowe, które dokładnie oddadzą pożądaną tematykę, zostaje automatycznie wygenerowany tekst, który możesz umieścić na **stronie www** lub blogu. Wcześniej warto jednak upewnić się, czy potencjalny wpis jest poprawny i w razie potrzeby dokonać edycji.
 
-### Dynamiczne pop-up’y dopasowane do użytkownika/akcji wykonywanej na stronie
+#### Dynamiczne pop-up’y dopasowane do użytkownika/akcji wykonywanej na stronie
 
 Użytkownik może poruszać się po stronie na wiele sposobów, ale z reguły przeglądanie poszczególnych treści nie zajmuje mu zbyt dużo czasu i szybko opuszcza witrynę.
 
@@ -73,11 +73,11 @@ Użytkownik może poruszać się po stronie na wiele sposobów, ale z reguły pr
 
 Działanie dynamicznych akcji jest proste: użytkownik wchodzi na stronę i dodaje kilka produktów do koszyka, ale niestety z różnych powodów nie dokonuje zakupu (zbyt duża wartość, obowiązkowa rejestracja itp.). Zanim porzuci koszyk wyświetli się komunikat, proponujący np. skorzystanie z opcji darmowej dostawy od określonej wartości zakupów.
 
-Inny przykład: użytkownik znajdujący się na Twojej stronie kieruje kursor w stronę wyjścia z danej zakładki. W tym momencie automatycznie wyświetla się pop-up zachęcający do pozostania na stronie i skorzystania z aktualnej zniżki.
+Inny przykład: użytkownik znajdujący się na Twojej stronie kieruje kursor w stronę wyjścia z danej zakładki.  W tym momencie automatycznie wyświetla się pop-up zachęcający do pozostania na stronie i skorzystania z aktualnej zniżki.
 
 Automatyczne pop-up’y to idealny sposób na przekazanie użytkownikowi informacji na temat aktualnych promocji, zniżek, polecanych produktów czy nowości na stronie. Przystępna dla odwiedzającego forma komunikatów szybko przykuwa uwagę i może wpłynąć na dokonanie pożądanej akcji na stronie.
 
-### Lejki mailowe
+#### Lejki mailowe
 
 Proces wysyłania wiadomości mailowych do odbiorców znajdujących się w wewnętrznym systemie może przebiegać w odmienny sposób, w zależności od dokonanych przez użytkowników wyborów.
 
@@ -85,7 +85,7 @@ O jakich wyborach mowa? Odczytanie wiadomości, odpisanie na e-mail, pobranie eb
 
 Najlepszym rozwiązaniem jest zbudowanie i ustawienie automatycznego lejka mailowego, który pozwoli sprawnie przeprowadzić każdego odbiorcę przez dany etap. To zagwarantuje indywidualne podejście do użytkownika oraz ułatwi segmentację i odpowiedni dobór oferty dla potencjalnych klientów.
 
-### Live chat na stronie
+#### Live chat na stronie
 
 Użytkownik z reguły nie ma czasu na przeglądanie zakładek na stronie w celu znalezienia pożądanych informacji, dlatego oczekuje natychmiastowej obsługi. Automatyczny live chat pozwoli nawiązać kontakt z odbiorcą zaraz po wejściu na stronę.
 
@@ -97,7 +97,7 @@ Live chat oznacza dla Twojej firmy możliwość prowadzenia kompleksowej komunik
 
 Przykładowo, na platformie [Smartsupp](https://smartsapp.com/) możesz łatwo komunikować się z klientem za pośrednictwem czatu, wiadomości e-mail lub Facebook Messenger, wykorzystując jeden interfejs.
 
-### Inteligentne proponowanie użytkownikom treści/produktów, którymi mogą być zainteresowani
+#### Inteligentne proponowanie użytkownikom treści/produktów, którymi mogą być zainteresowani
 
 Akceptacja przez użytkownika plików cookies pozwala zapamiętywać przeglądarce jego zachowania. Na podstawie wcześniejszych wyborów lub akcji dokonanych na stronie wyświetlają się automatyczne podpowiedzi oraz sugestie.
 
@@ -105,18 +105,17 @@ Podejmując decyzję o zakupie lub będąc na etapie składania zamówienia, uż
 
 Wykorzystując na stronie automatyczne propozycje produktów, możesz łatwo skierować do odbiorcy najlepszą ofertę, uwzględniając jego preferencje oraz wpływać na zachowanie użytkownika na stronie, a tym samym zwiększyć konwersję.
 
-### Planowanie cyklicznych webinarów i okien sprzedażowych
+#### Planowanie cyklicznych webinarów i okien sprzedażowych
 
 Webinary cieszą się zainteresowaniem sporej grupy odbiorców, którzy liczą na otrzymanie solidnej dawki wiedzy w danej dziedzinie. Punkt wyjścia stanowi odpowiednie zaplanowanie samego wydarzenia, którego głównym celem jest często zwiększenie sprzedaży. Najłatwiej tego dokonać automatyzując za pośrednictwem jednego systemu poszczególne etapy takie jak:
 
 - wygenerowanie grafiki, którą możesz wgrać podczas tworzenia kampanii reklamowej;
 - zaplanowanie i ustawienie cyklicznego wydarzenia;
-- wysłanie wszystkim odbiorcom znajdującym się w wewnętrznej bazie wiadomości z informacją o webinarze, a następnie przypomnieniem o nadchodzącym wydarzeniu, podziękowaniem za udział, linkiem do ponownego obejrzenia (jeżeli odbiorca nie uczestniczył w wydarzeniu), aż wreszcie propozycją dokonania zakupu danego produktu, którego dotyczył webinar. 
-‍
+- wysłanie wszystkim odbiorcom znajdującym się w wewnętrznej bazie wiadomości z informacją o webinarze, a następnie przypomnieniem o nadchodzącym wydarzeniu, podziękowaniem za udział, linkiem do ponownego obejrzenia (jeżeli odbiorca nie uczestniczył w wydarzeniu), aż wreszcie propozycją dokonania zakupu danego produktu, którego dotyczył webinar.
 
 Dzięki temu zgromadzisz liczną grupę zainteresowanych ofertą odbiorców oraz zwiększysz prawdopodobieństwo dokonania przez nich zakupu.
 
-O automatyzacji w sprzedaży możesz przeczytać [klikając tutaj](/baza-wiedzy/automatyzacja-w-sprzedazy-w-modelu-b2b-oraz-b2c).
+O automatyzacji w sprzedaży możesz przeczytać [klikając tutaj](/post/automatyzacja-w-sprzedazy-w-modelu-b2b-oraz-b2c).
 
 Warto pamiętać, że powyższe propozycje nie wyczerpują możliwości automatyzacji w marketingu, lecz służą jako inspiracja do usprawnienia Twojej firmy. Dobór odpowiednich procesów marketingowych wymagających automatyzacji zależy od Twoich indywidualnych potrzeb oraz oczekiwań.
 
@@ -131,7 +130,6 @@ Automatyczny marketing to automatyczne korzyści dla Twojej firmy, które mogą 
 - wyższa jakość lead'ów;
 - możliwość dokładnej analizy wyników i odnajdywanie słabych punktów;
 - sprawna i efektywna współpraca zespołu social media.
-‍
 
 ## Zautomatyzuj marketing i wyprzedź konkurencję
 

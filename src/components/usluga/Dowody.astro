@@ -1,0 +1,71 @@
+---
+// PRZYKŁADY: poziomy rząd kart przewijany z przyciąganiem i strzałkami,
+// sięga krawędzi ekranu. Karta: proces (zielony), firma i wielkość,
+// „Przed" i „Po" jako dwa paski w jednej skali (skala = najdłuższa
+// wartość „przed"), krótki opis. Wszystkie karty w jednym kolorze.
+// Pod rzędem opcjonalny link (lewa) i strzałki (prawa); w slocie cytat
+// i krótkie wezwanie. Liczby PRZYKŁADOWE oznaczać w nagłówku strony.
+import { HI } from './ikony';
+interface Przyklad { p: string; f: string; m: string; d: string; przed: string; po: string; przedD: number; poD: number }
+interface Props {
+  tytul: string;              // HTML
+  sub: string;
+  przyklady: Przyklad[];
+  skala?: number;             // wartość „przed" odpowiadająca pełnemu paskowi
+  miara?: string;             // do opisu dla czytników: „Czas sprawy"
+  link?: { href: string; t: string };
+  id?: string;
+}
+const { tytul, sub, przyklady, skala = Math.max(...przyklady.map((x) => x.przedD)), miara = 'Czas sprawy', link, id = 'dowody' } = Astro.props;
+---
+<section id={id} class="v3-sek">
+<div class="v8-gl">
+<h2 class="v3-h2" set:html={tytul}></h2>
+<p class="v3-sub">{sub}</p>
+</div>
+<div class="v4-dw dw-sc" data-anim data-gra data-dw-sc tabindex="0" role="region" aria-label="Przykłady, przewijane w poziomie">
+{przyklady.map((x, i) => (
+  <article class="dw4-k">
+    <span class="dw4-p">{x.p}</span>
+    <h3>{x.f}<small>{x.m}</small></h3>
+    <div class="dw5-pp" role="img" aria-label={`${miara}: przed ${x.przed}, po ${x.po}`}>
+      <div class="dw5-r"><span>Przed</span><i class="czk-j" style={`--u:${(x.przedD / skala * 100).toFixed(1)}%`}></i><b>{x.przed}</b></div>
+      <div class="dw5-r po"><span>Po</span><i style={`--u:${Math.max(3, x.poD / skala * 100).toFixed(1)}%;--j:${i}`}></i><b>{x.po}</b></div>
+    </div>
+    <p class="dw4-d">{x.d}</p>
+  </article>
+))}
+</div>
+<div class="dw-dol">
+{link ? <a href={link.href} class="dw4-jak">{link.t}</a> : <span></span>}
+<div class="dw-str">
+<button type="button" data-dw-wstecz aria-label="Poprzednie przykłady" disabled><svg class="hi" viewBox="0 0 16 16" set:html={HI['arrow-right']} style="transform:scaleX(-1)"></svg></button>
+<button type="button" data-dw-dalej aria-label="Następne przykłady"><svg class="hi" viewBox="0 0 16 16" set:html={HI['arrow-right']}></svg></button>
+</div>
+</div>
+<slot />
+</section>
+
+<script>
+  var redukcja = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // ---- Rząd przykładów: strzałki przewijają o jedną kartę ----
+  (function(){
+    var sc = document.querySelector('[data-dw-sc]');
+    if(!sc) return;
+    var wstecz = document.querySelector('[data-dw-wstecz]');
+    var dalej = document.querySelector('[data-dw-dalej]');
+    function krok(){ var k = sc.querySelector('.dw4-k'); return k ? k.getBoundingClientRect().width + parseFloat(getComputedStyle(sc).columnGap || 0) : 320; }
+    function stan(){
+      var max = sc.scrollWidth - sc.clientWidth - 2;
+      if(wstecz) wstecz.disabled = sc.scrollLeft <= 2;
+      if(dalej) dalej.disabled = sc.scrollLeft >= max;
+    }
+    function jedz(kier){ sc.scrollBy({ left: kier * krok(), behavior: redukcja ? 'auto' : 'smooth' }); }
+    if(wstecz) wstecz.addEventListener('click', function(){ jedz(-1); });
+    if(dalej) dalej.addEventListener('click', function(){ jedz(1); });
+    sc.addEventListener('scroll', stan, { passive: true });
+    window.addEventListener('resize', stan);
+    stan();
+  })();
+
+</script>

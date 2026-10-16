@@ -1,0 +1,42 @@
+---
+// HERO podstrony usługowej: nagłówek (slot „h1", akcent w <span>), lead
+// i dwie akcje: główne wezwanie i link do sekcji z produktem; domyślny
+// slot to rysunek z klasą .hero-wid. Trzy warianty — forma idzie za tym,
+// co da się pokazać:
+//   · wariant="okno" (domyślny) — ciemna plansza, nagłówek u góry na całą
+//     szerokość, makieta aplikacji wisi na dolnej krawędzi planszy. Tylko
+//     wtedy, gdy usługa ma aplikację do pokazania.
+//   · wariant="obok" — ciemna plansza, tekst po lewej, rysunek po prawej,
+//     w środku planszy (nic nie wisi). Dla artefaktów i ludzi.
+//   · wariant="jasny" — jasna plansza (papier), tekst po lewej, rysunek po
+//     prawej. Dla usług, których wynik jest dokumentem albo zmianą
+//     w zespole, nie oprogramowaniem.
+// Bez rysunku: <Hero bezRysunku …>. Pod planszą pasek logotypów.
+import Loga from './Loga.astro';
+interface Props {
+  lead: string;
+  cta?: { href: string; t: string };
+  link?: { href: string; t: string };
+  wariant?: 'okno' | 'obok' | 'jasny';
+  bezRysunku?: boolean;
+  loga?: boolean;
+}
+const { lead, cta = { href: '#kontakt', t: 'Umów rozmowę' }, link, wariant = 'okno', bezRysunku = false, loga = true } = Astro.props;
+const klasa = ['v4-hero-in', bezRysunku ? 'bez-wid' : '', wariant !== 'okno' ? `obok${wariant === 'jasny' ? ' jasny' : ''}` : ''].filter(Boolean).join(' ');
+---
+<section class="v4-hero">
+<div class={klasa}>
+<div class="v4-gl">
+<h1 class="v3-h1"><slot name="h1" /></h1>
+<div class="v4-lewa">
+<p class="v3-lead">{lead}</p>
+<div class="v3-akcje">
+<a href={cta.href} class="v3-btn">{cta.t} <span aria-hidden="true">→</span></a>
+{link && <a href={link.href} class="v3-lnk">{link.t}</a>}
+</div>
+</div>
+</div>
+<slot />
+</div>
+</section>
+{loga && <Loga />}

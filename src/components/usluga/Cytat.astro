@@ -1,0 +1,23 @@
+---
+// CYTAT klienta w dużym stopniu pisma, z logotypem firmy (opcjonalnie —
+// bez pliku znaku zostaje sama osoba) i osobą. Stoi pod przykładami
+// (liczby → głos klienta → krótkie wezwanie). Tylko prawdziwe cytaty.
+interface Props {
+  cytat: string;
+  logo?: string;
+  logoAlt?: string;
+  logoW?: number;
+  logoH?: number;
+  imie: string;
+  rola: string;
+}
+const { cytat, logo, logoAlt = '', logoW = 104, logoH = 28, imie, rola } = Astro.props;
+---
+<figure class="v3-cyt rv" style="margin:0">
+<blockquote><span>„</span>{cytat}</blockquote>
+<figcaption>
+{logo && <img src={logo} alt={logoAlt} width={logoW} height={logoH} loading="lazy">}
+{logo && <i aria-hidden="true"></i>}
+<span><b>{imie}</b><span>{rola}</span></span>
+</figcaption>
+</figure>

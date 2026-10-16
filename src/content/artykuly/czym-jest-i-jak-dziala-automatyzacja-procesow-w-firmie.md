@@ -1,7 +1,7 @@
 ---
 tytul: "Czym jest i jak działa automatyzacja procesów w firmie?"
 lead: "Spróbujmy zatem poznać bliżej automatyzację procesów. Automatyzować możemy każdy proces – łatwy, trudny, krótki, długi, ale musi on opierać się na DANYCH, a nie kreatywności czy wyobraźni (od tego są ludzie)."
-data: 2022-06-07
+data: 2022-05-05
 kategoria: podstawy
 autor: "Zespół Let's automate"
 obraz: "/uploads/blog/czym-jest-i-jak-dziala-automatyzacja-procesow-w-firmie.webp"
@@ -15,11 +15,11 @@ Procesy działające w firmie, codziennie dają o sobie znać, rzucając przedsi
 
 W tym artykule dowiesz się w praktyczny sposób, o co chodzi z automatyzacją procesów, jak i gdzie działa, co dzięki niej zyskasz oraz po co w ogóle analizować procesy w firmie.
 
-## **Poznaj automatyzację procesów**
+### Poznaj automatyzację procesów
 
 „Cześć, jestem automatyzacja procesów w firmie, mów mi BPA lub RPA”. Gdyby w ten sposób przedstawił się Twój pracownik, to zapewne pomyślałbyś coś w stylu: „Ale on jest sztywny”. Spróbujmy zatem poznać bliżej automatyzację procesów. To inteligentna i ambitna technologia, która przejmuje od człowieka wszystkie powtarzalne czynności, przenosi je na specjalnie zaprojektowany system i z pomocą specjalistów jest wdrażana w Twojej firmie. Uwaga! Automatyzować możemy każdy proces – łatwy, trudny, krótki, długi, ale musi on opierać się na DANYCH, a nie kreatywności czy wyobraźni (od tego są ludzie).
 
-## **Podziałamy razem?**
+### Podziałamy razem?
 
 Działanie automatyzacji procesów jest stosunkowo proste. Kiedy pojawia się wyzwalacz (trigger) proces samoistnie uruchamia się. Przykład? Użytkownik zapisuje się na newsletter, dodając swój e-mail. Klika w magiczny przycisk „Subskrybuj”, który wysyła do systemu wiadomość (trigger) mniej więcej o treści „Ej odpalaj ten proces”. Wtedy automatycznie otrzymuje mail z podziękowaniem. Im bardziej rozbudowany proces, tym więcej występuje takich wyzwalaczy.
 
@@ -27,7 +27,7 @@ Automatyzacja może chodzić jak w zegarku (i to dosłownie), uruchamiając się
 
 Podsumowując, automatyzacja przejmuje każdą, bazującą na danych i zarazem rutynową czynność. Wyznaje ona zasadę: uczynić procesy sprawnymi, opłacalnymi, przejrzystymi i odpornymi na błędy.
 
-## **Czy analiza procesów biznesowych jest niezbędna?**
+### Czy analiza procesów biznesowych jest niezbędna?
 
 Zarządzanie procesami w firmie jest nierozerwalnie związane z ich mapowaniem oraz dokładną analizą. Mapowanie to stworzenie mapy procesów przebiegających w Twojej firmie oraz ich optymalizacja przed wdrożeniem automatyzacji. Mapowanie procesów pomaga:
 
@@ -37,19 +37,19 @@ Zarządzanie procesami w firmie jest nierozerwalnie związane z ich mapowaniem o
 
 Analiza procesów jest traktowana przez wiele firm w sposób pobieżny, co wynika z mylnego przekonania, że skoro proces przez X lat przebiegał prawidłowo aż do dzisiaj, to nie wymaga już ponownej analizy i wprowadzania zmian.
 
-## **Procesy i automatyzacja zmieniają się**
+### Procesy i automatyzacja zmieniają się
 
 Każdy proces biznesowy można zoptymalizować i zaprojektować na wiele sposobów. A co w sytuacji, gdy za 10 lat będziesz chciał rozbudować automatyzację w swojej firmie o nowe procesy? Żaden problem. Musisz tylko pamiętać, aby dostosować ją do aktualnych wymogów, bo technologia nieustannie się zmienia.
 
 Idealnym rozwiązaniem jest przeprowadzenie dokładnej analizy procesów biznesowych w firmie jeszcze przed ich zautomatyzowaniem. Warto zapamiętać następującą prawidłowość: firma nieustannie się zmienia, a wraz z nią zmienia się automatyzacja.
 
-## **Gdy proces nie działa to automatyzacja nic nie da**
+### Gdy proces nie działa to automatyzacja nic nie da
 
 Nie wszystkie procesy są dobrze zaprojektowane przez człowieka i nie wszystkie przebiegają prawidłowo. Takich procesów zdecydowanie nie warto automatyzować, ponieważ nasili to istniejące błędy, a sam proces będzie słabo działał lub nie będzie działał wcale. W każdym razie będzie niestabilny i wymagający czasochłonnej naprawy. Po prostu, jeżeli nie jesteś pewien/a czy proces zawiera błędy, to nie ryzykuj i nie automatyzuj go. Lepiej poświęć czas na jego dokładną analizę.
 
-Pamiętaj, że przeprowadzenie dokładnej analizy procesów biznesowych stanowi podstawę do ich sprawnego i skutecznego działania. Analiza to pierwszy krok do pracy z automatyzacją. Masz wątpliwości, czy Twoje procesy działają bez zarzutu? Nie wiesz, czy nadają się do automatyzacji? Pamiętaj, że zawsze możesz umówić się z nami na darmową konsultację. Jako [Let’s Automate](/) chętnie pomożemy w zakresie mapowania i optymalizacji procesów.
+Pamiętaj, że przeprowadzenie dokładnej analizy procesów biznesowych stanowi podstawę do ich sprawnego i skutecznego działania. Analiza to pierwszy krok do pracy z automatyzacją. Masz wątpliwości, czy Twoje procesy działają bez zarzutu? Nie wiesz, czy nadają się do automatyzacji? Pamiętaj, że zawsze możesz umówić się z nami na darmową konsultację. Jako [Let<sup>’</sup>s Automate](/) chętnie pomożemy w zakresie mapowania i optymalizacji procesów.
 
-## **Jakie procesy mogę automatyzować w swojej firmie?**
+### Jakie procesy mogę automatyzować w swojej firmie?
 
 Idealny opis procesów, które mogą być poddane automatyzacji, brzmi następująco:
 
@@ -57,7 +57,7 @@ Idealny opis procesów, które mogą być poddane automatyzacji, brzmi następuj
 
 Automatyzacja jest również świetnym rozwiązaniem w przypadku okresowo pojawiających się zadań, które należy wykonać szybko i dobrze. Jeżeli w swoich procesach wykorzystujesz poufne dane i zależy Ci na ich bezpieczeństwie, to tym bardziej je zautomatyzuj. Operacje wymagające przełączania się między interfejsami oraz przetwarzania dużej liczby danych z wielu źródeł również nadają się idealnie do automatyzacji.
 
-## **Przestarzałe systemy a automatyzacja – czy to zadziała?**
+### Przestarzałe systemy a automatyzacja – czy to zadziała?
 
 W jaki sposób automatyzacja radzi sobie z procesami, w których w grę wchodzą przestarzałe systemy, gdzie integracja IT jest z reguły niemożliwa lub zajmuje zbyt wiele czasu? Po prostu osoby zajmujące się automatyzacją muszą zaprojektować te procesy od zera, po to, aby niezbędne narzędzia, programy, aplikacje mogły się między sobą komunikować, i tym samym usprawniać procesy. To dobry krok w stronę unowocześnienia firmy.
 

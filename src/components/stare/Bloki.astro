@@ -1,0 +1,101 @@
+---
+// Bloki strony przeniesionej ze starego serwisu (kolekcja stare-strony).
+// Wywołuje sam siebie dla kart, kroków, zakładek i FAQ.
+//
+// Treść jest 1:1 ze starej strony — tu zapada tylko decyzja, jak ją
+// pokazać w stylu nowego serwisu:
+//   · krótki akapit tuż przed nagłówkiem to etykieta nad nim (stary
+//     „label” z Webflow, np. „Znasz te wyzwania?”)
+//   · w karcie: krótki pierwszy akapit to etykieta, akapit z samym
+//     pogrubieniem to tytuł karty
+//   · kolejne przyciski stoją w jednym rzędzie, kolejne obrazy w jednej
+//     siatce, grupa samych zdjęć to pasek zdjęć
+//   · zdjęcie na początku karty to portret (stała wielkość, koło)
+// Style: src/pages/[...stara].astro (klasy st-*).
+const { bloki = [], wKarcie = false, sekcja = false } = Astro.props;
+
+const goly = (h = '') => h.replace(/<br\s*\/?>/g, ' ').replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/\s+/g, ' ').trim();
+const samoPogrubienie = (h = '') => /^<strong>[\s\S]*<\/strong>$/.test(h.trim()) && !/<\/strong>[\s\S]*<strong>/.test(h.trim());
+
+const lista = [];
+let pierwszyNaglowek = sekcja;
+bloki.forEach((b, i) => {
+  const ost = lista[lista.length - 1];
+  if (b.t === 'cta') {
+    if (ost?.t === 'cty') ost.items.push(b); else lista.push({ t: 'cty', items: [b] });
+    return;
+  }
+  if (b.t === 'img') {
+    if (ost?.t === 'obrazy') ost.items.push(b); else lista.push({ t: 'obrazy', items: [b] });
+    return;
+  }
+  if (b.t === 'p') {
+    const t = goly(b.html);
+    if (bloki[i + 1]?.t === 'h' && t.length <= 60 && !/[.!:]$/.test(t)) { lista.push({ t: 'etykieta', html: b.html }); return; }
+    if (wKarcie && i === 0 && bloki.length > 1 && t.length <= 28 && !/[.!?:]$/.test(t)) { lista.push({ t: 'etykieta', html: b.html }); return; }
+    if (wKarcie && samoPogrubienie(b.html)) { lista.push({ t: 'tytul-karty', html: b.html.trim().slice(8, -9) }); return; }
+  }
+  if (b.t === 'h' && pierwszyNaglowek) { lista.push({ ...b, tytul: true }); pierwszyNaglowek = false; return; }
+  lista.push(b);
+});
+
+// Pojedyncze zdjęcie tuż przed podpisem z nazwiskiem (pogrubione na początku
+// akapitu, jak przy opinii klienta) to portret, nie ilustracja.
+lista.forEach((b, i) => {
+  const nast = lista[i + 1];
+  if (b.t === 'obrazy' && b.items.length === 1 && nast?.t === 'p' && /^<strong>/.test(nast.html.trim()) && goly(nast.html).length < 90) b.portret = true;
+});
+
+const zewn = (h) => (h.startsWith('http') ? { target: '_blank', rel: 'noopener' } : {});
+// Liczba kolumn tak, żeby ostatni rząd nie zostawał z jedną kartą:
+// 6 kart → 3 kolumny, 4 i 8 → 4, 2 → dwie szerokie, reszta — ile się zmieści.
+const kolumny = (n) => (n === 2 ? ' st-karty-2' : n % 4 === 0 ? ' st-k4' : n % 3 === 0 ? ' st-k3' : '');
+---
+{lista.map((b) => {
+  if (b.t === 'etykieta') return <p class="st-et" set:html={b.html} />;
+  if (b.t === 'tytul-karty') return <p class="st-kt" set:html={b.html} />;
+  if (b.t === 'p') return <p class="st-p" set:html={b.html} />;
+  if (b.t === 'h') {
+    const Tag = `h${b.n}`;
+    const klasa = b.tytul ? 'st-h st-tytul' : wKarcie ? 'st-h st-hk' : `st-h st-h${Math.min(Math.max(b.n, 2), 4)}`;
+    return <Tag class={klasa} set:html={b.html} />;
+  }
+  if (b.t === 'lista') {
+    const Tag = b.typ === 'ol' ? 'ol' : 'ul';
+    return <Tag class="st-lista">{b.items.map((it) => <li set:html={it} />)}</Tag>;
+  }
+  if (b.t === 'obrazy') return (
+    <div class={b.items.length > 1 ? 'st-obrazy st-obrazy-n' : b.portret ? 'st-obrazy st-portret' : 'st-obrazy'}>
+      {b.items.map((o) => <img src={o.src} alt={o.alt} loading="lazy" decoding="async" />)}
+    </div>
+  );
+  if (b.t === 'cty') return (
+    <div class="st-cty">
+      {b.items.map((c, i) => <a class={i ? 'st-cta st-cta-2' : 'st-cta'} href={c.href} {...zewn(c.href)}>{c.tekst}{!c.href.startsWith('mailto:') && <span aria-hidden="true">{c.href.startsWith('http') ? ' ↗' : ' →'}</span>}</a>)}
+    </div>
+  );
+  if (b.t === 'grupa') {
+    if (b.items.every((it) => it.every((x) => x.t === 'img'))) return (
+      <div class="st-galeria">{b.items.flat().map((o) => <img src={o.src} alt={o.alt} loading="lazy" decoding="async" />)}</div>
+    );
+    if (b.rodzaj === 'faq') return (
+      <div class="st-faq">
+        {b.items.map((it) => (
+          <details class="st-q">
+            <summary><span set:html={samoPogrubienie(it[0]?.html) ? it[0].html.trim().slice(8, -9) : it[0]?.html} /></summary>
+            <div class="st-a"><Astro.self bloki={it.slice(1)} wKarcie /></div>
+          </details>
+        ))}
+      </div>
+    );
+    if (b.rodzaj === 'kroki') return (
+      <ol class="st-kroki">{b.items.map((it) => <li><Astro.self bloki={it} wKarcie /></li>)}</ol>
+    );
+    return (
+      <div class={`st-karty st-${b.rodzaj}${kolumny(b.items.length)}`}>
+        {b.items.map((it) => <div class="st-karta"><Astro.self bloki={it} wKarcie /></div>)}
+      </div>
+    );
+  }
+  return null;
+})}

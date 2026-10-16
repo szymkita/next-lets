@@ -1,0 +1,810 @@
+---
+// O NAS — /dlaczego-my-v2 · WERSJA DO PORÓWNANIA (15.10.2026), noindex
+//
+// Ta sama strona „o nas, pisana o kliencie" co /dlaczego-my (v5), przełożona
+// na standard podstron usługowych (docs/uslugi-standard.md, wzorzec
+// /systemy-procesowe): ta sama rama, tokeny, typografia i wezwania co
+// nowe podstrony, „Wy" zamiast „Ty". Reguła redakcyjna z v5 zostaje:
+// żaden fakt o nas nie stoi sam, obok stoi to, co z niego wynika u klienta.
+// Do porównania z /dlaczego-my — nie podmieniać bez zgody Szymona.
+//
+// UKŁAD I SKĄD CO PRZYSZŁO
+//   1 hero „obok": Piotr Wojciuk i jego zdanie o pierwszej rozmowie (z v5)
+//   2 „Czym jest Let's automate?": definicja + rozwijany indeks zdań,
+//     od których zaczynają się rozmowy (#slyszymy z v5). NOWE: każde zdanie
+//     rozwija się w „co za tym stoi / od czego zaczynamy" i prowadzi do
+//     usługi, więc indeks jest zarazem mapą oferty bez katalogu
+//   3 zielony pas (pierwsze wezwanie)
+//   4 „Kim jesteśmy i co to zmienia u Was": teza, pięć par fakt → skutek
+//     (#kim z v5), dwa bloki z rysunkami. NOWE rysunki: karta projektu
+//     z dwunastoma decyzjami WiseStacka (lista 1:1 z /wisestack) i konta
+//     w projekcie przed i po zakończeniu współpracy
+//   5 ciemna scena: „Kto stoi za Let's automate" — pionowe spoty z v5,
+//     kadry i pliki bez zmian (rachunek w docs/dlaczego-my-koncepcja.md)
+//   6 liczby z wdrożeń (karty ze strony głównej) + cytat NARS + dwa
+//     mniejsze cytaty + krótkie wezwanie; klamra z sekcją 2 („zdania,
+//     od których się zaczyna" → „zdania, które padają po wdrożeniu")
+//   7 NOWE: „Z czym wychodzicie z pierwszej rozmowy" — trzy możliwe
+//     odpowiedzi, w tym dwie, w których nic nie sprzedajemy. To jedyne
+//     miejsce na stronie, gdzie odsyłamy gdzie indziej
+//   8 kontakt, 9 FAQ
+//
+// DO POTWIERDZENIA PRZED PUBLIKACJĄ:
+//   · dwa nowe zdania w indeksie („Trzy osoby przepisują dokumenty…",
+//     „Najważniejszy proces firmy żyje w arkuszu…") — parafrazy, jak
+//     pięć zdań z v5; wszystkie bez przypisania do osób i firm;
+//   · zdanie Piotra w hero (z v5, bez części o odradzaniu — ta przeszła
+//     do sekcji 7);
+//   · Szymon Negacz jako twarz zielonego pasa;
+//   · OpenAI Select Partner + „prowizji od dostawców modeli i narzędzi nie
+//     bierzemy" w jednym wierszu: jeśli program wiąże się z jakimkolwiek
+//     wynagrodzeniem od OpenAI, drugie zdanie trzeba zmienić;
+//   · rysunek kont: nazwy usług (GitHub, Vercel, Convex, OpenAI), role
+//     i to, że dostęp dostajemy imiennie — do sprawdzenia z zespołem;
+//     „Stalprofil" to firma zmyślona (ta sama co na /systemy-procesowe);
+//   · cztery karty liczb — za stroną główną (#dowody), tam podane jako
+//     realne wdrożenia;
+//   · sekcja 7: trzy odpowiedzi są z GcCta v5 („pierwszy krok z ceną",
+//     „gdzie zrobią to taniej", „lepiej wrócić za kwartał"); przykłady
+//     w kartach są poglądowe;
+//   · FAQ „Co z poufnością…" (NDA przed startem — z GcCta);
+//   · „ponad dwieście wdrożeń dla ponad stu czterdziestu firm" — za stroną
+//     główną; komponent Metoda na innych stronach mówi „140+ wdrożeń".
+//
+// CZEGO TU CELOWO NIE MA (jak w v5): historii firmy, „naszych wartości",
+// porównania z konkurencją wiersz po wierszu, liczby osób w zespole, kwot.
+import LaBase from '../layouts/LaBase.astro';
+import GcFaq from '../components/GcFaq.astro';
+import Styl from '../components/usluga/Styl.astro';
+import Anim from '../components/usluga/Anim.astro';
+import Hero from '../components/usluga/Hero.astro';
+import Pas from '../components/usluga/Pas.astro';
+import Cytat from '../components/usluga/Cytat.astro';
+import CtaPasek from '../components/usluga/CtaPasek.astro';
+import Kontakt from '../components/usluga/Kontakt.astro';
+import { HI } from '../components/usluga/ikony';
+
+const kanon = new URL('/dlaczego-my', Astro.site).href;
+
+const title = "O nas — kim jesteśmy i jak pracujemy | Let's automate";
+const description = 'Let’s automate to studio transformacji AI z Warszawy, część Wise Group. Kto stoi za firmą, na czyich kontach stoi kod, jak się rozliczamy i z czym wychodzicie z pierwszej rozmowy.';
+
+// Klucz — brakuje go w HI (Heroicons Micro, viewBox 16).
+const KLUCZ = '<path fill-rule="evenodd" d="M10 1a5 5 0 0 0-4.75 6.55L1.2 11.6a.7.7 0 0 0-.2.5v2.2c0 .39.31.7.7.7h2.1c.39 0 .7-.31.7-.7v-.8h.8c.39 0 .7-.31.7-.7v-.8h.8a.7.7 0 0 0 .5-.2l.95-.96A5 5 0 1 0 10 1Zm1.25 2.5a1.25 1.25 0 1 0 0 2.5 1.25 1.25 0 0 0 0-2.5Z" clip-rule="evenodd"/>';
+
+// ---- 2 · ZDANIA, OD KTÓRYCH ZWYKLE SIĘ ZACZYNA --------------------------
+// Pięć zdań z v5 (#slyszymy) plus dwa nowe, żeby każda główna usługa miała
+// swoje. Parafrazy, nie cytaty — bez przypisania do osób i firm.
+// `stoi` i `start` są spięte z definicjami na stronach usług.
+const ZDANIA = [
+  {
+    q: 'Mamy siedem narzędzi i żadne nie rozmawia z pozostałymi',
+    stoi: 'Każdy dział kupił swoje narzędzie osobno. Dane między nimi przenosi człowiek, a sprawa czeka przy każdym przekazaniu.',
+    start: 'Łączymy systemy, które już macie, tak żeby nikt niczego nie przepisywał. Każde połączenie ma imiennego właściciela i alarm na wypadek, gdy dane przestaną przechodzić.',
+    u: { e: 'Usługa', t: 'Integracje systemów', d: 'CRM, ERP i magazyn wymieniają dane same', h: '/automatyzacje-integracje' },
+  },
+  {
+    q: 'Trzy osoby przepisują dokumenty z maili do systemu',
+    stoi: 'Zamówienia i faktury przychodzą w setkach formatów. Żaden szablon ich nie obejmie, więc przy każdej sprawie siedzi człowiek z dwoma oknami obok siebie.',
+    start: 'Próg pewności ustalamy na Waszych dokumentach jeszcze przed budową. Sprawy pewne system zamyka sam, pozostałe oddaje człowiekowi razem z powodem.',
+    u: { e: 'Usługa', t: 'Automatyzacja procesów z AI', d: 'AI prowadzi sprawy, ludzie decydują o wyjątkach', h: '/rozwiazania-ai' },
+  },
+  {
+    q: 'Najważniejszy proces firmy żyje w arkuszu i w głowach trzech osób',
+    stoi: 'Gotowy system nie przewidział tego, co robicie inaczej niż reszta rynku, więc ta część ląduje w arkuszu obok. Firma rośnie tylko tak szybko, jak te trzy osoby nadążają.',
+    start: 'Od dwóch dni przy ludziach, którzy prowadzą proces. Pierwsza część systemu pracuje u Was na co dzień po sześciu tygodniach.',
+    u: { e: 'Usługa', t: 'Systemy dopasowane do firmy', d: 'Proces, na którym zarabiacie, w jednym systemie', h: '/systemy-procesowe' },
+  },
+  {
+    q: 'Zespół zbudował sobie aplikację w AI. Działa, tylko nikt nie wie, czy jest bezpieczna',
+    stoi: 'Aplikacja powstała szybko, bez przeglądu kodu i bez kogoś, kto odpowiada za dane. Braki wychodzą przy pierwszym pytaniu o RODO albo przy pierwszej awarii.',
+    start: 'Od przeglądu kodu i danych. Raport ustawia poprawki w kolejności: najpierw to, co grozi awarią albo wyciekiem danych klientów.',
+    u: { e: 'Usługa', t: 'Audyt aplikacji', d: 'Co grozi awarią i co poprawić najpierw', h: '/guided-coding/audyt-aplikacji' },
+  },
+  {
+    q: 'Rok temu kupiliśmy strategię AI. Leży w PDF-ie',
+    stoi: 'Dokument wymienia pomysły, ale bez kolejności i bez rachunku przy każdym z nich. Za taki plan trudno komukolwiek wziąć odpowiedzialność.',
+    start: 'W trzy tygodnie ustalamy z zarządem kolejność wdrożeń na dwanaście miesięcy, z kosztem i zwrotem przy każdej pozycji.',
+    u: { e: 'Usługa', t: 'Strategia AI', d: 'Od czego zacząć i ile to zwróci', h: '/strategia-ai' },
+  },
+  {
+    q: 'Ludzie proszą o AI, a ja nie chcę kolejnego pilota, z którego nic nie wynika',
+    stoi: 'Każdy dział testuje coś na własną rękę, często na prywatnych kontach i bez zasad dla danych firmy. Po kwartale nikt nie umie powiedzieć, co z tego zostało.',
+    start: 'Narzędzie dla wszystkich działów wybieramy w próbie na ich zadaniach. Przed startem porządkujemy dostępy i źródła, żeby AI pracowało na Waszych dokumentach.',
+    u: { e: 'Usługa', t: 'Narzędzia AI dla całej firmy', d: 'Gotowa platforma na Waszych dokumentach i danych', h: '/wdrozenie-ai' },
+  },
+  {
+    q: 'Mam na biurku trzy oferty i każda mówi dokładnie to samo',
+    stoi: 'Każdy wykonawca obiecuje zrozumienie procesu i szybkie wdrożenie. Różnice wychodzą w trakcie projektu, kiedy zmiana wykonawcy jest już droga.',
+    start: 'Od rzeczy, które da się sprawdzić przed podpisaniem umowy: kto u nas pracuje i na czyich kontach stoi kod.',
+    u: { e: 'Na tej stronie', t: 'Kim jesteśmy', d: 'I co z tego wynika u Was', h: '#kim' },
+  },
+];
+
+// ---- 4 · KIM JESTEŚMY — pary fakt → skutek ------------------------------
+// `f` to fakt o nas (lewa kolumna, drobniej), `k` skutek u klienta (duży
+// stopień). Z v5: studio, Wise Group, appto, prowadzenie zespołów. Wiersze
+// o dwustu wdrożeniach, WiseStacku i kontach przeszły do tezy i do dwóch
+// bloków z rysunkami niżej. NOWY: OpenAI Select Partner.
+const KIM = [
+  {
+    f: 'Analitycy, project managerowie, developerzy, QA i projektanci pracują w jednym studiu. Nie podnajmujemy zespołów na czas trwania zlecenia.',
+    k: 'Za wynik odpowiada jedna firma, od spisania procesu do utrzymania systemu.',
+  },
+  {
+    f: 'Jesteśmy częścią Wise Group, razem z SellWise, HireWise, AdWise, Finerto i IRSM.',
+    k: 'Kiedy proces do przebudowania okazuje się procesem sprzedaży albo rekrutacji, obok siada ktoś, kto zajmuje się tym na co dzień.',
+    znak: { src: '/uploads/wisegroup_logo_v2.webp', alt: 'Wise Group', w: 442, h: 52, kl: 'wg' },
+  },
+  {
+    f: 'Mamy własny produkt oparty na AI, appto.ai, zbudowany tą samą metodą i na tym samym stosie, co systemy naszych klientów.',
+    k: 'Skutki naszych decyzji technicznych ponosimy też na własnym rachunku.',
+    znak: { src: '/appto/appto-logo-full.svg', alt: 'appto', w: 120, h: 32, kl: 'ap' },
+    l: 'appto.ai', h: 'https://appto.ai', zew: true,
+  },
+  {
+    f: 'Prowadzimy też zespoły, które budują same, również takie, które nie mają działu IT.',
+    k: 'Możecie w każdej chwili przejąć klawiaturę. Umiemy przy tym zostać.',
+    l: 'Bieżące wsparcie', h: '/guided-coding/biezace-wsparcie',
+  },
+  {
+    f: 'Jesteśmy w programie OpenAI Select Partner. Prowizji od dostawców modeli i narzędzi nie bierzemy.',
+    k: 'Model do Waszego procesu dobieramy po wynikach na Waszych sprawach.',
+    znak: { src: '/uploads/openai-select-partner.png', alt: 'OpenAI Select Partner', w: 1125, h: 531, kl: 'oai' },
+  },
+];
+
+// ---- 4a · KARTA PROJEKTU: dwanaście decyzji z WiseStacka ----------------
+// Tytuły 1:1 z tablicy WYBORY w src/pages/wisestack.astro. Po prawej to,
+// co zostaje do ustalenia z klientem — jego proces, nie nasz warsztat.
+const WS = [
+  { faza: 'Zanim powstanie kod', p: ['Język domeny spisany przed pierwszym ekranem', 'Decyzje zapisane razem z powodem', 'Kryterium „gotowe” ustalone z góry', 'Prototyp tam, gdzie rozstrzyga szybciej niż rozmowa'] },
+  { faza: 'Kiedy powstaje kod', p: ['Next.js i Convex jako jeden stos', 'Typy generowane ze schematu danych', 'Reguły projektu czytane przez modele', 'Każda gałąź z własnym działającym adresem'] },
+  { faza: 'Po napisaniu kodu', p: ['Osobna ocena produktu i osobna wykonania', 'Testy postawione na granicach procesu', 'Monitoring z imiennym właścicielem', 'Repozytorium i klucze Wasze od pierwszego dnia'] },
+];
+const DO_USTALENIA = [
+  'Kroki procesu i wyjątki od reguły',
+  'Progi, przy których decyduje człowiek',
+  'Systemy, z których bierzemy dane',
+  'Kto po Waszej stronie zatwierdza zmiany',
+];
+
+// ---- 4b · KONTA W PROJEKCIE --------------------------------------------
+// Firma zmyślona (ta sama co na /systemy-procesowe). `os` — kto z nas ma
+// dostęp: mb = Marcel, jm = Jakub. Po zakończeniu współpracy znika tylko
+// prawa kolumna.
+const OSOBY = {
+  mb: { f: '/marcel-bilski.jpg', w: 1200, h: 2526, n: 'Marcel Bilski', poz: '50% 22%' },
+  jm: { f: '/jakub-markiewicz.jpg', w: 512, h: 500, n: 'Jakub Markiewicz', poz: '50% 30%' },
+};
+const KONTA = [
+  { ik: HI['code-bracket'], t: 'Repozytorium kodu', gdzie: 'GitHub', os: ['mb', 'jm'], r: 'zapis' },
+  { ik: HI['cube'], t: 'Aplikacja i wdrożenia', gdzie: 'Vercel', os: ['mb'], r: 'wdrożenia' },
+  { ik: HI['table-cells'], t: 'Baza danych', gdzie: 'Convex', os: ['mb', 'jm'], r: 'odczyt i zapis' },
+  { ik: KLUCZ, t: 'Klucze do modeli AI', gdzie: 'OpenAI', os: ['jm'], r: 'klucz projektu' },
+  { ik: HI['document-text'], t: 'Dokumentacja i decyzje', gdzie: 'GitHub', os: ['mb', 'jm'], r: 'zapis' },
+];
+
+// ---- 5 · KTO STOI ZA LET'S AUTOMATE ------------------------------------
+// 1:1 z v5. Kadry są znormalizowane w plikach (linia oczu na 30% wysokości,
+// twarz na 16%), slot przycina tylko szerokość. Nowa osoba = nowy wpis
+// PLUS ten sam rachunek na zdjęciu (docs/dlaczego-my-koncepcja.md).
+const LUDZIE = [
+  { n: 'Szymon Kita',      r: 'CEO & współwłaściciel',     f: '/szymon-kita-spot.jpg',   w: 870,  h: 1376, poz: '47% 50%' },
+  { n: 'Marcel Bilski',    r: 'Tech Lead',                 f: '/marcel-bilski.jpg',      w: 1200, h: 2526, poz: '50% 50%' },
+  { n: 'Szymon Negacz',    r: 'Współwłaściciel',           f: '/szymon-negacz-spot.jpg', w: 1100, h: 888,  poz: '53% 50%' },
+  { n: 'Jakub Markiewicz', r: 'AI Consultant & Developer', f: '/jakub-markiewicz.jpg',   w: 512,  h: 500,  poz: '50% 50%' },
+];
+
+// ---- 6 · LICZBY Z WDROŻEŃ ----------------------------------------------
+// Za stroną główną (#dowody, „realne wdrożenia u naszych klientów").
+// Opisy przepisane bez triad.
+const LICZBY = [
+  { p: 'Finanse', l: '99,7', j: '%', t: 'skuteczności księgowania', przed: 'Trzy osoby przepisują faktury z maili, a zaległości rosną.', po: 'Obieg sam księguje faktury z maili. Zespół zajmuje się wyjątkami.' },
+  { p: 'Sprzedaż', l: '−80', j: '%', t: 'czasu przygotowania oferty', przed: 'Oferta sklejana z CRM-u, cenników i maili zajmuje pół dnia.', po: 'Szkic powstaje z danych CRM-u w kilka minut. Handlowiec go dopina i wysyła.' },
+  { p: 'Operacje', l: '65', j: ' h', t: 'odzyskanych co miesiąc', przed: 'Raporty klejone z czterech arkuszy, decyzje na danych sprzed miesiąca.', po: 'Dane spływają same, a raport czeka w poniedziałek o 7:00.' },
+  { p: 'Obsługa klienta', l: '−90', j: '%', t: 'zapytań obsługiwanych ręcznie', przed: 'Zespół odpisuje na te same pytania kilkanaście razy dziennie.', po: 'Agent AI odpowiada w kilka minut, z danymi zamówienia.' },
+];
+
+// Prawdziwe cytaty, 1:1 z tablicy OPINIE w index.astro. Finerto pominięte:
+// to spółka z Wise Group, a wiersz wyżej wymienia ją jako siostrzaną.
+const OPINIE_MALE = [
+  { c: 'Bardzo dobrze zrozumieli nasze potrzeby i zaprojektowali scenariusz, który w pełni spełnił cele biznesowe. Otwartość i komunikacja to ich DNA.', kto: 'Arkadiusz Andruch', rola: 'Prezes Zarządu, X2O' },
+  { c: 'Korzystamy z usług Let’s automate od roku. Świetna komunikacja, łatwo się dogadać, a jakość usług na wysokim poziomie.', kto: 'Dominik Chylewski', rola: 'Wspólnik, X3D' },
+];
+
+// ---- 7 · Z CZYM WYCHODZICIE Z PIERWSZEJ ROZMOWY -------------------------
+// Trzy odpowiedzi z GcCta v5. Pierwsza karta szersza: to odpowiedź, po
+// którą klient przychodzi. Przykłady poglądowe.
+const ODP = [
+  {
+    ik: HI['check'], t: 'Pierwszy krok z ceną',
+    d: 'Nazywamy problem i proponujemy rozwiązanie. Cenę pierwszego etapu znacie, zanim cokolwiek zamówicie.',
+    pk: 'Obieg faktur kosztowych', pt: 'Faktury z trzech skrzynek trafiają do ERP-a bez przepisywania. Start od dwóch dni przy procesie, potem stała kwota za pierwsze uruchomienie.',
+  },
+  {
+    ik: HI['arrow-uturn-left'], t: 'Wskazanie, gdzie zrobią to taniej',
+    d: 'Jeśli Wasz proces mieści się w gotowym narzędziu, mówimy, w którym. Budowa własnego systemu by się nie zwróciła.',
+    pk: 'Rozliczanie delegacji', pt: 'Moduł w systemie kadrowym, który już macie, obejmuje cały proces. Wystarczy go włączyć i ustawić.',
+  },
+  {
+    ik: HI['clock'], t: 'Informacja, kiedy wrócić',
+    d: 'Proces, który za chwilę się zmieni, lepiej mierzyć po zmianie. Mówimy, na co poczekać.',
+    pk: 'Wymiana ERP-a w toku', pt: 'Obieg zamówień za kwartał będzie wyglądał inaczej. Wracamy do niego po wdrożeniu nowego systemu.',
+  },
+];
+
+const faq = [
+  {
+    q: 'Kto realnie siada do naszego projektu?',
+    a: 'Skład zależy od tego, co budujemy. Zawsze jest w nim osoba, która odpowiada za wynik i budżet, oraz analityk, który spisuje proces przy biurkach Waszych ludzi. Kod piszą nasi developerzy, bez podwykonawców i bez zespołów wynajętych na czas zlecenia.',
+  },
+  {
+    q: 'Jak to jest rozliczane?',
+    a: 'Budowa idzie w stałej cenie za etap, więc koszt kolejnego kroku znacie przed zamówieniem. Prowadzenie zespołu jest abonamentem miesięcznym z okresem wypowiedzenia. Prowizji od dostawców narzędzi nie bierzemy.',
+  },
+  {
+    q: 'Skąd wiadomo, że kod pisany przez AI jest bezpieczny?',
+    a: 'Decyduje o tym, przez co zmiana musi przejść, zanim zobaczą ją ludzie: typy i kontrakty danych, testy na granicach procesu, skan zależności i sekretów, przegląd produktu, przegląd inżynierski i zgoda człowieka. Wszystkie sześć bramek opisaliśmy na <a href="/wisestack" style="font-weight:700;color:#0a7a52">stronie WiseStacku</a>.',
+  },
+  {
+    q: 'Co z poufnością naszych danych?',
+    a: 'Umowę o poufności podpisujemy przed startem projektu. Dane, na których pracujemy, zostają na Waszych kontach, a dostęp do nich dostajemy imiennie i tylko na czas współpracy.',
+  },
+];
+
+const dane = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'AboutPage',
+      '@id': `${kanon}#strona`,
+      url: kanon,
+      name: 'O nas — Let’s automate',
+      inLanguage: 'pl-PL',
+      about: { '@id': new URL('/#organizacja', Astro.site).href },
+    },
+    {
+      '@type': 'BreadcrumbList',
+      '@id': `${kanon}#okruszki`,
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Strona główna', item: new URL('/', Astro.site).href },
+        { '@type': 'ListItem', position: 2, name: 'O nas', item: kanon },
+      ],
+    },
+    {
+      '@type': 'FAQPage',
+      '@id': `${kanon}#faq`,
+      mainEntity: faq.map((f) => ({
+        '@type': 'Question',
+        name: f.q,
+        acceptedAnswer: { '@type': 'Answer', text: f.a.replace(/<[^>]+>/g, '') },
+      })),
+    },
+  ],
+};
+---
+<LaBase noindex topbar={false} title={title} description={description} ctaHref="#kontakt" ctaLabel="Umów rozmowę" nav="dlaczego-my">
+<script type="application/ld+json" is:inline set:html={JSON.stringify(dane)} slot="head"></script>
+
+<style is:global slot="head">
+  /* ===================================================== HERO · PORTRET ====
+     Piotr na ciemnej planszy: jego zdjęcie ma ciemne tło z zielonym neonem
+     sygnetu, więc wtapia się w planszę. Karta z jego zdaniem nachodzi na
+     lewą krawędź portretu. */
+  .dm2-hw{position:relative;justify-self:end;width:min(100%,520px)}
+  .dm2-hw-foto{position:relative;margin:0;border-radius:22px;overflow:hidden;
+    box-shadow:0 0 0 1px rgba(255,255,255,0.07),0 70px 120px -60px rgba(0,0,0,0.9)}
+  .dm2-hw-foto img{display:block;width:100%;height:auto;aspect-ratio:10/11;object-fit:cover;object-position:50% 24%}
+  .dm2-hw-k{position:absolute;left:clamp(-150px,-8vw,-48px);bottom:clamp(30px,3.4vw,52px);width:min(340px,74%);margin:0;padding:22px 24px 20px;border-radius:18px;
+    background:var(--papier);color:var(--t1);box-shadow:0 36px 70px -26px rgba(0,0,0,0.75)}
+  .dm2-hw-k p{margin:0;font-size:16px;line-height:1.55;font-weight:500;letter-spacing:-0.005em;color:var(--t1);text-wrap:pretty}
+  .dm2-hw-k p > span{font-weight:700;color:var(--ziel-c)}
+  .dm2-hw-kto{display:block;margin-top:16px;padding-top:14px;border-top:1px solid var(--linia);font-size:12.5px;color:var(--t2)}
+  .dm2-hw-kto b{display:block;font-size:14px;font-weight:700;color:var(--t1)}
+  @media (max-width:1060px){
+    .dm2-hw{justify-self:start;width:min(100%,460px);margin-left:clamp(0px,9vw,96px) !important}
+  }
+  @media (max-width:640px){
+    .dm2-hw{margin-left:0 !important}
+    .dm2-hw-k{position:relative;left:auto;bottom:auto;width:auto;margin:-64px 14px 0}
+  }
+
+  /* ============================================ INDEKS ZDAŃ (sekcja 2) ====
+     Klasy indeksu z Styl.astro; tu tylko mniejszy stopień (zdania są
+     dłuższe niż nazwy procesów) i karta usługi w trzeciej kolumnie. */
+  .dm2-ix .ix-t{font-size:clamp(21px,2.45vw,36px);line-height:1.14;letter-spacing:-0.032em;text-wrap:balance}
+  .dm2-ix .ix-w summary{padding:clamp(20px,2.2vw,30px) 0}
+  .dm2-ix-pr{position:relative;padding-right:52px !important}
+  .dm2-ix-pr small{font-size:13.5px;line-height:1.45;color:var(--t2)}
+  .dm2-ix-pr > i{position:absolute;right:16px;top:50%;display:grid;place-items:center;width:28px;height:28px;margin-top:-14px;border-radius:50%;background:var(--ink);color:var(--ziel);transition:transform .2s}
+  .dm2-ix-pr > i svg{width:13px;height:13px;fill:currentColor}
+  .dm2-ix-pr:hover > i{transform:translateX(3px)}
+
+  /* ============================================ KIM JESTEŚMY (sekcja 4) ====
+     Fakt o nas drobniej po lewej, skutek u klienta dużym stopniem po
+     prawej — układ z v5, w typografii nowych podstron. */
+  .v3 #kim{padding-top:clamp(56px,7vw,96px)}
+  .dm2-km{margin-top:clamp(64px,7vw,104px)}
+  .dm2-km-w{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,8fr);gap:14px clamp(32px,5vw,96px);align-items:start;padding:clamp(26px,3vw,40px) 0;border-top:1px solid var(--linia)}
+  .dm2-km-w:first-child{border-top:1.5px solid var(--t1)}
+  .dm2-km-f p{margin:0;max-width:420px;font-size:15px;line-height:1.62;color:var(--t2);text-wrap:pretty}
+  .dm2-km-f img{display:block;width:auto;margin:0 0 16px}
+  .dm2-km-f img.wg{height:17px}
+  .dm2-km-f img.ap{height:24px}
+  .dm2-km-f img.oai{height:46px;border-radius:9px;mix-blend-mode:multiply}
+  .dm2-km-l{display:inline-flex;align-items:center;gap:6px;margin-top:12px;padding-bottom:2px;font-size:14px;font-weight:650;color:var(--ziel-c);border-bottom:1px solid rgba(10,122,82,0.35);transition:border-color .15s}
+  .dm2-km-l:hover{border-color:var(--ziel-c)}
+  .dm2-lnk{font-weight:650;color:var(--ziel-c);border-bottom:1px solid rgba(10,122,82,0.35);transition:border-color .15s}
+  .dm2-lnk:hover{border-color:var(--ziel-c)}
+  .dm2-km-k{margin:0;max-width:880px;font-size:clamp(22px,2.4vw,35px);line-height:1.16;letter-spacing:-0.033em;font-weight:650;color:var(--t1);text-wrap:balance}
+  @media (max-width:900px){
+    .dm2-km-w{grid-template-columns:minmax(0,1fr)}
+    .dm2-km-k{order:-1}
+  }
+
+  /* ---- Blok 4a · karta projektu z dwunastoma decyzjami ----
+     Kartka (dokument), nie okno aplikacji. Lewa kolumna: decyzje
+     rozstrzygnięte w WiseStacku, ptaszki zapalają się po kolei. Prawa: to,
+     co ustalamy z klientem — bursztyn, bo czeka na warsztat. */
+  .dm2-ws-kart{max-width:1120px;margin:0 auto;padding:clamp(22px,2.6vw,36px) clamp(20px,2.8vw,40px) clamp(24px,2.8vw,36px);border-radius:16px;background:#fdfcf8;
+    box-shadow:0 0 0 1px rgba(15,26,20,0.06),0 40px 70px -44px rgba(15,26,20,0.45)}
+  .dm2-ws-gl{display:flex;justify-content:space-between;align-items:baseline;gap:12px 24px;flex-wrap:wrap;padding-bottom:14px;border-bottom:1.5px solid var(--t1)}
+  .dm2-ws-gl b{font-size:clamp(17px,1.5vw,21px);font-weight:700;letter-spacing:-0.02em}
+  .dm2-ws-gl span{font-family:var(--mono);font-size:12px;color:var(--t3)}
+  .dm2-ws-sz{display:grid;grid-template-columns:minmax(0,7.4fr) minmax(0,4.6fr);gap:clamp(24px,3.4vw,56px);margin-top:clamp(20px,2.2vw,28px)}
+  .dm2-ws-sz h4{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:0 0 6px;font-size:13.5px;font-weight:700;color:var(--t1)}
+  .dm2-ws-sz h4 em{font-style:normal;font-family:var(--mono);font-size:12px;font-weight:500;color:var(--t3)}
+  .dm2-ws-f{display:grid;grid-template-columns:minmax(0,1fr);margin-top:14px}
+  .dm2-ws-f > span{font-size:12px;font-weight:600;color:var(--t3);padding-bottom:4px}
+  .dm2-ws ul{margin:0;padding:0;list-style:none}
+  .dm2-ws-l ul{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:24px}
+  .dm2-ws li{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-top:1px solid var(--linia2);font-size:13.5px;line-height:1.4;color:var(--t1)}
+  .dm2-ws-l li > i{flex-shrink:0;display:grid;place-items:center;width:16px;height:16px;margin-top:1px;border-radius:50%;background:var(--ziel)}
+  .dm2-ws-l li > i svg{width:10px;height:10px;fill:var(--ink)}
+  .dm2-ws-p{padding-left:clamp(20px,2.6vw,40px);border-left:1px solid var(--linia)}
+  .dm2-ws-p ul{margin-top:14px}
+  .dm2-ws-p li{flex-wrap:wrap;padding:11px 0}
+  .dm2-ws-p li > i{flex-shrink:0;width:16px;height:16px;margin-top:1px;border-radius:4px}
+  .dm2-ws-p li > span{flex:1;min-width:0}
+  .dm2-ws-p li small{display:block;margin-top:2px;font-size:12px;color:var(--burs-c)}
+  .dm2-ws-p > p{margin:18px 0 0;font-size:13px;line-height:1.55;color:var(--t2)}
+  @media (max-width:860px){
+    .dm2-ws-sz{grid-template-columns:minmax(0,1fr)}
+    .dm2-ws-p{padding:22px 0 0;border-left:0;border-top:1.5px solid var(--t1)}
+  }
+  @media (max-width:560px){ .dm2-ws-l ul{grid-template-columns:minmax(0,1fr)} }
+  /* wejście w kadr: ptaszki po kolei, potem pozycje do ustalenia */
+  .dm2-ws.gra .dm2-ws-l li{color:var(--t3)}
+  .dm2-ws.gra .dm2-ws-l li > i{transform:scale(0)}
+  .dm2-ws.gra.on .dm2-ws-l li{color:var(--t1);transition:color .3s calc(var(--i) * 75ms + 0.25s)}
+  .dm2-ws.gra.on .dm2-ws-l li > i{transform:none;transition:transform .35s cubic-bezier(.3,1.6,.5,1) calc(var(--i) * 75ms + 0.25s)}
+  .dm2-ws.gra .dm2-ws-p li{opacity:0;transform:translateY(6px)}
+  .dm2-ws.gra.on .dm2-ws-p li{opacity:1;transform:none;transition:opacity .4s calc(1.3s + var(--j) * 0.12s),transform .4s calc(1.3s + var(--j) * 0.12s)}
+
+  /* ---- Blok 4b · konta w projekcie, w trakcie i po zakończeniu ----
+     Stan bez klasy = po zakończeniu (to widać bez JS i przy ograniczonym
+     ruchu). .wt = w trakcie współpracy. Przełącznik pokazuje się dopiero
+     z JS (.js). Po wejściu w kadr rysunek sam przechodzi z „w trakcie"
+     do „po zakończeniu": znika tylko prawa kolumna. */
+  .dm2-tg{display:none;gap:3px;padding:4px;border-radius:999px;background:#ffffff;box-shadow:0 0 0 1px rgba(15,26,20,0.08)}
+  .dm2-kn.js .dm2-tg{display:inline-flex}
+  .dm2-tg button{appearance:none;border:0;background:transparent;font:inherit;font-size:13.5px;font-weight:650;color:var(--t2);padding:8px 14px;border-radius:999px;cursor:pointer;transition:background .2s,color .2s}
+  .dm2-tg button:hover{color:var(--t1)}
+  .dm2-tg button[aria-pressed="true"]{background:var(--ink);color:#ffffff}
+  .dm2-tg button:focus-visible{outline:2px solid var(--ziel);outline-offset:2px}
+  .dm2-kn-tab{max-width:1120px;margin:0 auto;border-radius:16px;background:#ffffff;box-shadow:0 0 0 1px rgba(15,26,20,0.06),0 40px 70px -44px rgba(15,26,20,0.45);overflow:hidden}
+  .dm2-kn-w{display:grid;grid-template-columns:minmax(0,4.4fr) minmax(0,3.6fr) minmax(0,4fr);align-items:center;gap:16px;padding:14px clamp(18px,2.4vw,32px);border-top:1px solid var(--linia2)}
+  .dm2-kn-w.n{padding-top:16px;padding-bottom:12px;border-top:0;background:#fbfaf6;font-size:12.5px;font-weight:650;color:var(--t3)}
+  .dm2-kn-z{display:flex;align-items:center;gap:12px;min-width:0}
+  .dm2-kn-z > i{flex-shrink:0;display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:var(--papier);color:var(--t1)}
+  .dm2-kn-z > i svg{width:15px;height:15px;fill:currentColor}
+  .dm2-kn-z b{display:block;font-size:14.5px;font-weight:650;letter-spacing:-0.01em}
+  .dm2-kn-z small{display:block;margin-top:1px;font-family:var(--mono);font-size:11.5px;color:var(--t3)}
+  .dm2-kn-o{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:14px;color:var(--t1)}
+  .dm2-kn-o > i{flex-shrink:0;display:grid;place-items:center;width:16px;height:16px;border-radius:50%;background:var(--ziel)}
+  .dm2-kn-o > i svg{width:10px;height:10px;fill:var(--ink)}
+  .dm2-kn-d{display:flex;align-items:center;gap:12px;min-width:0}
+  .dm2-kn-os{position:relative;display:flex;flex-shrink:0}
+  .dm2-kn-os img{width:28px;height:28px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 2px #ffffff;transition:filter .35s calc(var(--i) * 0.14s),opacity .35s calc(var(--i) * 0.14s)}
+  .dm2-kn-os img + img{margin-left:-8px}
+  .dm2-kn-os::after{content:"";position:absolute;left:-4px;right:-4px;top:50%;height:1.5px;margin-top:-0.75px;background:var(--t2);transform-origin:0 50%;transition:transform .35s calc(var(--i) * 0.14s + 0.1s)}
+  .dm2-kn-r{display:grid;font-size:13.5px;white-space:nowrap}
+  .dm2-kn-r > *{grid-area:1 / 1;transition:opacity .3s calc(var(--i) * 0.14s + 0.1s)}
+  .dm2-kn-r span{color:var(--t1)}
+  .dm2-kn-r s{color:var(--t3);text-decoration:none}
+  /* stan „po zakończeniu" (domyślny) */
+  .dm2-kn-os img{filter:grayscale(1);opacity:0.4}
+  .dm2-kn-r span{opacity:0}
+  /* stan „w trakcie" */
+  .dm2-kn.wt .dm2-kn-os img{filter:none;opacity:1}
+  .dm2-kn.wt .dm2-kn-os::after{transform:scaleX(0)}
+  .dm2-kn.wt .dm2-kn-r span{opacity:1}
+  .dm2-kn.wt .dm2-kn-r s{opacity:0}
+  .dm2-kn-st{max-width:1120px;margin:18px auto 0;display:grid;padding:0 4px;font-size:14.5px;line-height:1.5;color:var(--t2)}
+  .dm2-kn-st > span{grid-area:1 / 1;transition:opacity .3s}
+  .dm2-kn-st b{color:var(--t1);font-weight:650}
+  .dm2-kn-st .wt{opacity:0}
+  .dm2-kn.wt .dm2-kn-st .wt{opacity:1}
+  .dm2-kn.wt .dm2-kn-st .po{opacity:0}
+  @media (max-width:760px){
+    .dm2-kn-w{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px 14px}
+    .dm2-kn-w.n{display:none}
+    .dm2-kn-z{grid-column:1 / -1}
+    .dm2-kn-o{font-size:13px}
+  }
+  @media (max-width:560px){ .dm2-tg button{padding:7px 11px;font-size:12.5px} }
+  @media (prefers-reduced-motion:reduce){
+    .dm2-kn *,.dm2-kn *::after{transition:none !important}
+  }
+
+  /* ========================================== KTO STOI ZA (sekcja 5) ====
+     Spoty z v5 na ciemnej scenie nowych podstron. Sekcja bez paddingu
+     pionowego — spoty biegną przez całą wysokość pasa; poziomo ten sam
+     kontener co reszta strony. */
+  .dm2-lz{display:grid;grid-template-columns:minmax(0,0.95fr) minmax(0,1.45fr);gap:clamp(28px,4vw,72px);align-items:center;padding:0 var(--pad);scroll-margin-top:16px}
+  .dm2-lz-t{padding:clamp(80px,9vw,136px) 0}
+  .dm2-lz-t .v3-sub{max-width:44ch}
+  .dm2-lz-t .v3-h2 + .v3-sub{margin-top:clamp(22px,2.6vw,34px)}
+  .dm2-lz-t .v3-sub + .v3-sub{margin-top:14px}
+  .dm2-lz-t b{font-weight:650;color:#ffffff}
+  .dm2-sp{align-self:stretch;display:grid;grid-template-columns:repeat(var(--spoty,4),minmax(0,1fr));gap:6px;min-height:clamp(380px,36vw,520px)}
+  .dm2-sp-s{position:relative;overflow:hidden;margin:0;background:#12261b}
+  .dm2-sp-s:first-child{border-radius:16px 0 0 16px}
+  .dm2-sp-s:last-child{border-radius:0 16px 16px 0}
+  .dm2-sp-s img{display:block;width:100%;height:100%;object-fit:cover;object-position:50% 18%;filter:grayscale(1) contrast(1.06)}
+  .dm2-sp-pod{position:absolute;left:0;right:0;bottom:0;padding:clamp(96px,13vw,150px) clamp(12px,1.4vw,18px) clamp(16px,1.8vw,22px);background:linear-gradient(180deg,rgba(7,20,13,0),rgba(7,20,13,0.62) 34%,rgba(7,20,13,0.95) 74%)}
+  .dm2-sp-pod b{display:block;font-size:clamp(13px,1.3vw,15.5px);font-weight:700;line-height:1.2;color:#ffffff;text-wrap:pretty}
+  .dm2-sp-pod span{display:block;min-height:2.6em;margin-top:4px;font-size:12px;line-height:1.3;color:rgba(255,255,255,0.6);text-wrap:pretty}
+  /* Poniżej 760 px dwie kolumny i sztywna proporcja 1:2,2 — węższa niż
+     najwęższy plik (Bilski 0,475), więc kadr dalej przycina szerokość
+     i twarze zostają na tej samej wysokości. */
+  @media (max-width:1200px){
+    .dm2-lz{grid-template-columns:minmax(0,1fr);gap:0}
+    .dm2-lz-t{padding:clamp(72px,9vw,104px) 0 clamp(34px,4.4vw,48px)}
+    .dm2-lz-t .v3-sub{max-width:60ch}
+    .dm2-sp{min-height:clamp(300px,40vw,440px)}
+  }
+  @media (max-width:760px){
+    .dm2-sp{grid-template-columns:repeat(2,minmax(0,1fr));min-height:0}
+    .dm2-sp-s{aspect-ratio:1 / 2.2}
+    .dm2-sp-s:first-child{border-radius:16px 0 0 0}
+    .dm2-sp-s:nth-child(2){border-radius:0 16px 0 0}
+    .dm2-sp-s:nth-child(3){border-radius:0 0 0 16px}
+    .dm2-sp-s:last-child{border-radius:0 0 16px 0}
+    .dm2-sp-pod span{min-height:0}
+  }
+
+  /* ============================================ LICZBY I CYTATY (6) ====
+     Karty na wspólnym rzędzie przykładów (.dw-sc, .dw4-k). Miara nie jest
+     „przed / po" w jednej skali, więc w środku duża liczba i dwa zdania;
+     bursztyn przy „Przed", zieleń przy „Po" — jak na całej stronie. */
+  .dm2-dws .dw4-k{flex:1 0 clamp(272px,22vw,320px);padding:24px 24px 22px}
+  .dm2-dw-l{margin:20px 0 0;font-size:clamp(46px,4.2vw,62px);font-weight:700;letter-spacing:-0.05em;line-height:0.95;color:var(--t1)}
+  .dm2-dw-l span{color:var(--ziel-c)}
+  .dw4-k .dm2-dw-t{margin:10px 0 0;font-size:15px;font-weight:650;letter-spacing:-0.01em;line-height:1.3;color:var(--t2)}
+  .dm2-dw-pp{margin-top:auto;padding-top:22px}
+  .dm2-dw-pp p{margin:0;padding:12px 0 0;border-top:1px solid var(--linia);font-size:14px;line-height:1.55;color:var(--t2);text-wrap:pretty}
+  .dm2-dw-pp p + p{margin-top:12px;color:var(--t1)}
+  .dm2-dw-pp b{display:flex;align-items:center;gap:8px;margin-bottom:4px;font-size:12.5px;font-weight:650;color:var(--t3)}
+  .dm2-dw-pp b i{display:block;width:12px;height:12px;border-radius:3px}
+  .dm2-dw-pp p + p b{color:var(--ziel-c)}
+  .dm2-dw-pp p + p b i{background:var(--ziel)}
+  /* klamra z sekcją 2: podpis nad cytatem, pod nim dwa mniejsze */
+  .dm2-op{margin-top:clamp(80px,9vw,136px)}
+  #dowody .dm2-op .v3-cyt{margin-top:clamp(24px,2.8vw,38px) !important}
+  .dm2-op-m{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px clamp(32px,4vw,72px);margin-top:clamp(48px,5vw,76px)}
+  .dm2-op-m figure{margin:0;padding-top:22px;border-top:1px solid var(--linia)}
+  .dm2-op-m blockquote{margin:0;max-width:560px;font-size:clamp(17px,1.5vw,20px);line-height:1.45;letter-spacing:-0.012em;font-weight:500;color:var(--t1);text-wrap:pretty}
+  .dm2-op-m figcaption{margin-top:18px;padding-left:14px;border-left:2px solid var(--ziel);font-size:13.5px;line-height:1.45;color:var(--t2)}
+  .dm2-op-m figcaption b{display:block;font-size:14.5px;font-weight:700;color:var(--t1)}
+  @media (max-width:760px){ .dm2-op-m{grid-template-columns:minmax(0,1fr)} }
+
+  /* ========================================= PIERWSZA ROZMOWA (7) ====
+     Trzy odpowiedzi obok siebie — kafle, bo służą porównaniu. Wszystkie
+     w jednym kolorze; pierwsza szersza, bo to odpowiedź, po którą klient
+     przychodzi. Przykład na dole każdej karty, w tincie papieru. */
+  .dm2-od{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) minmax(0,1fr);gap:clamp(12px,1.2vw,16px);margin-top:clamp(48px,5vw,80px)}
+  .dm2-od-k{display:flex;flex-direction:column;padding:clamp(24px,2.4vw,34px);border-radius:24px;background:#ffffff;box-shadow:0 0 0 1px rgba(15,26,20,0.05),0 30px 60px -48px rgba(15,26,20,0.4)}
+  .dm2-od-gl{display:flex;align-items:center;justify-content:space-between}
+  .dm2-od-ik{display:grid;place-items:center;width:42px;height:42px;border-radius:50%;background:var(--ink);color:var(--ziel)}
+  .dm2-od-ik svg{width:19px;height:19px;fill:currentColor}
+  .dm2-od-n{font-family:var(--mono);font-size:12px;color:var(--t3)}
+  .dm2-od-k h3{margin:clamp(26px,3vw,40px) 0 0;font-size:clamp(22px,2vw,29px);font-weight:700;letter-spacing:-0.032em;line-height:1.1;text-wrap:balance}
+  .dm2-od-k > p{margin:12px 0 0;max-width:460px;font-size:15.5px;line-height:1.6;color:var(--t2);text-wrap:pretty}
+  .dm2-od-pr{margin-top:auto;padding-top:clamp(24px,2.6vw,34px)}
+  .dm2-od-pr > div{padding:16px 18px;border-radius:14px;background:var(--papier)}
+  .dm2-od-pr small{display:block;font-size:12px;font-weight:600;color:var(--t3)}
+  .dm2-od-pr b{display:block;margin-top:6px;font-size:14.5px;font-weight:700;letter-spacing:-0.01em}
+  .dm2-od-pr p{margin:4px 0 0;font-size:14px;line-height:1.55;color:var(--t2);text-wrap:pretty}
+  @media (max-width:1000px){ .dm2-od{grid-template-columns:minmax(0,1fr)} }
+</style>
+
+<div class="v3">
+<Styl />
+<Anim />
+
+<!-- ============ 1 · HERO ============
+     Wariant „obok": ludzie na ciemnej planszy. Zdanie o czytelniku, nie
+     o nas, i twarz osoby, z którą klient rozmawia jako pierwszą. -->
+<Hero wariant="obok" lead="Projektujemy i budujemy systemy oparte na AI. Każdy projekt zaczynamy od kilku dni przy biurkach ludzi, którzy wykonują proces, bo schemat z prezentacji zarządu rzadko zgadza się z tym, co widać na miejscu." link={{ href: '#ludzie', t: 'Kto stoi za Let’s automate →' }}>
+<Fragment slot="h1">Najpierw chcemy zobaczyć, <span>jak jest u Was naprawdę</span></Fragment>
+
+<figure class="hero-wid dm2-hw">
+<div class="dm2-hw-foto"><img src="/piotr-wojciuk.jpg" alt="Piotr Wojciuk, New Business Lead w Let’s automate" width="1002" height="1100" fetchpriority="high" decoding="async"></div>
+<figcaption class="dm2-hw-k">
+<p><span aria-hidden="true">„</span>W pierwszej rozmowie siedzę zwykle ja. Zaczynam od pytań o proces i o to, co się w nim psuje.”</p>
+<span class="dm2-hw-kto"><b>Piotr Wojciuk</b>New Business Lead</span>
+</figcaption>
+</figure>
+</Hero>
+
+<!-- ============ 2 · CZYM JEST ============
+     Definicja dla modeli językowych dużym stopniem pisma; pod nią zdania,
+     od których zaczynają się rozmowy (#slyszymy z v5). Każde rozwija się
+     w to, co za nim stoi, i w usługę, od której zaczynamy. -->
+<section id="czym-jest" class="v3-sek v3-papier">
+<div class="v3-def">
+<h2 class="v3-h2m">Czym jest Let’s automate?</h2>
+<div>
+<p class="v3-def-duzy rv">Let’s automate to studio transformacji AI z Warszawy, część Wise Group. Projektujemy i budujemy systemy oparte na AI, które prowadzą kluczowe procesy średnich i dużych firm, a zespołom, które budują same, dajemy metodę i stałą opiekę.</p>
+</div>
+</div>
+
+<div class="v3-ix dm2-ix">
+<div class="ix-gl"><h3>Zdania, od których zwykle się zaczyna</h3></div>
+{ZDANIA.map((x, i) => (
+  <details class="ix-w rv" open={i === 0}>
+    <summary>
+      <span class="ix-n">{String(i + 1).padStart(2, '0')}</span>
+      <span class="ix-t">„{x.q}”</span>
+      <span class="ix-plus" aria-hidden="true"></span>
+    </summary>
+    <div class="ix-roz">
+      <div><b>Co zwykle za tym stoi</b><p>{x.stoi}</p></div>
+      <div><b>Od czego zaczynamy</b><p>{x.start}</p></div>
+      <a href={x.u.h} class="ix-pr dm2-ix-pr"><b>{x.u.e}</b><span>{x.u.t}</span><small>{x.u.d}</small><i aria-hidden="true"><svg viewBox="0 0 16 16" set:html={HI['arrow-right']}></svg></i></a>
+    </div>
+  </details>
+))}
+</div>
+</section>
+
+<!-- ============ 3 · ZIELONY PAS ============
+     Pierwsze wezwanie. Werdykt z pierwszej rozmowy, ten sam rodzaj zdania
+     co na podstronach usług. Rozwinięcie w sekcji 7. -->
+<Pas tekst="Jeśli taniej zrobi to ktoś inny, powiemy to na pierwszej rozmowie" foto="/szymon-negacz-spot.jpg" fotoW={1100} fotoH={888} alt="Szymon Negacz, współwłaściciel Let’s automate" imie="Szymon Negacz" rola="Współwłaściciel" />
+
+<!-- ============ 4 · KIM JESTEŚMY ============
+     Teza na całą szerokość (fakt szary, skutek czarny — reguła strony
+     w jednym zdaniu), pięć par fakt → skutek, dwa bloki z rysunkami. -->
+<section id="kim" class="v3-sek">
+<h2 class="v3-h2m">Kim jesteśmy i co to zmienia u Was</h2>
+<p class="v3-teza rv"><span>Ponad dwieście wdrożeń dla ponad stu czterdziestu firm.</span> Każde zostawiło nam zasady, od których zaczyna się Wasz projekt</p>
+
+<div class="dm2-km">
+{KIM.map((x) => (
+  <div class="dm2-km-w rv">
+    <div class="dm2-km-f">
+      {x.znak && <img src={x.znak.src} alt={x.znak.alt} width={x.znak.w} height={x.znak.h} class={x.znak.kl} loading="lazy" decoding="async">}
+      <p>{x.f}</p>
+      {x.h && <a href={x.h} class="dm2-km-l" target={x.zew ? '_blank' : null} rel={x.zew ? 'noopener' : null}>{x.l} <span aria-hidden="true">{x.zew ? '↗' : '→'}</span></a>}
+    </div>
+    <p class="dm2-km-k">{x.k}</p>
+  </div>
+))}
+</div>
+
+<!-- 4a · KARTA PROJEKTU. Dwanaście decyzji z WiseStacka (lista z
+     /wisestack) jest rozstrzygniętych w dniu pierwszym; z klientem
+     ustalamy tylko to, co dotyczy jego procesu. -->
+<div class="dl-blok">
+<div class="dl-gl"><h3>Dwanaście decyzji zapada przed pierwszym dniem projektu</h3><p>Z poprzednich wdrożeń zostały rozstrzygnięcia, których nie trzeba ustalać od nowa, od stosu technologicznego po sposób sprawdzania każdej zmiany. Spisaliśmy je w <a href="/wisestack" class="dm2-lnk">WiseStacku</a>. Z Wami ustalamy tylko to, co dotyczy Waszego procesu, więc nie płacicie za to, żebyśmy wybierali, w czym to napisać.</p></div>
+<figure class="dl-kafel dm2-ws" data-anim data-gra>
+<div class="ts4-gl"><b>Karta projektu, dzień pierwszy</b></div>
+<div class="dm2-ws-kart" role="img" aria-label="Karta projektu w pierwszym dniu. Dwanaście decyzji jest już rozstrzygniętych w WiseStacku: cztery przed powstaniem kodu, cztery przy pisaniu kodu i cztery po jego napisaniu. Cztery sprawy zostają do ustalenia z klientem na warsztacie: kroki procesu i wyjątki, progi, przy których decyduje człowiek, systemy, z których bierzemy dane, i osoba, która zatwierdza zmiany.">
+<div class="dm2-ws-gl"><b>Stalprofil · obieg zamówień</b><span>dzień 1</span></div>
+<div class="dm2-ws-sz" aria-hidden="true">
+<div class="dm2-ws-l">
+<h4>Rozstrzygnięte w WiseStacku <em>12</em></h4>
+{WS.map((f, k) => (
+  <div class="dm2-ws-f">
+    <span>{f.faza}</span>
+    <ul>{f.p.map((t, j) => (<li style={`--i:${k * 4 + j}`}><i><svg viewBox="0 0 16 16" set:html={HI['check']}></svg></i>{t}</li>))}</ul>
+  </div>
+))}
+</div>
+<div class="dm2-ws-p">
+<h4>Do ustalenia z Wami <em>4</em></h4>
+<ul>{DO_USTALENIA.map((t, j) => (<li style={`--j:${j}`}><i class="czk-j"></i><span>{t}<small>na warsztacie, przy Waszym procesie</small></span></li>))}</ul>
+</div>
+</div>
+</div>
+</figure>
+</div>
+
+<!-- 4b · KONTA. Ten sam projekt. Bez JS i przy ograniczonym ruchu widać
+     stan „po zakończeniu"; z JS rysunek zaczyna „w trakcie" i po wejściu
+     w kadr sam przechodzi dalej. -->
+<div class="dl-blok">
+<div class="dl-gl"><h3>Repozytorium i klucze stoją na Waszych kontach od pierwszego dnia</h3><p>Konta projektu, od repozytorium po klucze do modeli AI, zakładamy na Waszą firmę, a sami dostajemy do nich dostęp imiennie. Kiedy współpraca się kończy, odbieracie nam te dostępy. Nie ma czego migrować i nie potrzebujecie od nas żadnej licencji.</p></div>
+<figure class="dl-kafel dm2-kn" data-konta>
+<div class="ts4-gl">
+<b>Konta w projekcie Stalprofil</b>
+<div class="dm2-tg" role="group" aria-label="Stan dostępów">
+<button type="button" data-konta-st="wt" aria-pressed="false">W trakcie współpracy</button>
+<button type="button" data-konta-st="po" aria-pressed="true">Po zakończeniu</button>
+</div>
+</div>
+<div class="dm2-kn-tab" role="table" aria-label="Konta w projekcie: repozytorium kodu, aplikacja i wdrożenia, baza danych, klucze do modeli AI oraz dokumentacja należą do Stalprofil sp. z o.o. Let’s automate ma do nich dostęp imienny w trakcie współpracy, a po jej zakończeniu dostęp jest odebrany i nic nie trzeba przenosić.">
+<div class="dm2-kn-w n" role="row"><span role="columnheader">Zasób</span><span role="columnheader">Konto należy do</span><span role="columnheader">Dostęp Let’s automate</span></div>
+{KONTA.map((x, i) => (
+  <div class="dm2-kn-w" role="row" style={`--i:${i}`}>
+    <span class="dm2-kn-z" role="cell"><i aria-hidden="true"><svg viewBox="0 0 16 16" set:html={x.ik}></svg></i><span><b>{x.t}</b><small>{x.gdzie}</small></span></span>
+    <span class="dm2-kn-o" role="cell"><i aria-hidden="true"><svg viewBox="0 0 16 16" set:html={HI['check']}></svg></i>Stalprofil sp. z o.o.</span>
+    <span class="dm2-kn-d" role="cell">
+      <span class="dm2-kn-os" aria-hidden="true">{x.os.map((k) => (<img src={OSOBY[k].f} alt="" width="28" height="28" style={`object-position:${OSOBY[k].poz}`} loading="lazy" decoding="async">))}</span>
+      <span class="dm2-kn-r"><span>{x.r}</span><s>dostęp odebrany</s></span>
+    </span>
+  </div>
+))}
+</div>
+<p class="dm2-kn-st" aria-live="polite"><span class="wt">Dostępy są imienne i da się je odebrać w minutę.</span><span class="po"><b>Do przeniesienia: nic.</b> Wszystko zostaje na Waszych kontach.</span></p>
+</figure>
+</div>
+</section>
+
+<!-- ============ 5 · KTO STOI ZA LET'S AUTOMATE ============
+     Ciemna scena. Opis po lewej, pionowe spoty po prawej przez całą
+     wysokość pasa. Rząd portretów czyta się jak „oto cały zespół" — pas
+     spotów nie (historia w docs/dlaczego-my-koncepcja.md). -->
+<section id="ludzie" class="v3-scena v3-ziarno dm2-lz">
+<div class="dm2-lz-t">
+<h2 class="v3-h2 jasny">Kto stoi za Let’s automate</h2>
+<p class="v3-sub jasny">Na zdjęciach nie ma całego zespołu. To ludzie, którzy prowadzą studio i mają za sobą <b>dziesiątki wdrożeń</b> w firmach różnej wielkości i z różnych branż.</p>
+<p class="v3-sub jasny">Podobny problem zwykle był już u kogoś rozwiązany, razem z tym, co przy nim nie zadziałało. <b>Dlatego rozmowa o Waszym procesie rzadko zaczyna się od zera.</b></p>
+</div>
+<div class="dm2-sp" style={`--spoty:${LUDZIE.length}`}>
+{LUDZIE.map((o) => (
+  <figure class="dm2-sp-s">
+    <img src={o.f} alt={o.n} width={o.w} height={o.h} style={`object-position:${o.poz}`} loading="lazy" decoding="async">
+    <figcaption class="dm2-sp-pod"><b>{o.n}</b><span>{o.r}</span></figcaption>
+  </figure>
+))}
+</div>
+</section>
+
+<!-- ============ 6 · LICZBY I CYTATY ============
+     Karty na rzędzie przykładów (miara nie jest „przed / po" w jednej
+     skali, więc własne karty — standard §8). Pod nimi klamra z sekcją 2:
+     zdania, które padają po wdrożeniu, i krótkie wezwanie. -->
+<section id="dowody" class="v3-sek">
+<div class="v8-gl">
+<h2 class="v3-h2">Co zmienia się u klientów po wdrożeniu</h2>
+<p class="v3-sub">Ten sam proces przed wdrożeniem i dziś, w czterech różnych działach.</p>
+</div>
+<div class="v4-dw dw-sc dm2-dws" data-dw-sc tabindex="0" role="region" aria-label="Liczby z wdrożeń, przewijane w poziomie">
+{LICZBY.map((x) => (
+  <article class="dw4-k">
+    <span class="dw4-p">{x.p}</span>
+    <p class="dm2-dw-l">{x.l}<span>{x.j}</span></p>
+    <h3 class="dm2-dw-t">{x.t}</h3>
+    <div class="dm2-dw-pp">
+      <p><b><i class="czk-j"></i>Przed</b>{x.przed}</p>
+      <p><b><i></i>Po</b>{x.po}</p>
+    </div>
+  </article>
+))}
+</div>
+<div class="dw-dol" data-dw-dol>
+<span></span>
+<div class="dw-str">
+<button type="button" data-dw-wstecz aria-label="Poprzednie liczby" disabled><svg class="hi" viewBox="0 0 16 16" set:html={HI['arrow-right']} style="transform:scaleX(-1)"></svg></button>
+<button type="button" data-dw-dalej aria-label="Następne liczby"><svg class="hi" viewBox="0 0 16 16" set:html={HI['arrow-right']}></svg></button>
+</div>
+</div>
+
+<div class="dm2-op">
+<h2 class="v3-h2m">Zdania, które padają po wdrożeniu</h2>
+<Cytat cytat="Let’s automate wziął pełną odpowiedzialność za projekt i dowiózł go do końca. To dlatego powierzyliśmy im kolejny, znacznie większy." logo="https://cdn.prod.website-files.com/625be9db7e9f071ffb58618a/682b89c78adefdc7985c5353_nars_black.svg" logoAlt="NARS Polska" imie="Jakub Ciołkowski" rola="Członek Zarządu, NARS Polska" />
+<div class="dm2-op-m">
+{OPINIE_MALE.map((o) => (
+  <figure class="rv">
+    <blockquote>„{o.c}”</blockquote>
+    <figcaption><b>{o.kto}</b>{o.rola}</figcaption>
+  </figure>
+))}
+</div>
+</div>
+
+<CtaPasek tytul="Opowiedzcie nam o procesie, który dziś uwiera najbardziej." />
+</section>
+
+<!-- ============ 7 · PIERWSZA ROZMOWA ============
+     Rezultat rozmowy, nie jej przebieg. Trzy odpowiedzi z GcCta v5;
+     w dwóch z nich nic nie sprzedajemy — to jedyne miejsce na stronie,
+     gdzie odsyłamy gdzie indziej. -->
+<section id="pierwsza-rozmowa" class="v3-sek v3-papier">
+<div class="v8-gl">
+<h2 class="v3-h2">Z czym wychodzicie z pierwszej rozmowy</h2>
+<p class="v3-sub">Trzydzieści minut, online albo telefonicznie. Rozmowa kończy się jedną z trzech odpowiedzi.</p>
+</div>
+<div class="dm2-od">
+{ODP.map((o, i) => (
+  <article class="dm2-od-k rv">
+    <div class="dm2-od-gl"><span class="dm2-od-ik" aria-hidden="true"><svg viewBox="0 0 16 16" set:html={o.ik}></svg></span><span class="dm2-od-n">{String(i + 1).padStart(2, '0')}</span></div>
+    <h3>{o.t}</h3>
+    <p>{o.d}</p>
+    <div class="dm2-od-pr"><div><small>Na przykład</small><b>{o.pk}</b><p>{o.pt}</p></div></div>
+  </article>
+))}
+</div>
+</section>
+
+<!-- ============ 8 · KONTAKT ============
+     Ten sam moduł co na podstronach usług. Szymon bez dopisku „prowadzi
+     pierwsze rozmowy" — w hero mówi to Piotr. -->
+<Kontakt tytul="Opowiedzcie, jak jest u Was" lead="Napiszcie w dwóch zdaniach, co się u Was dzieje. Odpowiemy w jeden dzień roboczy z propozycją terminu rozmowy." zrodlo="Dlaczego my" pytanie="Co się u Was dzieje?" podpowiedz="Np. mamy cztery systemy, dane przepisujemy ręcznie i nikt nie wie, ile to kosztuje…" osoba={{ foto: '/szymon-kita.jpg', w: 870, h: 1210, imie: 'Szymon Kita', rola: 'Założyciel Let’s automate' }} />
+
+</div>
+
+<GcFaq
+  heading="Pytania, które padają przed decyzją"
+  ctaLabel="Zadajcie nam swoje →"
+  items={faq}
+/>
+
+<script>
+  var redukcja = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ---- Rząd liczb: strzałki przewijają o jedną kartę (kopia z Dowody.astro).
+  // Kiedy karty mieszczą się w oknie, strzałek nie ma.
+  (function(){
+    var sc = document.querySelector('[data-dw-sc]');
+    if(!sc) return;
+    var dol = document.querySelector('[data-dw-dol]');
+    var wstecz = document.querySelector('[data-dw-wstecz]');
+    var dalej = document.querySelector('[data-dw-dalej]');
+    function krok(){ var k = sc.querySelector('.dw4-k'); return k ? k.getBoundingClientRect().width + parseFloat(getComputedStyle(sc).columnGap || 0) : 320; }
+    function stan(){
+      var max = sc.scrollWidth - sc.clientWidth - 2;
+      if(dol) dol.style.display = max <= 0 ? 'none' : '';
+      if(wstecz) wstecz.disabled = sc.scrollLeft <= 2;
+      if(dalej) dalej.disabled = sc.scrollLeft >= max;
+    }
+    function jedz(kier){ sc.scrollBy({ left: kier * krok(), behavior: redukcja ? 'auto' : 'smooth' }); }
+    if(wstecz) wstecz.addEventListener('click', function(){ jedz(-1); });
+    if(dalej) dalej.addEventListener('click', function(){ jedz(1); });
+    sc.addEventListener('scroll', stan, { passive: true });
+    window.addEventListener('resize', stan);
+    stan();
+  })();
+
+  // ---- Konta w projekcie: „w trakcie" → „po zakończeniu" ----
+  // Bez JS i przy ograniczonym ruchu zostaje stan końcowy (bez .wt).
+  // Z ruchem: start „w trakcie", po wejściu w kadr przejście dalej, chyba
+  // że czytelnik sam kliknął przełącznik.
+  (function(){
+    var f = document.querySelector('[data-konta]');
+    if(!f) return;
+    var guziki = f.querySelectorAll('[data-konta-st]');
+    var klik = false;
+    f.classList.add('js');
+    function ustaw(st){
+      f.classList.toggle('wt', st === 'wt');
+      guziki.forEach(function(b){ b.setAttribute('aria-pressed', b.getAttribute('data-konta-st') === st ? 'true' : 'false'); });
+    }
+    guziki.forEach(function(b){
+      b.addEventListener('click', function(){ klik = true; ustaw(b.getAttribute('data-konta-st')); });
+    });
+    if(redukcja || !('IntersectionObserver' in window)){ ustaw('po'); return; }
+    ustaw('wt');
+    var io = new IntersectionObserver(function(w){
+      if(!w[0].isIntersecting) return;
+      io.disconnect();
+      setTimeout(function(){ if(!klik) ustaw('po'); }, 2400);
+    }, { threshold: 0.45 });
+    io.observe(f);
+  })();
+</script>
+</LaBase>

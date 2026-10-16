@@ -1,0 +1,1276 @@
+---
+// WARIANT HERO v2 (13.10.2026) — do porównania z /guided-coding/audyt-aplikacji; reszta strony bez zmian
+// Hero w wariancie „okno": ciemna plansza, nagłówek u góry, papiery na stole
+// (notatnik z pięciu dni + raport na kartce A4) nachodzą na dolną krawędź.
+// Zmienione tylko: <Hero>, jego rysunek (.au2-*), dane i klatki ruchu hero
+// (NOTATNIK, AU_*), skrypt pauzy. Plik noindex, poza menu i sitemapą.
+//
+// AUDYT APLIKACJI — /guided-coding/audyt-aplikacji
+// Nowa usługa ścieżki „Budujecie sami z AI" (megamenu: „Audyt aplikacji ·
+// Co grozi awarią i co poprawić najpierw"), od razu pod swoim adresem.
+// Standard: docs/uslugi-standard.md, wzorzec: src/pages/systemy-procesowe.astro.
+// Treść: sekcja #start z dawnej strony „bez działu IT" (dziś plik
+// biezace-wsparcie.astro), bez-dzialu-it-old, dla-zespolow-old (dwa tygodnie
+// pomiaru, pół godziny z leadami), guided-coding-old (pięć obserwacji
+// z przeglądów, FAQ o dużym projekcie), guided-coding/index (lista po
+// przeglądzie, „przegląd wyceniamy osobno") i koncepcje w docs/.
+//
+// CO SPRZEDAJE: wynik audytu — raport, który ustawia poprawki w kolejności
+// (najpierw to, co grozi wyciekiem albo utratą danych klientów) i przy każdej
+// pozycji mówi, ile zajmie i kto ją zrobi. Audyt jest jeden dla obu typów
+// zespołów; różnice (5 dni / 2 tygodnie, co oglądamy, jak opisana jest
+// pozycja) stoją w jednym miejscu: sekcja #zespoly. Ciąg dalszy (bieżące
+// wsparcie, warsztaty) to jedna sekcja: #po-raporcie.
+//
+// TEZA (v3-teza w „Dlaczego"): najgroźniejsze rzeczy w aplikacji zbudowanej
+// z AI zwykle poprawia się w kilka godzin; trudniej je znaleźć niż poprawić
+// (z obserwacji na /guided-coding-old: „to zwykle dwie godziny roboty").
+//
+// JEDNA SPRAWA PRZEZ CAŁĄ STRONĘ: audyt panelu zamówień działu operacji,
+// pięć dni, siedem pozycji (tablica POZ). Te same numery, tytuły i czasy
+// wracają w hero (notatki → raport), na wydruku kodu (poz. 2, 4, 1 na
+// marginesie, reszta „poza tym plikiem"), w macierzy kolejności, na stronach
+// raportu w scenie, w przykładowej pozycji w #zespoly i w #po-raporcie
+// (pozycje „Wy, z instrukcją" = 1, 2, 4, 6). Zmiana tablicy POZ przelicza
+// sumy grup, liczbę pozycji do zrobienia samemu i opisy dostępności.
+//
+// KOLEJNOŚĆ SEKCJI (standard §2, pytania zakupowe tej usługi: co nam grozi →
+// skąd wiecie, co najpierw → czy zrozumiemy raport → czy to dla naszego
+// zespołu → czym to się różni od audytu kodu → co dalej i czy coś nam
+// wcisną → dla kogo):
+//   1 hero (wariant „okno": papiery na ciemnej planszy) · 2 czym jest + indeks
+//   „Co przechodzimy" · 3 zielony pas · 4 dlaczego (wydruk kodu, macierz)
+//   · 5 ciemna scena: trzy strony raportu · 6 zamiast przykładów „Ten sam
+//   audyt dla obu zespołów" + cytat + krótkie wezwanie (Dowody wypadają:
+//   brak prawdziwej miary przed/po z audytów) · 7 metoda (porównanie
+//   z typowym audytem kodu) · 8 po raporcie (trzy drogi, jedna z nich to
+//   bieżące wsparcie) · 9 dla kogo · 10 kontakt · 11 FAQ.
+//
+// RYSUNKI TEJ USŁUGI (gatunki inne niż /systemy-procesowe i inne niż
+// rysunki na /guided-coding/biezace-wsparcie, /guided-coding, /transfer-know-how):
+//   · hero — papiery na ciemnej planszy: notatnik na spirali z pięciu dni
+//     (zapiski długopisem w kolejności znalezienia, numer pozycji raportu
+//     dopisany czerwonym na marginesie) i pierwsza strona raportu jako druk
+//     na kartce A4 z dwiema kartkami pod spodem. Ruch raz, przy wejściu
+//     w kadr: zapiski dzień po dniu → numery na marginesie → pozycje
+//     wpisują się w raport w kolejności raportu → sumy grup i podpis;
+//     pauza poza kadrem;
+//   · Dlaczego 1 — wydruk eksport.ts z uwagami czerwonym długopisem: kółka
+//     i klamra w kodzie, numery pozycji na marginesie, pod spodem cztery
+//     pozycje, których w tym pliku nie widać (raz, z „jeszcze raz");
+//   · Dlaczego 2 — macierz kolejności: siedem pozycji według skutku (trzy
+//     pasy) i czasu poprawki (skala logarytmiczna); długopis obchodzi je
+//     w kolejności raportu i nadaje numery (raz, z „jeszcze raz");
+//   · scena — trzy strony raportu: pierwsza strona z werdyktem i spisem,
+//     „Co przejrzeliśmy" (także to, co jest bez uwag), pozycja 1 w całości;
+//   · #zespoly — dwie karty z przykładową pozycją raportu dla każdego zespołu.
+// Stan końcowy jest w markupie: bez JS i przy prefers-reduced-motion widać
+// wszystko. Stany pośrednie tylko pod .gra (Anim).
+//
+// BRAKI WE WSPÓLNYCH: w ikony.ts brakuje „document-check" i „command-line"
+// (Heroicons Micro) — dopisane lokalnie w IK, do przeniesienia do HI.
+//
+// DO POTWIERDZENIA PRZED PUBLIKACJĄ:
+//   · czasy: 5 dni (bez działu IT) i 2 tygodnie (dział IT) — z obecnych
+//     stron; „wycena po rozmowie" i „wyceniamy osobno, żeby dało się po nim
+//     podziękować" — z /guided-coding; kwoty nie ma nigdzie (żadna strona jej
+//     nie potwierdza);
+//   · cały raport panelu zamówień jest PRZYKŁADOWY: siedem pozycji (złożone
+//     z obserwacji „Pięć rzeczy, które widzimy prawie zawsze" i listy na
+//     /guided-coding), daty 5–9 października, dni znalezienia, czasy poprawek
+//     (dzień = 8 godzin, „dwa popołudnia" = 8 godzin, sumy grup 7/20/9 godzin),
+//     kod eksport.ts, liczby w „Co przejrzeliśmy" (64 pliki, 9 400 wierszy,
+//     3 tabele, 5 kont, 14 dni kopii), 3 000 → 40 000 zamówień (z obecnej
+//     strony); kod nie może przypominać kodu konkretnego klienta;
+//   · zasady kolejności (najpierw skutek: dane klientów → praca działu →
+//     koszty; w grupie od najkrótszej poprawki) i trzy nazwy grup — opis
+//     sposobu pracy do potwierdzenia przez prowadzących audyty;
+//   · elementy pozycji raportu poza czterema częściami (polecenie do
+//     wklejenia, „jak sprawdzić", zasada do CLAUDE.md) — zobowiązanie co do
+//     kształtu raportu;
+//   · pozycja raportu w dziale IT („ile czasu odzyskuje, ile kosztuje,
+//     kto wprowadza, którą liczbę ma poruszyć", część pozycji odradzamy) —
+//     z docs/dla-zespolow-doradztwo-koncepcja.md, tam propozycja; przykład
+//     „6 godzin tygodniowo, 2 dni, lead modułu" zmyślony;
+//   · Marcel Bilski jako twarz pasa (Tech Lead, w rejestrze zespołu
+//     „Automation Developer") i jako prowadzący audyt w przykładowym
+//     raporcie — prawdziwa osoba w przykładowym dokumencie;
+//   · cytat X2O jest prawdziwy (strona główna), ale dotyczy współpracy
+//     ogólnie, nie audytu; bez logotypu (brak pliku znaku);
+//   · lewa kolumna metody opisuje typowy audyt kodu, nie konkretną firmę;
+//     „200+ wdrożeń" jak na /guided-coding (pasek logotypów: „140+ firm",
+//     wzorzec: „140+ wdrożeń") — do jednej decyzji;
+//   · „Kiedy to nie ma sensu": zdanie o formalnym teście bezpieczeństwa
+//     z certyfikatem — granica dopisana tutaj, do potwierdzenia;
+//   · „Pierwsza rozmowa jest bezpłatna" — z obecnych stron („bezpłatna
+//     diagnoza").
+//   · HERO v2: w notatniku dwa zapiski „bez uwag" (logowanie i role,
+//     biblioteki) — dopisane, żeby zgadzały się z „Co przejrzeliśmy";
+//     podpis Marcela Bilskiego to wymyślony zygzak, nie jego podpis; pismo
+//     notatnika to Caveat z Google Fonts (osobny link, display=block);
+//     .gra w hero zakłada skrypt inline pod rysunkiem (Anim robi to za
+//     późno dla rysunku w pierwszym ekranie).
+import LaBase from '../../layouts/LaBase.astro';
+import GcFaq from '../../components/GcFaq.astro';
+import Styl from '../../components/usluga/Styl.astro';
+import Anim from '../../components/usluga/Anim.astro';
+import Hero from '../../components/usluga/Hero.astro';
+import Procesy from '../../components/usluga/Procesy.astro';
+import Pas from '../../components/usluga/Pas.astro';
+import Cytat from '../../components/usluga/Cytat.astro';
+import CtaPasek from '../../components/usluga/CtaPasek.astro';
+import Metoda from '../../components/usluga/Metoda.astro';
+import DlaKogo from '../../components/usluga/DlaKogo.astro';
+import Kontakt from '../../components/usluga/Kontakt.astro';
+import { HI, SYGNET } from '../../components/usluga/ikony';
+
+const kanon = new URL('/guided-coding/audyt-aplikacji', Astro.site).href;
+
+const title = "Audyt aplikacji zbudowanej z AI — co grozi awarią i co poprawić najpierw | Let's automate";
+const description = 'Audyt aplikacji zbudowanej w Claude Code albo w Codexie: kod, dane klientów, dostępy, kopie i rachunki. Raport ustawia poprawki w kolejności i przy każdej mówi, ile zajmie i kto ją zrobi.';
+
+// Heroicons Micro (16 × 16, solid), których nie ma w ikony.ts — tylko tutaj.
+const IK = {
+  ...HI,
+  'document-check': '<path fill-rule="evenodd" d="M4 2a1.5 1.5 0 0 0-1.5 1.5v9A1.5 1.5 0 0 0 4 14h8a1.5 1.5 0 0 0 1.5-1.5V6.621a1.5 1.5 0 0 0-.44-1.06L9.94 2.439A1.5 1.5 0 0 0 8.878 2H4Zm6.713 4.16a.75.75 0 0 1 .127 1.053l-2.75 3.5a.75.75 0 0 1-1.078.106l-1.75-1.5a.75.75 0 1 1 .976-1.138l1.156.99L9.66 6.287a.75.75 0 0 1 1.053-.127Z" clip-rule="evenodd"/>',
+  'command-line': '<path fill-rule="evenodd" d="M2 4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V4Zm2.22 1.97a.75.75 0 0 0 0 1.06l.97.97-.97.97a.75.75 0 1 0 1.06 1.06l1.5-1.5a.75.75 0 0 0 0-1.06l-1.5-1.5a.75.75 0 0 0-1.06 0ZM8.75 8.5a.75.75 0 0 0 0 1.5h2.5a.75.75 0 0 0 0-1.5h-2.5Z" clip-rule="evenodd"/>',
+};
+
+// polska odmiana: 1 / 2–4 / 5+
+const odm = (n, jeden, kilka, wiele) => (n === 1 ? jeden : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14) ? kilka : wiele);
+const godzin = (h) => `${h} ${odm(h, 'godzina', 'godziny', 'godzin')}`;
+
+// =====================================================================
+// RAPORT PANELU ZAMÓWIEŃ · siedem pozycji (PRZYKŁADOWE)
+// n = miejsce w raporcie, g = grupa, dz = dzień znalezienia (0 = pn),
+// h = czas poprawki w godzinach (do sum i do macierzy), kto: w = Wy,
+// z instrukcją; r = razem przy ekranie; rw = razem, potem Wy.
+// notka = jak rzecz stoi w notatkach z danego dnia; k = krótka nazwa
+// (macierz na wąskim ekranie); dy/lab = położenie w macierzy.
+// =====================================================================
+const POZ = [
+  { n: 1, g: 0, dz: 1, h: 1, czas: 'godzina', kto: 'w', k: 'dziennik', mx: 'Dane w dzienniku',
+    t: 'Dane klientów trafiają do dziennika zdarzeń', d: 'NIP-y i telefony leżą w logach, których nikt nie czyści.',
+    notka: 'NIP-y i telefony lecą do dziennika zdarzeń' },
+  { n: 2, g: 0, dz: 0, h: 2, czas: '2 godziny', kto: 'w', k: 'hasło', mx: 'Hasło w kodzie',
+    t: 'Hasło do poczty wpisane w kod', d: 'Kto zobaczy kod, wyśle maile w imieniu firmy.',
+    notka: 'hasło do poczty wprost w kodzie' },
+  { n: 3, g: 0, dz: 2, h: 4, czas: 'pół dnia', kto: 'r', k: 'kopia', mx: 'Powrót z kopii',
+    t: 'Nikt nie sprawdził powrotu z kopii', d: 'Kopia powstaje co noc. Nie wiadomo, czy da się z niej wrócić.',
+    notka: 'kopia co noc, nikt z niej nie wracał' },
+  { n: 4, g: 1, dz: 1, h: 8, czas: 'dzień', kto: 'w', k: 'eksport', mx: 'Eksport', dy: 12, lab: 'g',
+    t: 'Eksport stanie przy większym ruchu', d: 'Dziś 3 000 zamówień. Przy 40 000 panel stanie dla wszystkich.',
+    notka: 'eksport bierze wszystkie zamówienia naraz' },
+  { n: 5, g: 1, dz: 3, h: 12, czas: 'półtora dnia', kto: 'rw', k: 'testy', mx: 'Test zamówienia', dy: -8,
+    t: 'Ścieżka zamówienia nie ma żadnego testu', d: 'Błąd w zamówieniu zgłosi dopiero klient.',
+    notka: 'zero testów na ścieżce zamówienia' },
+  { n: 6, g: 2, dz: 4, h: 1, czas: 'godzina', kto: 'w', k: 'usługi', mx: 'Usługi po próbach',
+    t: 'Płatne usługi zostały po próbach', d: 'Dwie usługi z nieudanych prób dalej są na rachunku.',
+    notka: 'dwie usługi po próbach dalej płatne' },
+  { n: 7, g: 2, dz: 0, h: 8, czas: 'dwa popołudnia', kto: 'r', k: 'autor', mx: 'Uruchamia tylko autor',
+    t: 'Projekt od zera uruchamia tylko autor', d: 'Bez niego nikt nie postawi aplikacji na nowo.',
+    notka: 'projekt od zera stawia tylko autor' },
+];
+const KTO = { w: 'Wy, z instrukcją', r: 'razem przy ekranie', rw: 'razem, potem Wy' };
+const GRUPY = [
+  { t: 'Najpierw, w tym tygodniu', s: 'Wyciek albo utrata danych klientów' },
+  { t: 'W pierwszym miesiącu', s: 'Staje praca działu albo zamówienia' },
+  { t: 'Może poczekać', s: 'Kosztuje albo spowalnia' },
+].map((g, i) => ({ ...g, i, h: POZ.filter((x) => x.g === i).reduce((a, x) => a + x.h, 0), poz: POZ.filter((x) => x.g === i) }));
+const SAMI = POZ.filter((x) => x.kto === 'w');                    // 1, 2, 4, 6
+const RAZEM = POZ.filter((x) => x.kto !== 'w');                   // 3, 5, 7
+const NAJPIERW_H = GRUPY[0].h;                                    // 7
+const DNI = [
+  { dz: 'pn', data: '5.10' },
+  { dz: 'wt', data: '6.10' },
+  { dz: 'śr', data: '7.10' },
+  { dz: 'cz', data: '8.10' },
+  { dz: 'pt', data: '9.10' },
+];
+const PROWADZACY = { foto: '/team/marcel-bilski.png', imie: 'Marcel Bilski' };
+
+// =====================================================================
+// HERO · notatnik z pięciu dni i pierwsza strona raportu (papiery na planszy)
+// Notatnik: zapiski w kolejności znalezienia (pierwszego dnia najpierw
+// uruchomienie projektu), przy każdym numer pozycji raportu dopisany
+// czerwonym długopisem; ✓ = obejrzane, bez uwag — te same dwa obszary co
+// „bez uwag" na stronie „Co przejrzeliśmy" w scenie (PRZEJRZANE).
+// Ruch (sekundy od wejścia w kadr; animacje CSS tylko pod .gra, pauza
+// poza kadrem przez .stoi): A zapiski dzień po dniu → B numery na
+// marginesie, od góry notatnika → C pozycje wpisują się w raport
+// w kolejności raportu, a zapisek, z którego pochodzi pozycja, jaśnieje
+// w notatniku → D sumy grup, „4 z 7" i podpis. Bez notatnika (wąski ekran)
+// raport zaczyna od razu: wszystkie czasy raportu minus --skok.
+// =====================================================================
+const NOTATNIK = [[7, 2], [4, 1, 'logowanie i role bez uwag'], [3], [5, 'biblioteki aktualne, bez znanych luk'], [6]]
+  .map((dzien) => dzien.map((x) => (typeof x === 'number' ? { n: x, t: POZ.find((p) => p.n === x).notka } : { n: 0, t: x })));
+const r2 = (x) => +x.toFixed(2);
+const auPis = (s) => r2(Math.min(0.46, Math.max(0.24, s.length * 0.0085)));  // czas pisania zapisku
+let auT = 0.3;
+const AU_DNI = DNI.map((d, i) => {
+  const tz = { t: r2(auT), d: 0.22 };                               // nagłówek dnia
+  auT += 0.28;
+  const w = NOTATNIK[i].map((x) => { const o = { ...x, t0: r2(auT), d: auPis(x.t) }; auT += o.d + 0.05; return o; });
+  auT += 0.12;
+  return { ...d, tz, w };
+});
+auT += 0.2;
+const AU_WIERSZE = AU_DNI.flatMap((d) => d.w);
+AU_WIERSZE.forEach((x) => { x.tm = r2(auT); auT += 0.17; });          // B: długopis na marginesie
+auT += 0.3;
+const AU_C0 = r2(auT);                                               // C: notatnik przygasa
+auT += 0.3;
+const AU_TG = [];
+const AU_TP = {};
+GRUPY.forEach((g) => { AU_TG[g.i] = r2(auT); auT += 0.2; g.poz.forEach((x) => { AU_TP[x.n] = r2(auT); auT += 0.42; }); });
+auT += 0.2;
+const AU_C1 = r2(auT);
+const AU_SUMA = r2(auT + 0.1);                                       // D: + 0.12 s na grupę
+const AU_SAMI = r2(auT + 0.5);
+const AU_PODP = r2(auT + 0.6);                                       // podpis: 0.25 + 0.45 + kreska 0.3 s
+// Przygaszenie zapisków w fazie C; zapisek jaśnieje, gdy jego pozycja się wpisuje.
+const AU_FD = r2(AU_C1 + 0.5 - AU_C0);
+const auPr = (t) => `${(((t - AU_C0) / AU_FD) * 100).toFixed(2)}%`;
+const AU_KLATKI = AU_WIERSZE.map((x, k) => {
+  const tf = x.n ? AU_TP[x.n] : null;
+  const f = ['0%{opacity:1}', `${auPr(AU_C0 + 0.3)}{opacity:.3}`];
+  if (tf != null) f.push(`${auPr(tf - 0.1)}{opacity:.3}`, `${auPr(tf + 0.02)}{opacity:1}`, `${auPr(tf + 0.4)}{opacity:1}`, `${auPr(tf + 0.56)}{opacity:.3}`);
+  f.push(`${auPr(AU_C1)}{opacity:.3}`, '100%{opacity:1}');
+  return `@keyframes au2-f${k}{${f.join('')}}.au2.gra .au2-n.f${k}{animation:au2-f${k} ${AU_FD}s linear ${AU_C0}s both}`;
+}).join('\n');
+const AU_ARIA = `Na ciemnej planszy notatnik z pięciodniowego audytu panelu zamówień, który zbudował dział operacji, i pierwsza strona raportu. W notatniku zapiski z kolejnych dni w kolejności znalezienia, przy każdym numer pozycji raportu dopisany czerwonym długopisem; logowanie i biblioteki są bez uwag. W raporcie te same rzeczy stoją w kolejności poprawek. ${GRUPY.map((g) => `${g.t}, razem ${godzin(g.h)}: ${g.poz.map((x) => `${x.n}. ${x.t.toLowerCase()}, ${x.czas}, ${KTO[x.kto]}`).join('; ')}`).join('. ')}. ${SAMI.length} z ${POZ.length} poprawek zespół zrobi sam, z instrukcją. Raport podpisał ${PROWADZACY.imie}, który prowadził audyt.`;
+
+// =====================================================================
+// DLACZEGO 1 · wydruk eksport.ts z uwagami
+// Kod PRZYKŁADOWY. Zaznaczone miejsca: wiersz 7 (poz. 2), klamra 12–15
+// (poz. 4), wiersz 17 (poz. 1) — numery liczą się z tablicy (wiersz()).
+// Wiersze są szerokie na swoją treść, więc klamra stoi tuż za wierszem 12.
+// t = sekunda, w której pojawia się znak.
+// =====================================================================
+const KOD = [
+  { s: "import { baza } from '../baza';" },
+  { s: "import { wyslij } from '../poczta';" },
+  { s: "import { doCSV } from '../pliki';" },
+  { s: '' },
+  { s: 'const POCZTA = {' },
+  { s: "  login: 'zamowienia'," },
+  { a: '  haslo: ', m: "'Wiosna2026!'", b: ',', z: 2 },
+  { s: '};' },
+  { s: '' },
+  { s: '// eksport zamówień dla księgowości' },
+  { s: 'export async function eksport(od: Date) {' },
+  { s: '  const lista = await baza.zamowienie.findMany({', kl: 4, z: 4 },
+  { s: '    where: { utworzone: { gte: od } },' },
+  { s: '    include: { klient: true },' },
+  { s: '  });' },
+  { s: '' },
+  { a: "  console.log('eksport', ", m: 'lista', b: ');', z: 1 },
+  { s: '' },
+  { s: "  const plik = doCSV(lista, ['nr', 'nip', 'kwota']);" },
+  { s: "  await wyslij(POCZTA, 'ksiegowosc@firma.pl', plik);" },
+  { s: '  return lista.length;' },
+  { s: '}' },
+];
+const WK_T = { 2: 0.4, 4: 1.9, 1: 3.4 };
+const wiersz = (z) => KOD.findIndex((w) => w.z === z);       // indeks od zera
+const WK_UWAGI = [
+  { z: 2, t: 'Hasło do poczty zapisane w kodzie. Kto zobaczy kod, wyśle maile w imieniu firmy.' },
+  { z: 4, t: 'Bierze wszystkie zamówienia naraz. Przy 3 000 działa, przy 40 000 panel stanie.' },
+  { z: 1, t: 'Cała lista z NIP-ami i telefonami klientów ląduje w dzienniku zdarzeń.' },
+].map((u) => ({ ...u, l: wiersz(u.z) }));
+const W1 = wiersz(1) + 1;                                       // wiersz z pozycją 1 (strona raportu)
+const WK_POZA = [
+  { n: 3, t: 'nikt nie próbował wrócić z kopii' },
+  { n: 5, t: 'ścieżka zamówienia bez testu' },
+  { n: 6, t: 'płatne usługi po próbach' },
+  { n: 7, t: 'od zera uruchamia tylko autor' },
+].map((x, i) => ({ ...x, g: POZ.find((p) => p.n === x.n).g, t0: 5 + i * 0.18 }));
+const W_KODZIE = POZ.length - WK_POZA.length;                     // 3
+// Prosty podział na słowa kluczowe, napisy i komentarze — tylko do kolorów.
+const tokeny = (s) => {
+  const out = [];
+  const re = /(\/\/.*$|'[^']*'|\b(?:import|from|const|export|async|function|await|return|true)\b)/g;
+  let i = 0, m;
+  while ((m = re.exec(s))) {
+    if (m.index > i) out.push({ c: '', t: s.slice(i, m.index) });
+    out.push({ c: m[0][0] === "'" ? 's' : m[0][0] === '/' ? 'c' : 'k', t: m[0] });
+    i = m.index + m[0].length;
+  }
+  if (i < s.length) out.push({ c: '', t: s.slice(i) });
+  return out;
+};
+const WK_ARIA = `Wydruk pliku eksport.ts z uwagami czerwonym długopisem. W wierszu ${wiersz(2) + 1} hasło do poczty wpisane wprost w kod: pozycja 2 raportu. Klamra przy wierszach ${wiersz(4) + 1}–${wiersz(4) + 4}: zapytanie pobiera wszystkie zamówienia naraz, pozycja 4. W wierszu ${W1} cała lista zamówień z danymi klientów trafia do dziennika zdarzeń, pozycja 1. Pod kodem cztery pozycje, których w tym pliku nie widać: ${WK_POZA.map((x) => `${x.n}, ${x.t}`).join('; ')}.`;
+
+// =====================================================================
+// DLACZEGO 2 · macierz kolejności
+// x = czas poprawki na skali logarytmicznej (godzina → dwa dni), pasy =
+// skutek (te same trzy grupy co w raporcie). Długopis obchodzi pozycje
+// w kolejności raportu: jedna pozycja na sekundę.
+// =====================================================================
+const MX_X = (h) => +(6 + (Math.log2(h) / 4) * 88).toFixed(2);
+const MX_OS = [['godzina', 1], ['2 godziny', 2], ['pół dnia', 4], ['dzień', 8], ['dwa dni', 16]].map(([t, h]) => ({ t, x: MX_X(h) }));
+const MX_KR = { 'godzina': 'godz.', '2 godziny': '2 godz.', 'pół dnia': 'pół dnia', 'dzień': 'dzień', 'dwa dni': '2 dni' };
+const MX_YB = ['16.667%', '50%', '83.333%'];
+const MX_P = POZ.map((x, k) => ({
+  ...x,
+  x: MX_X(x.h),
+  yb: MX_YB[x.g],
+  dy: x.dy || 0,
+  lw: x.lab === 'g',                  // podpis nad punktem
+  t0: +(0.7 + k * 1.0).toFixed(2),    // sekunda, w której długopis dochodzi do punktu
+}));
+const MX_T = 8.6;
+const mxk = (t) => `${((t / MX_T) * 100).toFixed(2)}%`;
+const mxPoz = (p) => `left:${p.x}%;top:calc(${p.yb} + var(--off) + ${p.dy}px)`;
+const MX_KLATKI = (() => {
+  const f = [`0%{opacity:0;${mxPoz(MX_P[0])}}`, `${mxk(MX_P[0].t0 - 0.35)}{opacity:0;${mxPoz(MX_P[0])};transform:scale(1.5)}`];
+  MX_P.forEach((p) => {
+    f.push(`${mxk(p.t0)}{opacity:1;${mxPoz(p)};transform:none;animation-timing-function:linear}`);
+    f.push(`${mxk(p.t0 + 0.38)}{opacity:1;${mxPoz(p)};transform:none;animation-timing-function:cubic-bezier(.55,0,.3,1)}`);
+  });
+  const o = MX_P[MX_P.length - 1];
+  f.push(`${mxk(o.t0 + 0.9)}{opacity:0;${mxPoz(o)};transform:scale(1.4)}`, `100%{opacity:0;${mxPoz(o)}}`);
+  return `@keyframes mx-pen{${f.join('')}}\n.mx.gra.on .mx-pen{animation:mx-pen ${MX_T}s both}`;
+})();
+// Podpis grupy pojawia się, gdy długopis skończy jej ostatnią pozycję.
+const MX_G = GRUPY.map((g) => ({ ...g, t0: +(MX_P.filter((p) => p.g === g.i).slice(-1)[0].t0 + 0.4).toFixed(2) }));
+const MX_ARIA = `Siedem pozycji raportu według skutku i czasu poprawki. ${MX_G.map((g) => `${g.s}, w raporcie „${g.t.toLowerCase()}”: ${g.poz.map((x) => `${x.n}. ${x.mx.toLowerCase()}, ${x.czas}`).join('; ')}`).join('. ')}. Najpierw idą pozycje z górnego pasa i w nim od najkrótszej poprawki; usługi po próbach poprawia się w godzinę, a stoją na szóstym miejscu.`;
+
+// =====================================================================
+// SCENA · trzy strony raportu (PRZYKŁADOWE liczby w „Co przejrzeliśmy")
+// =====================================================================
+const ZAKLADKI = [
+  { t: 'Pierwsza strona', p: 'W kilku zdaniach: czy aplikację da się rozwijać dalej i co trzeba zrobić w tym tygodniu. Obok spis poprawek w kolejności, z numerem strony.' },
+  { t: 'Co przejrzeliśmy', p: 'Wszystko, co obejrzeliśmy, także to, co jest w porządku. Przy każdej rzeczy numer pozycji w raporcie.' },
+  { t: 'Pozycja 1', p: 'Każda pozycja w czterech częściach, z poleceniem do wklejenia w Claude Code i ze sposobem, żeby sprawdzić, czy poprawka działa.' },
+];
+const STRON = POZ.length + 2;                                     // 9
+const PRZEJRZANE = [
+  { o: 'Kod aplikacji', c: '64 pliki, około 9 400 wierszy', p: [1, 2, 4] },
+  { o: 'Dane klientów', c: '3 tabele z danymi osobowymi i dziennik zdarzeń', p: [1] },
+  { o: 'Logowanie i konta użytkowników', c: 'hasła, role, wylogowanie po bezczynności', p: [] },
+  { o: 'Dostępy do usług', c: 'klucze i hasła do 4 usług, 5 kont na serwerze', p: [2] },
+  { o: 'Kopie zapasowe', c: 'kopia co noc, trzymana 14 dni', p: [3] },
+  { o: 'Ścieżka zamówienia', c: 'od złożenia do zmiany statusu i faktury', p: [5] },
+  { o: 'Ruch', c: 'eksport i lista zamówień przy 40 000 rekordów', p: [4] },
+  { o: 'Uruchomienie od zera', c: 'postawienie projektu na czystym komputerze', p: [7] },
+  { o: 'Rachunki za usługi', c: 'faktury z ostatnich trzech miesięcy', p: [6] },
+  { o: 'Biblioteki', c: 'wersje i znane luki', p: [] },
+];
+const BEZ_UWAG = PRZEJRZANE.filter((x) => !x.p.length).length;   // 2
+const P1 = POZ[0];
+const P1_CZESCI = [
+  { t: 'Co zobaczyliśmy', d: 'Przy każdym eksporcie aplikacja zapisuje w dzienniku zdarzeń całą listę zamówień razem z danymi klientów, także NIP-y i telefony. Dziennika nikt nie czyści, a widzi go każdy, kto ma dostęp do serwera.' },
+  { t: 'Co proponujemy', d: 'Niech do dziennika trafia tylko liczba zamówień w eksporcie. Wpisy, które już tam są, usuwacie raz, ręcznie.' },
+  { t: 'Ile to zajmie', d: 'Około godziny, razem ze sprawdzeniem.' },
+  { t: 'Czego nie ruszamy', d: 'Samego eksportu i pliku, z którego korzysta księgowość.' },
+];
+
+// =====================================================================
+// CZYM JEST · indeks rozwijany (obserwacje z /guided-coding-old i /guided-coding)
+// =====================================================================
+const OBSZARY = [
+  { t: 'Klucze i dostępy',
+    a: 'Gdzie leżą hasła i klucze do poczty i bazy danych oraz kto ma konto z prawem do wszystkiego.',
+    b: 'Hasła wpisane w kod, bo na starcie tak było najszybciej. Przeniesienie ich w bezpieczne miejsce to zwykle dwie godziny roboty.' },
+  { t: 'Dane klientów',
+    a: 'Jakie dane osobowe zbiera aplikacja, gdzie je zapisuje i jak długo trzyma.',
+    b: 'Dane trafiają do dziennika zdarzeń, a nikt nie ustalił, jak długo je trzymać. To drugie jest decyzją po Waszej stronie, kod zmienia się po niej.' },
+  { t: 'Kopie i powrót',
+    a: 'Czy kopia zapasowa powstaje i czy da się z niej wrócić do działającej aplikacji.',
+    b: 'Kopia istnieje, ale nikt nigdy nie próbował z niej wrócić. Próbne odtworzenie robimy razem przy jednym ekranie.' },
+  { t: 'Ścieżki z pieniędzmi',
+    a: 'Zamówienia i płatności, czyli miejsca, w których błąd kosztuje od razu.',
+    b: 'Ścieżka zamówienia bez żadnego testu. Awarię zgłasza klient, czasem po dwóch dniach.' },
+  { t: 'Ruch i wydajność',
+    a: 'Co stanie się z aplikacją, kiedy danych będzie dziesięć razy więcej.',
+    b: 'Eksport pobiera wszystkie zamówienia naraz. Przy 3 000 działa, przy 40 000 panel stanie dla wszystkich.' },
+  { t: 'Uruchomienie i rachunki',
+    a: 'Czy ktoś poza autorem postawi projekt od zera i za co płacicie co miesiąc.',
+    b: 'Projekt uruchamia tylko autor, a po nieudanych próbach nikt nie wyłącza usług, za które płacicie.' },
+  { t: 'Praca z agentami w dziale IT',
+    a: 'Historia zadań, konfiguracje agentów i to, jak zespół opisuje pracę.',
+    b: 'Reguły domeny, których nikt nie zapisał, i zadania krojone na porcje wielkości człowieka. Pierwsze podejście agenta wraca wtedy do przeróbki.' },
+];
+
+// =====================================================================
+// DWA ZESPOŁY · bez działu IT i z działem IT (bez-dzialu-it, dla-zespolow)
+// =====================================================================
+const ZESPOLY = [
+  { e: 'Bez działu IT', ik: 'wrench-screwdriver',
+    t: 'Aplikację zbudował ktoś z operacji, finansów albo sprzedaży',
+    w: [
+      ['Czas', '5 dni', true],
+      ['Od Was', 'Zaproszenie do projektu i do miejsca, gdzie leży kod. Cofacie je jednym kliknięciem.'],
+      ['Oglądamy', 'Kod i to, na czym stoi aplikacja: dane klientów, dostępy, kopie zapasowe i rachunki.'],
+      ['Pozycja raportu', 'W czterech częściach, z poleceniem do wklejenia w Claude Code.'],
+      ['Poprawki', 'Większość robicie sami, z instrukcją. Trudniejsze razem przy jednym ekranie.'],
+      ['Wycena', 'Po rozmowie, osobno od dalszej współpracy.'],
+    ],
+    poz: { n: POZ[1].n, g: POZ[1].g, t: POZ[1].t, m: [POZ[1].czas, KTO[POZ[1].kto]] } },
+  { e: 'Z działem IT', ik: 'code-bracket',
+    t: 'Zespół inżynierów pracuje z agentami od kilku miesięcy',
+    w: [
+      ['Czas', '2 tygodnie', true],
+      ['Od Was', 'Dostęp do odczytu repozytoriów i CI, historia zadań i pół godziny z każdym z leadów.'],
+      ['Oglądamy', 'To samo co obok, a do tego miejsca, w których pierwsze podejście agenta wraca do przeróbki.'],
+      ['Pozycja raportu', 'Z uzasadnieniem: ile czasu odzyskuje, ile kosztuje wdrożenie, kto ją u Was wprowadza i którą liczbę ma poruszyć. Część pozycji odradzamy, z powodem.'],
+      ['Poprawki', 'Wasz zespół, w swoim rytmie. Ten sam pomiar da się powtórzyć za kwartał, u Was albo z nami.'],
+      ['Wycena', 'Po rozmowie, osobno od dalszej współpracy.'],
+    ],
+    poz: { n: 1, g: 0, t: 'Agent nie zna reguł domeny zamówień', m: ['odzyskuje ok. 6 godzin tygodniowo', 'wdrożenie 2 dni', 'wprowadza lead modułu'] } },
+];
+
+// =====================================================================
+// METODA · porównanie z typowym audytem kodu
+// =====================================================================
+const METODA = [
+  { k: 'Co oglądamy', ik: 'magnifying-glass',
+    r: 'Kod przepuszczony przez narzędzie do skanowania.',
+    t: 'Kod i wszystko, na czym stoi aplikacja', m: `Kopie zapasowe, dostępy, dane klientów i rachunki za usługi. W raporcie panelu zamówień ${WK_POZA.length} pozycje z ${POZ.length} leżą poza kodem.` },
+  { k: 'Raport', ik: 'list-bullet',
+    r: 'Lista wszystkich znalezisk z oceną według skali narzędzia.',
+    t: 'Kolejność poprawek', m: 'Najpierw to, co grozi danym klientów, potem pracy działu. W każdej grupie od najkrótszej poprawki.' },
+  { k: 'Język', ik: 'document-text',
+    r: 'Pisany dla programisty.',
+    t: 'Do przeczytania bez programisty', m: 'Każda pozycja w czterech częściach: co zobaczyliśmy, co proponujemy, ile to zajmie i czego nie ruszamy.' },
+  { k: 'Poprawki', ik: 'wrench-screwdriver',
+    r: 'Wykonawca audytu wycenia je u siebie.',
+    t: 'Większość robicie sami', m: 'Z instrukcją i poleceniem do wklejenia w Claude Code. Wycenę dalszej pracy dostajecie tylko na prośbę.' },
+  { k: 'Kto przegląda', ik: 'users',
+    r: 'Osoba od bezpieczeństwa, która nie pracuje w Claude Code ani w Codexie.',
+    t: 'Inżynier, który sam buduje z AI', m: 'Ktoś, kto w tym tygodniu sam wypuścił coś do ludzi w tym samym sposobie pracy.' },
+  { k: 'Żeby nie wróciło', ik: 'arrow-path',
+    r: 'Raport kończy się na liście.',
+    t: 'Zasada do Waszego repozytorium', m: 'Przy pozycjach, które AI mogłoby powtórzyć, stoi zasada do dopisania w pliku, który czyta przy każdej zmianie.' },
+];
+
+// =====================================================================
+// PO RAPORCIE · trzy drogi
+// =====================================================================
+const DROGI = [
+  { t: 'Sami, według raportu',
+    d: `Pozycje z dopiskiem „Wy, z instrukcją” mają opis krok po kroku i polecenie do wklejenia w Claude Code. W raporcie panelu zamówień to ${SAMI.length} pozycje z ${POZ.length}.`,
+    poz: SAMI, a: { h: '#raport', t: 'Jak wygląda pozycja raportu' } },
+  { t: 'Z bieżącym wsparciem',
+    d: 'Pierwszy miesiąc zaczyna się od góry listy z raportu. Pozycje do zrobienia razem robimy przy jednym ekranie, a każda kolejna wersja aplikacji przechodzi przegląd według zasad zapisanych w Waszym repozytorium.',
+    poz: RAZEM, a: { h: '/guided-coding/biezace-wsparcie', t: 'Bieżące wsparcie' } },
+  { t: 'Z warsztatami dla zespołu',
+    d: 'Zamknięty cykl sesji na Waszym kodzie. Program składamy z tego, co wyszło w audycie, i prowadzimy go na sprawach z bieżącego tygodnia.',
+    a: { h: '/guided-coding/transfer-know-how', t: 'Warsztaty dla zespołu' } },
+];
+
+// =====================================================================
+// DLA KOGO
+// =====================================================================
+const DLA_KOGO = [
+  { t: 'Dział korzysta z aplikacji, której nikt z zewnątrz nie oglądał',
+    d: 'Powstała w kilka wieczorów w Claude Code albo w Codexie, dziś siedzi w niej codzienna robota działu. Przy każdej większej zmianie autor się waha.' },
+  { t: 'Przez aplikację zaczęły iść pieniądze albo dane klientów',
+    d: 'Idą przez nią zamówienia i faktury z NIP-ami klientów. Stawka podniosła się na tyle, że pomyłka kosztuje.' },
+  { t: 'Aplikacja ma przeżyć odejście autora',
+    d: 'Uruchomić ją od zera umie jedna osoba, która za miesiąc zmienia dział albo odchodzi z firmy.' },
+  { t: 'Dział IT ma agentów i oddaje im ułamek roboty',
+    d: 'Pierwsze podejście wraca do przeróbki, więc zadania oddawane agentom robią się coraz mniejsze. Audyt pokazuje, czego brakuje w repozytorium.' },
+];
+const NIE_TERAZ = [
+  'Budujecie prototyp do wyrzucenia albo narzędzie dla jednej osoby. Tam szybkość jest ważniejsza od zasad.',
+  'Aplikacja i tak idzie do przepisania. Najpierw zapada ta decyzja, audyt ma sens dopiero po niej.',
+  'Potrzebujecie formalnego testu bezpieczeństwa z certyfikatem, na przykład do przetargu. Ten audyt go nie zastąpi.',
+  'To, czego potrzebujecie, da się kupić taniej z półki. Wtedy powiemy to na pierwszej rozmowie.',
+];
+
+// =====================================================================
+// FAQ
+// =====================================================================
+const faq = [
+  { q: 'Czy na koniec zaproponujecie nam duży projekt?',
+    a: 'Raport kończy się listą poprawek, w której najwięcej jest takich do zrobienia samodzielnie, z instrukcją. Jeśli przy czymś naszym zdaniem warto pomóc, powiemy to i uzasadnimy. Wycenę dostaniecie tylko wtedy, gdy o nią poprosicie.' },
+  { q: 'Nie mamy nikogo technicznego. Czy zrozumiemy raport?',
+    a: 'Każda pozycja ma cztery części: co zobaczyliśmy, co proponujemy, ile to zajmie i czego nie ruszamy. Do tego polecenie do wklejenia w Claude Code i sposób, żeby sprawdzić, czy poprawka działa. Pozycja, po której ktoś czuje się głupszy, jest źle napisaną pozycją — to jedyne kryterium, po którym oceniamy własną robotę.' },
+  { q: 'Musicie mieć dostęp do wszystkiego?',
+    a: 'Nie. Wystarczy podgląd do projektu i do miejsca, gdzie leży kod — w większości narzędzi to zaproszenie na adres e-mail, do cofnięcia jednym kliknięciem. W dziale IT dochodzi dostęp do odczytu CI i historii zadań. Umowę o poufności podpisujemy przed pierwszym dostępem.' },
+  { q: 'Ile kosztuje audyt?',
+    a: 'Wyceniamy go po rozmowie, kiedy wiemy, jak duża jest aplikacja i na czym stoi. Audyt wyceniamy osobno od dalszej współpracy, żeby dało się po nim podziękować. Pierwsza rozmowa jest bezpłatna.' },
+  { q: 'Poprawiacie sami czy tylko mówicie, co zrobić?',
+    a: 'Przy każdej pozycji raportu stoi, kto ją zrobi. Większość zrobicie sami, z instrukcją. Trudniejsze rzeczy, jak próbne odtworzenie kopii, robimy razem przy jednym ekranie, a klawiatura zostaje u Waszych ludzi. Budowy produktu nie przejmujemy.' },
+  { q: 'Mamy dział IT, a operacje budują obok własne narzędzia. Od czego zacząć?',
+    a: 'Od tego, żeby zobaczyć, co w firmie powstało. Na pierwszej rozmowie ustalamy, które narzędzie oglądamy najpierw, i dobieramy przebieg audytu do zespołu, który je rozwija.' },
+  { q: 'Co zostaje u nas po audycie?',
+    a: 'Raport razem z instrukcjami i poleceniami do wklejenia. Kod, dostępy i decyzje zostają Wasze, niczego nie przejmujemy. Od dostawców narzędzi nie bierzemy prowizji.' },
+];
+
+const dane = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Service',
+      '@id': `${kanon}#usluga`,
+      name: 'Audyt aplikacji zbudowanej z AI',
+      alternateName: ['Audyt aplikacji', 'Przegląd aplikacji zbudowanej w Claude Code', 'Audyt kodu tworzonego z AI'],
+      serviceType: 'Audyt aplikacji i kodu tworzonego z AI',
+      url: kanon,
+      description: 'Audyt aplikacji to przegląd aplikacji zbudowanej z AI (Claude Code, Codex), zakończony raportem z kolejnością poprawek: najpierw to, co grozi awarią albo wyciekiem danych klientów. Przy każdej pozycji raport podaje czas poprawki i to, kto ją wykona. W zespole bez działu IT audyt trwa pięć dni, w dziale IT pracującym z agentami dwa tygodnie.',
+      provider: { '@id': new URL('/#organizacja', Astro.site).href },
+      areaServed: { '@type': 'Country', name: 'Polska' },
+      audience: { '@type': 'BusinessAudience', name: 'Firmy, które budują własne aplikacje z AI' },
+    },
+    {
+      '@type': 'BreadcrumbList',
+      '@id': `${kanon}#okruszki`,
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Strona główna', item: new URL('/', Astro.site).href },
+        { '@type': 'ListItem', position: 2, name: 'Guided coding', item: new URL('/guided-coding', Astro.site).href },
+        { '@type': 'ListItem', position: 3, name: 'Audyt aplikacji', item: kanon },
+      ],
+    },
+    {
+      '@type': 'FAQPage',
+      '@id': `${kanon}#faq`,
+      mainEntity: faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+    },
+  ],
+};
+---
+<LaBase topbar={false} noindex title={title} description={description} ctaHref="#kontakt" ctaLabel="Umów rozmowę" nav="uslugi">
+<script type="application/ld+json" is:inline set:html={JSON.stringify(dane)} slot="head"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" slot="head">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&display=block" slot="head">
+<style is:global slot="head">
+  /* Style rysunków tej usługi. Wspólny wygląd: src/components/usluga/Styl.astro.
+     Każdy rysunek ma stan końcowy w markupie; stany pośrednie chowają się
+     tylko pod .gra (Anim). */
+  .v3{--g0:#c0492f;--g1:#5d6b62;--g2:#b3bab5;--pen:#c43d2a}
+  .v3 .gk0{--gc:var(--g0)}
+  .v3 .gk1{--gc:var(--g1)}
+  .v3 .gk2{--gc:var(--g2)}
+  /* numer pozycji w kółku w kolorze grupy (wszędzie ten sam) */
+  .v3 .nr{display:inline-grid;place-items:center;flex-shrink:0;width:20px;height:20px;border-radius:50%;background:var(--gc);font-style:normal;font-size:10.5px;font-weight:700;line-height:1;color:#ffffff;font-variant-numeric:tabular-nums}
+  .v3 .gk2 .nr,.v3 .nr.gk2{color:var(--t1)}
+
+  /* =====================================================================
+     HERO · papiery na ciemnej planszy: notatnik z pięciu dni i pierwsza
+     strona raportu (druk na kartce A4, dwie kartki pod spodem).
+     Raport leży w przepływie — to on wisi na krawędzi planszy (--zwis
+     z Hero); notatnik leży obok, pod raportem, i kończy się nad krawędzią.
+     Jeden język: druk (raport) i długopis (zapiski, numery na marginesie,
+     podpis). Ruch: klatki tylko pod .gra, czas startu w --t (sekundy).
+     ===================================================================== */
+  .au2{--lh:30px;--mg:50px;--atr:#24336e;--cz:#c43d2a;--pap:#fbfaf6;--skok:0;
+    position:relative;margin:0;container-type:inline-size;color:#1c1c1a;-webkit-font-smoothing:antialiased}
+  .au2-sc{position:relative}
+  .au2-kart,.au2-ark{background-color:var(--pap);
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.42 0 0 0 0 0.36 0 0 0 0 0.24 0 0 0 0.06 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)'/%3E%3C/svg%3E")}
+
+  /* notatnik na spirali: linie co --lh, czerwony margines, długopis */
+  .au2-not{position:absolute;z-index:1;left:2.4%;top:46px;width:37.5%;min-height:calc(100% - 46px - var(--zwis) - 30px);display:flex;
+    transform:rotate(-1.7deg);transform-origin:60% 0}
+  .au2-kart{position:relative;flex:1;display:flex;flex-direction:column;padding:calc(var(--lh) * 1.5) 34px calc(var(--lh) * 0.6) 0;border-radius:2px 2px 4px 4px;
+    box-shadow:0 0 0 1px rgba(60,48,20,0.1),0 1px 1px rgba(0,0,0,0.25),0 5px 12px -3px rgba(0,0,0,0.35),0 36px 64px -24px rgba(0,0,0,0.75)}
+  .au2-kart::before{content:"";position:absolute;top:0;bottom:0;left:calc(var(--mg) - 1px);width:1.5px;background:rgba(206,74,58,0.42)}
+  .au2-spir{position:absolute;z-index:2;left:20px;right:20px;top:-15px;display:flex;justify-content:space-between;pointer-events:none}
+  .au2-spir i{position:relative;display:block;width:9px;height:36px}
+  .au2-spir i::before{content:"";position:absolute;left:0;bottom:0;width:9px;height:9px;border-radius:50%;background:#08110c;box-shadow:inset 0 1px 2px rgba(0,0,0,0.8),0 0.5px 0 rgba(255,255,255,0.8)}
+  .au2-spir i::after{content:"";position:absolute;left:1.5px;top:0;bottom:4px;width:6px;border-radius:3px;background:linear-gradient(90deg,#3f454b,#b9bfc5 30%,#f3f4f5 48%,#a2a9b0 68%,#454b51);box-shadow:0 1px 1.5px rgba(0,0,0,0.5)}
+  .au2-tr{flex:1;background:repeating-linear-gradient(180deg,rgba(0,0,0,0) 0 calc(var(--lh) - 1px),rgba(66,104,170,0.22) calc(var(--lh) - 1px) var(--lh))}
+  .au2-tr > p{position:relative;display:grid;grid-template-columns:var(--mg) minmax(0,1fr);min-height:var(--lh);margin:0;
+    font-family:Caveat,'Bradley Hand','Segoe Print',cursive;font-size:22px;font-weight:500;line-height:var(--lh);color:var(--atr)}
+  .au2-pis{grid-column:2;grid-row:1;justify-self:start;display:inline-block;position:relative;top:3px;padding-left:12px}
+  .au2-ng .au2-pis{font-size:25px;font-weight:700}
+  .au2-dz .au2-pis{font-weight:700;color:#1a2554}
+  .au2-mk{grid-column:1;grid-row:1;position:relative;justify-self:center;width:30px;height:var(--lh);color:var(--cz)}
+  .au2-mk svg{position:absolute;left:0;top:2px;width:30px;height:26px;overflow:visible}
+  .au2-mk path,.au2-sg path{fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:0}
+  .au2-mk path{stroke-width:1.6}
+  .au2-mk b{position:absolute;inset:0;display:grid;place-items:center;padding-top:4px;font-size:21px;font-weight:700;line-height:1}
+
+  /* raport: pierwsza strona jako druk */
+  .au2-rap{position:relative;z-index:2;width:62%;margin-left:35%}
+  .au2-rap::before,.au2-rap::after{content:"";position:absolute;inset:0;border-radius:3px;box-shadow:0 0 0 1px rgba(60,48,20,0.08),0 1px 2px rgba(0,0,0,0.3),0 40px 70px -30px rgba(0,0,0,0.6)}
+  .au2-rap::before{background:#e3e0d6;transform:translate(15px,16px) rotate(1.7deg)}
+  .au2-rap::after{background:#eeece4;transform:translate(6px,8px) rotate(0.8deg)}
+  .au2-ark{--r1:#1c1c1a;--r2:#57564f;--r3:#86857c;--rl:rgba(28,28,26,0.11);position:relative;z-index:1;padding:38px clamp(24px,3.8cqi,52px) 34px;border-radius:3px;
+    font-size:13.5px;line-height:1.45;color:var(--r1);
+    box-shadow:0 0 0 1px rgba(60,48,20,0.06),0 1px 1px rgba(0,0,0,0.22),0 4px 12px -4px rgba(0,0,0,0.3),0 50px 90px -40px rgba(0,0,0,0.85)}
+  .au2-ark p{margin:0}
+  .au2-pg{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding-bottom:11px;border-bottom:1px solid var(--rl);font-size:13px;color:var(--r3)}
+  .au2-pg > span:first-child{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .au2-pg svg{display:inline-block;width:11px;height:11px;margin-right:8px;vertical-align:-1px;fill:var(--r1)}
+  .au2-pg b{font-weight:650;color:var(--r1)}
+  .au2-pg-s{flex-shrink:0}
+  .au2-ark .au2-tyt{margin-top:24px;max-width:640px;font-size:clamp(19px,1.95cqi,26px);font-weight:700;letter-spacing:-0.028em;line-height:1.14;text-wrap:balance}
+  .au2-ark .au2-wer{margin-top:10px;max-width:640px;font-size:14.5px;line-height:1.55;color:var(--r2);text-wrap:pretty}
+  .au2-tab{margin-top:22px}
+  .au2-th,.au2-w,.au2-gh{display:grid;grid-template-columns:26px minmax(0,1fr) 104px 124px;column-gap:16px}
+  .au2-th{padding-bottom:8px;border-bottom:1.5px solid var(--r1);font-size:13px;color:var(--r3)}
+  .au2-th span:first-child{grid-column:1 / 3}
+  .au2-gh{align-items:baseline;padding:15px 0 3px;font-size:13.5px}
+  .au2-gh i{display:block;width:8px;height:8px;background:var(--gc);transform:translateY(-1px)}
+  .au2-gh b{font-weight:700}
+  .au2-gs{margin-left:10px;color:var(--r3)}
+  .au2-gh em{font-style:normal;color:var(--r2);white-space:nowrap}
+  .au2-w{align-items:baseline;padding:8px 0 9px;border-bottom:1px solid var(--rl)}
+  .au2-nr{font-size:15px;font-weight:700;font-variant-numeric:tabular-nums}
+  .au2-tx{min-width:0}
+  .au2-tx b{display:block;font-size:15px;font-weight:600;letter-spacing:-0.01em;line-height:1.35}
+  .au2-zd{display:block;margin-top:1px;font-size:13px;color:var(--r2);text-wrap:pretty}
+  .au2-mt{display:contents}
+  .au2-cz{color:var(--r1);white-space:nowrap}
+  .au2-kto{font-style:italic;color:var(--r2);white-space:nowrap}
+  .au2-dol{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:14px 28px;margin-top:20px}
+  .au2-pod{display:flex;flex-direction:column;align-items:flex-start}
+  .au2-sg{display:block;width:168px;height:52px;margin:0 0 -6px 4px;overflow:visible;color:#1f3a8a}
+  .au2-sg path{stroke-width:1.7}
+  .au2-pod > span{min-width:236px;padding-top:7px;border-top:1px solid var(--r1);font-size:13px;color:var(--r2)}
+  .au2-pod b{font-weight:650;color:var(--r1)}
+  .au2-sami{font-size:13.5px;color:var(--r2)}
+  .au2-sami b{font-weight:700;color:var(--r1)}
+
+  /* ruch: zapiski → numery na marginesie → druk pozycji → sumy i podpis */
+  .au2.gra:not(.on) *,.au2.gra.stoi *{animation-play-state:paused !important}
+  .au2.gra .au2-n .au2-pis,.au2.gra .au2-dz .au2-pis{animation:au2-pis calc(var(--d) * 1s) cubic-bezier(.45,.15,.6,.95) calc(var(--t) * 1s) both}
+  .au2.gra .au2-mk b{animation:au2-pis .16s linear calc(var(--t) * 1s) both}
+  .au2.gra .au2-mk path{animation:au2-kr .3s cubic-bezier(.5,0,.4,1) calc(var(--t) * 1s + .12s) both}
+  .au2.gra .au2-mk.ok path{animation-delay:calc(var(--t) * 1s)}
+  .au2.gra .au2-gh{animation:au2-poj .3s ease-out calc((var(--t) - var(--skok)) * 1s) both}
+  .au2.gra .au2-gh em{animation:au2-poj .4s ease-out calc((var(--t) - var(--skok)) * 1s) both}
+  .au2.gra .au2-w{animation:au2-lin .3s linear calc((var(--t) - var(--skok) + .1) * 1s) both}
+  .au2.gra .au2-w .au2-nr{animation:au2-poj .14s linear calc((var(--t) - var(--skok)) * 1s) both}
+  .au2.gra .au2-w b{animation:au2-druk .22s linear calc((var(--t) - var(--skok) + .05) * 1s) both}
+  .au2.gra .au2-w .au2-zd{animation:au2-druk .3s linear calc((var(--t) - var(--skok) + .16) * 1s) both}
+  .au2.gra .au2-w .au2-cz,.au2.gra .au2-w .au2-kto{animation:au2-poj .24s ease-out calc((var(--t) - var(--skok) + .3) * 1s) both}
+  .au2.gra .au2-sami,.au2.gra .au2-pod > span{animation:au2-poj .4s ease-out calc((var(--t) - var(--skok)) * 1s) both}
+  .au2.gra .au2-sg path{animation:au2-kr .25s cubic-bezier(.45,0,.55,1) calc((var(--t) - var(--skok)) * 1s) both}
+  .au2.gra .au2-sg path:nth-child(2){animation-duration:.45s;animation-delay:calc((var(--t) - var(--skok) + .28) * 1s)}
+  .au2.gra .au2-sg path:nth-child(3){animation-duration:.3s;animation-delay:calc((var(--t) - var(--skok) + .76) * 1s)}
+  @keyframes au2-pis{from{clip-path:inset(-14px 100% -14px -10px)}to{clip-path:inset(-14px -20px -14px -10px)}}
+  @keyframes au2-druk{from{clip-path:inset(-6px 100% -6px -6px)}to{clip-path:inset(-6px -12px -6px -6px)}}
+  @keyframes au2-poj{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}
+  @keyframes au2-kr{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+  @keyframes au2-lin{from{border-bottom-color:rgba(28,28,26,0)}}
+
+  /* węższe: notatnik mniejszym pismem, raport szerszy; potem pozycja
+     w dwóch wierszach (czas i „kto" pod tytułem) */
+  @container (max-width:1299px){
+    .au2-th,.au2-w,.au2-gh{grid-template-columns:26px minmax(0,1fr) 96px 118px;column-gap:14px}
+    .au2-gs{display:none}
+  }
+  @container (max-width:1199px){
+    .au2-not{--lh:28px;--mg:44px;left:0;width:40%}
+    .au2-tr > p{font-size:20px}
+    .au2-ng .au2-pis{font-size:22px}
+    .au2-mk b{font-size:19px}
+    .au2-rap{width:63%;margin-left:37%}
+  }
+  @container (max-width:1099px){
+    .au2-th,.au2-w{grid-template-columns:24px minmax(0,1fr);column-gap:12px}
+    .au2-th span:not(:first-child){display:none}
+    .au2-gh{grid-template-columns:24px minmax(0,1fr) auto;column-gap:12px}
+    .au2-kto{white-space:normal}
+    .au2-mt{grid-column:2;display:flex;flex-wrap:wrap;gap:0 6px;margin-top:4px;font-size:13px}
+    .au2-kto::before{content:"·";margin-right:6px;font-style:normal;color:var(--r3)}
+  }
+  /* bez notatnika: sam raport, ruch zaczyna od pierwszej pozycji */
+  @container (max-width:859px){
+    .au2-not{display:none}
+    .au2-rap{--skok:var(--skok-w);width:auto;max-width:720px;margin:0 auto}
+    .au2-rap::before{transform:translate(8px,10px) rotate(1.2deg)}
+    .au2-rap::after{transform:translate(4px,5px) rotate(0.6deg)}
+  }
+  @container (max-width:560px){
+    .au2-ark{padding:24px 18px 22px}
+    .au2-pg-c{display:none}
+    .au2-ark .au2-tyt{margin-top:18px}
+    .au2-ark .au2-wer{display:none}
+    .au2-w{padding:7px 0 8px}
+    .au2-tab{margin-top:20px}
+    .au2-zd{display:none}
+    .au2-tx b{font-size:14.5px}
+    .au2-gh{padding-top:14px}
+    .au2-sg{width:124px;height:38px}
+    .au2-pod > span{min-width:0}
+  }
+  @container (max-width:440px){
+    .au2-th,.au2-w,.au2-gh{grid-template-columns:20px minmax(0,1fr);column-gap:10px}
+    .au2-gh em{grid-column:2;font-size:13px;color:var(--r3)}
+  }
+  @container (max-width:330px){
+    .au2-pg-s{display:none}
+  }
+
+  /* =====================================================================
+     DLACZEGO 1 · wydruk eksport.ts z uwagami czerwonym długopisem
+     Kółka i klamra odsłaniają się jak pociągnięcie długopisem (clip-path),
+     potem numer i uwaga na marginesie. Raz, przy wejściu w kadr.
+     ===================================================================== */
+  .wk-ark{position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,310px);max-width:1120px;margin:0 auto;border-radius:6px;background:#ffffff;
+    box-shadow:0 0 0 1px rgba(15,26,20,0.06),0 2px 4px rgba(15,26,20,0.04),0 34px 56px -36px rgba(15,26,20,0.45)}
+  .wk-gl{grid-column:1 / -1;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px 16px;padding:13px 22px;border-bottom:1px solid rgba(15,26,20,0.08);font-family:var(--mono);font-size:11.5px;color:var(--t3)}
+  .wk-gl b{font-weight:600;color:var(--t1)}
+  .wk{--lh:26px}
+  .wk-kod{min-width:0;padding:14px 0 18px;overflow-x:auto;font-family:var(--mono);font-size:13px;line-height:var(--lh);color:#29332e;scrollbar-width:thin}
+  .wk-l{position:relative;display:block;width:max-content;min-height:var(--lh);padding:0 50px 0 54px;white-space:pre}
+  .wk-l::before{content:attr(data-n);position:absolute;left:0;width:36px;text-align:right;font-size:11px;color:#b2b9b4}
+  .wk-kod .k{color:#7c3aed}
+  .wk-kod .s{color:#0a7a52}
+  .wk-kod .c{color:#97a19b}
+  .wk-m{position:relative;display:inline-block}
+  .wk-o{position:absolute;left:-9px;right:-9px;top:-2px;bottom:-2px;border:2px solid var(--pen);border-radius:48% 52% 46% 54% / 60% 50% 56% 44%;transform:rotate(-1.4deg);pointer-events:none}
+  .wk-kl{position:absolute;right:22px;top:4px;width:12px;height:calc(4 * var(--lh) - 8px);border:2px solid var(--pen);border-left:0;border-radius:0 10px 10px 0;pointer-events:none}
+  .wk-b{position:absolute;display:grid;place-items:center;width:19px;height:19px;border-radius:50%;background:var(--pen);font-family:'Schibsted Grotesk',system-ui,sans-serif;font-size:11px;font-weight:700;line-height:1;color:#ffffff;pointer-events:none}
+  .wk-m .wk-b{top:-13px;right:-22px}
+  .wk-kl .wk-b{top:50%;right:-24px;margin-top:-10px}
+  .wk-mar{position:relative;min-width:0;border-left:1px solid rgba(196,61,42,0.2)}
+  .wk-u{position:absolute;left:20px;right:22px;top:calc(14px + var(--l) * var(--lh));display:grid;grid-template-columns:19px minmax(0,1fr);gap:10px;font-size:13.5px;line-height:1.45;color:#8f2f20;text-wrap:pretty}
+  .wk-u .wk-b{position:static;margin-top:1px}
+  .wk-poza{grid-column:1 / -1;display:flex;flex-wrap:wrap;align-items:center;gap:8px 8px;padding:14px 22px 16px;border-top:1px solid rgba(15,26,20,0.08);font-size:12.5px;color:var(--t2)}
+  .wk-poza > b{margin-right:6px;font-size:13px;font-weight:650;color:var(--t1)}
+  .wk-c{display:inline-flex;align-items:center;gap:7px;padding:4px 11px 4px 4px;border-radius:999px;background:var(--papier);color:var(--t1)}
+  /* ruch: znak długopisu, potem numer, potem uwaga */
+  .wk.gra .wk-o,.wk.gra .wk-kl{clip-path:inset(0 100% 0 0)}
+  .wk.gra .wk-kl{clip-path:inset(0 0 100% 0)}
+  .wk.gra .wk-m .wk-b,.wk.gra .wk-kl .wk-b,.wk.gra .wk-u,.wk.gra .wk-c{opacity:0}
+  .wk.gra .wk-u{transform:translateX(-6px)}
+  .wk.gra .wk-c{transform:translateY(5px)}
+  .wk.gra.on .wk-o,.wk.gra.on .wk-kl{clip-path:inset(0 0 0 0);transition:clip-path .6s cubic-bezier(.5,0,.3,1) calc(var(--t) * 1s)}
+  .wk.gra.on .wk-m .wk-b,.wk.gra.on .wk-kl .wk-b{opacity:1;transition:opacity .3s calc(var(--t) * 1s + .5s)}
+  .wk.gra.on .wk-u{opacity:1;transform:none;transition:opacity .45s calc(var(--t) * 1s + .7s),transform .5s calc(var(--t) * 1s + .7s)}
+  .wk.gra.on .wk-c{opacity:1;transform:none;transition:opacity .4s calc(var(--t) * 1s),transform .45s calc(var(--t) * 1s)}
+  .wk.bez *,.mx.bez *{transition:none !important;animation:none !important}
+  @media (max-width:820px){
+    .wk-ark{grid-template-columns:minmax(0,1fr)}
+    .wk-mar{display:grid;gap:12px;padding:16px 18px 6px;border-left:0;border-top:1px dashed rgba(196,61,42,0.3)}
+    .wk-u{position:static}
+    .wk-gl{padding:12px 16px}
+    .wk-poza{padding:14px 16px}
+  }
+  @media (max-width:560px){
+    .wk{--lh:22px}
+    .wk-kod{font-size:11px}
+    .wk-l{padding-left:38px}
+    .wk-l::before{width:26px;font-size:10px}
+    .wk-m .wk-b{right:-20px;top:-12px}
+  }
+
+  /* =====================================================================
+     DLACZEGO 2 · macierz kolejności
+     Jedna warstwa punktów nad trzema pasami (left/top w %), więc długopis
+     może iść przez wszystkie pasy jedną animacją. Pasy = grupy raportu.
+     ===================================================================== */
+  .mx-sc{--off:0px;--bh:clamp(100px,9vw,120px);position:relative;display:grid;grid-template-columns:minmax(0,200px) minmax(0,1fr) minmax(0,220px);grid-template-rows:repeat(3,var(--bh)) auto;margin:0 clamp(2px,0.8vw,14px)}
+  .mx-pas{grid-column:1 / -1;border-top:1px dashed rgba(15,26,20,0.16)}
+  .mx-pas.gk0{border-top:0;border-radius:16px 16px 0 0;background:rgba(192,73,47,0.075)}
+  .mx-pas.gk1{background:rgba(15,26,20,0.03)}
+  .mx-y{grid-column:1;align-self:center;padding:0 18px;font-size:14.5px;font-weight:650;line-height:1.3;letter-spacing:-0.01em;text-wrap:balance}
+  .mx-g{grid-column:3;align-self:center;padding:0 18px;text-align:right}
+  .mx-g b{display:block;font-size:14px;font-weight:700;letter-spacing:-0.01em;line-height:1.3}
+  .mx-g b i{display:inline-block;width:9px;height:9px;margin-right:7px;border-radius:50%;background:var(--gc);vertical-align:1px}
+  .mx-g span{display:block;margin-top:2px;font-size:13px;color:var(--t2)}
+  .mx-pl{grid-column:2;grid-row:1 / 4;position:relative;z-index:1}
+  .mx-tk{position:absolute;top:0;bottom:0;left:var(--x);border-left:1px dashed rgba(15,26,20,0.13)}
+  .mx-p{position:absolute;left:var(--x);top:calc(var(--yb) + var(--off) + var(--dy));z-index:2;width:0;height:0}
+  .mx-p .nr{position:absolute;left:-16px;top:-16px;width:32px;height:32px;font-size:13.5px;box-shadow:0 0 0 3px var(--papier);transition:background .35s,color .35s,box-shadow .35s,transform .35s cubic-bezier(.3,1.6,.5,1)}
+  .mx-p em{position:absolute;left:0;top:22px;transform:translateX(-50%);width:max-content;max-width:120px;font-style:normal;font-size:12.5px;font-weight:600;line-height:1.25;text-align:center;color:var(--t1)}
+  .mx-p.lw em{top:auto;bottom:22px}
+  .mx-p em .kr{display:none}
+  .mx-os{grid-column:2;grid-row:4;position:relative;height:42px}
+  .mx-os span{position:absolute;left:var(--x);top:12px;transform:translateX(-50%);font-size:12.5px;color:var(--t2);white-space:nowrap}
+  .mx-os span .kr{display:none}
+  .mx-os-t{grid-column:1;grid-row:4;align-self:start;padding:12px 18px 0;font-size:12.5px;font-weight:650;color:var(--t3)}
+  .mx-pen{position:absolute;z-index:3;width:48px;height:48px;margin:-24px 0 0 -24px;border:2px solid var(--pen);border-radius:50%;opacity:0;pointer-events:none;
+    left:var(--x0);top:var(--y0);box-shadow:0 0 0 4px rgba(196,61,42,0.1)}
+  /* ruch: punkty szare bez numeru, długopis nadaje numery po kolei */
+  .mx.gra .mx-p .nr{background:#ffffff;color:transparent;box-shadow:0 0 0 3px var(--papier),inset 0 0 0 2px #c8cec9;transform:scale(0.82)}
+  .mx.gra .mx-g{opacity:0}
+  .mx.gra.on .mx-p .nr{background:var(--gc);color:#ffffff;box-shadow:0 0 0 3px var(--papier);transform:none;transition-delay:calc(var(--t) * 1s)}
+  .mx.gra.on .mx-p.gk2 .nr{color:var(--t1)}
+  .mx.gra.on .mx-g{opacity:1;transition:opacity .45s calc(var(--t) * 1s)}
+  @media (max-width:860px){
+    .mx-sc{--off:14px;--bh:150px;grid-template-columns:minmax(0,1fr);grid-template-rows:repeat(3,var(--bh)) auto}
+    .mx-y,.mx-g{grid-column:1;align-self:start}
+    .mx-y{padding:14px 16px 0;font-size:13px;font-weight:600;color:var(--t2)}
+    .mx-g{justify-self:start;padding:34px 16px 0;text-align:left}
+    .mx-g b{font-size:13px}
+    .mx-g span{display:none}
+    .mx-pl{grid-column:1;margin:0 16px}
+    .mx-os{grid-column:1;margin:0 16px}
+    .mx-os-t{display:none}
+    .mx-p em{max-width:84px;font-size:11.5px}
+    .mx-p.lw em{transform:translateX(-82%)}
+    .mx-p em .dl{display:none}
+    .mx-p em .kr{display:inline}
+    .mx-os span{font-size:11.5px}
+    .mx-os span .dl{display:none}
+    .mx-os span .kr{display:inline}
+  }
+
+  /* =====================================================================
+     SCENA · trzy strony raportu na stosie kartek
+     ===================================================================== */
+  .sr-pan{margin-top:clamp(28px,3vw,44px)}
+  .sr-stos{position:relative;max-width:1140px;margin:0 auto}
+  .sr-stos::before,.sr-stos::after{content:"";position:absolute;inset:0;border-radius:8px;background:#e8e7e1;box-shadow:0 30px 60px -40px rgba(0,0,0,0.8)}
+  .sr-stos::before{transform:translate(14px,14px) rotate(0.8deg);background:#d9d8d1}
+  .sr-stos::after{transform:translate(7px,7px) rotate(0.35deg)}
+  .sr-str{--t1:#18181b;--t2:#52525b;--t3:#71717a;--t4:#a1a1aa;--lin:rgba(9,9,11,0.08);--lin2:rgba(9,9,11,0.05);
+    position:relative;z-index:1;padding:clamp(20px,3vw,48px) clamp(18px,3.4vw,58px) clamp(18px,2.4vw,32px);border-radius:8px;background:#ffffff;color:var(--t1);
+    box-shadow:0 0 0 1px rgba(255,255,255,0.12),0 60px 120px -50px rgba(0,0,0,0.9),0 20px 40px -24px rgba(0,0,0,0.6)}
+  .sr-str .hi{display:block;flex-shrink:0;width:16px;height:16px;fill:currentColor}
+  .sr-gl{display:flex;align-items:center;gap:10px;padding-bottom:14px;border-bottom:1px solid var(--lin);font-size:12.5px;color:var(--t3)}
+  .sr-gl i{display:grid;place-items:center;flex-shrink:0;width:26px;height:26px;border-radius:7px;background:#0f1a14}
+  .sr-gl i svg{display:block;width:13px;height:13px;fill:#00cd77}
+  .sr-gl b{font-weight:650;color:var(--t1)}
+  .sr-gl > span:last-child{margin-left:auto;white-space:nowrap}
+  .sr-kick{display:block;font-size:12.5px;font-weight:650;color:var(--ziel-c)}
+  .sr-str h3{margin:8px 0 0;font-size:clamp(22px,2.3vw,32px);font-weight:700;letter-spacing:-0.03em;line-height:1.12;text-wrap:balance}
+  .sr-str p{margin:12px 0 0;font-size:15px;line-height:1.65;color:var(--t2);text-wrap:pretty}
+  .sr-str p b{color:var(--t1);font-weight:650}
+  /* strona 1: werdykt i spis */
+  .sr-p0{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:clamp(28px,4.4vw,72px);margin-top:clamp(22px,2.6vw,34px)}
+  .sr-pod{display:flex;align-items:center;gap:11px;margin-top:24px;padding-top:16px;border-top:1px solid var(--lin)}
+  .sr-pod img{display:block;width:38px;height:38px;border-radius:50%;object-fit:cover;filter:grayscale(1)}
+  .sr-pod b{display:block;font-size:14px;font-weight:650}
+  .sr-pod span span{display:block;font-size:12.5px;color:var(--t3)}
+  .sr-spis h4{margin:0;font-size:12.5px;font-weight:650;color:var(--t3)}
+  .sr-sg{display:flex;align-items:center;gap:7px;margin-top:16px;font-size:12.5px;font-weight:650;color:var(--t2)}
+  .sr-sg i{display:block;width:8px;height:8px;border-radius:50%;background:var(--gc)}
+  .sr-sw{display:flex;align-items:baseline;gap:9px;padding:8px 0;border-bottom:1px solid var(--lin2);font-size:14px;line-height:1.35}
+  .sr-sw .nr{align-self:center}
+  .sr-sw > span{min-width:0}
+  .sr-sw > .sr-ld{flex:1;min-width:14px;border-bottom:1.5px dotted rgba(9,9,11,0.22);transform:translateY(-4px)}
+  .sr-sw > em{font-style:normal;font-size:12.5px;color:var(--t3);white-space:nowrap}
+  /* strona 2: co przejrzeliśmy */
+  .sr-tab{margin-top:clamp(18px,2.2vw,28px)}
+  .sr-tn,.sr-tw{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1.6fr) minmax(0,0.9fr);gap:18px;align-items:center}
+  .sr-tn{padding:0 0 10px;font-size:12px;font-weight:650;color:var(--t3)}
+  .sr-tw{padding:11px 0;border-top:1px solid var(--lin2);font-size:14px}
+  .sr-tw > b{font-weight:600}
+  .sr-tw > span{color:var(--t2)}
+  .sr-ref{display:flex;flex-wrap:wrap;align-items:center;gap:4px}
+  .sr-ref small{margin-right:2px;font-size:12px;color:var(--t3)}
+  .sr-ok{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:#047857}
+  .sr-ok svg{display:block;width:16px;height:16px;padding:2px;border-radius:50%;background:rgba(16,185,129,0.14);fill:currentColor}
+  /* strona 3: pozycja 1 */
+  .sr-p1-gl{display:flex;align-items:center;flex-wrap:wrap;gap:8px 12px;margin-top:clamp(20px,2.4vw,30px)}
+  .sr-p1-gl > span{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:650;color:var(--t2)}
+  .sr-meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+  .sr-meta > span{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:999px;background:#f4f4f2;font-size:12.5px;font-weight:550;color:var(--t2)}
+  .sr-meta > span.w{background:rgba(16,185,129,0.1);color:#047857}
+  .sr-meta .hi{width:13px;height:13px}
+  .sr-meta em{font-style:normal}
+  .sr-meta code{font-family:var(--mono);font-size:11.5px}
+  .sr-p1{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:clamp(24px,3.6vw,56px);margin-top:clamp(20px,2.4vw,30px)}
+  .sr-cz{margin:0}
+  .sr-cz > div{display:grid;grid-template-columns:150px minmax(0,1fr);gap:16px;padding:13px 0;border-top:1px solid var(--lin2)}
+  .sr-cz > div:first-child{border-top:1.5px solid var(--t1)}
+  .sr-cz dt{font-size:13.5px;font-weight:650}
+  .sr-cz dd{margin:0;font-size:14.5px;line-height:1.6;color:var(--t2);text-wrap:pretty}
+  .sr-box{padding:14px 16px;border-radius:12px;background:#f6f6f3}
+  .sr-box + .sr-box{margin-top:10px}
+  .sr-box > span{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:650;color:var(--t3)}
+  .sr-box > span .hi{width:14px;height:14px}
+  .sr-box > p{margin:6px 0 0;font-size:14px;line-height:1.55;color:var(--t1)}
+  .sr-box.cmd{background:#0f1a14}
+  .sr-box.cmd > span{color:rgba(255,255,255,0.55)}
+  .sr-box.cmd > span .hi{color:#00cd77}
+  .sr-box.cmd code{display:block;margin-top:7px;font-family:var(--mono);font-size:12.5px;line-height:1.6;color:#e7efe9}
+  .sr-box.zas code{display:block;margin-top:7px;padding:8px 10px;border-radius:8px;background:#ffffff;box-shadow:inset 0 0 0 1px rgba(16,185,129,0.3);font-family:var(--mono);font-size:12px;line-height:1.5;color:#065f46}
+  .sr-pan + .v3-jw-dol{margin-top:clamp(32px,3.4vw,44px)}
+  @media (max-width:900px){
+    .sr-p0,.sr-p1{grid-template-columns:minmax(0,1fr)}
+    .sr-stos::before{transform:translate(8px,10px) rotate(0.6deg)}
+    .sr-stos::after{transform:translate(4px,5px) rotate(0.3deg)}
+  }
+  @media (max-width:640px){
+    .sr-gl > span:nth-child(2) span{display:none}
+    .sr-tn{display:none}
+    .sr-tw{grid-template-columns:minmax(0,1fr) auto;gap:4px 12px}
+    .sr-tw > span{grid-column:1;grid-row:2;font-size:13px}
+    .sr-ref{grid-column:2;grid-row:1 / 3;justify-content:flex-end}
+    .sr-ref small{display:none}
+    .sr-cz > div{grid-template-columns:minmax(0,1fr);gap:4px}
+  }
+
+  /* =====================================================================
+     DWA ZESPOŁY · ta sama karta, inna treść
+     ===================================================================== */
+  .tz-uk{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(12px,1.4vw,20px);margin-top:clamp(40px,4.4vw,64px)}
+  .tz-k{display:flex;flex-direction:column;padding:clamp(24px,2.8vw,40px);border-radius:26px;background:var(--papier)}
+  .tz-e{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:700;color:var(--ziel-c)}
+  .tz-e i{display:grid;place-items:center;width:32px;height:32px;border-radius:9px;background:#ffffff;box-shadow:0 0 0 1px rgba(15,26,20,0.07)}
+  .tz-e svg{display:block;width:15px;height:15px;fill:currentColor}
+  .tz-k h3{margin:18px 0 0;max-width:520px;font-size:clamp(22px,2.1vw,30px);font-weight:700;letter-spacing:-0.032em;line-height:1.12;text-wrap:balance}
+  .tz-dl{margin:26px 0 0}
+  .tz-dl > div{display:grid;grid-template-columns:128px minmax(0,1fr);gap:16px;padding:13px 0;border-top:1px solid var(--linia)}
+  .tz-dl dt{padding-top:2px;font-size:13px;font-weight:650;color:var(--t3)}
+  .tz-dl dd{margin:0;font-size:15px;line-height:1.55;color:var(--t1);text-wrap:pretty}
+  .tz-dl .duzy dd{font-size:clamp(22px,2vw,28px);font-weight:700;letter-spacing:-0.03em;line-height:1.1}
+  .tz-poz{margin-top:auto;padding-top:24px}
+  .tz-poz > span{display:block;margin-bottom:8px;font-size:12.5px;font-weight:650;color:var(--t3)}
+  .tz-pk{display:grid;grid-template-columns:20px minmax(0,1fr);gap:4px 11px;align-items:center;padding:13px 15px;border-radius:12px;background:#ffffff;box-shadow:0 0 0 1px rgba(15,26,20,0.06),0 16px 30px -22px rgba(15,26,20,0.4)}
+  .tz-pk b{font-size:14px;font-weight:650;letter-spacing:-0.01em;color:#18181b}
+  .tz-pk ul{grid-column:2;display:flex;flex-wrap:wrap;gap:4px 14px;margin:0;padding:0;list-style:none;font-size:12.5px;color:#52525b}
+  .tz-pk li + li::before{content:"·";margin:0 7px 0 -7px;color:#a1a1aa}
+  @media (max-width:980px){ .tz-uk{grid-template-columns:minmax(0,1fr)} }
+  @media (max-width:520px){
+    .tz-dl > div{grid-template-columns:minmax(0,1fr);gap:3px}
+    .tz-pk ul{flex-direction:column;gap:2px}
+    .tz-pk li + li::before{display:none}
+  }
+
+  /* =====================================================================
+     PO RAPORCIE · trzy drogi
+     ===================================================================== */
+  .po-l{margin-top:clamp(40px,4.4vw,64px)}
+  .po-w{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,5.4fr) minmax(0,2.6fr);gap:14px clamp(24px,3.4vw,56px);align-items:start;padding:clamp(24px,2.8vw,36px) 0;border-top:1px solid var(--linia)}
+  .po-w:first-child{border-top:1.5px solid var(--t1)}
+  .po-w h3{margin:0;font-size:clamp(22px,2.3vw,32px);font-weight:700;letter-spacing:-0.034em;line-height:1.1;text-wrap:balance}
+  .po-w p{margin:0;max-width:620px;font-size:16px;line-height:1.64;color:var(--t2);text-wrap:pretty}
+  .po-nr{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:14px;font-size:13px;color:var(--t3)}
+  .po-nr > span{margin-right:4px}
+  .po-nr .nr{width:24px;height:24px;font-size:11.5px}
+  .po-a{justify-self:end;display:inline-flex;align-items:center;gap:10px;padding:6px 0 4px;font-size:15.5px;font-weight:700;color:var(--t1);border-bottom:1.5px solid var(--ziel);white-space:nowrap;transition:color .15s}
+  .po-a:hover{color:var(--ziel-c)}
+  .po-a svg{display:block;width:15px;height:15px;fill:currentColor;transition:transform .2s}
+  .po-a:hover svg{transform:translateX(3px)}
+  @media (max-width:900px){
+    .po-w{grid-template-columns:minmax(0,1fr)}
+    .po-a{justify-self:start}
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    .mx-pen{display:none}
+  }
+</style>
+<style is:inline set:html={MX_KLATKI}></style>
+<style is:inline set:html={AU_KLATKI}></style>
+
+<div class="v3">
+<Styl />
+<Anim />
+
+<!-- ============ 1 · HERO ============
+     Wariant „okno": na ciemnej planszy leżą papiery. Po lewej notatnik
+     z pięciu dni (zapiski w kolejności znalezienia, numery pozycji
+     dopisane na marginesie), na nim pierwsza strona raportu, w której te
+     same rzeczy stoją w kolejności poprawek. Raport wisi na krawędzi. -->
+<Hero lead={"Przez pięć dni przechodzimy aplikację zbudowaną w Claude Code albo w Codexie, razem z tym, na czym stoi: danymi klientów, dostępami, kopiami i rachunkami. Raport ustawia poprawki w kolejności, a przy każdej stoi, ile zajmie i kto ją zrobi."} link={{ href: '#raport', t: 'Zobacz, co jest w raporcie →' }}>
+<Fragment slot="h1">Audyt aplikacji: <span>co grozi awarią i&nbsp;co poprawić najpierw</span></Fragment>
+
+<figure class="au2 hero-wid" data-au2 data-anim data-gra role="img" aria-label={AU_ARIA} style={`--skok-w:${AU_C0}`}>
+<div class="au2-sc" aria-hidden="true">
+<div class="au2-not">
+<div class="au2-kart">
+<div class="au2-spir">{Array.from({ length: 24 }, () => (<i></i>))}</div>
+<div class="au2-tr">
+<p class="au2-ng"><span class="au2-pis">Audyt: panel zamówień</span></p>
+{AU_DNI.map((d) => (<>
+  <p class="au2-dz"><span class="au2-pis" style={`--t:${d.tz.t};--d:${d.tz.d}`}>{d.dz} {d.data}</span></p>
+  {d.w.map((x) => (
+    <p class={`au2-n f${AU_WIERSZE.indexOf(x)}`}>
+      <span class={`au2-mk${x.n ? '' : ' ok'}`} style={`--t:${x.tm}`}>{x.n ? (<><svg viewBox="0 0 30 26"><path pathLength="1" d="M17 3.2C9.5 2.4 3.6 6.6 3.6 13.2s6 10.6 12.6 10.3 10.6-4.6 10.2-10.8S20.6 2.6 13 4.6" /></svg><b>{x.n}</b></>) : (<svg viewBox="0 0 30 26"><path pathLength="1" d="M8 14.5l4.4 5.2L23.5 5" /></svg>)}</span>
+      <span class="au2-pis" style={`--t:${x.t0};--d:${x.d}`}>– {x.t}</span>
+    </p>
+  ))}
+</>))}
+</div>
+</div>
+</div>
+
+<div class="au2-rap">
+<div class="au2-ark">
+<p class="au2-pg"><span><svg viewBox="0 0 40 41" set:html={SYGNET}></svg><b>Raport z audytu</b><span class="au2-pg-b"> · Panel zamówień</span><span class="au2-pg-c"> · 5–9 października</span></span><span class="au2-pg-s">str. 1 z {STRON}</span></p>
+<p class="au2-tyt">Panel zamówień można rozwijać dalej. Trzy rzeczy trzeba poprawić w&nbsp;tym tygodniu</p>
+<p class="au2-wer">Aplikacja nie wymaga przepisania. Najpilniejsze są dane klientów w&nbsp;dzienniku zdarzeń i&nbsp;hasło do poczty w&nbsp;kodzie: obie poprawki zrobicie sami w&nbsp;trzy godziny.</p>
+<div class="au2-tab">
+<p class="au2-th"><span>Poprawki w kolejności</span><span>Ile zajmie</span><span>Kto robi</span></p>
+{GRUPY.map((g) => (
+  <div class={`au2-gr gk${g.i}`}>
+    <p class="au2-gh" style={`--t:${AU_TG[g.i]}`}><i></i><span><b>{g.t}</b><span class="au2-gs">{g.s}</span></span><em style={`--t:${r2(AU_SUMA + g.i * 0.12)}`}>razem {godzin(g.h)}</em></p>
+    {g.poz.map((x) => (
+      <div class="au2-w" style={`--t:${AU_TP[x.n]}`}>
+        <span class="au2-nr">{x.n}</span>
+        <span class="au2-tx"><b>{x.t}</b><span class="au2-zd">{x.d}</span></span>
+        <span class="au2-mt"><span class="au2-cz">{x.czas}</span><i class="au2-kto">{KTO[x.kto]}</i></span>
+      </div>
+    ))}
+  </div>
+))}
+</div>
+<div class="au2-dol">
+<p class="au2-pod"><svg class="au2-sg" viewBox="0 0 150 46" style={`--t:${AU_PODP}`}><path pathLength="1" d="M6 36C9 28 13 16 17 7c1 9 1 18 2 24 3-8 7-17 11-24 0 9-1 19 0 26 2-4 4-6 6-6" /><path pathLength="1" d="M40 31c2-9 4-17 7-24-2 10-3 17-3 24 3-5 8-9 12-9 4 0 4 4 0 6-3 2-7 3-9 3 5-1 10 0 10 4 0 3-5 5-10 4 6 0 11-4 14-9 1 3 1 6 3 6s3-3 4-5c1-9 3-15 5-21-2 9-3 16-2 21 1 3 4 2 6-1 1 3 3 4 5 3 2-1 2-4 4-4-2 2 0 4 3 3 3-1 5-8 7-14-1 6-1 11 1 13 2 1 4-3 6-5 1 2 1 4 3 4s4-3 7-5" /><path pathLength="1" d="M30 41c30-4 68-6 108-8" /></svg><span style={`--t:${r2(AU_PODP + 0.5)}`}><b>{PROWADZACY.imie}</b>, prowadził audyt · 9&nbsp;października</span></p>
+<p class="au2-sami" style={`--t:${AU_SAMI}`}><b>{SAMI.length} z {POZ.length}</b> poprawek zrobicie sami, z&nbsp;instrukcją</p>
+</div>
+</div>
+</div>
+</div>
+</figure>
+<script is:inline>
+  // Hero: przebieg to klatki CSS pod .gra, startują z .on (Anim). .gra
+  // zakładamy tutaj, zaraz pod rysunkiem — ten sam warunek co w Anim, ale
+  // przed pierwszym malowaniem; z modułu Anim przychodzi za późno i w kadrze
+  // mignąłby stan końcowy. Poza kadrem .stoi wstrzymuje klatki.
+  (function(fig){
+    if(!fig || !('IntersectionObserver' in window) || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    fig.classList.add('gra');
+    new IntersectionObserver(function(w){
+      fig.classList.toggle('stoi', !(w[0].isIntersecting && w[0].intersectionRatio >= 0.1));
+    }, { threshold: [0, 0.1] }).observe(fig);
+  })(document.querySelector('[data-au2]'));
+</script>
+</Hero>
+
+<!-- ============ 2 · CZYM JEST ============
+     Definicja z podmiotem = nazwa usługi. Pod nią indeks: co przechodzimy
+     podczas audytu i co z tego najczęściej trafia do raportu. -->
+<section id="czym-jest" class="v3-sek v3-papier">
+<div class="v3-def">
+<h2 class="v3-h2m">Czym jest audyt aplikacji?</h2>
+<div>
+<p class="v3-def-duzy rv">Audyt aplikacji to przegląd aplikacji zbudowanej z&nbsp;AI, zakończony raportem, który ustawia poprawki w&nbsp;kolejności: najpierw to, co grozi awarią albo wyciekiem danych klientów. Przy każdej pozycji stoi, ile zajmie i&nbsp;kto ją zrobi.</p>
+</div>
+</div>
+
+<Procesy tytul="Co przechodzimy podczas audytu" pozycje={OBSZARY} etykietaA="Co oglądamy" etykietaB="Co najczęściej trafia do raportu" />
+</section>
+
+<!-- ============ 3 · ZIELONY PAS ============ -->
+<Pas tekst={"Raport zaczyna się od poprawki, którą zrobicie jeszcze w tym samym tygodniu"} foto="/marcel-bilski.jpg" fotoW={1200} fotoH={2526} alt="Marcel Bilski, Tech Lead w Let's automate" imie="Marcel Bilski" rola="Tech Lead" />
+
+<!-- ============ 4 · DLACZEGO ============
+     Teza na całą szerokość. Blok 1: co widać w kodzie (wydruk z uwagami).
+     Blok 2: jak powstaje kolejność (macierz skutek × czas poprawki). -->
+<section id="dlaczego" class="v3-sek">
+<h2 class="v3-h2m">Dlaczego raport ustawia kolejność</h2>
+<p class="v3-teza rv"><span>Najgroźniejsze rzeczy w&nbsp;aplikacji zbudowanej z&nbsp;AI zwykle poprawia się w&nbsp;kilka godzin.</span> Trudniej je znaleźć niż poprawić</p>
+
+<div class="dl-blok">
+<div class="dl-gl"><h3>{W_KODZIE === 3 ? 'Trzy' : W_KODZIE} z&nbsp;{POZ.length === 7 ? 'siedmiu' : POZ.length} pozycji raportu widać w&nbsp;kodzie</h3><p>Aplikacja robi, co ma robić, więc nikt nie zagląda do środka. Model pisze dokładnie to, o&nbsp;co go poproszono: jeśli nikt nie poprosił o&nbsp;porcje, eksport pobierze wszystkie zamówienia naraz. Pozostałe {WK_POZA.length === 4 ? 'cztery' : WK_POZA.length} pozycje leżą poza kodem, na przykład w&nbsp;kopii zapasowej, z&nbsp;której nikt nigdy nie próbował wrócić.</p></div>
+<figure class="dl-kafel wk" data-anim data-gra data-znow-cel>
+<div class="ts4-gl"><b>Wydruk eksport.ts z&nbsp;uwagami z&nbsp;audytu</b><button type="button" class="ts4-znow" data-znow aria-label="Pokaż zaznaczanie jeszcze raz"><svg viewBox="0 0 16 16" set:html={HI['arrow-path']} aria-hidden="true"></svg></button></div>
+<div class="wk-ark" role="img" aria-label={WK_ARIA}>
+<div class="wk-gl" aria-hidden="true"><span>panel-zamowien / src / <b>eksport.ts</b></span><span>czytane w pn i wt</span></div>
+<div class="wk-kod" aria-hidden="true">
+{KOD.map((w, i) => w.s !== undefined ? (
+  <span class="wk-l" data-n={i + 1}>{tokeny(w.s).map((x) => x.c ? <span class={x.c}>{x.t}</span> : x.t)}{w.kl && <span class="wk-kl" style={`--t:${WK_T[w.z]}`}><i class="wk-b">{w.z}</i></span>}</span>
+) : (
+  <span class="wk-l" data-n={i + 1}>{tokeny(w.a).map((x) => x.c ? <span class={x.c}>{x.t}</span> : x.t)}<span class="wk-m" style={`--t:${WK_T[w.z]}`}>{tokeny(w.m).map((x) => x.c ? <span class={x.c}>{x.t}</span> : x.t)}<span class="wk-o"></span><i class="wk-b">{w.z}</i></span>{w.b}</span>
+))}
+</div>
+<div class="wk-mar" aria-hidden="true">
+{WK_UWAGI.map((u) => (<p class="wk-u" style={`--l:${u.l};--t:${WK_T[u.z]}`}><i class="wk-b">{u.z}</i><span>{u.t}</span></p>))}
+</div>
+<div class="wk-poza" aria-hidden="true"><b>Poza tym plikiem</b>{WK_POZA.map((x) => (<span class={`wk-c gk${x.g}`} style={`--t:${x.t0}`}><i class="nr">{x.n}</i>{x.t}</span>))}</div>
+</div>
+</figure>
+</div>
+
+<div class="dl-blok">
+<div class="dl-gl"><h3>Kolejność ustala skutek, potem czas poprawki</h3><p>Najpierw idzie to, co może kosztować dane klientów. W&nbsp;tej grupie zaczynamy od najkrótszych poprawek, więc pierwsze dwie zajmują razem {godzin(POZ[0].h + POZ[1].h).replace('3 godziny', 'trzy godziny')}. Wyłączenie płatnych usług po próbach też zajmuje godzinę, a&nbsp;i&nbsp;tak stoi na szóstym miejscu, bo grozi tylko wyższym rachunkiem.</p></div>
+<figure class="dl-kafel mx" data-anim data-gra data-znow-cel>
+<div class="ts4-gl"><b>Siedem pozycji raportu według skutku i&nbsp;czasu poprawki</b><button type="button" class="ts4-znow" data-znow aria-label="Pokaż ustalanie kolejności jeszcze raz"><svg viewBox="0 0 16 16" set:html={HI['arrow-path']} aria-hidden="true"></svg></button></div>
+<div class="mx-sc" role="img" aria-label={MX_ARIA}>
+{MX_G.map((g) => (<>
+  <span class={`mx-pas gk${g.i}`} style={`grid-row:${g.i + 1}`} aria-hidden="true"></span>
+  <span class="mx-y" style={`grid-row:${g.i + 1}`} aria-hidden="true">{g.s}</span>
+  <span class={`mx-g gk${g.i}`} style={`grid-row:${g.i + 1};--t:${g.t0}`} aria-hidden="true"><b><i></i>{g.t}</b><span>razem {godzin(g.h)}</span></span>
+</>))}
+<div class="mx-pl" aria-hidden="true">
+{MX_OS.map((o) => (<span class="mx-tk" style={`--x:${o.x}%`}></span>))}
+{MX_P.map((p) => (<span class={`mx-p gk${p.g}${p.lw ? ' lw' : ''}`} style={`--x:${p.x}%;--yb:${p.yb};--dy:${p.dy}px;--t:${p.t0 + 0.15}`}><i class="nr">{p.n}</i><em><span class="dl">{p.mx}</span><span class="kr">{p.k}</span></em></span>))}
+<span class="mx-pen" style={`--x0:${MX_P[0].x}%;--y0:calc(${MX_P[0].yb} + var(--off))`}></span>
+</div>
+<span class="mx-os-t" aria-hidden="true">Czas poprawki</span>
+<div class="mx-os" aria-hidden="true">{MX_OS.map((o) => (<span style={`--x:${o.x}%`}><span class="dl">{o.t}</span><span class="kr">{MX_KR[o.t]}</span></span>))}</div>
+</div>
+</figure>
+</div>
+</section>
+
+<!-- ============ 5 · RAPORT (ciemna scena) ============
+     Trzy strony tego samego raportu co w hero. Bez JS widać pierwszą. -->
+<section id="raport" class="v3-sek v3-scena v3-ziarno">
+<div class="v8-gl">
+<h2 class="v3-h2 jasny">Raport, z&nbsp;którym zostajecie</h2>
+<p class="v3-sub jasny">Pierwsza strona mówi, w&nbsp;jakim stanie jest aplikacja. Każda pozycja ma własną stronę, napisaną tak, żeby poprawkę zrobiła osoba, która nie programuje.</p>
+</div>
+
+<div class="v3-zak" role="tablist" aria-label="Strony raportu">
+{ZAKLADKI.map((z, i) => (<button type="button" role="tab" id={`zak-${i}`} aria-controls={`widok-${i}`} aria-selected={i === 0 ? 'true' : 'false'} tabindex={i === 0 ? 0 : -1} data-zak>{z.t}</button>))}
+</div>
+
+<div class="sr-pan">
+<!-- strona 1 -->
+<div class="sr-stos" role="tabpanel" id="widok-0" aria-labelledby="zak-0" data-widok>
+<article class="sr-str">
+<div class="sr-gl"><i><svg viewBox="0 0 40 41" set:html={SYGNET}></svg></i><span><b>Raport z audytu</b><span> · Panel zamówień · 5–9 października</span></span><span>str. 1 z {STRON}</span></div>
+<div class="sr-p0">
+<div>
+<span class="sr-kick">W skrócie</span>
+<h3>Panel zamówień można rozwijać dalej. Trzy rzeczy trzeba poprawić w&nbsp;tym tygodniu</h3>
+<p>Aplikacja robi to, czego potrzebuje dział operacji, i&nbsp;nie wymaga przepisania. Najpilniejsze są dane klientów: lista zamówień z&nbsp;NIP-ami trafia do dziennika zdarzeń, a&nbsp;hasło do poczty leży w&nbsp;kodzie. Obie poprawki zrobicie sami w&nbsp;trzy godziny, według instrukcji z&nbsp;pozycji 1&nbsp;i&nbsp;2.</p>
+<p>Kopia zapasowa powstaje co noc, ale nikt nie próbował z&nbsp;niej wrócić. Próbne odtworzenie zrobimy razem przy jednym ekranie, to około pół dnia.</p>
+<p>Eksport i&nbsp;ścieżka zamówienia wytrzymają dzisiejszy ruch. Warto je poprawić w&nbsp;pierwszym miesiącu, zanim zamówień przybędzie.</p>
+<div class="sr-pod"><img src={PROWADZACY.foto} alt="" width="38" height="38" loading="lazy"><span><b>{PROWADZACY.imie}</b><span>prowadził audyt · 9 października</span></span></div>
+</div>
+<div class="sr-spis">
+<h4>Spis poprawek</h4>
+{GRUPY.map((g) => (<>
+  <div class={`sr-sg gk${g.i}`}><i></i>{g.t}</div>
+  {g.poz.map((x) => (<div class={`sr-sw gk${x.g}`}><i class="nr">{x.n}</i><span>{x.t}</span><i class="sr-ld" aria-hidden="true"></i><em>str. {x.n + 2}</em></div>))}
+</>))}
+</div>
+</div>
+</article>
+</div>
+
+<!-- strona 2 -->
+<div class="sr-stos" role="tabpanel" id="widok-1" aria-labelledby="zak-1" data-widok hidden>
+<article class="sr-str">
+<div class="sr-gl"><i><svg viewBox="0 0 40 41" set:html={SYGNET}></svg></i><span><b>Raport z audytu</b><span> · Panel zamówień · 5–9 października</span></span><span>str. 2 z {STRON}</span></div>
+<span class="sr-kick" style="margin-top:clamp(20px,2.4vw,30px)">Co przejrzeliśmy</span>
+<h3>{PRZEJRZANE.length} obszarów, w&nbsp;tym {BEZ_UWAG === 2 ? 'dwa' : BEZ_UWAG} bez uwag</h3>
+<div class="sr-tab">
+<div class="sr-tn"><span>Obszar</span><span>Co obejrzeliśmy</span><span>W raporcie</span></div>
+{PRZEJRZANE.map((r) => (
+  <div class="sr-tw">
+    <b>{r.o}</b>
+    <span>{r.c}</span>
+    <span class="sr-ref">{r.p.length ? (<><small>poz.</small>{r.p.map((n) => (<i class={`nr gk${POZ.find((x) => x.n === n).g}`}>{n}</i>))}</>) : (<span class="sr-ok"><svg viewBox="0 0 16 16" set:html={HI['check']} aria-hidden="true"></svg>bez uwag</span>)}</span>
+  </div>
+))}
+</div>
+</article>
+</div>
+
+<!-- strona 3 -->
+<div class="sr-stos" role="tabpanel" id="widok-2" aria-labelledby="zak-2" data-widok hidden>
+<article class="sr-str">
+<div class="sr-gl"><i><svg viewBox="0 0 40 41" set:html={SYGNET}></svg></i><span><b>Raport z audytu</b><span> · Panel zamówień · 5–9 października</span></span><span>str. 3 z {STRON}</span></div>
+<div class="sr-p1-gl"><span class={`gk${P1.g}`}><i class="nr">{P1.n}</i>Pozycja {P1.n} z {POZ.length}</span><span>{GRUPY[P1.g].t}</span></div>
+<h3>{P1.t}</h3>
+<div class="sr-meta"><span><svg class="hi" viewBox="0 0 16 16" set:html={IK['code-bracket']} aria-hidden="true"></svg><em><code>eksport.ts</code>, wiersz {W1}</em></span><span><svg class="hi" viewBox="0 0 16 16" set:html={IK['clock']} aria-hidden="true"></svg>około godziny</span><span class="w"><svg class="hi" viewBox="0 0 16 16" set:html={IK['user']} aria-hidden="true"></svg>{KTO[P1.kto]}</span></div>
+<div class="sr-p1">
+<dl class="sr-cz">
+{P1_CZESCI.map((c) => (<div><dt>{c.t}</dt><dd>{c.d}</dd></div>))}
+</dl>
+<div>
+<div class="sr-box cmd"><span><svg class="hi" viewBox="0 0 16 16" set:html={IK['command-line']} aria-hidden="true"></svg>Do wklejenia w Claude Code</span><code>W pliku eksport.ts zmień zapis w dzienniku zdarzeń tak, żeby trafiała tam tylko liczba zamówień, bez danych klientów. Niczego innego w eksporcie nie zmieniaj.</code></div>
+<div class="sr-box"><span><svg class="hi" viewBox="0 0 16 16" set:html={IK['check-circle']} aria-hidden="true"></svg>Jak sprawdzić, że działa</span><p>Zróbcie eksport za ostatni tydzień i&nbsp;otwórzcie dziennik zdarzeń. Powinien być w&nbsp;nim jeden wpis z&nbsp;liczbą zamówień, bez nazw i&nbsp;numerów.</p></div>
+<div class="sr-box zas"><span><svg class="hi" viewBox="0 0 16 16" set:html={IK['document-check']} aria-hidden="true"></svg>Żeby nie wróciło, dopiszcie do CLAUDE.md</span><code>- Dane klientów nie trafiają do dziennika zdarzeń.</code></div>
+</div>
+</div>
+</article>
+</div>
+</div>
+
+<div class="v3-jw-dol">
+<div>
+{ZAKLADKI.map((z, i) => (<p class="v3-jw-p" data-podpis hidden={i !== 0}><b>{z.t}</b>{z.p}</p>))}
+</div>
+</div>
+</section>
+
+<!-- ============ 6 · DWA ZESPOŁY (zamiast przykładów) ============
+     Jedyne miejsce, w którym audyt różni się według zespołu. Pod spodem
+     prawdziwy cytat (bez logotypu: X2O nie ma pliku znaku) i krótkie wezwanie. -->
+<section id="zespoly" class="v3-sek">
+<div class="v8-gl">
+<h2 class="v3-h2">Ten sam audyt dla zespołu bez działu IT i&nbsp;dla działu IT</h2>
+<p class="v3-sub">W&nbsp;dziale IT patrzymy dodatkowo na to, gdzie praca agenta wraca do przeróbki. Dlatego audyt trwa dłużej, a&nbsp;każda pozycja raportu ma inne uzasadnienie.</p>
+</div>
+<div class="tz-uk">
+{ZESPOLY.map((z) => (
+  <div class="tz-k rv">
+    <span class="tz-e"><i><svg viewBox="0 0 16 16" set:html={HI[z.ik]} aria-hidden="true"></svg></i>{z.e}</span>
+    <h3>{z.t}</h3>
+    <dl class="tz-dl">{z.w.map(([k, v, duzy]) => (<div class={duzy ? 'duzy' : ''}><dt>{k}</dt><dd>{v}</dd></div>))}</dl>
+    <div class="tz-poz">
+      <span>Przykładowa pozycja raportu</span>
+      <div class={`tz-pk gk${z.poz.g}`}><i class="nr">{z.poz.n}</i><b>{z.poz.t}</b><ul>{z.poz.m.map((m) => (<li>{m}</li>))}</ul></div>
+    </div>
+  </div>
+))}
+</div>
+
+<Cytat cytat="Bardzo dobrze zrozumieli nasze potrzeby i zaprojektowali scenariusz, który w pełni spełnił cele biznesowe. Otwartość i komunikacja to ich DNA." imie="Arkadiusz Andruch" rola="Prezes Zarządu, X2O" />
+<CtaPasek tytul="Na pierwszej rozmowie ustalamy, który przebieg audytu ma u Was sens i od czego zaczynamy." pod="30 minut, online albo telefonicznie. Rozmowa jest bezpłatna." />
+</section>
+
+<!-- ============ 7 · METODA ============ -->
+<Metoda tytul="Raport, z&nbsp;którego da się od razu pracować" sub="Porównanie z typowym audytem kodu. Przeglądamy tak, jak sami budujemy, z zasadami sprawdzonymi na ponad dwustu wdrożeniach." wiersze={METODA} typowy="Typowy audyt<br>kodu" liczba="200+ wdrożeń" />
+
+<!-- ============ 8 · PO RAPORCIE ============
+     Jedyne miejsce, w którym pada ciąg dalszy: sami, bieżące wsparcie,
+     warsztaty. Numery pozycji z raportu panelu zamówień. -->
+<section id="po-raporcie" class="v3-sek">
+<div class="v8-gl">
+<h2 class="v3-h2">Po raporcie poprawiacie sami albo z&nbsp;nami</h2>
+<p class="v3-sub">Raport jest Wasz i&nbsp;do niczego nie zobowiązuje. Wycenę dalszej pracy dostajecie tylko wtedy, gdy o&nbsp;nią poprosicie.</p>
+</div>
+<div class="po-l">
+{DROGI.map((d) => (
+  <div class="po-w rv">
+    <h3>{d.t}</h3>
+    <div>
+      <p>{d.d}</p>
+      {d.poz && <div class="po-nr"><span>pozycje</span>{d.poz.map((x) => (<i class={`nr gk${x.g}`}>{x.n}</i>))}</div>}
+    </div>
+    <a href={d.a.h} class="po-a">{d.a.t}<svg viewBox="0 0 16 16" set:html={HI['arrow-right']} aria-hidden="true"></svg></a>
+  </div>
+))}
+</div>
+</section>
+
+<!-- ============ 9 · DLA KOGO ============ -->
+<DlaKogo sub="Najczęściej dział operacji albo finansów, który zbudował sobie narzędzie sam, albo dział IT, który od kilku miesięcy pracuje z agentami." warunki={DLA_KOGO} nie={NIE_TERAZ} />
+
+<!-- ============ 10 · KONTAKT ============ -->
+<Kontakt tytul="Pokażcie nam, co zbudowaliście" lead="Napiszcie w dwóch zdaniach, co powstało i kto to u Was rozwija. Odpowiemy w jeden dzień roboczy z propozycją terminu rozmowy." zrodlo="Audyt aplikacji" pytanie="Co macie dzisiaj?" podpowiedz="Np. panel zamówień zbudowany w Claude Code, rozwija go dwoje ludzi z operacji…" />
+
+</div>
+
+<GcFaq
+  heading="Pytania, które padają przed decyzją"
+  ctaLabel="Zadajcie nam swoje →"
+  items={faq}
+/>
+
+<script>
+  // ---- „Jeszcze raz" w rysunkach odsłanianych raz (wydruk, macierz) ----
+  // Gasi przejścia (.bez), zdejmuje .on i zakłada je z powrotem.
+  (function(){
+    document.querySelectorAll('[data-znow]').forEach(function(b){
+      var fig = b.closest('[data-znow-cel]');
+      if(!fig) return;
+      b.addEventListener('click', function(){
+        fig.classList.add('bez'); fig.classList.remove('on');
+        void fig.offsetWidth;
+        fig.classList.remove('bez');
+        requestAnimationFrame(function(){ requestAnimationFrame(function(){ fig.classList.add('on'); }); });
+      });
+    });
+  })();
+
+  // ---- Zakładki „Raport, z którym zostajecie" ----
+  (function(){
+    var zak = Array.prototype.slice.call(document.querySelectorAll('[data-zak]'));
+    if(!zak.length) return;
+    var widoki = document.querySelectorAll('[data-widok]');
+    var podpisy = document.querySelectorAll('[data-podpis]');
+    function pokaz(i, fokus){
+      zak.forEach(function(b, j){ b.setAttribute('aria-selected', i === j ? 'true' : 'false'); b.tabIndex = i === j ? 0 : -1; });
+      widoki.forEach(function(v, j){ v.hidden = i !== j; });
+      podpisy.forEach(function(p, j){ p.hidden = i !== j; });
+      if(fokus) zak[i].focus();
+    }
+    zak.forEach(function(b, i){
+      b.addEventListener('click', function(){ pokaz(i); });
+      b.addEventListener('keydown', function(e){
+        if(e.key === 'ArrowRight'){ e.preventDefault(); pokaz((i + 1) % zak.length, true); }
+        if(e.key === 'ArrowLeft'){ e.preventDefault(); pokaz((i - 1 + zak.length) % zak.length, true); }
+      });
+    });
+  })();
+</script>
+</LaBase>

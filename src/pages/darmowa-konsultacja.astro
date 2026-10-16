@@ -1,764 +1,645 @@
 ---
-import Nawigacja from '../components/Nawigacja.astro';
-import Stopka from '../components/Stopka.astro';
-// Landing konwersyjny: bezpłatna konsultacja.
-// Bez klasycznego hero — formularz stoi nad zgięciem, w prawej kolumnie splitu.
+// BEZPŁATNA KONSULTACJA — /darmowa-konsultacja
+// 16.10.2026 weszła tu dawna /darmowa-konsultacja-v4 (wariant zostaje pod tym adresem
+// z noindex). Poprzednia wersja: /darmowa-konsultacja-old.
+// Strona konwersji: jedno zadanie, wysłanie formularza. Układ jak strony konsultacji
+// w grupie (wisegroup.pl, sellwise.pl, adwise.pl /bezplatna-konsultacja): w hero tekst,
+// formularz i portret osoby, która oddzwania; pod spodem krótko to, co rozwiewa
+// wątpliwości przed zgłoszeniem; na końcu ten sam formularz (moduł Kontakt).
+// Treść z /darmowa-konsultacja-v3, język wizualny nowych podstron (tokeny i klasy
+// z src/components/usluga/Styl.astro, formularz w wyglądzie modułu Kontakt).
 //
-// UWAGA: FORM_ENDPOINT musi wskazywać adres przyjmujący POST z formularza
-// (własny endpoint, Formspree, HubSpot itp.). Dopóki jest pusty, formularz
-// NIE udaje wysyłki — pokazuje drogę awaryjną z mailto, żeby nie gubić
-// zgłoszeń po cichu.
-const FORM_ENDPOINT = '';
-const CONTACT_EMAIL = 'hello@letsautomate.pl';
-const CONTACT_PHONE = '+48 571 399 932';
+// Kolejność: hero z formularzem → logotypy → zdania z rozmów → przebieg w czterech
+// krokach (kto i kiedy) → co zostaje u Was → wyniki wdrożeń i cytat → FAQ → formularz.
+// „Czego nie będzie" i „Jak się przygotować" z v3 weszły do FAQ.
+//
+// Formularz w hero ma własne atrybuty (data-zg-*) i własny skrypt: skrypt modułu
+// Kontakt obsługuje jeden formularz na stronie ([data-kt-form]), ten na dole.
+// Podgląd ekranu po wysłaniu: /darmowa-konsultacja?sukces=1
+//
+// DO POTWIERDZENIA PRZED PUBLIKACJĄ
+//   1. Czas konsultacji nie pada na stronie (16.10.2026: rzadko kończy się
+//      w 30 minut, a po rozmowie pracujemy dalej nad planem). Strona główna,
+//      CtaPasek i Kontakt na podstronach nadal mówią „30 minut".
+//   2. Marcel Bilski (Tech Lead) jako osoba prowadząca konsultację.
+//   3. Przykład w „Co zostaje u Was": kwota 24 000 zł i pięć tygodni są przykładowe.
+//   4. Cztery wyniki — te same co w #dowody na stronie głównej.
+import LaBase from '../layouts/LaBase.astro';
+import GcFaq from '../components/GcFaq.astro';
+import Styl from '../components/usluga/Styl.astro';
+import Anim from '../components/usluga/Anim.astro';
+import Loga from '../components/usluga/Loga.astro';
+import Cytat from '../components/usluga/Cytat.astro';
+import CtaPasek from '../components/usluga/CtaPasek.astro';
+import Kontakt from '../components/usluga/Kontakt.astro';
+import { HI, SYGNET } from '../components/usluga/ikony';
+
+const title = "Bezpłatna konsultacja — Let's automate";
+const description = 'Krótki telefon, potem konsultacja o jednym procesie w Waszej firmie z osobą, która takie systemy buduje. Po niej dostajecie plan działania z ceną pierwszego etapu. Bezpłatnie i bez zobowiązań.';
+const ZRODLO = 'Bezpłatna konsultacja';
+const dwa = (n: number) => String(n).padStart(2, '0');
+
+// Zdania, od których zaczynają się pierwsze rozmowy — te same co na stronie
+// głównej i na /dlaczego-my.
+const ZDANIA = [
+  'Mamy siedem narzędzi i żadne nie rozmawia z pozostałymi.',
+  'Zespół zbudował sobie aplikację w AI. Działa, tylko nikt nie wie, czy jest bezpieczna.',
+  'Rok temu kupiliśmy strategię AI. Leży w PDF-ie.',
+  'Ludzie proszą o AI, a ja nie chcę kolejnego pilota, z którego nic nie wynika.',
+  'Mam na biurku trzy oferty i każda mówi dokładnie to samo.',
+];
+
+// Przebieg od formularza do planu. Ostatni krok to wynik, po który klient przychodzi.
+const KROKI = [
+  { t: 'Wypełniacie formularz', d: 'Dwa pola kontaktowe i jedno zdanie o tym, co Was uwiera.', kiedy: 'minuta' },
+  { t: 'Dzwoni Piotr', d: 'Pyta, o czym jest sprawa i czy umiemy w niej pomóc. Kiedy nie umiemy, mówi to od razu.', kiedy: 'w 1 dzień roboczy',
+    os: { f: '/piotr-avatar.jpg', n: 'Piotr Wojciuk', r: 'New Business Lead' } },
+  { t: 'Konsultacja', d: 'Rozmowa z osobą, która takie systemy buduje: jak proces wygląda dziś, gdzie się zacina i co ma się zmienić, żeby było warto.', kiedy: 'w terminie, który Wam pasuje',
+    os: { f: '/marcel-bilski.jpg', n: 'Marcel Bilski', r: 'Tech Lead' } },
+  { t: 'Plan działania z ceną', d: 'Po konsultacji rozpisujemy pomysł na rozwiązanie i kolejne kroki, a pierwszy etap wyceniamy kwotą stałą.', kiedy: 'po konsultacji', mocny: true },
+];
+
+// Wyniki wdrożeń — ta sama czwórka co w #dowody na stronie głównej.
+const WYNIKI = [
+  { dz: 'Finanse', p: 'Obieg faktur kosztowych', l: '99,7%', ld: 'skuteczności księgowania',
+    przed: 'Trzy osoby przepisują faktury z maili, zaległości rosną.',
+    po: 'Faktury z maili księgują się same, zespół zajmuje się wyjątkami.' },
+  { dz: 'Sprzedaż', p: 'Przygotowanie oferty', l: '−80%', ld: 'czasu przygotowania oferty',
+    przed: 'Oferta sklejana z CRM, cenników i maili zajmuje pół dnia.',
+    po: 'Szkic oferty powstaje z danych CRM w kilka minut, handlowiec go dopina.' },
+  { dz: 'Operacje', p: 'Raport tygodniowy', l: '65 h', ld: 'odzyskanych co miesiąc',
+    przed: 'Raport klejony z czterech arkuszy, decyzje na danych sprzed miesiąca.',
+    po: 'Dane spływają same, raport czeka w poniedziałek o 7:00.' },
+  { dz: 'Obsługa klienta', p: 'Pytania o zamówienia', l: '−90%', ld: 'zapytań obsługiwanych ręcznie',
+    przed: 'Zespół odpisuje na te same pytania kilkanaście razy dziennie.',
+    po: 'Agent AI odpowiada w kilka minut, z danymi zamówienia.' },
+];
+
+const faq = [
+  {
+    q: 'Czym dokładnie jest ta bezpłatna konsultacja?',
+    a: 'To dwie rozmowy i praca po nich. Najpierw krótki telefon: o czym jest sprawa i czy umiemy w niej pomóc. Potem konsultacja z osobą, która takie systemy wdraża, o tym, jak Wasz proces wygląda dziś i co da się z nim zrobić. Po konsultacji rozpisujemy plan działania i wyceniamy jego pierwszy etap.',
+  },
+  {
+    q: 'Czy konsultacja zobowiązuje do współpracy?',
+    a: 'Nie. Konsultacja jest bezpłatna, a plan zostaje u Was. Możecie go zrealizować z własnym zespołem albo z inną firmą.',
+  },
+  {
+    q: 'Nie mamy sprecyzowanego pomysłu. Czy to ma sens?',
+    a: 'Wtedy ma największy. Wystarczy jeden proces, który Was uwiera, resztę wyciągniemy pytaniami. Ustalenie, co da się usprawnić i w jakiej kolejności, jest częścią konsultacji.',
+  },
+  {
+    q: 'Jak się przygotować?',
+    a: 'Nie potrzeba dokumentacji ani gotowego planu. Wystarczy pomyśleć o jednym procesie, który zabiera najwięcej ręcznej pracy. Zapytamy o wielkość firmy i działy, przez które przechodzi sprawa, o branżę, o to, co dziś najbardziej się zacina, i czego oczekujecie po wyniku.',
+  },
+  {
+    q: 'Kto prowadzi konsultację?',
+    a: 'Pierwszy telefon odbiera Piotr z new businessu. Na samej konsultacji jest już osoba, która potem odpowiada za wdrożenie, więc zna koszt tego, co proponuje. Nie mamy przygotowanej prezentacji o sobie, cała rozmowa idzie po Waszym procesie.',
+  },
+  {
+    q: 'Czy będziecie namawiać nas na AI?',
+    a: 'Nie. Część spraw tanio załatwia zmiana w procesie albo narzędzie, które już macie. Kiedy tak jest, mówimy to na konsultacji.',
+  },
+  {
+    q: 'Co, jeśli nie umiecie nam pomóc?',
+    a: 'Mówimy to w pierwszym telefonie i wtedy nie umawiamy konsultacji. Spotkanie na siłę zabrałoby czas obu stronom.',
+  },
+  {
+    q: 'Mamy gotowy projekt. Możecie go od razu wycenić?',
+    a: 'Tak. Wtedy pomijamy rozpoznanie procesu i rozmawiamy o zakresie i terminie. Opiszcie projekt w formularzu, a na rozmowę przyjdziemy z pytaniami do wyceny.',
+  },
+  {
+    q: 'Jak wygląda sama konsultacja?',
+    a: 'Online przez Google Meet albo Zoom, link przychodzi w zaproszeniu. Jeśli wolicie telefon, dzwonimy. Na rozmowę rezerwujemy tyle czasu, ile wymaga sprawa. Gdy proces przechodzi przez kilka działów i systemów, zwykle jest to więcej niż pół godziny.',
+  },
+  {
+    q: 'Co z naszymi danymi?',
+    a: 'Pracujemy zgodnie z RODO, a NDA podpisujemy także przed samą konsultacją, jeśli tego potrzebujecie. Do rozmowy nie potrzebujemy dostępu do żadnego z Waszych systemów.',
+  },
+];
+
+const kanon = new URL('/darmowa-konsultacja', Astro.site).href;
+const dane = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Service',
+      '@id': `${kanon}#usluga`,
+      name: 'Bezpłatna konsultacja',
+      serviceType: 'Konsultacja automatyzacji procesów i wdrożeń AI',
+      url: kanon,
+      description: 'Bezpłatna konsultacja w Let’s automate: krótki telefon, potem konsultacja o jednym procesie w firmie z osobą, która takie systemy wdraża. Po niej klient dostaje plan działania: pomysł na rozwiązanie, kolejne kroki i cenę pierwszego etapu.',
+      provider: { '@id': new URL('/#organizacja', Astro.site).href },
+      areaServed: { '@type': 'Country', name: 'Polska' },
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'PLN' },
+    },
+    {
+      '@type': 'BreadcrumbList',
+      '@id': `${kanon}#okruszki`,
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Strona główna', item: new URL('/', Astro.site).href },
+        { '@type': 'ListItem', position: 2, name: 'Bezpłatna konsultacja', item: kanon },
+      ],
+    },
+    {
+      '@type': 'FAQPage',
+      '@id': `${kanon}#faq`,
+      mainEntity: faq.map((f) => ({
+        '@type': 'Question',
+        name: f.q,
+        acceptedAnswer: { '@type': 'Answer', text: f.a.replace(/<[^>]+>/g, '') },
+      })),
+    },
+  ],
+};
 ---
-<!DOCTYPE html>
-<html lang="pl">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Bezpłatna konsultacja — Let's automate</title>
-<meta name="description" content="30 minut rozmowy z założycielem Let's automate. Opowiadasz, jak pracujecie dziś — wychodzisz z konkretnym pierwszym krokiem. Bez zobowiązań i bez sprzedażowej gadki.">
-<link rel="icon" href="/uploads/logo-2.svg">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
-<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-<style>
-  :root{--la-accent:#00CD77}
-  *{box-sizing:border-box}
-  html{scroll-behavior:smooth}
-  body{margin:0;background:#ffffff;overflow-x:clip;font-family:'Schibsted Grotesk',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
-  a{color:inherit;text-decoration:none}
-  /* reguła klasy autora bije [hidden] ze stylu przeglądarki — bez tego elementy
-     z własnym display (np. .f-ok-echo) pokazują się mimo atrybutu hidden */
-  [hidden]{display:none !important}
-  ::selection{background:rgba(0,205,119,0.25)}
-  /* Poświata biegnie od samej góry strony, więc pod nawigacją nie ma krawędzi koloru.
-     Trzyma ją .page, a nie sekcja foldu — inaczej sticky header wychodzi poza tło. */
-  .page{width:100%;margin:0 auto;background:radial-gradient(880px 560px at 88% 0, rgba(0,205,119,0.13), transparent 62%) no-repeat, #ffffff;color:#16211a}
+<LaBase topbar={false} title={title} description={description} ctaHref="#formularz" ctaLabel="Umów konsultację" nav={null}>
+<script type="application/ld+json" is:inline set:html={JSON.stringify(dane)} slot="head"></script>
+<style is:global slot="head">
+  /* =====================================================================
+     HERO · plansza modułu Kontakt: tekst, formularz wprost na ciemnym tle
+     (bez osobnego panelu, jak w Kontakt v12a), wąski portret osoby, która
+     oddzwania. Szersza kolumna formularza, węższa portretu.
+     ===================================================================== */
+  .zg{padding:0 var(--ram);scroll-margin-top:84px}
+  .zg .kt-in{--kp:clamp(40px,4.4vw,64px);grid-template-columns:minmax(0,4.6fr) minmax(0,5.4fr) minmax(0,2.3fr)}
+  @media (max-width:1180px){ .zg .kt-in{grid-template-columns:minmax(0,1fr) minmax(0,1.3fr) minmax(0,0.5fr)} }
+  .zg .hi{display:block;flex-shrink:0;fill:currentColor}
+  .zg .kt-os img{object-position:42% 16%}
+  .zg .kt-os figcaption{left:18px;right:14px}
+  .zg .kt-os figcaption span{font-size:12.5px}
+  .zg-h1{margin:0;font-size:clamp(34px,3.3vw,50px);line-height:1;letter-spacing:-0.045em;font-weight:700;color:#ffffff;text-wrap:balance}
+  .zg-h1 span{color:var(--ziel)}
+  .zg .kt-lewa .v3-sub{max-width:440px}
+  .zg .kt-karta h2{margin:0 0 22px;font-size:clamp(22px,1.9vw,26px);font-weight:700;letter-spacing:-0.025em;line-height:1.15;color:#ffffff}
+  .zg-kroki{margin:18px 0 0;padding:0;list-style:none;counter-reset:k}
+  .zg-kroki li{display:grid;grid-template-columns:28px minmax(0,1fr);gap:10px;align-items:baseline;padding:10px 0;border-top:1px solid rgba(255,255,255,0.14);font-size:14.5px;line-height:1.5;color:rgba(255,255,255,0.72)}
+  .zg-kroki li::before{counter-increment:k;content:"0" counter(k);font-size:12.5px;font-weight:650;color:var(--ziel)}
+  .zg-kroki b{color:#ffffff}
+  @media (max-width:1000px){ .zg .kt-karta h2{font-size:22px} }
 
-  /* hover / focus */
-  .nav-lnk{padding:7px 11px;border-radius:9px;transition:color .15s,background .15s}
-  .nav-lnk:hover{color:#0a7a52 !important;background:rgba(10,122,82,0.07)}
-  .btn-dark{transition:background .2s,color .2s}
-  .btn-dark:hover{background:#0a7a52 !important;color:#fff !important}
-  .btn-accent{transition:background .2s}
-  .btn-accent:hover{background:#00b96c !important;color:#0b1a11 !important}
-  .lnk-green{transition:color .15s}
-  .lnk-green:hover{color:#16211a !important}
-  .foot-lnk{transition:color .15s}
-  .foot-lnk:hover{color:#fff !important}
+  /* =====================================================================
+     ZDANIA Z ROZMÓW · wątek: pięć zdań klienta i nasza odpowiedź
+     ===================================================================== */
+  .v3-h2.sr{font-size:clamp(32px,3.6vw,54px)}
+  /* Strona konwersji: sekcje krótsze niż na podstronach usługowych, żeby
+     od hero do formularza na końcu było jak najmniej przewijania. */
+  .v3 > .v3-sek{padding-top:clamp(64px,7.5vw,112px);padding-bottom:clamp(64px,7.5vw,112px)}
+  .zd{display:grid;grid-template-columns:minmax(0,4.6fr) minmax(0,7.4fr);gap:clamp(32px,5vw,96px);align-items:center}
+  .zd .v3-sub{margin-top:22px;max-width:420px}
+  .zd-w{display:flex;flex-direction:column;align-items:flex-start;gap:10px}
+  .zd-d{max-width:620px;padding:15px 20px;border-radius:20px 20px 20px 6px;background:#ffffff;font-size:clamp(16px,1.35vw,18px);line-height:1.45;letter-spacing:-0.012em;color:var(--t1);text-wrap:pretty;
+    box-shadow:0 0 0 1px rgba(15,26,20,0.06),0 14px 30px -26px rgba(15,26,20,0.5)}
+  .zd-d:nth-child(2n){margin-left:clamp(0px,3vw,44px)}
+  .zd-n{display:flex;align-items:center;gap:12px;align-self:flex-end;margin-top:8px;padding:15px 22px 15px 15px;border-radius:20px 20px 6px 20px;background:var(--ink);color:#ffffff;font-size:clamp(16px,1.35vw,18px);line-height:1.45;letter-spacing:-0.012em}
+  .zd-n i{flex-shrink:0;display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:rgba(0,205,119,0.14)}
+  .zd-n i svg{display:block;width:15px;height:15px;fill:var(--ziel)}
+  .zd-n b{font-weight:700;color:var(--ziel)}
+  .zd.gra .zd-d,.zd.gra .zd-n{opacity:0;transform:translateY(10px)}
+  .zd.gra.on .zd-d,.zd.gra.on .zd-n{opacity:1;transform:none;transition:opacity .5s ease calc(var(--i) * .14s),transform .5s cubic-bezier(.2,.7,.2,1) calc(var(--i) * .14s)}
+  @media (max-width:900px){ .zd{grid-template-columns:1fr} .zd-d:nth-child(2n){margin-left:0} }
 
-  /* ---------- STREFA NAD ZGIĘCIEM ---------- */
-  .fold-grid{position:relative;z-index:1;display:grid;grid-template-columns:1fr 516px;gap:clamp(40px,5vw,80px);align-items:start;max-width:1240px;margin:0 auto}
-  .fold-aside{padding-top:clamp(6px,1.4vw,20px)}
-  .fa-h1{margin:0;font-size:clamp(32px,4.6vw,52px);line-height:1.04;letter-spacing:-0.032em;font-weight:800;color:#16211a;text-wrap:balance}
-  .fa-lead{margin:20px 0 0;max-width:520px;font-size:clamp(16px,1.5vw,18.5px);line-height:1.58;color:#3d4a42;text-wrap:pretty}
-  .fa-eyebrow{margin-top:clamp(28px,3vw,36px);font-family:ui-monospace,Menlo,monospace;font-size:11.5px;letter-spacing:0.14em;text-transform:uppercase;color:#808b83}
-  .fa-list{display:flex;flex-direction:column;gap:13px;margin-top:15px;max-width:520px}
-  .fa-item{display:flex;align-items:flex-start;gap:12px;font-size:15.5px;line-height:1.5;color:#3d4a42}
-  .fa-item svg{flex-shrink:0;margin-top:2px}
-  .fa-item strong{font-weight:700;color:#16211a}
-  .fold-proof{display:flex;align-items:center;gap:20px;margin-top:clamp(30px,3.4vw,40px);padding-top:clamp(26px,3vw,32px);border-top:1px solid #e7ece4;max-width:520px}
-  .fa-nm{font-size:15px;font-weight:750;color:#16211a}
-  .fa-role{margin-top:2px;font-size:13px;line-height:1.45;color:#6d786f}
-  .fa-num{font-size:21px;font-weight:800;letter-spacing:-0.02em;color:#16211a}
-  .fa-lbl{margin-top:1px;font-size:12.5px;color:#6d786f}
-  .fa-stars{font-size:15px;letter-spacing:1px;color:#0a7a52}
-  .fa-group{display:flex;align-items:center;gap:15px;margin-top:26px}
-  .fa-group span{font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.13em;text-transform:uppercase;color:#93a094}
-  .fa-group img{height:18px;width:auto;display:block;opacity:0.72}
-  .fold-contact{position:relative;z-index:1;display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:6px 14px;margin-top:clamp(30px,3.4vw,42px);font-size:15px;color:#4c5850}
+  /* =====================================================================
+     PRZEBIEG · cztery kroki na kropkowanej linii, kto i kiedy
+     ===================================================================== */
+  .pb{--g:clamp(20px,2.6vw,40px);position:relative;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--g);margin-top:clamp(48px,5vw,72px)}
+  .pb::before{content:"";position:absolute;left:20px;right:calc((100% - 3 * var(--g)) / 4 - 20px);top:19px;height:1px;background:repeating-linear-gradient(90deg,rgba(15,26,20,0.28) 0 5px,transparent 5px 11px)}
+  .pb-k{position:relative;display:flex;flex-direction:column}
+  .pb-n{position:relative;z-index:1;display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:var(--ink);color:#ffffff;font-size:14px;font-weight:700;box-shadow:0 0 0 8px #ffffff}
+  .pb-k.mocny .pb-n{background:var(--ziel);color:var(--ink)}
+  .pb-k h3{margin:24px 0 0;font-size:clamp(19px,1.7vw,23px);font-weight:700;letter-spacing:-0.025em;line-height:1.15}
+  .pb-os{display:flex;align-items:center;gap:10px;margin-top:12px;font-size:13.5px;line-height:1.3;color:var(--t2)}
+  .pb-os img{flex-shrink:0;width:34px;height:34px;border-radius:50%;object-fit:cover;object-position:50% 14%;background:#e3e6e0}
+  .pb-os b{display:block;font-weight:650;color:var(--t1)}
+  .pb-k p{margin:12px 0 18px;font-size:15px;line-height:1.6;color:var(--t2);text-wrap:pretty}
+  /* Czas u dołu kroku, we wszystkich czterech na tej samej wysokości */
+  .pb-czas{display:inline-flex;align-self:flex-start;align-items:center;gap:7px;margin-top:auto;padding:8px 14px 8px 11px;border-radius:999px;background:var(--ink);color:#ffffff;font-size:13px;font-weight:650;white-space:nowrap}
+  .pb-czas svg{display:block;width:14px;height:14px;fill:var(--ziel)}
+  .pb-k.mocny .pb-czas{background:var(--ziel);color:var(--ink)}
+  .pb-k.mocny .pb-czas svg{fill:var(--ink)}
+  .pb-tel{display:flex;align-items:center;gap:10px;margin-top:clamp(40px,4vw,56px);padding-top:22px;border-top:1px solid var(--linia);font-size:15px;color:var(--t2)}
+  .pb-tel svg{display:block;width:16px;height:16px;fill:var(--ziel-c)}
+  .pb-tel a{font-weight:700;color:var(--ziel-c);white-space:nowrap}
+  @media (max-width:1060px){ .pb{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:44px} .pb::before{display:none} }
+  @media (max-width:600px){ .pb{grid-template-columns:1fr;row-gap:34px} }
 
-  /* Poświata biegnie od samej góry .page, więc pod przyklejoną nawigacją nie ma
-     krawędzi koloru. Każdy wariant zmienia tylko tę jedną powierzchnię. */
-  .sec-plain{background:#ffffff}
-  .sec-tint{background:#f4f8f2}
-
-  /* ---------- FORMULARZ — ciemnozielone pudło, jak panele na stronie głównej ---------- */
-  .form-card{position:relative;background:radial-gradient(120% 130% at 100% 0%, rgba(0,205,119,0.18), transparent 58%), #0e2b1d;border-radius:22px;box-shadow:0 44px 96px -46px rgba(8,26,17,0.72);overflow:hidden}
-  /* wewnętrzna krawędź + akcentowa nitka u góry — pudło ma się odcinać od jasnej strony */
-  .form-card::before{content:"";position:absolute;inset:0;border-radius:inherit;border:1px solid rgba(255,255,255,0.10);pointer-events:none;z-index:2}
-  .form-card::after{content:"";position:absolute;top:0;left:14%;right:14%;height:1px;background:linear-gradient(90deg,transparent,rgba(0,205,119,0.7),transparent);pointer-events:none;z-index:2}
-  .form-body{padding:clamp(28px,3vw,38px)}
-  .f-field{display:block}
-  .f-lab{display:block;font-size:12px;font-weight:600;letter-spacing:0.015em;color:rgba(255,255,255,0.62);margin-bottom:8px}
-  .f-req{color:var(--la-accent,#00CD77);font-weight:700}
-
-  /* Pola jasne — biel na ciemnym pudle. Cień pod polem sadza je na karcie,
-     inaczej biały prostokąt wygląda jak dziura wycięta w tle. */
-  .inp{width:100%;box-sizing:border-box;font-family:inherit;font-size:15.5px;color:#16211a;background:#ffffff;border:1px solid transparent;border-radius:11px;padding:14px 16px;outline:none;box-shadow:0 1px 2px rgba(0,0,0,0.24);transition:border-color .16s,box-shadow .16s}
-  .inp::placeholder{color:#9aa69c}
-  .inp:focus{border-color:var(--la-accent,#00CD77);box-shadow:0 0 0 3px rgba(0,205,119,0.42),0 1px 2px rgba(0,0,0,0.24)}
-  textarea.inp{resize:vertical;min-height:88px;line-height:1.5}
-  .phone-field{display:flex;align-items:center;background:#ffffff;border:1px solid transparent;border-radius:11px;box-shadow:0 1px 2px rgba(0,0,0,0.24);transition:border-color .16s,box-shadow .16s}
-  .phone-field:focus-within{border-color:var(--la-accent,#00CD77);box-shadow:0 0 0 3px rgba(0,205,119,0.42),0 1px 2px rgba(0,0,0,0.24)}
-  .phone-field select,.phone-field input{color:#16211a}
-  .phone-field input::placeholder{color:#9aa69c}
-  .f-err{display:none;margin-top:7px;font-size:12.5px;font-weight:600;color:#ff9c8d}
-  .f-field.err .inp,.f-field.err .phone-field{border-color:#e0574a;box-shadow:0 0 0 3px rgba(224,87,74,0.3)}
-  .f-field.err .f-err{display:block}
-
-  /* natywny checkbox rysuje się chromem systemu — na ciemnym pudle wygląda jak wada */
-  .f-consent{display:flex;align-items:flex-start;gap:11px;margin-top:4px;font-size:12.5px;line-height:1.55;color:rgba(255,255,255,0.56);cursor:pointer}
-  .f-consent input{position:absolute;width:1px;height:1px;opacity:0}
-  .f-cb{position:relative;width:18px;height:18px;border-radius:5px;border:1.5px solid rgba(255,255,255,0.32);flex-shrink:0;margin-top:1px;transition:background .16s,border-color .16s,box-shadow .16s}
-  .f-cb svg{position:absolute;inset:0;margin:auto;opacity:0;transform:scale(.6);transition:opacity .16s,transform .16s}
-  .f-consent input:checked + .f-cb{background:var(--la-accent,#00CD77);border-color:var(--la-accent,#00CD77)}
-  .f-consent input:checked + .f-cb svg{opacity:1;transform:scale(1)}
-  .f-consent input:focus-visible + .f-cb{box-shadow:0 0 0 3px rgba(0,205,119,0.45)}
-  .f-consent .lnk-green{color:var(--la-accent,#00CD77) !important;font-weight:600}
-  .f-consent .lnk-green:hover{color:#ffffff !important}
-  .f-consent.err{color:#ff9c8d}
-  .f-consent.err .f-cb{border-color:#ff9c8d}
-
-  .btn-submit{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;margin-top:14px;font-family:inherit;background:var(--la-accent,#00CD77);color:#06170e;border:0;padding:18px 24px;border-radius:12px;font-weight:800;font-size:17px;letter-spacing:-0.01em;cursor:pointer;box-shadow:0 14px 32px -16px rgba(0,205,119,0.75);transition:background .2s,box-shadow .2s,transform .12s}
-  .btn-submit:hover{background:#2ce08f;box-shadow:0 20px 42px -16px rgba(0,205,119,0.95)}
-  .btn-submit:active{transform:translateY(1px)}
-  .btn-submit:focus-visible{outline:3px solid #ffffff;outline-offset:3px}
-  .btn-submit:disabled{opacity:.6;cursor:progress;box-shadow:none}
-  .btn-submit [aria-hidden]{transition:transform .18s}
-  .btn-submit:hover [aria-hidden]{transform:translateX(4px)}
-
-  /* Pas pod CTA — trzy równe kolumny rozdzielone włoskową linią, zamiast
-     zawijających się luzem trzech napisów o różnej długości. */
-  .f-trust{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid rgba(255,255,255,0.10);background:rgba(255,255,255,0.035)}
-  .f-trust span{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:8px;padding:17px 12px 18px;font-size:11.5px;font-weight:600;line-height:1.35;text-align:center;text-wrap:balance;color:rgba(255,255,255,0.62)}
-  .f-trust span + span{border-left:1px solid rgba(255,255,255,0.08)}
-  .f-trust svg{flex-shrink:0}
-
-  .f-note{margin-top:16px;padding:14px 15px;border-radius:12px;background:rgba(255,196,120,0.12);border:1px solid rgba(255,196,120,0.32);font-size:13.5px;line-height:1.55;color:#ffd9a6}
-  .f-note strong{color:#ffe9c9}
-  .f-note .lnk-green{color:var(--la-accent,#00CD77) !important}
-  /* ---- stan po wysłaniu ---- */
-  .f-ok{text-align:center}
-  .f-ok-in{padding:clamp(40px,4.2vw,52px) clamp(26px,3vw,34px) clamp(26px,3vw,32px)}
-  .f-ok-ico{position:relative;display:flex;align-items:center;justify-content:center;width:64px;height:64px;margin:0 auto;border-radius:50%;background:rgba(0,205,119,0.15)}
-  .f-ok-ico::before{content:"";position:absolute;inset:-9px;border-radius:50%;border:1px solid rgba(0,205,119,0.24)}
-  .f-ok-t{margin-top:22px;font-size:clamp(22px,2.2vw,26px);font-weight:800;letter-spacing:-0.025em;color:#ffffff}
-  .f-ok-p{margin:10px auto 0;max-width:330px;font-size:15px;line-height:1.6;color:rgba(255,255,255,0.68)}
-  .f-ok-echo{display:inline-flex;align-items:center;gap:8px;margin-top:16px;padding:8px 14px;border-radius:999px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);font-size:13px;font-weight:600;color:rgba(255,255,255,0.72)}
-  .f-ok-echo svg{color:var(--la-accent,#00CD77);flex-shrink:0}
-  .f-ok-next{margin-top:clamp(24px,2.6vw,30px);text-align:left;background:rgba(255,255,255,0.045);border:1px solid rgba(255,255,255,0.12);border-radius:14px;padding:18px 18px 20px}
-  .f-ok-eyebrow{font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.62)}
-  .f-ok-step{display:flex;align-items:flex-start;gap:11px;margin-top:13px;font-size:13.5px;line-height:1.5;color:rgba(255,255,255,0.7)}
-  .f-ok-step strong{font-weight:700;color:#ffffff}
-  .f-ok-n{display:flex;align-items:center;justify-content:center;width:21px;height:21px;border-radius:7px;background:rgba(0,205,119,0.16);color:var(--la-accent,#00CD77);font-family:ui-monospace,Menlo,monospace;font-size:11px;font-weight:800;flex-shrink:0;margin-top:1px}
-  .f-ok-note{margin:18px 0 0;font-size:13px;line-height:1.55;color:rgba(255,255,255,0.62)}
-  .f-ok-foot{padding:15px 20px;border-top:1px solid rgba(255,255,255,0.10);background:rgba(255,255,255,0.035);font-size:13px;color:rgba(255,255,255,0.58)}
-  .f-ok .lnk-green{color:var(--la-accent,#00CD77) !important;font-weight:700}
-  .f-ok .lnk-green:hover{color:#ffffff !important}
-
-  /* Jedna zaaranżowana chwila: fajka się rysuje, treść wjeżdża pod nią kaskadą. */
-  .f-ok-ico svg path{stroke-dasharray:28;stroke-dashoffset:28;animation:ok-draw .5s cubic-bezier(.65,0,.35,1) .2s forwards}
-  .f-ok-ico{animation:ok-pop .4s cubic-bezier(.34,1.4,.64,1) both}
-  .f-ok-t{animation:ok-up .45s cubic-bezier(.4,0,.2,1) .22s both}
-  .f-ok-p{animation:ok-up .45s cubic-bezier(.4,0,.2,1) .29s both}
-  .f-ok-echo{animation:ok-up .45s cubic-bezier(.4,0,.2,1) .35s both}
-  .f-ok-next{animation:ok-up .45s cubic-bezier(.4,0,.2,1) .41s both}
-  .f-ok-note{animation:ok-up .45s cubic-bezier(.4,0,.2,1) .47s both}
-  @keyframes ok-draw{to{stroke-dashoffset:0}}
-  @keyframes ok-pop{from{opacity:0;transform:scale(.72)}to{opacity:1;transform:scale(1)}}
-  @keyframes ok-up{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:none}}
-  @media (prefers-reduced-motion:reduce){
-    .f-ok-ico,.f-ok-ico svg path,.f-ok-t,.f-ok-p,.f-ok-echo,.f-ok-next,.f-ok-note{animation:none;stroke-dashoffset:0;opacity:1;transform:none}
-  }
-  @media (max-width:420px){
-    .f-trust{grid-template-columns:1fr}
-    .f-trust span{flex-direction:row;justify-content:flex-start;gap:10px;padding:13px 20px;text-align:left}
-    .f-trust span + span{border-left:0;border-top:1px solid rgba(255,255,255,0.08)}
-  }
-  @media (prefers-reduced-motion:reduce){ .inp,.phone-field,.btn-submit,.btn-submit [aria-hidden],.f-cb,.f-cb svg{transition:none} }
-
-  /* ---------- FAQ (akordeon) ---------- */
-  .faq-item{border-top:1px solid #e7ece4}
-  .faq-item:last-child{border-bottom:1px solid #e7ece4}
-  .faq-q{appearance:none;width:100%;background:none;border:none;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:20px;text-align:left;padding:24px 4px;font-size:clamp(17px,2vw,20px);font-weight:700;letter-spacing:-0.01em;color:#16211a;transition:color .15s}
-  .faq-q:hover{color:#0a7a52}
-  .faq-ico{flex-shrink:0;display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:#e9f2ea;color:#0a7a52;transition:transform .35s cubic-bezier(0.4,0,0.2,1),background .2s}
-  .faq-item.open .faq-ico{transform:rotate(180deg);background:var(--la-accent,#00CD77);color:#0b1a11}
-  .faq-a{overflow:hidden;max-height:0;transition:max-height .4s cubic-bezier(0.4,0,0.2,1)}
-  .faq-item.open .faq-a{max-height:340px}
-  .faq-a-inner{padding:0 4px 26px;max-width:660px;font-size:15.5px;line-height:1.65;color:#4c5850;text-wrap:pretty}
-  @media (prefers-reduced-motion:reduce){ .faq-a,.faq-ico{transition:none} }
-
-  /* ---------- OPINIE (marquee) ---------- */
-  .marq{position:relative;overflow:hidden;
-    -webkit-mask:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);
-            mask:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
-  .marq-track{display:flex;gap:20px;width:max-content;will-change:transform;animation:marq-scroll 46s linear infinite}
-  .marq:hover .marq-track{animation-play-state:paused}
-  .marq-card{flex:0 0 auto;width:min(340px,80vw);display:flex;flex-direction:column;background:#ffffff;border:1px solid #e7ece4;border-radius:16px;padding:24px 24px 20px}
-  @keyframes marq-scroll{from{transform:translateX(0)}to{transform:translateX(calc(-50% - 10px))}}
-  @media (prefers-reduced-motion:reduce){
-    .marq{overflow-x:auto;-webkit-mask:none;mask:none;scroll-snap-type:x mandatory}
-    .marq-track{animation:none}
-    .marq-card{scroll-snap-align:start}
-    .marq-dup{display:none !important}
+  /* =====================================================================
+     CO ZOSTAJE U WAS · ciemna scena, trzy obiekty z prawdziwą treścią
+     ===================================================================== */
+  .zw{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));margin-top:clamp(44px,5vw,72px);border-top:1px solid rgba(255,255,255,0.12);border-bottom:1px solid rgba(255,255,255,0.12)}
+  .zw-k{display:flex;flex-direction:column;padding:clamp(24px,2.6vw,36px) clamp(20px,2.4vw,36px) clamp(28px,3vw,40px)}
+  .zw-k + .zw-k{border-left:1px solid rgba(255,255,255,0.12)}
+  .zw-ob{display:flex;align-items:center;justify-content:center;min-height:210px;padding:22px;border-radius:18px;background:rgba(255,255,255,0.045);box-shadow:inset 0 0 0 1px rgba(255,255,255,0.07)}
+  .zw-k h3{margin:26px 0 0;font-size:clamp(19px,1.6vw,22px);font-weight:700;letter-spacing:-0.022em;color:#ffffff}
+  .zw-k p{margin:10px 0 0;max-width:400px;font-size:15px;line-height:1.6;color:rgba(255,255,255,0.68);text-wrap:pretty}
+  /* kartka planu */
+  .zw-kar{width:100%;max-width:300px;padding:14px 16px 12px;border-radius:3px;background:#fffdf8;color:#141a16;font-size:12px;line-height:1.35;box-shadow:0 30px 50px -30px rgba(0,0,0,0.8)}
+  .zw-kar-gl{display:flex;justify-content:space-between;gap:8px;padding-bottom:6px;border-bottom:1px solid rgba(15,26,20,0.12);font-size:10.5px;color:#7a827c}
+  .zw-kar-gl span{display:inline-flex;align-items:center;gap:5px;font-weight:650;color:#141a16}
+  .zw-kar-gl svg{display:block;width:10px;height:10px;fill:var(--ziel)}
+  .zw-kar b.t{display:block;margin-top:9px;font-size:16px;font-weight:700;letter-spacing:-0.025em}
+  .zw-kar small{display:block;margin-top:1px;font-size:10.5px;color:#7a827c}
+  .zw-kar ol{margin:8px 0 0;padding:0;list-style:none}
+  .zw-kar li{display:grid;grid-template-columns:22px minmax(0,1fr);align-items:baseline;padding:5px 0 5px 7px;border-top:1px solid rgba(15,26,20,0.07);font-weight:600}
+  .zw-kar li.e1{box-shadow:inset 2px 0 0 var(--ziel)}
+  .zw-kar li em{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--ziel-c)}
+  /* cena etapu */
+  .zw-cena{width:100%;max-width:300px;padding:16px 18px;border-radius:3px;background:#fffdf8;color:#141a16;box-shadow:0 30px 50px -30px rgba(0,0,0,0.8)}
+  .zw-cena span{display:block;font-size:12.5px;font-weight:650}
+  .zw-cena small{display:block;margin-top:2px;font-size:11px;color:#7a827c}
+  .zw-cena strong{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-top:14px;padding-top:12px;border-top:1.5px solid #141a16;font-size:11.5px;font-weight:400;color:#7a827c}
+  .zw-cena mark{padding:0 3px;font-size:30px;font-weight:750;letter-spacing:-0.04em;line-height:1;color:#141a16;background:linear-gradient(transparent 56%, rgba(0,205,119,0.5) 56%) no-repeat 0 0 / 100% 100%}
+  .zw.gra .zw-cena mark{background-size:0% 100%}
+  .zw.gra.on .zw-cena mark{background-size:100% 100%;transition:background-size .8s cubic-bezier(.4,0,.2,1) .5s}
+  /* decyzja */
+  .zw-dec{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;max-width:320px}
+  .zw-dec div{padding:14px 14px 15px;border-radius:12px;font-size:12.5px;line-height:1.45}
+  .zw-dec b{display:flex;align-items:center;gap:6px;margin-bottom:6px;font-size:13.5px;font-weight:700}
+  .zw-dec b svg{display:block;width:14px;height:14px;fill:currentColor}
+  .zw-dec .nie{background:rgba(255,255,255,0.06);box-shadow:inset 0 0 0 1px rgba(255,255,255,0.14);color:rgba(255,255,255,0.75)}
+  .zw-dec .nie b{color:#ffffff}
+  .zw-dec .tak{background:var(--ziel);color:var(--ink)}
+  @media (max-width:980px){
+    .zw{grid-template-columns:1fr}
+    .zw-k{padding-left:0;padding-right:0}
+    .zw-k + .zw-k{border-left:0;border-top:1px solid rgba(255,255,255,0.12)}
   }
 
-  /* ---- sticky header + mega menu ---- */
-  .site-header{position:sticky;top:0;z-index:60;padding:0 clamp(16px,4vw,40px);transition:padding-top .35s cubic-bezier(.4,0,.2,1)}
-  .site-header.scrolled{padding-top:12px}
-  .nav-pill{display:flex;align-items:center;justify-content:space-between;gap:20px;max-width:1440px;margin:0 auto;padding:16px 14px 16px 8px;background:transparent;border:1px solid transparent;border-radius:18px;box-shadow:none;transition:max-width .4s cubic-bezier(.4,0,.2,1),padding .35s cubic-bezier(.4,0,.2,1),background .3s,border-color .3s,box-shadow .3s}
-  .site-header.scrolled .nav-pill{max-width:1180px;padding:8px 12px 8px 22px;background:rgba(255,255,255,0.78);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);border-color:rgba(255,255,255,0.6);box-shadow:0 16px 46px -18px rgba(18,38,28,0.34)}
-  .nav-item{display:flex;align-items:center}
-  .mega-wrap{position:absolute;top:calc(100% - 20px);left:50%;transform:translateX(-50%) translateY(6px);width:min(940px,calc(100vw - 40px));padding-top:34px;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .18s ease,transform .18s ease}
-  .nav-item:hover .mega-wrap,.nav-item:focus-within .mega-wrap{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0);pointer-events:auto}
-  .nav-caret{transition:transform .2s}
-  .nav-item:hover .nav-caret,.nav-item:focus-within .nav-caret{transform:rotate(180deg)}
-  .mega-eyebrow{font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#808b83;padding:0 11px;margin-bottom:6px}
-  .mega-item{display:block;padding:9px 11px;border-radius:11px;transition:background .15s}
-  .mega-item:hover{background:#f4f8f2}
-  .mega-t{display:block;font-size:14.5px;font-weight:650;color:#16211a;transition:color .15s}
-  .mega-item:hover .mega-t{color:#0a7a52}
-  .mega-d{display:block;margin-top:2px;font-size:12.5px;line-height:1.4;color:#637066}
-  .mega-feat{display:flex;flex-direction:column;justify-content:center;background:radial-gradient(120% 120% at 100% 0%, rgba(0,205,119,0.16), transparent 55%), #0e2b1d;border-radius:14px;padding:24px 22px;color:#ffffff;transition:transform .2s,box-shadow .2s}
-  .mega-feat:hover{transform:translateY(-2px);box-shadow:0 22px 44px -22px rgba(0,0,0,0.5)}
-  /* ---- Megamenu usług: triaż po sytuacji klienta ---- */
-  .usl-grid{display:grid;grid-template-columns:1fr 1fr 1fr;grid-template-rows:auto auto auto;gap:0 6px}
-  .usl-lane{display:grid;grid-template-rows:subgrid;grid-row:span 3;padding:15px 14px 11px;border-radius:14px;transition:background .2s}
-  .usl-top{align-self:start}
-  .usl-head{display:block;font-size:24px;font-weight:800;line-height:1.06;letter-spacing:-0.032em;text-wrap:balance;color:#16211a;transition:color .18s}
-  .usl-head:hover{color:#0a7a52}
-  .usl-sub{display:block;margin-top:9px;font-size:12.5px;line-height:1.45;color:#637066}
-  .usl-rule{display:block;width:26px;height:2px;margin:16px 0 15px;border-radius:2px;background:var(--la-accent,#00CD77);transition:width .28s cubic-bezier(.4,0,.2,1)}
-  .usl-lane:hover .usl-rule{width:78px}
-  .usl-list .mega-item{padding:7px 9px;margin-left:-9px;border-radius:10px}
-  .usl-list .mega-item:hover{background:#eef5ec}
-  .usl-list .mega-t{font-size:14px;font-weight:650}
-  .usl-list .mega-d{font-size:12px;color:#96a098}
-  @media (prefers-reduced-motion:reduce){ .usl-rule{transition:none} }
-  @media (max-width:900px){ .mega-wrap{display:none !important} }
+  /* =====================================================================
+     WYNIKI · cztery karty; na szerokim ekranie w jednym rzędzie
+     ===================================================================== */
+  #dowody .rz-k{flex:1 0 290px;max-width:360px}
+  .rz-l{margin:18px 0 0}
+  .rz-l b{display:block;font-size:clamp(40px,3.5vw,52px);font-weight:750;letter-spacing:-0.045em;line-height:1;color:var(--ziel-c)}
+  .rz-l span{display:block;margin-top:7px;font-size:13.5px;color:var(--t2)}
+  .rz-pp{display:grid;gap:12px;margin:18px 0 0;padding-top:14px;border-top:1px solid var(--linia)}
+  .rz-pp dt{display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:700;color:var(--burs-c)}
+  .rz-pp dt::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--burs)}
+  .rz-pp .po dt{color:var(--ziel-c)}
+  .rz-pp .po dt::before{background:var(--ziel)}
+  .rz-pp dd{margin:3px 0 0;font-size:14px;line-height:1.5;color:var(--t2);text-wrap:pretty}
+  .rz-pp .po dd{color:var(--t1)}
+  .dw-dol.bez .dw-str{visibility:hidden}
 
-  /* ---- Skala nagłówków ---- */
-  .h-sec{font-size:clamp(30px,4.6vw,52px);line-height:1.05;letter-spacing:-0.028em;font-weight:800}
-  .sub{font-size:17px;line-height:1.6;color:#4c5850;text-wrap:pretty}
-  .sec-head{display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:24px 56px}
-  .etap-card{transition:transform .3s cubic-bezier(.4,0,.2,1),box-shadow .3s,border-color .3s}
-  .etap-card:hover{transform:translateY(-4px);border-color:var(--la-accent,#00CD77);box-shadow:0 26px 54px -32px rgba(18,38,28,0.22)}
-  @media (prefers-reduced-motion:reduce){ .etap-card{transition:none} .etap-card:hover{transform:none} }
-
-  /* ---- Pasek CTA na mobile ---- */
-  .mob-cta{display:none}
-  @media (max-width:900px){
-    .mob-cta{display:flex;align-items:center;gap:12px;position:fixed;left:0;right:0;bottom:0;z-index:70;padding:11px clamp(14px,4vw,20px) calc(11px + env(safe-area-inset-bottom));background:rgba(255,255,255,0.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid #e2eade;box-shadow:0 -10px 30px -18px rgba(18,38,28,0.4)}
-    .mob-cta.hide{display:none}
-    body{padding-bottom:74px}
-  }
-
-  /* ---------- RESPONSYWNOŚĆ ---------- */
-  @media (max-width:1100px){
-    .fold-grid{grid-template-columns:1fr !important;gap:clamp(32px,5vw,44px) !important;max-width:640px !important}
-    .fold-aside{order:2}
-  }
-  @media (max-width:1024px){
-    .faq-grid{grid-template-columns:1fr !important;gap:clamp(32px,5vw,48px) !important}
-  }
-  @media (max-width:900px){
-    /* Palec potrzebuje więcej niż wysokość linijki tekstu: linki-odnośniki
-       dostają zapas w pionie bez zmiany odstępów (ujemny margines go znosi). */
-    .lnk-green,.row-lnk{padding-block:10px;margin-block:-10px}
-    .sub{text-wrap:wrap}
-    .grid3{grid-template-columns:minmax(0,1fr) !important;gap:20px !important}
-    .foot-grid{grid-template-columns:1fr 1fr !important;gap:40px !important}
-    .nav-menu{display:none !important}
-  }
-  @media (max-width:600px){
-    .grid2,.foot-grid{grid-template-columns:1fr !important}
-    .fold-proof{flex-direction:column !important;align-items:flex-start !important;gap:18px !important}
-    .form-body{padding-left:20px !important;padding-right:20px !important}
-  }
-
-  /* iOS Safari powiększa całą stronę, gdy kursor wchodzi w pole z krojem
-     mniejszym niż 16px — po wyjściu z pola układ zostaje przesunięty.
-     Na telefonie pola dostają więc równe 16px. */
-  @media (max-width:900px){
-    input,select,textarea{font-size:16px !important}
-  }
+  /* FAQ stoi przed formularzem, więc formularz domyka stronę: równy papier
+     nad planszą (dół FAQ) i pod nią. */
+  #kontakt{padding-bottom:clamp(56px,7vw,96px)}
 </style>
-</head>
-<body>
 
-<div class="page">
+<div class="v3">
+<Styl />
+<Anim />
 
-<Nawigacja />
-
-<!-- ============ FOLD · OFERTA + FORMULARZ ============ -->
-<section id="formularz" class="fold" style="position:relative;padding:clamp(26px,3.4vw,44px) clamp(20px,5vw,56px) clamp(56px,7vw,88px);scroll-margin-top:80px">
-
-
-<div class="fold-grid">
-
-<!-- LEWA: dlaczego warto -->
-<div class="fold-aside">
-<h1 class="fa-h1">Wyjdź z tej rozmowy z konkretnym pierwszym krokiem.</h1>
-<p class="fa-lead">Opowiadasz, jak pracujecie dziś. My mówimy, co realnie da się usprawnić i od czego zacząć — na Twoich przykładach. Bez prezentacji i bez sprzedażowej gadki.</p>
-
-<div class="fa-eyebrow">W 30 minut ustalimy</div>
-<div class="fa-list">
-<div class="fa-item"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#0a7a52" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span><strong>Gdzie ucieka czas i pieniądze</strong> — w Twoich procesach, nie w ogólnych statystykach</span></div>
-<div class="fa-item"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#0a7a52" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span><strong>Co usprawnić najszybciej</strong> — z realnym zwrotem, nie w teorii</span></div>
-<div class="fa-item"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#0a7a52" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span><strong>Konkretny pierwszy krok</strong> — na piśmie, w kilka dni roboczych</span></div>
+<!-- ============ 1 · HERO Z FORMULARZEM ============ -->
+<section id="formularz" class="zg kt-ciemny">
+<div class="kt-in v3-ziarno">
+<div class="kt-lewa">
+<h1 class="zg-h1">Bezpłatna konsultacja kończy się <span>planem działania i ceną</span></h1>
+<p class="v3-sub jasny">Krótki telefon, potem konsultacja z osobą, która takie systemy buduje. Po niej rozpisujemy pomysł na rozwiązanie, kolejne kroki i cenę pierwszego etapu. Plan zostaje u Was, także jeśli nie zaczniemy współpracy.</p>
+<p class="kt-kanaly"><a href="mailto:hello@letsautomate.pl"><svg class="hi" viewBox="0 0 16 16" aria-hidden="true" set:html={HI['envelope']}></svg>hello@letsautomate.pl</a><a href="tel:+48571399932"><svg class="hi" viewBox="0 0 16 16" aria-hidden="true" set:html={HI['phone']}></svg>+48 571 399 932</a></p>
 </div>
 
-<!-- dowód: z kim rozmawiasz -->
-<div class="fold-proof">
-<div style="display:flex;align-items:center;gap:14px;flex-shrink:0">
-<img src="/szymon-kita.jpg" alt="Szymon Kita — założyciel Let's automate" style="width:62px;height:62px;border-radius:50%;object-fit:cover;object-position:50% 16%;flex-shrink:0;box-shadow:0 8px 20px -10px rgba(18,38,28,0.5)">
-<div>
-<div class="fa-nm">Szymon Kita</div>
-<div class="fa-role">rozmawiasz bezpośrednio<br>z założycielem</div>
+<div class="kt-karta" data-anim>
+<form class="kt-f" data-zg-form data-zrodlo={`${ZRODLO} · ${Astro.url.pathname} · hero`} novalidate>
+<h2>Wypełnijcie formularz</h2>
+<div class="kt-2">
+<div class="kt-pole">
+<label class="kt-lab" for="zg-email">E-mail <span class="req">*</span></label>
+<div class="kt-ramka"><svg class="hi" viewBox="0 0 16 16" aria-hidden="true" set:html={HI['envelope']}></svg><input class="kt-inp" id="zg-email" name="email" type="email" inputmode="email" autocomplete="email" placeholder="jan@firma.pl" aria-describedby="zg-err-email"></div>
+<div class="kt-err" id="zg-err-email"></div>
+</div>
+<div class="kt-pole">
+<label class="kt-lab" for="zg-tel">Telefon <span class="req">*</span></label>
+<div class="kt-ramka kt-tel">
+<span class="kt-kier"><select name="kierunkowy" aria-label="Numer kierunkowy"><option value="+48">+48</option><option value="+49">+49</option><option value="+44">+44</option><option value="+380">+380</option><option value="+420">+420</option><option value="+1">+1</option></select><svg class="hi" viewBox="0 0 16 16" aria-hidden="true" set:html={HI['chevron-down']}></svg></span>
+<i aria-hidden="true"></i>
+<input class="kt-inp" id="zg-tel" name="telefon" type="tel" inputmode="tel" autocomplete="tel-national" placeholder="571 000 000" aria-describedby="zg-err-tel">
+</div>
+<div class="kt-err" id="zg-err-tel"></div>
 </div>
 </div>
-<div style="display:flex;gap:26px">
-<div>
-<div class="fa-num">140+</div>
-<div class="fa-lbl">firm</div>
+<div class="kt-blok kt-pole">
+<label class="kt-lab" for="zg-msg">Czego dotyczy sprawa? <span class="opt">nieobowiązkowe</span></label>
+<div class="kt-ramka kt-ta"><textarea class="kt-inp" id="zg-msg" name="wiadomosc" rows="3" placeholder="Np. zapytania ofertowe przychodzą mailem, a potem przepisujemy je do Excela i do ERP…"></textarea></div>
 </div>
-<div>
-<div class="fa-num">200+</div>
-<div class="fa-lbl">wdrożeń</div>
-</div>
-<div>
-<div class="fa-stars" aria-hidden="true">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-<div class="fa-lbl" style="margin-top:3px">opinie klientów</div>
-</div>
-</div>
-</div>
-
-<div class="fa-group">
-<span>Część grupy</span>
-<img src="/uploads/wisegroup_logo_v2.webp" alt="Wise Group">
-</div>
-</div>
-
-<!-- PRAWA: formularz -->
-<div class="form-card">
-<form id="leadForm" data-endpoint={FORM_ENDPOINT} novalidate>
-<div class="form-body">
-<div style="display:flex;flex-direction:column;gap:15px">
-
-<div class="f-field">
-<label class="f-lab" for="leadEmail">E-mail <span class="f-req">*</span></label>
-<input class="inp" id="leadEmail" name="email" type="email" inputmode="email" autocomplete="email" placeholder="jan@firma.pl" aria-describedby="errEmail">
-<div class="f-err" id="errEmail">Sprawdź adres e-mail.</div>
-</div>
-
-<div class="f-field">
-<label class="f-lab" for="leadPhone">Telefon <span class="f-req">*</span></label>
-<div class="phone-field">
-<div style="position:relative;display:flex;align-items:center;flex-shrink:0">
-<select id="leadPrefix" name="kierunkowy" aria-label="Numer kierunkowy" style="appearance:none;-webkit-appearance:none;-moz-appearance:none;border:0;background:transparent;font-family:inherit;font-size:15px;font-weight:600;color:#16211a;padding:14px 32px 14px 16px;outline:none;cursor:pointer">
-<option value="+48">+48</option>
-<option value="+49">+49</option>
-<option value="+44">+44</option>
-<option value="+380">+380</option>
-<option value="+420">+420</option>
-<option value="+1">+1</option>
-</select>
-<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#8a978c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;right:13px;top:50%;transform:translateY(-50%);pointer-events:none" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
-</div>
-<span style="width:1px;height:22px;background:#e4ebe2;flex-shrink:0"></span>
-<input id="leadPhone" name="telefon" type="tel" inputmode="tel" autocomplete="tel-national" placeholder="571 000 000" aria-describedby="errPhone" style="flex:1;min-width:0;border:0;background:transparent;font-family:inherit;font-size:15px;color:#16211a;padding:14px 16px 14px 14px;outline:none">
-</div>
-<div class="f-err" id="errPhone">Sprawdź numer telefonu.</div>
-</div>
-
-<div class="f-field">
-<label class="f-lab" for="leadMsg">O czym chcesz porozmawiać?</label>
-<textarea class="inp" id="leadMsg" name="wiadomosc" rows="3" placeholder="Kilka zdań o tym, jak pracujecie dziś — albo od razu konkretny pomysł. Nie musi być gotowy."></textarea>
-</div>
-
-<label class="f-consent" id="consentRow" for="leadConsent">
-<input type="checkbox" id="leadConsent" name="zgoda">
-<span class="f-cb"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="#06170e" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg></span>
-<span>Wyrażam zgodę na kontakt i przetwarzanie moich danych w celu obsługi zapytania. <a href="/polityka-prywatnosci" class="lnk-green" style="font-weight:600">Polityka prywatności</a>.</span>
+<label class="kt-zgoda" data-zg-zgoda-row>
+<input type="checkbox" name="zgoda" data-zg-zgoda>
+<span class="kt-cb"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="#ffffff" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg></span>
+<span>Wyrażam zgodę na kontakt i przetwarzanie moich danych w celu obsługi zapytania. <a href="/polityka-prywatnosci">Polityka prywatności</a>.</span>
 </label>
-
-<button type="submit" class="btn-submit" id="leadSubmit"><span data-label>Umów bezpłatną konsultację</span> <span aria-hidden="true">→</span></button>
-
-</div>
-
-<div class="f-note" id="leadFallback" hidden>
-<strong>Wysyłka formularza nie jest jeszcze podłączona.</strong><br>
-Napisz do nas bezpośrednio — <a id="leadMailto" href={`mailto:${CONTACT_EMAIL}`} class="lnk-green" style="font-weight:700">{CONTACT_EMAIL}</a> — albo zadzwoń: <a href="tel:+48571399932" class="lnk-green" style="font-weight:700">{CONTACT_PHONE}</a>.
-</div>
-</div>
-
-<div class="f-trust">
-<span><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#00CD77" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l2.8 1.7"/></svg>Odpowiedź w 1 dzień roboczy</span>
-<span><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#00CD77" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>RODO i NDA przed startem</span>
-<span><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#00CD77" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>Zero zobowiązań</span>
+<div class="kt-hp" aria-hidden="true"><label for="zg-www">Nie wypełniaj tego pola</label><input id="zg-www" name="firma_www" type="text" tabindex="-1" autocomplete="off"></div>
+<button type="submit" class="kt-btn" data-zg-submit>
+<span class="kt-btn-t" data-zg-label>Umów bezpłatną konsultację</span>
+<span class="kt-btn-k" aria-hidden="true">
+<svg class="s1" viewBox="0 0 16 16" set:html={HI['arrow-right']}></svg>
+<svg class="s2" viewBox="0 0 16 16" set:html={HI['arrow-right']}></svg>
+<svg class="kr" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="30 100"/></svg>
+<svg class="pt" viewBox="0 0 16 16" set:html={HI['check']}></svg>
+</span>
+</button>
+<p class="kt-po">Bez zobowiązań. Odzywamy się w jeden dzień roboczy.</p>
+<div class="kt-awaria" data-zg-awaria hidden>
+<strong data-zg-awaria-t>Zgłoszenie nie doszło.</strong>
+<span data-zg-awaria-d>Wpisane dane zostały w formularzu — spróbujcie jeszcze raz za chwilę.</span>
+Możecie też napisać na <a href="mailto:hello@letsautomate.pl" data-zg-mailto>hello@letsautomate.pl</a> albo zadzwonić: <a href="tel:+48571399932">+48 571 399 932</a>.
 </div>
 </form>
 
-<div class="f-ok" id="leadSuccess" role="status" tabindex="-1" hidden>
-<div class="f-ok-in">
-
-<div class="f-ok-ico">
-<svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#00CD77" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
-</div>
-
-<div class="f-ok-t">Mamy Twoje zgłoszenie.</div>
-<p class="f-ok-p">Odezwiemy się w 1 dzień roboczy, żeby dobrać termin rozmowy.</p>
-
-<!-- echo kontaktu — użytkownik od razu widzi, czy nie zrobił literówki -->
-<div class="f-ok-echo" id="okContact" hidden>
-<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3.5 6.5L12 13l8.5-6.5"/></svg>
-<span id="okContactText"></span>
-</div>
-
-<div class="f-ok-next">
-<div class="f-ok-eyebrow">Co dalej</div>
-<div class="f-ok-step"><span class="f-ok-n">1</span><span>Piszemy albo dzwonimy — <strong>w 1 dzień roboczy</strong>, na podany kontakt.</span></div>
-<div class="f-ok-step"><span class="f-ok-n">2</span><span>Rozmawiamy <strong>30 minut</strong> — online albo telefonicznie, jak Ci wygodniej.</span></div>
-<div class="f-ok-step"><span class="f-ok-n">3</span><span>Dostajesz <strong>kierunek na piśmie</strong> — w kilka dni roboczych po rozmowie.</span></div>
-</div>
-
-<p class="f-ok-note">Nie musisz się przygotowywać. Wystarczy, że opowiesz, jak pracujecie dziś.</p>
-
-</div>
-
-<div class="f-ok-foot">
-Sprawa pilna? Zadzwoń: <a href="tel:+48571399932" class="lnk-green">{CONTACT_PHONE}</a>
-</div>
+<div class="kt-ok" data-zg-ok role="status" tabindex="-1" hidden>
+<span class="kt-ok-ik"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#0a7a52" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5" pathLength="1"/></svg></span>
+<h3>Mamy Wasze zgłoszenie</h3>
+<p>Odezwiemy się na adres <b data-zg-echo>podany w formularzu</b> albo na podany numer. Jeśli to literówka, napiszcie na <a href="mailto:hello@letsautomate.pl" style="font-weight:700;color:#0a7a52">hello@letsautomate.pl</a>.</p>
+<ol class="zg-kroki">
+<li><span>Piotr dzwoni <b>w jeden dzień roboczy</b> i pyta, czy umiemy pomóc.</span></li>
+<li><span>Umawiamy <b>konsultację</b> w terminie, który Wam pasuje.</span></li>
+<li><span>Po konsultacji rozpisujemy <b>plan działania z ceną</b> pierwszego etapu.</span></li>
+</ol>
 </div>
 </div>
 
-</div>
-
-<div class="fold-contact">
-<span>Wolisz napisać lub zadzwonić?</span>
-<a href={`mailto:${CONTACT_EMAIL}`} class="lnk-green" style="font-weight:700;color:#0a7a52">{CONTACT_EMAIL}</a>
-<span style="color:#c3cbc2">·</span>
-<a href="tel:+48571399932" class="lnk-green" style="font-weight:700;color:#0a7a52">{CONTACT_PHONE}</a>
+<figure class="kt-os">
+<img src="/piotr-wojciuk.jpg" alt="Piotr Wojciuk" width="1002" height="1100" fetchpriority="high" decoding="async">
+<figcaption><b>Piotr Wojciuk</b><span>Oddzwania po zgłoszeniu</span></figcaption>
+</figure>
 </div>
 </section>
+<Loga />
 
-<!-- ============ JAK TO WYGLĄDA ============ -->
-<section id="jak" class="sec sec-tint" style="padding:clamp(64px,8vw,100px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:80px">
-<div class="sec-head">
-<h2 class="h-sec" style="margin:0;max-width:520px;text-wrap:pretty">Trzy kroki. Zero zobowiązań.</h2>
-<p class="sub" style="margin:0 0 6px;max-width:440px">Od Twojego zgłoszenia do konkretnego kierunku — bez formalności i bez presji.</p>
-</div>
-<div class="grid3" style="display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(20px,2.5vw,28px);margin-top:clamp(40px,5vw,56px)">
-<div class="etap-card" style="background:#ffffff;border:1px solid #e7ece4;border-radius:20px;padding:30px 28px">
-<div style="display:flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:12px;background:#0e2b1d;color:#fff;font-family:ui-monospace,Menlo,monospace;font-size:16px;font-weight:800">01</div>
-<div style="margin-top:20px;font-size:20px;font-weight:750;letter-spacing:-0.015em;color:#16211a">Zostawiasz kontakt</div>
-<p style="margin:9px 0 0;font-size:14.5px;line-height:1.6;color:#4c5850">Wypełniasz krótki formularz. Odzywamy się w 1 dzień roboczy, żeby dobrać dogodny termin.</p>
-</div>
-<div class="etap-card" style="background:#ffffff;border:1px solid #e7ece4;border-radius:20px;padding:30px 28px">
-<div style="display:flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:12px;background:#0e2b1d;color:#fff;font-family:ui-monospace,Menlo,monospace;font-size:16px;font-weight:800">02</div>
-<div style="margin-top:20px;font-size:20px;font-weight:750;letter-spacing:-0.015em;color:#16211a">Rozmawiamy 30 minut</div>
-<p style="margin:9px 0 0;font-size:14.5px;line-height:1.6;color:#4c5850">Online albo telefonicznie. Słuchamy, jak działa Twoja firma i gdzie najbardziej boli. Więcej pytamy, niż mówimy.</p>
-</div>
-<div class="etap-card" style="background:#ffffff;border:1px solid #e7ece4;border-radius:20px;padding:30px 28px">
-<div style="display:flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:12px;background:var(--la-accent,#00CD77);color:#0b1a11;font-family:ui-monospace,Menlo,monospace;font-size:16px;font-weight:800">03</div>
-<div style="margin-top:20px;font-size:20px;font-weight:750;letter-spacing:-0.015em;color:#16211a">Dostajesz kierunek</div>
-<p style="margin:9px 0 0;font-size:14.5px;line-height:1.6;color:#4c5850">Wstępny pomysł i od czego zacząć — na piśmie, w kilka dni roboczych. Co dalej, decydujesz Ty.</p>
-</div>
-</div>
-</section>
-
-<!-- ============ ROZBRAJANIE OBAW ============ -->
-<section class="sec sec-plain" style="padding:clamp(56px,7vw,88px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) clamp(8px,1vw,16px);scroll-margin-top:80px">
-<div style="position:relative;overflow:hidden;background:radial-gradient(820px 460px at 88% 0%, rgba(0,205,119,0.14), transparent 58%), #0e2b1d;border-radius:26px;padding:clamp(48px,6vw,80px) clamp(36px,5vw,72px)">
-<div style="max-width:560px">
-<h2 class="h-sec" style="margin:0;color:#ffffff;text-wrap:pretty">Nie musisz być gotowy. Od tego jest ta rozmowa.</h2>
-<p style="margin:20px 0 0;max-width:480px;font-size:17px;line-height:1.6;color:rgba(255,255,255,0.75);text-wrap:pretty">Najczęstszy powód, dla którego firmy zwlekają, to poczucie „najpierw musimy to sobie poukładać". Nie musicie — to nasza część roboty.</p>
-</div>
-<div class="grid2" style="display:grid;grid-template-columns:1fr 1fr;gap:16px 40px;margin-top:clamp(36px,4vw,48px);max-width:900px">
-<div style="display:flex;align-items:flex-start;gap:13px"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#00CD77" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:2px" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span style="font-size:15.5px;line-height:1.55;color:rgba(255,255,255,0.9)"><strong style="color:#fff;font-weight:700">Nie musisz mieć dokumentacji ani planu.</strong> Wystarczy, że opowiesz, jak jest dziś.</span></div>
-<div style="display:flex;align-items:flex-start;gap:13px"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#00CD77" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:2px" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span style="font-size:15.5px;line-height:1.55;color:rgba(255,255,255,0.9)"><strong style="color:#fff;font-weight:700">Nie musisz znać się na AI.</strong> Od tłumaczenia „co i jak" jesteśmy my.</span></div>
-<div style="display:flex;align-items:flex-start;gap:13px"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#00CD77" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:2px" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span style="font-size:15.5px;line-height:1.55;color:rgba(255,255,255,0.9)"><strong style="color:#fff;font-weight:700">Nie usłyszysz sprzedażowej gadki.</strong> Jak coś nie ma sensu, powiemy wprost.</span></div>
-<div style="display:flex;align-items:flex-start;gap:13px"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#00CD77" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:2px" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span style="font-size:15.5px;line-height:1.55;color:rgba(255,255,255,0.9)"><strong style="color:#fff;font-weight:700">Masz już konkretny projekt? Tym lepiej.</strong> Pominiemy diagnozę i przejdziemy do wyceny.</span></div>
-</div>
-<a href="#formularz" class="btn-accent" style="display:inline-flex;align-items:center;gap:9px;margin-top:clamp(36px,4vw,44px);background:var(--la-accent,#00CD77);color:#0b1a11;padding:16px 28px;border-radius:12px;font-weight:750;font-size:16px">Wróć do formularza <span aria-hidden="true">↑</span></a>
-</div>
-</section>
-
-<!-- ============ OPINIE ============ -->
-<section id="opinie" class="sec sec-plain" style="padding:clamp(72px,9vw,110px) 0 clamp(64px,8vw,96px);scroll-margin-top:80px;overflow:hidden">
-<div style="padding:0 max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2))">
-<div class="sec-head">
-<h2 class="h-sec" style="margin:0;max-width:520px;text-wrap:pretty">Zgłosili się przed Tobą. Nie żałują.</h2>
-<p class="sub" style="margin:0 0 6px;max-width:460px">Firmy, które zaczęły od jednej rozmowy — o efektach współpracy własnymi słowami.</p>
-</div>
-</div>
-<div class="marq" style="margin-top:clamp(32px,4vw,48px)" role="region" aria-label="Opinie klientów">
-<div class="marq-track">
-<figure class="marq-card" style="margin:0">
-<div aria-hidden="true" style="font-size:13px;letter-spacing:2px;color:#0a7a52;margin-bottom:14px">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-<blockquote style="margin:0;flex:1;font-size:14.5px;line-height:1.6;color:#33413a;text-wrap:pretty">„Wprowadzenie danych trwało godzinę. Dziś przesłanie oferty to <span style="color:#0a7a52;font-weight:700">10 minut</span> — oszczędności liczymy w etatach."</blockquote>
-<div style="display:inline-flex;align-items:center;gap:8px;margin-top:16px;background:#f4f8f2;border:1px solid #e7ece4;border-radius:8px;padding:6px 11px;align-self:flex-start">
-<span style="font-size:12.5px;font-weight:700;color:#808b83;text-decoration:line-through">60 min</span>
-<span style="color:#0a7a52;font-weight:800" aria-hidden="true">→</span>
-<span style="font-size:12.5px;font-weight:800;color:#0a7a52">10 min</span>
-</div>
-<figcaption style="display:flex;align-items:center;gap:11px;margin-top:18px;padding-top:16px;border-top:1px solid #eef1ec">
-<span style="width:38px;height:38px;border-radius:50%;overflow:hidden;flex-shrink:0"><img src="https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Mateusz Chinczewski" style="width:38px;height:38px;object-fit:cover"></span>
-<span><span style="display:block;font-size:13.5px;font-weight:700;color:#16211a">Mateusz Chinczewski</span><span style="display:block;font-size:12px;color:#637066">Prezes Zarządu, Finerto</span></span>
-</figcaption>
-</figure>
-<figure class="marq-card" style="margin:0">
-<div aria-hidden="true" style="font-size:13px;letter-spacing:2px;color:#0a7a52;margin-bottom:14px">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-<blockquote style="margin:0;flex:1;font-size:14.5px;line-height:1.6;color:#33413a;text-wrap:pretty">„Let's automate wziął pełną odpowiedzialność za projekt i dowiózł go do końca. To dlatego powierzyliśmy im kolejny, znacznie większy."</blockquote>
-<figcaption style="display:flex;align-items:center;gap:11px;margin-top:18px;padding-top:16px;border-top:1px solid #eef1ec">
-<span style="width:38px;height:38px;border-radius:50%;overflow:hidden;flex-shrink:0"><img src="https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Jakub Ciołkowski" style="width:38px;height:38px;object-fit:cover"></span>
-<span><span style="display:block;font-size:13.5px;font-weight:700;color:#16211a">Jakub Ciołkowski</span><span style="display:block;font-size:12px;color:#637066">Członek Zarządu, NARS Polska</span></span>
-</figcaption>
-</figure>
-<figure class="marq-card" style="margin:0">
-<div aria-hidden="true" style="font-size:13px;letter-spacing:2px;color:#0a7a52;margin-bottom:14px">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-<blockquote style="margin:0;flex:1;font-size:14.5px;line-height:1.6;color:#33413a;text-wrap:pretty">„Bardzo dobrze zrozumieli nasze potrzeby i zaprojektowali scenariusz, który w pełni spełnił cele biznesowe. Otwartość i komunikacja to ich DNA."</blockquote>
-<figcaption style="display:flex;align-items:center;gap:11px;margin-top:18px;padding-top:16px;border-top:1px solid #eef1ec">
-<span style="width:38px;height:38px;border-radius:50%;overflow:hidden;flex-shrink:0"><img src="https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Arkadiusz Andruch" style="width:38px;height:38px;object-fit:cover"></span>
-<span><span style="display:block;font-size:13.5px;font-weight:700;color:#16211a">Arkadiusz Andruch</span><span style="display:block;font-size:12px;color:#637066">Prezes Zarządu, X2O</span></span>
-</figcaption>
-</figure>
-<figure class="marq-card" style="margin:0">
-<div aria-hidden="true" style="font-size:13px;letter-spacing:2px;color:#0a7a52;margin-bottom:14px">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-<blockquote style="margin:0;flex:1;font-size:14.5px;line-height:1.6;color:#33413a;text-wrap:pretty">„Korzystamy z usług Let's automate od roku. Świetna komunikacja, łatwo się dogadać, a jakość usług na wysokim poziomie."</blockquote>
-<figcaption style="display:flex;align-items:center;gap:11px;margin-top:18px;padding-top:16px;border-top:1px solid #eef1ec">
-<span style="width:38px;height:38px;border-radius:50%;overflow:hidden;flex-shrink:0"><img src="https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Dominik Chylewski" style="width:38px;height:38px;object-fit:cover"></span>
-<span><span style="display:block;font-size:13.5px;font-weight:700;color:#16211a">Dominik Chylewski</span><span style="display:block;font-size:12px;color:#637066">Wspólnik, X3D</span></span>
-</figcaption>
-</figure>
-<figure class="marq-card marq-dup" aria-hidden="true" style="margin:0">
-<div style="font-size:13px;letter-spacing:2px;color:#0a7a52;margin-bottom:14px">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-<blockquote style="margin:0;flex:1;font-size:14.5px;line-height:1.6;color:#33413a;text-wrap:pretty">„Wprowadzenie danych trwało godzinę. Dziś przesłanie oferty to <span style="color:#0a7a52;font-weight:700">10 minut</span> — oszczędności liczymy w etatach."</blockquote>
-<figcaption style="display:flex;align-items:center;gap:11px;margin-top:18px;padding-top:16px;border-top:1px solid #eef1ec">
-<span style="width:38px;height:38px;border-radius:50%;overflow:hidden;flex-shrink:0"><img src="https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=200" alt="" style="width:38px;height:38px;object-fit:cover"></span>
-<span><span style="display:block;font-size:13.5px;font-weight:700;color:#16211a">Mateusz Chinczewski</span><span style="display:block;font-size:12px;color:#637066">Prezes Zarządu, Finerto</span></span>
-</figcaption>
-</figure>
-<figure class="marq-card marq-dup" aria-hidden="true" style="margin:0">
-<div style="font-size:13px;letter-spacing:2px;color:#0a7a52;margin-bottom:14px">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-<blockquote style="margin:0;flex:1;font-size:14.5px;line-height:1.6;color:#33413a;text-wrap:pretty">„Let's automate wziął pełną odpowiedzialność za projekt i dowiózł go do końca. To dlatego powierzyliśmy im kolejny, znacznie większy."</blockquote>
-<figcaption style="display:flex;align-items:center;gap:11px;margin-top:18px;padding-top:16px;border-top:1px solid #eef1ec">
-<span style="width:38px;height:38px;border-radius:50%;overflow:hidden;flex-shrink:0"><img src="https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=200" alt="" style="width:38px;height:38px;object-fit:cover"></span>
-<span><span style="display:block;font-size:13.5px;font-weight:700;color:#16211a">Jakub Ciołkowski</span><span style="display:block;font-size:12px;color:#637066">Członek Zarządu, NARS Polska</span></span>
-</figcaption>
-</figure>
-</div>
-</div>
-</section>
-
-<!-- ============ FAQ ============ -->
-<section id="faq" class="sec sec-tint" style="padding:clamp(72px,9vw,110px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:80px">
-<div class="faq-grid" style="display:grid;grid-template-columns:1fr 720px;gap:clamp(40px,6vw,88px);align-items:start">
+<!-- ============ 2 · ZDANIA Z ROZMÓW ============ -->
+<section id="zdania" class="v3-sek v3-papier">
+<div class="zd" data-anim data-gra>
 <div>
-<h2 class="h-sec" style="margin:0;text-wrap:pretty">Zanim się zgłosisz.</h2>
-<p class="sub" style="margin:20px 0 0;max-width:380px">Najczęstsze wątpliwości przed pierwszą rozmową. Nie znalazłeś swojej?</p>
-<a href="#formularz" class="lnk-green" style="display:inline-block;margin-top:18px;font-size:16px;font-weight:700;color:#0a7a52">Zapytaj nas wprost →</a>
+<h2 class="v3-h2 sr">Nie wiecie, od czego zacząć rozmowę?</h2>
+<p class="v3-sub">Te zdania słyszymy na pierwszych konsultacjach najczęściej. Wystarczy jedno z nich, żeby było o czym rozmawiać.</p>
 </div>
-<div class="faq-list">
-<div class="faq-item open">
-<button class="faq-q" aria-expanded="true">Czym właściwie jest ta bezpłatna konsultacja?<span class="faq-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"></path></svg></span></button>
-<div class="faq-a"><div class="faq-a-inner">To około 30 minut rozmowy z kimś, kto realnie buduje takie systemy — nie z handlowcem. Słuchamy, jak działa Twoja firma, i podpowiadamy, co da się usprawnić. Na koniec dostajesz wstępny pomysł na piśmie. Tyle. Żadnej prezentacji na siłę.</div></div>
-</div>
-<div class="faq-item">
-<button class="faq-q" aria-expanded="false">Czy to mnie do czegoś zobowiązuje?<span class="faq-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"></path></svg></span></button>
-<div class="faq-a"><div class="faq-a-inner">Absolutnie nie. Konsultacja jest bezpłatna i niezobowiązująca. Jeśli po rozmowie uznasz, że to nie czas albo nie temat — rozejdziemy się z konkretnym pomysłem, który zostaje u Ciebie.</div></div>
-</div>
-<div class="faq-item">
-<button class="faq-q" aria-expanded="false">Nie mam jeszcze sprecyzowanego pomysłu — ma to sens?<span class="faq-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"></path></svg></span></button>
-<div class="faq-a"><div class="faq-a-inner">Właśnie wtedy ma największy. Nie musisz przychodzić z gotowym planem — wystarczy, że opowiesz, jak pracujecie dziś i co Cię uwiera. Od nazwania, co i jak da się usprawnić, jesteśmy my.</div></div>
-</div>
-<div class="faq-item">
-<button class="faq-q" aria-expanded="false">Mam już konkretny projekt — możecie od razu wycenić?<span class="faq-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"></path></svg></span></button>
-<div class="faq-a"><div class="faq-a-inner">Tak. Jeśli wiesz, czego chcesz, pomijamy etap diagnozy i przechodzimy prosto do zakresu i wyceny. Opisz projekt w formularzu — na rozmowie doprecyzujemy szczegóły.</div></div>
-</div>
-<div class="faq-item">
-<button class="faq-q" aria-expanded="false">W jakiej formie i ile trwa rozmowa?<span class="faq-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"></path></svg></span></button>
-<div class="faq-a"><div class="faq-a-inner">Online (Google Meet lub Zoom) albo telefonicznie — jak Ci wygodniej. Standardowo około 30 minut. Wstępną koncepcję na piśmie dostajesz w ciągu kilku dni roboczych.</div></div>
-</div>
-<div class="faq-item">
-<button class="faq-q" aria-expanded="false">Czy nasze dane są bezpieczne?<span class="faq-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"></path></svg></span></button>
-<div class="faq-a"><div class="faq-a-inner">Tak. Pracujemy zgodnie z RODO, a przed każdym poważniejszym projektem podpisujemy NDA. To, co powiesz na rozmowie, zostaje między nami.</div></div>
-</div>
+<div class="zd-w">
+{ZDANIA.map((z, i) => (<div class="zd-d" style={`--i:${i}`}>„{z}”</div>))}
+<div class="zd-n" style={`--i:${ZDANIA.length + 1}`}><i aria-hidden="true"><svg viewBox="0 0 40 41" set:html={SYGNET}></svg></i><span>Zaczynamy od <b>tego jednego procesu</b> i mówimy, co da się z nim zrobić.</span></div>
 </div>
 </div>
 </section>
 
-<!-- ============ DOMKNIĘCIE ============ -->
-<section class="sec sec-plain" style="padding:clamp(64px,8vw,100px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));text-align:center">
-<h2 class="h-sec" style="margin:0 auto;max-width:640px;text-wrap:balance">Trzydzieści minut teraz albo kolejny kwartał na Excelu.</h2>
-<p class="sub" style="margin:20px auto 0;max-width:520px">Nic nie ryzykujesz — a wychodzisz z konkretnym pierwszym krokiem, nawet jeśli zrobisz go bez nas.</p>
-<a href="#formularz" class="btn-accent" style="display:inline-flex;align-items:center;gap:9px;margin-top:clamp(28px,3.4vw,36px);background:var(--la-accent,#00CD77);color:#0b1a11;padding:17px 30px;border-radius:12px;font-weight:750;font-size:16.5px">Umów bezpłatną konsultację <span aria-hidden="true">↑</span></a>
+<!-- ============ 3 · PRZEBIEG ============ -->
+<section id="przebieg" class="v3-sek">
+<div class="v8-gl">
+<h2 class="v3-h2 sr">Od formularza do planu</h2>
+<p class="v3-sub">Zgłoszenie trafia prosto do nas, bez kolejki i systemu ticketowego.</p>
+</div>
+<ol class="pb" style="list-style:none;padding:0">
+{KROKI.map((k, i) => (
+  <li class={k.mocny ? 'pb-k mocny' : 'pb-k'}>
+    <span class="pb-n">{dwa(i + 1)}</span>
+    <h3>{k.t}</h3>
+    {k.os && <span class="pb-os"><img src={k.os.f} alt="" width="34" height="34" loading="lazy" decoding="async"><span><b>{k.os.n}</b>{k.os.r}</span></span>}
+    <p>{k.d}</p>
+    <span class="pb-czas"><svg viewBox="0 0 16 16" aria-hidden="true" set:html={HI['clock']}></svg>{k.kiedy}</span>
+  </li>
+))}
+</ol>
+<p class="pb-tel"><svg viewBox="0 0 16 16" aria-hidden="true" set:html={HI['phone']}></svg><span>Sprawa pilna? Zadzwońcie: <a href="tel:+48571399932">+48 571 399 932</a></span></p>
 </section>
 
-<!-- ============ STOPKA ============ -->
-<Stopka />
-
+<!-- ============ 4 · CO ZOSTAJE U WAS ============ -->
+<section id="co-zostaje" class="v3-sek v3-scena v3-ziarno">
+<div class="v8-gl">
+<h2 class="v3-h2 jasny sr">Co zostaje u Was po konsultacji</h2>
+<p class="v3-sub jasny">Plan przychodzi po konsultacji i jest Wasz, niezależnie od decyzji o współpracy.</p>
 </div>
+<div class="zw" data-anim data-gra>
+<div class="zw-k">
+<div class="zw-ob" aria-hidden="true">
+<div class="zw-kar">
+<div class="zw-kar-gl"><span><svg viewBox="0 0 40 41" set:html={SYGNET}></svg>Let’s automate</span>po konsultacji</div>
+<b class="t">Plan działania</b>
+<small>Hurtownia instalacyjna · ofertowanie</small>
+<ol>
+<li class="e1"><em>01</em>Zapytania z maila w jednej liście</li>
+<li class="e1"><em>02</em>Szkic oferty z cennika ERP</li>
+<li><em>03</em>Akceptacja z terminem w powiadomieniu</li>
+</ol>
+</div>
+</div>
+<h3>Plan działania</h3>
+<p>Pomysł na rozwiązanie i kolejne kroki w kolejności, w jakiej mają sens, z rezultatem przy każdym.</p>
+</div>
+<div class="zw-k">
+<div class="zw-ob" aria-hidden="true">
+<div class="zw-cena">
+<span>Cena etapu 1</span>
+<small>kroki 01–02 · 5 tygodni · kwota stała</small>
+<strong><mark>24 000 zł</mark>netto</strong>
+</div>
+</div>
+<h3>Cena pierwszego etapu</h3>
+<p>Kwota stała, znana przed startem. Bez wyceny „po analizie”.</p>
+</div>
+<div class="zw-k">
+<div class="zw-ob" aria-hidden="true">
+<div class="zw-dec">
+<div class="nie"><b><svg viewBox="0 0 16 16" set:html={HI['arrow-down-tray']}></svg>Nie teraz</b>Plan zostaje u Was. Zrealizujecie go sami albo z inną firmą.</div>
+<div class="tak"><b><svg viewBox="0 0 16 16" set:html={HI['check']}></svg>Zaczynamy</b>Etap 1 rusza w terminie z planu.</div>
+</div>
+</div>
+<h3>Decyzja po Waszej stronie</h3>
+<p>Konsultacja nie zobowiązuje do współpracy. Plan ma być przydatny także bez nas.</p>
+</div>
+</div>
+</section>
 
-<!-- pasek CTA na mobile — pojawia się, gdy formularz zjedzie z ekranu -->
-<div class="mob-cta hide" id="mobCta">
-<a href={`tel:${CONTACT_PHONE.replace(/\s/g, '')}`} aria-label="Zadzwoń" style="display:flex;align-items:center;justify-content:center;width:48px;height:48px;flex-shrink:0;border:1px solid #e2eade;border-radius:11px;color:#0a7a52"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .3 1.9.6 2.8a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.2-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.5 2.8.6a2 2 0 0 1 1.7 2z"/></svg></a>
-<a href="#formularz" style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;background:#0a7a52;color:#fff;padding:15px 20px;border-radius:11px;font-weight:750;font-size:16px">Umów konsultację <span aria-hidden="true">→</span></a>
+<!-- ============ 5 · WYNIKI WDROŻEŃ ============ -->
+<section id="dowody" class="v3-sek">
+<div class="v8-gl">
+<h2 class="v3-h2 sr">Po czym poznać, że to miało sens</h2>
+<p class="v3-sub">Cztery wdrożenia u naszych klientów. Na konsultacji ustalamy, który z tych wyników jest u Was najbliżej.</p>
+</div>
+<div class="v4-dw dw-sc" data-dw-sc tabindex="0" role="region" aria-label="Wdrożenia, przewijane w poziomie">
+{WYNIKI.map((w) => (
+  <article class="dw4-k rz-k">
+    <span class="dw4-p">{w.dz}</span>
+    <h3>{w.p}</h3>
+    <p class="rz-l"><b>{w.l}</b><span>{w.ld}</span></p>
+    <dl class="rz-pp">
+      <div><dt>Przed</dt><dd>{w.przed}</dd></div>
+      <div class="po"><dt>Po</dt><dd>{w.po}</dd></div>
+    </dl>
+  </article>
+))}
+</div>
+<div class="dw-dol">
+<span></span>
+<div class="dw-str">
+<button type="button" data-dw-wstecz aria-label="Poprzednie wdrożenia" disabled><svg class="hi" viewBox="0 0 16 16" set:html={HI['arrow-right']} style="transform:scaleX(-1)"></svg></button>
+<button type="button" data-dw-dalej aria-label="Następne wdrożenia"><svg class="hi" viewBox="0 0 16 16" set:html={HI['arrow-right']}></svg></button>
+</div>
+</div>
+<Cytat cytat="Bardzo dobrze zrozumieli nasze potrzeby i zaprojektowali scenariusz, który w pełni spełnił cele biznesowe. Otwartość i komunikacja to ich DNA." imie="Arkadiusz Andruch" rola="Prezes Zarządu, X2O" />
+<CtaPasek tytul="Zacznijmy od jednego procesu, który Was uwiera." pod="Bezpłatnie i bez zobowiązań, online albo telefonicznie." cta="Umów konsultację" />
+</section>
+
+<!-- ============ 6 · FAQ ============ -->
+<GcFaq heading="Zanim wyślecie formularz" ctaLabel="Zadajcie nam swoje →" items={faq} />
+
+<!-- ============ 7 · FORMULARZ NA KOŃCU ============ -->
+<Kontakt
+  tytul="Zacznijmy od jednego telefonu"
+  lead="Zostawcie kontakt i jedno zdanie o procesie. Piotr oddzwoni w jeden dzień roboczy i sprawdzi, czy umiemy pomóc."
+  zrodlo={ZRODLO}
+  pytanie="Czego dotyczy sprawa?"
+  podpowiedz="Np. zapytania ofertowe przychodzą mailem, a potem przepisujemy je do Excela i do ERP…"
+  osoba={{ foto: '/piotr-wojciuk.jpg', w: 1002, h: 1100, imie: 'Piotr Wojciuk', rola: 'New Business Lead, oddzwania po zgłoszeniu' }}
+  po="Bez zobowiązań. Odzywamy się w jeden dzień roboczy."
+/>
 </div>
 
 <script>
-  // ---- Sticky header: cień/obramowanie po scrollu ----
-  (function(){
-    var h = document.querySelector('.site-header');
-    if(!h) return;
-    function upd(){ h.classList.toggle('scrolled', window.scrollY > 65); }
-    upd();
-    window.addEventListener('scroll', upd, {passive:true});
-  })();
+  var redukcja = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // ---- FAQ — akordeon ----
+  // ---- Formularz w hero ----
+  // Ta sama umowa z /api/kontakt co w module Kontakt (e-mail i telefon
+  // wymagane, pułapka na boty, 503 = formularz wyłączony) i te same zdarzenia
+  // pomiaru. DO ZDARZEŃ NIE WCHODZI TREŚĆ FORMULARZA ANI DANE KONTAKTOWE.
   (function(){
-    var items = document.querySelectorAll('.faq-item');
-    if(!items.length) return;
-    items.forEach(function(item){
-      var btn = item.querySelector('.faq-q');
-      if(!btn) return;
-      btn.addEventListener('click', function(){
-        var willOpen = !item.classList.contains('open');
-        items.forEach(function(other){
-          other.classList.remove('open');
-          var b = other.querySelector('.faq-q');
-          if(b) b.setAttribute('aria-expanded', 'false');
-        });
-        if(willOpen){
-          item.classList.add('open');
-          btn.setAttribute('aria-expanded', 'true');
-        }
-      });
-    });
-  })();
-
-  // Rotujące CTA prowadzi teraz komponent Nawigacja.astro. Kopia z tej strony
-  // pisała do tego samego elementu równolegle z komponentem (bezpiecznik
-  // `navInit` chroni tylko skrypt komponentu), więc napis migotał i gubił
-  // wersję skróconą na telefonie.
-
-  // ---- Pasek CTA na mobile: tylko gdy formularz jest poza ekranem ----
-  (function(){
-    var bar = document.getElementById('mobCta');
-    var form = document.getElementById('formularz');
-    if(!bar || !form || !('IntersectionObserver' in window)) return;
-    var io = new IntersectionObserver(function(entries){
-      entries.forEach(function(e){ bar.classList.toggle('hide', e.isIntersecting); });
-    }, { threshold: 0.12 });
-    io.observe(form);
-  })();
-
-  // ---- Formularz: walidacja, wysyłka, stan sukcesu ----
-  (function(){
-    var form = document.getElementById('leadForm');
+    var form = document.querySelector('[data-zg-form]');
     if(!form) return;
-    var endpoint = (form.dataset.endpoint || '').trim();
-    var btn = document.getElementById('leadSubmit');
-    var btnLabel = btn.querySelector('[data-label]');
-    var okBox = document.getElementById('leadSuccess');
-    var fallback = document.getElementById('leadFallback');
-    var mailto = document.getElementById('leadMailto');
-
-    var consent = document.getElementById('leadConsent');
-    var consentRow = document.getElementById('consentRow');
-    var RULES = [
-      { id: 'leadEmail', msg: 'Sprawdź adres e-mail.',   test: function(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v); } },
-      { id: 'leadPhone', msg: 'Sprawdź numer telefonu.', test: function(v){ return v.replace(/\D/g, '').length >= 9; } }
+    var ENDPOINT = '/api/kontakt', MAIL = 'hello@letsautomate.pl';
+    var karta = form.parentNode, okBox = karta.querySelector('[data-zg-ok]');
+    var btn = form.querySelector('[data-zg-submit]'), etykieta = form.querySelector('[data-zg-label]');
+    var zgoda = form.querySelector('[data-zg-zgoda]'), wierszZgody = form.querySelector('[data-zg-zgoda-row]');
+    var awaria = form.querySelector('[data-zg-awaria]');
+    var zrodlo = form.dataset.zrodlo || '';
+    var wysylam = false, zaczety = false;
+    function pomiar(nazwa, powod){
+      var dane = { event: nazwa, usluga: zrodlo, strona: location.pathname };
+      if(powod) dane.powod = powod;
+      try {
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push(dane);
+        document.dispatchEvent(new CustomEvent('la:pomiar', { detail: dane }));
+      } catch(e){}
+    }
+    var REGULY = [
+      { pole: 'email', msg: 'Adres e-mail wygląda na niepełny.', ok: function(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v); } },
+      { pole: 'telefon', msg: 'Numer telefonu ma za mało cyfr.', ok: function(v){ return v.replace(/\D/g, '').length >= 9; } }
     ];
-
-    function field(el){ return el.closest('.f-field'); }
-    function passes(rule, v){ return v ? rule.test(v) : false; }
-
-    function setErr(el, msg){
-      var f = field(el); if(!f) return;
-      f.classList.add('err');
-      el.setAttribute('aria-invalid', 'true');
-      var box = f.querySelector('.f-err');
-      if(box && msg) box.textContent = msg;
-    }
-    function clearErr(el){
-      var f = field(el); if(!f) return;
-      f.classList.remove('err');
-      el.removeAttribute('aria-invalid');
-    }
-
-    function validate(){
-      var first = null;
-      RULES.forEach(function(rule){
-        var el = document.getElementById(rule.id);
-        var v = (el.value || '').trim();
-        if(passes(rule, v)){ clearErr(el); }
-        else { setErr(el, v ? rule.msg : 'To pole jest wymagane.'); if(!first) first = el; }
+    function pole(el){ return el && el.closest ? el.closest('.kt-pole') : null; }
+    function blad(el, msg){ var f = pole(el); if(!f) return; f.classList.add('err'); el.setAttribute('aria-invalid', 'true'); f.querySelector('.kt-err').textContent = msg; }
+    function dobrze(el){ var f = pole(el); if(!f) return; f.classList.remove('err'); el.removeAttribute('aria-invalid'); }
+    function sprawdz(){
+      var pierwszy = null;
+      REGULY.forEach(function(r){
+        var el = form.elements[r.pole], v = (el.value || '').trim();
+        if(v && r.ok(v)) dobrze(el);
+        else { blad(el, v ? r.msg : 'To pole jest wymagane.'); if(!pierwszy) pierwszy = el; }
       });
-      consentRow.classList.toggle('err', !consent.checked);
-      if(!consent.checked && !first) first = consent;
-      return first;
+      wierszZgody.classList.toggle('err', !zgoda.checked);
+      if(!zgoda.checked && !pierwszy) pierwszy = zgoda;
+      return pierwszy;
     }
-
-    // błąd znika, gdy tylko użytkownik poprawia pole
-    form.addEventListener('input', function(e){ if(field(e.target)) clearErr(e.target); });
-    consent.addEventListener('change', function(){ consentRow.classList.toggle('err', !consent.checked); });
-
-    function showSuccess(){
-      // Echo kontaktu — użytkownik od razu widzi, na co odpowiemy, i wyłapie literówkę.
-      var echo = document.getElementById('okContact');
-      var echoText = document.getElementById('okContactText');
-      var mail = (document.getElementById('leadEmail').value || '').trim();
-      if(echo && echoText && mail){
-        echoText.textContent = mail;
-        echo.hidden = false;
-      }
+    form.addEventListener('input', function(e){
+      if(pole(e.target)) dobrze(e.target);
+      if(!zaczety){ zaczety = true; pomiar('formularz_start'); }
+    });
+    zgoda.addEventListener('change', function(){ wierszZgody.classList.toggle('err', !zgoda.checked); });
+    function telefon(){ return (form.elements.kierunkowy.value + ' ' + (form.elements.telefon.value || '').trim()).trim(); }
+    function opis(){ return (form.elements.wiadomosc.value || '').trim(); }
+    function pokazOk(bezPomiaru){
+      var echo = okBox.querySelector('[data-zg-echo]'), mail = (form.elements.email.value || '').trim();
+      if(echo && mail) echo.textContent = mail;
+      if(!bezPomiaru) pomiar('formularz_sukces');
       form.hidden = true;
       okBox.hidden = false;
-      // karta zmienia wysokość — trzymamy ją w kadrze, zanim oddamy fokus
       okBox.scrollIntoView({ block: 'nearest' });
-      okBox.focus();
+      okBox.focus({ preventScroll: true });
     }
-
-    // Podgląd ekranu podziękowania bez wysyłki: /darmowa-konsultacja?sukces=1
-    if(location.search.indexOf('sukces=1') > -1){
-      document.getElementById('leadEmail').value = 'jan@firma.pl';
-      showSuccess();
+    var AWARIE = {
+      'brak-konfiguracji': ['Formularz jest chwilowo wyłączony.', 'Zgłoszenie nie zostało wysłane, a ponowna próba nic nie zmieni.'],
+      'domyslna': ['Zgłoszenie nie doszło.', 'Wpisane dane zostały w formularzu — spróbujcie jeszcze raz za chwilę.']
+    };
+    function pokazAwarie(kod){
+      pomiar('formularz_blad', kod || 'domyslna');
+      var tr = AWARIE[kod] || AWARIE.domyslna;
+      awaria.querySelector('[data-zg-awaria-t]').textContent = tr[0];
+      awaria.querySelector('[data-zg-awaria-d]').textContent = tr[1];
+      awaria.querySelector('[data-zg-mailto]').href = 'mailto:' + MAIL
+        + '?subject=' + encodeURIComponent('Bezpłatna konsultacja — zgłoszenie')
+        + '&body=' + encodeURIComponent('E-mail: ' + (form.elements.email.value || '').trim() + '\nTelefon: ' + telefon() + '\n\n' + opis());
+      awaria.hidden = false;
+      awaria.scrollIntoView({ block: 'nearest' });
     }
-
-    function showFallback(){
-      // Nie udajemy wysyłki — dajemy drogę, którą zgłoszenie naprawdę do nas dotrze.
-      if(mailto){
-        var mail = (document.getElementById('leadEmail').value || '').trim();
-        var msg  = (document.getElementById('leadMsg').value || '').trim();
-        var tel  = document.getElementById('leadPrefix').value + ' ' + (document.getElementById('leadPhone').value || '').trim();
-        mailto.href = mailto.href.split('?')[0]
-          + '?subject=' + encodeURIComponent('Bezpłatna konsultacja — zgłoszenie')
-          + '&body=' + encodeURIComponent('E-mail: ' + mail + '\nTelefon: ' + tel + '\n\n' + msg);
-      }
-      fallback.hidden = false;
-      fallback.scrollIntoView({ block: 'nearest' });
-    }
-
     form.addEventListener('submit', function(e){
       e.preventDefault();
-      var bad = validate();
-      if(bad){ bad.focus(); return; }
-
-      if(!endpoint){ showFallback(); return; }
-
+      if(wysylam) return;
+      var zly = sprawdz();
+      if(zly){ zly.focus(); return; }
+      wysylam = true;
       btn.disabled = true;
-      var label = btnLabel.textContent;
-      btnLabel.textContent = 'Wysyłam…';
-
-      fetch(endpoint, { method: 'POST', headers: { 'Accept': 'application/json' }, body: new FormData(form) })
-        .then(function(r){
-          if(!r.ok) throw new Error('HTTP ' + r.status);
-          showSuccess();
+      btn.classList.add('wysyla');
+      var napis = etykieta.textContent;
+      etykieta.textContent = 'Wysyłam…';
+      awaria.hidden = true;
+      fetch(ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({
+          email: (form.elements.email.value || '').trim(),
+          telefon: telefon(),
+          wiadomosc: opis(),
+          firma_www: form.elements.firma_www.value || '',
+          zrodlo: zrodlo
         })
-        .catch(function(){
+      })
+        .then(function(r){
+          if(r.ok){
+            btn.classList.remove('wysyla');
+            btn.classList.add('wyslane');
+            etykieta.textContent = 'Wysłane';
+            return redukcja ? pokazOk() : setTimeout(pokazOk, 850);
+          }
+          return r.json().catch(function(){ return {}; }).then(function(j){ throw new Error(j.blad || 'domyslna'); });
+        })
+        .catch(function(err){
+          wysylam = false;
           btn.disabled = false;
-          btnLabel.textContent = label;
-          showFallback();
+          btn.classList.remove('wysyla');
+          etykieta.textContent = napis;
+          pokazAwarie(err && err.message);
         });
     });
+    // Odnośniki do formularza w hero ustawiają kursor w pierwszym polu.
+    document.querySelectorAll('a[href="#formularz"]').forEach(function(a){
+      a.addEventListener('click', function(){
+        pomiar('cta_klik');
+        setTimeout(function(){ if(!form.hidden) form.elements.email.focus({ preventScroll: true }); }, 450);
+      });
+    });
+    // Podgląd ekranu po wysłaniu bez wysyłki: ?sukces=1
+    if(location.search.indexOf('sukces=1') > -1){
+      form.elements.email.value = 'jan@firma.pl';
+      pokazOk(true);
+    }
+  })();
+
+  // ---- Wyniki: strzałki przewijają o jedną kartę (kopia z Dowody.astro);
+  // gdy wszystkie karty mieszczą się w rzędzie, strzałki znikają ----
+  (function(){
+    var sc = document.querySelector('[data-dw-sc]');
+    if(!sc) return;
+    var wstecz = document.querySelector('[data-dw-wstecz]');
+    var dalej = document.querySelector('[data-dw-dalej]');
+    var dol = document.querySelector('#dowody .dw-dol');
+    function krok(){ var k = sc.querySelector('.dw4-k'); return k ? k.getBoundingClientRect().width + parseFloat(getComputedStyle(sc).columnGap || 0) : 320; }
+    function stan(){
+      var max = sc.scrollWidth - sc.clientWidth - 2;
+      if(wstecz) wstecz.disabled = sc.scrollLeft <= 2;
+      if(dalej) dalej.disabled = sc.scrollLeft >= max;
+      if(dol) dol.classList.toggle('bez', max <= 0);
+    }
+    function jedz(kier){ sc.scrollBy({ left: kier * krok(), behavior: redukcja ? 'auto' : 'smooth' }); }
+    if(wstecz) wstecz.addEventListener('click', function(){ jedz(-1); });
+    if(dalej) dalej.addEventListener('click', function(){ jedz(1); });
+    sc.addEventListener('scroll', stan, { passive: true });
+    window.addEventListener('resize', stan);
+    stan();
   })();
 </script>
-
-</body>
-</html>
+</LaBase>

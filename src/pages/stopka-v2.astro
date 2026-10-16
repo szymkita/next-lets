@@ -1,0 +1,89 @@
+---
+// Porównanie wariantów stopki (15.10.2026). Strona robocza, poza indeksem
+// i poza sitemapą. Żywa stopka to nadal Stopka.astro — podmiana dopiero po
+// wyborze wariantu.
+//
+// Stopką jest tylko ciemna część (decyzja Szymona): biały pas Wise Group
+// zostaje nad nią bez zmian. Dlatego nad wariantem E stoi prawdziwy pas
+// z obecnej Stopka.astro — jej ciemną część chowamy tu stylem. To samo nad G.
+// Odrzucone i zdjęte ze strony: B (wizytówka), D (jasna rama), F (CTA z diagnozą).
+import Stopka from '../components/Stopka.astro';
+import StopkaA from '../components/stopka-v2/StopkaA.astro';
+import StopkaC from '../components/stopka-v2/StopkaC.astro';
+import StopkaE from '../components/stopka-v2/StopkaE.astro';
+import StopkaG from '../components/stopka-v2/StopkaG.astro';
+---
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stopka — warianty do porównania</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="/uploads/logo-2.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+<style is:global>
+  :root{--la-accent:#00CD77}
+  *{box-sizing:border-box}
+  body{margin:0;background:#ffffff;overflow-x:clip;font-family:'Schibsted Grotesk',system-ui,sans-serif;-webkit-font-smoothing:antialiased;color:#16211a}
+  /* Z obecnej stopki bierzemy tylko pas grupy. */
+  .tylko-pas > footer{display:none}
+</style>
+<style>
+  .skok{position:sticky;top:0;z-index:50;display:flex;gap:6px;flex-wrap:wrap;align-items:center;padding:10px max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));background:rgba(255,255,255,0.92);backdrop-filter:blur(10px);border-bottom:1px solid #e7ece4;font-size:13.5px}
+  .skok b{margin-right:8px}
+  .skok a{color:#2c3a30;text-decoration:none;padding:6px 11px;border-radius:8px}
+  .skok a:hover{background:#eef3ec}
+  .koniec{background:#f4f3ee;padding:clamp(56px,7vw,96px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:48px}
+  .koniec h2{margin:0;font-size:clamp(30px,3.4vw,46px);line-height:1.05;letter-spacing:-0.03em;font-weight:800}
+  .koniec p{margin:14px 0 0;max-width:680px;font-size:16.5px;line-height:1.55;color:#46524b}
+  .koniec-obecna{background:#f4f8f2}
+</style>
+</head>
+<body>
+
+<nav class="skok" aria-label="Warianty">
+<b>Stopka</b>
+<a href="#g">G · E z krótszą listą linków</a>
+<a href="#e">E · Combo A + neon</a>
+<a href="#a">A · Mapa oferty</a>
+<a href="#c">C · Neon</a>
+<a href="#obecna">Obecna</a>
+</nav>
+
+<section class="koniec" id="g">
+<h2>G · E z krótszą listą linków</h2>
+<p>Góra jak w E. Linki nie kopiują menu: cztery kolumny, każda z nagłówkiem — dwie z usługami, obszary i firma z jednym linkiem do produktów. 19 linków zamiast 23.</p>
+</section>
+<div class="tylko-pas"><Stopka /></div>
+<StopkaG />
+
+<section class="koniec" id="e">
+<h2>E · Combo A + neon</h2>
+<p>Zdanie i mapa usług z A, neon z C. Odznaka OpenAI zaraz pod zdaniem, mail i telefon w jednym wierszu obok niej. Pas Wise Group nad stopką bez zmian.</p>
+</section>
+<div class="tylko-pas"><Stopka /></div>
+<StopkaE />
+
+<section class="koniec" id="a">
+<h2>A · Mapa oferty</h2>
+<p>Do porównania.</p>
+</section>
+<StopkaA />
+
+<section class="koniec" id="c">
+<h2>C · Neon</h2>
+<p>Do porównania.</p>
+</section>
+<StopkaC />
+
+<section class="koniec koniec-obecna" id="obecna">
+<h2>Obecna stopka</h2>
+<p>Do porównania.</p>
+</section>
+<Stopka />
+
+</body>
+</html>

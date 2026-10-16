@@ -28,7 +28,8 @@
 //   co tydzień, wpisać to wprost — to mocniejszy argument niż „regularnie".
 // — Ceny nie ma na tej stronie. Cennik Appto żyje na appto.ai; Wingman
 //   nie ma jeszcze publicznej ceny.
-// — Widoki aplikacji są rysowane w HTML i poglądowe (nota pod sekcją Wingmana).
+// — Widoki aplikacji są rysowane w HTML i poglądowe. Noty „Widoki poglądowe”
+//   pod hero i pod Wingmanem zdjęte 14.10.2026 (dopiski bez treści, standard §7).
 import LaBase from '../../layouts/LaBase.astro';
 import GcFaq from '../../components/GcFaq.astro';
 import GcCta from '../../components/GcCta.astro';
@@ -81,6 +82,7 @@ const FAQ = [
 ];
 ---
 <LaBase
+  topbar={false}
   title={title}
   description={description}
   ogImage="/og/hub.png"
@@ -210,6 +212,9 @@ const FAQ = [
     .spec-w{grid-template-columns:minmax(0,1fr);gap:5px}
     .wdr{grid-template-columns:minmax(0,1fr);gap:8px;padding:18px 0}
     .wdr-n{padding-top:0}
+    /* „Skąd się biorą”: kolumna tytułu 340px zabierała telefonowi całą
+       szerokość i link „WiseStack →” wychodził poza ekran (14.10.2026). */
+    .skad-w{grid-template-columns:minmax(0,1fr) !important;gap:8px !important}
   }
 </style>
 
@@ -273,7 +278,7 @@ const FAQ = [
 </div>
 </div>
 </div>
-<p class="stos-nota">Trzy rzeczy, które w naszej firmie wróciły zrobione jednego ranka. Widoki poglądowe.</p>
+<p class="stos-nota">Trzy rzeczy, które w naszej firmie wróciły zrobione jednego ranka.</p>
 </div>
 </div>
 </section>
@@ -289,7 +294,7 @@ const FAQ = [
 
 <div style="margin-top:clamp(36px,4.6vw,56px);border-top:1px solid #e7ece4">
 {SKAD.map((s) => (
-<div class="rv" style="display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:16px 48px;padding:24px 0;border-bottom:1px solid #e7ece4">
+<div class="rv skad-w" style="display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:16px 48px;padding:24px 0;border-bottom:1px solid #e7ece4">
 <div style="font-size:18.5px;font-weight:750;letter-spacing:-0.018em;color:#16211a;text-wrap:balance">{s.t}</div>
 <div>
 <p style="margin:0;font-size:15.5px;line-height:1.62;color:#4c5850;max-width:720px;text-wrap:pretty">{s.d}</p>
@@ -393,7 +398,7 @@ const FAQ = [
 </div>
 </div>
 </div>
-<p style="margin:16px 0 0;font-size:12.5px;line-height:1.5;color:#98a49a">Widok poglądowy. Kryteria oceny ustawiacie sami — dobrą rozmowę definiuje u Was zespół sprzedaży.</p>
+<p style="margin:16px 0 0;font-size:12.5px;line-height:1.5;color:#98a49a">Kryteria oceny ustawiacie sami: dobrą rozmowę definiuje u Was zespół sprzedaży.</p>
 </div>
 
 <div>
@@ -478,9 +483,9 @@ const FAQ = [
 <div>
 <div class="eyebrow">Wtedy budujemy</div>
 <div class="gran-lista">
-<a href="/systemy-procesowe" class="gran-lnk">System pod kluczowy proces <span aria-hidden="true">→</span></a>
-<a href="/rozwiazania-ai" class="gran-lnk">Rozwiązanie AI w Waszych danych <span aria-hidden="true">→</span></a>
-<a href="/automatyzacje-integracje" class="gran-lnk">Integracja z systemami, które macie <span aria-hidden="true">→</span></a>
+<a href="/systemy-procesowe" class="gran-lnk">Systemy dopasowane do firmy <span aria-hidden="true">→</span></a>
+<a href="/rozwiazania-ai" class="gran-lnk">Automatyzacja procesów z AI <span aria-hidden="true">→</span></a>
+<a href="/automatyzacje-integracje" class="gran-lnk">Integracje systemów <span aria-hidden="true">→</span></a>
 </div>
 </div>
 </div>
@@ -488,7 +493,6 @@ const FAQ = [
 
 <GcFaq
   heading="Pytania, które padają przy produktach"
-  lead="Cztery najczęstsze. Szczegóły o Appto zebraliśmy na jego własnej stronie."
   ctaLabel="Zapytaj o resztę →"
   items={FAQ}
 />

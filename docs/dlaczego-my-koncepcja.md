@@ -11,6 +11,31 @@ na **„o nas, pisane o kliencie"**.
 | v4 · 07.09 | strona o mechanizmie: kto trzyma klawiaturę, szyna trzech układów, karta code review, krajobraz alternatyw | „trochę dziwna — to powinno iść bardziej w stronę »O nas«, ale pisane językiem mówiącym cały czas o kliencie" |
 | **v5 — obecna** | o nas, z regułą: żaden fakt o nas nie stoi sam | — |
 
+### v2 do porównania — `/dlaczego-my-v2` (15.10.2026, noindex)
+
+Pierwsze podejście tego dnia (kopia: `docs/_kopie/dlaczego-my-v2-przed-powodami.astro`)
+przełożyło v5 na standard podstron usługowych i dołożyło moduły: indeks zdań
+klientów rozwijany w usługi, pary fakt → skutek, kartę projektu z WiseStackiem,
+konta, liczby, cytaty, trzy odpowiedzi z pierwszej rozmowy. Uwaga Szymona:
+*„tu jest wszystko i nic, tylko nie odpowiada na pytanie dlaczego my"*.
+
+Obecna v2 ma jedną oś — **pięć powodów**. Odpowiedź stoi w pierwszym ekranie
+(lista w hero: powód + co z niego wynika u klienta), a niżej te same powody
+po kolei, każdy z **jednym** dowodem:
+
+| # | Powód | Dowód |
+|---|---|---|
+| 01 | Za nami ponad 200 wdrożeń | cztery karty liczb ze strony głównej, odznaka OpenAI |
+| 02 | Jeden zespół odpowiada za całość | spoty z v5 na ciemnej scenie, pod nią cytat NARS |
+| 03 | Stała cena za każde uruchomienie | oferta podzielona na trzy uruchomienia z decyzją klienta między nimi |
+| 04 | Wszystko stoi na Waszych kontach | konta projektu „w trakcie / po zakończeniu" |
+| 05 | Mówimy, kiedy to nie dla nas | trzy odpowiedzi z pierwszej rozmowy |
+
+Wypadło wszystko, co nie dowodzi żadnego powodu: definicja z indeksem zdań,
+pary fakt → skutek, karta projektu z WiseStackiem, zielony pas, mniejsze
+cytaty, Piotr w hero. Wysokość: 12 300 → 8 750 px. Rzeczy do potwierdzenia
+są w nagłówku pliku. Nie podmieniać bez zgody.
+
 Kopie: `docs/_kopie/dlaczego-my-przed-v4.astro` (v1),
 `docs/_kopie/dlaczego-my-v4-uklady.astro` (v4),
 `src/pages/dlaczego-my-v3.astro` (v3, dalej w repo).

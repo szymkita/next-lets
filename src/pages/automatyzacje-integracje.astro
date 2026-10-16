@@ -1,79 +1,117 @@
 ---
-// AUTOMATYZACJE I INTEGRACJE — /automatyzacje-integracje
-// Trzecia i ostatnia podstrona z pionu „Budujemy aplikacje". Domyka komplet.
+// Od 13.10.2026 na właściwym adresie /automatyzacje-integracje (bez noindex, w menu).
+// Poprzednia wersja: /automatyzacje-integracje-old (noindex). Wzmianki o „-new” niżej
+// dotyczą okresu porównania.
 //
-// LEKCJA Z /systemy-dla-klientow (oceniona jako najsłabsza z pięciu):
-// tamta strona miała dwa rysunki tego samego gatunku — listę słupków w hero
-// i listę słupków w ciemnym pasie — a tezę („portal musi być szybszy od
-// telefonu") tylko wypowiadała. Tutaj: JEDNA animacja z prawdziwym ruchem
-// i JEDEN artefakt, dwa różne rejestry. Teza jest pokazana, nie opisana:
-// w hero trzecia linia po prostu przestaje pulsować.
+// INTEGRACJE SYSTEMÓW — NOWA WERSJA — /automatyzacje-integracje-new
+// Podstrona w standardzie docs/uslugi-standard.md (wzorzec /systemy-procesowe-new).
+// Treść, teza, FAQ i przykłady z obecnej /automatyzacje-integracje
+// i z docs/automatyzacje-integracje-koncepcja.md. noindex do czasu, aż
+// zastąpi stary adres; kanoniczny adres w JSON-LD to już /automatyzacje-integracje.
 //
-// CZYM SIĘ RÓŻNI OD RESZTY PIONU:
-//   /systemy-procesowe    — system prowadzi proces, miarą jest czas sprawy
-//   /systemy-dla-klientow — system stoi u klienta, miarą są pytania
-//   tutaj                 — dane przechodzą między systemami, miarą jest to,
-//                           czy wiadomo, kiedy przestaną przechodzić
-// To jest podłoga tego pionu: najtańsza rzecz, jaką można kupić, i jedyna,
-// która zwraca się w tygodniach. Po niej widać, czy sensowny jest system.
+// TEZA: automatyzacja, o której awarii nikt się nie dowiaduje, jest gorsza
+// od jej braku. Miara, która niesie całą stronę: czas od chwili, w której
+// dane przestają przechodzić, do chwili, w której ktoś o tym wie
+// (8 minut w hero, 28 dni w „Dlaczego").
 //
-// POZYCJONOWANIE — dwa argumenty:
-//   1. ROLA. Integracja kosztuje dni, nie miesiące, i widać po niej w kilka
-//      tygodni, czy warto iść dalej. Jest też warunkiem wstępnym dla dwóch
-//      pozostałych usług z pionu: zanim system poprowadzi proces, dane muszą
-//      być w jednym miejscu i aktualne.
-//   2. TEZA. Automatyzacja, która pada po cichu, jest gorsza od jej braku —
-//      bo ludzie już przestali robić to ręcznie, a system przestał robić to
-//      za nich. Kategoria sprzedaje scenariusze; my sprzedajemy to, że
-//      o awarii dowiadujecie się w minutach.
+// JEDEN PRZYPADEK PRZEZ CAŁĄ STRONĘ: połączenie POL-014 „Nowy klient z CRM
+// do księgowości" u dystrybutora części. Hero pokazuje jego awarię na żywo
+// (10:12 cisza → 10:20 alarm → 10:23 przejęte → 10:41 przebiegi wracają),
+// scena pokazuje jego kartę, wiadomość z alarmem i rejestr dziewięciu
+// połączeń, sekcja „Pierwszy kwartał" jego trzynaście tygodni, a karta
+// dystrybutora w przykładach ma ten alarm w tygodniu 7.
 //
-// TRZY RZECZY SPRAWDZALNE PRZED PODPISANIEM UMOWY:
-//   1. Każde połączenie ma kartę: co uruchamia, co robi, co się dzieje przy
-//      błędzie, kto jest właścicielem i na czym stoi. Karta jest w ciemnym
-//      pasie w całości, więc klient wie, co dostanie, zanim zapłaci.
-//   2. Alarm z progiem czasowym, nie „monitoring" w ogólności. Osiem minut
-//      ciszy i wiadomość idzie do imiennie wskazanej osoby.
-//   3. Odsyłamy do zrobienia samemu, kiedy chodzi o jedno połączenie
-//      i ktoś u Was umie kliknąć w Make'u.
+// RYSUNKI TEJ USŁUGI (słownik: puls i cisza, rozwinięty z obecnej strony):
+//   · hero — „Połączenia na żywo": cztery połączenia biją we własnym rytmie
+//     na wspólnej osi godziny, jedno milknie, po ośmiu minutach ciszy wchodzi
+//     alarm, w bocznym dzienniku zdarzeń widać reakcję i powrót przebiegów;
+//   · Dlaczego 1 — „zamek": klienci z CRM i kontrahenci w programie
+//     księgowym, połączeni parami; po wygaśnięciu tokenu prawa strona
+//     przestaje się zapełniać, a licznik „Nikt nie wie od" dochodzi do 28 dni;
+//   · Dlaczego 2 — droga powiadomienia o błędzie: z platformy na skrzynkę
+//     osoby, która odeszła z firmy, i zwrot na adres no-reply;
+//   · Jak to wygląda — trzy artefakty (karta połączenia, wiadomość z alarmem,
+//     rejestr połączeń), bez okna „aplikacji", bo produktem są te dokumenty;
+//   · Przykłady — kwartał w tygodniach z alarmami przy każdej firmie;
+//   · Pierwszy kwartał — dziennik jednego połączenia z artefaktem przy wpisie.
+//   Zajęte gatunki z /systemy-procesowe-new (tor góra–dół, pięć okien z drogą
+//   sprawy, wykres schodkowy w tygodniach, makieta z kursorami) nie wracają.
 //
-// WARSTWA WIZUALNA — szósty osobny słownik w serwisie:
-//   /strategia-ai:         łuki, przewijany strumień, siatka stu kwadratów
-//   /rozwiazania-ai:       przekrój warstw, próg pewności, tory harmonogramu
-//   /szkolenia-ai:         jednostki do policzenia (ludzie, minuty)
-//   /systemy-procesowe:    oś czasu sprawy — praca kontra czekanie
-//   /systemy-dla-klientow: lista pytań
-//   tutaj:                 PULS. Cztery automatyzacje biją we własnym rytmie,
-//     trzecia milknie w połowie i dopiero wtedy zapala się alarm.
-//     Ruch jest tu argumentem: cisza jednej linii na tle bijących pozostałych
-//     jest dokładnie tym, czego w prawdziwej firmie nikt nie zauważa.
-//   Drugi nośnik to artefakt, nie wykres: karta automatyzacji w całości.
+// DECYZJE O UKŁADZIE (standard §2):
+//   · kolejność sekcji jak w standardzie;
+//   · sekcja 6 (przykłady) bez komponentu Dowody: miara „Przed / Po" nie
+//     pasuje, bo integracja nie skraca jednego czasu sprawy. Przykłady z obecnej
+//     strony: wolumen, który przechodzi bez człowieka, i alarmy w kwartale
+//     (połączenia się psują, pytanie brzmi, czy ktoś o tym wie). Własny rząd
+//     kart w tym samym przewijanym pasie (.dw-sc) i z tym samym id (#dowody);
+//   · sekcja 8 to „Pierwszy kwartał jednego połączenia": pierwsze połączenie
+//     wchodzi w kilka dni, a usługą docelową jest utrzymanie (alarmy, poprawki
+//     po zmianach u dostawców, kolejne wersje karty).
 //
 // DO POTWIERDZENIA PRZED PUBLIKACJĄ:
-// · Zawartość karty automatyzacji — kształt jest pewny, wartości przykładowe.
-// · Próg alarmu (osiem minut ciszy) i trzy próby co pięć minut — założenie
-//   o standardzie, do potwierdzenia jako obietnica handlowa.
-// · Zdanie o odsyłaniu do zrobienia samemu — decyzja Szymona.
-// · Trzy przykłady w sekcji DOWODY są PRZYKŁADOWE, do podmiany.
-// · Kwoty świadomie nie ma. Miejsce na nią czeka w FAQ „Ile kosztuje".
-// · /og/automatyzacje-integracje.png — strona dziedziczy /og/hub.png.
+//   · próg alarmu (osiem minut ciszy) i trzy próby co pięć minut — z obecnej
+//     strony, padają w hero, w karcie, w metodzie i w FAQ jako obietnica;
+//   · reakcja Let's automate w kilka minut po alarmie (hero, wiadomość
+//     w scenie, kwartał: przejęte 10:23) — w umowie utrzymaniowej;
+//   · trzy przykłady w sekcji przykładów są PRZYKŁADOWE (z obecnej strony),
+//     tygodnie i przyczyny alarmów dopisane do rysunku;
+//   · dystrybutor części, Joanna Mazur, Marek Zieliński, nazwy klientów,
+//     numery POL-011…019, daty i godziny w rysunkach są zmyślone, czasy
+//     poglądowe;
+//   · zdanie w zielonym pasie i pierwsza pozycja w „Kiedy to nie ma sensu"
+//     (odsyłamy do zrobienia samemu w Make'u) — decyzja Szymona;
+//   · Marcel Bilski jako twarz zielonego pasa;
+//   · metoda: liczba „140+ wdrożeń" (domyślna w komponencie) i podpis
+//     „według WiseStacka". WiseStack opisuje budowę kodu na Next.js i Convexie;
+//     z dwunastu wyborów do integracji pasują wprost dwa (monitoring
+//     z imiennym właścicielem, repozytorium i klucze Wasze od pierwszego dnia),
+//     połączenia na platformie (n8n) stosu nie dzielą. Lewa kolumna metody
+//     opisuje typowe wdrożenie automatyzacji, nie konkretną firmę;
+//   · wiersz „Utrzymanie" w karcie połączenia (umowa miesięczna) zastępuje
+//     wiersz „Koszt utrzymania: bez naszej opłaty abonamentowej" ze starej strony;
+//   · /og/automatyzacje-integracje.png — strona dziedziczy /og/hub.png.
 import LaBase from '../layouts/LaBase.astro';
 import GcFaq from '../components/GcFaq.astro';
-import GcCta from '../components/GcCta.astro';
-import WarunkiZakupu from '../components/WarunkiZakupu.astro';
+import Styl from '../components/usluga/Styl.astro';
+import Anim from '../components/usluga/Anim.astro';
+import Hero from '../components/usluga/Hero.astro';
+import Procesy from '../components/usluga/Procesy.astro';
+import Pas from '../components/usluga/Pas.astro';
+import Cytat from '../components/usluga/Cytat.astro';
+import CtaPasek from '../components/usluga/CtaPasek.astro';
+import Metoda from '../components/usluga/Metoda.astro';
+import DlaKogo from '../components/usluga/DlaKogo.astro';
+import Kontakt from '../components/usluga/Kontakt.astro';
+import { HI, SYGNET } from '../components/usluga/ikony';
+
+// Heroicons Micro (16 × 16, solid), których nie ma w ikony.ts. Trzymane
+// tutaj, żeby nie zmieniać komponentów wspólnych (zgłoszone w raporcie).
+const IK: Record<string, string> = {
+  'bell-alert': '<path d="M3.6 1.7A.75.75 0 1 0 2.4.799a6.978 6.978 0 0 0-1.123 2.247.75.75 0 1 0 1.44.418c.187-.644.489-1.24.883-1.764ZM13.6.799a.75.75 0 1 0-1.2.9 5.48 5.48 0 0 1 .883 1.765.75.75 0 1 0 1.44-.418A6.978 6.978 0 0 0 13.6.799Z"/> <path fill-rule="evenodd" d="M8 1a4 4 0 0 1 4 4v2.379c0 .398.158.779.44 1.06l1.267 1.268a1 1 0 0 1 .293.707V11a1 1 0 0 1-1 1h-2a3 3 0 1 1-6 0H3a1 1 0 0 1-1-1v-.586a1 1 0 0 1 .293-.707L3.56 8.44A1.5 1.5 0 0 0 4 7.38V5a4 4 0 0 1 4-4Zm0 12.5A1.5 1.5 0 0 1 6.5 12h3A1.5 1.5 0 0 1 8 13.5Z" clip-rule="evenodd"/>',
+  'link': '<path fill-rule="evenodd" d="M8.914 6.025a.75.75 0 0 1 1.06 0 3.5 3.5 0 0 1 0 4.95l-2 2a3.5 3.5 0 0 1-5.396-4.402.75.75 0 0 1 1.251.827 2 2 0 0 0 3.085 2.514l2-2a2 2 0 0 0 0-2.828.75.75 0 0 1 0-1.06Z" clip-rule="evenodd"/> <path fill-rule="evenodd" d="M7.086 9.975a.75.75 0 0 1-1.06 0 3.5 3.5 0 0 1 0-4.95l2-2a3.5 3.5 0 0 1 5.396 4.402.75.75 0 0 1-1.251-.827 2 2 0 0 0-3.085-2.514l-2 2a2 2 0 0 0 0 2.828.75.75 0 0 1 0 1.06Z" clip-rule="evenodd"/>',
+  'key': '<path fill-rule="evenodd" d="M14 6a4 4 0 0 1-4.899 3.899l-1.955 1.955a.5.5 0 0 1-.353.146H5v1.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-2.293a.5.5 0 0 1 .146-.353l3.955-3.955A4 4 0 1 1 14 6Zm-4-2a.75.75 0 0 0 0 1.5.5.5 0 0 1 .5.5.75.75 0 0 0 1.5 0 2 2 0 0 0-2-2Z" clip-rule="evenodd"/>',
+  'exclamation-triangle': '<path fill-rule="evenodd" d="M6.701 2.25c.577-1 2.02-1 2.598 0l5.196 9a1.5 1.5 0 0 1-1.299 2.25H2.804a1.5 1.5 0 0 1-1.3-2.25l5.197-9ZM8 4a.75.75 0 0 1 .75.75v3a.75.75 0 1 1-1.5 0v-3A.75.75 0 0 1 8 4Zm0 8a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" clip-rule="evenodd"/>',
+  'no-symbol': '<path fill-rule="evenodd" d="M3.05 3.05a7 7 0 1 1 9.9 9.9 7 7 0 0 1-9.9-9.9Zm1.627.566 7.707 7.707a5.501 5.501 0 0 0-7.707-7.707Zm6.646 8.768L3.616 4.677a5.501 5.501 0 0 0 7.707 7.707Z" clip-rule="evenodd"/>',
+  'hashtag': '<path fill-rule="evenodd" d="M7.487 2.89a.75.75 0 1 0-1.474-.28l-.455 2.388H3.61a.75.75 0 0 0 0 1.5h1.663l-.571 2.998H2.75a.75.75 0 0 0 0 1.5h1.666l-.403 2.114a.75.75 0 0 0 1.474.28l.456-2.394h2.973l-.403 2.114a.75.75 0 0 0 1.474.28l.456-2.394h1.947a.75.75 0 0 0 0-1.5h-1.661l.57-2.998h1.95a.75.75 0 0 0 0-1.5h-1.664l.402-2.108a.75.75 0 0 0-1.474-.28l-.455 2.388H7.085l.402-2.108ZM6.8 6.498l-.571 2.998h2.973l.57-2.998H6.8Z" clip-rule="evenodd"/>',
+  'bolt': '<path fill-rule="evenodd" d="M9.58 1.077a.75.75 0 0 1 .405.82L9.165 6h4.085a.75.75 0 0 1 .567 1.241l-6.5 7.5a.75.75 0 0 1-1.302-.638L6.835 10H2.75a.75.75 0 0 1-.567-1.241l6.5-7.5a.75.75 0 0 1 .897-.182Z" clip-rule="evenodd"/>',
+  'rocket-launch': '<path fill-rule="evenodd" d="M6.333 4.478A4 4 0 0 0 1 8.25c0 .414.336.75.75.75h3.322c.572.71 1.219 1.356 1.928 1.928v3.322c0 .414.336.75.75.75a4 4 0 0 0 3.772-5.333A10.721 10.721 0 0 0 15 1.75a.75.75 0 0 0-.75-.75c-3.133 0-5.953 1.34-7.917 3.478ZM12 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z" clip-rule="evenodd"/> <path d="M3.902 10.682a.75.75 0 1 0-1.313-.725 4.764 4.764 0 0 0-.469 3.36.75.75 0 0 0 .564.563 4.76 4.76 0 0 0 3.359-.47.75.75 0 1 0-.725-1.312 3.231 3.231 0 0 1-1.81.393 3.232 3.232 0 0 1 .394-1.81Z"/>',
+  'building-storefront': '<path d="M4.5 7c.681 0 1.3-.273 1.75-.715C6.7 6.727 7.319 7 8 7s1.3-.273 1.75-.715A2.5 2.5 0 1 0 11.5 2h-7a2.5 2.5 0 0 0 0 5ZM6.25 8.097A3.986 3.986 0 0 1 4.5 8.5c-.53 0-1.037-.103-1.5-.29v4.29h-.25a.75.75 0 0 0 0 1.5h.5a.754.754 0 0 0 .138-.013A.5.5 0 0 0 3.5 14H6a.5.5 0 0 0 .5-.5v-3A.5.5 0 0 1 7 10h2a.5.5 0 0 1 .5.5v3a.5.5 0 0 0 .5.5h2.5a.5.5 0 0 0 .112-.013c.045.009.09.013.138.013h.5a.75.75 0 1 0 0-1.5H13V8.21c-.463.187-.97.29-1.5.29a3.986 3.986 0 0 1-1.75-.403A3.986 3.986 0 0 1 8 8.5a3.986 3.986 0 0 1-1.75-.403Z"/>',
+};
+const ik = (n: string) => IK[n] || HI[n] || '';
 
 const kanon = new URL('/automatyzacje-integracje', Astro.site).href;
 
-const dane = {
+const dane: any = {
   '@context': 'https://schema.org',
   '@graph': [
     {
       '@type': 'Service',
       '@id': `${kanon}#usluga`,
-      name: 'Automatyzacje i integracje',
-      alternateName: ['Integracje systemów', 'Automatyzacja procesów', 'Przepływ danych między systemami'],
+      name: 'Integracje systemów',
+      alternateName: ['Automatyzacje i integracje', 'Integracja CRM i ERP', 'Przepływ danych między systemami'],
       serviceType: 'Łączenie systemów firmowych i automatyzacja przepływu danych między nimi',
       url: kanon,
-      description: 'Połączenia między CRM, ERP, magazynem i pocztą, dzięki którym nikt nie przepisuje danych z systemu do systemu. Każde połączenie dostaje kartę, imiennego właściciela, opisane zachowanie przy błędzie i alarm z progiem czasowym.',
+      description: 'Połączenia między CRM, ERP, magazynem, sklepem i pocztą, dzięki którym nikt nie przepisuje danych z systemu do systemu. Każde połączenie dostaje kartę, imiennego właściciela, opisane zachowanie przy błędzie i alarm, który odzywa się po ośmiu minutach ciszy.',
       provider: { '@id': new URL('/#organizacja', Astro.site).href },
       areaServed: { '@type': 'Country', name: 'Polska' },
       audience: { '@type': 'BusinessAudience', name: 'Firmy z kilkoma systemami, które nie wymieniają danych' },
@@ -83,112 +121,263 @@ const dane = {
       '@id': `${kanon}#okruszki`,
       itemListElement: [
         { '@type': 'ListItem', position: 1, name: 'Strona główna', item: new URL('/', Astro.site).href },
-        { '@type': 'ListItem', position: 2, name: 'Automatyzacje i integracje', item: kanon },
+        { '@type': 'ListItem', position: 2, name: 'Integracje systemów', item: kanon },
       ],
     },
   ],
 };
 
-const title = "Automatyzacje i integracje systemów — z alarmem, nie na wiarę | Let's automate";
-const description = 'Łączymy CRM, ERP, magazyn i pocztę tak, żeby nikt nie przepisywał danych. Każde połączenie ma kartę, właściciela i alarm — bo automatyzacja, która pada po cichu, jest gorsza od jej braku.';
+const title = "Integracje systemów — CRM, ERP i magazyn wymieniają dane same | Let's automate";
+const description = 'Łączymy CRM, ERP, magazyn, sklep i pocztę tak, żeby nikt nie przepisywał danych. Każde połączenie ma właściciela i alarm, bo automatyzacja, która pada po cichu, jest gorsza od jej braku.';
+
+// Kolory systemów: te same w hero, w karcie i w rejestrze. Bez zieleni
+// i bursztynu — te dwie barwy mają na stronie inną rolę (praca / czekanie).
+const KOLOR: Record<string, string> = {
+  'CRM': '#3f78d8', 'ERP': '#7b5fd0', 'Program księgowy': '#0e7490', 'Sklep': '#e0457b',
+  'Poczta': '#d0573f', 'EDI': '#8b6f4e', 'Kurier': '#5c6b63', 'Dysk': '#64748b', 'Formularz': '#94a3b8',
+};
 
 
-// ---- PULS (hero) --------------------------------------------------------
-// Cztery automatyzacje, każda z własnym odstępem między przebiegami. Trzecia
-// milknie w połowie osi i dopiero po chwili ciszy zapala się alarm. Cały
-// argument strony jest tu pokazany ruchem: cisza jednej linii na tle
-// bijących pozostałych to dokładnie to, czego nikt w firmie nie zauważa.
-// Wszystkie czasy wynikają z odstępów w tej tablicy.
-const SLOTY = 30;
-const PULS = [
-  { t: 'Faktury z poczty → ERP', o: 0.55, ile: SLOTY, st: '1 240 / mies.' },
-  { t: 'Zamówienia z portalu → produkcja', o: 0.86, ile: SLOTY, st: '380 / mies.' },
-  { t: 'Nowy klient w CRM → księgowość', o: 0.62, ile: 12, st: '420 / mies.', awaria: 'stanęła 03:12', pada: true },
-  { t: 'Stany magazynowe → sklep', o: 0.41, ile: SLOTY, st: '4 / godz.' },
+// ---- HERO · POŁĄCZENIA NA ŻYWO -------------------------------------------
+// Ostatnia godzina u dystrybutora części, 9:45–10:45. Czas w minutach od
+// północy. Każdy przebieg to kreska na wspólnej osi; skrypt odsłania je od
+// LN_START w tempie jednej minuty na 330 ms (wszystkie czasy biorą się
+// z data-t w znacznikach). Stan w HTML to stan końcowy: przerwa, alarm
+// i powrót są widoczne bez JS i przy ograniczonym ruchu.
+let ziarno = 11;
+const los = () => { ziarno = (ziarno * 16807) % 2147483647; return (ziarno - 1) / 2147483646; };
+const LN_OD = 9 * 60 + 45, LN_DO = 10 * 60 + 45, LN_START = 9 * 60 + 58;
+const LN_STOP = 10 * 60 + 12, LN_ALARM = LN_STOP + 8, LN_PRZEJ = 10 * 60 + 23, LN_WRACA = 10 * 60 + 41;
+const lnX = (t: number) => ((t - LN_OD) / (LN_DO - LN_OD) * 100).toFixed(2) + '%';
+const lnW = (d: number) => (d / (LN_DO - LN_OD) * 100).toFixed(2) + '%';
+const hhmm = (t: number) => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+const rytm = (od: number, krok: number, rozrzut: number) => {
+  const o: number[] = [];
+  for (let t = od; t < LN_DO - 0.3; t += krok) o.push(+Math.min(LN_DO - 0.2, Math.max(LN_OD + 0.2, t + (los() - 0.5) * rozrzut)).toFixed(2));
+  return o;
+};
+const FAKTURY = ['FV 4471/07/2026 · Hydro-Pol', 'FA/1182/2026 · Tech-Mont', 'FV/07/339 · Transbud', 'F 2026/7/88 · Elmar', 'FV 52/07/2026 · Biuro-Max', 'FV/2026/1204 · Pakmar'];
+const KANALY = ['sklep', 'EDI', 'e-mail'];
+// Połączenie nowych klientów: przebieg co dwie minuty do 10:12, potem cisza,
+// o 10:41 trzy przebiegi naraz (zaległe) i dwóch klientów z przerwy.
+const tkKlient: { t: number; p?: string; nad?: boolean }[] = [];
+for (let t = 586; t <= LN_STOP; t += 2) tkKlient.push({ t, p: t === 602 ? 'Kowalczyk Instalacje' : t === LN_STOP ? 'Delta Okna sp. z o.o.' : undefined });
+tkKlient.push({ t: LN_WRACA, p: 'Termo-Serwis s.c.', nad: true }, { t: LN_WRACA + 0.35, p: 'Marbud sp. z o.o.', nad: true }, { t: LN_WRACA + 0.7, nad: true }, { t: 643, }, { t: 644.8 });
+const stanyT: number[] = [];
+for (let t = 585.5; t < LN_DO - 0.3; t += 0.7 + los() * 3.2) stanyT.push(+t.toFixed(2));
+const LN_W = [
+  { nr: 'POL-011', t: 'Faktury kosztowe z poczty', z: ['Poczta'], zt: 'Poczta', do: 'Program księgowy', vol: '1 240 / mies.',
+    tk: rytm(586.2, 3.6, 1.6).map((t, i) => ({ t, p: FAKTURY[i % FAKTURY.length] })) },
+  { nr: 'POL-012', t: 'Zamówienia z trzech kanałów', z: ['Sklep', 'Poczta', 'EDI'], zt: 'Sklep, e-mail, EDI', do: 'ERP', vol: '2 300 / mies.',
+    tk: rytm(585.8, 2.3, 1.5).map((t, i) => ({ t, p: `ZS-18 ${190 + i} · ${KANALY[i % 3]} · ${1 + Math.floor(los() * 24)} poz.` })) },
+  { nr: 'POL-014', t: 'Nowy klient z CRM', z: ['CRM'], zt: 'CRM', do: 'Program księgowy', vol: '85 / mies.', pada: true, tk: tkKlient },
+  { nr: 'POL-013', t: 'Stany i ceny do sklepu', z: ['ERP'], zt: 'ERP', do: 'Sklep', vol: 'przy każdej zmianie',
+    tk: stanyT.map((t) => ({ t, p: los() < 0.7 ? `SKU ${4400 + Math.floor(los() * 900)}-${String(Math.floor(los() * 90) + 10)} · ${Math.floor(los() * 60)} szt.` : `SKU ${4400 + Math.floor(los() * 900)}-${String(Math.floor(los() * 90) + 10)} · ${(40 + los() * 300).toFixed(2).replace('.', ',')} zł` })) },
+].map((w) => {
+  const zRek = w.tk.filter((k) => k.p);
+  const ost = zRek[zRek.length - 1];
+  return { ...w, ost: ost ? `${ost.p} · ${hhmm(ost.t)}` : '' };
+});
+const LN_OS = [LN_OD, LN_OD + 15, LN_OD + 30, LN_OD + 45, LN_DO];
+const LN_ARIA = 'Monitoring czterech połączeń u dystrybutora części w ciągu ostatniej godziny. Faktury kosztowe z poczty do programu księgowego, zamówienia z trzech kanałów do ERP-a oraz stany i ceny z ERP-a do sklepu mają przebiegi co kilka minut. Połączenie nowych klientów z CRM do księgowości ma ostatni przebieg o 10:12, potem cisza. O 10:20, po ośmiu minutach ciszy, alarm idzie do Joanny Mazur, kierownik księgowości, i do Let’s automate. O 10:23 Let’s automate przejmuje sprawę: wygasł token programu księgowego. O 10:41 przebiegi wracają, a dwóch klientów dodanych w przerwie zapisuje się w programie księgowym.';
+
+
+// ---- DLACZEGO 1 · ZAMEK ---------------------------------------------------
+// Inna firma, wrzesień 2026, bez alarmu. Klient z CRM i jego kontrahent
+// w programie księgowym połączeni parami. 4.09 o 16:40 wygasa token: CRM
+// wygląda jak zwykle, a prawa strona przestaje się zapełniać. Średnio
+// cztery nowe klienty na dzień roboczy, od 7.09 do 30.09 to 72 klientów.
+// dni = ile dni minęło od awarii w chwili, gdy wiersz się pojawia.
+const CS_PRZED = [
+  { d: '01.09', n: 'Wiśniewski Dachy', k: 'K-2288' },
+  { d: '02.09', n: 'Termobud sp. z o.o.', k: 'K-2289' },
+  { d: '03.09', n: 'Agro-Mech', k: 'K-2290' },
+  { d: '04.09', n: 'Elektro-Serwis s.c.', k: 'K-2291' },
 ];
-const PU_C = 20;
-const PU_START = 0.5;
-const IDX_PADA = PULS.findIndex((x) => x.pada);
-const OSTATNI = PU_START + (PULS[IDX_PADA].ile - 1) * PULS[IDX_PADA].o;
-const CISZA = OSTATNI + 2.1;      // kiedy widać, że kolejny przebieg nie przyszedł
-const ALARM = CISZA + 0.9;
-const PU_GASNIE = 18.2;
-const up = (s) => `${(Math.max(0, Math.min(1, s / PU_C)) * 100).toFixed(2)}%`;
-
-// Wszystkie kreski dzielą jedną klatkę i różnią się wyłącznie opóźnieniem —
-// przy równym czasie cyklu układ powtarza się co obieg, bez rozjazdu.
-const klatkiPuls = [
-  `@keyframes pu-tik{0%{opacity:0;transform:scaleY(.3)}2.2%{opacity:1;transform:scaleY(1)}${up(PU_GASNIE)}{opacity:1;transform:scaleY(1)}${up(PU_GASNIE + 0.7)}{opacity:0;transform:scaleY(.3)}100%{opacity:0;transform:scaleY(.3)}}`,
-  `@keyframes pu-brak{0%,${up(CISZA)}{opacity:0}${up(CISZA + 0.6)}{opacity:1}${up(PU_GASNIE)}{opacity:1}${up(PU_GASNIE + 0.6)}{opacity:0}100%{opacity:0}}`,
-  `@keyframes pu-cisza{0%,${up(CISZA)}{color:#637066}${up(CISZA + 0.5)}{color:#b07524}${up(PU_GASNIE)}{color:#b07524}100%{color:#637066}}`,
-  `@keyframes pu-stare{0%,${up(CISZA)}{opacity:1}${up(CISZA + 0.35)}{opacity:0}${up(PU_GASNIE)}{opacity:0}100%{opacity:1}}`,
-  `@keyframes pu-nowe{0%,${up(CISZA + 0.2)}{opacity:0}${up(CISZA + 0.6)}{opacity:1}${up(PU_GASNIE)}{opacity:1}100%{opacity:0}}`,
-  `@keyframes pu-kropka{0%,${up(CISZA)}{background:var(--la-accent,#00CD77);transform:scale(1)}${up(CISZA + 0.25)}{background:#d99a3c;transform:scale(1.5)}${up(CISZA + 0.5)}{background:#d99a3c;transform:scale(1)}${up(PU_GASNIE)}{background:#d99a3c;transform:scale(1)}100%{background:var(--la-accent,#00CD77);transform:scale(1)}}`,
-  `@keyframes pu-alarm{0%,${up(ALARM)}{opacity:0;transform:translateY(-4px)}${up(ALARM + 0.45)}{opacity:1;transform:translateY(0)}${up(PU_GASNIE)}{opacity:1;transform:translateY(0)}${up(PU_GASNIE + 0.6)}{opacity:0;transform:translateY(-4px)}100%{opacity:0;transform:translateY(-4px)}}`,
-  `@keyframes pu-pod{0%,${up(ALARM + 0.6)}{opacity:0}${up(ALARM + 1.2)}{opacity:1}${up(PU_GASNIE)}{opacity:1}${up(PU_GASNIE + 0.6)}{opacity:0}100%{opacity:0}}`,
-].join('\n');
+const CS_PO = [
+  { d: '07.09', n: 'Pol-Kran sp. z o.o.', dni: 3 },
+  { d: '10.09', n: 'Stal-Rem', dni: 6 },
+  { d: '15.09', n: 'Hydro-Tech', dni: 11 },
+  { reszta: '… i 68 kolejnych, do 29.09', d: '', dni: 25 },
+  { d: '30.09', n: 'Bud-Instal sp. z o.o.', dni: 26 },
+];
+const CS_DNI = 28;   // od 4.09 do zamknięcia września 2.10
 
 
-// ---- CO ŁĄCZYMY (kolumna przy definicji) --------------------------------
-const POLACZENIA = [
-  { t: 'Faktury kosztowe z poczty do ERP', d: 'bez przepisywania pozycji i kwot' },
-  { t: 'Zamówienia ze sklepu i portalu do produkcji', d: 'razem z terminem i rezerwacją materiału' },
-  { t: 'Nowy klient z CRM do księgowości i magazynu', d: 'jeden komplet danych, jeden raz' },
-  { t: 'Stany i ceny z ERP do sklepu i cenników', d: 'co godzinę albo przy każdej zmianie' },
-  { t: 'Dokumenty z systemu na dysk i do archiwum', d: 'nazwane tak, żeby dało się je znaleźć' },
+// ---- DLACZEGO 2 · POWIADOMIENIE DONIKĄD -----------------------------------
+// Ta sama awaria widziana z platformy: trzy błędy, scenariusz się wyłącza,
+// a powiadomienie idzie na skrzynkę osoby, która zakładała konto.
+const PW_SCEN = [
+  { n: 'klienci CRM → FK (v2)', z: '14.03.2025', pada: true },
+  { n: 'faktury z maila NOWE', z: '02.12.2024' },
+  { n: 'Kopia: faktury z maila', z: '02.12.2024', off: true },
+  { n: 'stany do sklepu', z: '21.05.2025' },
+  { n: 'test webhook', z: '09.01.2025' },
+  { n: 'Scenariusz 7', z: '30.04.2025' },
+];
+const PW_LOG = [['16:40', '401 · token wygasł'], ['16:55', '401 · token wygasł'], ['17:10', 'wyłączony po 3 błędach']];
+// Ostatnie wiadomości w skrzynce przed jej wyłączeniem (po odejściu Marka).
+const PW_POCZTA = [
+  ['29.06', 'Platforma automatyzacji', 'Podsumowanie tygodnia: 6 scenariuszy, 0 błędów'],
+  ['29.06', 'Kadry', 'Rozliczenie urlopu przed odejściem'],
+  ['26.06', 'Platforma automatyzacji', 'Podsumowanie tygodnia: 6 scenariuszy, 0 błędów'],
 ];
 
 
-// ---- DLACZEGO AUTOMATYZACJE CICHO UMIERAJĄ ------------------------------
-const POWODY = [
-  {
-    t: 'Nikt nie jest ich właścicielem',
-    d: 'Powstały przy okazji, w narzędziu, do którego dostęp ma jedna osoba. Ta osoba zmieniła stanowisko albo firmę, a scenariusze zostały — bez nazwy, bez opisu i bez nikogo, kto miałby je sprawdzać.',
-  },
-  {
-    t: 'Zmiana po drugiej stronie nie daje znać',
-    d: 'Dostawca dodał pole w formularzu, ktoś przemianował kolumnę w arkuszu, wygasł token dostępowy. Połączenie przestaje działać w sposób, który niczego nikomu nie wyświetla.',
-  },
-  {
-    t: 'Sukces i awaria wyglądają identycznie',
-    d: 'Jedyną różnicą między działającą a martwą automatyzacją jest to, czego nie ma w systemie docelowym. Nikt nie sprawdza codziennie, czy czegoś nie brakuje — i właśnie dlatego znajduje się to przy zamknięciu miesiąca.',
-  },
+// ---- JAK TO WYGLĄDA · trzy artefakty POL-014 -----------------------------
+const ZAKLADKI = [
+  { t: 'Karta połączenia', p: 'Jedna strona na jedno połączenie, aktualizowana przy każdej zmianie. Wyróżnione wiersze ustalamy, zanim połączenie ruszy, i to od nich zależy, czy ktoś się dowie o awarii.' },
+  { t: 'Wiadomość z alarmem', p: 'Alarm przychodzi do właściciela i do nas, z godziną ostatniego udanego przebiegu i krokiem, na którym połączenie stanęło. W tym samym wątku widać, kto przejął sprawę i kiedy przebiegi wróciły.' },
+  { t: 'Rejestr połączeń', p: 'Wszystkie połączenia w jednym miejscu, z właścicielem i wersją karty przy każdym. Przy zmianie w jednym systemie widać, które połączenia z niego korzystają.' },
 ];
-
-
-// ---- KARTA AUTOMATYZACJI (ciemny pas) -----------------------------------
-// Artefakt, nie wykres. Świadomie pokazany w całości: to jest dokładnie to,
-// co klient dostaje przy każdym połączeniu, więc może go ocenić przed wyceną.
 const KARTA = [
-  { k: 'Co ją uruchamia', v: 'Nowa wiadomość na skrzynce faktury@' },
-  { k: 'Co robi', v: 'Odczytuje dane z załącznika i tworzy w ERP dokument dopasowany do zamówienia' },
-  { k: 'Wolumen', v: 'Około 1 200 dokumentów miesięcznie' },
-  { k: 'Przy błędzie', v: 'Trzy próby co pięć minut, potem sprawa wraca do skrzynki z etykietą', wazne: true },
-  { k: 'Alarm', v: 'Wiadomość i kanał na Slacku po ośmiu minutach ciszy', wazne: true },
-  { k: 'Właściciel', v: 'Kierownik księgowości, imiennie', wazne: true },
-  { k: 'Stoi na', v: 'n8n na Waszej infrastrukturze' },
-  { k: 'Koszt utrzymania', v: 'Licencja platformy, bez naszej opłaty abonamentowej' },
+  { k: 'Co je uruchamia', v: 'Klient w CRM przechodzi na etap „Klient”' },
+  { k: 'Co robi', v: 'Zakłada kontrahenta w programie księgowym i w obu magazynach z jednego kompletu danych' },
+  { k: 'Wolumen', v: 'Około 85 nowych klientów miesięcznie' },
+  { k: 'Przy błędzie', v: 'Trzy próby co pięć minut, potem klient wraca do CRM z etykietą i opisem, czego brakuje', w: true },
+  { k: 'Alarm', v: 'Po ośmiu minutach bez przebiegu, do właściciela i do Let’s automate, na kanale #integracje-alarmy', w: true },
+  { k: 'Właściciel', v: 'Joanna Mazur, kierownik księgowości', w: true },
+  { k: 'Stoi na', v: 'n8n na serwerze firmy, licencja na firmę' },
+  { k: 'Utrzymanie', v: 'Let’s automate, umowa miesięczna' },
+];
+const KARTA_HIST = [
+  { v: 'v3', d: '18.08.2026', t: 'Drugi magazyn w Poznaniu' },
+  { v: 'v2', d: '30.06.2026', t: 'Pole „kraj” obowiązkowe w programie księgowym' },
+  { v: 'v1', d: '8.06.2026', t: 'Uruchomienie' },
+];
+const KARTA_ZAL = [
+  { s: 'CRM', d: 'etap „Klient”, pola NIP i adres' },
+  { s: 'Program księgowy', d: 'kartoteka kontrahentów przez API' },
+  { s: 'ERP', d: 'kontrahenci w magazynach Łódź i Poznań' },
+];
+const REJESTR = [
+  { nr: 'POL-011', t: 'Faktury kosztowe z poczty do księgowości', s: ['Poczta', 'Program księgowy'], o: 'Joanna Mazur', v: 'v4', h: '10:44' },
+  { nr: 'POL-012', t: 'Zamówienia z trzech kanałów do ERP', s: ['Sklep', 'Poczta', 'EDI', 'ERP'], o: 'Paweł Nowicki', v: 'v6', h: '10:45' },
+  { nr: 'POL-013', t: 'Stany i ceny z ERP do sklepu', s: ['ERP', 'Sklep'], o: 'Paweł Nowicki', v: 'v3', h: '10:45' },
+  { nr: 'POL-014', t: 'Nowy klient z CRM do księgowości i magazynu', s: ['CRM', 'Program księgowy', 'ERP'], o: 'Joanna Mazur', v: 'v3', h: '10:43' },
+  { nr: 'POL-015', t: 'Rozrachunki z księgowości do CRM', s: ['Program księgowy', 'CRM'], o: 'Joanna Mazur', v: 'v2', h: '10:30' },
+  { nr: 'POL-016', t: 'Listy przewozowe od kuriera do ERP', s: ['Kurier', 'ERP'], o: 'Tomasz Lis', v: 'v2', h: '10:38' },
+  { nr: 'POL-017', t: 'Faktury sprzedaży z ERP do klientów', s: ['ERP', 'Poczta'], o: 'Paweł Nowicki', v: 'v1', h: '10:31' },
+  { nr: 'POL-018', t: 'Raport sprzedaży dla zarządu', s: ['ERP', 'Dysk'], o: 'Ewa Król', v: 'v2', h: 'pon 7:00' },
+  { nr: 'POL-019', t: 'Reklamacje z formularza do ERP', s: ['Formularz', 'ERP'], o: 'Tomasz Lis', v: 'v1', h: '10:12' },
+];
+const RJ_FILTR = 'Program księgowy';
+const rjIle = (s: string) => REJESTR.filter((r) => r.s.includes(s)).length;
+
+
+// ---- CO ŁĄCZYMY (indeks pod definicją) ------------------------------------
+const POLACZENIA = [
+  { t: 'Faktury kosztowe z poczty do ERP',
+    a: 'Faktury przychodzą mailem. Ktoś otwiera załącznik, przepisuje pozycje i kwoty, a potem szuka zamówienia, do którego faktura pasuje.',
+    b: 'Dane z załącznika trafiają do systemu jako dokument dopasowany do zamówienia. Faktura, której nie da się dopasować, wraca do skrzynki z etykietą.' },
+  { t: 'Zamówienia ze sklepu i portalu do produkcji',
+    a: 'Zamówienie z portalu ktoś przepisuje do systemu produkcji, termin potwierdza mailem, a materiał rezerwuje osobno.',
+    b: 'Zamówienie trafia do planowania razem z terminem i rezerwacją materiału, a zmiana terminu wraca do klienta bez udziału handlowca.' },
+  { t: 'Nowy klient z CRM do księgowości i magazynu',
+    a: 'Handlowiec zakłada klienta w CRM, księgowość wpisuje go jeszcze raz do programu księgowego, magazyn po raz trzeci, każdy z innym skrótem nazwy.',
+    b: 'Klient zakłada się w księgowości i w magazynie z jednego kompletu danych, raz, w chwili, gdy w CRM zmienia etap.' },
+  { t: 'Stany i ceny z ERP do sklepu i cenników',
+    a: 'Stany w sklepie aktualizuje się z eksportu raz dziennie, więc klient zamawia towar, którego już nie ma.',
+    b: 'Stany i ceny jadą do sklepu co godzinę albo przy każdej zmianie w ERP-ie.' },
+  { t: 'Dokumenty z systemu na dysk i do archiwum',
+    a: 'Umowy i protokoły leżą w załącznikach maili i na pulpitach, nazwane tak, jak je ktoś zapisał.',
+    b: 'Dokument z systemu ląduje na dysku i w archiwum od razu, nazwany tak, żeby dało się go znaleźć.' },
 ];
 
 
-// ---- DLA JAKICH FIRM ----------------------------------------------------
+// ---- PRZYKŁADY ------------------------------------------------------------
+// PRZYKŁADOWE wdrożenia z obecnej strony — do podmiany. Pierwsza firma to
+// dystrybutor z hero; alarm w tygodniu 7 to ten z 10:12. Tygodnie i przyczyny
+// pozostałych alarmów są dopisane do rysunku (DO POTWIERDZENIA).
+const PRZYKLADY = [
+  { f: 'Dystrybutor części', m: '9 połączeń', p: 'Zamówienia, faktury i stany',
+    d: 'Zamówienia z trzech kanałów wpadają do jednego rejestru, faktury kosztowe księgują się same, a stany jadą do sklepu przy każdej zmianie w ERP-ie.',
+    ile: '5 800', ileD: 'dokumentów miesięcznie przechodzi bez człowieka',
+    al: [{ w: 3, t: 'zmiana u dostawcy' }, { w: 7, t: 'wygasły token' }, { w: 9, t: 'ERP niedostępny' }, { w: 12, t: 'zmiana u dostawcy' }],
+    wn: '4 alarmy w kwartale, każdy zamknięty tego samego dnia' },
+  { f: 'Producent mebli', m: '4 połączenia', p: 'Od zamówienia do produkcji',
+    d: 'Zamówienie z portalu trafia do planowania razem z rezerwacją materiału, a zmiana terminu wraca do klienta bez udziału handlowca.',
+    ile: '760', ileD: 'zleceń miesięcznie przechodzi bez człowieka',
+    al: [{ w: 5, t: 'zmiana u dostawcy' }],
+    wn: '1 alarm w kwartale, przyczyną była zmiana po stronie dostawcy' },
+  { f: 'Sieć gabinetów', m: '6 połączeń', p: 'Rejestracja, rozliczenia i raporty',
+    d: 'Wizyty z rejestracji online lądują w grafiku i w rozliczeniach, a raport dla zarządu składa się sam w poniedziałek rano.',
+    ile: '11 400', ileD: 'wizyt miesięcznie przechodzi bez człowieka',
+    al: [{ w: 4, t: 'wygasły token' }, { w: 11, t: 'wygasły token' }],
+    wn: '2 alarmy w kwartale, oba przy wygaśnięciu tokenu' },
+];
+
+
+// ---- PIERWSZY KWARTAŁ POL-014 -------------------------------------------------
+// Dziennik jednego połączenia od uruchomienia (pon 8.06.2026) przez
+// trzynaście tygodni. Wersje karty spięte z historią w karcie (scena),
+// alarm z tygodnia 7 to ten z hero. Oś alarmu w minutach: 8 + 3 + 18 = 29.
+const KW = [
+  { tydz: 1, data: 'pon 8.06', ik: 'rocket-launch', t: 'Połączenie na produkcji',
+    d: 'Nowi klienci z CRM zakładają się w programie księgowym i w magazynie. Karta z właścicielem i progiem alarmu była gotowa przed pierwszym przebiegiem.', art: 'karta' },
+  { tydz: 2, data: 'wt 16.06', ik: 'arrow-uturn-left', t: 'Sześciu klientów wraca do CRM z etykietą',
+    d: 'Nie mieli NIP-u, więc połączenie ich nie zapisało. Handlowcy dostali ich z powrotem z opisem, czego brakuje.', art: 'zwrot' },
+  { tydz: 4, data: 'wt 30.06', ik: 'wrench-screwdriver', t: 'Aktualizacja programu księgowego',
+    d: 'Pole „kraj” staje się obowiązkowe i pierwszy klient wraca z etykietą. Z kart widać, że ta sama zmiana dotyczy jeszcze dwóch połączeń, więc wszystkie trzy dostają poprawkę tego samego dnia.', art: 'zmiana' },
+  { tydz: 7, data: 'wt 21.07', ik: 'bell-alert', t: 'Przebiegi stają o 10:12', al: true,
+    d: 'Wygasł token programu księgowego. Alarm idzie o 10:20, trzy minuty później sprawę przejmujemy, a o 10:41 przebiegi wracają razem z dwoma klientami z przerwy.', art: 'os' },
+  { tydz: 11, data: 'wt 18.08', ik: 'building-storefront', t: 'Drugi magazyn',
+    d: 'Firma otwiera magazyn w Poznaniu. Nowi klienci zakładają się w obu magazynach, a karta dostaje wersję 3.', art: 'v3' },
+];
+const KW_OS = [
+  { od: 0, do: 8, k: 'cz', t: 'cisza 8 min' },
+  { od: 8, do: 11, k: 'al', t: '3 min' },
+  { od: 11, do: 29, k: 'na', t: 'odnowienie tokenu 18 min' },
+];
+const KW_PKT = [
+  { m: 0, h: '10:12', t: 'ostatni przebieg', g: true },
+  { m: 8, h: '10:20', t: 'alarm' },
+  { m: 11, h: '10:23', t: 'przejęte', g: true },
+  { m: 29, h: '10:41', t: 'przebiegi wracają' },
+];
+
+
+// ---- METODA ---------------------------------------------------------------
+// Prawa kolumna: fakty z tej strony, z FAQ i z /wisestack (monitoring
+// z imiennym właścicielem, klucze Wasze od pierwszego dnia). Lewa opisuje
+// typowe wdrożenie automatyzacji, nie konkretną firmę — do przejrzenia.
+// Ikony tylko z HI (komponent nie przyjmuje ikony spoza ikony.ts), stąd
+// „eye" przy monitoringu.
+const METODA = [
+  { k: 'Start', ik: 'banknotes',
+    r: 'Wycena godzin pracy nad scenariuszami.',
+    t: 'Stała kwota za każde połączenie', m: 'Na pierwszej rozmowie wypisujemy, co z czym i jak często. Kwotę za każde połączenie podajemy zaraz po niej.' },
+  { k: 'Pierwszy efekt', ik: 'clock',
+    r: 'Wszystkie scenariusze oddane razem, na koniec projektu.',
+    t: 'Pierwsze połączenie na produkcji w kilka dni', m: 'Tyle trwa przy systemach z API. Kiedy dane trzeba po drodze uporządkować, dwa do czterech tygodni. Następne bierzemy dopiero po nim.' },
+  { k: 'Przy błędzie', ik: 'arrow-path',
+    r: 'Scenariusz staje na pierwszym błędzie i czeka, aż ktoś zajrzy do platformy.',
+    t: 'Zachowanie przy błędzie zapisane w karcie', m: 'Trzy próby co pięć minut. Potem sprawa wraca tam, skąd przyszła, z etykietą, żeby człowiek mógł ją dokończyć.' },
+  { k: 'Monitoring', ik: 'eye',
+    r: 'Powiadomienie z platformy na skrzynkę osoby, która zakładała konto.',
+    t: 'Alarm po ośmiu minutach ciszy', m: 'Wiadomość idzie do imiennie wskazanej osoby po Waszej stronie i do nas. Kto to jest, stoi w karcie połączenia.' },
+  { k: 'Zmiana po drugiej stronie', ik: 'wrench-screwdriver',
+    r: 'Wychodzi przy zamknięciu miesiąca.',
+    t: 'Karty wszystkich połączeń w jednym miejscu', m: 'Przy zmianie w jednym systemie widać, co jeszcze trzeba sprawdzić. Kartę aktualizujemy przy każdej zmianie, a numer wersji stoi na jej górze.' },
+  { k: 'Utrzymanie', ik: 'shield-check',
+    r: 'Zlecenie u wykonawcy przy każdej awarii.',
+    t: 'Monitoring i poprawki w jednej umowie', m: 'Reakcja na alarmy i poprawki po zmianach u dostawców, bo to one psują połączenia najczęściej. Umowa jest osobna od budowy.' },
+  { k: 'Wyjście', ik: 'code-bracket',
+    r: 'Scenariusze na koncie wykonawcy.',
+    t: 'Scenariusze i karty Wasze od pierwszego dnia', m: 'Platforma stoi najczęściej na Waszej infrastrukturze i z licencją na Was. Utrzymanie wypowiadacie z miesięcznym terminem. Nie mamy prowizji od żadnego dostawcy.' },
+];
+
+
+// ---- DLA JAKICH FIRM (z obecnej strony) -----------------------------------
 const DLA_KOGO = [
-  {
-    t: 'Te same dane wpisujecie w dwóch miejscach',
-    d: 'Zamówienie w CRM i w ERP, klient w systemie i w arkuszu, dane przesyłki w panelu kuriera i w mailu do klienta. Każde przepisanie to miejsce, w którym da się pomylić cyfrę.',
-  },
-  {
-    t: 'Ktoś ma w kalendarzu stały punkt „eksport i wysyłka"',
-    d: 'Raport dla zarządu, zestawienie dla księgowej, plik z zamówieniami dla magazynu. Praca, o której nikt nie mówi, bo zajmuje tylko dwadzieścia minut dziennie.',
-  },
-  {
-    t: 'Macie systemy, które nie rozmawiają, i nie zamierzacie ich wymieniać',
-    d: 'Integracja jest tańsza od wymiany i szybsza o rok. Przy okazji pokazuje, czy wymiana w ogóle jest potrzebna.',
-  },
-  {
-    t: 'Chcecie sprawdzić, czy warto iść dalej',
-    d: 'Pierwsze połączenie idzie na produkcję w kilka dni i po miesiącu wiadomo, ile pracy naprawdę z Was zdjęło. Dopiero na tej podstawie warto decydować o systemie prowadzącym cały proces.',
-  },
+  { t: 'Te same dane wpisujecie w dwóch miejscach',
+    d: 'Zamówienie w CRM i w ERP, dane przesyłki w panelu kuriera i w mailu do klienta. Każde przepisanie to miejsce, w którym da się pomylić cyfrę.' },
+  { t: 'Ktoś ma w kalendarzu stały punkt „eksport i wysyłka”',
+    d: 'Raport dla zarządu albo plik z zamówieniami dla magazynu. Praca, o której nikt nie mówi, bo zajmuje tylko dwadzieścia minut dziennie.' },
+  { t: 'Macie systemy, które nie rozmawiają, i nie zamierzacie ich wymieniać',
+    d: 'Integracja jest tańsza od wymiany i szybsza o rok. Przy okazji pokazuje, czy wymiana w ogóle jest potrzebna.' },
+  { t: 'Chcecie sprawdzić, czy warto iść dalej',
+    d: 'Pierwsze połączenie idzie na produkcję w kilka dni i po miesiącu wiadomo, ile pracy naprawdę z Was zdjęło. Dopiero na tej podstawie warto decydować o systemie prowadzącym cały proces.' },
 ];
 const NIE_TERAZ = [
   'Chodzi o jedno połączenie, a u Was jest ktoś, kto umie kliknąć scenariusz w Make’u. Wtedy zróbcie to sami — chętnie powiemy, na co uważać.',
@@ -197,69 +386,28 @@ const NIE_TERAZ = [
 ];
 
 
-// ---- PRZYKŁADY ----------------------------------------------------------
-// PRZYKŁADOWE wdrożenia — do podmiany. Druga liczba jest tu ważniejsza od
-// pierwszej: pokazuje, że rzeczy się psują i że o tym wiadomo.
-const PRZYKLADY = [
-  {
-    f: 'Dystrybutor części', m: '9 połączeń', p: 'Zamówienia, faktury i stany',
-    d: 'Zamówienia z trzech kanałów wpadają do jednego rejestru, faktury kosztowe księgują się same, a stany jadą do sklepu co godzinę.',
-    ile: '5 800 dokumentów miesięcznie', alarmy: '4 alarmy w kwartale, każdy zamknięty tego samego dnia',
-  },
-  {
-    f: 'Producent mebli', m: '4 połączenia', p: 'Od zamówienia do produkcji',
-    d: 'Zamówienie z portalu trafia do planowania razem z rezerwacją materiału, a zmiana terminu wraca do klienta bez udziału handlowca.',
-    ile: '760 zleceń miesięcznie', alarmy: '1 alarm w kwartale, przyczyną była zmiana po stronie dostawcy',
-  },
-  {
-    f: 'Sieć gabinetów', m: '6 połączeń', p: 'Rejestracja, rozliczenia i raporty',
-    d: 'Wizyty z rejestracji online lądują w grafiku i w rozliczeniach, a raport dla zarządu składa się sam w poniedziałek rano.',
-    ile: '11 400 wizyt miesięcznie', alarmy: '2 alarmy w kwartale, oba przy wygaśnięciu tokenu',
-  },
-];
-
-
+// ---- FAQ (z obecnej strony) -----------------------------------------------
 const faq = [
-  {
-    q: 'Czym to się różni od Make’a albo Zapiera, które nasz człowiek sam sklika?',
-    a: 'Niczym, jeśli chodzi o jedno połączenie i macie kogoś, kto to zrobi — wtedy zróbcie to sami, a my chętnie powiemy, na co uważać. Różnica zaczyna się przy kilku połączeniach naraz. Wtedy liczy się to, czy ktoś zauważy awarię, czy przy zmianie po drugiej stronie wiadomo, co jeszcze się posypie, i czy da się to przekazać nowej osobie. Sam scenariusz jest najprostszą częścią tej pracy.',
-  },
-  {
-    q: 'Ile kosztują automatyzacje i integracje?',
-    a: 'Wyceniamy połączenie po połączeniu, a kwota jest stała i podawana po rozmowie, na której wypisujemy, co z czym i jak często. O kwocie rozstrzyga przede wszystkim to, czy systemy mają API. Dalej idzie liczba wyjątków, które połączenie ma obsłużyć, i to, czy dane wymagają uporządkowania po drodze. Pierwsze połączenie zwykle zwraca się w kilka tygodni.',
-  },
-  {
-    q: 'Co się dzieje, kiedy automatyzacja wywali się w nocy?',
-    a: 'Najpierw trzy próby w odstępach kilku minut, bo większość awarii to chwilowa niedostępność drugiej strony. Jeśli nie pomogą, sprawa wraca tam, skąd przyszła, z etykietą, żeby człowiek mógł ją dokończyć ręcznie. Równolegle idzie alarm do imiennie wskazanej osoby po Waszej stronie i do nas. Zachowanie przy błędzie jest zapisane w karcie połączenia, więc nie jest przedmiotem domysłów.',
-  },
-  {
-    q: 'Nasze systemy nie mają API. Da się coś zrobić?',
-    a: 'Zwykle tak, tylko drożej w utrzymaniu i o tym mówimy przed wyceną. Kolejność wygląda tak: API, jeśli jest; wymiana plików w uzgodnionym formacie, jeśli system ją umie; odczyt bezpośrednio z bazy po ustaleniu z Waszym IT. Ostatnią drogą jest sterowanie interfejsem, ale wtedy uprzedzamy, że każda aktualizacja dostawcy może to zepsuć.',
-  },
-  {
-    q: 'Czy nie zrobimy sobie plątaniny, której za rok nikt nie ogarnie?',
-    a: 'Przed tym broni karta przy każdym połączeniu i jedno miejsce, w którym stoją wszystkie. Widać z niej, co skąd bierze dane i kto za to odpowiada, więc przy zmianie w jednym systemie wiadomo, co jeszcze trzeba sprawdzić. Kartę aktualizujemy przy każdej zmianie połączenia i numer wersji stoi na jej górze.',
-  },
-  {
-    q: 'Na czym to budujecie?',
-    a: 'Na platformie automatyzacji tam, gdzie liczy się to, żeby zmiana zajmowała kwadrans, i we własnym kodzie tam, gdzie połączenie dotyka reguł albo dużego wolumenu. Platformę stawiamy najczęściej na Waszej infrastrukturze, żeby dane nie wychodziły na zewnątrz i żeby licencja była Wasza. Nie mamy prowizji od żadnego dostawcy.',
-  },
-  {
-    q: 'Ile to trwa?',
-    a: 'Proste połączenie między systemami z API to zwykle kilka dni. Takie, które wymaga uporządkowania danych po drodze albo obsługi wyjątków, to dwa do czterech tygodni. Zaczynamy od jednego, uruchamiamy je na produkcji i dopiero potem bierzemy następne — także dlatego, że pierwsze zwykle zmienia listę kolejnych.',
-  },
-  {
-    q: 'Kto to utrzymuje?',
-    a: 'Scenariusze, dokumentacja i dostęp do platformy są Wasze od pierwszego dnia, więc utrzymanie może przejąć Wasz zespół. Jeśli utrzymujemy my, umowa obejmuje monitoring, reakcję na alarmy i poprawki po zmianach u dostawców — bo to one psują połączenia najczęściej. Umowa jest osobna od budowy i wypowiadalna z miesięcznym terminem.',
-  },
-  {
-    q: 'Mamy trzydzieści pomysłów. Od czego zacząć?',
-    a: 'Od tego, które przepisywanie zdarza się najczęściej i kosztuje najwięcej przy pomyłce. Na pierwszej rozmowie przechodzimy listę i wskazujemy jedną pozycję, plus te, które odradzamy jako zbyt rzadkie. Jeśli okaże się, że pomysłów jest kilkanaście i nikt nie umie ich uszeregować, właściwą usługą jest <a href="/strategia-ai" style="font-weight:700;color:#0a7a52">strategia transformacji AI</a>, a nie kolejne połączenie.',
-  },
-  {
-    q: 'Czym to się różni od systemu dla kluczowego procesu?',
-    a: 'Skalą i tym, gdzie leży stan sprawy. Integracja przenosi dane między systemami, które już macie, i nie zmienia sposobu pracy. <a href="/systemy-procesowe" style="font-weight:700;color:#0a7a52">System dla kluczowego procesu</a> prowadzi sprawę od początku do końca i sam trzyma jej stan. Automatyzacje są tańszym wejściem i często pierwszym krokiem — a bywają też ostatnim, jeśli okaże się, że wystarczą.',
-  },
+  { q: 'Czym to się różni od Make’a albo Zapiera, które nasz człowiek sam sklika?',
+    a: 'Niczym, jeśli chodzi o jedno połączenie i macie kogoś, kto to zrobi — wtedy zróbcie to sami, a my chętnie powiemy, na co uważać. Różnica zaczyna się przy kilku połączeniach naraz. Wtedy liczy się to, czy ktoś zauważy awarię i czy przy zmianie po drugiej stronie wiadomo, co jeszcze się posypie. Sam scenariusz jest najprostszą częścią tej pracy.' },
+  { q: 'Ile kosztuje integracja systemów?',
+    a: 'Wyceniamy połączenie po połączeniu, a kwota jest stała i podawana po rozmowie, na której wypisujemy, co z czym i jak często. O kwocie rozstrzyga przede wszystkim to, czy systemy mają API. Dalej idzie liczba wyjątków, które połączenie ma obsłużyć, i to, czy dane wymagają uporządkowania po drodze. Pierwsze połączenie zwykle zwraca się w kilka tygodni.' },
+  { q: 'Co się dzieje, kiedy połączenie wywali się w nocy?',
+    a: 'Najpierw trzy próby w odstępach kilku minut, bo większość awarii to chwilowa niedostępność drugiej strony. Jeśli nie pomogą, sprawa wraca tam, skąd przyszła, z etykietą, żeby człowiek mógł ją dokończyć ręcznie. Równolegle idzie alarm do imiennie wskazanej osoby po Waszej stronie i do nas. Zachowanie przy błędzie jest zapisane w karcie połączenia, więc nie jest przedmiotem domysłów.' },
+  { q: 'Nasze systemy nie mają API. Da się coś zrobić?',
+    a: 'Zwykle tak, tylko drożej w utrzymaniu i o tym mówimy przed wyceną. Kolejność wygląda tak: API, jeśli jest; wymiana plików w uzgodnionym formacie, jeśli system ją umie; odczyt bezpośrednio z bazy po ustaleniu z Waszym IT. Ostatnią drogą jest sterowanie interfejsem, ale wtedy uprzedzamy, że każda aktualizacja dostawcy może to zepsuć.' },
+  { q: 'Czy nie zrobimy sobie plątaniny, której za rok nikt nie ogarnie?',
+    a: 'Przed tym broni karta przy każdym połączeniu i jedno miejsce, w którym stoją wszystkie. Widać z niej, co skąd bierze dane i kto za to odpowiada, więc przy zmianie w jednym systemie wiadomo, co jeszcze trzeba sprawdzić. Kartę aktualizujemy przy każdej zmianie połączenia i numer wersji stoi na jej górze.' },
+  { q: 'Na czym to budujecie?',
+    a: 'Na platformie automatyzacji tam, gdzie liczy się to, żeby zmiana zajmowała kwadrans, i we własnym kodzie tam, gdzie połączenie dotyka reguł albo dużego wolumenu. Platformę stawiamy najczęściej na Waszej infrastrukturze, żeby dane nie wychodziły na zewnątrz i żeby licencja była Wasza. Nie mamy prowizji od żadnego dostawcy.' },
+  { q: 'Ile to trwa?',
+    a: 'Proste połączenie między systemami z API to zwykle kilka dni. Takie, które wymaga uporządkowania danych po drodze albo obsługi wyjątków, to dwa do czterech tygodni. Zaczynamy od jednego, uruchamiamy je na produkcji i dopiero potem bierzemy następne — także dlatego, że pierwsze zwykle zmienia listę kolejnych.' },
+  { q: 'Kto to utrzymuje?',
+    a: 'Scenariusze z dokumentacją i dostęp do platformy są Wasze od pierwszego dnia, więc utrzymanie może przejąć Wasz zespół. Jeśli utrzymujemy my, umowa obejmuje monitoring z reakcją na alarmy oraz poprawki po zmianach u dostawców — bo to one psują połączenia najczęściej. Umowa jest osobna od budowy i wypowiadalna z miesięcznym terminem.' },
+  { q: 'Mamy trzydzieści pomysłów. Od czego zacząć?',
+    a: 'Od tego, które przepisywanie zdarza się najczęściej i kosztuje najwięcej przy pomyłce. Na pierwszej rozmowie przechodzimy listę i wskazujemy jedną pozycję, plus te, które odradzamy jako zbyt rzadkie. Jeśli okaże się, że pomysłów jest kilkanaście i nikt nie umie ich uszeregować, właściwą usługą jest <a href="/strategia-ai" style="font-weight:700;color:#0a7a52">strategia AI</a>.' },
+  { q: 'Czym to się różni od systemu dopasowanego do firmy?',
+    a: 'Skalą i tym, gdzie leży stan sprawy. Integracja przenosi dane między systemami, które już macie, i nie zmienia sposobu pracy. <a href="/systemy-procesowe" style="font-weight:700;color:#0a7a52">System dopasowany do firmy</a> prowadzi sprawę od początku do końca i sam trzyma jej stan. Integracje są tańszym wejściem i często pierwszym krokiem — a bywają też ostatnim, jeśli okaże się, że wystarczą.' },
 ];
 dane['@graph'].push({
   '@type': 'FAQPage',
@@ -271,373 +419,1113 @@ dane['@graph'].push({
   })),
 });
 ---
-<LaBase title={title} description={description} ctaHref="#kontakt" ctaLabel="Umów rozmowę" nav="uslugi">
+<LaBase topbar={false} title={title} description={description} ctaHref="#kontakt" ctaLabel="Umów rozmowę" nav="uslugi">
 <script type="application/ld+json" is:inline set:html={JSON.stringify(dane)} slot="head"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" slot="head">
 <style is:global slot="head">
-  /* ================= puls (hero) =================
-     Cztery automatyzacje, każda z własnym odstępem między przebiegami.
-     Wszystkie kreski dzielą jedną klatkę i różnią się wyłącznie opóźnieniem,
-     więc przy równym czasie cyklu układ powtarza się bez rozjazdu.
-     Trzecia linia po prostu przestaje pulsować — i to jest cały argument
-     strony, pokazany zamiast opisany. */
-  .pu-gora{display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding-bottom:11px;border-bottom:1px solid #e7ece4}
-  .pu-gora b{font-size:13px;font-weight:700;color:#16211a}
-  .pu-gora span{font-family:ui-monospace,Menlo,monospace;font-size:11px;color:#a9b3aa}
-  .pu-row{padding:14px 0;border-bottom:1px solid #f0f3ee}
-  .pu-t{display:flex;align-items:baseline;justify-content:space-between;gap:14px}
-  .pu-t b{font-size:14px;font-weight:650;color:#16211a}
-  .pu-st{display:inline-flex;align-items:center;gap:7px;flex-shrink:0;font-family:ui-monospace,Menlo,monospace;font-size:11.5px;color:#637066}
-  .pu-kropka{display:block;width:7px;height:7px;border-radius:50%;background:var(--la-accent,#00CD77)}
-  /* Dwa stany statusu leżą na sobie, żeby wiersz nie skakał przy zmianie. */
-  .pu-zmiana{display:grid}
-  .pu-zmiana em{grid-area:1/1;font-style:normal;white-space:nowrap}
-  .pu-pas{display:flex;align-items:flex-end;gap:5px;height:20px;margin-top:10px}
-  .pu-tik{flex:0 0 6px;height:100%;border-radius:2px;background:#2ecf8b;opacity:0;transform-origin:bottom}
-  /* Brakujące przebiegi pojawiają się dopiero w chwili ciszy — wcześniej
-     zdradzałyby pointę, zanim linia zdąży zamilknąć. */
-  .pu-tik.pusty{flex:0 0 6px;height:6px;border-radius:2px;background:#e8c99a;opacity:0}
-  .pu-alarm{display:inline-flex;align-items:center;gap:8px;margin-top:11px;padding:7px 12px;border-radius:8px;background:#fdf3e4;font-size:12.5px;font-weight:650;color:#b07524;opacity:0}
-  .pu-alarm svg{flex-shrink:0}
-  .pu-pod{margin:clamp(16px,2vw,22px) 0 0;font-size:14.5px;line-height:1.6;color:#4c5850;max-width:540px;text-wrap:pretty;opacity:0}
-  .pu-pod strong{font-weight:700;color:#16211a}
-  @media (max-width:560px){
-    .pu-t{flex-direction:column;gap:5px}
-    .pu-t b{font-size:13px}
-    .pu-pas{height:17px}
+  /* Style rysunków tej usługi. Wspólny wygląd: src/components/usluga/Styl.astro. */
+
+  /* ---- podpis kafla (ten sam układ co .ts4-gl na /systemy-procesowe-new,
+     który nie trafił do Styl.astro) ---- */
+  .ia-gl{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px 40px;margin:0 clamp(2px,0.8vw,14px) clamp(26px,3vw,44px)}
+  .ia-gl > b{font-size:15px;font-weight:700;letter-spacing:-0.01em}
+  .ia-licz{display:flex;align-items:center;gap:12px}
+  .ia-licz > span{font-size:13px;color:var(--t2)}
+  .ia-licz > b{min-width:3.4em;font-size:clamp(22px,2vw,28px);font-weight:700;letter-spacing:-0.035em;line-height:1;color:var(--t1)}
+  .ia-licz > b.tik{animation:ia-tik .45s ease-out}
+  @keyframes ia-tik{0%{color:var(--burs-c);transform:translateY(-3px)}100%{color:var(--t1);transform:none}}
+  .ia-znow{display:none;place-items:center;width:34px;height:34px;padding:0;border:0;border-radius:50%;background:#ffffff;color:var(--t1);cursor:pointer;box-shadow:0 0 0 1px rgba(15,26,20,0.1);transition:background .15s,color .15s,opacity .2s}
+  .ia-znow svg{display:block;width:14px;height:14px;fill:currentColor}
+  .ia-znow:hover{background:var(--ink);color:#ffffff}
+  .ia-znow:focus-visible{outline:2px solid var(--ziel);outline-offset:2px}
+  .ruch .ia-znow{display:grid}
+  .ia-znow[disabled]{opacity:0.35;cursor:default;background:#ffffff;color:var(--t1)}
+
+  /* =====================================================================
+     HERO · POŁĄCZENIA NA ŻYWO
+     Tablica monitoringu: cztery połączenia na wspólnej osi ostatniej
+     godziny, każde bije we własnym rytmie. Trzecie milknie o 10:12;
+     kreskowany bursztyn rośnie, aż po ośmiu minutach nad paskiem staje
+     klamra z alarmem, a w dzienniku zdarzeń po prawej pojawia się alarm,
+     przejęcie i powrót przebiegów. Stan w HTML to stan końcowy (bez JS
+     i przy ograniczonym ruchu). Skrypt dodaje .ruch i odgrywa godzinę od
+     9:58 w pętli, z przytrzymaniem stanu końcowego.
+     ===================================================================== */
+  .ln{--t1:#18181b;--t2:#52525b;--t3:#71717a;--t4:#a1a1aa;--lin:rgba(9,9,11,0.08);--lin2:rgba(9,9,11,0.05);
+    position:relative;margin:0;container-type:inline-size;font-size:12.5px;line-height:1.4;color:var(--t1);letter-spacing:-0.004em;-webkit-font-smoothing:antialiased}
+  .ln svg{display:block;flex-shrink:0;fill:currentColor}
+  .ln-okno{position:relative;overflow:hidden;border-radius:14px;background:#ffffff;
+    box-shadow:0 0 0 1px rgba(255,255,255,0.14),0 0 0 1.5px rgba(0,0,0,0.3),0 50px 100px -40px rgba(0,0,0,0.9),0 18px 36px -20px rgba(0,0,0,0.55)}
+  .ln-gora{display:flex;align-items:center;gap:10px;height:50px;padding:0 18px;border-bottom:1px solid var(--lin);background:#fafaf9;white-space:nowrap}
+  .ln-znak{display:grid;place-items:center;width:26px;height:26px;border-radius:7px;background:#0f1a14;box-shadow:inset 0 1px 0 rgba(255,255,255,0.12);color:#00cd77}
+  .ln-znak svg{width:14px;height:14px}
+  .ln-gora b{font-size:13.5px;font-weight:650;letter-spacing:-0.01em}
+  .ln-gora > em{min-width:0;overflow:hidden;text-overflow:ellipsis;font-style:normal;font-size:12px;color:var(--t4)}
+  .ln-zywo{margin-left:auto;display:flex;align-items:center;gap:9px;font-size:12px;color:var(--t3)}
+  .ln-zywo > i{width:7px;height:7px;border-radius:50%;background:#10b981;box-shadow:0 0 0 3px rgba(16,185,129,0.18)}
+  .ln.ruch .ln-zywo > i{animation:ln-mig 1.8s ease-in-out infinite}
+  @keyframes ln-mig{50%{box-shadow:0 0 0 6px rgba(16,185,129,0)}}
+  .ln-zegar{min-width:3.6em;padding:4px 8px;border-radius:6px;background:#ffffff;box-shadow:inset 0 0 0 1px var(--lin);font-family:var(--mono);font-size:12px;font-weight:500;color:var(--t1);text-align:center}
+  .ln-uk{display:grid;grid-template-columns:minmax(0,1fr) 300px}
+  .ln-gl{min-width:0;padding:2px 22px 6px}
+  .ln-w{display:grid;grid-template-columns:220px minmax(0,1fr) 128px;column-gap:24px;align-items:center}
+  .ln-w.n{height:38px;border-bottom:1px solid var(--lin);font-size:11.5px;color:var(--t4)}
+  .ln-row{padding:15px 0 12px;border-bottom:1px solid var(--lin2)}
+  .ln-naz{min-width:0}
+  .ln-naz em{display:block;font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--t4)}
+  .ln-naz b{display:block;margin-top:1px;font-size:13px;font-weight:600;letter-spacing:-0.012em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ln-tr{display:flex;align-items:center;gap:5px;margin-top:3px;font-size:11.5px;color:var(--t3);white-space:nowrap;overflow:hidden}
+  .ln-tr i{flex-shrink:0;display:block;width:7px;height:7px;border-radius:2px}
+  .ln-tr i + i{margin-left:-2px}
+  .ln-tr svg{width:10px;height:10px;color:var(--t4)}
+  .ln-tr span{min-width:0;overflow:hidden;text-overflow:ellipsis}
+  .ln-pw{min-width:0}
+  .ln-row.pada .ln-pw{padding-top:22px}
+  .ln-pas{position:relative;height:24px}
+  .ln-pas::before{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:rgba(9,9,11,0.1)}
+  .ln-tk{position:absolute;bottom:0;display:block;width:3px;height:100%;margin-left:-1.5px;border-radius:1.5px;background:#10b981;transform-origin:50% 100%}
+  .ln-tk.nad{background:#047857}
+  .ln-cz{position:absolute;top:0;bottom:0;display:block;border-radius:3px}
+  .ln-kl{position:absolute;bottom:calc(100% + 5px);display:block;height:7px;border:1.5px solid #e3962f;border-bottom:0;border-radius:3px 3px 0 0}
+  .ln-kl > span{position:absolute;left:100%;bottom:calc(100% - 4px);transform:translateX(-11px);display:inline-flex;align-items:center;gap:4px;padding:1px 7px 1px 5px;border-radius:999px;background:#fff7ec;box-shadow:inset 0 0 0 1px rgba(214,134,30,0.45);font-size:10.5px;font-weight:650;color:#9c5f14;white-space:nowrap}
+  .ln-kl svg{width:11px;height:11px}
+  .ln-ost{display:block;margin-top:7px;font-family:var(--mono);font-size:10.5px;color:var(--t3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ln-st{display:flex;align-items:flex-start;gap:8px;font-size:12.5px;font-weight:600;color:#047857;white-space:nowrap}
+  .ln-st > i{flex-shrink:0;display:block;width:7px;height:7px;margin-top:6px;border-radius:50%;background:#10b981;transition:background .3s,box-shadow .3s}
+  .ln-st small{display:block;font-size:11px;font-weight:400;color:var(--t4)}
+  .ln-st.uw{color:#a15c07}
+  .ln-st.uw > i{background:#f59e0b;box-shadow:0 0 0 3px rgba(245,158,11,0.22)}
+  .ln-os{height:30px}
+  .ln-os-o{position:relative;height:100%;font-family:var(--mono);font-size:10.5px;color:var(--t4)}
+  .ln-os-o em{position:absolute;top:9px;font-style:normal;transform:translateX(-50%)}
+  .ln-os-o em:first-child{transform:none}
+  .ln-os-o em:last-child{transform:translateX(-100%)}
+  /* dziennik zdarzeń */
+  .ln-bok{min-width:0;padding:14px 18px 10px;border-left:1px solid var(--lin);background:#fcfcfb}
+  .ln-bok h4{display:flex;justify-content:space-between;margin:2px 0 8px;font-size:12px;font-weight:600}
+  .ln-bok h4 span{font-weight:400;color:var(--t4)}
+  .ln-bok ol{margin:0;padding:0;list-style:none}
+  .ln-zd{display:grid;grid-template-columns:24px minmax(0,1fr);gap:10px;padding:11px 0;border-top:1px solid var(--lin2)}
+  .ln-zd > i{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:#f1f1f0;color:var(--t3)}
+  .ln-zd > i svg{width:13px;height:13px}
+  .ln-zd.al > i{background:rgba(245,158,11,0.16);color:#b45309}
+  .ln-zd.ok > i{background:rgba(16,185,129,0.12);color:#047857}
+  .ln-zd.la > i{background:#0f1a14;color:#00cd77}
+  .ln-zd.la > i svg{width:12px;height:12px}
+  .ln-zd b{display:flex;justify-content:space-between;gap:8px;font-size:12px;font-weight:600}
+  .ln-zd b em{flex-shrink:0;font-style:normal;font-family:var(--mono);font-size:10.5px;font-weight:400;color:var(--t4)}
+  .ln-zd p{margin:2px 0 0;font-size:11.5px;line-height:1.45;color:var(--t2)}
+  .ln-zd.al{margin:0 -9px;padding:11px 9px;border-top-color:transparent;border-radius:10px;background:#fff8ee;box-shadow:inset 0 0 0 1px rgba(214,134,30,0.28)}
+  .ln-zd.al + .ln-zd{border-top-color:transparent}
+  /* ruch */
+  .ln.ruch .ln-tk{transition:opacity .25s ease,transform .45s cubic-bezier(.3,1.6,.5,1)}
+  .ln.ruch .ln-tk.ukr{opacity:0;transform:scaleY(.2)}
+  .ln.ruch .ln-kl{transition:opacity .35s ease,transform .45s cubic-bezier(.3,1.6,.5,1)}
+  .ln.ruch .ln-kl.ukr{opacity:0;transform:translateY(5px)}
+  .ln.ruch .ln-zd.ukr{display:none}
+  .ln.ruch .ln-zd.nowy{animation:ln-wej .55s cubic-bezier(.2,.8,.2,1) both}
+  @keyframes ln-wej{from{opacity:0;transform:translateY(-8px)}}
+  .ln-pas,.ln-bok ol,.ln-ost,.ln-st{transition:opacity .45s ease}
+  .ln.gasnie .ln-pas,.ln.gasnie .ln-bok ol,.ln.gasnie .ln-ost,.ln.gasnie .ln-st{opacity:0.2}
+  @container (max-width:940px){
+    .ln-w{grid-template-columns:190px minmax(0,1fr) 118px;column-gap:18px}
+    .ln-uk{grid-template-columns:minmax(0,1fr)}
+    .ln-bok{border-left:0;border-top:1px solid var(--lin)}
+    .ln-bok ol{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:24px}
+    .ln-zd:nth-child(2){border-top-color:transparent}
   }
-  @media (prefers-reduced-motion:reduce){
-    .pu-tik,.pu-alarm,.pu-pod,.pu-kropka,.pu-st,.pu-zmiana em{animation:none !important;opacity:1}
-    .pu-tik.pusty{opacity:1}
-    /* Bez ruchu zostaje stan po awarii — to on niesie argument. */
-    .pu-row.pada .pu-kropka{background:#d99a3c}
-    .pu-row.pada .pu-st{color:#b07524}
-    .pu-zmiana em{opacity:0}
-    .pu-zmiana em.nowe{opacity:1}
+  @container (max-width:640px){
+    .ln-gora{padding:0 12px}
+    .ln-gora > em{display:none}
+    .ln-gl{padding:0 14px 4px}
+    .ln-w.n{display:none}
+    .ln-w{grid-template-columns:minmax(0,1fr) auto;row-gap:10px;column-gap:12px}
+    .ln-naz{grid-column:1;grid-row:1}
+    .ln-st{grid-column:2;grid-row:1}
+    .ln-pw{grid-column:1 / -1;grid-row:2}
+    .ln-os > span:first-child,.ln-os > span:last-child{display:none}
+    .ln-os-o{grid-column:1 / -1}
+    .ln-bok{padding:12px 14px 14px}
+    .ln-bok ol{grid-template-columns:minmax(0,1fr)}
+    .ln-zd:nth-child(2){border-top-color:var(--lin2)}
+    .ln-zd.al + .ln-zd{border-top-color:transparent}
+    .ln-zd:nth-child(n+4){display:none !important}
   }
 
-  /* ================= co łączymy (kolumna przy definicji) ================= */
-  .pl-h{margin:0 0 4px;font-size:15.5px;font-weight:750;letter-spacing:-0.01em;color:#16211a}
-  .pl-row{padding:12px 0;border-top:1px solid #e4ebe2}
-  .pl-row:last-of-type{border-bottom:1px solid #e4ebe2}
-  .pl-t{display:block;font-size:14.5px;font-weight:700;letter-spacing:-0.01em;line-height:1.3;color:#16211a;text-wrap:balance}
-  .pl-d{display:block;margin-top:3px;font-size:12.5px;color:#637066}
-  .pl-nota{margin:13px 0 0;font-size:13px;line-height:1.55;color:#637066;text-wrap:pretty}
-
-  /* ================= powody ================= */
-  .pw-row{display:grid;grid-template-columns:minmax(0,0.95fr) minmax(0,1.15fr);gap:clamp(18px,3vw,48px);align-items:baseline;padding:clamp(20px,2.4vw,28px) 0;border-top:1px solid #e2e9e0}
-  .pw-row:last-of-type{border-bottom:1px solid #e2e9e0}
-  .pw-t{margin:0;font-size:clamp(17px,2vw,20px);font-weight:750;letter-spacing:-0.015em;line-height:1.3;color:#16211a;text-wrap:balance}
-  .pw-d{margin:0;font-size:15px;line-height:1.6;color:#4c5850;text-wrap:pretty}
-  @media (max-width:760px){ .pw-row{grid-template-columns:1fr;gap:7px} }
-
-  /* ================= karta automatyzacji (ciemny pas) =================
-     Artefakt, nie wykres — na tej stronie drugi nośnik jest celowo z innego
-     gatunku niż hero. Pokazana w całości, bo to jest dokładnie to, co klient
-     dostaje przy każdym połączeniu. Trzy wiersze niosące obietnicę
-     (zachowanie przy błędzie, alarm, właściciel) są wyróżnione. */
-  .ka{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,0.92fr);gap:clamp(30px,5vw,72px);align-items:start;margin-top:clamp(30px,3.6vw,44px)}
-  .ka-dok{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.16);border-radius:16px;overflow:hidden}
-  .ka-gora{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:15px 18px;border-bottom:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.04)}
-  .ka-gora b{font-size:12.5px;font-weight:750;letter-spacing:0.02em;color:rgba(255,255,255,0.6)}
-  .ka-gora span{font-family:ui-monospace,Menlo,monospace;font-size:11px;color:rgba(255,255,255,0.35)}
-  .ka-nazwa{padding:17px 18px 3px;font-size:clamp(17px,2vw,20px);font-weight:750;letter-spacing:-0.015em;color:#ffffff}
-  .ka-tresc{padding:10px 18px 18px}
-  .ka-w{display:grid;grid-template-columns:minmax(120px,0.42fr) minmax(0,1fr);gap:14px;align-items:baseline;padding:11px 0;border-top:1px solid rgba(255,255,255,0.1)}
-  .ka-k{font-size:12.5px;color:rgba(255,255,255,0.62)}
-  .ka-v{font-size:14px;line-height:1.5;color:rgba(255,255,255,0.86);text-wrap:pretty}
-  .ka-w.wazne .ka-k{color:var(--la-accent,#00CD77)}
-  .ka-w.wazne .ka-v{color:#ffffff;font-weight:650}
-  @media (max-width:900px){ .ka{grid-template-columns:1fr;gap:32px} }
-  @media (max-width:520px){ .ka-w{grid-template-columns:1fr;gap:3px} }
-
-  /* ================= dla jakich firm ================= */
-  .dl-row{display:grid;grid-template-columns:46px minmax(0,0.9fr) minmax(0,1.2fr);gap:clamp(16px,2.6vw,44px);align-items:start;padding:clamp(20px,2.4vw,28px) 0;border-top:1px solid #e2e9e0}
-  .dl-row:last-of-type{border-bottom:1px solid #e2e9e0}
-  .dl-n{font-size:clamp(22px,2.6vw,30px);font-weight:800;letter-spacing:-0.03em;line-height:1;color:#dbe4d8;padding-top:2px}
-  .dl-t{margin:0;font-size:clamp(17px,2vw,20px);font-weight:750;letter-spacing:-0.015em;line-height:1.3;color:#16211a;text-wrap:balance}
-  .dl-d{margin:0;font-size:15px;line-height:1.6;color:#4c5850;text-wrap:pretty}
-  .dl-nie{margin:clamp(32px,3.8vw,48px) 0 0 clamp(0px,4vw,64px);padding-left:clamp(18px,2vw,26px);border-left:2px solid #dde7db;max-width:760px}
-  .dl-nie h3{margin:0;font-size:15.5px;font-weight:750;letter-spacing:-0.01em;color:#4c5850}
-  .dl-nie p{margin:10px 0 0;font-size:14.5px;line-height:1.6;color:#637066;text-wrap:pretty}
-  @media (max-width:860px){
-    .dl-row{grid-template-columns:34px minmax(0,1fr);gap:12px 14px}
-    .dl-row > p:last-child{grid-column:2}
-  }
-
-  /* ================= pas wezwania ================= */
-  .ps{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:18px 40px;padding:clamp(26px,3vw,36px) 0;border-top:1px solid #e7ece4;border-bottom:1px solid #e7ece4}
-  .ps p{margin:0;max-width:640px;font-size:clamp(18px,2.2vw,24px);line-height:1.35;letter-spacing:-0.018em;font-weight:700;color:#16211a;text-wrap:pretty}
-
-  /* ================= przykłady =================
-     Druga liczba jest ważniejsza od pierwszej: pokazuje, że rzeczy się psują
-     i że o tym wiadomo. Dlatego stoi w tej samej kolumnie, nie w przypisie. */
-  .px-row{display:grid;grid-template-columns:minmax(190px,0.6fr) minmax(0,1.2fr) minmax(210px,0.8fr);gap:clamp(20px,3.2vw,52px);align-items:start;padding:clamp(26px,3.2vw,40px) 0;border-top:1px solid #dde7db}
-  .px-row:last-of-type{border-bottom:1px solid #dde7db}
-  .px-f{display:block;margin:0;font-size:clamp(18px,2.1vw,22px);font-weight:750;letter-spacing:-0.018em;color:#16211a}
-  .px-m{display:block;margin-top:4px;font-size:13.5px;color:#637066}
-  .px-p{display:block;margin-top:14px;font-size:14px;font-weight:700;color:#0a7a52}
-  .px-d{margin:0;font-size:15px;line-height:1.6;color:#16211a;text-wrap:pretty}
-  .px-ile{display:block;font-size:clamp(17px,2vw,20px);font-weight:750;letter-spacing:-0.015em;color:#16211a}
-  .px-cap{display:block;margin-top:4px;font-size:12.5px;color:#a0aba1}
-  .px-al{display:flex;align-items:flex-start;gap:9px;margin-top:16px;padding-top:14px;border-top:1px solid #dde7db;font-size:13.5px;line-height:1.5;color:#4c5850}
-  .px-al i{flex-shrink:0;display:block;width:7px;height:7px;margin-top:6px;border-radius:50%;background:#d99a3c}
-  @media (max-width:1000px){
-    .px-row{grid-template-columns:minmax(0,1fr) minmax(200px,0.7fr)}
-    .px-row > :first-child{grid-column:1 / -1}
-  }
+  /* =====================================================================
+     DLACZEGO 1 · ZAMEK — klient w CRM i kontrahent w programie księgowym,
+     połączeni parami. Po wygaśnięciu tokenu lewa strona rośnie dalej, prawa
+     zostaje pusta, a od CRM-u nie widać żadnej różnicy. Licznik w rogu to
+     czas, przez który nikt nie wie. Ramy obu list widać od początku;
+     wiersze wypełniają się po kolei (skrypt, .ruch → .on).
+     ===================================================================== */
+  .cs-sc{--m:clamp(40px,9vw,150px);margin:0 clamp(0px,0.6vw,10px);font-size:13px}
+  .cs-w{display:grid;grid-template-columns:minmax(0,1fr) var(--m) minmax(0,1fr)}
+  .cs-c{display:grid;grid-template-columns:44px minmax(0,1fr) auto;align-items:center;column-gap:10px;min-height:42px;padding:0 16px;background:#ffffff;border:1px solid #e4e8e2;border-top-color:#f0f2ee;border-bottom:0}
+  .cs-c.r{grid-template-columns:52px minmax(0,1fr)}
+  .cs-w.g .cs-c{border-top-color:#e4e8e2;border-radius:12px 12px 0 0}
+  .cs-w.d .cs-c{border-bottom:1px solid #e4e8e2;border-radius:0 0 12px 12px;box-shadow:0 24px 34px -30px rgba(15,26,20,0.5)}
+  .cs-c em{font-style:normal;font-family:var(--mono);font-size:11px;color:var(--t3);white-space:nowrap}
+  .cs-c b{min-width:0;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .cs-c b.rs{font-weight:500;color:var(--t3)}
+  .cs-etap{padding:2px 8px;border-radius:6px;background:#eef1ec;font-size:11px;font-weight:650;color:var(--t2);white-space:nowrap}
+  .cs-pusto{grid-column:1 / -1;display:block;width:72%;height:16px;border-radius:5px;border:1px dashed #d9ddd6}
+  .cs-n .cs-c{grid-template-columns:auto auto minmax(0,1fr);min-height:46px;background:#fafaf8}
+  .cs-n .cs-c > i{display:block;width:11px;height:11px;border-radius:3.5px}
+  .cs-n .cs-c > b{font-weight:750}
+  .cs-n .cs-c > span{justify-self:end;min-width:0;font-size:11.5px;color:var(--t3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .cs-m{position:relative;display:flex;align-items:center;padding:0 3px}
+  .cs-n .cs-m{justify-content:center;font-size:11px;color:var(--t3)}
+  .cs-pol{position:relative;display:block;width:100%;height:2px;background:var(--ziel);transform-origin:0 50%}
+  .cs-pol::before,.cs-pol::after{content:"";position:absolute;top:50%;width:7px;height:7px;margin-top:-3.5px;border-radius:50%;background:var(--ziel)}
+  .cs-pol::before{left:-3.5px}
+  .cs-pol::after{right:-3.5px}
+  .cs-pol.brak{width:56%;background:repeating-linear-gradient(90deg,var(--burs) 0 5px,transparent 5px 9px)}
+  .cs-pol.brak::before{background:var(--burs)}
+  .cs-pol.brak::after{background:var(--papier);box-shadow:inset 0 0 0 1.5px var(--burs)}
+  .cs-przerwa{display:flex;align-items:center;flex-wrap:wrap;gap:6px 10px;margin:14px 0;padding:11px 16px;border-radius:12px;background:#fff6ea;box-shadow:inset 0 0 0 1px rgba(214,134,30,0.35);font-size:13px;color:var(--burs-c)}
+  .cs-przerwa > i{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:#ffffff;box-shadow:inset 0 0 0 1.5px var(--burs)}
+  .cs-przerwa svg{display:block;width:12px;height:12px;fill:currentColor}
+  .cs-przerwa b{font-family:var(--mono);font-size:12px;color:var(--t1)}
+  .cs-zam{display:flex;align-items:flex-start;gap:12px;margin-top:18px;padding:15px 18px;border-radius:12px;background:#ffffff;box-shadow:inset 3px 0 0 var(--burs),0 0 0 1px #e4e8e2;font-size:14px;line-height:1.5;color:var(--t2)}
+  .cs-zam svg{display:block;flex-shrink:0;width:16px;height:16px;margin-top:2px;fill:var(--burs)}
+  .cs-zam b{color:var(--t1)}
+  .cs.ruch [data-cs-k] .cs-c > *{opacity:0;transition:opacity .35s ease}
+  .cs.ruch [data-cs-k] .cs-c.l > *{transform:translateX(-6px);transition:opacity .35s ease,transform .45s cubic-bezier(.2,.8,.2,1)}
+  .cs.ruch [data-cs-k] .cs-c.r > *{transition-delay:.55s}
+  .cs.ruch [data-cs-k] .cs-pol{transform:scaleX(0);transition:transform .5s cubic-bezier(.5,0,.2,1) .18s}
+  .cs.ruch [data-cs-k].on .cs-c > *{opacity:1;transform:none}
+  .cs.ruch [data-cs-k].on .cs-pol{transform:none}
+  .cs.ruch .cs-przerwa,.cs.ruch .cs-zam{opacity:0;transform:translateY(6px);transition:opacity .4s ease,transform .5s cubic-bezier(.2,.8,.2,1)}
+  .cs.ruch .cs-przerwa.on,.cs.ruch .cs-zam.on{opacity:1;transform:none}
   @media (max-width:700px){
-    .px-row{grid-template-columns:1fr;gap:16px}
-    .px-row > :first-child{grid-column:auto}
+    .cs-sc{--m:28px;font-size:12px}
+    .cs-c{grid-template-columns:40px minmax(0,1fr);column-gap:8px;padding:0 10px}
+    .cs-c.r{grid-template-columns:minmax(0,1fr)}
+    .cs-c.r em,.cs-etap,.cs-n .cs-c > span,.cs-n .cs-m span{display:none}
+    .cs-pusto{width:84%}
+    .cs-n .cs-c.l,.cs-n .cs-c.r{grid-template-columns:auto minmax(0,1fr);column-gap:7px}
+    .cs-n .cs-c > b{overflow:hidden;text-overflow:ellipsis}
+  }
+  @media (max-width:440px){
+    .cs-c.l{grid-template-columns:minmax(0,1fr)}
+    .cs-c.l em{display:none}
   }
 
-  @media (max-width:900px){
-    .hero-split{grid-template-columns:1fr !important;gap:clamp(30px,5vw,46px) !important}
+  /* =====================================================================
+     DLACZEGO 2 · POWIADOMIENIE DONIKĄD — konto na platformie (scenariusze
+     bez opisu, jeden pada), powiadomienie o wyłączeniu jedzie na skrzynkę
+     osoby, która odeszła, i wraca zwrotem na adres no-reply. Bez ruchu:
+     cała droga narysowana, koperty schowane. Poniżej 1180 px pionowo,
+     bez kopert.
+     ===================================================================== */
+  .pw-sc{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(190px,0.7fr) minmax(0,1fr);align-items:center;margin:0 clamp(0px,0.6vw,10px);font-size:12.5px}
+  .pw-karta{min-width:0;overflow:hidden;border-radius:12px;background:#ffffff;box-shadow:0 0 0 1px rgba(15,26,20,0.07),0 24px 40px -28px rgba(15,26,20,0.45)}
+  .pw-gora{display:flex;align-items:center;gap:8px;padding:11px 14px;border-bottom:1px solid #eef0ec;background:#fafaf8;white-space:nowrap}
+  .pw-gora b{font-size:12.5px;font-weight:700}
+  .pw-gora em{min-width:0;margin-left:auto;overflow:hidden;text-overflow:ellipsis;font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--t3)}
+  .pw-ik{display:grid;place-items:center;flex-shrink:0;width:22px;height:22px;border-radius:6px;background:#eef0ec;color:var(--t2)}
+  .pw-ik svg,.pw-sc svg{display:block;flex-shrink:0;fill:currentColor}
+  .pw-ik svg{width:12px;height:12px}
+  .pw-tab{padding:4px 14px 10px}
+  .pw-w{display:grid;grid-template-columns:minmax(0,1.6fr) 84px 36px 92px;gap:10px;align-items:center;min-height:34px;border-bottom:1px solid #f0f2ee;transition:background .3s}
+  .pw-w.n{min-height:30px;font-size:11px;color:var(--t3)}
+  .pw-w > span{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pw-w:not(.n) > span:first-child{font-weight:600}
+  .pw-w:not(.n) > span:nth-child(2){font-family:var(--mono);font-size:11px;color:var(--t3)}
+  .pw-brak{color:#c4cac5}
+  .pw-stan{display:flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;color:#047857}
+  .pw-stan i{display:block;flex-shrink:0;width:6px;height:6px;border-radius:50%;background:#10b981}
+  .pw-stan em{font-style:normal}
+  .pw-stan .b{display:none}
+  .pw-w.off > span{color:var(--t3) !important}
+  .pw-w.off .pw-stan i{background:#c4cac5}
+  .pw-w.pada{margin:0 -8px;padding:0 8px;border-radius:8px;border-bottom-color:transparent;background:#fff6ea}
+  .pw-w.pada .pw-stan{color:var(--burs-c)}
+  .pw-w.pada .pw-stan i{background:var(--burs)}
+  .pw-w.pada .pw-stan .a{display:none}
+  .pw-w.pada .pw-stan .b{display:inline}
+  .pw-log{margin:6px 0 8px 2px;padding:0 0 0 12px;list-style:none;border-left:2px solid rgba(214,134,30,0.4);font-family:var(--mono);font-size:11px;color:var(--t2)}
+  .pw-log li{padding:2px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pw-log em{margin-right:8px;font-style:normal;color:var(--burs-c)}
+  .pw-droga{position:relative;display:flex;flex-direction:column;gap:30px;min-width:0;padding:0 16px}
+  .pw-tam,.pw-zwrot{display:flex;flex-direction:column;gap:8px}
+  .pw-tor{position:relative;height:2px}
+  .pw-lin{position:absolute;inset:0;display:block;background:repeating-linear-gradient(90deg,#97a29b 0 6px,transparent 6px 11px)}
+  .pw-lin::after{content:"";position:absolute;right:-3px;top:-4px;border-left:7px solid #97a29b;border-top:5px solid transparent;border-bottom:5px solid transparent}
+  .pw-zwrot .pw-lin{background:repeating-linear-gradient(90deg,var(--burs) 0 6px,transparent 6px 11px)}
+  .pw-zwrot .pw-lin::after{right:auto;left:-3px;border-left:0;border-right:7px solid var(--burs)}
+  .pw-et{display:flex;align-items:center;gap:6px;font-size:11.5px;font-weight:650;color:var(--t2);white-space:nowrap}
+  .pw-zwrot .pw-et{color:var(--burs-c)}
+  .pw-et svg{width:12px;height:12px}
+  .pw-kop{display:none}
+  .pw-noreply{display:flex;align-items:center;gap:9px;align-self:flex-start;max-width:100%;padding:7px 11px 7px 9px;border-radius:10px;background:#ffffff;box-shadow:0 0 0 1px rgba(15,26,20,0.08);font-size:11.5px;line-height:1.35;color:var(--t3)}
+  .pw-noreply svg{width:15px;height:15px;color:#97a29b}
+  .pw-noreply b{display:block;font-family:var(--mono);font-size:11px;font-weight:600;color:var(--t1)}
+  .pw-skr-in{position:relative;padding:6px 14px 14px}
+  .pw-poczta{margin:0;padding:0;list-style:none;opacity:0.45}
+  .pw-poczta li{display:grid;grid-template-columns:40px minmax(0,1fr);column-gap:8px;padding:7px 0;border-bottom:1px solid #f0f2ee}
+  .pw-poczta em{grid-row:1 / 3;font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--t3)}
+  .pw-poczta b{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pw-poczta span{font-size:11.5px;color:var(--t3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pw-skr-in > .pw-stempel{position:absolute;left:50%;top:58px;transform:translate(-50%,-50%) rotate(-4deg);background:rgba(255,255,255,0.92)}
+  .pw-stempel{display:inline-flex;align-items:center;gap:7px;padding:7px 12px;border-radius:8px;box-shadow:inset 0 0 0 2px #5f6863;font-size:12.5px;font-weight:750;color:#3a423e;white-space:nowrap}
+  .pw-stempel svg{width:14px;height:14px}
+  .pw-skr-in p{margin:12px 0 0;font-size:12px;color:var(--t3)}
+  .pw-skr-in p.pw-odrz{display:flex;align-items:center;gap:6px;margin-top:12px;font-weight:650;color:var(--burs-c)}
+  .pw-odrz svg{width:13px;height:13px}
+  /* ruch */
+  .pw.ruch [data-pw-k]{transition:opacity .4s ease}
+  .pw.ruch [data-pw-k]:not(.on){opacity:0}
+  .pw.ruch:not(.wyl) .pw-w.pada{background:transparent}
+  .pw.ruch:not(.wyl) .pw-w.pada .pw-stan{color:#047857}
+  .pw.ruch:not(.wyl) .pw-w.pada .pw-stan i{background:#10b981}
+  .pw.ruch:not(.wyl) .pw-w.pada .pw-stan .a{display:inline}
+  .pw.ruch:not(.wyl) .pw-w.pada .pw-stan .b{display:none}
+  .pw.ruch .pw-w.pada.blysk{animation:pw-blysk .7s ease-out}
+  @keyframes pw-blysk{0%{box-shadow:inset 0 0 0 2px rgba(214,134,30,0.8)}100%{box-shadow:inset 0 0 0 2px rgba(214,134,30,0)}}
+  .pw.ruch .pw-kop{position:absolute;top:50%;left:0;display:grid;place-items:center;width:28px;height:28px;margin:-14px 0 0 -14px;border-radius:8px;background:var(--ink);color:#ffffff;opacity:0;box-shadow:0 6px 16px -6px rgba(7,20,13,0.5)}
+  .pw.ruch .pw-kop svg{width:14px;height:14px}
+  .pw.ruch .pw-zwrot .pw-kop{background:var(--burs);color:#ffffff}
+  .pw.ruch .pw-tam.on .pw-kop{animation:pw-tam 1.3s cubic-bezier(.45,0,.25,1) forwards}
+  .pw.ruch .pw-zwrot.on .pw-kop{animation:pw-zw 1.3s cubic-bezier(.45,0,.25,1) forwards}
+  @keyframes pw-tam{0%{left:0;opacity:0}12%{opacity:1}88%{opacity:1}100%{left:100%;opacity:0}}
+  @keyframes pw-zw{0%{left:100%;opacity:0}12%{opacity:1}88%{opacity:1}100%{left:0;opacity:0}}
+  .pw.ruch .pw-skr.uderz .pw-stempel{animation:pw-st .5s cubic-bezier(.3,1.6,.5,1)}
+  @keyframes pw-st{0%{transform:translate(-50%,-50%) rotate(-4deg) scale(1.35);opacity:.4}100%{transform:translate(-50%,-50%) rotate(-4deg) scale(1)}}
+  @media (max-width:1180px){
+    .pw-sc{grid-template-columns:minmax(0,1fr);row-gap:14px}
+    .pw-droga{display:contents}
+    .pw-konto{order:1}
+    .pw-tam{order:2}
+    .pw-skr{order:3}
+    .pw-zwrot{order:4}
+    .pw-noreply{order:5}
+    .pw-tor{display:none}
+    .pw-tam,.pw-zwrot{padding-left:14px}
+    .pw-tam .pw-et svg{transform:rotate(90deg)}
+    .pw-zwrot .pw-et svg{transform:rotate(-90deg)}
+    .pw-noreply{justify-self:start;margin-left:14px}
+    .pw-skr{max-width:420px}
   }
+  @media (max-width:560px){
+    .pw-w{grid-template-columns:minmax(0,1fr) 30px 84px}
+    .pw-w > span:nth-child(2){display:none}
+    .pw-et{white-space:normal}
+  }
+
+  /* =====================================================================
+     JAK TO WYGLĄDA · trzy artefakty jednego połączenia na ciemnej scenie:
+     karta (dokument), wiadomość z alarmem (wątek na kanale), rejestr
+     (tabela wszystkich połączeń z filtrem po systemie). Ten sam język co
+     tablica w hero: Heroicons Micro, linie półprzezroczyste, mono tylko
+     w numerach i godzinach.
+     ===================================================================== */
+  .ia-ekran{position:relative;margin-top:22px}
+  .ia-w{--t1:#18181b;--t2:#52525b;--t3:#71717a;--t4:#a1a1aa;--lin:rgba(9,9,11,0.08);--lin2:rgba(9,9,11,0.05);
+    height:clamp(520px,38vw,560px);overflow:hidden;border-radius:14px;background:#ffffff;color:var(--t1);font-size:12.5px;line-height:1.4;letter-spacing:-0.004em;-webkit-font-smoothing:antialiased;
+    box-shadow:0 0 0 1px rgba(255,255,255,0.14),0 70px 130px -50px rgba(0,0,0,0.8),0 0 140px -30px rgba(0,205,119,0.32)}
+  .ia-w[hidden]{display:none}
+  .ia-w svg{display:block;flex-shrink:0;fill:currentColor}
+  /* karta */
+  .kp{display:grid;grid-template-columns:minmax(0,1fr) 300px}
+  .kp-tlo{min-width:0;overflow:hidden;padding:28px 34px 0;background:#f1f1ee radial-gradient(rgba(9,9,11,0.07) 1px,transparent 1px) 0 0/14px 14px}
+  .kp-ark{max-width:660px;min-height:100%;margin:0 auto;padding:24px 30px 28px;border-radius:6px 6px 0 0;background:#ffffff;box-shadow:0 0 0 1px rgba(9,9,11,0.06),0 22px 44px -22px rgba(9,9,11,0.3)}
+  .kp-gl{display:flex;align-items:center;gap:10px;padding-bottom:14px;border-bottom:1px solid var(--lin)}
+  .kp-znak{display:grid;place-items:center;flex-shrink:0;width:28px;height:28px;border-radius:8px;background:#0f1a14;color:#00cd77}
+  .kp-znak svg{width:14px;height:14px}
+  .kp-gl b{display:block;font-size:13px;font-weight:650}
+  .kp-gl em{display:block;font-style:normal;font-size:11.5px;color:var(--t4)}
+  .kp-gl .kp-nr{margin-left:auto;padding:4px 9px;border-radius:6px;background:#f4f4f5;font-family:var(--mono);font-size:11px;color:var(--t2);white-space:nowrap}
+  .kp-ark h3{margin:16px 0 0;font-size:19px;font-weight:650;letter-spacing:-0.022em;line-height:1.25}
+  .kp-tr{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:9px 0 0;color:var(--t4)}
+  .kp-tr span{display:inline-flex;align-items:center;gap:6px;padding:3px 8px;border-radius:6px;box-shadow:inset 0 0 0 1px var(--lin);font-size:11.5px;font-weight:550;color:var(--t2)}
+  .kp-tr span i{display:block;width:7px;height:7px;border-radius:2px}
+  .kp-tr svg{width:11px;height:11px}
+  .kp-dl{margin:16px 0 0}
+  .kp-dl > div{display:grid;grid-template-columns:118px minmax(0,1fr);gap:16px;padding:8px 0;border-top:1px solid var(--lin2)}
+  .kp-dl dt{font-size:12px;color:var(--t3)}
+  .kp-dl dd{margin:0;font-size:12.5px;line-height:1.45;color:var(--t1)}
+  .kp-dl > div.w{margin:0 -12px;padding:8px 12px;border-top-color:transparent;background:#effaf4;box-shadow:inset 2px 0 0 #10b981}
+  .kp-dl > div.w + div.w{margin-top:2px}
+  .kp-dl > div.w dt{font-weight:600;color:#047857}
+  .kp-dl > div.w dd{font-weight:550}
+  .kp-dl > div.w + div:not(.w){border-top-color:transparent}
+  .kp-bok{min-width:0;overflow:hidden;padding:22px 20px;border-left:1px solid var(--lin);background:#fcfcfb}
+  .kp-bok h4{margin:0 0 12px;font-size:12px;font-weight:600}
+  .kp-hist{margin:0 0 24px;padding:0;list-style:none}
+  .kp-hist li{position:relative;display:grid;grid-template-columns:32px minmax(0,1fr);gap:10px;padding:0 0 14px}
+  .kp-hist li::before{content:"";position:absolute;left:15px;top:24px;bottom:2px;width:1.5px;background:rgba(9,9,11,0.08)}
+  .kp-hist li:last-child{padding-bottom:0}
+  .kp-hist li:last-child::before{display:none}
+  .kp-hist b{display:grid;place-items:center;width:32px;height:22px;border-radius:6px;background:#f4f4f5;font-family:var(--mono);font-size:11px;font-weight:600;color:var(--t2)}
+  .kp-hist li:first-child b{background:#18181b;color:#ffffff}
+  .kp-hist span{font-size:12px;line-height:1.4}
+  .kp-hist em{display:block;font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--t4)}
+  .kp-zal{margin:0;padding:0;list-style:none}
+  .kp-zal li{display:grid;grid-template-columns:8px minmax(0,1fr);gap:2px 10px;padding:9px 0;border-top:1px solid var(--lin2)}
+  .kp-zal i{display:block;width:8px;height:8px;margin-top:4px;border-radius:2.5px}
+  .kp-zal b{font-size:12px;font-weight:600}
+  .kp-zal span{grid-column:2;font-size:11.5px;color:var(--t3)}
+  /* wiadomość z alarmem */
+  .alw{display:grid;grid-template-columns:210px minmax(0,1fr)}
+  .al-bok{display:flex;flex-direction:column;gap:2px;padding:16px 10px;background:#17201b;color:rgba(255,255,255,0.6)}
+  .al-ws{display:block;padding:0 8px 16px;font-size:13px;font-weight:700;color:#ffffff}
+  .al-bok span{display:flex;align-items:center;gap:6px;height:28px;padding:0 8px;border-radius:6px;font-size:12.5px;white-space:nowrap}
+  .al-bok span svg{width:12px;height:12px;opacity:.7}
+  .al-bok span.on{background:rgba(255,255,255,0.1);color:#ffffff;font-weight:600}
+  .al-gl{display:flex;flex-direction:column;min-width:0;min-height:0}
+  .al-gora{display:flex;align-items:center;gap:6px;flex-shrink:0;height:50px;padding:0 22px;border-bottom:1px solid var(--lin);white-space:nowrap}
+  .al-gora svg{width:14px;height:14px;color:var(--t3)}
+  .al-gora b{font-size:13.5px;font-weight:650}
+  .al-gora em{min-width:0;margin-left:10px;overflow:hidden;text-overflow:ellipsis;font-style:normal;font-size:12px;color:var(--t4)}
+  .al-msgs{flex:1;min-height:0;overflow:hidden;padding:4px 22px 16px}
+  .al-dzien{display:flex;align-items:center;gap:12px;margin:8px 0 4px;font-size:11px;font-weight:600;color:var(--t3)}
+  .al-dzien::before,.al-dzien::after{content:"";flex:1;height:1px;background:var(--lin)}
+  .al-m{display:grid;grid-template-columns:32px minmax(0,1fr);gap:12px;padding:7px 0}
+  .al-av{display:grid;place-items:center;width:32px;height:32px;border-radius:8px;background:#f1f1f0;color:var(--t3)}
+  .al-av svg{width:15px;height:15px}
+  .al-av.bot{background:#fff1dd;color:#b45309}
+  .al-av.ok{background:#e3f6ec;color:#047857}
+  .al-av.la{background:#0f1a14;color:#00cd77}
+  .al-av.la svg{width:17px;height:17px}
+  .al-av.os{border-radius:50%}
+  .al-kto{display:flex;align-items:baseline;gap:8px;margin:0}
+  .al-kto b{font-size:13px;font-weight:650}
+  .al-kto em{font-style:normal;font-size:11px;color:var(--t4)}
+  .al-m > div > p:not(.al-kto){margin:2px 0 0;font-size:12.5px;line-height:1.5;color:var(--t1)}
+  .al-blok{max-width:540px;margin-top:6px;padding:11px 14px 12px;border-radius:8px;background:#fffdf9;box-shadow:inset 3px 0 0 #f59e0b,inset 0 0 0 1px var(--lin)}
+  .al-blok.ok{background:#fbfefc;box-shadow:inset 3px 0 0 #10b981,inset 0 0 0 1px var(--lin)}
+  .al-blok > b{display:block;font-size:12.5px;font-weight:650}
+  .al-blok > p{margin:3px 0 0;font-size:12.5px;color:var(--t2)}
+  .al-blok dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 16px;margin:9px 0 0;font-size:12px}
+  .al-blok dt{color:var(--t3)}
+  .al-blok dd{margin:0;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .al-blok dd .mono{font-family:var(--mono);font-size:11.5px}
+  .al-wzm{padding:0 3px;border-radius:4px;background:rgba(47,111,237,0.1);color:#1d4ed8;font-weight:600}
+  .al-btn{display:flex;gap:8px;margin-top:11px}
+  .al-btn span{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 12px;border-radius:7px;font-size:12px;font-weight:600;box-shadow:inset 0 0 0 1px var(--lin),0 1px 2px rgba(0,0,0,0.04)}
+  .al-btn span svg{width:13px;height:13px}
+  .al-btn span.g{background:#18181b;color:#ffffff;box-shadow:0 1px 2px rgba(0,0,0,0.25),inset 0 1px 0 rgba(255,255,255,0.12)}
+  /* rejestr */
+  .rj{display:flex;flex-direction:column;padding:22px 26px}
+  .rj-gl{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
+  .rj-gl em{display:block;font-style:normal;font-size:11.5px;color:var(--t4)}
+  .rj-gl h3{margin:3px 0 0;font-size:18px;font-weight:650;letter-spacing:-0.022em}
+  .rj-f{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0 10px}
+  .rj-f span{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 10px;border-radius:8px;font-size:12px;font-weight:550;color:var(--t2);box-shadow:inset 0 0 0 1px var(--lin);white-space:nowrap}
+  .rj-f span i{display:block;width:7px;height:7px;border-radius:2px}
+  .rj-f span.on{background:#18181b;color:#ffffff;box-shadow:none}
+  .rj-f em{font-style:normal;opacity:.6}
+  .rj-w{display:grid;grid-template-columns:66px minmax(0,1.7fr) minmax(0,0.9fr) 46px 70px 66px;gap:12px;align-items:center;min-height:40px;padding:0 10px;border-bottom:1px solid var(--lin2);font-size:12.5px}
+  .rj-w.n{min-height:28px;font-size:11.5px;font-weight:550;color:var(--t4)}
+  .rj-w > *{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .rj-w .nr{font-family:var(--mono);font-size:11px;color:var(--t3)}
+  .rj-pol{display:flex;align-items:center;gap:8px}
+  .rj-pol > span{display:flex;flex-shrink:0}
+  .rj-pol > span i{display:block;width:7px;height:7px;border-radius:2px;box-shadow:0 0 0 1.5px #ffffff}
+  .rj-pol > span i + i{margin-left:-2px}
+  .rj-pol b{min-width:0;overflow:hidden;text-overflow:ellipsis;font-weight:550}
+  .rj-os{display:flex;align-items:center;gap:6px;color:var(--t2)}
+  .rj-os i{display:grid;place-items:center;flex-shrink:0;width:18px;height:18px;border-radius:50%;background:#f1f1f0;color:var(--t3)}
+  .rj-os svg{width:10px;height:10px}
+  .rj-v{justify-self:start;padding:2px 6px;border-radius:5px;background:#f4f4f5;font-family:var(--mono);font-size:11px;color:var(--t2)}
+  .rj-h{font-family:var(--mono);font-size:11px;color:var(--t3)}
+  .rj-st{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:550;color:#047857}
+  .rj-st i{display:block;flex-shrink:0;width:6px;height:6px;border-radius:50%;background:#10b981}
+  .rj-w.wyb{border-bottom-color:transparent;border-radius:8px;background:rgba(16,185,129,0.07)}
+  .rj-w.wyb + .rj-w.wyb{margin-top:2px}
+  .rj-w.inne > *{opacity:0.42}
+  @media (max-width:980px){
+    .ia-w{height:auto}
+    .kp{grid-template-columns:minmax(0,1fr)}
+    .kp-tlo{padding:22px 22px 0}
+    .kp-bok{border-left:0;border-top:1px solid var(--lin)}
+    .alw{grid-template-columns:minmax(0,1fr)}
+    .al-bok{display:none}
+    .rj-w{grid-template-columns:62px minmax(0,1fr) 40px 62px}
+    .rj-w > :nth-child(3),.rj-w > :nth-child(5){display:none}
+  }
+  @media (max-width:560px){
+    .kp-tlo{padding:14px 12px 0}
+    .kp-ark{padding:18px 16px 20px}
+    .kp-gl .kp-nr{display:none}
+    .kp-dl > div{grid-template-columns:minmax(0,1fr);gap:2px}
+    .kp-dl > div.w{margin:0 -8px;padding:8px}
+    .al-gora{padding:0 14px}
+    .al-gora em{display:none}
+    .al-msgs{padding:4px 14px 14px}
+    .al-m{grid-template-columns:28px minmax(0,1fr);gap:10px}
+    .al-av{width:28px;height:28px}
+    .al-blok dl{grid-template-columns:minmax(0,1fr);gap:0}
+    .al-blok dt{margin-top:5px}
+    .al-blok dd{white-space:normal}
+    .rj{padding:18px 14px}
+    .rj-w{grid-template-columns:minmax(0,1fr) 60px;padding:6px 8px;row-gap:2px}
+    .rj-w > :nth-child(1){grid-column:1 / -1}
+    .rj-w > :nth-child(4){display:none}
+    .rj-w.n{display:none}
+  }
+
+  /* =====================================================================
+     PRZYKŁADY · trzy karty w przewijanym pasie (.dw-sc ze Styl.astro).
+     Wolumen, który przechodzi bez człowieka, i kwartał w tygodniach:
+     zielony tydzień = połączenia pracowały, bursztynowa czapka i dzwonek
+     = alarm w tym tygodniu. Pod spodem przyczyny alarmów.
+     ===================================================================== */
+  .px4-k{flex:1 0 290px;scroll-snap-align:start;display:flex;flex-direction:column;padding:24px 24px 22px;border-radius:20px;background:var(--papier)}
+  .px4-p{font-size:12.5px;font-weight:700;color:var(--ziel-c)}
+  .px4-k h3{margin:8px 0 0;font-size:17px;font-weight:700;letter-spacing:-0.02em;line-height:1.25}
+  .px4-k h3 small{display:block;margin-top:2px;font-size:12.5px;font-weight:400;letter-spacing:0;color:var(--t3)}
+  .px4-ile{display:flex;align-items:center;gap:12px;margin-top:20px;padding-top:18px;border-top:1px solid var(--linia)}
+  .px4-ile b{flex-shrink:0;font-size:clamp(30px,2.6vw,38px);font-weight:750;letter-spacing:-0.045em;line-height:1;white-space:nowrap}
+  .px4-ile span{max-width:170px;font-size:13px;line-height:1.35;color:var(--t2)}
+  .px4-kw{margin-top:18px;padding:16px 0 18px;border-top:1px solid var(--linia);border-bottom:1px solid var(--linia)}
+  .px4-et{display:block;font-size:12.5px;color:var(--t3)}
+  .px4-tyg{display:grid;grid-template-columns:repeat(13,minmax(0,1fr));gap:3px;align-items:end;height:58px;margin-top:8px}
+  .px4-tyg i{position:relative;display:block;height:26px;border-radius:3px;background:var(--ziel);transform-origin:50% 100%}
+  .px4-tyg i.al::before{content:"";position:absolute;left:0;right:0;top:0;height:6px;border-radius:3px 3px 0 0;background:#e3962f}
+  .px4-tyg i b{position:absolute;left:50%;bottom:calc(100% + 5px);display:grid;place-items:center;width:20px;height:20px;margin-left:-10px;border-radius:50%;background:#ffffff;box-shadow:inset 0 0 0 1.5px var(--burs);color:var(--burs-c)}
+  .px4-tyg i b svg{display:block;width:11px;height:11px;fill:currentColor}
+  .px4-os{display:flex;justify-content:space-between;margin-top:6px;font-size:11px;color:var(--t3)}
+  .px4-lista{display:flex;flex-wrap:wrap;gap:4px 14px;margin:12px 0 0;padding:0;list-style:none;font-size:12.5px;color:var(--t2)}
+  .px4-lista em{margin-right:5px;font-style:normal;font-weight:650;color:var(--burs-c)}
+  .px4-wn{margin:12px 0 0;font-size:14px;font-weight:650;letter-spacing:-0.01em;line-height:1.4;color:var(--t1)}
+  .px4-d{margin:16px 0 0;font-size:14px;line-height:1.55;color:var(--t2);text-wrap:pretty}
+  @media (max-width:600px){ .px4-k{flex-basis:84%} }
+  .px4.gra .px4-tyg i{transform:scaleY(0)}
+  .px4.gra.on .px4-tyg i{transform:none;transition:transform .5s cubic-bezier(.3,.8,.3,1) calc(0.15s + var(--w) * 0.05s)}
+  .px4.gra .px4-tyg i b{opacity:0;transform:translateY(4px)}
+  .px4.gra.on .px4-tyg i b{opacity:1;transform:none;transition:opacity .35s ease calc(0.9s + var(--w) * 0.05s),transform .45s cubic-bezier(.3,1.6,.5,1) calc(0.9s + var(--w) * 0.05s)}
+  #dowody .v3-cyt{margin-top:clamp(56px,7vw,96px) !important}
+
+  /* =====================================================================
+     PIERWSZY KWARTAŁ · dziennik jednego połączenia. Wpis: tydzień i data,
+     znak na pionowej linii, opis, a po prawej to, co po tym wpisie zostało
+     (karta, zwrócone sprawy, poprawka, oś alarmu w minutach, nowa wersja).
+     ===================================================================== */
+  .kw{position:relative;margin:clamp(48px,5.6vw,80px) 0 0;padding:0;list-style:none}
+  .kw-w{position:relative;display:grid;grid-template-columns:132px 38px minmax(0,1fr) minmax(0,440px);column-gap:clamp(16px,2.2vw,36px);align-items:start;padding:24px 0 28px;border-top:1px solid var(--linia)}
+  .kw-w:first-child{border-top:1.5px solid var(--t1)}
+  .kw-kiedy b{display:block;font-size:14px;font-weight:700}
+  .kw-kiedy em{display:block;margin-top:2px;font-style:normal;font-family:var(--mono);font-size:12px;color:var(--t3)}
+  .kw-ik{position:relative;z-index:1;display:grid;place-items:center;width:38px;height:38px;border-radius:50%;background:var(--ink);color:var(--ziel)}
+  .kw-ik svg{display:block;width:15px;height:15px;fill:currentColor}
+  .kw-ik.al{background:#fff4e5;color:var(--burs-c);box-shadow:inset 0 0 0 1.5px var(--burs)}
+  .kw-t h3{margin:2px 0 0;font-size:clamp(18px,1.6vw,21px);font-weight:700;letter-spacing:-0.022em;line-height:1.25;text-wrap:balance}
+  .kw-t p{margin:8px 0 0;max-width:560px;font-size:15.5px;line-height:1.6;color:var(--t2);text-wrap:pretty}
+  .kw-art{min-width:0;padding:14px 16px 15px;border-radius:14px;background:var(--papier);font-size:12.5px;color:var(--t1)}
+  .kw-art svg{display:block;flex-shrink:0;fill:currentColor}
+  .kw-art-gl{display:flex;justify-content:space-between;gap:10px;margin-bottom:8px;font-size:12px;font-weight:650}
+  .kw-art-gl em{font-style:normal;font-family:var(--mono);font-size:11px;font-weight:500;color:var(--t3)}
+  .kw-dl{margin:0}
+  .kw-dl > div{display:grid;grid-template-columns:96px minmax(0,1fr);gap:10px;padding:6px 8px;border-radius:6px;background:#ffffff;box-shadow:inset 2px 0 0 #10b981}
+  .kw-dl > div + div{margin-top:3px}
+  .kw-dl dt{font-size:11.5px;font-weight:600;color:#047857}
+  .kw-dl dd{margin:0;font-size:12px}
+  .kw-zw{margin:0;padding:0;list-style:none}
+  .kw-zw li{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:6px;background:#ffffff}
+  .kw-zw li + li{margin-top:3px}
+  .kw-zw li b{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
+  .kw-zw li span{display:inline-flex;align-items:center;gap:5px;padding:2px 7px;border-radius:999px;background:#fff6ea;box-shadow:inset 0 0 0 1px rgba(214,134,30,0.35);font-size:11px;font-weight:650;color:var(--burs-c);white-space:nowrap}
+  .kw-zw li span svg{width:11px;height:11px}
+  .kw-zw li.r{background:none;padding-top:4px;color:var(--t3);font-size:12px}
+  .kw-ch{display:flex;flex-wrap:wrap;gap:6px}
+  .kw-ch span{display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border-radius:8px;background:#ffffff;font-family:var(--mono);font-size:11.5px}
+  .kw-ch span svg{width:12px;height:12px;color:#10b981}
+  .kw-ch span.v{margin-left:auto;background:var(--ink);color:#ffffff}
+  .kw-art p{margin:9px 0 0;font-size:12px;color:var(--t3)}
+  /* oś alarmu w minutach */
+  .kw-os{position:relative;padding:36px 0 34px}
+  .kw-seg{display:flex;gap:2px;height:14px}
+  .kw-seg i{display:block;height:100%;border-radius:3px;transform-origin:0 50%}
+  .kw-seg i.al{background:#f6c27e}
+  .kw-seg i.na{background:#a9e8c8}
+  .kw-pkt{position:absolute;top:36px;height:14px;width:0}
+  .kw-pkt::before{content:"";position:absolute;left:-1px;top:-4px;bottom:-4px;width:2px;border-radius:1px;background:var(--t1)}
+  .kw-pkt span{position:absolute;left:0;top:calc(100% + 6px);transform:translateX(-50%);font-size:11px;line-height:1.25;color:var(--t2);white-space:nowrap;text-align:center}
+  .kw-pkt.g span{top:auto;bottom:calc(100% + 6px)}
+  .kw-pkt span b{display:block;font-family:var(--mono);font-size:11px;font-weight:600;color:var(--t1)}
+  .kw-pkt.l span{transform:none;text-align:left}
+  .kw-pkt.r span{transform:translateX(-100%);text-align:right}
+  .kw-os-t{display:flex;gap:2px;margin-top:2px;font-size:11px;font-weight:650}
+  .kw-os-t span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .kw.gra .kw-w{opacity:0;transform:translateY(12px)}
+  .kw.gra.on .kw-w{opacity:1;transform:none;transition:opacity .5s ease calc(var(--i) * 0.14s),transform .6s cubic-bezier(.2,.8,.2,1) calc(var(--i) * 0.14s)}
+  .kw.gra .kw-seg i{transform:scaleX(0)}
+  .kw.gra.on .kw-seg i{transform:none;transition:transform .6s cubic-bezier(.4,0,.2,1) calc(0.8s + var(--j) * 0.5s)}
+  @media (min-width:901px){
+    .kw::before{content:"";position:absolute;left:calc(132px + clamp(16px,2.2vw,36px) + 18px);top:44px;bottom:60px;width:2px;background:var(--linia)}
+  }
+  @media (max-width:1100px){
+    .kw-w{grid-template-columns:118px 38px minmax(0,1fr);row-gap:16px}
+    .kw-art{grid-column:3}
+  }
+  @media (max-width:900px){
+    .kw-w{grid-template-columns:38px minmax(0,1fr);column-gap:14px;row-gap:12px}
+    .kw-ik{grid-column:1;grid-row:1 / span 2}
+    .kw-kiedy{grid-column:2;grid-row:1;display:flex;align-items:baseline;gap:10px;padding-top:8px}
+    .kw-t{grid-column:2}
+    .kw-art{grid-column:1 / -1}
+  }
+  @media (max-width:420px){ .kw-dl > div{grid-template-columns:minmax(0,1fr);gap:0} }
 </style>
 
+<div class="v3">
+<Styl />
+<Anim />
+
 <!-- ============ 1 · HERO ============
-     Cztery automatyzacje biją we własnym rytmie. Trzecia milknie w połowie
-     i dopiero po chwili ciszy zapala się alarm. Teza strony jest tu pokazana
-     ruchem, nie napisana — cisza jednej linii na tle bijących pozostałych
-     jest dokładnie tym, czego w firmie nikt nie zauważa. -->
-<div aria-hidden="true" style="position:absolute;left:0;right:0;top:0;height:1080px;background:radial-gradient(900px 640px at 86% 2%, rgba(0,205,119,0.13), transparent 64%);pointer-events:none"></div>
-<section style="position:relative;overflow:hidden;background:transparent;padding:clamp(28px,4vw,52px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) clamp(56px,6.5vw,84px)">
-<div class="hero-split" style="display:grid;grid-template-columns:1fr 1.04fr;gap:clamp(32px,4.5vw,64px);align-items:center;margin-top:clamp(10px,1.5vw,20px)">
-<div>
-<h1 style="margin:0;font-size:clamp(29px,4.4vw,51px);line-height:1.06;letter-spacing:-0.032em;font-weight:800;color:#16211a;text-wrap:balance">Systemy wymieniają dane same, a o awarii wiecie w kilka minut</h1>
-<p style="margin:26px 0 0;max-width:600px;font-size:clamp(16px,2.1vw,19px);line-height:1.6;color:#33413a;text-wrap:pretty">Łączymy CRM, ERP, magazyn i pocztę tak, żeby nikt niczego nie przepisywał, a dane w każdym z nich zgadzały się bez ręcznego poprawiania. Każde połączenie dostaje kartę, imiennego właściciela i alarm z progiem czasowym.</p>
-<div class="hero-actions" style="display:flex;align-items:center;flex-wrap:wrap;gap:16px 22px;margin-top:34px">
-<a href="#kontakt" class="btn-dark" style="display:inline-flex;align-items:center;gap:10px;background:#16211a;color:#ffffff;padding:18px 32px;border-radius:12px;font-weight:650;font-size:16.5px;box-shadow:0 14px 30px -14px rgba(16,33,26,0.45)">Umów rozmowę <span aria-hidden="true">→</span></a>
-<a href="#karta" class="btn-ghost" style="display:inline-flex;align-items:center;gap:8px;font-size:16.5px;font-weight:700;color:#16211a;background:rgba(255,255,255,0.6);padding:18px 26px;border-radius:12px;border:1px solid rgba(22,33,26,0.16)">Co dostajecie przy każdym →</a>
-</div>
-<!-- Warunki zakupu pod pierwszym ekranem. Każdy wiersz jest skrótem
-     zdania, które stoi niżej na tej stronie (FAQ o cenie i o czasie
-     zespołu) — nic tu nie jest nową obietnicą. -->
-<WarunkiZakupu pozycje={[
-  { t: 'Zaczyna się od', d: 'rozmowy, na której wypisujemy, co z czym i jak często' },
-  { t: 'Pierwsze połączenie', d: '<strong>kilka dni</strong> przy systemach z API, <strong>2–4 tygodnie</strong>, gdy po drodze trzeba uporządkować dane' },
-  { t: 'Wycena', d: 'stała, połączenie po połączeniu, podawana po tej rozmowie' },
-]} />
-</div>
+     Tablica „Połączenia na żywo" wisi na dolnej krawędzi planszy. Teza
+     strony pokazana ruchem: jedna linia milknie wśród bijących, a alarm
+     przychodzi po ośmiu minutach. -->
+<Hero lead="Łączymy systemy, które już macie, tak, żeby nikt niczego nie przepisywał, a dane w każdym z nich zgadzały się bez ręcznego poprawiania. Każde połączenie ma imiennego właściciela i alarm, który odzywa się po ośmiu minutach ciszy." link={{ href: '#jak-wyglada', t: 'Co dostajecie przy każdym połączeniu →' }}>
+<Fragment slot="h1">CRM, ERP i magazyn wymieniają dane same, <span>a o awarii wiecie w kilka minut</span></Fragment>
 
-<div>
-<div role="img" aria-label="Podgląd czterech automatyzacji. Każda odbywa przebiegi we własnym rytmie, a trzecia — przekazywanie nowego klienta z CRM do księgowości — przestaje działać w połowie osi. Po chwili ciszy zapala się alarm.">
-<div class="pu-gora"><b>Monitoring połączeń</b><span>ostatnia godzina</span></div>
-{PULS.map((x, i) => (
-  <div class={x.pada ? 'pu-row pada' : 'pu-row'}>
-    <span class="pu-t">
-      <b>{x.t}</b>
-      <span class="pu-st" style={x.pada ? `animation:pu-cisza ${PU_C}s linear infinite` : ''}>
-        <i class="pu-kropka" style={x.pada ? `animation:pu-kropka ${PU_C}s cubic-bezier(.34,1.5,.5,1) infinite` : ''}></i>
-        {x.pada
-          ? <span class="pu-zmiana"><em style={`animation:pu-stare ${PU_C}s linear infinite`}>{x.st}</em><em class="nowe" style={`animation:pu-nowe ${PU_C}s linear infinite`}>{x.awaria}</em></span>
-          : x.st}
-      </span>
-    </span>
-    <span class="pu-pas">
-      {Array.from({ length: SLOTY }).map((_, k) => (
-        k < x.ile
-          ? <i class="pu-tik" style={`animation:pu-tik ${PU_C}s linear infinite;animation-delay:${(PU_START + k * x.o).toFixed(2)}s`}></i>
-          : <i class="pu-tik pusty" style={`animation:pu-brak ${PU_C}s linear infinite`}></i>
-      ))}
-    </span>
-    {x.pada && (
-      <span class="pu-alarm" style={`animation:pu-alarm ${PU_C}s cubic-bezier(.34,1.4,.5,1) infinite`}>
-        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 8v5"/><path d="M12 17h.01"/><circle cx="12" cy="12" r="9"/></svg>
-        Alarm do właściciela · 03:20
-      </span>
-    )}
-  </div>
-))}
-<p class="pu-pod" style={`animation:pu-pod ${PU_C}s linear infinite`}>Trzecia linia stanęła o 03:12. <strong>Alarm poszedł osiem minut później</strong> — a nie trzy tygodnie później, przy zamknięciu miesiąca.</p>
-<style is:inline set:html={klatkiPuls}></style>
+<figure class="ln hero-wid" data-ln data-od={LN_OD} data-do={LN_DO} data-start={LN_START} data-stop={LN_STOP} data-alarm={LN_ALARM} data-wraca={LN_WRACA} role="img" aria-label={LN_ARIA}>
+<div class="ln-okno" aria-hidden="true">
+<div class="ln-gora">
+<span class="ln-znak"><svg viewBox="0 0 16 16" set:html={ik('link')}></svg></span>
+<b>Połączenia</b><em>dystrybutor części · wtorek 21.07</em>
+<span class="ln-zywo"><i></i>na żywo<span class="ln-zegar" data-zegar>{hhmm(LN_DO)}</span></span>
 </div>
-</div>
-</div>
-</section>
-
-<!-- ============ 2 · CZYM TO JEST ============ -->
-<section id="czym-jest" class="sec-pad" style="padding-top:clamp(48px,6vw,72px)">
-<h2 class="h-sec" style="margin:0;max-width:820px;text-wrap:balance">Czym są automatyzacje i integracje?</h2>
-<div class="s2-grid" style="display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:clamp(30px,5vw,80px);margin-top:clamp(24px,3vw,34px);align-items:start">
-<div style="font-size:17px;line-height:1.65;color:#33413a">
-<p style="margin:0;text-wrap:pretty">Automatyzacje i integracje to połączenia między systemami, które już macie, dzięki którym dane przechodzą z jednego do drugiego bez człowieka pośrodku. Integracja przenosi dane, automatyzacja dokłada do tego regułę: co ma się stać i kiedy.</p>
-<p style="margin:18px 0 0;text-wrap:pretty">To najtańsza rzecz, jaką u nas kupicie, i jedyna, po której wynik widać w kilka tygodni. Bywa całą potrzebną zmianą, a bywa podłogą pod resztę — bo zanim <a href="/systemy-procesowe" class="lnk-green" style="font-weight:650;color:#0a7a52">system poprowadzi proces</a>, dane muszą być w jednym miejscu i aktualne.</p>
-<p style="margin:18px 0 0;text-wrap:pretty">Sam scenariusz jest tu najprostszą częścią pracy. Trudne jest to, co dzieje się wokół niego: co przy błędzie, kto dostaje sygnał i co zrobić, kiedy druga strona zmieni się bez uprzedzenia.</p>
-</div>
-<div>
-<h3 class="pl-h">Co najczęściej łączymy</h3>
-{POLACZENIA.map((x) => (
-  <div class="pl-row rv"><span class="pl-t">{x.t}</span><span class="pl-d">{x.d}</span></div>
-))}
-<p class="pl-nota">Kolejność bierze się z tego, które przepisywanie zdarza się u Was najczęściej.</p>
-</div>
-</div>
-</section>
-
-<!-- ============ 3 · DLACZEGO CICHO UMIERAJĄ ============
-     Teza strony jako osobna linia w dużym stopniu pisma. -->
-<section id="dlaczego" style="background:#f4f8f2;padding:clamp(60px,7.5vw,96px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
-<h2 class="h-sec" style="margin:0;max-width:640px;text-wrap:pretty">Dlaczego automatyzacje umierają po cichu</h2>
-<p class="rv" style="margin:clamp(20px,2.4vw,28px) 0 0;max-width:940px;font-size:clamp(19px,2.4vw,27px);line-height:1.3;letter-spacing:-0.02em;font-weight:700;color:#16211a;text-wrap:pretty">Automatyzacja, o której awarii nikt się nie dowiaduje, jest gorsza od jej braku</p>
-<p class="sub rv" style="margin:16px 0 0;max-width:640px">Ludzie już przestali robić to ręcznie, a system przestał robić to za nich. Między jednym a drugim nie ma nikogo — i dlatego wychodzi to przy zamknięciu miesiąca.</p>
-
-<div style="margin-top:clamp(34px,4.2vw,52px)">
-{POWODY.map((p) => (
-  <div class="pw-row rv">
-    <h3 class="pw-t">{p.t}</h3>
-    <p class="pw-d">{p.d}</p>
-  </div>
-))}
-</div>
-
-<p class="sub rv" style="margin:clamp(26px,3vw,36px) 0 0;max-width:760px">Dlatego przy każdym połączeniu, które budujemy, powstaje karta. Nie jako dokumentacja do szuflady, tylko jako miejsce, w którym stoi zachowanie przy błędzie i nazwisko osoby, do której idzie alarm.</p>
-</section>
-
-<!-- ============ 4 · KARTA AUTOMATYZACJI ============
-     Ciemny pas, najcięższy argument strony. Drugi nośnik jest tu celowo
-     z innego gatunku niż hero: artefakt, nie wykres. Pokazany w całości,
-     bo to jest dokładnie to, co klient dostaje przy każdym połączeniu. -->
-<section id="karta" style="position:relative;background:radial-gradient(900px 420px at 88% 4%, rgba(0,205,119,0.16), transparent 62%), #0e2b1d;padding:clamp(60px,7.5vw,98px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
-<div class="sec-head">
-<h2 class="h-sec" style="margin:0;max-width:560px;color:#ffffff;text-wrap:pretty">Każde połączenie dostaje kartę</h2>
-<p style="margin:0 0 6px;max-width:470px;font-size:17px;line-height:1.6;color:rgba(255,255,255,0.72);text-wrap:pretty">Jedna strona na jedno połączenie. Poniżej cała, tak jak wygląda przy odbiorze — żebyście wiedzieli, co dostajecie, zanim cokolwiek zamówicie.</p>
-</div>
-
-<div class="ka">
-<div class="ka-dok rv">
-  <div class="ka-gora"><b>KARTA POŁĄCZENIA</b><span>POL-014 · wersja 3</span></div>
-  <div class="ka-nazwa">Faktury kosztowe z poczty → ERP</div>
-  <div class="ka-tresc">
-  {KARTA.map((x) => (
-    <div class={x.wazne ? 'ka-w wazne' : 'ka-w'}>
-      <span class="ka-k">{x.k}</span>
-      <span class="ka-v">{x.v}</span>
+<div class="ln-uk">
+<div class="ln-gl">
+<div class="ln-w n"><span>Połączenie</span><span>Przebiegi w ostatniej godzinie</span><span>Stan</span></div>
+{LN_W.map((w) => (
+  <div class={w.pada ? 'ln-w ln-row pada' : 'ln-w ln-row'} data-ln-w>
+    <div class="ln-naz">
+      <em>{w.nr}</em><b>{w.t}</b>
+      <span class="ln-tr">{w.z.map((s) => (<i style={`background:${KOLOR[s]}`}></i>))}<span>{w.zt}</span><svg viewBox="0 0 16 16" set:html={HI['arrow-right']}></svg><i style={`background:${KOLOR[w.do]}`}></i><span>{w.do}</span></span>
     </div>
-  ))}
-  </div>
-</div>
-
-<div>
-<p style="margin:0;font-size:16.5px;line-height:1.65;color:rgba(255,255,255,0.82);text-wrap:pretty">Trzy wyróżnione wiersze to cała różnica między połączeniem, które ktoś sklikał, a takim, które da się utrzymać. <strong style="color:#ffffff;font-weight:700">Zachowanie przy błędzie, próg alarmu i nazwisko właściciela</strong> — zapisane, zanim połączenie ruszy.</p>
-<p style="margin:18px 0 0;font-size:15.5px;line-height:1.65;color:rgba(255,255,255,0.6);text-wrap:pretty">Karty wszystkich połączeń stoją w jednym miejscu. Kiedy zmienia się coś w jednym systemie, widać z nich, co jeszcze trzeba sprawdzić. Plątanina bierze się z połączeń, których nikt nie opisał, a nie z ich liczby.</p>
-<p style="margin:18px 0 0;font-size:15.5px;line-height:1.65;color:rgba(255,255,255,0.6);text-wrap:pretty">Scenariusze, karty i dostęp do platformy są Wasze od pierwszego dnia. Licencja platformy idzie na Was, więc widzicie realny koszt, a my nie mamy prowizji od żadnego dostawcy.</p>
-</div>
-</div>
-</section>
-
-<!-- ============ 5 · DLA JAKICH FIRM ============ -->
-<section id="dla-kogo" class="sec-pad">
-<div class="sec-head">
-<h2 class="h-sec" style="margin:0;max-width:520px;text-wrap:pretty">Dla jakich firm to jest</h2>
-<p class="sub" style="margin:0 0 6px;max-width:460px">Wielkość firmy nie ma tu znaczenia. Znaczenie ma to, ile razy dziennie ktoś przenosi te same dane z jednego okna do drugiego.</p>
-</div>
-
-<div style="margin-top:clamp(28px,3.4vw,42px)">
-{DLA_KOGO.map((x, i) => (
-  <div class="dl-row rv">
-    <span class="dl-n">{String(i + 1).padStart(2, '0')}</span>
-    <h3 class="dl-t">{x.t}</h3>
-    <p class="dl-d">{x.d}</p>
+    <div class="ln-pw">
+      <div class="ln-pas">
+        {w.pada && <span class="ln-cz czk-j" data-ln-cz style={`left:${lnX(LN_STOP + 0.2)};width:${lnW(LN_WRACA - LN_STOP - 0.4)}`}></span>}
+        {w.pada && <span class="ln-kl" data-t={LN_ALARM} style={`left:${lnX(LN_STOP)};width:${lnW(LN_ALARM - LN_STOP)}`}><span><svg viewBox="0 0 16 16" set:html={ik('bell-alert')}></svg>alarm po 8 min</span></span>}
+        {w.tk.map((k: any) => (<i class={k.nad ? 'ln-tk nad' : 'ln-tk'} style={`left:${lnX(k.t)}`} data-t={k.t} data-p={k.p}></i>))}
+      </div>
+      <span class="ln-ost" data-ost>{w.ost}</span>
+    </div>
+    <div class="ln-st" data-ln-st={w.pada ? '' : undefined}><i></i><span><span data-st-t>działa</span><small data-st-s data-przed={w.vol}>{w.pada ? `przerwa ${hhmm(LN_STOP)}–${hhmm(LN_WRACA)}` : w.vol}</small></span></div>
   </div>
 ))}
+<div class="ln-w ln-os"><span></span><span class="ln-os-o">{LN_OS.map((t) => (<em style={`left:${lnX(t)}`}>{hhmm(t)}</em>))}</span><span></span></div>
 </div>
-
-<div class="dl-nie rv">
-<h3>Kiedy to nie ma sensu</h3>
-{NIE_TERAZ.map((t) => (<p>{t}</p>))}
+<aside class="ln-bok">
+<h4>Zdarzenia<span>dziś</span></h4>
+<ol>
+<li class="ln-zd ok" data-t={LN_WRACA}><i><svg viewBox="0 0 16 16" set:html={HI['check-circle']}></svg></i><div><b>Nowy klient z CRM<em>{hhmm(LN_WRACA)}</em></b><p>Przebiegi wróciły. Dwóch klientów dodanych w przerwie zapisało się w programie księgowym.</p></div></li>
+<li class="ln-zd la" data-t={LN_PRZEJ}><i><svg viewBox="0 0 40 41" set:html={SYGNET}></svg></i><div><b>Przejęte przez Let’s automate<em>{hhmm(LN_PRZEJ)}</em></b><p>Wygasł token programu księgowego, odnawiamy.</p></div></li>
+<li class="ln-zd al" data-t={LN_ALARM}><i><svg viewBox="0 0 16 16" set:html={ik('bell-alert')}></svg></i><div><b>Alarm · Nowy klient z CRM<em>{hhmm(LN_ALARM)}</em></b><p>Brak przebiegu od {hhmm(LN_STOP)}. Poszło do Joanny Mazur, kierownik księgowości, i do Let’s automate.</p></div></li>
+<li class="ln-zd"><i><svg viewBox="0 0 16 16" set:html={HI['arrow-uturn-left']}></svg></i><div><b>Stany i ceny do sklepu<em>9:52</em></b><p>Trzy pozycje wróciły do ERP-a z etykietą: brak ceny w cenniku.</p></div></li>
+</ol>
+</aside>
 </div>
-</section>
-
-<!-- ============ 5b · PAS WEZWANIA ============ -->
-<section style="padding:0 max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) 0">
-<div class="ps">
-<p>Powiedzcie, co u Was ktoś przepisuje z jednego okna do drugiego — wycenimy pierwsze połączenie</p>
-<a href="#kontakt" class="btn-dark" style="display:inline-flex;align-items:center;gap:9px;background:#16211a;color:#ffffff;padding:15px 26px;border-radius:11px;font-weight:650;font-size:15.5px;white-space:nowrap">Umów rozmowę <span aria-hidden="true">→</span></a>
-</div>
-</section>
-
-<!-- ============ 6 · PRZYKŁADY ============
-     PRZYKŁADOWE wdrożenia — do podmiany. Druga liczba jest ważniejsza od
-     pierwszej i dlatego stoi w tej samej kolumnie, nie w przypisie. -->
-<section id="dowody" style="background:#f4f8f2;padding:clamp(60px,7.5vw,96px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
-<div class="sec-head">
-<h2 class="h-sec" style="margin:0;max-width:600px;text-wrap:pretty">Trzy firmy i alarmy, które się u nich odezwały</h2>
-<p class="sub" style="margin:0 0 6px;max-width:460px">Druga liczba przy każdej jest ważniejsza od pierwszej. Połączenia się psują — pytanie brzmi, czy ktoś się o tym dowiaduje tego samego dnia.</p>
-</div>
-
-<div style="margin-top:clamp(20px,2.4vw,30px)">
-{PRZYKLADY.map((x) => (
-  <div class="px-row rv">
-    <div>
-      <h3 class="px-f">{x.f}</h3>
-      <span class="px-m">{x.m}</span>
-      <span class="px-p">{x.p}</span>
-    </div>
-    <div>
-      <p class="px-d">{x.d}</p>
-    </div>
-    <div>
-      <span class="px-ile">{x.ile}</span>
-      <span class="px-cap">przechodzi bez człowieka</span>
-      <span class="px-al"><i aria-hidden="true"></i>{x.alarmy}</span>
-    </div>
-  </div>
-))}
-</div>
-</section>
-
-<!-- ============ 6b · GŁOS KLIENTA ============ -->
-<section style="padding:clamp(56px,7vw,88px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2))">
-<figure class="rv" style="margin:0;display:grid;grid-template-columns:auto 1fr;gap:clamp(20px,3vw,36px);align-items:start;max-width:1000px">
-<span aria-hidden="true" style="font-size:clamp(46px,5vw,64px);line-height:.72;font-weight:800;color:var(--la-accent,#00CD77)">„</span>
-<div>
-<blockquote style="margin:0;font-size:clamp(20px,2.6vw,29px);line-height:1.35;letter-spacing:-0.02em;font-weight:650;color:#16211a;text-wrap:pretty">Let’s automate wziął pełną odpowiedzialność za projekt i dowiózł go do końca. To dlatego powierzyliśmy im kolejny, znacznie większy.</blockquote>
-<figcaption><span style="display:block;margin-top:clamp(16px,2vw,22px);font-size:15px;font-weight:750;color:#16211a">Jakub Ciołkowski</span><span style="display:block;margin-top:2px;font-size:14px;color:#637066">Członek Zarządu, NARS Polska</span></figcaption>
 </div>
 </figure>
+</Hero>
+
+<!-- ============ 2 · CZYM SĄ ============
+     Definicja dla modeli językowych jako pierwsze zdanie (podmiot = nazwa
+     usługi z menu). Pod nią połączenia, które robimy najczęściej. -->
+<section id="czym-jest" class="v3-sek v3-papier">
+<div class="v3-def">
+<h2 class="v3-h2m">Czym są integracje systemów?</h2>
+<div>
+<p class="v3-def-duzy rv">Integracje systemów to połączenia między CRM-em, ERP-em, magazynem, sklepem i pocztą, dzięki którym dane przechodzą z jednego systemu do drugiego bez człowieka pośrodku. Każde połączenie ma imiennego właściciela i alarm, który odzywa się, kiedy dane przestają przechodzić.</p>
+</div>
+</div>
+
+<Procesy tytul="Połączenia, które robimy najczęściej" etykietaB="Z połączeniem" pozycje={POLACZENIA.map((x) => ({ t: x.t, a: x.a, b: x.b }))} />
 </section>
 
-<GcCta
-  usluga="Automatyzacje i integracje"
-  heading="Zacznijmy od jednego połączenia"
-  lead="Powiedzcie, co u Was ktoś przenosi z systemu do systemu i jak często. Odpowiemy z pytaniem o to, czy te systemy mają API, i z terminem pierwszej rozmowy."
-  eyebrow="Z rozmowy wychodzicie z"
-  items={[
-    { t: 'Jedną wskazaną pozycją', d: 'tą, od której warto zacząć, i powodem' },
-    { t: 'Listą odradzanych', d: 'te, które zrobicie sami albo które się nie zwrócą' },
-    { t: 'Listą systemów po drodze', d: 'razem ze sposobem, w jaki je połączymy' },
-  ]}
-  placeholder="Np. zamówienia ze sklepu przepisujemy ręcznie do ERP-a, jest ich około 40 dziennie…"
-  badges={[
-    { i: 'klodka', t: 'Wasze dane bezpieczne' },
-    { i: 'kartka', t: 'NDA przed startem' },
-    { i: 'ptaszek', t: 'Scenariusze zostają Wasze' },
-  ]}
-/>
+<!-- ============ 2b · ZIELONY PAS ============
+     Werdykt z pierwszej rozmowy (z bloku „Kiedy to nie ma sensu" i FAQ
+     obecnej strony). Wprowadza „Dlaczego": sklikany scenariusz działa,
+     dopóki nikt nie musi wiedzieć, że przestał.
+     DO POTWIERDZENIA: Marcel jako twarz; zdanie — decyzja Szymona. -->
+<Pas tekst="Jeśli połączenie da się u Was zrobić samemu w Make’u, powiemy to na pierwszej rozmowie" foto="/marcel-bilski.jpg" fotoW={1200} fotoH={2526} alt="Marcel Bilski, Tech Lead w Let's automate" imie="Marcel Bilski" rola="Tech Lead" />
+
+<!-- ============ 3 · DLACZEGO ============
+     Teza na całą szerokość. Dwa bloki: ta sama awaria (wygasły token
+     4.09) raz od strony danych (zamek), raz od strony platformy
+     (powiadomienie, które trafia donikąd). -->
+<section id="dlaczego" class="v3-sek">
+<h2 class="v3-h2m">Dlaczego automatyzacje umierają po cichu</h2>
+<p class="v3-teza rv"><span>Połączenia się psują.</span> Automatyzacja, o której awarii nikt się nie dowiaduje, jest gorsza od jej braku</p>
+
+<div class="dl-blok">
+<div class="dl-gl"><h3>Sukces i awaria wyglądają identycznie</h3><p>Ludzie przestali przepisywać dane ręcznie, bo robi to połączenie. Wystarczy, że wygaśnie token albo dostawca doda pole w formularzu, a połączenie staje i w żadnym z systemów nic nie świeci się na czerwono. Jedyną różnicą jest to, czego brakuje w systemie docelowym, i dlatego wychodzi to przy zamknięciu miesiąca.</p></div>
+<figure class="dl-kafel cs" data-cs>
+<div class="ia-gl"><b>Nowi klienci we wrześniu, w dwóch systemach</b><div class="ia-licz"><span>Nikt nie wie od</span><b data-cs-licz>{CS_DNI} dni</b><button type="button" class="ia-znow" data-cs-znow aria-label="Pokaż wrzesień jeszcze raz"><svg viewBox="0 0 16 16" set:html={HI['arrow-path']} aria-hidden="true"></svg></button></div></div>
+<div class="cs-sc" role="img" aria-label="Dwie listy obok siebie: nowi klienci w CRM i kontrahenci w programie księgowym. Od 1 do 4 września każdy klient z CRM ma swojego kontrahenta. 4 września o 16:40 wygasa token programu księgowego. Od tej chwili klienci w CRM przybywają jak zwykle, z etapem „Klient”, a w programie księgowym nie pojawia się już nikt. 2 października, przy zamknięciu września, okazuje się, że 72 klientów z CRM nie ma w programie księgowym. Przez 28 dni nikt o tym nie wiedział.">
+<div class="cs-w cs-n g" aria-hidden="true">
+<div class="cs-c l"><i style={`background:${KOLOR['CRM']}`}></i><b>CRM</b><span>etap „Klient”</span></div>
+<div class="cs-m"><span>połączenie</span></div>
+<div class="cs-c r"><i style={`background:${KOLOR['Program księgowy']}`}></i><b>Program księgowy</b><span>kontrahenci</span></div>
+</div>
+{CS_PRZED.map((x, i) => (
+  <div class={i === CS_PRZED.length - 1 ? 'cs-w d' : 'cs-w'} data-cs-k data-ms="420" aria-hidden="true">
+    <div class="cs-c l"><em>{x.d}</em><b>{x.n}</b><span class="cs-etap">Klient</span></div>
+    <div class="cs-m"><span class="cs-pol"></span></div>
+    <div class="cs-c r"><em>{x.k}</em><b>{x.n}</b></div>
+  </div>
+))}
+<div class="cs-przerwa" data-cs-k data-ms="1100" aria-hidden="true"><i><svg viewBox="0 0 16 16" set:html={ik('key')}></svg></i><b>4.09, 16:40</b>wygasa token programu księgowego</div>
+{CS_PO.map((x: any, i) => (
+  <div class={`cs-w${i === 0 ? ' g' : ''}${i === CS_PO.length - 1 ? ' d' : ''}`} data-cs-k data-dni={x.dni} data-ms={x.reszta ? '900' : '620'} aria-hidden="true">
+    <div class="cs-c l"><em>{x.d}</em>{x.reszta ? <b class="rs">{x.reszta}</b> : <b>{x.n}</b>}{!x.reszta && <span class="cs-etap">Klient</span>}</div>
+    <div class="cs-m"><span class="cs-pol brak"></span></div>
+    <div class="cs-c r"><span class="cs-pusto"></span></div>
+  </div>
+))}
+<div class="cs-zam" data-cs-k data-dni={CS_DNI} aria-hidden="true"><svg viewBox="0 0 16 16" set:html={ik('exclamation-triangle')}></svg><span><b>2.10, zamknięcie września.</b> 72 klientów z CRM nie ma w programie księgowym, więc ich faktur nie da się zaksięgować.</span></div>
+</div>
+</figure>
+</div>
+
+<div class="dl-blok">
+<div class="dl-gl"><h3>Nikt nie jest ich właścicielem</h3><p>Powstały przy okazji, w narzędziu, do którego dostęp ma jedna osoba. Ta osoba zmieniła stanowisko albo firmę, a scenariusze zostały bez nazwy i bez opisu. Platforma wysyła powiadomienie o błędzie, tylko że na skrzynkę, której nikt już nie czyta.</p></div>
+<figure class="dl-kafel pw" data-pw>
+<div class="ia-gl"><b>Dokąd idzie powiadomienie o błędzie</b><div class="ia-licz"><button type="button" class="ia-znow" data-pw-znow aria-label="Pokaż drogę powiadomienia jeszcze raz"><svg viewBox="0 0 16 16" set:html={HI['arrow-path']} aria-hidden="true"></svg></button></div></div>
+<div class="pw-sc" role="img" aria-label="Konto na platformie automatyzacji założone na adres marek.zielinski@firma.pl. Sześć scenariuszy, żaden nie ma opisu, nazwy w rodzaju „Scenariusz 7” i „test webhook”. Scenariusz „klienci CRM → FK (v2)” dostaje błąd o 16:40, 16:55 i 17:10 i platforma go wyłącza. Powiadomienie o wyłączeniu idzie na skrzynkę marek.zielinski@firma.pl, która jest wyłączona od 30 czerwca, po odejściu Marka z firmy. Wiadomość zostaje odrzucona, a zwrot wraca na adres no-reply platformy, którego nikt nie czyta.">
+<div class="pw-karta pw-konto" aria-hidden="true">
+<div class="pw-gora"><span class="pw-ik"><svg viewBox="0 0 16 16" set:html={ik('bolt')}></svg></span><b>Platforma automatyzacji</b><em>konto: marek.zielinski@firma.pl</em></div>
+<div class="pw-tab">
+<div class="pw-w n"><span>Scenariusz</span><span>Ostatnia zmiana</span><span>Opis</span><span>Stan</span></div>
+{PW_SCEN.map((s) => (<>
+  <div class={`pw-w${s.pada ? ' pada' : ''}${s.off ? ' off' : ''}`} data-pw-sc={s.pada ? '' : undefined}><span>{s.n}</span><span>{s.z}</span><span class="pw-brak">—</span><span class="pw-stan"><i></i><em class="a">{s.off ? 'wyłączony' : 'aktywny'}</em>{s.pada && <em class="b">wyłączony</em>}</span></div>
+  {s.pada && <ol class="pw-log">{PW_LOG.map(([h, t], i) => (<li data-pw-k={i + 1}><em>{h}</em>{t}</li>))}</ol>}
+</>))}
+</div>
+</div>
+<div class="pw-droga" aria-hidden="true">
+<div class="pw-tam" data-pw-k="4"><span class="pw-et"><svg viewBox="0 0 16 16" set:html={HI['arrow-right']}></svg>powiadomienie o wyłączeniu · 17:10</span><span class="pw-tor"><i class="pw-lin"></i><span class="pw-kop"><svg viewBox="0 0 16 16" set:html={HI['envelope']}></svg></span></span></div>
+<div class="pw-zwrot" data-pw-k="6"><span class="pw-tor"><i class="pw-lin"></i><span class="pw-kop"><svg viewBox="0 0 16 16" set:html={HI['envelope']}></svg></span></span><span class="pw-et"><svg viewBox="0 0 16 16" set:html={HI['arrow-uturn-left']}></svg>zwrot · adres nie istnieje</span></div>
+<div class="pw-noreply" data-pw-k="7"><svg viewBox="0 0 16 16" set:html={ik('no-symbol')}></svg><span><b>no-reply@platformy</b>skrzynki nikt nie czyta</span></div>
+</div>
+<div class="pw-karta pw-skr" data-pw-skr aria-hidden="true">
+<div class="pw-gora"><span class="pw-ik"><svg viewBox="0 0 16 16" set:html={HI['envelope']}></svg></span><b>marek.zielinski@firma.pl</b></div>
+<div class="pw-skr-in">
+<ul class="pw-poczta">
+{PW_POCZTA.map(([d, k, t]) => (<li><em>{d}</em><b>{k}</b><span>{t}</span></li>))}
+</ul>
+<span class="pw-stempel"><svg viewBox="0 0 16 16" set:html={ik('no-symbol')}></svg>Konto wyłączone 30.06.2026</span>
+<p class="pw-odrz" data-pw-k="5"><svg viewBox="0 0 16 16" set:html={HI['x-mark']}></svg>4.09, 17:10 · wiadomość odrzucona</p>
+</div>
+</div>
+</div>
+</figure>
+</div>
+</section>
+
+<!-- ============ 4 · JAK TO WYGLĄDA ============
+     Produktem są dokumenty, nie aplikacja: karta połączenia, wiadomość
+     z alarmem i rejestr. Wszystkie trzy o tym samym połączeniu POL-014,
+     które w hero milknie o 10:12. Bez JS widać kartę. -->
+<section id="jak-wyglada" class="v3-sek v3-scena v3-ziarno">
+<div class="v8-gl">
+<h2 class="v3-h2 jasny">Co dostajecie przy każdym połączeniu</h2>
+<p class="v3-sub jasny">Karta powstaje, zanim połączenie ruszy, a karty wszystkich połączeń stoją w jednym rejestrze. Na przykładzie połączenia nowych klientów z CRM do księgowości u dystrybutora części.</p>
+</div>
+
+<div class="v3-zak" role="tablist" aria-label="Co dostajecie przy połączeniu">
+{ZAKLADKI.map((z, i) => (<button type="button" role="tab" id={`zak-${i}`} aria-controls={`widok-${i}`} aria-selected={i === 0 ? 'true' : 'false'} tabindex={i === 0 ? 0 : -1} data-zak>{z.t}</button>))}
+</div>
+
+<div class="ia-ekran">
+<!-- karta połączenia -->
+<div class="ia-w kp" role="tabpanel" id="widok-0" aria-labelledby="zak-0" data-widok>
+<div class="kp-tlo">
+<article class="kp-ark">
+<header class="kp-gl"><span class="kp-znak"><svg viewBox="0 0 16 16" set:html={ik('link')}></svg></span><span><b>Karta połączenia</b><em>Dystrybutor części</em></span><em class="kp-nr">POL-014 · wersja 3</em></header>
+<h3>Nowy klient z CRM do księgowości i magazynu</h3>
+<p class="kp-tr"><span><i style={`background:${KOLOR['CRM']}`}></i>CRM</span><svg viewBox="0 0 16 16" set:html={HI['arrow-right']}></svg><span><i style={`background:${KOLOR['Program księgowy']}`}></i>Program księgowy</span><span><i style={`background:${KOLOR['ERP']}`}></i>ERP · magazyny</span></p>
+<dl class="kp-dl">
+{KARTA.map((x) => (<div class={x.w ? 'w' : ''}><dt>{x.k}</dt><dd>{x.v}</dd></div>))}
+</dl>
+</article>
+</div>
+<aside class="kp-bok">
+<h4>Historia karty</h4>
+<ol class="kp-hist">
+{KARTA_HIST.map((h) => (<li><b>{h.v}</b><span>{h.t}<em>{h.d}</em></span></li>))}
+</ol>
+<h4>Zależy od</h4>
+<ul class="kp-zal">
+{KARTA_ZAL.map((z) => (<li><i style={`background:${KOLOR[z.s]}`}></i><b>{z.s}</b><span>{z.d}</span></li>))}
+</ul>
+</aside>
+</div>
+
+<!-- wiadomość z alarmem -->
+<div class="ia-w alw" role="tabpanel" id="widok-1" aria-labelledby="zak-1" data-widok hidden>
+<nav class="al-bok" aria-hidden="true">
+<b class="al-ws">Dystrybutor części</b>
+<span><svg viewBox="0 0 16 16" set:html={ik('hashtag')}></svg>ogólny</span>
+<span><svg viewBox="0 0 16 16" set:html={ik('hashtag')}></svg>sprzedaż</span>
+<span class="on"><svg viewBox="0 0 16 16" set:html={ik('hashtag')}></svg>integracje-alarmy</span>
+<span><svg viewBox="0 0 16 16" set:html={ik('hashtag')}></svg>magazyn</span>
+<span><svg viewBox="0 0 16 16" set:html={ik('hashtag')}></svg>księgowość</span>
+</nav>
+<div class="al-gl">
+<div class="al-gora"><svg viewBox="0 0 16 16" set:html={ik('hashtag')}></svg><b>integracje-alarmy</b><em>alarmy z połączeń · właściciele i Let’s automate</em></div>
+<div class="al-msgs">
+<div class="al-dzien"><span>wtorek, 21 lipca</span></div>
+<div class="al-m">
+<span class="al-av bot"><svg viewBox="0 0 16 16" set:html={ik('bell-alert')}></svg></span>
+<div><p class="al-kto"><b>Połączenia</b><em>{hhmm(LN_ALARM)}</em></p>
+<div class="al-blok">
+<b>POL-014 · Nowy klient z CRM do księgowości</b>
+<p>Brak przebiegu od {hhmm(LN_STOP)}, czyli od 8 minut.</p>
+<dl>
+<dt>Ostatni udany</dt><dd><span class="mono">10:12:08</span> · Delta Okna sp. z o.o.</dd>
+<dt>Krok</dt><dd>zapis kontrahenta w programie księgowym</dd>
+<dt>Odpowiedź</dt><dd><span class="mono">401</span> · token wygasł</dd>
+<dt>Właściciel</dt><dd><span class="al-wzm">@Joanna Mazur</span></dd>
+</dl>
+<div class="al-btn"><span class="g">Przejmuję</span><span><svg viewBox="0 0 16 16" set:html={HI['document-text']}></svg>Karta POL-014</span></div>
+</div>
+</div>
+</div>
+<div class="al-m">
+<span class="al-av la"><svg viewBox="0 0 40 41" set:html={SYGNET}></svg></span>
+<div><p class="al-kto"><b>Let’s automate</b><em>{hhmm(LN_PRZEJ)}</em></p><p>Przejmujemy. Wygasł token programu księgowego, odnawiamy go na koncie firmy.</p></div>
+</div>
+<div class="al-m">
+<span class="al-av os"><svg viewBox="0 0 16 16" set:html={HI['user']}></svg></span>
+<div><p class="al-kto"><b>Joanna Mazur</b><em>10:26</em></p><p>Dzięki. Dajcie znać, jak wróci.</p></div>
+</div>
+<div class="al-m">
+<span class="al-av ok"><svg viewBox="0 0 16 16" set:html={HI['check-circle']}></svg></span>
+<div><p class="al-kto"><b>Połączenia</b><em>{hhmm(LN_WRACA)}</em></p>
+<div class="al-blok ok"><b>POL-014 działa</b><p>Przebiegi wróciły o {hhmm(LN_WRACA)}. Klienci dodani w przerwie są już w programie księgowym: Termo-Serwis s.c. i Marbud sp. z o.o. Przerwa trwała 29 minut.</p></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- rejestr połączeń -->
+<div class="ia-w rj" role="tabpanel" id="widok-2" aria-labelledby="zak-2" data-widok hidden>
+<div class="rj-gl"><div><em>dystrybutor części · {REJESTR.length} połączeń</em><h3>Rejestr połączeń</h3></div></div>
+<div class="rj-f" aria-hidden="true">
+<span>Wszystkie <em>{REJESTR.length}</em></span>
+{['Program księgowy', 'ERP', 'CRM', 'Sklep'].map((s) => (<span class={s === RJ_FILTR ? 'on' : ''}><i style={`background:${KOLOR[s]}`}></i>{s} <em>{rjIle(s)}</em></span>))}
+</div>
+<div class="rj-w n"><span>Numer</span><span>Połączenie</span><span>Właściciel</span><span>Karta</span><span>Ostatnio</span><span>Stan</span></div>
+{REJESTR.map((r) => (
+  <div class={r.s.includes(RJ_FILTR) ? 'rj-w wyb' : 'rj-w inne'}>
+    <span class="nr">{r.nr}</span>
+    <span class="rj-pol"><span>{r.s.map((s) => (<i style={`background:${KOLOR[s]}`}></i>))}</span><b>{r.t}</b></span>
+    <span class="rj-os"><i><svg viewBox="0 0 16 16" set:html={HI['user']}></svg></i>{r.o}</span>
+    <span class="rj-v">{r.v}</span>
+    <span class="rj-h">{r.h}</span>
+    <span class="rj-st"><i></i>działa</span>
+  </div>
+))}
+</div>
+</div>
+
+<div class="v3-jw-dol">
+<div>
+{ZAKLADKI.map((z, i) => (<p class="v3-jw-p" data-podpis hidden={i !== 0}><b>{z.t}</b>{z.p}</p>))}
+</div>
+</div>
+</section>
+
+<!-- ============ 5 · PRZYKŁADY ============
+     PRZYKŁADOWE wdrożenia z obecnej strony. Zamiast „Przed / Po" (komponent
+     Dowody) wolumen i alarmy w kwartale: połączenia się psują u każdego,
+     liczy się to, że wiadomo o tym tego samego dnia. -->
+<section id="dowody" class="v3-sek">
+<div class="v8-gl">
+<h2 class="v3-h2">Trzy firmy i&nbsp;alarmy, które się u&nbsp;nich odezwały</h2>
+<p class="v3-sub">Połączenia psują się u każdego. Przy każdej firmie stoi wolumen, który przechodzi bez człowieka, i każdy alarm z kwartału.</p>
+</div>
+<div class="dw-sc px4" data-anim data-gra tabindex="0" role="region" aria-label="Przykłady, przewijane w poziomie">
+{PRZYKLADY.map((x) => (
+  <article class="px4-k">
+    <span class="px4-p">{x.p}</span>
+    <h3>{x.f}<small>{x.m}</small></h3>
+    <div class="px4-ile"><b>{x.ile}</b><span>{x.ileD}</span></div>
+    <div class="px4-kw">
+      <span class="px4-et">Alarmy w kwartale, tydzień po tygodniu</span>
+      <div class="px4-tyg" role="img" aria-label={`${x.al.length === 1 ? 'Jeden alarm' : x.al.length + ' alarmy'} w trzynastu tygodniach: ${x.al.map((a) => `tydzień ${a.w}, ${a.t}`).join('; ')}.`}>
+        {Array.from({ length: 13 }).map((_, w) => {
+          const a = x.al.find((q) => q.w === w + 1);
+          return (<i class={a ? 'al' : ''} style={`--w:${w}`}>{a && <b><svg viewBox="0 0 16 16" set:html={ik('bell-alert')}></svg></b>}</i>);
+        })}
+      </div>
+      <div class="px4-os" aria-hidden="true"><span>tydzień 1</span><span>13</span></div>
+      <ul class="px4-lista">{x.al.map((a) => (<li><em>tydz. {a.w}</em>{a.t}</li>))}</ul>
+      <p class="px4-wn">{x.wn}</p>
+    </div>
+    <p class="px4-d">{x.d}</p>
+  </article>
+))}
+</div>
+<Cytat cytat="Let’s automate wziął pełną odpowiedzialność za projekt i dowiózł go do końca. To dlatego powierzyliśmy im kolejny, znacznie większy." logo="/uploads/klienci/nars.svg" logoAlt="NARS Polska" imie="Jakub Ciołkowski" rola="Członek Zarządu, NARS Polska" />
+<CtaPasek tytul="Na pierwszej rozmowie wskazujemy połączenie, od którego warto zacząć, i te, które zrobicie sami." />
+</section>
+
+<!-- ============ 6 · METODA ============
+     Porównanie z typowym wdrożeniem automatyzacji. Tytuł to zdanie
+     z koncepcji: sam scenariusz jest najprostszą częścią pracy. -->
+<Metoda tytul="Sam scenariusz to najprostsza część pracy" sub="Typowe wdrożenie kończy się na scenariuszu, który działa w dniu odbioru. To, co ma działać po nim, mamy rozstrzygnięte w WiseStacku i wnosimy do każdego połączenia." wiersze={METODA} typowy="Typowe wdrożenie<br>automatyzacji" stopka={'WiseStack to nasz sposób budowania oprogramowania z AI: dwanaście decyzji podjętych raz i wnoszonych do każdego projektu. Monitoring z imiennym właścicielem i klucze po Waszej stronie są dwiema z nich.<br><a href="/wisestack">Cała metoda →</a>'} />
+
+<!-- ============ 7 · PIERWSZY KWARTAŁ ============
+     Sekcja 8 standardu. Pierwsze połączenie wchodzi w kilka dni, a usługą
+     docelową jest utrzymanie: dziennik trzynastu tygodni POL-014. -->
+<section id="kwartal" class="v3-sek">
+<div class="v8-gl">
+<h2 class="v3-h2">Pierwszy kwartał jednego połączenia</h2>
+<p class="v3-sub">Pierwsze połączenie wchodzi na produkcję w kilka dni, a utrzymanie zaczyna się tego samego dnia. Trzynaście tygodni połączenia nowych klientów z CRM do księgowości u dystrybutora części.</p>
+</div>
+<ol class="kw" data-anim data-gra>
+{KW.map((e, i) => (
+  <li class="kw-w" style={`--i:${i}`}>
+    <div class="kw-kiedy"><b>Tydzień {e.tydz}</b><em>{e.data}</em></div>
+    <span class={e.al ? 'kw-ik al' : 'kw-ik'} aria-hidden="true"><svg viewBox="0 0 16 16" set:html={ik(e.ik)}></svg></span>
+    <div class="kw-t"><h3>{e.t}</h3><p>{e.d}</p></div>
+    <div class="kw-art">
+      {e.art === 'karta' && (<>
+        <div class="kw-art-gl"><span>Karta połączenia</span><em>POL-014 · wersja 1</em></div>
+        <dl class="kw-dl">
+          <div><dt>Właściciel</dt><dd>Joanna Mazur, księgowość</dd></div>
+          <div><dt>Alarm</dt><dd>po 8 min bez przebiegu</dd></div>
+          <div><dt>Przy błędzie</dt><dd>3 próby co 5 min, potem zwrot</dd></div>
+        </dl>
+      </>)}
+      {e.art === 'zwrot' && (<>
+        <div class="kw-art-gl"><span>Wróciło do CRM</span><em>16.06</em></div>
+        <ul class="kw-zw">
+          {['Pol-Hurt sp. z o.o.', 'Instal-Bis', 'Agro-Serwis'].map((n) => (<li><b>{n}</b><span><svg viewBox="0 0 16 16" set:html={HI['arrow-uturn-left']}></svg>brak NIP</span></li>))}
+          <li class="r">i trzech kolejnych z tą samą etykietą</li>
+        </ul>
+      </>)}
+      {e.art === 'zmiana' && (<>
+        <div class="kw-art-gl"><span>Program księgowy 2026.3</span><em>30.06</em></div>
+        <div class="kw-ch">
+          {['POL-011', 'POL-014', 'POL-015'].map((n) => (<span><svg viewBox="0 0 16 16" set:html={HI['check']}></svg>{n}</span>))}
+          <span class="v">karta v2</span>
+        </div>
+        <p>Pole „kraj” obowiązkowe. Poprawione trzy połączenia, które zapisują kontrahentów.</p>
+      </>)}
+      {e.art === 'os' && (<>
+        <div class="kw-art-gl"><span>21.07, od ostatniego przebiegu do powrotu</span><em>29 min</em></div>
+        <div class="kw-os" role="img" aria-label="Ostatni przebieg 10:12, po 8 minutach ciszy alarm o 10:20, po kolejnych 3 minutach sprawa przejęta o 10:23, po 18 minutach odnawiania tokenu przebiegi wracają o 10:41.">
+          <div class="kw-seg">{KW_OS.map((s, j) => (<i class={s.k === 'cz' ? 'czk-j' : s.k} style={`flex:${s.do - s.od} 0 0;--j:${j}`}></i>))}</div>
+          {KW_PKT.map((p, j) => (<span class={`kw-pkt${p.g ? ' g' : ''}${j === 0 ? ' l' : ''}${j === KW_PKT.length - 1 ? ' r' : ''}`} style={`left:${(p.m / 29 * 100).toFixed(2)}%`} aria-hidden="true"><span><b>{p.h}</b>{p.t}</span></span>))}
+        </div>
+      </>)}
+      {e.art === 'v3' && (<>
+        <div class="kw-art-gl"><span>Karta połączenia</span><em>POL-014 · wersja 3</em></div>
+        <dl class="kw-dl">
+          <div><dt>Co robi</dt><dd>zakłada kontrahenta w programie księgowym i w magazynach Łódź i Poznań</dd></div>
+        </dl>
+      </>)}
+    </div>
+  </li>
+))}
+</ol>
+</section>
+
+<!-- ============ 8 · DLA JAKICH FIRM ============ -->
+<DlaKogo sub="Liczy się to, ile razy dziennie ktoś przenosi te same dane z jednego okna do drugiego." warunki={DLA_KOGO} nie={NIE_TERAZ} />
+
+<!-- ============ 9 · KONTAKT ============ -->
+<Kontakt tytul="Zacznijmy od jednego połączenia" lead="Napiszcie, co u Was ktoś przepisuje z jednego systemu do drugiego i jak często. Odpowiemy w jeden dzień roboczy z propozycją terminu rozmowy." zrodlo="Integracje systemów" pytanie="Co dziś ktoś przepisuje?" podpowiedz="Np. zamówienia ze sklepu przepisujemy ręcznie do ERP-a, jest ich około 40 dziennie…" />
+
+</div>
 
 <GcFaq
   heading="Pytania, które padają przed decyzją"
-
   ctaLabel="Zadajcie nam swoje →"
   items={faq}
 />
 
 <script>
   var redukcja = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var jestIO = 'IntersectionObserver' in window;
+  function czekaj(ms: number){ return new Promise(function(r){ setTimeout(r, ms); }); }
+
+  // ---- Hero: połączenia na żywo ----
+  // Zegar symulowany: jedna minuta = 330 ms. Wszystko, co ma data-t
+  // (przebiegi, klamra alarmu, wpisy w dzienniku), pojawia się, kiedy zegar
+  // dojdzie do jego minuty. Kreskowana cisza rośnie od 10:12 do powrotu,
+  // stan połączenia liczy minuty ciszy. Na końcu godziny stan końcowy stoi
+  // siedem sekund, potem pętla wraca do 9:58. Stoi, kiedy tablicy nie widać.
   (function(){
-    var els = document.querySelectorAll('[data-anim]');
-    if(!els.length) return;
-    if(redukcja || !('IntersectionObserver' in window)){
-      els.forEach(function(el){ el.classList.add('on'); });
-      return;
+    var fig = document.querySelector('[data-ln]') as HTMLElement | null;
+    if(!fig || redukcja) return;
+    var f = fig;
+    var OD = +f.dataset.od!, DO = +f.dataset.do!, START = +f.dataset.start!;
+    var STOP = +f.dataset.stop!, ALARM = +f.dataset.alarm!, WRACA = +f.dataset.wraca!;
+    var MS = 330, TRZYMAJ = 7000;
+    var el = Array.prototype.slice.call(f.querySelectorAll('[data-t]')).map(function(e: HTMLElement){
+      return { e: e, t: +e.dataset.t!, p: e.dataset.p || '', w: e.closest('[data-ln-w]') as HTMLElement | null };
+    }).sort(function(a: any, b: any){ return a.t - b.t; });
+    var zegar = f.querySelector('[data-zegar]') as HTMLElement;
+    var cz = f.querySelector('[data-ln-cz]') as HTMLElement;
+    var st = f.querySelector('[data-ln-st]') as HTMLElement;
+    var stT = st.querySelector('[data-st-t]') as HTMLElement;
+    var stS = st.querySelector('[data-st-s]') as HTMLElement;
+    var stPrzed = stS.dataset.przed || '';
+    function hh(t: number){ var h = Math.floor(t / 60), m = Math.floor(t % 60); return h + ':' + (m < 10 ? '0' : '') + m; }
+    var t = START, i = 0, faza = 'gra', licz = 0, widoczny = true, pop: number | null = null, ostM = -1, ostStan = '';
+    function ost(x: any){
+      if(!x.p || !x.w) return;
+      var o = x.w.querySelector('[data-ost]');
+      if(o) o.textContent = x.p + ' · ' + hh(x.t);
     }
-    var io = new IntersectionObserver(function(wpisy){
-      wpisy.forEach(function(w){
-        if(w.isIntersecting){ w.target.classList.add('on'); io.unobserve(w.target); }
+    function stan(){
+      var c = Math.floor(t - STOP), k, a, b;
+      if(t < STOP + 2){ k = ''; a = 'działa'; b = stPrzed; }
+      else if(t < ALARM){ k = 'uw'; a = 'cisza ' + c + ' min'; b = 'ostatni ' + hh(STOP); }
+      else if(t < WRACA){ k = 'uw'; a = 'alarm wysłany'; b = 'cisza ' + c + ' min'; }
+      else { k = ''; a = 'działa'; b = 'przerwa ' + hh(STOP) + '–' + hh(WRACA); }
+      var klucz = k + a + b;
+      if(klucz === ostStan) return;
+      ostStan = klucz;
+      st.className = k ? 'ln-st ' + k : 'ln-st';
+      stT.textContent = a; stS.textContent = b;
+    }
+    function szer(){ var w = Math.max(0, Math.min(t, WRACA - 0.2) - STOP - 0.2); cz.style.width = (w / (DO - OD) * 100) + '%'; }
+    function zeruj(){
+      t = START; i = 0; ostM = -1; ostStan = '';
+      el.forEach(function(x: any){ x.e.classList.remove('nowy'); x.e.classList.add('ukr'); });
+      while(i < el.length && el[i].t <= t){ el[i].e.classList.remove('ukr'); ost(el[i]); i++; }
+      zegar.textContent = hh(t); stan(); szer();
+      f.classList.remove('gasnie');
+    }
+    function klatka(ts: number){
+      if(pop === null) pop = ts;
+      var dt = Math.min(ts - pop, 100); pop = ts;
+      if(widoczny){
+        if(faza === 'gra'){
+          t = Math.min(DO, t + dt / MS);
+          while(i < el.length && el[i].t <= t){
+            var x = el[i++];
+            x.e.classList.remove('ukr');
+            if(x.e.classList.contains('ln-zd')) x.e.classList.add('nowy');
+            ost(x);
+          }
+          var m = Math.floor(t);
+          if(m !== ostM){ ostM = m; zegar.textContent = hh(t); }
+          stan(); szer();
+          if(t >= DO){ faza = 'trzyma'; licz = TRZYMAJ; }
+        } else if(faza === 'trzyma'){
+          licz -= dt;
+          if(licz <= 0){ faza = 'gasnie'; licz = 500; f.classList.add('gasnie'); }
+        } else {
+          licz -= dt;
+          if(licz <= 0){ zeruj(); faza = 'gra'; }
+        }
+      }
+      requestAnimationFrame(klatka);
+    }
+    f.classList.add('ruch');
+    zeruj();
+    if(jestIO) new IntersectionObserver(function(w){ widoczny = w[0].isIntersecting; }, { threshold: 0.05 }).observe(f);
+    requestAnimationFrame(klatka);
+  })();
+
+  // ---- Dlaczego 1: zamek ----
+  // Wiersze wypełniają się po kolei; licznik „Nikt nie wie od" bierze dni
+  // z data-dni wiersza. Raz po wejściu w kadr, potem przycisk powtórki.
+  (function(){
+    var fig = document.querySelector('[data-cs]') as HTMLElement | null;
+    if(!fig || redukcja || !jestIO) return;
+    var f = fig;
+    var kroki = Array.prototype.slice.call(f.querySelectorAll('[data-cs-k]')) as HTMLElement[];
+    var licz = f.querySelector('[data-cs-licz]') as HTMLElement;
+    var znow = f.querySelector('[data-cs-znow]') as HTMLButtonElement;
+    var bieg = 0;
+    function ustaw(n: number, tik?: boolean){
+      licz.textContent = n === 1 ? '1 dzień' : n + ' dni';
+      if(tik){ licz.classList.remove('tik'); void licz.offsetWidth; licz.classList.add('tik'); }
+    }
+    function zeruj(){ kroki.forEach(function(k){ k.classList.remove('on'); }); ustaw(0); }
+    async function graj(){
+      var nr = ++bieg;
+      zeruj(); znow.disabled = true;
+      await czekaj(500); if(nr !== bieg) return;
+      for(var j = 0; j < kroki.length; j++){
+        kroki[j].classList.add('on');
+        var d = kroki[j].dataset.dni;
+        if(d) ustaw(+d, true);
+        await czekaj(+(kroki[j].dataset.ms || 650)); if(nr !== bieg) return;
+      }
+      znow.disabled = false;
+    }
+    f.classList.add('ruch');
+    zeruj();
+    znow.addEventListener('click', graj);
+    var io = new IntersectionObserver(function(w){ if(w[0].isIntersecting){ io.disconnect(); graj(); } }, { threshold: 0.35 });
+    io.observe(f);
+  })();
+
+  // ---- Dlaczego 2: powiadomienie donikąd ----
+  // Trzy błędy w logu, scenariusz się wyłącza, koperta jedzie na skrzynkę,
+  // skrzynka odrzuca, zwrot wraca na no-reply. Elementy z data-pw-k
+  // pojawiają się w kolejności numerów.
+  (function(){
+    var fig = document.querySelector('[data-pw]') as HTMLElement | null;
+    if(!fig || redukcja || !jestIO) return;
+    var f = fig;
+    var kroki = Array.prototype.slice.call(f.querySelectorAll('[data-pw-k]')) as HTMLElement[];
+    var wiersz = f.querySelector('[data-pw-sc]') as HTMLElement;
+    var skr = f.querySelector('[data-pw-skr]') as HTMLElement;
+    var znow = f.querySelector('[data-pw-znow]') as HTMLButtonElement;
+    var bieg = 0;
+    function pokaz(n: number){ kroki.forEach(function(k){ if(+k.dataset.pwK! === n) k.classList.add('on'); }); }
+    function blysk(){ wiersz.classList.remove('blysk'); void wiersz.offsetWidth; wiersz.classList.add('blysk'); }
+    function zeruj(){ kroki.forEach(function(k){ k.classList.remove('on'); }); f.classList.remove('wyl'); skr.classList.remove('uderz'); }
+    var PLAN: [number, () => void][] = [
+      [700, function(){ pokaz(1); blysk(); }],
+      [850, function(){ pokaz(2); blysk(); }],
+      [850, function(){ pokaz(3); blysk(); f.classList.add('wyl'); }],
+      [800, function(){ pokaz(4); }],
+      [1300, function(){ pokaz(5); skr.classList.add('uderz'); }],
+      [700, function(){ pokaz(6); }],
+      [1300, function(){ pokaz(7); }],
+    ];
+    async function graj(){
+      var nr = ++bieg;
+      zeruj(); znow.disabled = true;
+      for(var j = 0; j < PLAN.length; j++){
+        await czekaj(PLAN[j][0]); if(nr !== bieg) return;
+        PLAN[j][1]();
+      }
+      znow.disabled = false;
+    }
+    f.classList.add('ruch');
+    zeruj();
+    znow.addEventListener('click', graj);
+    var io = new IntersectionObserver(function(w){ if(w[0].isIntersecting){ io.disconnect(); graj(); } }, { threshold: 0.35 });
+    io.observe(f);
+  })();
+
+  // ---- Zakładki: karta, alarm, rejestr ----
+  (function(){
+    var zak = Array.prototype.slice.call(document.querySelectorAll('[data-zak]')) as HTMLElement[];
+    if(!zak.length) return;
+    var widoki = Array.prototype.slice.call(document.querySelectorAll('[data-widok]')) as HTMLElement[];
+    var podpisy = Array.prototype.slice.call(document.querySelectorAll('[data-podpis]')) as HTMLElement[];
+    function pokaz(i: number, fokus?: boolean){
+      zak.forEach(function(b, j){ b.setAttribute('aria-selected', i === j ? 'true' : 'false'); b.tabIndex = i === j ? 0 : -1; });
+      widoki.forEach(function(w, j){ w.hidden = i !== j; });
+      podpisy.forEach(function(p, j){ p.hidden = i !== j; });
+      if(fokus) zak[i].focus();
+    }
+    zak.forEach(function(b, i){
+      b.addEventListener('click', function(){ pokaz(i); });
+      b.addEventListener('keydown', function(e){
+        if(e.key === 'ArrowRight'){ e.preventDefault(); pokaz((i + 1) % zak.length, true); }
+        if(e.key === 'ArrowLeft'){ e.preventDefault(); pokaz((i - 1 + zak.length) % zak.length, true); }
       });
-    }, { threshold: 0.22 });
-    els.forEach(function(el){ io.observe(el); });
+    });
   })();
 </script>
 </LaBase>

@@ -1,62 +1,95 @@
 ---
-// INDYWIDUALNE ROZWIĄZANIA AI — /rozwiazania-ai · druga podstrona usługowa
-// z pionu „Wdrażamy AI". Siostra /strategia-ai, ale nie jej kalka.
+// Od 13.10.2026 na właściwym adresie /rozwiazania-ai (bez noindex, w menu).
+// Poprzednia wersja: /rozwiazania-ai-old (noindex). Wzmianki o „-new” niżej
+// dotyczą okresu porównania.
 //
-// CZYM SIĘ RÓŻNI OD STRATEGII (i dlaczego wygląda inaczej):
-// Strategia sprzedaje dokument, więc tamta strona odpowiada na pytanie
-// „skąd wiem, że kolejność jest dobra". Tutaj sprzedajemy działający system,
-// więc lista pytań zakupowych jest zupełnie inna:
-//   · co ja właściwie dostaję, skoro model kupuje się za 20 dolarów
-//   · co się stanie, kiedy model się pomyli
-//   · czy to wejdzie w nasz ERP, czy stanie obok
-//   · gdzie lądują nasze dane
-//   · kto to utrzyma za rok
-// Cała strona jest ułożona pod te pytania, w tej kolejności.
+// AUTOMATYZACJA PROCESÓW Z AI — NOWA WERSJA — /rozwiazania-ai-new
+// Zastąpi /rozwiazania-ai (w menu: „AI prowadzi sprawy, ludzie decydują
+// o wyjątkach”). Zbudowana według docs/uslugi-standard.md na wzorcu
+// /systemy-procesowe-new. Treść z /rozwiazania-ai, z wariantu v2
+// i z docs/rozwiazania-ai-koncepcja.md: teza o 6%, siedem warstw, próg
+// pewności, pomiar przed budową z zapisem w umowie, „kiedy nie warto”, FAQ.
+// noindex do czasu podmiany; kanon i JSON-LD już dla /rozwiazania-ai.
 //
-// POZYCJONOWANIE:
-// Rynek sprzedaje „wdrożenie AI" jako dostęp do modelu i okno do rozmowy.
-// Nasza teza: model jest najmniejszą częścią roboty (6% czasu budowy), a to,
-// czy rozwiązanie zadziała, rozstrzyga się w warstwach wokół niego. Stąd
-// rysunek w hero — przekrój rozwiązania, który tę proporcję pokazuje wprost.
+// PYTANIA ZAKUPOWE (playbook §2) I GDZIE NA NIE ODPOWIADAMY:
+//   1. co dostaję, skoro model kosztuje grosze → Czym jest + Dlaczego (6%)
+//   2. co się stanie, kiedy model się pomyli    → hero (zwrotnica) + Jak to wygląda
+//   3. czy to wejdzie w ERP, czy stanie obok    → Dlaczego, blok 2 (teczka sprawy)
+//   4. skąd wiem, że zadziała u nas             → sekcja 8: pomiar przed budową
+//   5. dane, utrzymanie, wyjście                → Metoda + FAQ
+//   6. czy w ogóle warto budować                → Dla kogo + „Kiedy nie warto”
+// KOLEJNOŚĆ SEKCJI: jak w standardzie §2. Zmiany: sekcja 6 (przykłady) nie
+// używa komponentu Dowody, bo miara „przed / po” nie pasuje do tej usługi —
+// tu miarą jest udział spraw zamykanych bez człowieka i to, co zostało
+// ludziom (treść z obecnej strony). Sekcja 8 to „Najpierw pomiar, potem
+// produkcja”: dwutorowy harmonogram z bramką pomiaru zamiast wykresu
+// pierwszego efektu. „Kiedy nie warto” (dwie z trzech dróg tańsze) stoi
+// w DlaKogo jako jedyne miejsce, gdzie odsyłamy.
 //
-// TRZY RZECZY SPRAWDZALNE PRZED PODPISANIEM UMOWY (odpowiednik „trzech
-// mechanizmów" ze /strategia-ai — bez nich strona jest zwykłą ofertą):
-//   1. Próg jakości mierzony na sprawach klienta przed budową i zapisany
-//      w umowie razem z warunkiem odstąpienia.
-//   2. Ścieżka wyjątku projektowana razem z główną — widoczna w rysunku
-//      w ciemnym pasie, nie schowana w FAQ.
-//   3. Klucze do dostawcy modelu po stronie klienta i brak prowizji od
-//      kogokolwiek — to samo zdanie, co w FAQ na /strategia-ai.
-//
-// WARSTWA WIZUALNA — świadomie inny słownik niż /strategia-ai:
-// tam: koła wypełniane łukiem, przewijany strumień wierszy, siatka stu
-// kwadratów, kreskowe ikonki w bento, kartka ze skanem.
-// tu: trzy rysunki, żaden z tamtych mechanizmów.
-//   · PRZEKRÓJ (hero) — siedem warstw o grubości proporcjonalnej do udziału
-//     w czasie budowy; po złożeniu rozsuwa się wachlarzem na warstwie modelu
-//   · PRÓG PEWNOŚCI (ciemny pas) — jedna sprawa naraz, w powiększeniu,
-//     z paskiem pewności i werdyktem; celowo pokazujemy też sprawy odrzucone
-//   · HARMONOGRAM DWUTOROWY — jedyna animacja na stronie sterowana scrollem:
-//     głowica idzie po osi tygodni razem z ruchem strony, bloki wypełniają
-//     się w miarę jej przejścia (technika, której nie ma na żadnej innej
-//     podstronie — stąd `--p` ustawiane z JS i clamp() w CSS)
-// Wszystkie mają stan końcowy czytelny przy prefers-reduced-motion.
+// RYSUNKI TEJ USŁUGI (słownik obecnej strony: przekrój warstw, próg
+// pewności, dwutorowy harmonogram). Jedna miara przez całą stronę: sprawy,
+// które zamyka system, i sprawy, które idą do człowieka. Wszystkie rysunki
+// grają ten sam obieg reklamacji u dystrybutora materiałów budowlanych:
+//   · hero — ZWROTNICA PROGU: pięć porannych reklamacji, odczyt, pasek
+//     pewności z kreską progu 92%, rozjazd; 3 zamyka system, 2 idą do ludzi
+//   · Dlaczego 1 — PRZEKRÓJ: siedem płyt w izometrii, grubość = udział
+//     w czasie budowy; płyta modelu (6%) wysuwa się jak szuflada
+//   · Dlaczego 2 — TECZKA SPRAWY: RMA-2186 składana z poczty, ERP, umowy
+//     i CRM; model to jeden wiersz; decyzja wraca do ERP i do klienta
+//   · Jak to wygląda — aplikacja: sprawa u człowieka (RMA-2190), sprawa
+//     zamknięta (RMA-2186), historia decyzji, próg i reguły
+//   · sekcja 8 — HARMONOGRAM DWUTOROWY z bramką pomiaru w 4. tygodniu
 //
 // DO POTWIERDZENIA PRZED PUBLIKACJĄ:
-// · Udziały procentowe warstw (22/18/14/6/15/15/10) — proporcja z naszych
-//   projektów, nie z pomiaru. Sam kształt (model najcieńszy) jest pewny.
-// · Dziewięć tygodni od warsztatu do produkcji — założenie o kształcie usługi.
-// · Warunek „poniżej progu nie płacicie za wdrożenie" — decyzja handlowa
-//   Szymona, nie moja. Bez niej sekcja PRÓG traci ostrze.
-// · Trzy przykłady w sekcji DOWODY są PRZYKŁADOWE, do podmiany.
-// · Widełki cenowe — świadomie nie ma żadnej kwoty, bo nie mam danych.
-//   Na /strategia-ai stoi 5–20 tys. zł i to jest tam przewagą; tutaj miejsce
-//   na kwotę jest przygotowane w FAQ „Ile kosztuje".
-// · /og/rozwiazania-ai.png — na razie strona dziedziczy /og/hub.png.
+//   · udziały warstw 22/18/14/6/15/15/10 i zdanie „model to 6% pracy” —
+//     proporcja z obserwacji, nie z pomiaru (tak samo na obecnej stronie);
+//     teza mówi „to, co budujemy wokół niego” zamiast „siedem warstw wokół
+//     niego”, bo model sam jest jedną z siedmiu warstw;
+//   · dziewięć tygodni od warsztatu do produkcji — założenie o kształcie usługi;
+//   · zapis „poniżej progu nie płacicie za wdrożenie” — decyzja handlowa;
+//   · trzy przykłady w sekcji przykładów są PRZYKŁADOWE (z obecnej strony;
+//     14.10.2026 hurtownia napojów z potwierdzeniami dostaw zastąpiła
+//     dystrybutora technicznego z zapytaniami ofertowymi — ofertowanie zostaje
+//     przy /systemy-procesowe, a faktury nazwane od tego, co rozstrzyga AI);
+//   · dane w rysunkach są przykładowe: próg 92%, pewności spraw, 412 spraw
+//     z kwartału, 247 zamkniętych, zgodność 98,4%, próg w umowie 97%,
+//     kwoty korekt; nazwy firm i osób w makietach są zmyślone, zdjęcia osób
+//     zastępcze (/makieta/);
+//   · Szymon Negacz jako twarz zielonego pasa;
+//   · liczba wdrożeń w Metodzie: tytuł „ponad 140” i plakietka „140+ wdrożeń”
+//     (domyślna liczba komponentu); na innych stronach pada „140+” albo
+//     „200+” — nie ujednolicone, do decyzji; lewa kolumna Metody (opis
+//     typowego projektu, nie konkretnej firmy);
+//   · cytat X2O bez logotypu (brak pliku znaku X2O w serwisie); od 14.10.2026
+//     w brzmieniu ze strony głównej (wcześniej stała tu inna wersja).
 import LaBase from '../layouts/LaBase.astro';
 import GcFaq from '../components/GcFaq.astro';
-import GcCta from '../components/GcCta.astro';
-import WarunkiZakupu from '../components/WarunkiZakupu.astro';
+import Styl from '../components/usluga/Styl.astro';
+import Anim from '../components/usluga/Anim.astro';
+import Hero from '../components/usluga/Hero.astro';
+import Procesy from '../components/usluga/Procesy.astro';
+import Pas from '../components/usluga/Pas.astro';
+import CtaPasek from '../components/usluga/CtaPasek.astro';
+import Metoda from '../components/usluga/Metoda.astro';
+import DlaKogo from '../components/usluga/DlaKogo.astro';
+import Kontakt from '../components/usluga/Kontakt.astro';
+import { HI } from '../components/usluga/ikony';
+
+// Heroicons Micro (16 × 16, solid), których nie ma w ikony.ts. Ścieżki
+// z @heroicons/react@2.2.0 (16/solid), bez zmian.
+const IKI = {
+  'cpu-chip': '<path d="M6 6v4h4V6H6Z"/> <path fill-rule="evenodd" d="M5.75 1a.75.75 0 0 0-.75.75V3a2 2 0 0 0-2 2H1.75a.75.75 0 0 0 0 1.5H3v.75H1.75a.75.75 0 0 0 0 1.5H3v.75H1.75a.75.75 0 0 0 0 1.5H3a2 2 0 0 0 2 2v1.25a.75.75 0 0 0 1.5 0V13h.75v1.25a.75.75 0 0 0 1.5 0V13h.75v1.25a.75.75 0 0 0 1.5 0V13a2 2 0 0 0 2-2h1.25a.75.75 0 0 0 0-1.5H13v-.75h1.25a.75.75 0 0 0 0-1.5H13V6.5h1.25a.75.75 0 0 0 0-1.5H13a2 2 0 0 0-2-2V1.75a.75.75 0 0 0-1.5 0V3h-.75V1.75a.75.75 0 0 0-1.5 0V3H6.5V1.75A.75.75 0 0 0 5.75 1ZM11 4.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-.5.5H5a.5.5 0 0 1-.5-.5V5a.5.5 0 0 1 .5-.5h6Z" clip-rule="evenodd"/>',
+  'photo': '<path fill-rule="evenodd" d="M2 4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V4Zm10.5 5.707a.5.5 0 0 0-.146-.353l-1-1a.5.5 0 0 0-.708 0L9.354 9.646a.5.5 0 0 1-.708 0L6.354 7.354a.5.5 0 0 0-.708 0l-2 2a.5.5 0 0 0-.146.353V12a.5.5 0 0 0 .5.5h8a.5.5 0 0 0 .5-.5V9.707ZM12 5a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z" clip-rule="evenodd"/>',
+  'exclamation-triangle': '<path fill-rule="evenodd" d="M6.701 2.25c.577-1 2.02-1 2.598 0l5.196 9a1.5 1.5 0 0 1-1.299 2.25H2.804a1.5 1.5 0 0 1-1.3-2.25l5.197-9ZM8 4a.75.75 0 0 1 .75.75v3a.75.75 0 1 1-1.5 0v-3A.75.75 0 0 1 8 4Zm0 8a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" clip-rule="evenodd"/>',
+  'circle-stack': '<path d="M8 7c3.314 0 6-1.343 6-3s-2.686-3-6-3-6 1.343-6 3 2.686 3 6 3Z"/> <path d="M8 8.5c1.84 0 3.579-.37 4.914-1.037A6.33 6.33 0 0 0 14 6.78V8c0 1.657-2.686 3-6 3S2 9.657 2 8V6.78c.346.273.72.5 1.087.683C4.42 8.131 6.16 8.5 8 8.5Z"/> <path d="M8 12.5c1.84 0 3.579-.37 4.914-1.037.366-.183.74-.41 1.086-.684V12c0 1.657-2.686 3-6 3s-6-1.343-6-3v-1.22c.346.273.72.5 1.087.683C4.42 12.131 6.16 12.5 8 12.5Z"/>',
+  'folder': '<path d="M2 3.5A1.5 1.5 0 0 1 3.5 2h2.879a1.5 1.5 0 0 1 1.06.44l1.122 1.12A1.5 1.5 0 0 0 9.62 4H12.5A1.5 1.5 0 0 1 14 5.5v1.401a2.986 2.986 0 0 0-1.5-.401h-9c-.546 0-1.059.146-1.5.401V3.5ZM2 9.5v3A1.5 1.5 0 0 0 3.5 14h9a1.5 1.5 0 0 0 1.5-1.5v-3A1.5 1.5 0 0 0 12.5 8h-9A1.5 1.5 0 0 0 2 9.5Z"/>',
+  'inbox-stack': '<path fill-rule="evenodd" d="M2.742 2.755A2.25 2.25 0 0 1 4.424 2h7.152a2.25 2.25 0 0 1 1.682.755l1.174 1.32c.366.412.568.944.568 1.495v.68a2.25 2.25 0 0 1-2.25 2.25h-9.5A2.25 2.25 0 0 1 1 6.25v-.68c0-.55.202-1.083.568-1.495l1.174-1.32Zm1.682.745a.75.75 0 0 0-.561.252L2.753 5h2.212a1 1 0 0 1 .832.445l.406.61a1 1 0 0 0 .832.445h1.93a1 1 0 0 0 .832-.445l.406-.61A1 1 0 0 1 11.035 5h2.211l-1.109-1.248a.75.75 0 0 0-.56-.252H4.423Z" clip-rule="evenodd"/> <path d="M1 10.75a.75.75 0 0 1 .75-.75h3.215a1 1 0 0 1 .832.445l.406.61a1 1 0 0 0 .832.445h1.93a1 1 0 0 0 .832-.445l.406-.61a1 1 0 0 1 .832-.445h3.215a.75.75 0 0 1 .75.75v1A2.25 2.25 0 0 1 12.75 14h-9.5A2.25 2.25 0 0 1 1 11.75v-1Z"/>',
+  'archive-box': '<path d="M3 2a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1H3Z"/> <path fill-rule="evenodd" d="M3 6h10v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6Zm3 2.75A.75.75 0 0 1 6.75 8h2.5a.75.75 0 0 1 0 1.5h-2.5A.75.75 0 0 1 6 8.75Z" clip-rule="evenodd"/>',
+  'document-check': '<path fill-rule="evenodd" d="M4 2a1.5 1.5 0 0 0-1.5 1.5v9A1.5 1.5 0 0 0 4 14h8a1.5 1.5 0 0 0 1.5-1.5V6.621a1.5 1.5 0 0 0-.44-1.06L9.94 2.439A1.5 1.5 0 0 0 8.878 2H4Zm6.713 4.16a.75.75 0 0 1 .127 1.053l-2.75 3.5a.75.75 0 0 1-1.078.106l-1.75-1.5a.75.75 0 1 1 .976-1.138l1.156.99L9.66 6.287a.75.75 0 0 1 1.053-.127Z" clip-rule="evenodd"/>',
+  'clipboard-document-check': '<path fill-rule="evenodd" d="M11.986 3H12a2 2 0 0 1 2 2v6a2 2 0 0 1-1.5 1.937V7A2.5 2.5 0 0 0 10 4.5H4.063A2 2 0 0 1 6 3h.014A2.25 2.25 0 0 1 8.25 1h1.5a2.25 2.25 0 0 1 2.236 2ZM10.5 4v-.75a.75.75 0 0 0-.75-.75h-1.5a.75.75 0 0 0-.75.75V4h3Z" clip-rule="evenodd"/> <path fill-rule="evenodd" d="M2 7a1 1 0 0 1 1-1h7a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V7Zm6.585 1.08a.75.75 0 0 1 .336 1.005l-1.75 3.5a.75.75 0 0 1-1.16.234l-1.75-1.5a.75.75 0 0 1 .977-1.139l1.02.875 1.321-2.64a.75.75 0 0 1 1.006-.336Z" clip-rule="evenodd"/>',
+  'truck': '<path d="M2.908 2.067A.978.978 0 0 0 2 3.05V8h6V3.05a.978.978 0 0 0-.908-.983 32.481 32.481 0 0 0-4.184 0ZM12.919 4.722A.98.98 0 0 0 11.968 4H10a1 1 0 0 0-1 1v6.268A2 2 0 0 1 12 13h1a.977.977 0 0 0 .985-1 31.99 31.99 0 0 0-1.066-7.278Z"/> <path d="M11 13a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM2 12V9h6v3a1 1 0 0 1-1 1 2 2 0 1 0-4 0 1 1 0 0 1-1-1Z"/> <path d="M6 13a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"/>',
+};
+const IK = { ...HI, ...IKI };
 
 const kanon = new URL('/rozwiazania-ai', Astro.site).href;
 
@@ -66,11 +99,11 @@ const dane = {
     {
       '@type': 'Service',
       '@id': `${kanon}#usluga`,
-      name: 'Indywidualne rozwiązania AI',
-      alternateName: ['Wdrożenie AI w firmie', 'Rozwiązania AI dla firm', 'AI pod proces'],
-      serviceType: 'Projektowanie i budowa rozwiązań opartych na sztucznej inteligencji',
+      name: 'Automatyzacja procesów z AI',
+      alternateName: ['Indywidualne rozwiązania AI', 'Wdrożenie AI w firmie', 'AI pod proces'],
+      serviceType: 'Projektowanie i budowa rozwiązań AI, które prowadzą sprawy w procesach firmy',
       url: kanon,
-      description: 'Indywidualne rozwiązanie AI zbudowane pod jeden proces w firmie i wpięte w systemy, z których korzysta zespół. Sprawy pewne system zamyka sam, pozostałe trafiają do człowieka razem z powodem. Próg jakości mierzymy na sprawach klienta przed budową.',
+      description: 'Rozwiązanie AI zbudowane pod jeden proces w firmie i wpięte w systemy, z których korzysta zespół. Sprawy pewne zamyka samo, pozostałe przekazuje człowiekowi razem z powodem. Próg jakości mierzymy na sprawach klienta przed budową i zapisujemy w umowie.',
       provider: { '@id': new URL('/#organizacja', Astro.site).href },
       areaServed: { '@type': 'Country', name: 'Polska' },
       audience: { '@type': 'BusinessAudience', name: 'Średnie i duże firmy' },
@@ -80,222 +113,337 @@ const dane = {
       '@id': `${kanon}#okruszki`,
       itemListElement: [
         { '@type': 'ListItem', position: 1, name: 'Strona główna', item: new URL('/', Astro.site).href },
-        { '@type': 'ListItem', position: 2, name: 'Indywidualne rozwiązania AI', item: kanon },
+        { '@type': 'ListItem', position: 2, name: 'Automatyzacja procesów z AI', item: kanon },
       ],
     },
   ],
 };
 
-const title = "Indywidualne rozwiązania AI dla firm — wdrożenie pod Wasz proces | Let's automate";
-const description = 'Rozwiązanie AI zbudowane pod jeden proces i wpięte w Wasze systemy. Próg jakości mierzymy na Waszych sprawach przed budową, a sprawy niepewne trafiają do człowieka z uzasadnieniem.';
+const title = "Automatyzacja procesów z AI — sprawy prowadzi AI, wyjątki ludzie | Let's automate";
+const description = 'Rozwiązanie AI zbudowane pod jeden Wasz proces i wpięte w Wasze systemy. Sprawy pewne zamyka samo, niepewne trafiają do człowieka z powodem. Próg jakości mierzymy na Waszych sprawach przed budową.';
 
 
-// ---- PRZEKRÓJ ROZWIĄZANIA (hero) ---------------------------------------
-// Grubość warstwy to jej udział w czasie budowy. Warstwa modelu jest
-// najcieńsza i to jest cały argument tego rysunku — dlatego po złożeniu
-// przekrój rozsuwa się wachlarzem dokładnie na niej.
-// Udziały sumują się do 100; sprawdzane niżej, żeby przy edycji nie uciekło.
-const RDZEN = [
-  { n: 'Połączenie z systemami', u: 22, o: 'Sprawa leży tam, gdzie zawsze: w poczcie, w ERP, na dysku. Rozwiązanie sięga po nią samo.' },
-  { n: 'Uporządkowanie danych', u: 18, o: 'Skany, tabele i pola opisowe trzeba doprowadzić do postaci, w której da się je porównać.' },
-  { n: 'Reguły i progi', u: 14, o: 'Warunki, po których sprawa jest rozstrzygnięta. Spisujemy je z osobami, które prowadzą ją dzisiaj.' },
-  { n: 'Model', u: 6, o: 'Odczytuje treść sprawy i proponuje decyzję. Siedzi za własnym interfejsem, więc wymienia się go w jeden dzień.', model: true },
-  { n: 'Ścieżka wyjątku', u: 15, o: 'Co dzieje się ze sprawą, której system nie domyka: kto ją dostaje i z jakim uzasadnieniem.' },
-  { n: 'Miejsce pracy zespołu', u: 15, o: 'Ekran, na którym Wasi ludzie widzą sprawy i podejmują decyzje. Bez promptów do nauczenia.' },
-  { n: 'Pomiar i alarmy', u: 10, o: 'Licznik spraw, skuteczność tydzień do tygodnia i sygnał, kiedy wynik odjeżdża od normy.' },
-];
-const SUMA_U = RDZEN.reduce((a, w) => a + w.u, 0);
-if (SUMA_U !== 100) throw new Error(`Udziały warstw muszą sumować się do 100, jest ${SUMA_U}`);
-
-const RD_C = 24;               // długość cyklu animacji przekroju
-const IDX_MODEL = RDZEN.findIndex((w) => w.model);
-
-let biezaca = 0;
-const warstwy = RDZEN.map((w, i) => {
-  const poz = { ...w, i, y: biezaca, srodek: biezaca + w.u / 2 };
-  biezaca += w.u;
-  // Wachlarz: im dalej od warstwy modelu, tym mocniejszy odjazd.
-  poz.odjazd = (i - IDX_MODEL) * 9;
-  // Nasze warstwy dostają zieleń o malejącym nasyceniu, model — szarość.
-  // Kolor niesie legendę: co budujemy my, a co przychodzi od dostawcy.
-  const kroki = RDZEN.filter((x) => !x.model).length;
-  const rzad = RDZEN.slice(0, i).filter((x) => !x.model).length;
-  poz.tlo = w.model
-    ? 'rgba(22,33,26,0.17)'
-    : `rgba(0,205,119,${(0.44 - (rzad / (kroki - 1)) * 0.27).toFixed(3)})`;
-  return poz;
-});
-
-const rp = (s) => `${(Math.max(0, Math.min(1, s / RD_C)) * 100).toFixed(2)}%`;
-
-// Kalendarz cyklu. Wszystkie chwile liczone tutaj, żeby przesunięcie jednej
-// fazy nie wymagało przepisywania siedmiu reguł.
-const SKLADANIE = 0.4;         // kiedy startuje pierwsza warstwa
-const KROK = 0.34;             // odstęp między kolejnymi warstwami
-const ROZSUW = 5.0;            // początek rozsuwania wachlarza
-const TRZYMA = 6.0;            // wachlarz w pełni otwarty
-const ZAMYKA = 11.4;           // początek zamykania
-const ZAMKNIETY = 12.3;
-const ZANIK = 22.2;            // przekrój gaśnie i cykl startuje od nowa
-
-const klatkiRdzen = [
-  ...warstwy.map((w) => `@keyframes rd-w${w.i}{0%,${rp(SKLADANIE + w.i * KROK)}{opacity:0;transform:scaleY(0)}${rp(SKLADANIE + w.i * KROK + 0.62)}{opacity:1;transform:scaleY(1)}${rp(ZANIK)}{opacity:1;transform:scaleY(1)}${rp(ZANIK + 1.1)}{opacity:0;transform:scaleY(1)}100%{opacity:0;transform:scaleY(1)}}`),
-  ...warstwy.map((w) => `@keyframes rd-e${w.i}{0%,${rp(SKLADANIE + w.i * KROK + 0.2)}{opacity:0}${rp(SKLADANIE + w.i * KROK + 0.8)}{opacity:1}${rp(ZANIK)}{opacity:1}${rp(ZANIK + 0.9)}{opacity:0}100%{opacity:0}}`),
-  ...warstwy.map((w) => `@keyframes rd-roz${w.i}{0%,${rp(ROZSUW)}{transform:translateY(0)}${rp(TRZYMA)}{transform:translateY(${w.odjazd}px)}${rp(ZAMYKA)}{transform:translateY(${w.odjazd}px)}${rp(ZAMKNIETY)}{transform:translateY(0)}100%{transform:translateY(0)}}`),
-  `@keyframes rd-cal{0%,${rp(ROZSUW + 0.5)}{opacity:0;transform:translateY(-4px)}${rp(TRZYMA + 0.3)}{opacity:1;transform:translateY(0)}${rp(ZAMYKA)}{opacity:1;transform:translateY(0)}${rp(ZAMYKA + 0.5)}{opacity:0;transform:translateY(-4px)}100%{opacity:0;transform:translateY(-4px)}}`,
-  `@keyframes rd-blask{0%,${rp(ROZSUW + 0.3)}{box-shadow:0 0 0 0 rgba(0,205,119,0)}${rp(TRZYMA)}{box-shadow:0 0 0 3px rgba(0,205,119,0.85)}${rp(ZAMYKA)}{box-shadow:0 0 0 3px rgba(0,205,119,0.85)}${rp(ZAMKNIETY)}{box-shadow:0 0 0 0 rgba(0,205,119,0)}100%{box-shadow:0 0 0 0 rgba(0,205,119,0)}}`,
-].join('\n');
+// ---- LUDZIE I ŹRÓDŁA (wspólne dla wszystkich rysunków) ------------------
+// Zdjęcia zastępcze z makiety /systemy-procesowe-new, te same imiona.
+const LUDZIE = {
+  ak: { n: 'Anna Kowal', b: 'Annę', r: 'reklamacje', f: '/makieta/awatar-anna.webp' },
+  mr: { n: 'Michał Rutkowski', b: 'Michała', r: 'dział jakości', f: '/makieta/awatar-michal.webp' },
+};
+// Kolor każdego źródła danych jest ten sam w hero, w teczce i w aplikacji.
+// Model ma szarość „dostawcy”, jak jego płyta w przekroju.
+const ZRODLA = {
+  Poczta: { c: '#d0573f', ik: 'envelope' },
+  ERP: { c: '#7b5fd0', ik: 'circle-stack' },
+  Umowa: { c: '#c7822e', ik: 'folder' },
+  CRM: { c: '#3f78d8', ik: 'users' },
+  Magazyn: { c: '#5c6b63', ik: 'cube' },
+  Model: { c: '#8a918c', ik: 'cpu-chip' },
+};
 
 
-// ---- PRÓG PEWNOŚCI (ciemny pas) ----------------------------------------
-// Jedna sprawa naraz, w powiększeniu — odwrotnie niż strumień na
-// /strategia-ai, gdzie leciały trzydzieści dwa rozmyte wiersze.
-// Tam chodziło o skalę przeglądu, tutaj o to, żeby dało się przeczytać
-// powód. Dwie z pięciu spraw idą do człowieka i to jest celowe:
-// lista, na której wszystko przechodzi, wygląda jak materiał sprzedażowy.
+// ---- ZWROTNICA PROGU (hero) --------------------------------------------
+// Pięć reklamacji z jednego poranka, w kolejności wpływu. Rozwiązanie
+// odczytuje sprawę, liczy pewność i porównuje ją z progiem: powyżej
+// zamyka samo, poniżej oddaje człowiekowi z powodem. Dwie z pięciu idą
+// do ludzi i to jest celowe (playbook §6): lista, na której wszystko
+// przechodzi, czyta się jak materiał sprzedażowy. RMA-2189 przechodzi
+// o włos (93% przy progu 92%). Ostatnia sprawa (RMA-2190) zostaje na
+// stanowisku w stanie końcowym, bo to ona niesie argument — ta sama
+// sprawa jest otwarta w aplikacji w sekcji „Jak to wygląda”.
 const PROG = 92;
 const SPRAWY = [
-  { t: 'Faktura kosztowa 4471/08', p: 97, ok: true, w: 'zaksięgowana bez dotknięcia' },
-  { t: 'Reklamacja RMA-2190', p: 71, ok: false, w: 'na dokumencie i w ERP stoją dwie różne ceny' },
-  { t: 'Zapytanie ofertowe z poczty', p: 93, ok: true, w: 'wycena wyszła do klienta w cztery minuty' },
-  { t: 'Aneks do umowy ramowej', p: 64, ok: false, w: 'zapis, którego nie ma w żadnej wcześniejszej umowie' },
-  { t: 'Zamówienie z portalu klienta', p: 98, ok: true, w: 'poszło na produkcję z rezerwacją materiału' },
+  { nr: 'RMA-2186', kl: 'Dachpol', t: 'Uszkodzona paleta w transporcie', g: '9:12', p: 97, ok: true,
+    od: [['Poczta', 'zgłoszenie z 3 zdjęciami'], ['ERP', 'FS 8807/09 · dostawa 9.09'], ['Umowa', '§7 ust. 2 · szkoda do 7 dni'], ['Model', 'uszkodzenie na 3 z 3 zdjęć']],
+    wynik: 'korekta 876,00 zł w ERP' },
+  { nr: 'RMA-2187', kl: 'Termo-Bud', t: 'Pęknięte płytki, podejrzenie wady', g: '9:31', p: 64, ok: false, kto: 'mr',
+    od: [['Poczta', '2 zdjęcia, bez protokołu'], ['ERP', 'FS 8790/09 · gres 60×60'], ['Umowa', '§8 · wady produktu'], ['Model', 'pęknięcia widać, przyczyny nie']],
+    powod: 'zdjęcia nie pokazują, czy pęknięcie jest fabryczne' },
+  { nr: 'RMA-2188', kl: 'Budmat', t: 'Brak 12 szt. w dostawie', g: '9:48', p: 95, ok: true,
+    od: [['Poczta', 'protokół kierowcy: 36 z 48 szt.'], ['ERP', 'WZ 4502/09 · 48 szt.'], ['Magazyn', '12 szt. na stanie'], ['Model', 'zgłoszenie: brak, bez uszkodzeń']],
+    wynik: 'dosyłka 12 szt. zlecona na jutro' },
+  { nr: 'RMA-2189', kl: 'Stal-Hurt', t: 'Zgłoszenie 41 dni po dostawie', g: '10:04', p: 93, ok: true,
+    od: [['Poczta', 'zgłoszenie z 10.09'], ['ERP', 'WZ 4377/07 · dostawa 31.07'], ['Umowa', '§7 ust. 4 · 30 dni'], ['Model', 'dotyczy dostawy z 31.07']],
+    wynik: 'odpowiedź z terminem z §7 ust. 4' },
+  { nr: 'RMA-2190', kl: 'Kamex', t: 'Uszkodzenie 2 palet w transporcie', g: '10:22', p: 71, ok: false, kto: 'ak',
+    od: [['Poczta', 'faktura: 7 100 zł za paletę'], ['ERP', 'cennik Kamex: 6 820 zł'], ['Umowa', '§7 ust. 2 · szkoda do 7 dni'], ['Model', 'szkoda transportowa, 4 z 4 zdjęć']],
+    powod: 'faktura i ERP podają dwie różne ceny' },
 ];
-const SLOT = 4.4;
-const PG_C = SPRAWY.length * SLOT;
-const pgp = (s) => `${(Math.max(0, Math.min(1, s / PG_C)) * 100).toFixed(2)}%`;
-
-const klatkiProg = SPRAWY.map((s, i) => {
-  const b = i * SLOT;
-  return [
-    `@keyframes pg-k${i}{0%,${pgp(b)}{opacity:0}${pgp(b + 0.4)}{opacity:1}${pgp(b + 3.85)}{opacity:1}${pgp(b + 4.2)}{opacity:0}100%{opacity:0}}`,
-    `@keyframes pg-b${i}{0%,${pgp(b + 0.5)}{width:0%}${pgp(b + 1.75)}{width:${s.p}%}${pgp(b + 4.2)}{width:${s.p}%}100%{width:${s.p}%}}`,
-    `@keyframes pg-l${i}{0%,${pgp(b + 1.6)}{opacity:0}${pgp(b + 1.95)}{opacity:1}${pgp(b + 4.2)}{opacity:1}100%{opacity:1}}`,
-    `@keyframes pg-v${i}{0%,${pgp(b + 2.0)}{opacity:0;transform:translateY(5px)}${pgp(b + 2.4)}{opacity:1;transform:translateY(0)}${pgp(b + 4.2)}{opacity:1;transform:translateY(0)}100%{opacity:1;transform:translateY(0)}}`,
-  ].join('\n');
-}).join('\n');
+// Kolejne zgłoszenia w drodze — widać je w kolejce w stanie końcowym.
+const NASTEPNE = [
+  { nr: 'RMA-2191', kl: 'Dom-Instal', t: 'Brak atestu w dostawie', g: '10:37' },
+  { nr: 'RMA-2192', kl: 'Dachpol', t: 'Uszkodzony karton fug', g: '10:41' },
+  { nr: 'RMA-2193', kl: 'Budmat', t: 'Zła ilość na fakturze', g: '10:52' },
+  { nr: 'RMA-2194', kl: 'Agro-Bud', t: 'Wgnieciony grzejnik', g: '11:06' },
+];
+const ZR_S = SPRAWY.filter((s) => s.ok).length;    // 3
+const ZR_C = SPRAWY.length - ZR_S;                  // 2
+const ZR_ARIA = `Zwrotnica progu pewności w obiegu reklamacji. Pięć zgłoszeń z jednego poranka przechodzi przez odczyt: rozwiązanie zbiera dane z poczty, z ERP i z umowy, liczy pewność rozstrzygnięcia i porównuje ją z progiem ${PROG}%. Trzy sprawy powyżej progu zamyka samo: korekta 876 zł w ERP, dosyłka 12 sztuk, odpowiedź z terminem z umowy. Dwie poniżej progu idą do ludzi razem z powodem: przy pękniętych płytkach zdjęcia nie pokazują, czy wada jest fabryczna, a przy uszkodzonych paletach faktura i ERP podają dwie różne ceny.`;
 
 
-// ---- HARMONOGRAM DWUTOROWY ---------------------------------------------
-// Oś ma dziewięć tygodni. Bloki stoją na wspólnej osi w dwóch torach,
-// bo najczęstsze pytanie po „ile to trwa" brzmi „ile z tego jest po naszej
-// stronie". Wypełnienie bloków jedzie za scrollem: zmienna --p idzie z JS,
-// a każdy blok liczy sobie własne wypełnienie w CSS przez clamp().
-const TYGODNI = 9;
-const TORY = [
-  {
-    kto: 'Po naszej stronie',
-    akcent: true,
-    bloki: [
-      { t: 'Warsztat', s: 0, d: 1 },
-      { t: 'Prototyp na Waszych danych', s: 1, d: 2 },
-      { t: 'Pomiar progu', s: 3, d: 1 },
-      { t: 'Poprawki z pilota', s: 4, d: 3 },
-      { t: 'Produkcja i przekazanie', s: 7, d: 2 },
-    ],
-  },
-  {
-    kto: 'Po Waszej stronie',
-    akcent: false,
-    bloki: [
-      { t: 'Sprawy z kwartału', s: 0, d: 1 },
-      { t: 'Jedna rozmowa w tygodniu', s: 1, d: 2 },
-      { t: 'Sporne przypadki', s: 3, d: 1 },
-      { t: 'Zespół pracuje na rozwiązaniu', s: 4, d: 3 },
-      { t: 'Odbiór', s: 8, d: 1 },
-    ],
-  },
+// ---- PRZEKRÓJ ROZWIĄZANIA (dlaczego, blok 1) ----------------------------
+// Siedem płyt w rzucie izometrycznym. Grubość płyty to udział warstwy
+// w czasie budowy (DO POTWIERDZENIA: proporcja z obserwacji). Płyta modelu
+// leży w środku stosu i po złożeniu wysuwa się jak szuflada: siedzi za
+// własnym interfejsem, więc wymienia się ją bez przebudowy reszty.
+// Udziały sumują się do 100 — pilnowane niżej.
+const WARSTWY = [
+  { n: 'Połączenie z systemami', u: 22, o: 'Sprawa leży tam, gdzie zawsze: w poczcie, w ERP, w CRM i na dysku. Rozwiązanie sięga po nią samo.' },
+  { n: 'Uporządkowanie danych', u: 18, o: 'Skany i pola opisowe doprowadzone do postaci, w której da się je porównać.' },
+  { n: 'Reguły i progi', u: 14, o: 'Warunki, po których sprawa jest rozstrzygnięta, spisane z osobami, które prowadzą ją dzisiaj.' },
+  { n: 'Model', u: 6, model: true, o: 'Odczytuje treść sprawy i proponuje decyzję. Siedzi za własnym interfejsem, więc wymienia się go w jeden dzień.' },
+  { n: 'Ścieżka wyjątku', u: 15, o: 'Kto dostaje sprawę, której system nie domyka, i z jakim uzasadnieniem.' },
+  { n: 'Miejsce pracy zespołu', u: 15, o: 'Ekran, na którym Wasi ludzie widzą sprawy i podejmują decyzje. Bez promptów do nauczenia.' },
+  { n: 'Pomiar i alarmy', u: 10, o: 'Skuteczność tydzień do tygodnia i sygnał, kiedy wynik odjeżdża od normy.' },
+];
+const SUMA_U = WARSTWY.reduce((a, w) => a + w.u, 0);
+if (SUMA_U !== 100) throw new Error(`Udziały warstw muszą sumować się do 100, jest ${SUMA_U}`);
+// Geometria w viewBox 760 × 500: przód płyty to prostokąt, góra i bok to
+// równoległoboki przesunięte o (OX, −OY). Kolory nieprzezroczyste, bo płyty
+// się zasłaniają; zieleń nasycona u góry stosu, jaśniejsza niżej.
+const PK = { x: 300, fw: 290, ox: 120, oy: 66, y0: 100, ht: 324, gap: 5, wysun: 170 };
+const mixZ = (a) => [0, 205, 119].map((c) => Math.round(255 - a * (255 - c)));
+const rgb = (c) => `rgb(${c.join(',')})`;
+let pkY = PK.y0, pkRzad = 0;
+const PLYTY = WARSTWY.map((w, i) => {
+  const h = (w.u / 100) * PK.ht;
+  const y = pkY;
+  pkY += h + PK.gap;
+  let front, gora, bok;
+  if (w.model) { front = [24, 38, 31]; gora = [52, 70, 60]; bok = [13, 22, 18]; }
+  else {
+    const a = 0.66 - (pkRzad++ / 5) * 0.46;
+    front = mixZ(a); gora = mixZ(a * 0.6); bok = front.map((v) => Math.round(v * 0.86));
+  }
+  const { x, fw, ox, oy } = PK;
+  return {
+    ...w, i, h, y,
+    front: rgb(front), gora: rgb(gora), bok: rgb(bok),
+    pF: `${x},${y} ${x + fw},${y} ${x + fw},${y + h} ${x},${y + h}`,
+    pG: `${x},${y} ${x + ox},${y - oy} ${x + fw + ox},${y - oy} ${x + fw},${y}`,
+    pB: `${x + fw},${y} ${x + fw + ox},${y - oy} ${x + fw + ox},${y + h - oy} ${x + fw},${y + h}`,
+    // odnośnik: od środka boku płyty w prawo, potem do etykiety
+    ly: 40 + i * 70,
+    sy: y + h / 2 - oy / 2,
+    // opóźnienie wejścia: stos rośnie od dołu
+    d: ((WARSTWY.length - 1 - i) * 0.13).toFixed(2),
+  };
+});
+const PK_DOL = [...PLYTY].reverse();   // kolejność rysowania: od dołu stosu
+const PK_M = PLYTY.find((p) => p.model);
+const pkX = (v) => `${(v / 760 * 100).toFixed(2)}%`;
+const pkYp = (v) => `${(v / 500 * 100).toFixed(2)}%`;
+
+
+// ---- TECZKA SPRAWY (dlaczego, blok 2) -----------------------------------
+// RMA-2186 z hero, rozpisana: z czterech systemów wpadają kawałki sprawy,
+// w teczce składają się w jedną całość, model dokłada jeden wiersz,
+// a decyzja wraca do ERP i do klienta. z = indeks źródła (linia do niego).
+const TK_ZR = [
+  { z: 'Poczta', g: 'reklamacje@', t: 'Zgłoszenie od Dachpol, 3 zdjęcia' },
+  { z: 'ERP', g: 'dokumenty sprzedaży', t: 'FS 8807/09 · dostawa 9.09' },
+  { z: 'Umowa', g: 'dysk z umowami', t: 'Umowa ramowa Dachpol · §7' },
+  { z: 'CRM', g: 'karta klienta', t: 'Dachpol · klient od 2019' },
+];
+const TK_W = [
+  { z: 0, k: 'Zgłoszenie', v: 'uszkodzona paleta w transporcie · 10.09, 9:12' },
+  { z: 1, k: 'Dokument', v: 'FS 8807/09 · dostawa 9.09' },
+  { z: 1, k: 'Pozycja', v: 'Klej C2TE 25 kg · 40 szt. × 21,90 zł' },
+  { z: 2, k: 'Warunek', v: '§7 ust. 2: szkoda w transporcie zgłoszona do 7 dni, uznanie w całości' },
+  { z: 3, k: 'Klient', v: '1 reklamacja w ostatnich 12 miesiącach' },
+];
+const TK_WY = [
+  { z: 'ERP', t: 'Korekta FK/09/0412', d: '−876,00 zł · zapisana w ERP' },
+  { z: 'Poczta', t: 'Odpowiedź do Dachpol', d: 'reklamacja uznana, korekta w załączniku' },
 ];
 
-const etapy = [
-  {
-    e: 'TYDZIEŃ 1', t: 'Warsztat na jednym procesie',
-    d: 'Siadamy z osobami, które prowadzą sprawę dzisiaj, i rozkładamy ją na kroki razem z warunkami, po których zapada każda decyzja. Wychodzimy z kompletem spraw z ostatniego kwartału.',
-    w: 'dzień warsztatu i wydanie spraw z systemu',
-  },
-  {
-    e: 'TYDZIEŃ 2–3', t: 'Prototyp na Waszych danych',
-    d: 'Pierwsza wersja powstaje od razu na sprawach z Waszego kwartału. Po drugim tygodniu widzicie ją w działaniu i mówicie, gdzie rozstrzyga inaczej niż Wasz zespół.',
-    w: 'jedna rozmowa w tygodniu',
-  },
-  {
-    e: 'TYDZIEŃ 4', t: 'Pomiar progu',
-    d: 'Puszczamy rozwiązanie przez komplet spraw z kwartału i porównujemy jego decyzje z tym, co zrobił człowiek. Wynik jest liczbą, a przypadki sporne rozstrzygacie Wy.',
-    w: 'kilka godzin na sporne przypadki',
-  },
-  {
-    e: 'TYDZIEŃ 5–7', t: 'Pilot w jednym zespole',
-    d: 'Rozwiązanie idzie na produkcję w jednym zespole i pracuje na prawdziwym ruchu. Ścieżka wyjątku ma wtedy najwięcej pracy i to z niej biorą się poprawki.',
-    w: 'zespół pracuje na rozwiązaniu zamiast po staremu',
-  },
-  {
-    e: 'TYDZIEŃ 8–9', t: 'Produkcja i przekazanie',
-    d: 'Rozwiązanie obejmuje cały proces. Przekazujemy repozytorium, dokumentację i dostęp do panelu, a Wasz zespół dostaje szkolenie na własnych sprawach.',
-    w: 'odbiór i szkolenie',
-  },
-];
 
-
-// ---- KIEDY TEGO NIE BUDOWAĆ --------------------------------------------
-// Odpowiednik kolumny „jeszcze nie, jeśli" ze /strategia-ai, ale mocniejszy:
-// tam odsyłaliśmy klienta na później, tu odsyłamy go do tańszego rozwiązania.
-const DROGI = [
-  {
-    n: 'Gotowe narzędzie z półki',
-    k: 'Zadanie wygląda tak samo w każdej firmie: transkrypcja spotkań, tłumaczenia, pisanie treści. Nie dotyka Waszych danych ani Waszych reguł.',
-    r: 'Podajemy nazwę narzędzia i wracamy do rozmowy dopiero wtedy, kiedy zrobi się za ciasne.',
-  },
-  {
-    n: 'Integracja bez modelu',
-    k: 'Dane mają stały format, a decyzja daje się zapisać warunkiem. Model dołoży wtedy koszt zapytań i jedno miejsce, w którym coś może pójść inaczej niż zwykle.',
-    r: 'Wyceniamy integrację. Bywa, że to trzy dni pracy zamiast trzech miesięcy.',
-  },
-  {
-    n: 'Rozwiązanie zbudowane pod Was',
-    k: 'Sprawa przechodzi przez kilka systemów, dane bywają niepełne, a rozstrzygnięcie wymaga oceny. Przy takim wolumenie różnicę widać w wyniku firmy.',
-    r: 'Tu zaczyna się nasza robota.',
-    nasze: true,
-  },
+// ---- APLIKACJA (jak to wygląda) ----------------------------------------
+// Ten sam obieg reklamacji co w hero: pięć porannych spraw (RMA-2186…2190)
+// i trzy wcześniejsze. Sprawa otwarta w pierwszym widoku to RMA-2190 —
+// ta, która w hero zostaje na stanowisku poniżej progu.
+const KOLEJKA = [
+  { nr: 'RMA-2190', kl: 'Kamex', t: 'Uszkodzenie 2 palet w transporcie', g: '10:22', p: 71, st: ['c', 'ak', 'czeka na Annę'] },
+  { nr: 'RMA-2189', kl: 'Stal-Hurt', t: 'Zgłoszenie 41 dni po dostawie', g: '10:04', p: 93, st: ['s', '', 'odpowiedź wysłana'] },
+  { nr: 'RMA-2188', kl: 'Budmat', t: 'Brak 12 szt. w dostawie', g: '9:48', p: 95, st: ['s', '', 'dosyłka zlecona'] },
+  { nr: 'RMA-2187', kl: 'Termo-Bud', t: 'Pęknięte płytki, podejrzenie wady', g: '9:31', p: 64, st: ['c', 'mr', 'czeka na Michała'] },
+  { nr: 'RMA-2186', kl: 'Dachpol', t: 'Uszkodzona paleta w transporcie', g: '9:12', p: 97, st: ['s', '', 'korekta w ERP'] },
+  { nr: 'RMA-2185', kl: 'Agro-Bud', t: 'Zła ilość na fakturze', g: '8:51', p: 98, st: ['s', '', 'korekta ilościowa'] },
+  { nr: 'RMA-2184', kl: 'Dom-Instal', t: 'Wada fabryczna, 3 kartony', g: '8:30', p: 88, st: ['z', 'ak', 'Anna: uznana częściowo'] },
+  { nr: 'RMA-2183', kl: 'Kamex', t: 'Inny kolor fugi niż w zamówieniu', g: '8:12', p: 96, st: ['s', '', 'wymiana zlecona'] },
 ];
+const RK_ZAK = [
+  { t: 'Sprawa u człowieka', p: 'Sprawa poniżej progu przychodzi z tym, czego system nie rozstrzygnął, i z danymi, które zdążył zebrać. Projekt korekty czeka gotowy w obu wariantach.' },
+  { t: 'Sprawa zamknięta', p: 'Sprawę pewną rozwiązanie zamyka samo. W karcie zostaje każdy krok ze źródłem, a dokumenty trafiają do ERP i do klienta.' },
+  { t: 'Historia decyzji', p: 'Każda decyzja jest zapisana razem z powodem, także decyzje ludzi. Po fakcie da się sprawdzić, na czym się oparła.' },
+  { t: 'Próg i reguły', p: 'Próg pewności i reguły zmienia Wasz człowiek, bez naszego udziału. Zmiana działa od następnej sprawy.' },
+];
+const RK_ZEBRAL = [
+  ['Poczta', 'Zgłoszenie z 10.09, 10:22', 'protokół szkody, 4 zdjęcia'],
+  ['ERP', 'FS 8812/09 · dostawa 9.09', 'gres 60×60 · 2 palety'],
+  ['Umowa', 'Umowa ramowa Kamex 2024', '§7 ust. 2 · uznanie w całości'],
+  ['CRM', 'Kamex', '3 reklamacje w 18 mies., wszystkie uznane'],
+];
+const RK_SPRAWDZIL = [
+  'Zgłoszenie w terminie: 1 dzień po dostawie',
+  'Protokół szkody podpisany przez kierowcę',
+  'Uszkodzenie widoczne na 4 z 4 zdjęć',
+];
+const RK_PRZEBIEG = [
+  { h: '9:12', z: 'Poczta', t: 'Zgłoszenie z poczty, 3 zdjęcia' },
+  { h: '9:12', z: 'ERP', t: 'Dopasowane do FS 8807/09, dostawa 9.09' },
+  { h: '9:12', z: 'Umowa', t: '§7 ust. 2: szkoda zgłoszona dzień po dostawie' },
+  { h: '9:13', z: 'Model', t: 'Uszkodzenie widoczne na 3 z 3 zdjęć · pewność 97%' },
+  { h: '9:13', z: 'ERP', t: 'Korekta FK/09/0412 na 876,00 zł zapisana' },
+  { h: '9:13', z: 'Poczta', t: 'Odpowiedź wysłana do Dachpol' },
+];
+const RK_HIST = [
+  { nr: 'RMA-2189', kl: 'Stal-Hurt', d: 'Odpowiedź z terminem z umowy', kto: '', p: 93, w: '§7 ust. 4: zgłoszenie 41 dni po dostawie, termin 30 dni' },
+  { nr: 'RMA-2188', kl: 'Budmat', d: 'Dosyłka 12 szt.', kto: '', p: 95, w: 'protokół kierowcy: 36 z 48 szt., 12 szt. na stanie' },
+  { nr: 'RMA-2186', kl: 'Dachpol', d: 'Korekta 876,00 zł', kto: '', p: 97, w: '§7 ust. 2, uszkodzenie widoczne na 3 z 3 zdjęć' },
+  { nr: 'RMA-2185', kl: 'Agro-Bud', d: 'Korekta ilościowa, 6 szt.', kto: '', p: 98, w: 'WZ 4471/09 i faktura różnią się o 6 szt.' },
+  { nr: 'RMA-2184', kl: 'Dom-Instal', d: 'Uznana częściowo', kto: 'ak', p: 88, w: 'wada fabryczna w 1 z 3 kartonów, dwa uszkodzone przy montażu' },
+  { nr: 'RMA-2183', kl: 'Kamex', d: 'Wymiana na zamówiony kolor', kto: '', p: 96, w: 'zamówienie: fuga szara, wydano antracyt' },
+  { nr: 'RMA-2181', kl: 'Termo-Bud', d: 'Odrzucona', kto: 'mr', p: 76, w: 'montaż niezgodny z kartą techniczną produktu' },
+  { nr: 'RMA-2180', kl: 'Budmat', d: 'Korekta 1 240,00 zł', kto: '', p: 95, w: '§7 ust. 2, protokół szkody, uszkodzenie na 2 z 2 zdjęć' },
+  { nr: 'RMA-2179', kl: 'Dachpol', d: 'Przekazana do handlowca', kto: 'ak', p: 83, w: 'klient prosi o rabat zamiast korekty, tego umowa nie przewiduje' },
+];
+const RK_REGULY = [
+  { t: 'Szkoda w transporcie zgłoszona do 7 dni od dostawy', v: 'uznanie w całości · §7 ust. 2' },
+  { t: 'Zgłoszenie później niż 30 dni od dostawy', v: 'odpowiedź z terminem · §7 ust. 4' },
+  { t: 'Korekta powyżej kwoty', v: '20 000 zł · zawsze człowiek' },
+  { t: 'Pierwsza reklamacja nowego klienta', v: 'zawsze człowiek' },
+  { t: 'Sprawy poniżej progu', v: 'reklamacje · Anna Kowal' },
+  { t: 'Podejrzenie wady produktu', v: 'jakość · Michał Rutkowski' },
+];
+// Suwak progu: skala 80–100%.
+const SL = { od: 80, do: 100 };
+const slX = (v) => `${((v - SL.od) / (SL.do - SL.od) * 100).toFixed(1)}%`;
 
 
 // ---- PRZYKŁADY ---------------------------------------------------------
-// PRZYKŁADOWE wdrożenia — do podmiany na potwierdzone przypadki.
-// Pokrycie to udział spraw zamykanych bez człowieka po pierwszym kwartale.
+// PRZYKŁADOWE wdrożenia z obecnej strony — do podmiany na potwierdzone.
+// Miara: udział spraw zamykanych bez człowieka po pierwszym kwartale.
+// Pasek nigdy nie stoi sam: obok lista tego, co zostało u ludzi, bo bez
+// niej liczba czyta się jak obietnica pełnej automatyki.
 const PRZYKLADY = [
-  {
-    f: 'Producent opakowań', m: '210 osób', p: 'Obieg faktur kosztowych',
-    d: 'Faktura przychodzi na skrzynkę, rozwiązanie dopasowuje ją do zamówienia i do warunków z umowy, a potem księguje. Zgodność cen sprawdza w ERP przy każdej pozycji.',
-    pokrycie: 78,
-    ludzie: ['ceny rozjeżdżające się z umową', 'pierwsza faktura od nowego dostawcy'],
-  },
-  {
-    f: 'Dystrybutor techniczny', m: '340 osób', p: 'Zapytania ofertowe z poczty',
-    d: 'Zapytanie z poczty zamienia się w wycenę na podstawie cennika, historii tego klienta i dostępności w magazynie. Handlowiec dostaje gotowy dokument do zatwierdzenia.',
-    pokrycie: 64,
-    ludzie: ['zamienniki dla pozycji spoza katalogu', 'negocjacje przy dużych ilościach'],
-  },
-  {
-    f: 'Firma serwisowa', m: '120 osób', p: 'Kwalifikacja zgłoszeń',
-    d: 'Zgłoszenie dostaje priorytet, wymagane uprawnienia i termin z umowy serwisowej, a potem trafia do technika, który ma je najbliżej po drodze.',
-    pokrycie: 86,
-    ludzie: ['awarie z ryzykiem postoju linii'],
-  },
+  { f: 'Producent opakowań', m: '210 osób', p: 'Faktury niezgodne z zamówieniem', u: 78,
+    d: 'Rozwiązanie dopasowuje fakturę ze skrzynki do zamówienia i do warunków z umowy, a zgodną księguje. Zgodność cen sprawdza w ERP przy każdej pozycji.',
+    ludzie: ['ceny rozjeżdżające się z umową', 'pierwsza faktura od nowego dostawcy'] },
+  // 14.10.2026: potwierdzenia dostaw zamiast zapytań ofertowych — ofertowanie
+  // jest wizytówką /systemy-procesowe. Przypadek PRZYKŁADOWY, jak dwa obok.
+  { f: 'Hurtownia napojów', m: '260 osób', p: 'Potwierdzenia dostaw do klientów', u: 81,
+    d: 'Rozwiązanie czyta skany podpisanych WZ i listów przewozowych, dopasowuje je do wydania z magazynu i zamyka dostawy bez uwag. Dopisek odbiorcy o brakach trafia do obsługi klienta tego samego dnia.',
+    ludzie: ['odręczne uwagi, których nie da się odczytać', 'podpis osoby spoza listy upoważnionych'] },
+  { f: 'Firma serwisowa', m: '120 osób', p: 'Kwalifikacja zgłoszeń', u: 86,
+    d: 'Zgłoszenie dostaje priorytet i termin z umowy serwisowej, a potem trafia do technika z uprawnieniami, który ma je najbliżej po drodze.',
+    ludzie: ['awarie z ryzykiem postoju linii'] },
+];
+
+
+// ---- PROCESY (indeks pod definicją) -------------------------------------
+const PROCESY = [
+  { t: 'Reklamacje i zwroty',
+    a: 'Zgłoszenie leży w skrzynce, a ktoś szuka dokumentu sprzedaży w ERP i warunków w umowie na dysku, zanim w ogóle zacznie oceniać.',
+    b: 'Zgłoszenie łączy się z dokumentem i z umową samo. Sprawy w warunkach umowy zamykają się z korektą w ERP, sporne trafiają do działu reklamacji z powodem.' },
+  // Faktury: samo przeniesienie z poczty do ERP to /automatyzacje-integracje;
+  // tu rozwiązanie rozstrzyga, czy faktura zgadza się z zamówieniem i umową.
+  { t: 'Faktury niezgodne z zamówieniem',
+    a: 'Księgowość porównuje każdą fakturę z zamówieniem i z umową pozycja po pozycji, żeby wyłapać te, w których cena się rozjeżdża.',
+    b: 'Rozwiązanie sprawdza fakturę z zamówieniem i z warunkami z umowy, a zgodną księguje. Do człowieka trafia faktura niezgodna, z pozycjami, które się nie zgadzają.' },
+  { t: 'Potwierdzenia dostaw do klientów',
+    a: 'Kierowcy przywożą podpisane WZ i listy przewozowe, a ktoś przegląda skany i szuka uwag odbiorcy, zwykle dopiero przy sporze o zapłatę.',
+    b: 'Rozwiązanie odczytuje skan, dopasowuje go do wydania z magazynu i zamyka dostawy bez uwag. Dostawa z dopiskiem odbiorcy o brakach trafia do obsługi klienta tego samego dnia.' },
+  { t: 'Kwalifikacja zgłoszeń serwisowych',
+    a: 'Dyspozytor szuka umowy serwisowej klienta, a potem obdzwania techników.',
+    b: 'Zgłoszenie dostaje priorytet i termin z umowy serwisowej, a potem trafia do technika z uprawnieniami, który ma je najbliżej po drodze.' },
+  { t: 'Przegląd aneksów do umów',
+    a: 'Prawnik czyta każdy aneks w całości i porównuje go z wcześniejszymi umowami tego kontrahenta.',
+    b: 'Rozwiązanie zestawia aneks z wcześniejszymi umowami i zaznacza zapisy, których w nich nie było. Ocena zostaje u prawnika, więc tu większość spraw idzie do człowieka.' },
+];
+
+
+// ---- METODA (WiseStack) -------------------------------------------------
+// Prawa kolumna: fakty z obecnej strony i z FAQ. Lewa opisuje typowy
+// projekt wdrożenia AI, nie konkretną firmę — do przejrzenia.
+const METODA = [
+  { k: 'Start', ik: 'banknotes',
+    r: 'Analiza wymagań i wycena całego projektu z góry.',
+    t: 'Warsztat i stała kwota', m: 'Dzień warsztatu na jednym procesie. Po nim podajemy stałą kwotę za ustalony zakres, płatną etapami po odbiorze.' },
+  { k: 'Pierwszy efekt', ik: 'clock',
+    r: 'Demo na kilku przykładach wybranych przez wykonawcę.',
+    t: 'Prototyp na Waszych sprawach po dwóch tygodniach', m: 'Pierwsza wersja pracuje od razu na sprawach z Waszego kwartału. Raz w tygodniu pokazujemy, gdzie rozstrzyga inaczej niż zespół.' },
+  { k: 'Jakość rozstrzygnięć', ik: 'scale',
+    r: 'Ocena po pierwszych tygodniach na produkcji.',
+    t: 'Próg zmierzony przed budową', m: 'W czwartym tygodniu porównujemy decyzje rozwiązania z decyzjami zespołu na sprawach z kwartału. Próg stoi w umowie.' },
+  { k: 'Pomyłka modelu', ik: 'arrow-uturn-left',
+    r: 'Ścieżka wyjątku dopisywana po pierwszych błędach.',
+    t: 'Ścieżka wyjątku od pierwszego dnia', m: 'Sprawa poniżej progu idzie do człowieka z tym, czego system nie rozstrzygnął, i z danymi, które zdążył zebrać.' },
+  { k: 'Jakość kodu', ik: 'shield-check',
+    r: 'Testy i przegląd kodu według zwyczajów zespołu.',
+    t: 'Bramki przy każdej zmianie', m: 'Każde wdrożenie przechodzi testy i przegląd. Zmiana modelu albo reguł oznacza powtórzony pomiar progu.' },
+  { k: 'Zmiany po uruchomieniu', ik: 'adjustments-horizontal',
+    r: 'Każda zmiana progu czy reguły to zlecenie u wykonawcy.',
+    t: 'Próg i reguły na Waszym ekranie', m: 'Próg pewności i reguły siedzą w jednym miejscu. Zmienia je Wasz człowiek, bez przebudowy rozwiązania.' },
+  { k: 'Koszt modelu i wyjście', ik: 'code-bracket',
+    r: 'Konto u dostawcy modelu po stronie wykonawcy, zapytania w abonamencie.',
+    t: 'Klucze i repozytorium Wasze od pierwszego dnia', m: 'Faktura za zapytania idzie na Was, a my nie mamy prowizji od żadnego dostawcy. Utrzymanie wypowiadacie z miesięcznym terminem.' },
+];
+
+
+// ---- NAJPIERW POMIAR, POTEM PRODUKCJA (sekcja 8) -------------------------
+// Dwa tory na jednej osi tygodni (DO POTWIERDZENIA: dziewięć tygodni).
+// Bramka po czwartym tygodniu: pomiar na sprawach z kwartału. Liczby
+// pomiaru są PRZYKŁADOWE; 247 z 412 to 60%, czyli trzy sprawy z pięciu,
+// jak w zwrotnicy w hero.
+const TYG = 9;
+const ETAPY = [
+  { s: 0, d: 1, tyg: 'Tydzień 1', n: 'Warsztat na procesie', w: 'Sprawy z kwartału' },
+  { s: 1, d: 2, tyg: 'Tydzień 2–3', n: 'Prototyp na Waszych sprawach', w: 'Godzina rozmowy w tygodniu' },
+  { s: 3, d: 1, tyg: 'Tydzień 4', n: 'Pomiar progu', w: 'Sporne przypadki', pm: true },
+  { s: 4, d: 3, tyg: 'Tydzień 5–7', n: 'Pilot w jednym zespole', w: 'Zespół pracuje na rozwiązaniu' },
+  { s: 7, d: 2, tyg: 'Tydzień 8–9', n: 'Produkcja i przekazanie', w: 'Odbiór i szkolenie' },
+];
+const BRAMKA = ETAPY.find((e) => e.pm);
+const BR_X = (BRAMKA.s + BRAMKA.d) / TYG;
+const POMIAR = { spraw: 412, samo: 247, zg: 98.4, prog: 97, od: 90, do: 100 };
+const pmX = (v) => `${((v - POMIAR.od) / (POMIAR.do - POMIAR.od) * 100).toFixed(1)}%`;
+const pl = (v) => String(v).replace('.', ',');
+
+
+// ---- DLA KOGO -----------------------------------------------------------
+const DLA_KOGO = [
+  { t: 'Sprawa wymaga przeczytania dokumentu albo oceny',
+    d: 'Faktura w PDF albo zgłoszenie w mailu ze zdjęciami. Decyzji nie da się zapisać jednym warunkiem, więc dziś zapada w głowie kogoś, kto to czyta.' },
+  { t: 'Przechodzi przez kilka systemów',
+    d: 'Zgłoszenie przychodzi pocztą, a cena stoi w ERP. Ktoś składa dziś te kawałki ręcznie, zanim w ogóle zacznie decydować.' },
+  { t: 'Wraca setki razy w miesiącu',
+    d: 'Przy takim wolumenie każdy punkt procentowy spraw zamykanych bez człowieka da się przeliczyć na godziny, a różnicę widać w wyniku firmy.' },
+  { t: 'Informacja potrzebna do decyzji leży w systemach',
+    d: 'Może być w nieładzie, w skanach i polach opisowych, bo porządkowanie danych to część naszej pracy. Jeśli siedzi tylko w głowach, pierwszym krokiem jest jej zebranie i wyjdzie to na pomiarze.' },
+];
+// Dwie z trzech dróg są tańsze (koncepcja, „kiedy nie warto tego budować”).
+const NIE_WARTO = [
+  'Zadanie wygląda tak samo w każdej firmie, jak transkrypcja spotkań czy tłumaczenia. Wystarczy gotowe narzędzie z półki: podajemy jego nazwę i wracamy do rozmowy, kiedy zrobi się za ciasne.',
+  'Dane mają stały format, a decyzja daje się zapisać warunkiem. Model dołożyłby wtedy koszt zapytań i jedno miejsce, w którym coś może pójść inaczej, więc wyceniamy integrację bez niego. Bywa, że to trzy dni pracy.',
 ];
 
 
 const faq = [
   {
     q: 'Czym to się różni od gotowego narzędzia AI za kilkaset złotych miesięcznie?',
-    a: 'Zakresem odpowiedzialności. Gotowe narzędzie daje okno do rozmowy i zostawia sprawę w miejscu, w którym była — ktoś nadal musi ją przenieść do systemu i domknąć. Indywidualne rozwiązanie prowadzi sprawę do końca: sięga po dane do Waszych systemów, sprawdza je Waszymi warunkami i zamyka albo przekazuje człowiekowi z uzasadnieniem. Jeśli Wasze zadanie wygląda tak samo jak w każdej innej firmie, gotowe narzędzie wystarczy i powiemy to na pierwszej rozmowie.',
+    a: 'Zakresem odpowiedzialności. Gotowe narzędzie daje okno do rozmowy i zostawia sprawę w miejscu, w którym była — ktoś nadal musi ją przenieść do systemu i domknąć. Automatyzacja procesu z AI prowadzi sprawę do końca: bierze dane z Waszych systemów i sprawdza je Waszymi warunkami. Potem zamyka sprawę albo przekazuje ją człowiekowi z uzasadnieniem. Jeśli Wasze zadanie wygląda tak samo jak w każdej innej firmie, gotowe narzędzie wystarczy i powiemy to na pierwszej rozmowie.',
   },
   {
-    q: 'Ile kosztuje indywidualne rozwiązanie AI?',
+    q: 'Ile kosztuje automatyzacja procesu z AI?',
     a: 'Wycena jest stałą kwotą za ustalony zakres i podajemy ją po warsztacie, kiedy proces jest rozłożony na kroki. Cenę ruszają trzy rzeczy: liczba systemów, do których trzeba się wpiąć, jakość danych w miejscu, z którego sprawa startuje, i to, jak wysoki próg jakości ustalimy. Płatność idzie etapami, po odbiorze każdego z nich.',
   },
   {
     q: 'Co się stanie, kiedy model się pomyli?',
     a: 'Rozwiązanie ma próg pewności ustalony przed budową. Poniżej niego sprawa nie zostaje rozstrzygnięta automatycznie — idzie do człowieka razem z tym, czego system nie potrafił rozstrzygnąć, i z danymi, które zdążył zebrać. Każda decyzja jest zapisana razem z powodem, więc po fakcie da się sprawdzić, na czym się oparła. Próg widzicie w panelu i możecie go podnieść albo obniżyć bez naszego udziału.',
+  },
+  {
+    q: 'Co, jeśli pomiar wyjdzie poniżej progu?',
+    a: 'Rozwiązanie nie wchodzi na produkcję, a Wy nie płacicie za wdrożenie — ten zapis stoi w umowie. Pomiar pokazuje też, skąd wziął się wynik: czy w danych brakuje tego, czego decyzja wymaga, czy część spraw powinna zostać przy ludziach. Przypadki sporne rozstrzygacie Wy, bo to Wasza praca wyznacza tu wzorzec.',
   },
   {
     q: 'Czy nasze dane trafią do OpenAI, Anthropic albo Google’a?',
@@ -315,11 +463,11 @@ const faq = [
   },
   {
     q: 'Czy musimy najpierw zamówić strategię?',
-    a: 'Nie. Strategia układa kolejność wdrożeń wtedy, kiedy kandydatów jest kilkanaście i nikt nie chce decydować w ciemno. Jeśli wiecie, który proces boli, wchodzimy od razu w warsztat na tym procesie. Zobacz <a href="/strategia-ai" style="font-weight:700;color:#0a7a52">strategię transformacji AI</a>, jeśli kolejność jest dopiero do ustalenia.',
+    a: 'Nie. Strategia układa kolejność wdrożeń wtedy, kiedy kandydatów jest kilkanaście i nikt nie chce decydować w ciemno. Jeśli wiecie, który proces boli, wchodzimy od razu w warsztat na tym procesie. Zobaczcie <a href="/strategia-ai" style="font-weight:700;color:#0a7a52">strategię AI</a>, jeśli kolejność jest dopiero do ustalenia.',
   },
   {
     q: 'Budujecie od zera czy na gotowych platformach?',
-    a: 'Tak, jak wychodzi taniej w utrzymaniu. Połączenia między systemami często idą na gotowej platformie automatyzacji, bo tam zmiana zajmuje kwadrans. To, co dotyka reguł, ścieżki wyjątku i pracy ludzi, piszemy sami, bo w tych miejscach gotowe narzędzia najszybciej stają się ścianą. Przy każdym elemencie zapisujemy, na czym stoi i ile kosztuje jego utrzymanie przez rok.',
+    a: 'Tak, jak wychodzi taniej w utrzymaniu. Połączenia między systemami często idą na gotowej platformie automatyzacji, bo tam zmiana zajmuje kwadrans. To, co dotyka reguł i pracy ludzi, piszemy sami, bo w tych miejscach gotowe narzędzia najszybciej stają się ścianą. Przy każdym elemencie zapisujemy, na czym stoi i ile kosztuje jego utrzymanie przez rok.',
   },
 ];
 dane['@graph'].push({
@@ -332,560 +480,1259 @@ dane['@graph'].push({
   })),
 });
 ---
-<LaBase title={title} description={description} ctaHref="#kontakt" ctaLabel="Umów rozmowę" nav="uslugi">
+<LaBase topbar={false} title={title} description={description} ctaHref="#kontakt" ctaLabel="Umów rozmowę" nav="uslugi">
 <script type="application/ld+json" is:inline set:html={JSON.stringify(dane)} slot="head"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" slot="head">
 <style is:global slot="head">
-  /* ================= przekrój rozwiązania (hero) =================
-     Kolumna siedmiu warstw. Wysokość warstwy to jej udział w czasie budowy,
-     więc rysunek mówi to samo, co zdanie „model to 6% roboty", tylko bez
-     zdania. Po złożeniu przekrój rozsuwa się wachlarzem na warstwie modelu.
-     Wysokości i pozycje idą w procentach, więc kolumna skaluje się razem
-     z kontenerem i nie potrzebuje drugiego kompletu liczb na telefon. */
-  .rd{display:grid;grid-template-columns:clamp(92px,11vw,152px) minmax(0,1fr);gap:clamp(14px,1.8vw,22px);align-items:start}
-  .rd-kol{position:relative;height:clamp(288px,42vw,392px)}
-  .rd-poz{position:absolute;left:0;right:0}
-  .rd-w{position:absolute;inset:0 0 3px 0;border-radius:4px;background:var(--tlo);transform-origin:top;opacity:0;transition:background .2s}
-  .rd-warstwa:hover .rd-w{background:var(--la-accent,#00CD77)}
-  .rd-model{border-radius:5px}
-  .rd-opisy{position:relative;height:clamp(288px,42vw,392px)}
-  .rd-e{position:absolute;left:0;right:0;transform:translateY(-50%);display:flex;align-items:baseline;gap:9px;opacity:0}
-  .rd-e::before{content:"";flex-shrink:0;align-self:center;width:clamp(10px,1.4vw,20px);height:1px;background:#d3ddd1}
-  .rd-e b{font-size:clamp(12.5px,1.4vw,14.5px);font-weight:700;letter-spacing:-0.01em;color:#16211a;line-height:1.2}
-  .rd-e i{font-family:ui-monospace,Menlo,monospace;font-style:normal;font-size:11px;color:#9aa69b;flex-shrink:0}
-  .rd-e.model b{color:#0a7a52}
-  .rd-cal{position:absolute;top:calc(100% + 3px);left:calc(clamp(10px,1.4vw,20px) + 9px);font-size:12px;font-weight:650;color:#0a7a52;white-space:nowrap;opacity:0}
-  .rd-zrodlo{margin:12px 0 0;max-width:420px;font-size:12.5px;line-height:1.5;color:#637066}
-  .rd-leg{display:flex;flex-wrap:wrap;gap:8px 22px;margin-top:42px;font-size:12.5px;color:#637066}
-  .rd-leg span{display:inline-flex;align-items:center;gap:8px}
-  .rd-leg i{width:20px;height:8px;border-radius:3px;display:inline-block}
-  @media (max-width:900px){ .rd-kol,.rd-opisy{height:clamp(330px,58vw,392px)} }
-  @media (max-width:600px){
-    .rd{grid-template-columns:78px minmax(0,1fr);gap:12px}
-    .rd-cal{font-size:11px}
-    .rd-e b{font-size:12.5px}
+  /* Style tej usługi. Wspólny wygląd: src/components/usluga/Styl.astro. */
+  .v3 .ik{display:block;flex-shrink:0;width:16px;height:16px;fill:currentColor}
+
+
+  /* =====================================================================
+     ZWROTNICA PROGU (hero)
+     Biała plansza z czterema strefami: kolejka zgłoszeń, stanowisko
+     odczytu z paskiem pewności i kreską progu, rozjazd i dwa kosze.
+     Stan w markupie to stan końcowy (bez JS i przy ograniczonym ruchu):
+     pięć spraw rozdzielonych 3 : 2, na stanowisku RMA-2190 poniżej progu,
+     zwrotnica przestawiona w dół. Skrypt pod planszą odgrywa poranek
+     w pętli; stany startowe tylko pod .zr.ruch.
+     ===================================================================== */
+  .zr{--t1:#18181b;--t2:#52525b;--t3:#71717a;--t4:#a1a1aa;--lin:rgba(9,9,11,0.08);--lin2:rgba(9,9,11,0.05);
+    position:relative;margin:0;container-type:inline-size;font-size:12.5px;line-height:1.4;color:var(--t1);letter-spacing:-0.004em;-webkit-font-smoothing:antialiased}
+  .zr .ik{width:14px;height:14px}
+  .zr-pl{position:relative;overflow:hidden;border-radius:14px;background:#ffffff;
+    box-shadow:0 0 0 1px rgba(255,255,255,0.14),0 0 0 1.5px rgba(0,0,0,0.3),0 50px 100px -40px rgba(0,0,0,0.9),0 18px 36px -20px rgba(0,0,0,0.55)}
+  .zr-gl{display:flex;align-items:center;gap:10px 18px;min-height:54px;padding:10px 20px;border-bottom:1px solid var(--lin);background:#fafaf9;flex-wrap:wrap}
+  .zr-ap{display:flex;align-items:center;gap:9px;font-size:13.5px;font-weight:650;white-space:nowrap}
+  .zr-ap > b{display:grid;place-items:center;width:24px;height:24px;border-radius:7px;background:#0f1a14}
+  .zr-ap > b svg{width:13px;height:13px;fill:#00cd77}
+  .zr-ap em{font-style:normal;font-weight:400;color:var(--t4)}
+  .zr-prog{display:inline-flex;align-items:center;gap:7px;margin-left:auto;height:28px;padding:0 4px 0 10px;border-radius:8px;box-shadow:inset 0 0 0 1px var(--lin);font-size:12px;color:var(--t2);white-space:nowrap}
+  .zr-prog b{padding:2px 7px;border-radius:5px;background:#18181b;color:#ffffff;font-family:var(--mono);font-size:11.5px;font-weight:600}
+  .zr-lc{display:inline-flex;align-items:center;gap:7px;font-size:12px;color:var(--t2);white-space:nowrap}
+  .zr-lc i{display:block;width:9px;height:9px;border-radius:3px;background:var(--ziel)}
+  .zr-lc.c i{background:repeating-linear-gradient(135deg,rgba(214,134,30,0.7) 0 1.5px,rgba(214,134,30,0) 1.5px 4px),rgba(240,163,58,0.3);box-shadow:inset 0 0 0 1px #e3962f}
+  .zr-lc b{min-width:1ch;font-family:var(--mono);font-size:13px;font-weight:600;color:var(--t1)}
+  .zr-lc b.tik{animation:zr-tik .5s ease-out}
+  @keyframes zr-tik{0%{transform:translateY(-3px);color:var(--ziel-c)}100%{transform:none}}
+  .zr-uk{display:grid;grid-template-columns:minmax(0,0.82fr) minmax(0,1.2fr) 96px minmax(0,1.25fr);column-gap:18px;height:392px;padding:18px 20px}
+  .zr-et{display:block;height:20px;font-size:11.5px;font-weight:600;color:var(--t4)}
+  /* kolejka */
+  .zr-a{position:relative;min-width:0;overflow:hidden}
+  .zr-a::after{content:"";position:absolute;left:0;right:0;bottom:0;height:40px;background:linear-gradient(to top,#ffffff,rgba(255,255,255,0))}
+  .zr-lista{margin:4px 0 0;padding:0;list-style:none}
+  .zr-w{display:grid;grid-template-columns:26px minmax(0,1fr) auto;gap:2px 10px;align-items:center;height:56px;margin-bottom:8px;padding:0 10px;border-radius:10px;background:#fafaf9;box-shadow:inset 0 0 0 1px var(--lin2);overflow:hidden;
+    transition:height .45s cubic-bezier(.65,0,.35,1),margin .45s cubic-bezier(.65,0,.35,1),opacity .3s ease,transform .45s ease}
+  .zr-w > i{display:grid;place-items:center;width:26px;height:26px;border-radius:7px;background:#ffffff;box-shadow:0 0 0 1px var(--lin);color:#d0573f}
+  .zr-w > span{min-width:0}
+  .zr-w b{font-size:12px;font-weight:650}
+  .zr-w b small{margin-left:5px;font-size:12px;font-weight:400;color:var(--t3)}
+  .zr-w em{display:block;font-style:normal;font-size:11.5px;color:var(--t3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .zr-w time{align-self:start;margin-top:12px;font-size:11px;color:var(--t4)}
+  .zr-w.zabrane{height:0;margin-bottom:0;opacity:0;transform:translateX(24px)}
+  .zr-w.nast{opacity:0.6}
+  /* stanowisko odczytu */
+  .zr-b{position:relative;min-width:0}
+  .zr-st{position:absolute;top:20px;left:0;right:0;bottom:0;border-radius:12px;background:#ffffff;box-shadow:0 0 0 1px rgba(9,9,11,0.09),0 14px 30px -18px rgba(9,9,11,0.35)}
+  .zr-k{position:absolute;inset:0;display:flex;flex-direction:column;padding:14px 16px 16px;opacity:0;transform:translateY(6px);transition:opacity .3s ease,transform .4s cubic-bezier(.2,.8,.2,1)}
+  .zr-k.akt{opacity:1;transform:none}
+  .zr-k > *{flex-shrink:0}
+  .zr-k-gl{display:flex;align-items:baseline;gap:7px;font-size:12px}
+  .zr-k-gl b{font-weight:650}
+  .zr-k-gl span{color:var(--t3)}
+  .zr-k-gl time{margin-left:auto;font-size:11px;color:var(--t4)}
+  .zr-k h5{margin:3px 0 0;font-size:15px;font-weight:650;letter-spacing:-0.015em;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .zr-od{margin:12px 0 0;padding:0;list-style:none}
+  .zr-o{display:grid;grid-template-columns:62px minmax(0,1fr);gap:8px;align-items:center;height:30px;border-top:1px solid var(--lin2);font-size:12px;color:var(--t2);transition:opacity .3s ease,transform .3s ease}
+  .zr-o i{justify-self:start;display:inline-flex;align-items:center;gap:5px;font-style:normal;font-size:10.5px;font-weight:600;color:color-mix(in srgb,var(--c) 85%,#000)}
+  .zr-o i::before{content:"";width:6px;height:6px;border-radius:2px;background:var(--c)}
+  .zr-o span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .zr-m{margin-top:30px}
+  .zr-m-t{position:relative;display:block;height:10px;border-radius:5px;background:rgba(9,9,11,0.07)}
+  .zr-m-f{position:absolute;left:0;top:0;bottom:0;width:var(--p);border-radius:5px;background:var(--ziel);transition:width .9s cubic-bezier(.22,1,.3,1)}
+  .zr-k.c .zr-m-f{background:#f0a33a}
+  .zr-m-pr{position:absolute;top:-6px;bottom:-6px;width:2px;margin-left:-1px;border-radius:1px;background:#18181b}
+  .zr-m-w{position:absolute;left:var(--p);bottom:calc(100% + 7px);transform:translateX(-50%);font-family:var(--mono);font-style:normal;font-size:12px;font-weight:600;color:var(--t1);transition:opacity .3s ease}
+  .zr-m-os{position:relative;display:block;height:16px;margin-top:6px;font-size:10.5px;color:var(--t3)}
+  .zr-m-os span{position:absolute;top:0;transform:translateX(-50%);white-space:nowrap}
+  .zr-m-os span:first-child{left:0;transform:none}
+  .zr-wer{display:flex;align-items:flex-start;gap:8px;margin:auto 0 0;padding:9px 11px;border-radius:9px;font-size:12px;line-height:1.4;transition:opacity .35s ease,transform .35s ease}
+  .zr-wer b{font-weight:650}
+  .zr-wer .ik{margin-top:1px}
+  .zr-wer img{flex-shrink:0;width:18px;height:18px;border-radius:50%;object-fit:cover}
+  .zr-k.s .zr-wer{background:rgba(16,185,129,0.09);color:#047857}
+  .zr-k.c .zr-wer{background:rgba(245,158,11,0.1);color:#8a5207}
+  /* rozjazd */
+  .zr-sw{display:block;width:96px;height:356px;overflow:visible}
+  .zr-sw path{fill:none;stroke-width:3;stroke-linecap:round;transition:opacity .3s ease,stroke-width .3s ease}
+  .zr-sw .we{stroke:#c9cec9}
+  .zr-sw .g{stroke:var(--ziel)}
+  .zr-sw .d{stroke:#f0a33a;stroke-dasharray:6 5}
+  .zr-sw.gora .d,.zr-sw.dol .g{opacity:0.28}
+  .zr-sw.gora .g,.zr-sw.dol .d{stroke-width:3.5}
+  .zr-sw .z{stroke:#18181b;stroke-width:4;stroke-linecap:round;transform-origin:26px 178px;transform:rotate(0deg);transition:transform .35s cubic-bezier(.3,1.5,.5,1)}
+  .zr-sw.gora .z{transform:rotate(-26deg)}
+  .zr-sw.dol .z{transform:rotate(26deg)}
+  .zr-sw .os{fill:#ffffff;stroke:#18181b;stroke-width:2.5}
+  .zr-tok{fill:var(--ziel);opacity:0;filter:drop-shadow(0 0 6px rgba(0,205,119,0.8))}
+  .zr-tok.c{fill:#f0a33a;filter:drop-shadow(0 0 6px rgba(240,163,58,0.8))}
+  /* kosze */
+  .zr-c{display:flex;flex-direction:column;gap:12px;min-width:0}
+  .zr-kosz{display:flex;flex-direction:column;height:172px;border-radius:12px;overflow:hidden}
+  .zr-kosz.s{background:rgba(16,185,129,0.06);box-shadow:inset 0 0 0 1px rgba(16,185,129,0.22)}
+  .zr-kosz.c{background:#fffaf2;box-shadow:inset 0 0 0 1px rgba(240,163,58,0.4)}
+  .zr-kosz-gl{display:flex;align-items:center;gap:7px;height:34px;flex-shrink:0;padding:0 12px;font-size:12px;font-weight:650}
+  .zr-kosz.s .zr-kosz-gl{color:#047857}
+  .zr-kosz.c .zr-kosz-gl{color:#8a5207}
+  .zr-kosz ul{margin:0;padding:0 8px;list-style:none;transition:opacity .4s ease}
+  .zr-r{display:grid;grid-template-columns:18px minmax(0,1fr);gap:0 8px;align-items:center;padding:5px 6px;border-radius:7px;transition:opacity .35s ease,transform .4s cubic-bezier(.2,.8,.2,1),background-color 1s ease}
+  .zr-kosz.c .zr-r{grid-template-columns:22px minmax(0,1fr);padding:6px}
+  .zr-r > .ik{color:#10b981}
+  .zr-r > img{width:22px;height:22px;border-radius:50%;object-fit:cover;align-self:start;margin-top:1px}
+  .zr-r span{min-width:0}
+  .zr-r b{display:block;font-size:12px;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .zr-r b small{font-size:11.5px;font-weight:400;color:var(--t3)}
+  .zr-r em{display:block;font-style:normal;font-size:11.5px;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .zr-kosz.c .zr-r em{white-space:normal;line-height:1.35}
+  .zr-r.ukr{opacity:0;transform:translateX(-10px)}
+  .zr-r.bl{background-color:rgba(16,185,129,0.16);transition:background-color 0s}
+  .zr-kosz.c .zr-r.bl{background-color:rgba(240,163,58,0.22)}
+  /* w ruchu: kroki odczytu odsłania skrypt */
+  .zr.ruch .zr-o{opacity:0;transform:translateY(4px)}
+  .zr.ruch .zr-o.on{opacity:1;transform:none}
+  .zr.ruch .zr-k:not(.mtr) .zr-m-f{width:0}
+  .zr.ruch .zr-k:not(.mtr) .zr-m-w{opacity:0}
+  .zr.ruch .zr-k:not(.wer) .zr-wer{opacity:0;transform:translateY(4px)}
+  .zr.od .zr-st,.zr.od .zr-kosz ul,.zr.od .zr-lista{opacity:0;transition:opacity .45s ease}
+  /* węższa plansza: bez kolejki; wąska: stanowisko nad koszami, bez rozjazdu */
+  @container (max-width:980px){
+    .zr-uk{grid-template-columns:minmax(0,1.1fr) 84px minmax(0,1.2fr)}
+    .zr-a{display:none}
   }
-  @media (prefers-reduced-motion:reduce){
-    .rd-w,.rd-e,.rd-poz,.rd-cal{animation:none !important;opacity:1;transform:none}
-    .rd-w{transform:scaleY(1)}
-    .rd-e{transform:translateY(-50%)}
-    /* Bez ruchu wachlarz się nie rozsuwa, więc przypis wchodzi w wiersz
-       warstwy zamiast pod niego — inaczej nachodzi na sąsiedni podpis. */
-    .rd-cal{position:static;opacity:1;margin-left:2px}
-    .rd-model{box-shadow:0 0 0 3px rgba(0,205,119,0.85)}
+  @container (max-width:700px){
+    .zr-gl{padding:10px 14px}
+    .zr-prog{margin-left:0}
+    .zr-uk{grid-template-columns:minmax(0,1fr);height:auto;row-gap:14px;padding:14px}
+    .zr-sw{display:none}
+    .zr-b{height:330px}
+    .zr-o{height:28px}
+    .zr-m{margin-top:26px}
+    .zr-c{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+    .zr-kosz{height:auto;min-height:150px;padding-bottom:6px}
   }
-
-  /* ================= warstwy jako wiersze (sekcja „czym to jest") =======
-     Ten sam komplet danych, co w hero, tylko rozpisany. Wiersze na liniach
-     włosowych, bez pojemników — kafle w tym miejscu robiłyby z siedmiu
-     warstw siedem równorzędnych produktów, a one nie są równorzędne. */
-  .wr{display:grid;grid-template-columns:minmax(150px,0.5fr) minmax(0,1fr);gap:clamp(14px,2.4vw,36px);align-items:baseline;padding:15px 0;border-top:1px solid #e7ece4}
-  .wr:last-of-type{border-bottom:1px solid #e7ece4}
-  .wr-n{display:flex;align-items:baseline;gap:8px;font-size:15px;font-weight:700;letter-spacing:-0.01em;color:#16211a}
-  .wr-n i{font-family:ui-monospace,Menlo,monospace;font-style:normal;font-size:11px;font-weight:500;color:#a9b3aa}
-  .wr.model .wr-n{color:#0a7a52}
-  .wr-o{margin:0;font-size:14.5px;line-height:1.55;color:#4c5850;text-wrap:pretty}
-  @media (max-width:700px){ .wr{grid-template-columns:1fr;gap:5px} }
-
-  /* ================= trzy drogi =================
-     Trzeci wiersz jest wcięty i ma akcentową krechę — jedyne miejsce, gdzie
-     lista przestaje być równa. To on niesie usługę, dwa pozostałe odsyłają
-     klienta gdzie indziej. */
-  .dr{display:grid;grid-template-columns:minmax(180px,0.6fr) minmax(0,1.25fr) minmax(0,0.85fr);gap:clamp(18px,3vw,44px);align-items:start;padding:clamp(22px,2.6vw,30px) 0;border-top:1px solid #dde7db}
-  .dr:last-of-type{border-bottom:0}
-  .dr-n{margin:0;font-size:clamp(17px,2vw,20px);font-weight:750;letter-spacing:-0.015em;line-height:1.25;color:#4c5850}
-  .dr-k{margin:0;font-size:15px;line-height:1.6;color:#4c5850;text-wrap:pretty}
-  .dr-r{margin:0;font-size:14.5px;line-height:1.55;color:#637066;text-wrap:pretty}
-  .dr.nasze{position:relative;padding-left:clamp(18px,2vw,26px);border-top:1px solid #c9dfcd}
-  .dr.nasze::before{content:"";position:absolute;left:0;top:clamp(22px,2.6vw,30px);bottom:clamp(22px,2.6vw,30px);width:3px;border-radius:2px;background:var(--la-accent,#00CD77)}
-  .dr.nasze .dr-n{font-size:clamp(20px,2.4vw,26px);color:#16211a}
-  .dr.nasze .dr-k{color:#16211a}
-  .dr.nasze .dr-r{color:#0a7a52;font-weight:650}
-  @media (max-width:860px){ .dr{grid-template-columns:1fr;gap:8px} }
-
-  /* ================= próg pewności (ciemny pas) =================
-     Jedna sprawa naraz, w powiększeniu. Pasek dojeżdża do wartości, przy
-     progu stoi kreska, a werdykt wchodzi dopiero po zatrzymaniu paska —
-     inaczej czyta się go, zanim wiadomo, na czym stanął. */
-  .pg{position:relative;height:230px;padding:clamp(22px,2.4vw,30px) clamp(22px,2.6vw,32px);border:1px solid rgba(255,255,255,0.13);border-radius:18px;background:rgba(255,255,255,0.035)}
-  .pg-s{position:absolute;inset:clamp(22px,2.4vw,30px) clamp(22px,2.6vw,32px);opacity:0}
-  .pg-t{display:block;font-size:clamp(15px,1.9vw,18px);font-weight:700;letter-spacing:-0.012em;color:#ffffff}
-  .pg-tor{position:relative;height:14px;margin-top:26px;border-radius:7px;background:rgba(255,255,255,0.1)}
-  .pg-bar{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:7px;background:var(--la-accent,#00CD77)}
-  .pg-s.nie .pg-bar{background:#e0a95c}
-  .pg-lab{position:absolute;top:-27px;transform:translateX(-50%);font-family:ui-monospace,Menlo,monospace;font-size:13px;font-weight:600;color:#ffffff;opacity:0;white-space:nowrap}
-  .pg-prog{position:absolute;top:-9px;bottom:-9px;left:92%;width:1px;background:rgba(255,255,255,0.5)}
-  .pg-prog span{position:absolute;right:8px;top:calc(100% + 12px);font-family:ui-monospace,Menlo,monospace;font-size:11px;color:rgba(255,255,255,0.62);white-space:nowrap}
-  .pg-osie{display:flex;justify-content:space-between;margin-top:9px;font-family:ui-monospace,Menlo,monospace;font-size:10.5px;color:rgba(255,255,255,0.3)}
-  .pg-podpis{margin:clamp(14px,1.8vw,20px) 0 0;font-size:13px;line-height:1.5;color:rgba(255,255,255,0.62)}
-  .pg-v{display:flex;align-items:flex-start;gap:11px;margin-top:26px;opacity:0}
-  .pg-ik{flex-shrink:0;display:flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:rgba(0,205,119,0.18);color:var(--la-accent,#00CD77)}
-  .pg-s.nie .pg-ik{background:rgba(224,169,92,0.2);color:#e0a95c}
-  .pg-vt{display:block;font-size:15px;font-weight:700;color:#ffffff;line-height:1.35}
-  .pg-vw{display:block;margin-top:3px;font-size:14px;line-height:1.5;color:rgba(255,255,255,0.62)}
-  @media (max-width:900px){ .pg{height:264px} }
-  @media (prefers-reduced-motion:reduce){
-    /* Bez ruchu zostaje jedna sprawa — ta, która idzie do człowieka,
-       bo to ona niesie argument sekcji. */
-    .pg-s,.pg-bar,.pg-lab,.pg-v{animation:none !important}
-    .pg-s{opacity:0}
-    .pg-s.stop{opacity:1}
-    .pg-s.stop .pg-bar{width:71%}
-    .pg-s.stop .pg-lab{opacity:1;left:71%}
-    .pg-s.stop .pg-v{opacity:1}
-  }
-
-  /* ================= harmonogram dwutorowy =================
-     Jedyna animacja na stronie sterowana scrollem. --p idzie z JS jako
-     ułamek 0–1, a każdy blok liczy własne wypełnienie z własnego położenia
-     na osi. Bez JS --p zostaje na 1 i harmonogram stoi wypełniony. */
-  .hg{--p:1;position:relative;margin-top:clamp(28px,3.4vw,40px)}
-  .hg-tor{position:relative;height:38px;margin-top:9px}
-  .hg-tor + .hg-tor{margin-top:7px}
-  .hg-blok{position:absolute;top:0;bottom:0;left:calc(var(--s) / 9 * 100%);width:calc(var(--d) / 9 * 100% - 5px);border-radius:8px;background:#e9efe6;overflow:hidden}
-  .hg-tor.drugi .hg-blok{background:#f1f4ef}
-  .hg-fill{position:absolute;left:0;top:0;bottom:0;width:100%;background:var(--la-accent,#00CD77);opacity:.9}
-  .hg-tor.drugi .hg-fill{background:#b8ddc6;opacity:1}
-  .hg-blok b{position:absolute;left:11px;right:9px;top:50%;transform:translateY(-50%);font-size:12.5px;font-weight:650;line-height:1.2;color:#16211a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;z-index:2}
-  .hg-kto{display:block;font-size:12.5px;font-weight:650;color:#637066}
-  .hg-glowica{position:absolute;top:17px;bottom:22px;left:calc(var(--p) * 100%);width:1.5px;background:#16211a;opacity:0;transition:opacity .3s;z-index:3}
-  .hg-glowica::before{content:"";position:absolute;left:50%;top:-4px;width:7px;height:7px;border-radius:50%;background:#16211a;transform:translateX(-50%)}
-  .hg.zywy .hg-glowica{opacity:.72}
-  .hg-os{display:flex;margin-top:12px;border-top:1px solid #e2e9e0;padding-top:8px}
-  .hg-os span{flex:1;font-family:ui-monospace,Menlo,monospace;font-size:10.5px;color:#a9b3aa}
-  @media (max-width:820px){
-    .hg{display:none}
-  }
-
-  .et-row{display:grid;grid-template-columns:118px minmax(0,1fr) minmax(190px,0.52fr);gap:clamp(18px,3vw,44px);align-items:start;padding:clamp(20px,2.4vw,28px) 0;border-top:1px solid #e2e9e0}
-  .et-row:last-of-type{border-bottom:1px solid #e2e9e0}
-  .et-e{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;letter-spacing:0.09em;color:#0a7a52;padding-top:5px}
-  .et-t{margin:0;font-size:clamp(18px,2.1vw,22px);font-weight:750;letter-spacing:-0.015em;color:#16211a}
-  .et-d{margin:9px 0 0;max-width:720px;font-size:15px;line-height:1.62;color:#4c5850;text-wrap:pretty}
-  .et-w{padding-top:5px;font-size:14.5px;line-height:1.5;color:#4c5850}
-  .et-w b{display:block;margin-bottom:4px;font-size:12.5px;font-weight:500;color:#a0aba1}
-  @media (max-width:960px){ .et-row{grid-template-columns:118px minmax(0,1fr)} .et-w{grid-column:2;padding-top:10px} }
-  @media (max-width:700px){ .et-row{grid-template-columns:1fr;gap:6px} .et-w{grid-column:auto;padding-top:6px} }
-
-  /* ================= przykłady =================
-     Wiersz na firmę. Pasek pokrycia jest tu jedyną liczbą, więc stoi
-     osobno i dostaje własną skalę — a obok niego lista tego, co zostało
-     u ludzi, bo bez niej pasek czyta się jak obietnica stu procent. */
-  .px-row{display:grid;grid-template-columns:minmax(190px,0.6fr) minmax(0,1.4fr) minmax(200px,0.62fr);gap:clamp(20px,3.2vw,52px);align-items:start;padding:clamp(28px,3.4vw,42px) 0;border-top:1px solid #dde7db}
-  .px-row:last-of-type{border-bottom:1px solid #dde7db}
-  .px-f{display:block;margin:0;font-size:clamp(18px,2.1vw,22px);font-weight:750;letter-spacing:-0.018em;color:#16211a}
-  .px-m{display:block;margin-top:4px;font-size:13.5px;color:#637066}
-  .px-p{display:block;margin-top:14px;font-size:14px;font-weight:700;color:#0a7a52}
-  .px-d{margin:0;font-size:15px;line-height:1.6;color:#16211a;text-wrap:pretty}
-  .px-l{margin:16px 0 0;font-size:14px;line-height:1.55;color:#637066}
-  .px-l b{display:block;font-size:12.5px;font-weight:600;color:#a9b3aa;margin-bottom:3px}
-  .px-liczba{display:flex;align-items:baseline;gap:7px;font-size:clamp(30px,3.6vw,42px);font-weight:800;letter-spacing:-0.03em;line-height:1;color:#16211a}
-  .px-liczba span{font-size:14px;font-weight:650;letter-spacing:0;color:#637066}
-  .px-tor{display:block;height:7px;margin-top:12px;border-radius:4px;background:#e0e8de;overflow:hidden}
-  .px-tor i{display:block;height:100%;border-radius:4px;background:var(--la-accent,#00CD77);width:0;transition:width .9s cubic-bezier(.4,0,.2,1)}
-  .px-row.on .px-tor i{width:var(--w)}
-  .px-op{display:block;margin-top:9px;font-size:13px;line-height:1.5;color:#637066}
-  @media (max-width:1000px){
-    .px-row{grid-template-columns:minmax(0,1fr) minmax(190px,0.62fr);gap:24px 40px}
-    .px-row > :first-child{grid-column:1 / -1}
-  }
-  @media (max-width:700px){
-    .px-row{grid-template-columns:1fr;gap:18px}
-    .px-row > :first-child{grid-column:auto}
-  }
-  @media (prefers-reduced-motion:reduce){ .px-tor i{transition:none} }
-
-  /* ================= co zostaje u Was ================= */
-  .zw{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(32px,5vw,72px) clamp(36px,6vw,88px);margin-top:clamp(30px,3.6vw,44px)}
-  .zw h3{margin:0 0 12px;font-size:clamp(18px,2.1vw,21px);font-weight:750;letter-spacing:-0.015em;color:#16211a}
-  .zw p{margin:0 0 12px;font-size:15px;line-height:1.65;color:#4c5850;text-wrap:pretty}
-  .zw p:last-child{margin-bottom:0}
-  .zw strong{font-weight:700;color:#16211a}
-  @media (max-width:820px){ .zw{grid-template-columns:1fr} }
-
-  /* ================= wcięta kartka z zapisem umowy =================
-     Jedyny asymetryczny moment w sekcji o progu. */
-  .um{margin-top:clamp(26px,3vw,36px);margin-left:clamp(0px,4vw,64px);padding:clamp(22px,2.6vw,30px) clamp(24px,3vw,34px);background:#ffffff;border:1px solid #e0e8de;border-left:3px solid var(--la-accent,#00CD77);border-radius:0 14px 14px 0;max-width:640px}
-  .um-e{font-size:12.5px;font-weight:650;color:#637066}
-  .um p{margin:11px 0 0;font-size:16px;line-height:1.6;color:#16211a;text-wrap:pretty}
-
-  /* ================= responsywność wspólna dla tej strony ================= */
-  @media (max-width:900px){
-    .hero-split{grid-template-columns:1fr !important;gap:clamp(30px,5vw,44px) !important}
+  @container (max-width:480px){
+    .zr-ap em{display:none}
+    .zr-c{grid-template-columns:minmax(0,1fr)}
+    .zr-b{height:352px}
+    .zr-k{padding:12px 13px 13px}
+    .zr-o{grid-template-columns:56px minmax(0,1fr)}
   }
 
-  /* ================= pas wezwania (wąski) ================= */
-  .ps{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px 36px}
-  .ps h2{margin:0;max-width:640px;font-size:clamp(21px,2.6vw,30px);line-height:1.25;letter-spacing:-0.022em;font-weight:750;color:#ffffff;text-wrap:pretty}
-  .ps-akcja{display:flex;align-items:center;flex-wrap:wrap;gap:14px 22px}
-  .ps-lnk{font-size:15px;font-weight:650;color:rgba(255,255,255,0.75);transition:color .15s}
-  .ps-lnk:hover{color:#ffffff}
+  /* =====================================================================
+     PRZEKRÓJ ROZWIĄZANIA (dlaczego, blok 1)
+     Stos siedmiu płyt w izometrii; grubość = udział w czasie budowy.
+     Po wejściu w kadr płyty opadają od dołu, a płyta modelu wysuwa się
+     w lewo jak szuflada. Stan końcowy: stos złożony, model wysunięty.
+     ===================================================================== */
+  .pk{container-type:inline-size}
+  .pk-wyk{position:relative;display:grid;grid-template-columns:minmax(0,61fr) minmax(0,39fr)}
+  .pk-rys{position:relative}
+  .pk-rys svg{display:block;width:100%;height:auto;overflow:visible}
+  .pk-s polygon{stroke:rgba(255,255,255,0.7);stroke-width:1;stroke-linejoin:round}
+  .pk-ld{fill:none;stroke:rgba(15,26,20,0.32);stroke-width:1.2}
+  .pk-ld.m{stroke:var(--ziel-c);stroke-dasharray:3 3}
+  .pk-ldk{fill:var(--t1)}
+  .pk-m-ob{fill:none;stroke:var(--ziel);stroke-width:2.5;stroke-linejoin:round}
+  .pk-wy{transform:translateX(calc(var(--w) * -1px))}
+  .pk-et{position:relative}
+  .pk-e{position:absolute;left:0;right:0;transform:translateY(-50%);padding-left:6px}
+  .pk-e b{display:flex;align-items:baseline;gap:8px;font-size:clamp(13px,1.3cqw,16px);font-weight:700;letter-spacing:-0.012em;line-height:1.2}
+  .pk-e b i{font-family:var(--mono);font-style:normal;font-size:0.82em;font-weight:500;color:var(--t3)}
+  .pk-e p{margin:3px 0 0;max-width:430px;font-size:clamp(11.5px,1.05cqw,13.5px);line-height:1.42;color:var(--t2);text-wrap:pretty}
+  .pk-e.m b{color:var(--ziel-c)}
+  .pk-e.m b i{color:var(--ziel-c)}
+  .pk-wys{position:absolute;max-width:30%;font-size:clamp(11.5px,1.05cqw,13.5px);line-height:1.42;color:var(--t2)}
+  .pk-wys b{display:block;margin-bottom:2px;font-size:clamp(12.5px,1.2cqw,15px);font-weight:700;color:var(--ziel-c)}
+  .pk.gra .pk-s{opacity:0;transform:translateY(-40px)}
+  .pk.gra.on .pk-s{opacity:1;transform:none;transition:opacity .45s ease calc(var(--d) * 1s),transform .7s cubic-bezier(.2,.8,.2,1) calc(var(--d) * 1s)}
+  .pk.gra .pk-wy{transform:none}
+  .pk.gra.on .pk-wy{transform:translateX(calc(var(--w) * -1px));transition:transform 1s cubic-bezier(.6,0,.2,1) 1.55s}
+  .pk.gra .pk-m-ob,.pk.gra .pk-wys,.pk.gra .pk-ld.m,.pk.gra .pk-ldk.m{opacity:0}
+  .pk.gra.on .pk-m-ob,.pk.gra.on .pk-wys,.pk.gra.on .pk-ld.m,.pk.gra.on .pk-ldk.m{opacity:1;transition:opacity .5s ease 2.45s}
+  .pk.gra .pk-e,.pk.gra .pk-ld:not(.m),.pk.gra .pk-ldk:not(.m){opacity:0}
+  .pk.gra.on .pk-e,.pk.gra.on .pk-ld:not(.m),.pk.gra.on .pk-ldk:not(.m){opacity:1;transition:opacity .45s ease calc(var(--d) * 1s + 0.35s)}
+  /* Węższy kafel: stos na górze, warstwy jako lista pod nim (w dwóch
+     kolumnach, na telefonie w jednej). Odnośniki i dopisek chowają się. */
+  @container (max-width:1000px){
+    .pk-wyk{grid-template-columns:minmax(0,1fr)}
+    .pk-rys{width:100%;max-width:560px;margin:0 auto}
+    .pk-ld,.pk-ldk,.pk-wys{display:none}
+    .pk-et{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:28px;margin-top:22px}
+    .pk-e{position:static;transform:none;display:grid;grid-template-columns:14px minmax(0,1fr);gap:0 10px;padding:12px 0 14px;border-top:1px solid var(--linia)}
+    .pk-e::before{content:"";grid-row:1 / 3;width:14px;height:14px;margin-top:2px;border-radius:4px;background:var(--c)}
+    .pk-e b,.pk-e p{grid-column:2}
+    .pk-e b{font-size:15px}
+    .pk-e p{max-width:none;font-size:13.5px}
+  }
+  @container (max-width:600px){
+    .pk-et{grid-template-columns:minmax(0,1fr)}
+  }
+
+  /* =====================================================================
+     TECZKA SPRAWY (dlaczego, blok 2)
+     Cztery źródła po lewej, teczka RMA-2186 w środku, dwa zapisy zwrotne
+     po prawej. Linie liczy skrypt z położenia elementów (kolor = źródło).
+     Po wejściu w kadr: źródło po źródle linia się rysuje i wpada jego
+     wiersz; model dokłada jeden wiersz, decyzja idzie do ERP i do klienta.
+     Bez JS: teczka i wiersze bez linii; przy ograniczonym ruchu: linie
+     narysowane od razu.
+     ===================================================================== */
+  .tk-uk{position:relative;display:grid;grid-template-columns:minmax(0,0.92fr) minmax(40px,0.3fr) minmax(0,1.6fr) minmax(40px,0.3fr) minmax(0,0.86fr);align-items:center}
+  .tk-linie{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+  .tk-linie path{fill:none;stroke:var(--c);stroke-width:1.6;stroke-opacity:0.75;stroke-dasharray:1;stroke-dashoffset:0}
+  .tk-linie circle{fill:var(--c)}
+  .tk-zr,.tk-wy{display:flex;flex-direction:column;gap:12px;min-width:0}
+  .tk-zr{grid-column:1}
+  .tk-wy{grid-column:5}
+  .tk-s,.tk-o{position:relative;z-index:1;display:grid;grid-template-columns:30px minmax(0,1fr);gap:1px 10px;align-items:center;padding:11px 14px 11px 11px;border-radius:12px;background:#ffffff;
+    box-shadow:0 0 0 1px rgba(15,26,20,0.08),0 12px 26px -20px rgba(15,26,20,0.45);transition:box-shadow .3s ease}
+  .tk-s > i,.tk-o > i{grid-row:1 / 3;display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--c);color:#ffffff}
+  .tk-s > i .ik,.tk-o > i .ik{width:14px;height:14px}
+  .tk-s b,.tk-o b{min-width:0;font-size:13px;font-weight:700;letter-spacing:-0.01em;line-height:1.3}
+  .tk-s b em{margin-left:6px;font-style:normal;font-weight:500;font-size:11.5px;color:var(--t3)}
+  .tk-s p,.tk-o p{grid-column:2;margin:0;font-size:12.5px;line-height:1.4;color:var(--t2)}
+  .tk-o{box-shadow:0 0 0 1.5px rgba(0,205,119,0.5),0 12px 26px -20px rgba(15,26,20,0.45)}
+  .tk-t{grid-column:3;position:relative;z-index:1;border-radius:14px;background:#ffffff;overflow:hidden;
+    box-shadow:0 0 0 1px rgba(15,26,20,0.09),0 30px 60px -36px rgba(7,20,13,0.5)}
+  .tk-t-gl{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid #eceee9;background:#fafaf8}
+  .tk-t-gl > i{display:grid;place-items:center;width:26px;height:26px;border-radius:7px;background:var(--ink);color:var(--ziel)}
+  .tk-t-gl > i .ik{width:13px;height:13px}
+  .tk-t-gl b{font-size:13.5px;font-weight:700}
+  .tk-t-gl span{margin-left:auto;font-family:var(--mono);font-size:11.5px;color:var(--t3)}
+  .tk-r{display:grid;grid-template-columns:86px minmax(0,1fr) auto;gap:10px;align-items:center;min-height:38px;padding:7px 16px;border-bottom:1px solid #f0f2ee;font-size:13px;line-height:1.38;transition:opacity .35s ease,transform .4s cubic-bezier(.2,.8,.2,1),background-color 1s ease}
+  .tk-r > span{font-size:12px;color:var(--t3)}
+  .tk-r > b{font-weight:550;color:var(--t1);text-wrap:pretty}
+  .tk-r > i{display:inline-flex;align-items:center;gap:5px;font-style:normal;font-size:10.5px;font-weight:650;color:color-mix(in srgb,var(--c) 85%,#000);white-space:nowrap}
+  .tk-r > i::before{content:"";width:6px;height:6px;border-radius:2px;background:var(--c)}
+  .tk-r.m{background:#f5f6f4}
+  .tk-r.m > b{font-weight:500;color:var(--t2)}
+  .tk-r.d{border-bottom:0;background:#e9f8f0}
+  .tk-r.d > span{color:var(--ziel-c);font-weight:650}
+  .tk-r.d > b{font-weight:700}
+  .tk-r.d > i{color:var(--ziel-c)}
+  .tk-r.d > i::before{display:none}
+  .tk-r.bl{background-color:rgba(0,205,119,0.14);transition:background-color 0s}
+  .tk.ruch .tk-r > b,.tk.ruch .tk-r > i{opacity:0;transform:translateX(-8px);transition:opacity .35s ease,transform .4s cubic-bezier(.2,.8,.2,1)}
+  .tk.ruch .tk-r.on > b,.tk.ruch .tk-r.on > i{opacity:1;transform:none}
+  .tk.ruch .tk-o{opacity:0;transform:translateX(-8px);transition:opacity .4s ease,transform .45s cubic-bezier(.2,.8,.2,1)}
+  .tk.ruch .tk-o.on{opacity:1;transform:none}
+  .tk.ruch .tk-linie path{stroke-dashoffset:1;transition:stroke-dashoffset .55s cubic-bezier(.5,0,.3,1)}
+  .tk.ruch .tk-linie circle{opacity:0;transition:opacity .2s ease .45s}
+  .tk.ruch .tk-linie .on{stroke-dashoffset:0;opacity:1}
+  .tk.ruch .tk-s.akt{box-shadow:0 0 0 2px var(--c),0 12px 26px -20px rgba(15,26,20,0.45)}
+  @media (max-width:980px){
+    .tk-uk{grid-template-columns:minmax(0,1fr);gap:14px;max-width:560px}
+    .tk-linie{display:none}
+    .tk-zr,.tk-t,.tk-wy{grid-column:1}
+    .tk-zr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+    .tk-wy{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+    .tk-t::before,.tk-wy::before{content:"";position:absolute}
+  }
+  @media (max-width:560px){
+    .tk-zr,.tk-wy{grid-template-columns:minmax(0,1fr)}
+    .tk-r{grid-template-columns:minmax(0,1fr) auto;row-gap:2px}
+    .tk-r > span{grid-column:1}
+    .tk-r > b{grid-column:1 / -1;grid-row:2}
+    .tk-r > i{grid-column:2;grid-row:1}
+  }
+
+  /* =====================================================================
+     JAK TO WYGLĄDA · aplikacja „Obieg reklamacji”
+     Okno bez paska systemowego: nagłówek aplikacji, po lewej kolejka
+     dnia z paskiem pewności i kreską progu w każdym wierszu, po prawej
+     otwarta sprawa. Historia i reguły zajmują całą szerokość. Język ten
+     sam co w hero: Heroicons Micro, zdjęcia ludzi, linie półprzezroczyste,
+     zieleń = zamknięte przez system, bursztyn = czeka na człowieka.
+     ===================================================================== */
+  .rk{--t1:#18181b;--t2:#52525b;--t3:#71717a;--t4:#a1a1aa;--lin:rgba(9,9,11,0.08);--lin2:rgba(9,9,11,0.05);
+    display:flex;flex-direction:column;height:clamp(560px,42vw,610px);margin-top:22px;border-radius:14px;overflow:hidden;background:#ffffff;color:var(--t1);font-size:12.5px;line-height:1.4;letter-spacing:-0.004em;
+    box-shadow:0 0 0 1px rgba(255,255,255,0.14),0 70px 130px -50px rgba(0,0,0,0.8),0 0 140px -30px rgba(0,205,119,0.32)}
+  .rk .ik{width:14px;height:14px}
+  .rk-gora{display:flex;align-items:center;gap:9px;flex-shrink:0;height:50px;padding:0 14px 0 16px;border-bottom:1px solid var(--lin);background:#fafaf9;white-space:nowrap}
+  .rk-gora > b{display:grid;place-items:center;width:24px;height:24px;border-radius:7px;background:#0f1a14}
+  .rk-gora > b svg{width:13px;height:13px;fill:#00cd77}
+  .rk-gora > strong{font-size:13.5px;font-weight:650}
+  .rk-gora > .ik{color:var(--t4)}
+  .rk-gora > span{color:var(--t3)}
+  .rk-gora > em{font-style:normal;font-weight:550;color:var(--t1)}
+  .rk-szuk{display:flex;align-items:center;gap:7px;width:min(230px,28%);height:30px;margin-left:auto;padding:0 9px;border-radius:8px;background:#ffffff;box-shadow:inset 0 0 0 1px var(--lin);font-size:12px;color:var(--t4)}
+  .rk-szuk kbd{margin-left:auto;font-family:inherit;font-size:10.5px}
+  .rk-ja{width:28px;height:28px;border-radius:50%;object-fit:cover;outline:1px solid rgba(0,0,0,0.06);outline-offset:-1px}
+  .rk-uk{position:relative;flex:1;min-height:0}
+  .rk-w{position:absolute;inset:0;display:grid;grid-template-columns:330px minmax(0,1fr)}
+  .rk-w[hidden]{display:none}
+  .rk-w.pelny{display:block;overflow:hidden;padding:20px 24px}
+  /* kolejka */
+  .rk-kol{display:flex;flex-direction:column;min-height:0;border-right:1px solid var(--lin);background:#fcfcfb}
+  .rk-kol-gl{display:flex;align-items:center;gap:8px;flex-shrink:0;height:46px;padding:0 14px;border-bottom:1px solid var(--lin)}
+  .rk-kol-gl b{font-size:13px;font-weight:650;white-space:nowrap}
+  .rk-seg{display:flex;gap:2px;margin-left:auto;padding:2px;border-radius:8px;background:rgba(9,9,11,0.05)}
+  .rk-seg span{display:flex;align-items:center;height:24px;padding:0 9px;border-radius:6px;font-size:11.5px;color:var(--t3)}
+  .rk-seg span.on{background:#ffffff;color:var(--t1);font-weight:550;box-shadow:0 1px 2px rgba(0,0,0,0.08),0 0 0 1px rgba(9,9,11,0.04)}
+  .rk-lista{flex:1;min-height:0;overflow:hidden}
+  .rk-l{position:relative;padding:10px 14px 10px 16px;border-bottom:1px solid var(--lin2)}
+  .rk-l.sel{background:#ffffff;box-shadow:inset 3px 0 0 #18181b,0 1px 0 var(--lin)}
+  .rk-l1{display:flex;align-items:baseline;gap:6px;font-size:12px}
+  .rk-l1 b{font-weight:650}
+  .rk-l1 span{color:var(--t3)}
+  .rk-l1 time{margin-left:auto;font-size:11px;color:var(--t4)}
+  .rk-l p{margin:2px 0 0;font-size:12.5px;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .rk-l2{display:flex;align-items:center;gap:8px;margin-top:7px}
+  .rk-l2 em{width:30px;font-family:var(--mono);font-style:normal;font-size:11px;color:var(--t2)}
+  .rk-pw{position:relative;display:block;flex-shrink:0;width:64px;height:6px;border-radius:3px;background:rgba(9,9,11,0.07)}
+  .rk-pw i{position:absolute;left:0;top:0;bottom:0;width:var(--p);border-radius:3px;background:#10b981}
+  .rk-pw.n i{background:#f0a33a}
+  .rk-pw b{position:absolute;left:92%;top:-3px;bottom:-3px;width:1.5px;margin-left:-0.75px;background:#18181b}
+  .rk-st{display:inline-flex;align-items:center;gap:5px;min-width:0;margin-left:auto;font-size:11.5px;white-space:nowrap}
+  .rk-st > span{overflow:hidden;text-overflow:ellipsis}
+  .rk-st.s{color:#047857}
+  .rk-st.c{color:#8a5207;font-weight:550}
+  .rk-st.z{color:var(--t2)}
+  .rk-st img{width:16px;height:16px;border-radius:50%;object-fit:cover}
+  /* otwarta sprawa */
+  .rk-d{min-width:0;min-height:0;overflow:hidden;padding:18px 22px}
+  .rk-dg{display:flex;align-items:flex-start;gap:10px 16px;flex-wrap:wrap}
+  .rk-dg > div{min-width:0;flex:1}
+  .rk-nr{display:block;font-size:11.5px;color:var(--t4)}
+  .rk-dg h3{margin:3px 0 0;font-size:18px;line-height:1.2;font-weight:600;letter-spacing:-0.022em}
+  .rk-chip{display:inline-flex;align-items:center;gap:6px;height:26px;margin-top:4px;padding:0 10px 0 6px;border-radius:999px;font-size:11.5px;font-weight:600;white-space:nowrap}
+  .rk-chip.s{color:#047857;background:rgba(16,185,129,0.1);box-shadow:inset 0 0 0 1px rgba(16,185,129,0.25)}
+  .rk-chip.c{color:#8a5207;background:rgba(245,158,11,0.1);box-shadow:inset 0 0 0 1px rgba(245,158,11,0.32)}
+  .rk-chip img{width:18px;height:18px;border-radius:50%;object-fit:cover}
+  .rk-pew{display:flex;align-items:center;gap:12px;margin-top:14px;font-size:12px;color:var(--t3)}
+  .rk-pew .rk-pw{width:180px;height:8px;border-radius:4px}
+  .rk-pew .rk-pw i{border-radius:4px}
+  .rk-pew > b{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--t1)}
+  .rk-pew > em{font-style:normal}
+  .rk-nie{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px 14px;align-items:center;margin-top:14px;padding:12px 14px;border-radius:10px;background:#fffaf2;box-shadow:inset 0 0 0 1px rgba(240,163,58,0.4)}
+  .rk-nie > .ik{width:16px;height:16px;color:#d6861e;align-self:start;margin-top:1px}
+  .rk-nie b{display:block;font-size:12.5px;font-weight:650;color:#8a5207}
+  .rk-nie p{margin:2px 0 0;font-size:12.5px;color:var(--t2);text-wrap:pretty}
+  .rk-nie-w{display:flex;gap:8px}
+  .rk-nie-w span{display:flex;flex-direction:column;align-items:flex-end;padding:6px 10px;border-radius:8px;background:#ffffff;box-shadow:inset 0 0 0 1px rgba(240,163,58,0.35)}
+  .rk-nie-w em{font-style:normal;font-size:10.5px;color:var(--t3)}
+  .rk-nie-w b{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--t1)}
+  .rk-2k{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:22px;margin-top:16px}
+  .rk-et{display:block;margin:0 0 6px;font-size:11.5px;font-weight:600;color:var(--t4)}
+  .rk-et + * + .rk-et,.rk-zb + .rk-et{margin-top:14px}
+  .rk-zb{margin:0;padding:0;list-style:none}
+  .rk-zb li{display:grid;grid-template-columns:62px minmax(0,1fr);gap:8px;align-items:baseline;padding:6px 0;border-bottom:1px solid var(--lin2)}
+  .rk-zb li > span{min-width:0}
+  .rk-zb b{display:block;font-weight:550;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .rk-zb em{display:block;font-style:normal;font-size:11.5px;color:var(--t3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .rk-zr{display:inline-flex;align-items:center;gap:5px;font-style:normal;font-size:10.5px;font-weight:650;color:color-mix(in srgb,var(--c) 85%,#000);white-space:nowrap}
+  .rk-zr::before{content:"";width:6px;height:6px;border-radius:2px;background:var(--c)}
+  .rk-ok{margin:0;padding:0;list-style:none}
+  .rk-ok li{display:flex;align-items:center;gap:7px;padding:4px 0;font-size:12.5px;color:var(--t2)}
+  .rk-ok .ik{color:#10b981}
+  .rk-dok{border-radius:10px;background:#f6f6f4;padding:12px;box-shadow:inset 0 0 0 1px var(--lin2)}
+  .rk-dok-k{padding:12px 14px;border-radius:6px;background:#ffffff;box-shadow:0 0 0 1px rgba(9,9,11,0.06),0 1px 2px rgba(9,9,11,0.05),0 14px 28px -18px rgba(9,9,11,0.25);font-size:11.5px}
+  .rk-dok-k h5{margin:0;font-size:12.5px;font-weight:650}
+  .rk-dok-k > p{margin:1px 0 0;font-size:11px;color:var(--t3)}
+  .rk-war{display:grid;grid-template-columns:14px minmax(0,1fr) auto;gap:9px;align-items:center;margin-top:8px;padding:8px 10px;border-radius:7px;box-shadow:inset 0 0 0 1px var(--lin)}
+  .rk-war:first-of-type{margin-top:10px}
+  .rk-war i{width:14px;height:14px;border-radius:50%;box-shadow:inset 0 0 0 1.5px #c4c4c8}
+  .rk-war span{min-width:0;color:var(--t2)}
+  .rk-war span b{display:block;font-weight:600;color:var(--t1)}
+  .rk-war > b{font-family:var(--mono);font-size:12px;font-weight:600}
+  .rk-dok-st{display:flex;justify-content:space-between;gap:10px;margin-top:9px;padding-top:8px;border-top:1px solid var(--lin2);font-size:10.5px;color:var(--t3)}
+  .rk-akc{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}
+  .rk-b{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 11px;border-radius:8px;background:#18181b;color:#ffffff;font-size:12.5px;font-weight:550;white-space:nowrap;box-shadow:0 1px 2px rgba(0,0,0,0.25),inset 0 1px 0 rgba(255,255,255,0.12)}
+  .rk-b.c{background:#ffffff;color:var(--t1);box-shadow:inset 0 0 0 1px var(--lin),0 1px 2px rgba(0,0,0,0.04)}
+  .rk-zap{display:flex;align-items:center;gap:6px;margin:9px 0 0;font-size:11.5px;color:var(--t3)}
+  /* przebieg sprawy zamkniętej */
+  .rk-ob{margin:0;padding:0;list-style:none}
+  .rk-ob li{position:relative;display:grid;grid-template-columns:16px 38px minmax(0,1fr);gap:10px;align-items:start;padding:0 0 12px}
+  .rk-ob li::before{content:"";position:absolute;left:7px;top:16px;bottom:-1px;width:2px;background:#10b981;border-radius:1px}
+  .rk-ob li:last-child::before{display:none}
+  .rk-ob li > i{position:relative;z-index:1;width:16px;height:16px;border-radius:50%;background:#10b981 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M5 8.2l2 1.9 4-4.3' fill='none' stroke='%23fff' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/16px no-repeat}
+  .rk-ob li.m > i{background-color:#8a918c}
+  .rk-ob time{font-size:11px;color:var(--t4);line-height:16px}
+  .rk-ob li > span{min-width:0;font-size:12.5px;line-height:1.35}
+  .rk-ob li > span .rk-zr{display:flex;margin-top:2px}
+  .rk-list{padding:12px 14px;border-radius:6px;background:#ffffff;box-shadow:0 0 0 1px rgba(9,9,11,0.06),0 1px 2px rgba(9,9,11,0.05),0 14px 28px -18px rgba(9,9,11,0.25);font-size:12px;line-height:1.5}
+  .rk-list dl{display:grid;grid-template-columns:44px minmax(0,1fr);gap:2px 8px;margin:0 0 9px;padding-bottom:8px;border-bottom:1px solid var(--lin2);font-size:11.5px}
+  .rk-list dt{color:var(--t4)}
+  .rk-list dd{margin:0;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .rk-list p{margin:0 0 6px;color:var(--t1);text-wrap:pretty}
+  .rk-zal{display:inline-flex;align-items:center;gap:6px;margin-top:4px;padding:5px 9px;border-radius:7px;box-shadow:inset 0 0 0 1px var(--lin);font-size:11.5px;color:var(--t2)}
+  .rk-zal .ik{color:#d0573f}
+  /* historia */
+  .rk-h-gl,.rk-reg-gl{display:flex;align-items:baseline;gap:10px;margin-bottom:12px}
+  .rk-h-gl h3,.rk-reg-gl h3{margin:0;font-size:18px;font-weight:600;letter-spacing:-0.022em}
+  .rk-h-gl span,.rk-reg-gl span{font-size:12px;color:var(--t4)}
+  .rk-hw{display:grid;grid-template-columns:132px minmax(0,1fr) 150px 70px minmax(0,1.5fr);gap:12px;align-items:center;min-height:44px;padding:0 10px;border-bottom:1px solid var(--lin2);font-size:12.5px}
+  .rk-hw.n{min-height:30px;font-size:11.5px;font-weight:550;color:var(--t4)}
+  .rk-hw > *{min-width:0}
+  .rk-hw b{font-weight:600}
+  .rk-hw b small{display:block;font-size:11.5px;font-weight:400;color:var(--t3)}
+  .rk-hw .kto{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+  .rk-hw .kto img{width:20px;height:20px;border-radius:50%;object-fit:cover}
+  .rk-hw .kto i{display:grid;place-items:center;width:20px;height:20px;border-radius:5px;background:#0f1a14}
+  .rk-hw .kto i svg{width:11px;height:11px;fill:#00cd77}
+  .rk-hw .pw{font-family:var(--mono);font-size:12px}
+  .rk-hw .pw.n{color:#a15c07}
+  .rk-hw .wh{color:var(--t2);text-wrap:pretty}
+  .rk-hw.lud{background:rgba(245,158,11,0.05)}
+  /* próg i reguły */
+  .rk-reg{display:grid;grid-template-columns:minmax(0,0.85fr) minmax(0,1.3fr);gap:28px}
+  .rk-prog{padding:16px 18px;border-radius:12px;box-shadow:inset 0 0 0 1px var(--lin)}
+  .rk-prog-v{display:block;margin-top:2px;font-size:34px;font-weight:600;letter-spacing:-0.04em;line-height:1.1}
+  .rk-sl{position:relative;height:8px;margin:18px 0 0;border-radius:4px;background:rgba(9,9,11,0.07)}
+  .rk-sl > i{position:absolute;left:0;top:0;bottom:0;border-radius:4px;background:#f0a33a}
+  .rk-sl > b{position:absolute;top:50%;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;background:#ffffff;box-shadow:0 0 0 1.5px #18181b,0 2px 6px rgba(0,0,0,0.2)}
+  .rk-sl > u{position:absolute;left:0;right:0;top:0;bottom:0;border-radius:4px;background:#10b981;text-decoration:none}
+  .rk-sk{display:flex;justify-content:space-between;margin-top:7px;font-size:10.5px;color:var(--t4)}
+  .rk-sl-op{display:flex;justify-content:space-between;gap:10px;margin-top:10px;font-size:11.5px}
+  .rk-sl-op span{display:inline-flex;align-items:center;gap:6px;color:var(--t2)}
+  .rk-sl-op span i{width:8px;height:8px;border-radius:2px;background:#f0a33a}
+  .rk-sl-op span.s i{background:#10b981}
+  .rk-prog > p{margin:14px 0 0;font-size:12.5px;color:var(--t2);text-wrap:pretty}
+  .rk-zm{display:flex;align-items:center;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid var(--lin2);font-size:12px;color:var(--t2)}
+  .rk-zm img{width:22px;height:22px;border-radius:50%;object-fit:cover}
+  .rk-zm b{font-weight:600;color:var(--t1)}
+  .rk-rr{display:grid;grid-template-columns:minmax(0,1fr) auto 30px;gap:14px;align-items:center;min-height:46px;border-bottom:1px solid var(--lin2)}
+  .rk-rr > span{font-size:12.5px;color:var(--t1)}
+  .rk-rr > b{padding:4px 9px;border-radius:7px;font-size:12px;font-weight:550;white-space:nowrap;box-shadow:inset 0 0 0 1px var(--lin),0 1px 2px rgba(0,0,0,0.04)}
+  .rk-rr > i{position:relative;width:28px;height:16px;border-radius:999px;background:#10b981}
+  .rk-rr > i::after{content:"";position:absolute;right:2px;top:2px;width:12px;height:12px;border-radius:50%;background:#ffffff}
+  .rk-mod{display:flex;align-items:center;gap:10px;margin-top:12px;padding:10px 12px;border-radius:10px;background:#f6f6f4;font-size:12px;color:var(--t2)}
+  .rk-mod > i{display:grid;place-items:center;width:26px;height:26px;border-radius:7px;background:#e3e5e2;color:#5b625d}
+  .rk-mod b{color:var(--t1);font-weight:600}
+  @media (max-width:1180px){
+    .rk-w{grid-template-columns:290px minmax(0,1fr)}
+    .rk-hw{grid-template-columns:118px minmax(0,1fr) 140px 60px minmax(0,1.2fr)}
+    .rk-nie{grid-template-columns:auto minmax(0,1fr)}
+    .rk-nie-w{grid-column:2}
+  }
+  @media (max-width:980px){
+    .rk{height:auto}
+    .rk-uk{flex:none}
+    .rk-w{position:static;grid-template-columns:minmax(0,1fr)}
+    .rk-kol{display:none}
+    .rk-d{padding:18px 16px}
+    .rk-2k,.rk-reg{grid-template-columns:minmax(0,1fr)}
+    .rk-szuk{display:none}
+    .rk-w.pelny{padding:18px 16px}
+    .rk-hw{grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;padding:10px 4px}
+    .rk-hw.n{display:none}
+    .rk-hw > :nth-child(2){grid-column:1;grid-row:2}
+    .rk-hw > :nth-child(3){grid-column:2;grid-row:1}
+    .rk-hw > :nth-child(4){grid-column:2;grid-row:2;text-align:right}
+    .rk-hw > :nth-child(5){grid-column:1 / -1}
+  }
+  @media (max-width:560px){
+    .rk-gora > span,.rk-gora > em,.rk-gora > .ik{display:none}
+    .rk-pew .rk-pw{width:110px}
+    .rk-war{grid-template-columns:14px minmax(0,1fr)}
+    .rk-war > b{grid-column:2}
+    .rk-rr{grid-template-columns:minmax(0,1fr) 30px;padding:8px 0}
+    .rk-rr > b{grid-column:1;justify-self:start;white-space:normal}
+    .rk-rr > i{grid-column:2;grid-row:1}
+    .rk-dok-st{flex-direction:column}
+  }
+
+  /* =====================================================================
+     PRZYKŁADY · trzy karty, udział spraw zamykanych bez człowieka
+     Pasek: zieleń = zamyka rozwiązanie, kreskowany bursztyn = idzie do
+     ludzi (ta sama para barw co w zwrotnicy). Pod paskiem to, co zostało
+     u ludzi — bez tego liczba czyta się jak obietnica stu procent.
+     ===================================================================== */
+  .px2{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(12px,1.2vw,16px);margin-top:clamp(40px,4.4vw,64px)}
+  .px2-k{display:flex;flex-direction:column;padding:22px 22px 20px;border-radius:20px;background:var(--papier)}
+  .px2-p{font-size:12.5px;font-weight:700;color:var(--ziel-c)}
+  .px2-k h3{margin:8px 0 0;font-size:17px;font-weight:700;letter-spacing:-0.02em;line-height:1.25}
+  .px2-k h3 small{display:block;margin-top:2px;font-size:12.5px;font-weight:400;letter-spacing:0;color:var(--t3)}
+  .px2-ud{margin-top:22px;padding:16px 0;border-top:1px solid var(--linia);border-bottom:1px solid var(--linia)}
+  .px2-pas{position:relative;display:block;height:12px;border-radius:4px;overflow:hidden}
+  .px2-pas i{position:absolute;left:0;top:0;bottom:0;width:var(--u);border-radius:4px 0 0 4px;background:var(--ziel);box-shadow:2px 0 0 #ffffff}
+  .px2-op{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-top:10px;font-size:12.5px;color:var(--t3)}
+  .px2-op span:first-child{color:var(--t1)}
+  .px2-op b{margin-right:5px;font-size:20px;font-weight:750;letter-spacing:-0.03em;color:var(--t1)}
+  .px2-op span:last-child b{font-size:14px;font-weight:650;color:var(--burs-c)}
+  .px2-d{margin:16px 0 0;font-size:14px;line-height:1.55;color:var(--t2);text-wrap:pretty}
+  .px2-l{margin-top:auto;padding-top:16px}
+  .px2-l b{display:block;font-size:12.5px;font-weight:700;color:var(--t1)}
+  .px2-l ul{margin:6px 0 0;padding:0;list-style:none}
+  .px2-l li{position:relative;padding:3px 0 3px 16px;font-size:13.5px;line-height:1.45;color:var(--t2)}
+  .px2-l li::before{content:"";position:absolute;left:0;top:10px;width:8px;height:2px;background:#e3962f}
+  .px2.gra .px2-pas i{transform:scaleX(0);transform-origin:0 50%}
+  .px2.gra.on .px2-pas i{transform:none;transition:transform .9s cubic-bezier(.3,.8,.3,1) calc(0.2s + var(--j) * 0.12s)}
+  @media (max-width:980px){ .px2{grid-template-columns:minmax(0,1fr);max-width:560px} }
+  #przyklady .v3-cyt{margin-top:clamp(56px,7vw,96px) !important}
+
+  /* =====================================================================
+     NAJPIERW POMIAR, POTEM PRODUKCJA · harmonogram dwutorowy z bramką
+     Oś dziewięciu tygodni, nasz tor i Wasz tor. Po czwartym tygodniu
+     bramka: pomiar na sprawach z kwartału, z kreską progu z umowy.
+     Po wejściu w kadr głowica jedzie po osi, bloki wypełniają się za nią,
+     przy bramce głowica staje, pomiar się liczy, potem jazda do końca.
+     Stan końcowy: wszystko wypełnione, bramka przekroczona.
+     ===================================================================== */
+  .hm{margin-top:clamp(48px,5.6vw,80px)}
+  .hm-wyk{position:relative;display:grid;grid-template-columns:clamp(116px,11vw,156px) minmax(0,1fr)}
+  .hm-kto{position:relative}
+  .hm-kto span{position:absolute;left:0;right:12px;transform:translateY(-50%);font-size:13px;font-weight:700;line-height:1.25;color:var(--t1)}
+  .hm-kto span + span{color:var(--t3)}
+  .hm-pl{position:relative;min-width:0}
+  .hm-os{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));height:30px;font-size:12px;color:var(--t3)}
+  .hm-os span{padding-left:2px;border-left:1px solid var(--linia);line-height:30px;white-space:nowrap}
+  .hm-tory{position:relative;height:134px}
+  .hm-tory::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,var(--linia2) 0 1px,transparent 1px calc(100% / 9));pointer-events:none}
+  .hm-e{position:absolute;top:0;bottom:0;left:calc(var(--s) / 9 * 100%);width:calc(var(--d) / 9 * 100%)}
+  .hm-tyg{display:none}
+  .hm-b{position:absolute;left:3px;right:3px;height:62px;border-radius:10px;overflow:hidden;background:#eef1ec}
+  .hm-b.n{top:0}
+  .hm-b.w{top:72px;background:#f4f6f2}
+  .hm-f{position:absolute;left:0;top:0;bottom:0;width:100%;background:var(--ziel)}
+  .hm-b.w .hm-f{background:#bfe6cf}
+  .hm-b b{position:absolute;left:12px;right:10px;top:50%;z-index:1;transform:translateY(-50%);font-size:13px;font-weight:650;line-height:1.25;color:var(--t1);text-wrap:balance}
+  .hm-b.w b{font-weight:550;color:#1d3a2a}
+  .hm-e.pm .hm-b.n{box-shadow:inset 0 0 0 2px var(--t1)}
+  .hm-gl{display:none;position:absolute;top:-30px;bottom:-8px;z-index:2;width:2px;margin-left:-1px;background:var(--t1);pointer-events:none;transition:opacity .4s ease}
+  .hm-gl::before{content:"";position:absolute;left:50%;top:0;width:10px;height:10px;transform:translate(-50%,-2px);border-radius:50%;background:var(--t1)}
+  .hm-br{position:absolute;left:calc(var(--x) * 100%);top:-30px;bottom:-30px;z-index:1;width:0;border-left:2px dashed var(--t1)}
+  .hm-br > i{position:absolute;left:-15px;top:-16px;display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--t1);color:var(--ziel)}
+  .hm-br > i .ik{width:14px;height:14px}
+  .hm-karta{position:relative;width:min(560px,calc((1 - var(--x)) * 100% - 8px));margin:30px 0 0 calc(var(--x) * 100%);padding:18px 20px 16px;border-radius:0 16px 16px 16px;background:#ffffff;
+    box-shadow:0 0 0 1px rgba(15,26,20,0.1),0 30px 60px -38px rgba(7,20,13,0.5);transition:opacity .4s ease}
+  .hm-karta::before{content:"";position:absolute;left:-2px;top:-30px;height:30px;border-left:2px dashed var(--t1)}
+  .hm-k-gl{display:flex;align-items:center;flex-wrap:wrap;gap:8px 12px}
+  .hm-k-gl b{font-size:15px;font-weight:700;letter-spacing:-0.015em}
+  .hm-ok{display:inline-flex;align-items:center;gap:6px;margin-left:auto;padding:4px 10px 4px 7px;border-radius:999px;background:rgba(0,205,119,0.12);font-size:12.5px;font-weight:700;color:var(--ziel-c);transition:opacity .4s ease,transform .4s cubic-bezier(.3,1.5,.5,1)}
+  .hm-n{margin:10px 0 0;font-size:14px;line-height:1.5;color:var(--t2)}
+  .hm-n b{font-family:var(--mono);font-size:15px;font-weight:600;color:var(--t1)}
+  .hm-zg{margin-top:14px}
+  .hm-zg-gl{display:flex;justify-content:space-between;align-items:baseline;gap:12px;font-size:12.5px;color:var(--t2)}
+  .hm-zg-gl b{font-family:var(--mono);font-size:18px;font-weight:600;color:var(--t1)}
+  .hm-zg-t{position:relative;height:12px;margin-top:30px;border-radius:5px;background:#eef1ec}
+  .hm-zg-f{position:absolute;left:0;top:0;bottom:0;width:var(--w);border-radius:5px;background:var(--ziel)}
+  .hm-zg-p{position:absolute;top:-8px;bottom:-8px;width:2px;margin-left:-1px;background:var(--t1)}
+  .hm-zg-p span{position:absolute;bottom:calc(100% + 3px);left:50%;transform:translateX(-50%);font-size:11.5px;font-weight:650;white-space:nowrap;color:var(--t1)}
+  .hm-zg-sk{display:flex;justify-content:space-between;margin-top:7px;font-size:11px;color:var(--t3)}
+  .hm-wy{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:12px;font-size:13px;color:var(--t2)}
+  .hm-wy span{display:inline-flex;align-items:center;gap:7px}
+  .hm-wy i{width:10px;height:10px;border-radius:3px;background:var(--ziel)}
+  .hm-wy span + span i{background:repeating-linear-gradient(135deg,rgba(214,134,30,0.7) 0 1.5px,rgba(214,134,30,0) 1.5px 4px),rgba(240,163,58,0.3);box-shadow:inset 0 0 0 1px #e3962f}
+  .hm-wy b{font-weight:700;color:var(--t1)}
+  .hm-um{margin:14px 0 0;padding:12px 14px;border-radius:10px;border-left:3px solid var(--ziel);background:var(--papier);font-size:14px;line-height:1.5;color:var(--t1);text-wrap:pretty}
+  .hm-um b{display:block;margin-bottom:2px;font-size:12px;font-weight:700;color:var(--t3)}
+  .hm-dol{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(24px,4vw,64px);max-width:1100px;margin:clamp(40px,4.6vw,64px) 0 0 clamp(116px,11vw,156px)}
+  .hm-dol p{margin:0;padding-top:16px;border-top:1px solid var(--linia);font-size:15.5px;line-height:1.62;color:var(--t2);text-wrap:pretty}
+  /* w ruchu */
+  .hm.ruch .hm-gl{display:block}
+  .hm.ruch.kon .hm-gl{opacity:0}
+  .hm.ruch .hm-karta{opacity:0.45}
+  .hm.ruch.br .hm-karta{opacity:1}
+  .hm.ruch .hm-zg-f{width:0}
+  .hm.ruch.zm .hm-zg-f{width:var(--w);transition:width 1.2s cubic-bezier(.22,1,.3,1)}
+  .hm.ruch .hm-zg-gl b{opacity:0}
+  .hm.ruch.zm .hm-zg-gl b{opacity:1;transition:opacity .3s ease 1s}
+  .hm.ruch .hm-ok{opacity:0;transform:scale(.8)}
+  .hm.ruch .hm-wy,.hm.ruch .hm-um{opacity:0;transition:opacity .45s ease}
+  .hm.ruch.ok .hm-ok,.hm.ruch.ok .hm-wy,.hm.ruch.ok .hm-um{opacity:1;transform:none}
+  /* telefon i tablet: etapy jeden pod drugim, bramka po czwartym tygodniu */
+  @media (max-width:860px){
+    .hm-wyk{display:block}
+    .hm-kto,.hm-os,.hm-gl,.hm-br{display:none !important}
+    .hm-pl{display:flex;flex-direction:column;gap:10px}
+    .hm-tory{display:contents}
+    .hm-tory::before{display:none}
+    .hm-e{position:relative;left:auto;width:auto;order:var(--o);display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:6px 8px;padding-top:6px}
+    .hm-tyg{display:block;grid-column:1 / -1;font-size:12.5px;font-weight:700;color:var(--t3)}
+    .hm-b{position:relative;left:auto;right:auto;top:auto !important;height:auto;min-height:58px}
+    .hm-b b{position:relative;left:auto;right:auto;top:auto;transform:none;display:block;padding:10px 12px;font-size:13px}
+    .hm-karta{order:5;width:auto;margin:6px 0 4px}
+    .hm-karta::before{display:none}
+    .hm-karta{border-radius:16px}
+    .hm-dol{grid-template-columns:minmax(0,1fr);margin-left:0}
+  }
+  @media (max-width:520px){
+    .hm-e{grid-template-columns:minmax(0,1fr)}
+    .hm-b.w{min-height:44px}
+  }
 </style>
 
+<div class="v3">
+<Styl />
+<Anim />
+
 <!-- ============ 1 · HERO ============
-     Rysunek robi całą robotę pozycjonującą: siedem warstw o grubości równej
-     udziałowi w czasie budowy, z warstwą modelu na 6%. Nagłówek nie musi
-     przez to niczego udowadniać i mówi tylko, co rozwiązanie robi. -->
-<div aria-hidden="true" style="position:absolute;left:0;right:0;top:0;height:1080px;background:radial-gradient(900px 640px at 86% 2%, rgba(0,205,119,0.13), transparent 64%);pointer-events:none"></div>
-<section style="position:relative;overflow:hidden;background:transparent;padding:clamp(28px,4vw,52px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) clamp(56px,6.5vw,84px)">
-<div class="hero-split" style="display:grid;grid-template-columns:1fr 1.02fr;gap:clamp(32px,4.5vw,64px);align-items:center;margin-top:clamp(10px,1.5vw,20px)">
-<div>
-<h1 style="margin:0;font-size:clamp(29px,4.4vw,51px);line-height:1.06;letter-spacing:-0.032em;font-weight:800;color:#16211a;text-wrap:balance">Rozwiązanie AI, które prowadzi sprawę od zgłoszenia do zamknięcia</h1>
-<p style="margin:26px 0 0;max-width:610px;font-size:clamp(16px,2.1vw,19px);line-height:1.6;color:#33413a;text-wrap:pretty">Obsługa faktur kosztowych, kwalifikacja zgłoszeń, przygotowanie ofert — rozwiązanie powstaje pod jeden Wasz proces i wpina się w systemy, w których pracujecie na co dzień. Próg jakości mierzymy na Waszych sprawach, zanim cokolwiek wejdzie na produkcję.</p>
-<div class="hero-actions" style="display:flex;align-items:center;flex-wrap:wrap;gap:16px 22px;margin-top:34px">
-<a href="#kontakt" class="btn-dark" style="display:inline-flex;align-items:center;gap:10px;background:#16211a;color:#ffffff;padding:18px 32px;border-radius:12px;font-weight:650;font-size:16.5px;box-shadow:0 14px 30px -14px rgba(16,33,26,0.45)">Umów rozmowę <span aria-hidden="true">→</span></a>
-<a href="#prog" class="btn-ghost" style="display:inline-flex;align-items:center;gap:8px;font-size:16.5px;font-weight:700;color:#16211a;background:rgba(255,255,255,0.6);padding:18px 26px;border-radius:12px;border:1px solid rgba(22,33,26,0.16)">Co, gdy model się myli →</a>
-</div>
-<!-- Warunki zakupu pod pierwszym ekranem. Każdy wiersz jest skrótem
-     zdania, które stoi niżej na tej stronie (FAQ o cenie i o czasie
-     zespołu) — nic tu nie jest nową obietnicą. -->
-<WarunkiZakupu pozycje={[
-  { t: 'Zaczyna się od', d: 'dnia warsztatu i kompletu spraw z ostatniego kwartału' },
-  { t: 'Wycena', d: '<strong>stała kwota za ustalony zakres</strong>, podawana po warsztacie; płatność etapami' },
-  { t: 'Po Waszej stronie', d: 'rozmowa w tygodniu przez czas budowy, najwięcej przy pilocie' },
-]} />
-</div>
+     Zwrotnica progu na pięciu porannych reklamacjach. Plansza kończy się
+     nad dołem rysunku, więc rysunek wisi na jej krawędzi. -->
+<Hero lead="Rozwiązanie powstaje pod jeden Wasz proces i pracuje w systemach, z których zespół korzysta na co dzień. Sprawy pewne zamyka samo, pozostałe oddaje człowiekowi razem z powodem. Jakość rozstrzygnięć mierzymy na Waszych sprawach, zanim cokolwiek wejdzie na produkcję." link={{ href: '#jak-wyglada', t: 'Zobacz, co trafia do człowieka →' }}>
+<Fragment slot="h1">AI prowadzi sprawy od zgłoszenia do zamknięcia, <span>ludzie decydują o&nbsp;wyjątkach</span></Fragment>
 
-<div>
-<div class="rd" role="img" aria-label="Przekrój rozwiązania: siedem warstw, których grubość odpowiada udziałowi w czasie budowy. Model zajmuje sześć procent, reszta to połączenie z systemami, dane, reguły, ścieżka wyjątku, miejsce pracy zespołu oraz pomiar.">
-<div class="rd-kol">
-{warstwy.map((w) => (
-  <div class="rd-poz rd-warstwa" style={`top:${w.y}%;height:${w.u}%;animation:rd-roz${w.i} ${RD_C}s cubic-bezier(.34,1.3,.5,1) infinite`}>
-    <span class={w.model ? 'rd-w rd-model' : 'rd-w'} style={`--tlo:${w.tlo};animation:rd-w${w.i} ${RD_C}s cubic-bezier(.4,0,.2,1) infinite${w.model ? `,rd-blask ${RD_C}s cubic-bezier(.4,0,.2,1) infinite` : ''}`}></span>
-  </div>
+<figure class="zr hero-wid" role="img" aria-label={ZR_ARIA}>
+<div class="zr-pl" aria-hidden="true">
+<div class="zr-gl">
+<span class="zr-ap"><b><svg viewBox="0 0 16 16" set:html={IK['inbox-stack']}></svg></b>Obieg reklamacji<em>· 10.09, od 9:00</em></span>
+<span class="zr-prog">Próg pewności<b>{PROG}%</b></span>
+<span class="zr-lc s"><i></i>Zamyka system<b data-zr-ls>{ZR_S}</b></span>
+<span class="zr-lc c"><i></i>Do ludzi<b data-zr-lc>{ZR_C}</b></span>
+</div>
+<div class="zr-uk">
+<div class="zr-a">
+<span class="zr-et">Wpływa</span>
+<ol class="zr-lista">
+{[...SPRAWY, ...NASTEPNE].map((s, i) => (
+  <li class={i < SPRAWY.length ? 'zr-w zabrane' : 'zr-w nast'} data-zr-w>
+    <i><svg class="ik" viewBox="0 0 16 16" set:html={IK['envelope']}></svg></i>
+    <span><b>{s.nr}<small>{s.kl}</small></b><em>{s.t}</em></span>
+    <time>{s.g}</time>
+  </li>
 ))}
+</ol>
 </div>
-<div class="rd-opisy">
-{warstwy.map((w) => (
-  <div class={w.model ? 'rd-e model' : 'rd-e'} style={`top:${w.srodek}%;animation:rd-roz${w.i} ${RD_C}s cubic-bezier(.34,1.3,.5,1) infinite,rd-e${w.i} ${RD_C}s ease-out infinite`}>
-    <b>{w.n}</b><i>{w.u}%</i>
-    {w.model && <span class="rd-cal" style={`animation:rd-cal ${RD_C}s cubic-bezier(.34,1.3,.5,1) infinite`}>tyle waży sam model</span>}
-  </div>
-))}
-</div>
-</div>
-<div class="rd-leg">
-<span><i style="background:rgba(0,205,119,0.34)"></i>budujemy my — 94%</span>
-<span><i style="background:rgba(22,33,26,0.17)"></i>dostawca modelu — 6%</span>
-</div>
-<p class="rd-zrodlo">Udział w czasie budowy, z naszych wdrożeń. Między projektami proporcje się przesuwają; nie zmienia się to, że model jest najcieńszą warstwą.</p>
-<style is:inline set:html={klatkiRdzen}></style>
-</div>
-</div>
-</section>
-
-<!-- ============ 2 · CZYM TO JEST ============
-     Pierwsze zdanie zbudowane jako definicja (podmiot = nazwa usługi) —
-     po ten fragment sięgają modele językowe i wyróżnione odpowiedzi
-     w wyszukiwarce. Obok rozpisane siedem warstw z hero, żeby czytelnik
-     nie musiał się domyślać, co znaczą nazwy na rysunku. -->
-<section id="czym-jest" class="sec-pad" style="padding-top:clamp(48px,6vw,72px)">
-<div class="s2-grid" style="display:grid;grid-template-columns:minmax(300px,1fr) minmax(0,1.1fr);gap:clamp(34px,5vw,76px);align-items:start">
-<div>
-<h2 class="h-sec" style="margin:0;text-wrap:balance">Czym są indywidualne rozwiązania AI?</h2>
-<div style="margin-top:24px;font-size:17px;line-height:1.65;color:#33413a">
-<p style="margin:0;text-wrap:pretty">Indywidualne rozwiązanie AI to system zbudowany pod jeden proces w Waszej firmie i wpięty w narzędzia, z których korzysta zespół. Sprawa wchodzi do niego w tym samym miejscu, w którym dziś trafia na czyjeś biurko.</p>
-<p style="margin:18px 0 0;text-wrap:pretty">Dane bierze z systemów, w których leżą, i sprawdza je warunkami spisanymi razem z Wami. Sprawy pewne zamyka sam. Resztę przekazuje człowiekowi razem z powodem.</p>
-<p style="margin:18px 0 0;text-wrap:pretty">O tym, czy rozwiązanie zadziała, rozstrzyga siedem warstw wokół modelu. Tam idzie praca i tam leży ryzyko.</p>
-</div>
-</div>
-<div>
-{warstwy.map((w) => (
-  <div class={w.model ? 'wr model rv' : 'wr rv'}>
-    <span class="wr-n">{w.n}<i>{w.u}%</i></span>
-    <p class="wr-o">{w.o}</p>
-  </div>
-))}
-</div>
-</div>
-</section>
-
-<!-- ============ 3 · KIEDY TEGO NIE BUDOWAĆ ============
-     Dwie z trzech dróg odsyłają klienta do czegoś tańszego. To ta sama
-     figura, co „kiedy nas nie wybierać" na /dlaczego-my, tylko dotyczy
-     pieniędzy, nie terminu. Trzeci wiersz jest wcięty i ma krechę. -->
-<section id="kiedy" style="background:#f4f8f2;padding:clamp(60px,7.5vw,96px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
-<div class="sec-head">
-<h2 class="h-sec" style="margin:0;max-width:560px;text-wrap:pretty">Kiedy nie warto tego budować</h2>
-<p class="sub" style="margin:0 0 6px;max-width:430px">Część zapytań, które do nas trafiają, zamyka się tańszym sposobem. Mówimy to na pierwszej rozmowie, zanim ktokolwiek podpisze zlecenie.</p>
-</div>
-
-<div style="margin-top:clamp(30px,3.6vw,44px)">
-{DROGI.map((d) => (
-  <div class={d.nasze ? 'dr nasze rv' : 'dr rv'}>
-    <h3 class="dr-n">{d.n}</h3>
-    <p class="dr-k">{d.k}</p>
-    <p class="dr-r">{d.r}</p>
-  </div>
-))}
-</div>
-</section>
-
-<!-- ============ 4 · PRÓG PEWNOŚCI ============
-     Ciemny pas, największy ciężar na stronie. Odpowiada na pytanie, które
-     zabija najwięcej wdrożeń AI na etapie zakupu: co się dzieje, kiedy
-     model się pomyli. Dwie z pięciu spraw na rysunku idą do człowieka. -->
-<section id="prog" style="position:relative;background:radial-gradient(900px 420px at 88% 4%, rgba(0,205,119,0.16), transparent 62%), #0e2b1d;padding:clamp(60px,7.5vw,98px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
-<div class="s2-grid" style="display:grid;grid-template-columns:minmax(300px,0.86fr) minmax(0,1fr);gap:clamp(38px,5.5vw,84px);align-items:center">
-<div>
-<h2 class="h-sec" style="margin:0;color:#ffffff;text-wrap:pretty">Co się dzieje, kiedy model nie jest pewny</h2>
-<p style="margin:22px 0 0;font-size:17px;line-height:1.65;color:rgba(255,255,255,0.78);text-wrap:pretty">Każde rozwiązanie ma dwie drogi wyjścia. Sprawy pewne zamyka samo. Przy pozostałych zatrzymuje się i oddaje sprawę człowiekowi razem z tym, czego nie potrafiło rozstrzygnąć, oraz z danymi, które zdążyło zebrać.</p>
-<p style="margin:16px 0 0;font-size:17px;line-height:1.65;color:rgba(255,255,255,0.78);text-wrap:pretty">Granicę między jedną drogą a drugą ustalamy z Wami przed budową. Widzicie ją w panelu i możecie ją podnieść, kiedy zaufanie do rozwiązania rośnie.</p>
-<p style="margin:16px 0 0;font-size:15px;line-height:1.6;color:rgba(255,255,255,0.55);text-wrap:pretty">Udział spraw zamykanych bez człowieka zależy od procesu. W obiegu dokumentów bywa wysoki, przy ocenie zapisów umownych niski. Podajemy go dopiero po pomiarze.</p>
-</div>
-
-<div>
-<div class="pg" role="img" aria-label="Pięć spraw z paskiem pewności. Trzy przekraczają próg dziewięćdziesięciu dwóch procent i system zamyka je sam, dwie zostają poniżej i trafiają do człowieka razem z powodem.">
+<div class="zr-b">
+<span class="zr-et">Odczyt i pewność</span>
+<div class="zr-st">
 {SPRAWY.map((s, i) => (
-  <div class={`pg-s ${s.ok ? 'tak' : 'nie'}${!s.ok && s.p === 71 ? ' stop' : ''}`} style={`animation:pg-k${i} ${PG_C}s linear infinite`}>
-    <span class="pg-t">{s.t}</span>
-    <div class="pg-tor">
-      <span class="pg-bar" style={`animation:pg-b${i} ${PG_C}s cubic-bezier(.22,1,.3,1) infinite`}></span>
-      <span class="pg-lab" style={`left:${s.p}%;animation:pg-l${i} ${PG_C}s linear infinite`}>{s.p}%</span>
-      <span class="pg-prog" style={`left:${PROG}%`}><span>próg {PROG}%</span></span>
+  <div class={`zr-k ${s.ok ? 's' : 'c'}${i === SPRAWY.length - 1 ? ' akt' : ''}`} style={`--p:${s.p}%`} data-zr-k>
+    <div class="zr-k-gl"><b>{s.nr}</b><span>{s.kl}</span><time>{s.g}</time></div>
+    <h5>{s.t}</h5>
+    <ul class="zr-od">
+      {s.od.map(([z, t]) => (<li class="zr-o" data-zr-o><i style={`--c:${ZRODLA[z].c}`}>{z === 'Model' ? 'model' : z}</i><span>{t}</span></li>))}
+    </ul>
+    <div class="zr-m">
+      <span class="zr-m-t"><i class="zr-m-f"></i><b class="zr-m-pr" style={`left:${PROG}%`}></b><em class="zr-m-w">{s.p}%</em></span>
+      <span class="zr-m-os"><span>pewność</span><span style={`left:${PROG}%`}>próg {PROG}%</span></span>
     </div>
-    <div class="pg-osie"><span>0</span><span>100</span></div>
-    <div class="pg-v" style={`animation:pg-v${i} ${PG_C}s cubic-bezier(.34,1.4,.5,1) infinite`}>
-      <span class="pg-ik">
-        {s.ok
-          ? <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
-          : <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.4"/><path d="M5.5 20c.6-3.6 3.3-5.4 6.5-5.4s5.9 1.8 6.5 5.4"/></svg>}
-      </span>
-      <span>
-        <span class="pg-vt">{s.ok ? 'System zamyka sprawę sam' : 'Sprawa idzie do człowieka'}</span>
-        <span class="pg-vw">{s.w}</span>
-      </span>
-    </div>
-  </div>
-))}
-<style is:inline set:html={klatkiProg}></style>
-</div>
-<p class="pg-podpis">Pasek pokazuje pewność rozstrzygnięcia policzoną dla jednej sprawy. Próg stoi na wysokości ustalonej przed budową.</p>
-</div>
-</div>
-</section>
-
-<!-- ============ 5 · PRÓG USTALANY PRZED BUDOWĄ ============
-     Cicha sekcja zaraz po ciemnym pasie. Jedno duże zdanie zamiast nagłówka
-     z akapitem obok, na końcu wcięta kartka z zapisem umownym.
-     UWAGA: warunek o niepłaceniu poniżej progu jest do potwierdzenia. -->
-<section id="pomiar" class="sec-pad">
-<p class="rv" style="margin:0;max-width:960px;font-size:clamp(22px,3vw,34px);line-height:1.25;letter-spacing:-0.024em;font-weight:750;color:#16211a;text-wrap:pretty">Próg mierzymy na Waszych sprawach z ostatniego kwartału, zanim powstanie pierwszy element rozwiązania</p>
-<div class="s2-grid" style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(28px,4vw,64px);margin-top:clamp(26px,3.2vw,38px);max-width:1100px">
-<p class="sub rv" style="margin:0">Decyzje rozwiązania idą obok decyzji, które podjął przy tych sprawach Wasz zespół. Zgodność jest liczbą, a przypadki sporne rozstrzygacie Wy, bo to Wasza praca wyznacza tu wzorzec.</p>
-<p class="sub rv" style="margin:0">Ten pomiar rozstrzyga też o rzeczach, o których nie da się orzec z góry: który fragment procesu zostaje przy ludziach i czy w danych jest w ogóle to, czego decyzja wymaga.</p>
-</div>
-<div class="um rv">
-<span class="um-e">Zapis, który wchodzi do umowy</span>
-<p>Poniżej ustalonego progu rozwiązanie nie wchodzi na produkcję, a Wy nie płacicie za wdrożenie.</p>
-</div>
-</section>
-
-<!-- ============ 6 · JAK POWSTAJE ============
-     Dwa tory na jednej osi, bo drugie pytanie po „ile to trwa" brzmi
-     „ile z tego jest po naszej stronie". Wypełnienie jedzie za scrollem. -->
-<section id="przebieg" style="background:#f4f8f2;padding:clamp(60px,7.5vw,96px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
-<div class="sec-head">
-<h2 class="h-sec" style="margin:0;max-width:520px;text-wrap:pretty">Jak powstaje rozwiązanie</h2>
-<p class="sub" style="margin:0 0 6px;max-width:430px">Dziewięć tygodni od warsztatu do produkcji. Przy każdym etapie stoi to, co jest po Waszej stronie, i tego jest mniej, niż zwykle wychodzi w takich projektach.</p>
-</div>
-
-<div class="hg" data-postep aria-hidden="true">
-<span class="hg-glowica"></span>
-{TORY.map((tor, ti) => (
-  <div>
-    <span class="hg-kto">{tor.kto}</span>
-    <div class={ti === 0 ? 'hg-tor' : 'hg-tor drugi'}>
-      {tor.bloki.map((b) => (
-        <div class="hg-blok" data-s={b.s} data-d={b.d} style={`--s:${b.s};--d:${b.d}`}><span class="hg-fill"></span><b>{b.t}</b></div>
-      ))}
-    </div>
-  </div>
-))}
-<div class="hg-os">
-{Array.from({ length: TYGODNI }).map((_, i) => <span>{i + 1 === 1 || (i + 1) % 2 === 1 ? `tydz. ${i + 1}` : ''}</span>)}
-</div>
-</div>
-
-<div style="margin-top:clamp(30px,3.6vw,44px)">
-{etapy.map((e) => (
-  <div class="et-row rv">
-    <span class="et-e">{e.e}</span>
-    <span>
-      <h3 class="et-t">{e.t}</h3>
-      <p class="et-d">{e.d}</p>
-    </span>
-    <span class="et-w"><b>Po Waszej stronie</b>{e.w}</span>
+    {s.ok
+      ? <p class="zr-wer"><svg class="ik" viewBox="0 0 16 16" set:html={IK['check-circle']}></svg><span><b>Zamyka system:</b> {s.wynik}</span></p>
+      : <p class="zr-wer"><img src={LUDZIE[s.kto].f} alt="" width="18" height="18" loading="lazy"><span><b>Do człowieka:</b> {s.powod}</span></p>}
   </div>
 ))}
 </div>
-</section>
-
-<!-- ============ 6b · WĄSKI PAS WEZWANIA ============
-     Formularz jest dopiero na końcu strony, więc w połowie stoi jedno
-     zdanie i przycisk. Bez zdjęcia i bez pól — pełny moduł kontaktowy
-     w środku strony robił z podstrony dwie strony sklejone. -->
-<section style="background:#16211a;padding:clamp(34px,4.4vw,52px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2))">
-<div class="ps">
-<h2>Powiedzcie, który proces boli — wrócimy z tym, czy da się go domknąć bez człowieka</h2>
-<div class="ps-akcja">
-<a href="#kontakt" class="btn-accent" style="display:inline-flex;align-items:center;gap:9px;background:var(--la-accent,#00CD77);color:#0b1a11;padding:15px 26px;border-radius:11px;font-weight:750;font-size:15.5px">Umów rozmowę <span aria-hidden="true">→</span></a>
-<a href="tel:+48571399932" class="ps-lnk">+48 571 399 932</a>
 </div>
-</div>
-</section>
-
-<!-- ============ 7 · CO ZOSTAJE U WAS ============
-     Dwie kolumny prozy zamiast wierszy — trzecia lista z rzędu robiłaby
-     z tej strony spis treści. -->
-<section id="wlasnosc" class="sec-pad">
-<h2 class="h-sec" style="margin:0;max-width:640px;text-wrap:pretty">Co zostaje u Was</h2>
-<div class="zw">
-<div class="rv">
-<h3>Wszystko, co powstaje</h3>
-<p>Repozytorium, reguły, prompty i dokumentacja są Wasze od pierwszego dnia. <strong>Klucze do dostawcy modelu też są Wasze</strong> i faktura za zapytania idzie na Was, więc realny koszt pracy rozwiązania widzicie z dokładnością do dnia.</p>
-</div>
-<div class="rv">
-<h3>Gdzie leżą dane</h3>
-<p>Rozwiązanie stoi tam, gdzie zdecydujecie: w Waszej chmurze, na Waszym serwerze albo u nas. <strong>Co konkretnie opuszcza Waszą sieć, jest wypisane w dokumentacji technicznej</strong> i zatwierdzacie to przed uruchomieniem.</p>
-</div>
-<div class="rv">
-<h3>Kto to utrzymuje</h3>
-<p>Utrzymanie może przejąć Wasz zespół, my albo dowolna inna firma — dokumentacja jest napisana pod tę trzecią możliwość.</p>
-</div>
-<div class="rv">
-<h3>Co się dzieje, kiedy proces się zmieni</h3>
-<p>Reguły i progi siedzą w jednym miejscu i zmienia się je bez przebudowy rozwiązania. Model jest za własnym interfejsem, więc wymiana na nowszy albo tańszy to jeden dzień pracy i powtórzony pomiar progu.</p>
-</div>
-</div>
-</section>
-
-<!-- ============ 8 · PRZYKŁADY ============
-     PRZYKŁADOWE wdrożenia — do podmiany na potwierdzone przypadki.
-     Pasek pokrycia nigdy nie stoi sam: obok niego lista tego, co zostało
-     u ludzi, bo bez niej liczba czyta się jak obietnica pełnej automatyki. -->
-<section id="dowody" style="background:#f4f8f2;padding:clamp(60px,7.5vw,96px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
-<div class="sec-head">
-<h2 class="h-sec" style="margin:0;max-width:560px;text-wrap:pretty">Trzy rozwiązania i to, co przy nich zostało ludziom</h2>
-<p class="sub" style="margin:0 0 6px;max-width:440px">Pokrycie liczone po pierwszym kwartale na produkcji, na tych samych sprawach, na których mierzyliśmy próg przed budową.</p>
-</div>
-
-<div style="margin-top:clamp(20px,2.4vw,30px)">
-{PRZYKLADY.map((x) => (
-  <div class="px-row rv" data-anim>
-    <div>
-      <h3 class="px-f">{x.f}</h3>
-      <span class="px-m">{x.m}</span>
-      <span class="px-p">{x.p}</span>
-    </div>
-    <div>
-      <p class="px-d">{x.d}</p>
-      <p class="px-l"><b>Zostało u ludzi</b>{x.ludzie.join(' · ')}</p>
-    </div>
-    <div>
-      <span class="px-liczba">{x.pokrycie}<span>%</span></span>
-      <span class="px-tor" style={`--w:${x.pokrycie}%`}><i></i></span>
-      <span class="px-op">spraw zamykanych bez człowieka</span>
-    </div>
-  </div>
+<svg class="zr-sw dol" viewBox="0 0 96 356" aria-hidden="true">
+<path class="we" d="M-18,178 H26"/>
+<path class="g" d="M-18,178 H26 C60,178 54,86 96,86" data-zr-g/>
+<path class="d" d="M-18,178 H26 C60,178 54,270 96,270" data-zr-d/>
+<line class="z" x1="26" y1="178" x2="52" y2="178"/>
+<circle class="os" cx="26" cy="178" r="4.5"/>
+<circle class="zr-tok" r="6" cx="-18" cy="178" data-zr-tok/>
+</svg>
+<div class="zr-c">
+<div class="zr-kosz s">
+<div class="zr-kosz-gl"><svg class="ik" viewBox="0 0 16 16" set:html={IK['check-circle']}></svg>Zamyka system</div>
+<ul>
+{SPRAWY.map((s, i) => s.ok && (
+  <li class="zr-r" data-zr-r={i}><svg class="ik" viewBox="0 0 16 16" set:html={IK['check-circle']}></svg><span><b>{s.nr} <small>· {s.kl}</small></b><em>{s.wynik}</em></span></li>
 ))}
+</ul>
 </div>
-</section>
-
-<!-- ============ 8b · GŁOS KLIENTA ============ -->
-<section style="padding:clamp(56px,7vw,88px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2))">
-<figure class="rv" style="margin:0;display:grid;grid-template-columns:auto 1fr;gap:clamp(20px,3vw,36px);align-items:start;max-width:1000px">
-<span aria-hidden="true" style="font-size:clamp(46px,5vw,64px);line-height:.72;font-weight:800;color:var(--la-accent,#00CD77)">„</span>
-<div>
-<blockquote style="margin:0;font-size:clamp(20px,2.6vw,29px);line-height:1.35;letter-spacing:-0.02em;font-weight:650;color:#16211a;text-wrap:pretty">Firma Let’s Automate bardzo dobrze zrozumiała potrzeby i zaprojektowała scenariusz, który w pełni spełniał cele biznesowe.</blockquote>
-<figcaption><span style="display:block;margin-top:clamp(16px,2vw,22px);font-size:15px;font-weight:750;color:#16211a">Arkadiusz Andruch</span><span style="display:block;margin-top:2px;font-size:14px;color:#637066">Prezes Zarządu, X2O</span></figcaption>
+<div class="zr-kosz c">
+<div class="zr-kosz-gl"><svg class="ik" viewBox="0 0 16 16" set:html={IK['user']}></svg>Do człowieka, z powodem</div>
+<ul>
+{SPRAWY.map((s, i) => !s.ok && (
+  <li class="zr-r" data-zr-r={i}><img src={LUDZIE[s.kto].f} alt="" width="22" height="22" loading="lazy"><span><b>{s.nr} <small>· {LUDZIE[s.kto].n.split(' ')[0]}, {LUDZIE[s.kto].r}</small></b><em>{s.powod}</em></span></li>
+))}
+</ul>
+</div>
+</div>
+</div>
 </div>
 </figure>
+<script is:inline>
+  // Poranek w pętli: zgłoszenie schodzi z kolejki na stanowisko, wpadają
+  // trzy odczyty ze źródeł, pasek pewności dojeżdża do wartości, wychodzi
+  // werdykt, zwrotnica się przestawia, kropka jedzie do kosza. Po pięciu
+  // sprawach plansza stoi z wynikiem 3 : 2 i startuje od nowa. Pętla
+  // czeka, kiedy rysunek jest poza kadrem. Markup trzyma stan końcowy.
+  (function(fig){
+    if(!window.requestAnimationFrame || !('IntersectionObserver' in window) || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var $$ = function(q){ return Array.prototype.slice.call(fig.querySelectorAll(q)); };
+    var wej = $$('[data-zr-w]'), karty = $$('[data-zr-k]'), sw = fig.querySelector('.zr-sw');
+    var tok = fig.querySelector('[data-zr-tok]'), pG = fig.querySelector('[data-zr-g]'), pD = fig.querySelector('[data-zr-d]');
+    var ls = fig.querySelector('[data-zr-ls]'), lc = fig.querySelector('[data-zr-lc]');
+    var wr = {}; $$('[data-zr-r]').forEach(function(w){ wr[w.getAttribute('data-zr-r')] = w; });
+    var widoczny = false;
+    fig.classList.add('ruch');
+    function czekaj(ms){ return new Promise(function(r){ setTimeout(r, ms); }); }
+    async function gdyWidoczny(){ while(!widoczny) await czekaj(300); }
+    async function krok(ms){ await czekaj(ms); await gdyWidoczny(); }
+    function licz(el, v){ el.textContent = String(v); el.classList.remove('tik'); void el.offsetWidth; el.classList.add('tik'); }
+    function blysk(el){ el.classList.add('bl'); setTimeout(function(){ el.classList.remove('bl'); }, 60); }
+    function zeruj(){
+      wej.forEach(function(w){ w.classList.remove('zabrane'); });
+      karty.forEach(function(k){ k.classList.remove('akt', 'mtr', 'wer'); k.querySelectorAll('[data-zr-o]').forEach(function(o){ o.classList.remove('on'); }); });
+      Object.keys(wr).forEach(function(k){ wr[k].classList.add('ukr'); });
+      ls.textContent = '0'; lc.textContent = '0';
+      sw.classList.remove('gora', 'dol');
+      tok.style.opacity = '0';
+    }
+    function jedz(sciezka, ms){
+      return new Promise(function(r){
+        var L = sciezka.getTotalLength(), t0 = null;
+        function f(t){
+          if(t0 === null) t0 = t;
+          var u = Math.min(1, (t - t0) / ms), e = u < 0.5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2;
+          var p = sciezka.getPointAtLength(e * L);
+          tok.setAttribute('cx', p.x.toFixed(1)); tok.setAttribute('cy', p.y.toFixed(1));
+          if(u < 1) requestAnimationFrame(f); else r();
+        }
+        requestAnimationFrame(f);
+      });
+    }
+    async function petla(){
+      for(;;){
+        await gdyWidoczny();
+        zeruj(); fig.classList.remove('od');
+        await krok(800);
+        var nS = 0, nC = 0;
+        for(var i = 0; i < karty.length; i++){
+          var k = karty[i], ok = k.classList.contains('s');
+          karty.forEach(function(x){ x.classList.remove('akt'); });
+          wej[i].classList.add('zabrane'); k.classList.add('akt');
+          sw.classList.remove('gora', 'dol');
+          await krok(500);
+          var od = k.querySelectorAll('[data-zr-o]');
+          for(var j = 0; j < od.length; j++){ od[j].classList.add('on'); await krok(320); }
+          k.classList.add('mtr'); await krok(1050);
+          k.classList.add('wer'); sw.classList.add(ok ? 'gora' : 'dol'); await krok(520);
+          tok.setAttribute('class', ok ? 'zr-tok' : 'zr-tok c'); tok.style.opacity = '1';
+          await jedz(ok ? pG : pD, 720);
+          tok.style.opacity = '0';
+          var w = wr[i]; w.classList.remove('ukr'); blysk(w);
+          if(ok) licz(ls, ++nS); else licz(lc, ++nC);
+          await krok(ok ? 700 : 1100);
+        }
+        await krok(4200);
+        fig.classList.add('od'); await czekaj(520);
+      }
+    }
+    new IntersectionObserver(function(w){ widoczny = w[0].isIntersecting; }, { threshold: 0.1 }).observe(fig);
+    zeruj();
+    petla();
+  })(document.currentScript.previousElementSibling);
+</script>
+</Hero>
+
+<!-- ============ 2 · CZYM JEST ============
+     Definicja z podmiotem = nazwa usługi, dużym stopniem pisma. Pod nią
+     indeks procesów: czytelnik rozpoznaje swój. -->
+<section id="czym-jest" class="v3-sek v3-papier">
+<div class="v3-def">
+<h2 class="v3-h2m">Czym jest automatyzacja procesów z AI?</h2>
+<div>
+<p class="v3-def-duzy rv">Automatyzacja procesów z AI to rozwiązanie zbudowane pod jeden proces w firmie i wpięte w systemy, z których korzysta zespół: sprawy pewne prowadzi samo od zgłoszenia do zamknięcia, a pozostałe oddaje człowiekowi razem z powodem. Granicę wyznacza próg pewności, ustalony na Waszych sprawach przed budową.</p>
+</div>
+</div>
+
+<Procesy tytul="Procesy, które tak prowadzimy" pozycje={PROCESY} etykietaB="Z rozwiązaniem AI" />
 </section>
 
-<GcCta
-  usluga="Rozwiązania AI"
-  heading="Zacznijmy od jednego procesu"
-  lead="Wskażcie jedną sprawę, która przechodzi u Was przez najwięcej rąk. Odpowiemy z pytaniem o wolumen i z terminem pierwszej rozmowy."
-  eyebrow="Z pierwszej rozmowy wychodzicie z"
-  items={[
-    { t: 'Werdyktem', d: 'czy to zadanie w ogóle warto budować pod siebie' },
-    { t: 'Progiem jakości', d: 'na jakich Waszych sprawach dałoby się go zmierzyć' },
-    { t: 'Zakresem do wyceny', d: 'systemy, wolumen i granica pierwszego etapu' },
-  ]}
-  placeholder="Np. dziennie wpada 60 zapytań ofertowych na skrzynkę i dwie osoby przepisują je do systemu…"
-  badges={[
-    { i: 'klodka', t: 'Wasze dane bezpieczne' },
-    { i: 'kartka', t: 'NDA przed startem' },
-    { i: 'ptaszek', t: 'Repozytorium zostaje Wasze' },
-  ]}
-/>
+<!-- ============ 2b · ZIELONY PAS ============
+     Pierwsze wezwanie w treści. Zdanie to werdykt z pierwszej rozmowy.
+     DO POTWIERDZENIA: Szymon Negacz jako twarz rozmowy o rozwiązaniach AI. -->
+<Pas tekst="Na pierwszej rozmowie mówimy wprost, czy Wasz proces warto budować pod siebie" foto="/szymon-negacz-spot.jpg" fotoW={1100} fotoH={888} alt="Szymon Negacz, współwłaściciel Let's automate" imie="Szymon Negacz" rola="Współwłaściciel" />
+
+<!-- ============ 3 · DLACZEGO ============
+     Teza na całą szerokość, pod nią dwa bloki o tej samej budowie:
+     przekrój warstw (model to najcieńsza płyta) i teczka sprawy
+     (najgrubsza warstwa to połączenie z systemami). -->
+<section id="dlaczego" class="v3-sek">
+<h2 class="v3-h2m">Dlaczego sam dostęp do modelu nie domyka sprawy</h2>
+<p class="v3-teza rv"><span>Sam model to sześć procent pracy.</span> O tym, czy rozwiązanie zadziała, decyduje to, co budujemy wokół niego</p>
+
+<div class="dl-blok">
+<div class="dl-gl"><h3>Model jest najcieńszą warstwą rozwiązania</h3><p>Model odczytuje treść sprawy i proponuje decyzję. Siedzi za własnym interfejsem, więc wymiana na nowszy albo tańszy to dzień pracy i powtórzony pomiar progu. Resztę czasu budowy zabierają warstwy, których dostawca modelu nie sprzedaje.</p></div>
+<figure class="dl-kafel pk" data-anim data-gra>
+<div class="ts4-gl"><b>Przekrój rozwiązania w proporcjach czasu budowy</b></div>
+<div class="pk-wyk" role="img" aria-label={`Przekrój rozwiązania jako stos siedmiu płyt. Grubość płyty to udział warstwy w czasie budowy: ${WARSTWY.map((w) => `${w.n.toLowerCase()} ${w.u}%`).join(', ')}. Płyta modelu jest najcieńsza i wysuwa się ze środka stosu, bo wymienia się ją bez przebudowy reszty.`}>
+<div class="pk-rys">
+<svg viewBox="0 0 760 500" aria-hidden="true">
+{PK_DOL.map((p) => (
+  <g class="pk-s" style={`--d:${p.d}`}>
+    {p.model ? (
+      <g class="pk-wy" style={`--w:${PK.wysun}`}>
+        <polygon points={p.pG} fill={p.gora}/>
+        <polygon points={p.pB} fill={p.bok}/>
+        <polygon points={p.pF} fill={p.front}/>
+        <polygon class="pk-m-ob" points={p.pF}/>
+      </g>
+    ) : (<>
+      <polygon points={p.pG} fill={p.gora}/>
+      <polygon points={p.pB} fill={p.bok}/>
+      <polygon points={p.pF} fill={p.front}/>
+    </>)}
+  </g>
+))}
+{PLYTY.map((p) => (<>
+  <path class={p.model ? 'pk-ld m' : 'pk-ld'} style={`--d:${p.d}`} d={`M${PK.x + PK.fw + PK.ox / 2},${p.sy.toFixed(1)} H${PK.x + PK.fw + PK.ox + 12} L${745},${p.ly} H760`}/>
+  <circle class={p.model ? 'pk-ldk m' : 'pk-ldk'} style={`--d:${p.d}`} cx={PK.x + PK.fw + PK.ox / 2} cy={p.sy.toFixed(1)} r="2.6"/>
+</>))}
+<path class="pk-ld m" d={`M${PK.x - PK.wysun + 70},${(PK_M.y + PK_M.h + 4).toFixed(1)} V${(PK_M.y + PK_M.h + 30).toFixed(1)}`}/>
+</svg>
+<p class="pk-wys" style={`left:${pkX(PK.x - PK.wysun - 10)};top:${pkYp(PK_M.y + PK_M.h + 36)}`}><b>Model · {PK_M.u}%</b>wysuwa się bez ruszania reszty: wymiana to dzień pracy i powtórzony pomiar progu</p>
+</div>
+<div class="pk-et">
+{PLYTY.map((p) => (
+  <div class={p.model ? 'pk-e m' : 'pk-e'} style={`top:${pkYp(p.ly)};--d:${p.d};--c:${p.front}`}>
+    <b>{p.n}<i>{p.u}%</i></b>
+    <p>{p.o}</p>
+  </div>
+))}
+</div>
+</div>
+</figure>
+</div>
+
+<div class="dl-blok">
+<div class="dl-gl"><h3>Najgrubsza warstwa to połączenie z Waszymi systemami</h3><p>Zgłoszenie przychodzi pocztą, dokument sprzedaży leży w ERP, warunki reklamacji w umowie na dysku, a historia klienta w CRM. Zanim model cokolwiek oceni, rozwiązanie zbiera te kawałki w jedną teczkę. Po decyzji odpisuje ją tam, gdzie zespół jej szuka: korekta trafia do ERP, odpowiedź do klienta.</p></div>
+<figure class="dl-kafel tk" data-tk>
+<div class="ts4-gl"><b>Reklamacja RMA-2186, od zgłoszenia do korekty</b></div>
+<div class="tk-uk" role="img" aria-label="Teczka reklamacji RMA-2186 składana z czterech systemów. Z poczty przychodzi zgłoszenie uszkodzonej palety z trzema zdjęciami, z ERP dokument sprzedaży FS 8807/09 i pozycja: 40 sztuk kleju po 21,90 zł, z umowy na dysku warunek z paragrafu 7 ustęp 2, z CRM historia klienta. Model dokłada jeden wiersz: uszkodzenie widoczne na trzech z trzech zdjęć, pewność 97%. Decyzja: uznać w całości, korekta 876 zł. Korekta FK/09/0412 trafia do ERP, a odpowiedź z korektą w załączniku do klienta.">
+<svg class="tk-linie" aria-hidden="true" data-tk-linie></svg>
+<div class="tk-zr">
+{TK_ZR.map((s, i) => (
+  <div class="tk-s" style={`--c:${ZRODLA[s.z].c}`} data-tk-s={i}>
+    <i><svg class="ik" viewBox="0 0 16 16" set:html={IK[ZRODLA[s.z].ik]}></svg></i>
+    <b>{s.z}<em>{s.g}</em></b>
+    <p>{s.t}</p>
+  </div>
+))}
+</div>
+<article class="tk-t">
+<div class="tk-t-gl"><i><svg class="ik" viewBox="0 0 16 16" set:html={IK['archive-box']}></svg></i><b>Teczka sprawy</b><span>RMA-2186 · Dachpol</span></div>
+{TK_W.map((w) => (
+  <div class="tk-r" style={`--c:${ZRODLA[TK_ZR[w.z].z].c}`} data-tk-r data-z={w.z}><span>{w.k}</span><b>{w.v}</b><i>{TK_ZR[w.z].z}</i></div>
+))}
+<div class="tk-r m" style={`--c:${ZRODLA.Model.c}`} data-tk-r data-krok="m"><span>Odczyt zdjęć</span><b>uszkodzenie widoczne na 3 z 3 · pewność 97%</b><i>model</i></div>
+<div class="tk-r d" data-tk-r data-krok="d" data-tk-dec><span>Decyzja</span><b>uznać w całości · korekta 876,00 zł</b><i>próg {PROG}%</i></div>
+</article>
+<div class="tk-wy">
+{TK_WY.map((o) => (
+  <div class="tk-o" style={`--c:${ZRODLA[o.z].c}`} data-tk-o>
+    <i><svg class="ik" viewBox="0 0 16 16" set:html={IK[ZRODLA[o.z].ik]}></svg></i>
+    <b>{o.t}</b>
+    <p>{o.d}</p>
+  </div>
+))}
+</div>
+</div>
+</figure>
+</div>
+</section>
+
+<!-- ============ 4 · JAK TO WYGLĄDA ============
+     Aplikacja na tym samym obiegu reklamacji. Pierwszy widok to sprawa
+     poniżej progu (RMA-2190), bo to ona odpowiada na pytanie „co się
+     dzieje, kiedy model nie jest pewny”. Bez JS widać pierwszy widok. -->
+<section id="jak-wyglada" class="v3-sek v3-scena v3-ziarno">
+<div class="v8-gl">
+<h2 class="v3-h2 jasny">Jak pracuje się z&nbsp;takim rozwiązaniem</h2>
+<p class="v3-sub jasny">Ten sam obieg reklamacji co na górze strony. Z pięciu porannych spraw trzy zamknęły się same, dwie czekają na ludzi.</p>
+</div>
+
+<div class="v3-zak" role="tablist" aria-label="Widoki rozwiązania">
+{RK_ZAK.map((z, i) => (<button type="button" role="tab" id={`rk-zak-${i}`} aria-controls={`rk-widok-${i}`} aria-selected={i === 0 ? 'true' : 'false'} tabindex={i === 0 ? 0 : -1} data-rk-zak>{z.t}</button>))}
+</div>
+
+<div class="rk">
+<div class="rk-gora" aria-hidden="true">
+<b><svg viewBox="0 0 16 16" set:html={IK['inbox-stack']}></svg></b><strong>Obieg reklamacji</strong>
+<svg class="ik" viewBox="0 0 16 16" set:html={IK['chevron-right']}></svg><em data-rk-okruch>{RK_ZAK[0].t}</em>
+<span class="rk-szuk"><svg class="ik" viewBox="0 0 16 16" set:html={IK['magnifying-glass']}></svg>Szukaj sprawy<kbd>⌘K</kbd></span>
+<img class="rk-ja" src={LUDZIE.ak.f} alt="" width="28" height="28" loading="lazy">
+</div>
+<div class="rk-uk">
+
+{[0, 1].map((v) => (
+  <div class="rk-w" role="tabpanel" id={`rk-widok-${v}`} aria-labelledby={`rk-zak-${v}`} hidden={v !== 0} data-rk-widok>
+    <aside class="rk-kol" aria-hidden="true">
+      <div class="rk-kol-gl"><b>Kolejka · dziś</b><span class="rk-seg"><span class="on">Wszystkie</span><span>U ludzi</span></span></div>
+      <div class="rk-lista">
+      {KOLEJKA.map((s) => (
+        <div class={`rk-l${(v === 0 && s.nr === 'RMA-2190') || (v === 1 && s.nr === 'RMA-2186') ? ' sel' : ''}`}>
+          <div class="rk-l1"><b>{s.nr}</b><span>{s.kl}</span><time>{s.g}</time></div>
+          <p>{s.t}</p>
+          <div class="rk-l2">
+            <span class={s.p < PROG ? 'rk-pw n' : 'rk-pw'} style={`--p:${s.p}%`}><i></i><b></b></span><em>{s.p}%</em>
+            <span class={`rk-st ${s.st[0]}`}>{s.st[1] ? <img src={LUDZIE[s.st[1]].f} alt="" width="16" height="16" loading="lazy"> : <svg class="ik" viewBox="0 0 16 16" set:html={IK['check-circle']}></svg>}<span>{s.st[2]}</span></span>
+          </div>
+        </div>
+      ))}
+      </div>
+    </aside>
+    {v === 0 ? (
+      <div class="rk-d">
+        <div class="rk-dg">
+          <div><span class="rk-nr">RMA-2190 · zgłoszenie z 10:22 · reklamacje@</span><h3>Kamex · uszkodzenie 2 palet w transporcie</h3></div>
+          <span class="rk-chip c"><img src={LUDZIE.ak.f} alt="" width="18" height="18" loading="lazy">Czeka na Annę · 25 min</span>
+        </div>
+        <div class="rk-pew"><span>Pewność</span><span class="rk-pw n" style="--p:71%"><i></i><b></b></span><b>71%</b><em>próg {PROG}%</em></div>
+        <div class="rk-nie">
+          <svg class="ik" viewBox="0 0 16 16" set:html={IK['exclamation-triangle']}></svg>
+          <div><b>Czego system nie rozstrzygnął</b><p>Ta sama pozycja ma dwie ceny: faktura FS 8812/09 podaje 7 100 zł za paletę, cennik Kamex w ERP 6 820 zł. Od tej ceny zależy kwota korekty.</p></div>
+          <div class="rk-nie-w"><span><em>faktura</em><b>7 100 zł</b></span><span><em>ERP</em><b>6 820 zł</b></span></div>
+        </div>
+        <div class="rk-2k">
+          <div>
+            <span class="rk-et">Co zebrał</span>
+            <ul class="rk-zb">
+              {RK_ZEBRAL.map(([z, t, d]) => (<li><i class="rk-zr" style={`--c:${ZRODLA[z].c}`}>{z}</i><span><b>{t}</b><em>{d}</em></span></li>))}
+            </ul>
+            <span class="rk-et">Co sprawdził</span>
+            <ul class="rk-ok">
+              {RK_SPRAWDZIL.map((t) => (<li><svg class="ik" viewBox="0 0 16 16" set:html={IK['check-circle']}></svg>{t}</li>))}
+            </ul>
+          </div>
+          <div>
+            <span class="rk-et">Projekt korekty, gotowy do wysłania</span>
+            <div class="rk-dok">
+              <div class="rk-dok-k">
+                <h5>Faktura korygująca do FS 8812/09</h5>
+                <p>Kamex sp. z o.o. · gres 60×60, 2 palety</p>
+                <div class="rk-war"><i></i><span><b>Według faktury</b>2 × 7 100,00 zł</span><b>14 200,00 zł</b></div>
+                <div class="rk-war"><i></i><span><b>Według ERP</b>2 × 6 820,00 zł</span><b>13 640,00 zł</b></div>
+                <div class="rk-dok-st"><span>Podstawa: §7 ust. 2 umowy ramowej Kamex 2024</span><span>odpowiedź do klienta w szkicu</span></div>
+              </div>
+            </div>
+            <div class="rk-akc"><span class="rk-b">Koryguj według faktury</span><span class="rk-b c">Według ERP</span><span class="rk-b c">Do handlowca</span></div>
+            <p class="rk-zap"><svg class="ik" viewBox="0 0 16 16" set:html={IK['clipboard-document-check']}></svg>Decyzja zapisze się w historii razem z powodem.</p>
+          </div>
+        </div>
+      </div>
+    ) : (
+      <div class="rk-d">
+        <div class="rk-dg">
+          <div><span class="rk-nr">RMA-2186 · zgłoszenie z 9:12 · reklamacje@</span><h3>Dachpol · uszkodzona paleta w transporcie</h3></div>
+          <span class="rk-chip s"><svg class="ik" viewBox="0 0 16 16" set:html={IK['check-circle']}></svg>Zamknięta przez system · 9:13</span>
+        </div>
+        <div class="rk-pew"><span>Pewność</span><span class="rk-pw" style="--p:97%"><i></i><b></b></span><b>97%</b><em>próg {PROG}%</em></div>
+        <div class="rk-2k">
+          <div>
+            <span class="rk-et">Przebieg</span>
+            <ol class="rk-ob">
+              {RK_PRZEBIEG.map((x) => (<li class={x.z === 'Model' ? 'm' : ''}><i></i><time>{x.h}</time><span>{x.t}<i class="rk-zr" style={`--c:${ZRODLA[x.z].c}`}>{x.z === 'Model' ? 'model' : x.z}</i></span></li>))}
+            </ol>
+          </div>
+          <div>
+            <span class="rk-et">Odpowiedź do klienta, wysłana 9:13</span>
+            <div class="rk-dok">
+              <div class="rk-list">
+                <dl><dt>Do</dt><dd>Dachpol sp. z o.o., zaopatrzenie</dd><dt>Temat</dt><dd>RMA-2186 · reklamacja uznana</dd></dl>
+                <p>Dzień dobry,</p>
+                <p>reklamację uszkodzonej palety z dostawy 9.09 uznajemy w całości na podstawie §7 ust. 2 umowy ramowej. W załączniku korekta FK/09/0412 na 876,00 zł.</p>
+                <p>Dział reklamacji</p>
+                <span class="rk-zal"><svg class="ik" viewBox="0 0 16 16" set:html={IK['paper-clip']}></svg>FK_09_0412.pdf</span>
+              </div>
+            </div>
+            <p class="rk-zap"><svg class="ik" viewBox="0 0 16 16" set:html={IK['document-check']}></svg>Korekta FK/09/0412 zapisana w ERP o 9:13.</p>
+          </div>
+        </div>
+      </div>
+    )}
+  </div>
+))}
+
+<div class="rk-w pelny" role="tabpanel" id="rk-widok-2" aria-labelledby="rk-zak-2" hidden data-rk-widok>
+<div class="rk-h-gl"><h3>Historia decyzji</h3><span>ostatnie sprawy, system i ludzie</span></div>
+<div class="rk-hw n"><span>Sprawa</span><span>Decyzja</span><span>Kto</span><span>Pewność</span><span>Na czym się oparła</span></div>
+{RK_HIST.map((h) => (
+  <div class={h.kto ? 'rk-hw lud' : 'rk-hw'}>
+    <b>{h.nr}<small>{h.kl}</small></b>
+    <span>{h.d}</span>
+    <span class="kto">{h.kto ? <img src={LUDZIE[h.kto].f} alt="" width="20" height="20" loading="lazy"> : <i><svg viewBox="0 0 16 16" set:html={IK['inbox-stack']}></svg></i>}{h.kto ? LUDZIE[h.kto].n : 'system'}</span>
+    <span class={h.p < PROG ? 'pw n' : 'pw'}>{h.p}%</span>
+    <span class="wh">{h.w}</span>
+  </div>
+))}
+</div>
+
+<div class="rk-w pelny" role="tabpanel" id="rk-widok-3" aria-labelledby="rk-zak-3" hidden data-rk-widok>
+<div class="rk-reg-gl"><h3>Próg i reguły</h3><span>obieg reklamacji</span></div>
+<div class="rk-reg">
+<div class="rk-prog">
+<span class="rk-et">Próg pewności</span>
+<b class="rk-prog-v">{PROG}%</b>
+<div class="rk-sl"><i style={`width:${slX(PROG)}`}></i><u style={`left:${slX(PROG)}`}></u><b style={`left:${slX(PROG)}`}></b></div>
+<div class="rk-sk"><span>{SL.od}%</span><span>90%</span><span>{SL.do}%</span></div>
+<div class="rk-sl-op"><span><i></i>poniżej: do człowieka</span><span class="s"><i></i>od {PROG}%: zamyka system</span></div>
+<p>Sprawa poniżej progu idzie do człowieka razem z powodem. Zmiana działa od następnej sprawy i zapisuje się w historii.</p>
+<div class="rk-zm"><img src={LUDZIE.ak.f} alt="" width="22" height="22" loading="lazy"><span><b>Anna Kowal</b> obniżyła próg z 95% do {PROG}% · 2.09</span></div>
+</div>
+<div>
+<span class="rk-et">Reguły spisane z działem reklamacji</span>
+{RK_REGULY.map((r) => (<div class="rk-rr"><span>{r.t}</span><b>{r.v}</b><i></i></div>))}
+<div class="rk-mod"><i><svg class="ik" viewBox="0 0 16 16" set:html={IK['cpu-chip']}></svg></i><span><b>Odczyt zgłoszeń i zdjęć:</b> model dostawcy za własnym interfejsem. Wymiana wymaga powtórzenia pomiaru progu.</span></div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="v3-jw-dol">
+<div>
+{RK_ZAK.map((z, i) => (<p class="v3-jw-p" data-rk-podpis hidden={i !== 0}><b>{z.t}</b>{z.p}</p>))}
+</div>
+</div>
+</section>
+
+<!-- ============ 5 · PRZYKŁADY ============
+     PRZYKŁADOWE wdrożenia z obecnej strony — do podmiany. Bez komponentu
+     Dowody: jego miara „przed / po” tu nie pasuje. Pod kartami cytat
+     (prawdziwy, z obecnej strony) i krótkie wezwanie. -->
+<section id="przyklady" class="v3-sek">
+<div class="v8-gl">
+<h2 class="v3-h2">Trzy rozwiązania i&nbsp;to, co zostało przy nich ludziom</h2>
+<p class="v3-sub">Udział spraw zamykanych bez człowieka po pierwszym kwartale na produkcji, liczony na tych samych sprawach, na których mierzyliśmy próg przed budową.</p>
+</div>
+<div class="px2" data-anim data-gra>
+{PRZYKLADY.map((x, i) => (
+  <article class="px2-k">
+    <span class="px2-p">{x.p}</span>
+    <h3>{x.f}<small>{x.m}</small></h3>
+    <div class="px2-ud">
+      <span class="px2-pas czk-j" role="img" aria-label={`${x.u}% spraw zamyka rozwiązanie, ${100 - x.u}% idzie do ludzi`}><i style={`--u:${x.u}%;--j:${i}`}></i></span>
+      <div class="px2-op"><span><b>{x.u}%</b>zamyka rozwiązanie</span><span><b>{100 - x.u}%</b>do ludzi</span></div>
+    </div>
+    <p class="px2-d">{x.d}</p>
+    <div class="px2-l"><b>Zostało u ludzi</b><ul>{x.ludzie.map((l) => (<li>{l}</li>))}</ul></div>
+  </article>
+))}
+</div>
+<figure class="v3-cyt rv" style="margin:0">
+<blockquote><span>„</span>Bardzo dobrze zrozumieli nasze potrzeby i zaprojektowali scenariusz, który w pełni spełnił cele biznesowe. Otwartość i komunikacja to ich DNA.</blockquote>
+<figcaption><span><b>Arkadiusz Andruch</b><span>Prezes Zarządu, X2O</span></span></figcaption>
+</figure>
+<CtaPasek tytul="Na pierwszej rozmowie wskazujemy, na jakich Waszych sprawach da się zmierzyć próg jakości." />
+</section>
+
+<!-- ============ 6 · METODA ============
+     DO POTWIERDZENIA: liczba wdrożeń (tytuł „ponad 140”, plakietka
+     „140+ wdrożeń” z komponentu); na innych stronach pada też „200+”. -->
+<Metoda tytul={'Własne <span style="white-space:nowrap">know-how</span> z&nbsp;ponad 140 wdrożeń'} sub="Typowy projekt AI za każdym razem ustala od nowa, jak sprawdzić, czy model rozstrzyga dobrze, i co zrobić, kiedy się myli. My mamy to rozstrzygnięte w WiseStacku i poprawiamy po każdym wdrożeniu." wiersze={METODA} typowy="Typowy projekt<br>wdrożenia AI" />
+
+<!-- ============ 7 · NAJPIERW POMIAR, POTEM PRODUKCJA ============
+     Rzecz sprawdzalna tej usługi: próg jakości zmierzony na sprawach
+     klienta przed budową i zapisany w umowie razem z warunkiem
+     odstąpienia. Harmonogram dwutorowy z bramką po czwartym tygodniu. -->
+<section id="pomiar" class="v3-sek">
+<div class="v8-gl">
+<h2 class="v3-h2">Najpierw pomiar, potem produkcja</h2>
+<p class="v3-sub">Dziewięć tygodni od warsztatu do produkcji. W czwartym puszczamy rozwiązanie przez sprawy z Waszego kwartału i porównujemy jego decyzje z decyzjami zespołu. Dalej idzie tylko wtedy, gdy wynik przekracza próg zapisany w umowie.</p>
+</div>
+
+<div class="hm" data-hm>
+<div class="hm-wyk" role="img" aria-label={`Harmonogram dziewięciu tygodni w dwóch torach. Po naszej stronie: ${ETAPY.map((e) => `${e.tyg.toLowerCase()} ${e.n.toLowerCase()}`).join(', ')}. Po Waszej stronie: ${ETAPY.map((e) => e.w.toLowerCase()).join(', ')}. Po czwartym tygodniu bramka: pomiar na ${POMIAR.spraw} sprawach z kwartału, zgodność z decyzjami zespołu ${pl(POMIAR.zg)}% przy progu ${POMIAR.prog}% z umowy. Rozwiązanie zamknęłoby samo ${POMIAR.samo} z ${POMIAR.spraw} spraw. Poniżej progu rozwiązanie nie wchodzi na produkcję, a klient nie płaci za wdrożenie.`}>
+<div class="hm-kto" aria-hidden="true"><span style="top:61px">Po naszej stronie</span><span style="top:133px">Po Waszej stronie</span></div>
+<div class="hm-pl" style={`--x:${BR_X.toFixed(4)}`}>
+<div class="hm-os" aria-hidden="true">{Array.from({ length: TYG }, (_, i) => (<span>tydz. {i + 1}</span>))}</div>
+<div class="hm-tory">
+{ETAPY.map((e, i) => (
+  <div class={e.pm ? 'hm-e pm' : 'hm-e'} style={`--s:${e.s};--d:${e.d};--o:${i < 3 ? i : i + 3}`}>
+    <span class="hm-tyg">{e.tyg}</span>
+    <div class="hm-b n" data-hm-b data-s={e.s} data-d={e.d}><span class="hm-f"></span><b>{e.n}</b></div>
+    <div class="hm-b w" data-hm-b data-s={e.s} data-d={e.d}><span class="hm-f"></span><b>{e.w}</b></div>
+  </div>
+))}
+<span class="hm-br" aria-hidden="true"><i><svg class="ik" viewBox="0 0 16 16" set:html={IK['scale']}></svg></i></span>
+<span class="hm-gl" aria-hidden="true" data-hm-gl></span>
+</div>
+<div class="hm-karta">
+<div class="hm-k-gl"><b>Pomiar progu · tydzień {BRAMKA.s + 1}</b><span class="hm-ok"><svg class="ik" viewBox="0 0 16 16" set:html={IK['check-circle']}></svg>próg przekroczony</span></div>
+<p class="hm-n"><b data-hm-n>{POMIAR.spraw}</b> spraw z ostatniego kwartału, rozstrzygniętych raz przez zespół i raz przez rozwiązanie</p>
+<div class="hm-zg" style={`--w:${pmX(POMIAR.zg)}`}>
+<div class="hm-zg-gl"><span>Zgodność z decyzjami zespołu w sprawach, które rozwiązanie zamknęłoby samo</span><b>{pl(POMIAR.zg)}%</b></div>
+<div class="hm-zg-t"><i class="hm-zg-f"></i><b class="hm-zg-p" style={`left:${pmX(POMIAR.prog)}`}><span>próg w umowie {POMIAR.prog}%</span></b></div>
+<div class="hm-zg-sk"><span>{POMIAR.od}%</span><span>{POMIAR.do}%</span></div>
+</div>
+<div class="hm-wy"><span><i></i>Zamknęłoby samo <b>{POMIAR.samo} z {POMIAR.spraw}</b></span><span><i></i>Do ludzi z powodem <b>{POMIAR.spraw - POMIAR.samo}</b></span></div>
+<p class="hm-um"><b>Zapis w umowie</b>Poniżej ustalonego progu rozwiązanie nie wchodzi na produkcję, a Wy nie płacicie za wdrożenie.</p>
+</div>
+</div>
+</div>
+<div class="hm-dol">
+<p class="rv">Decyzje rozwiązania idą obok decyzji, które przy tych sprawach podjął Wasz zespół. Zgodność jest liczbą, a przypadki sporne rozstrzygacie Wy, bo to Wasza praca wyznacza tu wzorzec.</p>
+<p class="rv">Ten sam pomiar rozstrzyga o rzeczach, o których nie da się orzec z góry: który fragment procesu zostaje przy ludziach i czy w danych jest w ogóle to, czego decyzja wymaga.</p>
+</div>
+</div>
+</section>
+
+<!-- ============ 8 · DLA KOGO + KIEDY NIE WARTO ============
+     Jedyne miejsce, gdzie odsyłamy: dwie z trzech dróg są tańsze. -->
+<DlaKogo sub="Średnie i duże firmy, w których jeden proces zajmuje kilka osób przez większość dnia." warunki={DLA_KOGO} nieTytul="Kiedy nie warto tego budować" nie={NIE_WARTO} />
+
+<!-- ============ 9 · KONTAKT ============ -->
+<Kontakt tytul="Zacznijmy od spraw, które ktoś dziś czyta i ocenia" lead="Wskażcie proces, w którym decyzja zapada po przeczytaniu dokumentu albo zgłoszenia. Odpowiemy w jeden dzień roboczy z pytaniem o wolumen i z terminem pierwszej rozmowy." zrodlo="Automatyzacja procesów z AI" pytanie="Który to proces?" podpowiedz="Np. miesięcznie wpada 400 reklamacji ze zdjęciami, a trzy osoby sprawdzają je z fakturą i umową…" />
+
+</div>
 
 <GcFaq
-  heading="Pytania, które padają przed podpisaniem"
-  lead="Odpowiedzi o dane i o utrzymanie są najdłuższe, bo to one najczęściej zatrzymują projekt po stronie IT."
+  heading="Pytania, które padają przed decyzją"
   ctaLabel="Zadajcie nam swoje →"
   items={faq}
 />
 
 <script>
   var redukcja = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function czekaj(ms){ return new Promise(function(r){ setTimeout(r, ms); }); }
 
-  // ---- Odpalanie animacji, gdy element wchodzi w kadr ----
+  // ---- Teczka sprawy ----
+  // Linie od źródeł do wierszy teczki i od decyzji do zapisów zwrotnych
+  // liczone z położenia elementów (przy każdej zmianie szerokości od nowa).
+  // Po wejściu w kadr: źródło po źródle linia się rysuje i wpadają jego
+  // wiersze; potem wiersz modelu, decyzja i zapisy zwrotne. Przy
+  // ograniczonym ruchu linie stoją narysowane od razu.
   (function(){
-    var els = document.querySelectorAll('[data-anim]');
-    if(!els.length) return;
-    if(redukcja || !('IntersectionObserver' in window)){
-      els.forEach(function(el){ el.classList.add('on'); });
-      return;
+    var fig = document.querySelector('[data-tk]');
+    if(!fig) return;
+    var uk = fig.querySelector('.tk-uk'), svg = fig.querySelector('[data-tk-linie]');
+    var zr = Array.prototype.slice.call(fig.querySelectorAll('[data-tk-s]'));
+    var wiersze = Array.prototype.slice.call(fig.querySelectorAll('[data-tk-r]'));
+    var wy = Array.prototype.slice.call(fig.querySelectorAll('[data-tk-o]'));
+    var dec = fig.querySelector('[data-tk-dec]');
+    var NS = 'http://www.w3.org/2000/svg';
+    var gotowe = { z: redukcja ? 99 : -1, o: redukcja ? 99 : -1 };
+    function linia(a, b, kol, klucz, wart){
+      var u = uk.getBoundingClientRect(), r1 = a.getBoundingClientRect(), r2 = b.getBoundingClientRect();
+      var x1 = r1.right - u.left, y1 = r1.top + r1.height / 2 - u.top, x2 = r2.left - u.left, y2 = r2.top + r2.height / 2 - u.top, dx = (x2 - x1) * 0.55;
+      var p = document.createElementNS(NS, 'path');
+      p.setAttribute('d', 'M' + x1.toFixed(1) + ',' + y1.toFixed(1) + ' C' + (x1 + dx).toFixed(1) + ',' + y1.toFixed(1) + ' ' + (x2 - dx).toFixed(1) + ',' + y2.toFixed(1) + ' ' + x2.toFixed(1) + ',' + y2.toFixed(1));
+      p.setAttribute('pathLength', '1'); p.style.setProperty('--c', kol); p.setAttribute(klucz, wart);
+      var c = document.createElementNS(NS, 'circle');
+      c.setAttribute('cx', x2.toFixed(1)); c.setAttribute('cy', y2.toFixed(1)); c.setAttribute('r', '3'); c.style.setProperty('--c', kol); c.setAttribute(klucz, wart);
+      svg.appendChild(p); svg.appendChild(c);
     }
-    var io = new IntersectionObserver(function(wpisy){
-      wpisy.forEach(function(w){
-        if(w.isIntersecting){ w.target.classList.add('on'); io.unobserve(w.target); }
+    function rysuj(){
+      while(svg.firstChild) svg.removeChild(svg.firstChild);
+      if(getComputedStyle(svg).display === 'none') return;
+      wiersze.forEach(function(w){
+        var z = w.getAttribute('data-z'); if(z === null) return;
+        linia(zr[+z], w, zr[+z].style.getPropertyValue('--c'), 'data-lz', z);
       });
-    }, { threshold: 0.25 });
-    els.forEach(function(el){ io.observe(el); });
-  })();
-
-  // ---- Harmonogram sterowany scrollem ----
-  // Jedyna animacja na tej stronie, która nie chodzi z własnego zegara.
-  // --p to ułamek 0–1 wyliczony z położenia sekcji w kadrze; bloki liczą
-  // sobie z niego własne wypełnienie w CSS, więc tutaj nie ma pętli po nich.
-  (function(){
-    var el = document.querySelector('[data-postep]');
-    if(!el || redukcja) return;
-    var bloki = el.querySelectorAll('.hg-blok');
-    var TYG = 9;
-
-    var czeka = false;
-    function licz(){
-      czeka = false;
-      var r = el.getBoundingClientRect();
-      var wys = window.innerHeight || document.documentElement.clientHeight;
-      // Zero, kiedy pasek wjeżdża na trzy czwarte wysokości okna;
-      // jeden, kiedy dojedzie do jednej trzeciej. Krótki odcinek celowo:
-      // przy dłuższym głowica pełznie i wygląda na zepsutą.
-      var start = wys * 0.78;
-      var koniec = wys * 0.34;
-      var p = (start - r.top) / (start - koniec);
-      p = Math.max(0, Math.min(1, p));
-      el.style.setProperty('--p', p.toFixed(4));
-      for(var i = 0; i < bloki.length; i++){
-        var b = bloki[i];
-        var f = (p * TYG - parseFloat(b.dataset.s)) / parseFloat(b.dataset.d);
-        b.firstElementChild.style.width = (Math.max(0, Math.min(1, f)) * 100).toFixed(2) + '%';
+      wy.forEach(function(o, i){ linia(dec, o, '#0a7a52', 'data-lo', String(i)); });
+      svg.querySelectorAll('[data-lz]').forEach(function(el){ if(+el.getAttribute('data-lz') <= gotowe.z) el.classList.add('on'); });
+      svg.querySelectorAll('[data-lo]').forEach(function(el){ if(+el.getAttribute('data-lo') <= gotowe.o) el.classList.add('on'); });
+    }
+    var czas = null;
+    window.addEventListener('resize', function(){ clearTimeout(czas); czas = setTimeout(rysuj, 120); });
+    if(document.fonts && document.fonts.ready) document.fonts.ready.then(rysuj);
+    rysuj();
+    if(redukcja || !('IntersectionObserver' in window)) return;
+    fig.classList.add('ruch');
+    function blysk(el){ el.classList.add('bl'); setTimeout(function(){ el.classList.remove('bl'); }, 60); }
+    async function graj(){
+      await czekaj(300);
+      for(var i = 0; i < zr.length; i++){
+        zr[i].classList.add('akt');
+        gotowe.z = i;
+        svg.querySelectorAll('[data-lz="' + i + '"]').forEach(function(el){ el.classList.add('on'); });
+        await czekaj(480);
+        var moje = wiersze.filter(function(w){ return w.getAttribute('data-z') === String(i); });
+        for(var j = 0; j < moje.length; j++){ moje[j].classList.add('on'); blysk(moje[j]); await czekaj(200); }
+        await czekaj(220);
+        zr[i].classList.remove('akt');
+      }
+      var m = fig.querySelector('[data-krok="m"]'); m.classList.add('on'); blysk(m);
+      await czekaj(650);
+      dec.classList.add('on'); blysk(dec);
+      await czekaj(450);
+      for(var k = 0; k < wy.length; k++){
+        gotowe.o = k;
+        svg.querySelectorAll('[data-lo="' + k + '"]').forEach(function(el){ el.classList.add('on'); });
+        await czekaj(420);
+        wy[k].classList.add('on');
+        await czekaj(200);
       }
     }
-    function ruch(){
-      if(czeka) return;
-      czeka = true;
-      requestAnimationFrame(licz);
-    }
+    var io = new IntersectionObserver(function(w){
+      if(w[0].isIntersecting){ io.disconnect(); graj(); }
+    }, { threshold: 0.4 });
+    io.observe(fig);
+  })();
 
-    el.style.setProperty('--p', '0');
-    el.classList.add('zywy');
-    licz();
-    window.addEventListener('scroll', ruch, { passive: true });
-    window.addEventListener('resize', ruch, { passive: true });
+  // ---- Harmonogram z bramką pomiaru ----
+  // Głowica jedzie po osi tygodni ze stałą prędkością, bloki obu torów
+  // wypełniają się za nią. Po czwartym tygodniu staje: liczy się pomiar,
+  // pasek zgodności dojeżdża za kreskę progu, wychodzi „próg
+  // przekroczony” i zapis z umowy. Potem jazda do końca osi.
+  (function(){
+    var fig = document.querySelector('[data-hm]');
+    if(!fig || redukcja || !('IntersectionObserver' in window)) return;
+    var pl = fig.querySelector('.hm-pl');
+    var bloki = Array.prototype.slice.call(fig.querySelectorAll('[data-hm-b]'));
+    var gl = fig.querySelector('[data-hm-gl]');
+    var n = fig.querySelector('[data-hm-n]');
+    var TYG = 9, BR = parseFloat(getComputedStyle(pl).getPropertyValue('--x')) * TYG, N = +n.textContent;
+    var MS_TYG = 520;
+    function ustaw(p){
+      gl.style.left = (p / TYG * 100).toFixed(3) + '%';
+      bloki.forEach(function(b){
+        var s = +b.getAttribute('data-s'), d = +b.getAttribute('data-d');
+        b.firstElementChild.style.width = (Math.max(0, Math.min(1, (p - s) / d)) * 100).toFixed(2) + '%';
+      });
+    }
+    function jedz(od, doo){
+      var ms = (doo - od) * MS_TYG;
+      return new Promise(function(r){
+        var t0 = null;
+        function f(t){ if(t0 === null) t0 = t; var u = Math.min(1, (t - t0) / ms); ustaw(od + (doo - od) * u); if(u < 1) requestAnimationFrame(f); else r(); }
+        requestAnimationFrame(f);
+      });
+    }
+    function licz(ms){
+      return new Promise(function(r){
+        var t0 = null;
+        function f(t){ if(t0 === null) t0 = t; var u = Math.min(1, (t - t0) / ms); n.textContent = String(Math.round(N * (1 - Math.pow(1 - u, 3)))); if(u < 1) requestAnimationFrame(f); else r(); }
+        requestAnimationFrame(f);
+      });
+    }
+    fig.classList.add('ruch');
+    ustaw(0); n.textContent = '0';
+    async function graj(){
+      await czekaj(300);
+      await jedz(0, BR);
+      fig.classList.add('br');
+      await licz(900);
+      fig.classList.add('zm');
+      await czekaj(1350);
+      fig.classList.add('ok');
+      await czekaj(900);
+      await jedz(BR, TYG);
+      fig.classList.add('kon');
+    }
+    var io = new IntersectionObserver(function(w){
+      if(w[0].isIntersecting){ io.disconnect(); graj(); }
+    }, { threshold: 0.35 });
+    io.observe(fig);
+  })();
+
+  // ---- Zakładki widoków aplikacji ----
+  (function(){
+    var zak = Array.prototype.slice.call(document.querySelectorAll('[data-rk-zak]'));
+    if(!zak.length) return;
+    var widoki = document.querySelectorAll('[data-rk-widok]');
+    var podpisy = document.querySelectorAll('[data-rk-podpis]');
+    var okruch = document.querySelector('[data-rk-okruch]');
+    function pokaz(i, fokus){
+      zak.forEach(function(b, j){ b.setAttribute('aria-selected', i === j ? 'true' : 'false'); b.tabIndex = i === j ? 0 : -1; });
+      widoki.forEach(function(w, j){ w.hidden = i !== j; });
+      podpisy.forEach(function(p, j){ p.hidden = i !== j; });
+      if(okruch) okruch.textContent = zak[i].textContent;
+      if(fokus) zak[i].focus();
+    }
+    zak.forEach(function(b, i){
+      b.addEventListener('click', function(){ pokaz(i); });
+      b.addEventListener('keydown', function(e){
+        if(e.key === 'ArrowRight'){ e.preventDefault(); pokaz((i + 1) % zak.length, true); }
+        if(e.key === 'ArrowLeft'){ e.preventDefault(); pokaz((i - 1 + zak.length) % zak.length, true); }
+      });
+    });
   })();
 </script>
 </LaBase>

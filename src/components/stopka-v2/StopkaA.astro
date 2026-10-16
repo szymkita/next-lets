@@ -1,0 +1,139 @@
+---
+// WARIANT A — „Mapa oferty"
+// Ciemna zieleń i poświata ze strony głównej (sekcja #dlaczego-my). Usługi
+// ułożone w trzy drogi z megamenu, ale bez opisów — w stopce wystarcza
+// sytuacja klienta pod nazwą drogi. Pas Wise Group przestaje być osobną białą
+// sekcją: marki grupy schodzą do dolnej belki jako białe logotypy.
+import { DROGI, PRODUKTY, FIRMA, OBSZARY, GRUPA, KONTAKT, SPOLKA, logo, IKONA_LINKEDIN } from './dane';
+---
+<footer class="sA">
+<div class="sA-in">
+
+<div class="sA-gora">
+<div class="sA-marka">
+<a href="/" class="sA-logo" aria-label="Let's automate — strona główna" set:html={logo('#ffffff', 'sA')}></a>
+<p class="sA-zdanie">Studio transformacji AI z&nbsp;Warszawy. <span>Projektujemy i budujemy systemy, na których firmy działają po&nbsp;nowemu</span></p>
+</div>
+<div class="sA-kontakt">
+<a href={`mailto:${KONTAKT.email}`} class="sA-mail">{KONTAKT.email}</a>
+<a href={KONTAKT.telHref} class="sA-tel">{KONTAKT.tel}</a>
+<p class="sA-odp">Odpisujemy w jeden dzień roboczy</p>
+</div>
+</div>
+
+<nav class="sA-mapa" aria-label="Mapa serwisu">
+{DROGI.map((d) => (
+<div class="sA-kol">
+<p class="sA-pas">{d.pas}</p>
+<p class="sA-sub">{d.sub}</p>
+<span class="sA-kreska" aria-hidden="true"></span>
+<ul class="sA-lista">{d.poz.map((p) => <li><a href={p.h}>{p.t}</a></li>)}</ul>
+</div>
+))}
+<div class="sA-kol sA-kol-firma">
+<p class="sA-pas">Produkty</p>
+<ul class="sA-lista sA-prod">{PRODUKTY.map((p) => <li><a href={p.h}>{p.t}</a><span>{p.d}</span></li>)}</ul>
+<p class="sA-pas sA-pas2">Firma</p>
+<ul class="sA-lista">{FIRMA.map((p) => <li><a href={p.h}>{p.t}</a></li>)}</ul>
+</div>
+</nav>
+
+<div class="sA-obszary">
+<p class="sA-obl">Automatyzacja w działach</p>
+<ul>{OBSZARY.map((o) => <li><a href={o.h}>{o.t}</a></li>)}</ul>
+</div>
+
+<div class="sA-dol">
+<div class="sA-grupa">
+<span class="sA-grupa-t">Należymy do</span>
+<img src="/uploads/wisegroup_logo_v2.webp" alt="Wise Group" width="442" height="52" class="sA-wg" loading="lazy" decoding="async">
+<span class="sA-sep" aria-hidden="true"></span>
+<ul class="sA-marki">
+{GRUPA.map((m) => <li><a href={m.url} target="_blank" rel="noopener"><img src={m.logo} alt={m.nazwa} loading="lazy" decoding="async"></a></li>)}
+</ul>
+</div>
+<img src="/uploads/openai-select-partner.png" alt="OpenAI Select Partner" width="1125" height="531" class="sA-openai" loading="lazy" decoding="async">
+</div>
+
+<div class="sA-prawne">
+<span>© 2026 {SPOLKA.nazwa} · {SPOLKA.ulica}, {SPOLKA.miasto} · NIP {SPOLKA.nip} · KRS {SPOLKA.krs}</span>
+<span class="sA-prawne-l">
+<a href={KONTAKT.linkedin} class="sA-li"><svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden="true"><path d={IKONA_LINKEDIN}/></svg>LinkedIn</a>
+<a href="/polityka-prywatnosci">Polityka prywatności</a>
+</span>
+</div>
+
+</div>
+</footer>
+
+<style>
+  .sA,.sA *{box-sizing:border-box}
+  :global(.sA :where(a)){color:inherit;text-decoration:none}
+  :global(.sA :where(ul)){list-style:none;margin:0;padding:0}
+  :global(.sA :where(p)){margin:0}
+
+  .sA{position:relative;overflow:hidden;color:#ffffff;
+    background:radial-gradient(900px 520px at 6% -4%, rgba(0,205,119,0.13), transparent 62%), #0e2b1d;
+    padding:clamp(56px,6.5vw,88px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) 30px}
+
+  .sA-gora{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:clamp(32px,5vw,96px);align-items:end}
+  .sA-logo{display:inline-block}
+  .sA-logo :global(svg){display:block;height:26px;width:auto}
+  .sA-zdanie{margin-top:clamp(26px,3vw,36px);max-width:760px;font-size:clamp(23px,2.35vw,32px);line-height:1.2;font-weight:650;letter-spacing:-0.018em;text-wrap:balance}
+  .sA-zdanie span{color:rgba(255,255,255,0.5)}
+
+  .sA-kontakt{display:flex;flex-direction:column;align-items:flex-start;gap:8px;padding-bottom:4px}
+  .sA-mail{font-size:clamp(19px,1.7vw,23px);font-weight:650;letter-spacing:-0.01em;text-decoration:underline !important;text-decoration-color:rgba(0,205,119,0.55) !important;text-decoration-thickness:2px !important;text-underline-offset:7px;transition:text-decoration-color .2s}
+  .sA-mail:hover{text-decoration-color:#00CD77 !important}
+  .sA-tel{font-size:17px;font-weight:550;color:rgba(255,255,255,0.86)}
+  .sA-tel:hover{color:#ffffff}
+  .sA-odp{margin-top:6px;font-size:13px;color:rgba(255,255,255,0.5)}
+
+  .sA-mapa{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(28px,3vw,48px);margin-top:clamp(48px,5.5vw,72px);padding-top:clamp(36px,4vw,48px);border-top:1px solid rgba(255,255,255,0.12)}
+  .sA-pas{font-size:15.5px;font-weight:700;letter-spacing:-0.005em}
+  .sA-pas2{margin-top:30px}
+  .sA-sub{margin-top:4px;font-size:13px;line-height:1.45;color:rgba(255,255,255,0.5)}
+  .sA-kreska{display:block;width:26px;height:2px;margin:14px 0 16px;border-radius:2px;background:#00CD77}
+  .sA-kol-firma .sA-pas + .sA-lista{margin-top:14px}
+  .sA-lista{display:flex;flex-direction:column;gap:9px;font-size:15px;line-height:1.35;color:#c9dacf}
+  .sA-lista a,.sA-obszary a,.sA-prawne a{transition:color .15s,text-decoration-color .15s;text-decoration:underline !important;text-decoration-color:transparent !important;text-decoration-thickness:1.5px !important;text-underline-offset:4px}
+  .sA-lista a:hover,.sA-obszary a:hover,.sA-prawne a:hover{color:#ffffff;text-decoration-color:#00CD77 !important}
+  .sA-prod li{display:flex;flex-direction:column;gap:1px}
+  .sA-prod span{font-size:12.5px;color:rgba(255,255,255,0.45)}
+
+  .sA-obszary{display:flex;align-items:baseline;gap:10px 22px;flex-wrap:wrap;margin-top:clamp(40px,4.5vw,56px);padding-top:22px;border-top:1px solid rgba(255,255,255,0.12)}
+  .sA-obl{font-size:13.5px;font-weight:700;color:#ffffff}
+  .sA-obszary ul{display:flex;flex-wrap:wrap;gap:6px 0;font-size:14px;color:#c9dacf}
+  .sA-obszary li + li::before{content:"";display:inline-block;width:3px;height:3px;margin:0 12px;border-radius:50%;background:rgba(255,255,255,0.3);vertical-align:middle}
+
+  .sA-dol{display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;margin-top:22px;padding:22px 0;border-top:1px solid rgba(255,255,255,0.12);border-bottom:1px solid rgba(255,255,255,0.12)}
+  .sA-grupa{display:flex;align-items:center;gap:14px 26px;flex-wrap:wrap}
+  .sA-wg{display:block;height:17px;width:auto;filter:brightness(0) invert(1)}
+  .sA-grupa-t{font-size:12.5px;color:rgba(255,255,255,0.5);margin-right:-14px}
+  .sA-sep{width:1px;height:22px;background:rgba(255,255,255,0.16)}
+  .sA-marki{display:flex;align-items:center;gap:6px 26px;flex-wrap:wrap}
+  .sA-marki a{display:block;padding:6px 0}
+  .sA-marki img{display:block;height:auto;width:auto;max-height:15px;max-width:104px;filter:brightness(0) invert(1);opacity:.45;transition:opacity .2s}
+  .sA-marki a:hover img{opacity:1}
+  .sA-openai{display:block;height:44px;width:auto;border-radius:9px}
+
+  .sA-prawne{display:flex;align-items:center;justify-content:space-between;gap:12px 28px;flex-wrap:wrap;margin-top:22px;font-size:12.5px;line-height:1.6;color:rgba(255,255,255,0.45)}
+  .sA-prawne-l{display:flex;gap:22px}
+  .sA-li{display:inline-flex;align-items:center;gap:7px}
+
+  @media (max-width:1100px){
+    .sA-mapa{grid-template-columns:repeat(2,minmax(0,1fr))}
+  }
+  @media (max-width:860px){
+    .sA-gora{grid-template-columns:1fr;align-items:start}
+    .sA-sep{display:none}
+  }
+  @media (max-width:520px){
+    .sA-mapa{grid-template-columns:1fr;gap:34px}
+    .sA-obszary{flex-direction:column;gap:12px}
+    .sA-obszary ul{flex-direction:column;gap:2px}
+    .sA-obszary li + li::before{display:none}
+    .sA-lista a,.sA-obszary a{display:inline-block;padding-block:5px}
+    .sA-lista{gap:2px}
+  }
+</style>

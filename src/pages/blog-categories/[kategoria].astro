@@ -1,0 +1,125 @@
+---
+// KATEGORIA BAZY WIEDZY — /blog-categories/<adres>
+//
+// Adresy są ze starego bloga na Webflow (razem z `podstawy-copy`), bo pod
+// nimi Google zna kategorie: /blog-categories/narzedzia stoi na pozycji 2,6,
+// /blog-categories/firma na 4,6. Słownik adresów: KATEGORIE w content/config.
+//
+// UKŁAD
+//   1. hero — nazwa kategorii, jej opis, liczba tekstów
+//   2. lista — pasek kategorii (te same linki co na /blog) i wiersze
+//   3. kontakt — wspólny moduł, jak na /blog
+//
+// Bez wyróżnionego artykułu i bez nagrań: ktoś, kto wszedł na kategorię,
+// szuka tekstu z tej kategorii, a cała reszta stoi na /blog jedno kliknięcie
+// dalej. Lista pokazuje od razu wszystkie wiersze — najliczniejsza kategoria
+// ma kilkanaście tekstów, przycisk „pokaż starsze” niczego by tu nie dał.
+//
+// Strona powstaje dla każdej kategorii ze słownika, także pustej — stary
+// adres nie może skończyć się błędem 404.
+import { getCollection } from 'astro:content';
+import { KATEGORIE } from '../../content/config';
+import LaBase from '../../layouts/LaBase.astro';
+import GcCta from '../../components/GcCta.astro';
+import FiltrKategorii from '../../components/baza-wiedzy/FiltrKategorii.astro';
+import ListaArtykulow from '../../components/baza-wiedzy/ListaArtykulow.astro';
+import { adresArtykulu, adresKategorii, odmiana, najnowszePierwsze } from '../../components/baza-wiedzy/wspolne.js';
+
+export function getStaticPaths() {
+  return Object.entries(KATEGORIE).map(([klucz, k]) => ({ params: { kategoria: k.adres }, props: { klucz } }));
+}
+
+const { klucz } = Astro.props;
+const kat = KATEGORIE[klucz];
+const kanon = new URL(adresKategorii(klucz), Astro.site).href;
+
+const artykuly = (await getCollection('artykuly', (a) => !a.data.szkic && a.data.kategoria === klucz))
+  .sort(najnowszePierwsze);
+const ile = artykuly.length;
+const ileSlownie = `${ile} ${odmiana(ile, ['artykuł', 'artykuły', 'artykułów'])}`;
+
+const dl = new Intl.DateTimeFormat('pl-PL', { day: 'numeric', month: 'long', year: 'numeric' });
+
+const title = `${kat.nazwa} — artykuły o automatyzacji | Baza wiedzy Let's automate`;
+const description = `${kat.opis}. ${ileSlownie} z kategorii ${kat.nazwa} w bazie wiedzy Let's automate o automatyzacji procesów i wdrażaniu AI.`;
+
+const dane = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'CollectionPage', '@id': `${kanon}#strona`, url: kanon,
+      name: kat.nazwa, description,
+      isPartOf: { '@id': new URL('/blog#strona', Astro.site).href },
+    },
+    {
+      '@type': 'ItemList', '@id': `${kanon}#artykuly`, numberOfItems: ile,
+      itemListElement: artykuly.map((a, i) => ({
+        '@type': 'ListItem', position: i + 1, name: a.data.tytul,
+        url: new URL(adresArtykulu(a.slug), Astro.site).href,
+      })),
+    },
+    {
+      '@type': 'BreadcrumbList', '@id': `${kanon}#okruszki`,
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Strona główna', item: new URL('/', Astro.site).href },
+        { '@type': 'ListItem', position: 2, name: 'Baza wiedzy', item: new URL('/blog', Astro.site).href },
+        { '@type': 'ListItem', position: 3, name: kat.nazwa, item: kanon },
+      ],
+    },
+  ],
+};
+---
+<LaBase title={title} description={description} ctaHref="#kontakt" ctaLabel="Umów rozmowę" nav="dlaczego-my" topbar={false}>
+<script type="application/ld+json" is:inline set:html={JSON.stringify(dane)} slot="head"></script>
+<style is:global slot="head">
+  .bk-wroc{display:inline-flex;align-items:center;gap:7px;font-size:14px;font-weight:600;color:#637066;transition:color .15s}
+  .bk-wroc:hover{color:#0a7a52}
+  .bk-wroc i{font-style:normal;transition:transform .18s}
+  .bk-wroc:hover i{transform:translateX(-3px)}
+  .bk-h1{margin:clamp(22px,2.8vw,32px) 0 0;font-size:clamp(38px,6.4vw,74px);line-height:0.98;letter-spacing:-0.042em;font-weight:800;color:#16211a;text-wrap:balance;max-width:16ch}
+  .bk-lead{margin:clamp(20px,2.4vw,28px) 0 0;max-width:640px;font-size:clamp(16.5px,2vw,20px);line-height:1.55;color:#33413a;text-wrap:pretty}
+  .bk-licz{display:flex;flex-wrap:wrap;gap:6px 26px;margin-top:clamp(24px,3vw,34px);font-size:14px;color:#637066}
+  .bk-licz b{font-weight:750;color:#16211a}
+  .bk-pusto{padding:44px 0;font-size:15.5px;color:#637066}
+</style>
+
+<!-- ============ 1 · HERO ============ -->
+<div aria-hidden="true" style="position:absolute;left:0;right:0;top:0;height:560px;background:radial-gradient(900px 520px at 12% -10%, rgba(0,205,119,0.14), transparent 62%);pointer-events:none"></div>
+<section style="position:relative;padding:clamp(36px,5vw,72px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) clamp(40px,5vw,64px)">
+<a href="/blog" class="bk-wroc"><i aria-hidden="true">←</i> Baza wiedzy</a>
+<h1 class="bk-h1">{kat.nazwa}</h1>
+<p class="bk-lead">{kat.opis}.</p>
+<div class="bk-licz">
+<span><b>{ile}</b> {odmiana(ile, ['artykuł', 'artykuły', 'artykułów'])}</span>
+{ile > 0 && <span>ostatni wpis {dl.format(artykuly[0].data.data)}</span>}
+</div>
+</section>
+
+<!-- ============ 2 · LISTA ============ -->
+<section id="artykuly" class="sec-pad" style="background:#f4f8f2;padding-top:clamp(40px,5vw,64px)">
+<FiltrKategorii aktywna={klucz} />
+{ile > 0
+  ? <ListaArtykulow artykuly={artykuly} />
+  : <p class="bk-pusto">W tej kategorii nie ma jeszcze żadnego tekstu. <a href="/blog" style="color:#0a7a52;font-weight:650">Wszystkie artykuły →</a></p>}
+</section>
+
+<!-- ============ 3 · KONTAKT ============ -->
+<GcCta
+  usluga={`Baza wiedzy · ${kat.nazwa}`}
+  heading="Macie proces, o którym nie ma tu jeszcze tekstu?"
+  lead="Napiszcie, jak wygląda dzisiaj. Odpowiadamy tym samym, co w artykułach: liczbą, kolejnością i tym, czego nie warto budować."
+  eyebrow="Z pierwszej rozmowy wychodzicie z"
+  items={[
+    { t: 'Miarą stanu wyjściowego', d: 'czas sprawy w Waszym procesie, policzony na dwudziestu przypadkach' },
+    { t: 'Kolejnością', d: 'która rzecz pierwsza i dlaczego akurat ta' },
+    { t: 'Granicą', d: 'co w tym procesie nie zwróci się z automatyzacji' },
+  ]}
+  fieldLabel="Jak ten proces wygląda dzisiaj?"
+  placeholder="Np. oferty składamy z cennika w Excelu, trwa to trzy dni…"
+  badges={[
+    { i: 'klodka', t: 'Wasze dane bezpieczne' },
+    { i: 'kartka', t: 'NDA przed startem' },
+    { i: 'ptaszek', t: 'Bez prowizji od dostawców' },
+  ]}
+/>
+</LaBase>

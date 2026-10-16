@@ -1,0 +1,227 @@
+---
+// ZGODY I ANALITYKA — baner cookies + narzędzia ze starego serwisu.
+//
+// Stoi zaraz po <body> w LaBase, na stronie głównej i na /darmowa-konsultacja.
+//
+// CO JEST PRZENIESIONE (identyfikatory 1:1 ze starego letsautomate.pl)
+//   Google Tag Manager  GTM-MPKLK2BG
+//   Google Analytics 4  G-V31X5NVG6H (stary serwis ładował go obok GTM,
+//                       więc zostaje tak samo, żeby dane szły ciągiem)
+//   Hotjar              2886465            → kategoria „statystyki”
+//   Meta Pixel          419937373267135    → „marketing”
+//   LinkedIn Insight    4245625            → „marketing”
+//   Leadfeeder          ywVkO4XYkgpaZ6Bj   → „marketing”
+//   Albacross           89987235           → „marketing”
+//
+// CO JEST INACZEJ NIŻ NA STARYM SERWISIE
+// Stary miał w kodzie wywołanie banera, ale samego banera nie było na
+// stronie: nikt nie mógł się zgodzić, więc Google Analytics działał w trybie
+// bez zgody, a Hotjar, Pixel i LinkedIn ładowały się bez pytania. Tutaj
+// GA4 i GTM startują w Consent Mode z odmową domyślną, a narzędzia spoza
+// Google ładują się dopiero po zgodzie na swoją kategorię.
+//
+// ZAPIS ZGODY
+// localStorage `consentMode` — ten sam klucz i ten sam format co na starym
+// serwisie (stan Consent Mode), bo to ta sama domena. Data zapisu leży
+// obok, w `consentModeData`. Cofnięcie zgody przeładowuje stronę, żeby
+// zdjąć już załadowane skrypty.
+//
+// POLECENIA: `?ref=` w adresie trafia do localStorage `referrer` (jak na
+// starym serwisie), a formularze dokładają go do zgłoszenia.
+//
+// ZDARZENIA DLA GTM: `zgody_zapisane` po wyborze w banerze i
+// `formularz_wyslany` po udanym zgłoszeniu (wysyłają go formularze).
+---
+<script is:inline>
+(function(){
+  var KLUCZ = 'consentMode';
+  window.dataLayer = window.dataLayer || [];
+  window.gtag = window.gtag || function(){ window.dataLayer.push(arguments); };
+
+  var ODMOWA = {
+    ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied',
+    analytics_storage: 'denied', personalization_storage: 'denied',
+    functionality_storage: 'denied', security_storage: 'granted'
+  };
+  var zapis = null;
+  try { zapis = JSON.parse(localStorage.getItem(KLUCZ)); } catch (e) {}
+  if (!zapis || typeof zapis !== 'object') zapis = null;
+
+  gtag('consent', 'default', zapis ? Object.assign({}, ODMOWA, zapis) : Object.assign({ wait_for_update: 500 }, ODMOWA));
+
+  function wstaw(src){
+    var s = document.createElement('script');
+    s.async = true; s.src = src;
+    document.head.appendChild(s);
+  }
+
+  // Google: GA4 bezpośrednio i kontener GTM — oba szanują Consent Mode.
+  wstaw('https://www.googletagmanager.com/gtag/js?id=G-V31X5NVG6H');
+  gtag('js', new Date());
+  gtag('config', 'G-V31X5NVG6H');
+  window.dataLayer.push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
+  wstaw('https://www.googletagmanager.com/gtm.js?id=GTM-MPKLK2BG');
+
+  try {
+    var ref = new URLSearchParams(location.search).get('ref');
+    if (ref) localStorage.setItem('referrer', ref);
+  } catch (e) {}
+
+  var zaladowane = {};
+  var NARZEDZIA = {
+    statystyki: function(){
+      window.hj = window.hj || function(){ (window.hj.q = window.hj.q || []).push(arguments); };
+      window._hjSettings = { hjid: 2886465, hjsv: 6 };
+      wstaw('https://static.hotjar.com/c/hotjar-2886465.js?sv=6');
+    },
+    marketing: function(){
+      if (!window.fbq) {
+        var n = window.fbq = function(){ n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments); };
+        if (!window._fbq) window._fbq = n;
+        n.push = n; n.loaded = true; n.version = '2.0'; n.queue = [];
+        wstaw('https://connect.facebook.net/en_US/fbevents.js');
+      }
+      window.fbq('init', '419937373267135');
+      window.fbq('track', 'PageView');
+
+      window._linkedin_partner_id = '4245625';
+      window._linkedin_data_partner_ids = window._linkedin_data_partner_ids || [];
+      window._linkedin_data_partner_ids.push('4245625');
+      if (!window.lintrk) {
+        window.lintrk = function(a, b){ window.lintrk.q.push([a, b]); };
+        window.lintrk.q = [];
+      }
+      wstaw('https://snap.licdn.com/li.lms-analytics/insight.min.js');
+
+      window.ldfdr = window.ldfdr || function(){ (window.ldfdr._q = window.ldfdr._q || []).push([].slice.call(arguments)); };
+      wstaw('https://sc.lfeeder.com/lftracker_v1_ywVkO4XYkgpaZ6Bj.js');
+
+      window._nQc = '89987235';
+      wstaw('https://serve.albacross.com/track.js');
+    }
+  };
+
+  function uruchom(stan){
+    if (stan.analytics_storage === 'granted' && !zaladowane.statystyki) { zaladowane.statystyki = true; NARZEDZIA.statystyki(); }
+    if (stan.ad_storage === 'granted' && !zaladowane.marketing) { zaladowane.marketing = true; NARZEDZIA.marketing(); }
+  }
+
+  window.laZgody = {
+    stan: function(){ return zapis; },
+    zapisz: function(statystyki, marketing){
+      var m = marketing ? 'granted' : 'denied';
+      var stan = {
+        ad_storage: m, ad_user_data: m, ad_personalization: m, personalization_storage: m,
+        analytics_storage: statystyki ? 'granted' : 'denied',
+        functionality_storage: 'granted', security_storage: 'granted'
+      };
+      var cofniete = (zaladowane.statystyki && !statystyki) || (zaladowane.marketing && !marketing);
+      try {
+        localStorage.setItem(KLUCZ, JSON.stringify(stan));
+        localStorage.setItem('consentModeData', new Date().toISOString());
+      } catch (e) {}
+      zapis = stan;
+      gtag('consent', 'update', stan);
+      window.dataLayer.push({ event: 'zgody_zapisane', zgoda_statystyki: !!statystyki, zgoda_marketing: !!marketing });
+      if (cofniete) { location.reload(); return; }
+      uruchom(stan);
+    }
+  };
+
+  if (zapis) uruchom(zapis);
+})();
+</script>
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MPKLK2BG" height="0" width="0" style="display:none;visibility:hidden" title="Google Tag Manager"></iframe></noscript>
+
+<div class="zg" role="dialog" aria-labelledby="zg-t" aria-describedby="zg-o" data-zgody hidden>
+  <p class="zg-t" id="zg-t">Pliki cookies</p>
+  <p class="zg-o" id="zg-o">Bez zgody działają tylko pliki niezbędne do działania strony. Za zgodą włączamy statystyki i narzędzia marketingowe. Szczegóły w <a href="/polityka-prywatnosci#sek-6">polityce prywatności</a>.</p>
+
+  <div class="zg-wybor" data-zgody-wybor hidden>
+    <label class="zg-k">
+      <input type="checkbox" checked disabled>
+      <span><b>Niezbędne</b> zawsze włączone: zapamiętanie tego wyboru i działanie formularzy</span>
+    </label>
+    <label class="zg-k">
+      <input type="checkbox" data-zgody-statystyki>
+      <span><b>Statystyki</b> Google Analytics i Hotjar: które strony są czytane i gdzie ktoś się zatrzymuje</span>
+    </label>
+    <label class="zg-k">
+      <input type="checkbox" data-zgody-marketing>
+      <span><b>Marketing</b> Meta, LinkedIn, Leadfeeder i Albacross: mierzenie reklam i rozpoznawanie firm odwiedzających stronę</span>
+    </label>
+  </div>
+
+  <div class="zg-przyciski">
+    <button type="button" class="zg-b zg-b-tak" data-zgody-wszystko>Akceptuję wszystkie</button>
+    <button type="button" class="zg-b" data-zgody-niezbedne>Tylko niezbędne</button>
+    <button type="button" class="zg-b" data-zgody-zapisz hidden>Zapisz wybór</button>
+  </div>
+  <button type="button" class="zg-l" data-zgody-pokaz>Wybieram sam</button>
+</div>
+
+<style>
+  .zg{position:fixed;left:24px;bottom:24px;z-index:9999;width:min(410px,calc(100vw - 32px));padding:20px 20px 16px;border:1px solid #e1e8de;border-radius:16px;background:#ffffff;color:#16211a;box-shadow:0 28px 60px -24px rgba(14,43,29,0.45);font-family:'Schibsted Grotesk',system-ui,sans-serif}
+  .zg[hidden]{display:none}
+  .zg-t{margin:0;font-size:15px;font-weight:750;letter-spacing:-0.01em}
+  .zg-o{margin:8px 0 0;font-size:13.5px;line-height:1.55;color:#4c5850}
+  .zg-o a{color:#0a7a52;font-weight:650;text-decoration:underline;text-underline-offset:3px}
+  .zg-wybor{display:grid;gap:10px;margin-top:14px;padding-top:14px;border-top:1px solid #e7ece4}
+  .zg-wybor[hidden]{display:none}
+  .zg-k{display:grid;grid-template-columns:18px minmax(0,1fr);gap:10px;align-items:start;font-size:13px;line-height:1.45;color:#4c5850;cursor:pointer}
+  .zg-k input{width:16px;height:16px;margin:1px 0 0;accent-color:#0a7a52}
+  .zg-k b{display:block;font-size:13.5px;font-weight:700;color:#16211a}
+  .zg-przyciski{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px}
+  .zg-b{appearance:none;padding:11px 12px;border:1px solid #cfdacc;border-radius:10px;background:#ffffff;font-family:inherit;font-size:14px;font-weight:650;color:#16211a;cursor:pointer;transition:border-color .15s,background .15s,color .15s}
+  .zg-b:hover{border-color:#0a7a52;color:#0a7a52}
+  .zg-b-tak{border-color:#16211a;background:#16211a;color:#ffffff}
+  .zg-b-tak:hover{border-color:#0a7a52;background:#0a7a52;color:#ffffff}
+  .zg-b[hidden]{display:none}
+  .zg-l{appearance:none;display:block;margin:12px auto 0;padding:2px 4px;border:0;background:none;font-family:inherit;font-size:13px;font-weight:600;color:#637066;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+  .zg-l:hover{color:#0a7a52}
+  .zg-l[hidden]{display:none}
+  .zg :focus-visible{outline:2px solid #00CD77;outline-offset:2px}
+  @media (max-width:560px){ .zg{left:16px;right:16px;bottom:16px;width:auto} }
+</style>
+
+<script is:inline>
+(function(){
+  var baner = document.querySelector('[data-zgody]');
+  if (!baner || !window.laZgody) return;
+  var wybor = baner.querySelector('[data-zgody-wybor]');
+  var stat = baner.querySelector('[data-zgody-statystyki]');
+  var mark = baner.querySelector('[data-zgody-marketing]');
+  var pokaz = baner.querySelector('[data-zgody-pokaz]');
+  var zapisz = baner.querySelector('[data-zgody-zapisz]');
+  var niezbedne = baner.querySelector('[data-zgody-niezbedne]');
+
+  function rozwin(){
+    var s = window.laZgody.stan() || {};
+    stat.checked = s.analytics_storage === 'granted';
+    mark.checked = s.ad_storage === 'granted';
+    wybor.hidden = false; pokaz.hidden = true;
+    zapisz.hidden = false; niezbedne.hidden = true;
+  }
+  function zamknij(statystyki, marketing){
+    window.laZgody.zapisz(statystyki, marketing);
+    baner.hidden = true;
+  }
+
+  baner.querySelector('[data-zgody-wszystko]').addEventListener('click', function(){ zamknij(true, true); });
+  niezbedne.addEventListener('click', function(){ zamknij(false, false); });
+  zapisz.addEventListener('click', function(){ zamknij(stat.checked, mark.checked); });
+  pokaz.addEventListener('click', rozwin);
+
+  // „Ustawienia cookies” w stopce otwiera baner z rozwiniętym wyborem.
+  document.addEventListener('click', function(e){
+    var t = e.target.closest && e.target.closest('[data-zgody-otworz]');
+    if (!t) return;
+    e.preventDefault();
+    rozwin();
+    baner.hidden = false;
+    baner.querySelector('[data-zgody-statystyki]').focus();
+  });
+
+  if (!window.laZgody.stan()) baner.hidden = false;
+})();
+</script>

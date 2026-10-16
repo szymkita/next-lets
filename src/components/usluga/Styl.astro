@@ -1,0 +1,619 @@
+---
+// Wspólny wygląd podstron usługowych (zob. komentarz w stylu niżej).
+---
+<style is:global>
+/* =========================================================================
+   PODSTRONY USŁUGOWE — wspólny wygląd (wzorzec: /systemy-procesowe)
+   Zasady i powody: docs/uslugi-standard.md. Ten komponent wstawia raz każda podstrona usługowa (<Styl />); korzystają z niego komponenty
+   z src/components/usluga/ i podstrony usługowe. Tu stoi wszystko, co jest takie
+   samo na każdej podstronie: tokeny, typografia, przyciski, rama hero,
+   logotypy, „Czym są", dwa bloki „Dlaczego", scena, „Dla kogo", zielony
+   pas, metoda, karty przykładów, cytat, krótkie wezwanie, kontakt, FAQ.
+   Rysunki właściwe jednej usłudze trzyma jej strona.
+   ========================================================================= */
+  /* =====================================================================
+     v3 · TOKENY
+     Dwie barwy z rolą: bursztyn = czekanie, zieleń = praca i system.
+     Nigdzie na tej stronie nie znaczą niczego innego.
+     ===================================================================== */
+  .v3{
+    --ink:#07140d; --ink2:#0d2118;
+    --papier:#f4f3ee;
+    --t1:#0f1a14; --t2:#46524b; --t3:#7b867f;
+    --linia:rgba(15,26,20,0.13); --linia2:rgba(15,26,20,0.07);
+    --ziel:#00CD77; --ziel-c:#0a7a52;
+    --burs:#f0a33a; --burs-c:#9c5f14; --burs-j:#ffc879;
+    --mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
+    --pad:max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));
+    --ram:clamp(6px,0.9vw,14px);
+    --pin:max(16px,calc(max(clamp(20px,5vw,56px),calc((100vw - 1440px) / 2)) - clamp(6px,0.9vw,14px)));
+    color:var(--t1);
+  }
+  .v3 .czk{background:repeating-linear-gradient(135deg,rgba(240,163,58,0.5) 0 1.5px,rgba(240,163,58,0) 1.5px 6px),rgba(240,163,58,0.16);box-shadow:inset 0 2px 0 rgba(240,163,58,0.95)}
+  .v3 .czk-j{background:repeating-linear-gradient(135deg,rgba(214,134,30,0.55) 0 1.5px,rgba(214,134,30,0) 1.5px 6px),rgba(240,163,58,0.18);box-shadow:inset 0 2px 0 #e3962f}
+  .v3 .prc{background:var(--ziel)}
+  .v3-mono{font-family:var(--mono)}
+
+  /* ---- typografia ---- */
+  .v3-h1{margin:0;font-size:clamp(40px,5.7vw,84px);line-height:0.97;letter-spacing:-0.05em;font-weight:700;color:#ffffff;text-wrap:balance}
+  .v3-h1 span{color:var(--ziel)}
+  .v3-h2{margin:0;font-size:clamp(34px,5vw,70px);line-height:0.99;letter-spacing:-0.046em;font-weight:700;color:var(--t1);text-wrap:balance}
+  .v3-h2.jasny{color:#ffffff}
+  .v3-h2m{display:flex;align-items:center;gap:12px;margin:0;font-size:clamp(15px,1.25vw,17px);line-height:1.35;font-weight:650;letter-spacing:-0.005em;color:var(--t1)}
+  .v3-h2m::before{content:"";flex-shrink:0;width:22px;height:2px;background:var(--ziel)}
+  .v3-sub{margin:0;font-size:clamp(16px,1.3vw,18px);line-height:1.62;color:var(--t2);max-width:560px;text-wrap:pretty}
+  .v3-sub.jasny{color:rgba(255,255,255,0.66)}
+  .v3-sek{padding:clamp(88px,11vw,164px) var(--pad);scroll-margin-top:16px}
+  /* v8: jeden układ nagłówka dla sekcji, których treść idzie na całą
+     szerokość (Jak wygląda, Dowody, Uruchomienia, Metoda): tytuł po
+     lewej, podtytuł po prawej, dolne krawędzie równo. W v7 Metoda miała
+     podtytuł pod tytułem, a Jak wygląda inną siatkę niż reszta. Sekcje
+     z dwiema kolumnami (Dla kogo, kontakt, FAQ) trzymają tytuł
+     i podtytuł jeden pod drugim w lewej kolumnie; Czym są i Dlaczego
+     zaczynają się od podpisu z kreską i dużego zdania. */
+  .v8-gl{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:24px clamp(32px,5vw,96px);align-items:end}
+  .v8-gl > .v3-h2{max-width:720px}
+  .v8-gl > .v3-sub{max-width:500px}
+  @media (max-width:980px){ .v8-gl{grid-template-columns:1fr} }
+  /* v8: plansze wpuszczone w stronę (zielony pas, kontakt) mają nad i pod
+     sobą tę samą białą ramę. */
+  /* v9: drugie wezwanie, pasek pod cytatem w metodzie */
+  .cta2{display:flex;align-items:center;gap:clamp(16px,2vw,28px);margin-top:clamp(48px,5vw,72px);padding:clamp(18px,2vw,24px) clamp(18px,2vw,24px) clamp(18px,2vw,24px) clamp(20px,2.4vw,32px);border-radius:999px;background:var(--papier)}
+  .cta2-os{display:flex;flex-shrink:0}
+  .cta2-os img{width:48px;height:48px;border-radius:50%;object-fit:cover;object-position:50% 14%;box-shadow:0 0 0 3px var(--papier)}
+  .cta2-os img + img{margin-left:-12px}
+  .cta2 p{flex:1;min-width:0;margin:0;font-size:15px;line-height:1.5;color:var(--t2);text-wrap:pretty}
+  .cta2 p b{display:block;font-size:clamp(16px,1.35vw,19px);font-weight:700;letter-spacing:-0.015em;line-height:1.3;color:var(--t1)}
+  .cta2 .v3-btn{flex-shrink:0}
+  @media (max-width:760px){
+    .cta2{flex-direction:column;align-items:flex-start;border-radius:22px;padding:22px}
+  }
+  .v3-papier{background:var(--papier)}
+
+  /* ---- przyciski ---- */
+  .v3-btn{display:inline-flex;align-items:center;gap:14px;background:var(--ziel);color:var(--ink);font-weight:700;font-size:16px;letter-spacing:-0.01em;padding:9px 9px 9px 24px;border-radius:999px;transition:background .2s,transform .2s;white-space:nowrap}
+  .v3-btn span{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;background:var(--ink);color:var(--ziel);font-size:15px;transition:transform .25s}
+  .v3-btn:hover{background:#25dd8b}
+  .v3-btn:hover span{transform:translateX(3px)}
+  .v3-btn.ciemny{background:var(--ink);color:#ffffff}
+  .v3-btn.ciemny span{background:var(--ziel);color:var(--ink)}
+  .v3-btn.ciemny:hover{background:#163126}
+  @media (max-width:400px){ .v3-btn{white-space:normal;line-height:1.25;padding-left:20px} }
+  .v3-lnk{display:inline-flex;align-items:center;gap:8px;font-weight:650;font-size:16px;color:#ffffff;padding:8px 2px;border-bottom:1px solid rgba(255,255,255,0.28);transition:border-color .2s}
+  .v3-lnk:hover{border-color:var(--ziel)}
+
+  /* =====================================================================
+     HERO v4 · ciemna plansza kończy się nad dołem okna systemu, okno
+     wisi na jej krawędzi (ten sam chwyt co makieta na stronie głównej)
+     ===================================================================== */
+  .v4-hero{padding:0 var(--ram);overflow-x:clip}
+  /* Tło planszy to element siatki rozpięty na wierszach 1–3. Okno ma
+     ujemny margines dolny równy --zwis, więc wychodzi poza wiersz 3 o tyle,
+     ile wisi pod planszą; padding-bottom siatki trzyma to miejsce na bieli,
+     żeby logotypy nie weszły pod okno. */
+  .v4-hero-in{--zwis:clamp(110px,11vw,170px);--hgap:clamp(28px,4.4vw,80px);position:relative;display:grid;
+    grid-template-columns:var(--pin) minmax(0,4.3fr) minmax(0,7.7fr) var(--pin);color:#ffffff}
+  .v4-hero-in::before,.v4-hero-in::after{content:"";grid-column:1 / -1;grid-row:1 / 4;border-radius:clamp(20px,2.2vw,32px);pointer-events:none}
+  .v4-hero-in::before{background:
+      radial-gradient(820px 520px at 80% 104%,rgba(0,205,119,0.2),rgba(0,205,119,0) 70%),
+      radial-gradient(700px 420px at 6% -10%,rgba(0,205,119,0.07),rgba(0,205,119,0) 70%),
+      var(--ink)}
+  .v4-hero-in::after{opacity:0.09;mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+  .v4-hero-in > *{position:relative;z-index:1}
+  .v4-hero-in > .v4-gl{grid-column:2 / 4;grid-row:2;margin-top:clamp(48px,6.4vw,100px);display:grid;grid-template-columns:minmax(0,8.4fr) minmax(0,3.6fr);gap:clamp(28px,4vw,64px);align-items:end}
+  .v4-hero-in > .os,.v4-hero-in > .hero-wid{grid-column:2 / 4;grid-row:3;margin:clamp(48px,5.4vw,84px) 0 calc(var(--zwis) * -1)}
+  .v3-ziarno::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:0.09;mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+  .v3-etyk{display:inline-flex;align-items:center;gap:11px;margin:0 0 clamp(22px,3vw,38px);font-size:14px;font-weight:600;color:rgba(255,255,255,0.7)}
+  .v3-etyk i{display:block;width:7px;height:7px;border-radius:50%;background:var(--ziel);box-shadow:0 0 0 4px rgba(0,205,119,0.16),0 0 14px rgba(0,205,119,0.7)}
+  .v4-hero .v3-h1{max-width:1180px}
+  .v3-lead{margin:0;font-size:clamp(16px,1.25vw,18px);line-height:1.62;color:rgba(255,255,255,0.7);text-wrap:pretty}
+  .v3-akcje{display:flex;flex-wrap:wrap;align-items:center;gap:14px 24px;margin-top:30px}
+
+
+  /* ---- pod planszą: logotypy, na bieli ----
+     Pięć znaków stoi w miejscu: przy pięciu logotypach karuzela tylko je
+     powtarzała. Pliki SVG mają ok. 25% pustego pola u góry i u dołu,
+     dlatego wysokość 52 px — sam znak wychodzi ok. 26 px. */
+  .v4-hero-in{padding-bottom:var(--zwis)}
+  .v4-pod-hero{padding:clamp(36px,4vw,56px) var(--pad) clamp(56px,6.4vw,96px)}
+  .v4-loga{display:flex;align-items:center;gap:16px clamp(28px,4vw,64px)}
+  .v4-loga > p{flex-shrink:0;max-width:210px;margin:0;font-size:14px;line-height:1.45;color:var(--t2)}
+  .v4-loga > p strong{color:var(--t1);font-weight:700}
+  .v4-loga ul{flex:1;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:4px 32px;margin:0;padding:0;list-style:none}
+  .v4-loga img{display:block;height:52px;width:auto;filter:grayscale(1);opacity:0.6;mix-blend-mode:multiply}
+  @media (max-width:900px){
+    .v4-loga{flex-direction:column;align-items:flex-start}
+    .v4-loga ul{justify-content:flex-start;gap:0 26px}
+    .v4-loga img{height:46px}
+  }
+
+  /* =====================================================================
+     CZYM SĄ · definicja i indeks procesów
+     ===================================================================== */
+  .v3-def{display:grid;grid-template-columns:minmax(0,3.6fr) minmax(0,8.4fr);gap:clamp(24px,4vw,64px)}
+  .v3-def-duzy{margin:0;font-size:clamp(22px,2.5vw,36px);line-height:1.26;letter-spacing:-0.026em;font-weight:500;color:var(--t1);text-wrap:pretty}
+  /* Podpis sekcji stoi równo z pierwszą linią dużego zdania (flex w .v3-h2m
+     centrował go w całej wysokości wiersza siatki). */
+  .v3-def > .v3-h2m{align-self:start;margin-top:calc((clamp(22px,2.5vw,36px) * 1.26 - clamp(15px,1.25vw,17px) * 1.35) / 2)}
+  @media (max-width:900px){ .v3-def{grid-template-columns:1fr} .v3-def > .v3-h2m{margin-top:0} }
+  .v3-ix{margin-top:clamp(72px,9vw,136px)}
+  .ix-gl{display:flex;justify-content:space-between;align-items:end;flex-wrap:wrap;gap:12px 48px;padding-bottom:18px;border-bottom:1.5px solid var(--t1)}
+  .ix-gl h3{margin:0;font-size:15px;font-weight:700}
+  .ix-gl p{margin:0;max-width:470px;font-size:14.5px;line-height:1.55;color:var(--t2)}
+  /* v15: wiersz to znowu <details> — klik rozwija „Dziś", „Z systemem"
+     i przykład z liczbą. Bez działów po prawej (v13), tylko plus, który
+     obraca się w minus. */
+  .ix-w{border-bottom:1px solid var(--linia)}
+  .ix-w summary{display:grid;grid-template-columns:clamp(40px,5vw,72px) minmax(0,1fr) 36px;gap:16px;align-items:center;padding:clamp(18px,2vw,28px) 0;cursor:pointer;list-style:none}
+  .ix-w summary::-webkit-details-marker{display:none}
+  .ix-w summary:focus-visible{outline:2px solid var(--ziel);outline-offset:4px;border-radius:6px}
+  .ix-n{font-size:13px;font-weight:600;color:var(--ziel-c)}
+  .ix-t{font-size:clamp(26px,3.5vw,50px);font-weight:650;letter-spacing:-0.04em;line-height:1.04;transition:transform .4s cubic-bezier(.2,.7,.2,1),color .2s}
+  .ix-plus{position:relative;justify-self:end;width:36px;height:36px;border-radius:50%;background:var(--ink);transition:background .2s}
+  .ix-plus::before,.ix-plus::after{content:"";position:absolute;left:50%;top:50%;width:13px;height:1.75px;margin:-0.875px 0 0 -6.5px;border-radius:1px;background:#ffffff;transition:transform .3s}
+  .ix-plus::after{transform:rotate(90deg)}
+  .ix-w[open] .ix-plus{background:var(--ziel)}
+  .ix-w[open] .ix-plus::before,.ix-w[open] .ix-plus::after{background:var(--ink)}
+  .ix-w[open] .ix-plus::after{transform:rotate(0deg)}
+  .ix-w summary:hover .ix-t,.ix-w[open] .ix-t{transform:translateX(12px);color:var(--ziel-c)}
+  .ix-roz{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,0.8fr);gap:clamp(20px,3vw,48px);padding:0 52px clamp(26px,3vw,40px) calc(clamp(40px,5vw,72px) + 16px);animation:ix-in .35s ease both}
+  @keyframes ix-in{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+  .ix-roz b{display:block;font-size:12.5px;font-weight:700;color:var(--t3)}
+  .ix-roz p{margin:6px 0 0;font-size:15.5px;line-height:1.6;color:var(--t1);text-wrap:pretty}
+  .ix-pr{display:flex;flex-direction:column;gap:6px;align-self:start;padding:16px 18px;border-radius:16px;background:#ffffff;box-shadow:0 0 0 1px rgba(15,26,20,0.07);transition:box-shadow .2s}
+  .ix-pr:hover{box-shadow:0 0 0 1.5px var(--ziel)}
+  .ix-pr b{color:var(--ziel-c)}
+  .ix-pr span{font-size:15px;font-weight:650;color:var(--t1)}
+  .ix-pr em{font-style:normal;font-size:clamp(22px,2vw,28px);font-weight:700;letter-spacing:-0.035em;color:var(--t1)}
+  .ix-pr s{font-size:0.6em;font-weight:600;letter-spacing:0;color:var(--t3);text-decoration-color:var(--burs);text-decoration-thickness:2px}
+  @media (prefers-reduced-motion:reduce){ .ix-roz{animation:none} }
+  @media (max-width:900px){
+    .ix-w summary{grid-template-columns:30px minmax(0,1fr) 32px}
+    .ix-plus{width:32px;height:32px}
+    .ix-roz{grid-template-columns:minmax(0,1fr);gap:18px;padding:0 0 26px 46px}
+  }
+
+
+  /* =====================================================================
+     DLACZEGO · teza, krzywa, trasa
+     ===================================================================== */
+  .v3-teza{margin:clamp(22px,2.6vw,34px) 0 0;max-width:1260px;font-size:clamp(30px,4.6vw,68px);line-height:1.03;letter-spacing:-0.047em;font-weight:650;color:var(--t1);text-wrap:balance}
+  .v3-teza span{color:var(--t3)}
+  /* ---- DWA BLOKI „DLACZEGO" (v14) ----
+     Oba zbudowane tak samo: nagłówek bloku (tytuł po lewej, opis po
+     prawej, nad nimi kreska), pod nim rysunek w papierowym kaflu.
+     W v13 pierwszy rysunek stał bez kafla, a drugi w kaflu, z dwoma
+     powodami pod spodem zamiast nad nim. */
+  .dl-blok{margin-top:clamp(72px,8vw,120px)}
+  .dl-gl{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,8fr);gap:12px clamp(32px,5vw,96px);padding-top:20px;border-top:1.5px solid var(--t1)}
+  .dl-gl h3{margin:0;font-size:clamp(19px,1.75vw,24px);font-weight:700;letter-spacing:-0.024em;line-height:1.2;text-wrap:balance}
+  .dl-gl p{margin:0;max-width:720px;font-size:15.5px;line-height:1.64;color:var(--t2);text-wrap:pretty}
+  .dl-kafel{margin:clamp(28px,3vw,40px) 0 0 !important;padding:clamp(24px,3vw,44px) clamp(16px,1.8vw,26px) clamp(28px,3.4vw,48px);border-radius:28px;background:var(--papier)}
+  @media (max-width:1000px){ .dl-gl{grid-template-columns:minmax(0,1fr)} }
+  /* podpis kafla w lewym górnym rogu (po prawej miejsce na licznik/przycisk) */
+  .ts4-gl{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px 40px;margin:0 clamp(2px,0.8vw,14px) clamp(28px,3.4vw,52px)}
+  .ts4-gl > b{font-size:15px;font-weight:700;letter-spacing:-0.01em}
+  /* licznik obok podpisu kafla i okrągły przycisk „jeszcze raz" (widoczny
+     tylko, gdy rysunek naprawdę się animuje: kafel z .gra) */
+  .ts4-licz{display:flex;align-items:center;gap:12px}
+  .ts4-licz > span{font-size:13px;color:var(--t2)}
+  .ts4-licz > b{min-width:4.4em;font-size:clamp(22px,2vw,28px);font-weight:700;letter-spacing:-0.035em;line-height:1;color:var(--t1)}
+  .ts4-znow{display:none;place-items:center;width:34px;height:34px;padding:0;border:0;border-radius:50%;background:#ffffff;color:var(--t1);cursor:pointer;box-shadow:0 0 0 1px rgba(15,26,20,0.1);transition:background .15s,color .15s,opacity .2s}
+  .ts4-znow svg{display:block;width:14px;height:14px;fill:currentColor}
+  .ts4-znow:hover{background:var(--ink);color:#ffffff}
+  .ts4-znow:focus-visible{outline:2px solid var(--ziel);outline-offset:2px}
+  .gra .ts4-znow{display:grid}
+  .ts4-znow[disabled]{opacity:0.35;cursor:default;background:#ffffff;color:var(--t1)}
+
+
+  /* =====================================================================
+     SCENA · ciemna sekcja na całą szerokość (np. „Jak to wygląda"),
+     zakładki widoków i podpisy pod widokiem
+     ===================================================================== */
+  .v3-scena{position:relative;overflow:hidden;color:#ffffff;
+    background:radial-gradient(1100px 620px at 50% 104%,rgba(0,205,119,0.2),rgba(0,205,119,0) 70%),var(--ink)}
+  .v3-scena > *{position:relative;z-index:1}
+  .v3-zak{display:inline-flex;flex-wrap:wrap;gap:4px;padding:5px;margin-top:clamp(36px,4.4vw,56px);border-radius:999px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.09)}
+  .v3-zak button{appearance:none;border:0;background:transparent;color:rgba(255,255,255,0.66);font:inherit;font-size:14px;font-weight:600;padding:10px 18px;border-radius:999px;cursor:pointer;transition:background .2s,color .2s}
+  .v3-zak button:hover{color:#ffffff}
+  .v3-zak button[aria-selected="true"]{background:#ffffff;color:var(--ink)}
+  .v3-jw-dol{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px 48px;margin-top:24px}
+  .v3-jw-p{margin:0;max-width:620px;font-size:15.5px;line-height:1.6;color:rgba(255,255,255,0.78)}
+  .v3-jw-p b{color:#ffffff;font-weight:700;margin-right:8px}
+  .v3-jw-p[hidden]{display:none}
+  @media (max-width:560px){
+    .v3-zak{display:flex;flex-wrap:nowrap;overflow-x:auto;max-width:100%;scrollbar-width:none}
+    .v3-zak::-webkit-scrollbar{display:none}
+    .v3-zak button{flex-shrink:0;padding:9px 13px;font-size:13px}
+  }
+
+  /* =====================================================================
+     DLA KOGO · lewa kolumna przyklejona, warunki duże
+     ===================================================================== */
+  .v3-dk{display:grid;grid-template-columns:minmax(0,4.6fr) minmax(0,7.4fr);gap:clamp(32px,5vw,104px);align-items:start}
+  .dk-lewa{position:sticky;top:110px}
+  .dk-lewa .v3-sub{margin-top:24px}
+  .dk-w{display:grid;grid-template-columns:clamp(40px,4vw,60px) minmax(0,1fr);gap:10px 14px;padding:clamp(26px,3vw,38px) 0;border-top:1px solid var(--linia)}
+  .dk-w:first-child{border-top:1.5px solid var(--t1)}
+  .dk-n{padding-top:9px;font-size:13px;font-weight:600;color:var(--ziel-c)}
+  .dk-w h3{margin:0;font-size:clamp(22px,2.3vw,32px);font-weight:700;letter-spacing:-0.034em;line-height:1.1;text-wrap:balance}
+  .dk-w p{grid-column:2;margin:0;max-width:580px;font-size:16px;line-height:1.64;color:var(--t2);text-wrap:pretty}
+  .dk-nie{display:grid;grid-template-columns:clamp(40px,4vw,60px) minmax(0,1fr);gap:0 14px;margin-top:clamp(36px,4.4vw,64px);padding-top:clamp(26px,3vw,38px);border-top:1.5px solid var(--t1)}
+  .dk-nie h3{grid-column:2;margin:0;font-size:clamp(19px,1.75vw,24px);font-weight:700;letter-spacing:-0.024em;line-height:1.2}
+  .dk-nie ul{grid-column:2;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px clamp(24px,3vw,44px);margin:22px 0 0;padding:0;list-style:none}
+  .dk-nie li{padding-top:14px;border-top:1px solid var(--linia);font-size:15px;line-height:1.6;color:var(--t2);text-wrap:pretty}
+  @media (max-width:640px){ .dk-nie ul{grid-template-columns:1fr;gap:16px} }
+  @media (max-width:900px){ .v3-dk{grid-template-columns:1fr} .dk-lewa{position:static} }
+
+
+  /* =====================================================================
+     ZIELONY PAS · twarz w duotonie
+     ===================================================================== */
+  /* Pas stoi na białym z takim samym odstępem nad i pod sobą: po obu
+     stronach są papierowe sekcje, a zaokrąglone rogi nie mogą wchodzić
+     na granicę z nimi. */
+  .v3-zl{padding:clamp(56px,7vw,96px) var(--ram) 0}
+  #dlaczego{padding-top:clamp(56px,7vw,96px)}
+  .v3-zl-in{position:relative;overflow:hidden;display:grid;grid-template-columns:minmax(0,7.2fr) minmax(0,4.8fr);min-height:clamp(380px,34vw,500px);border-radius:clamp(20px,2.2vw,32px);background:var(--ziel)}
+  .zl-t{position:relative;z-index:2;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:clamp(26px,3vw,40px);padding:clamp(40px,5vw,80px) var(--pin)}
+  .zl-t p{margin:0;max-width:820px;font-size:clamp(28px,3.7vw,54px);line-height:1.04;letter-spacing:-0.045em;font-weight:700;color:var(--ink);text-wrap:balance}
+  .zl-foto{position:relative;min-height:300px}
+  .zl-foto img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 17%;filter:grayscale(1) contrast(1.12) brightness(1.04);mix-blend-mode:multiply;
+    -webkit-mask-image:linear-gradient(to right,transparent 0%,rgba(0,0,0,0.6) 16%,#000 36%);mask-image:linear-gradient(to right,transparent 0%,rgba(0,0,0,0.6) 16%,#000 36%)}
+  .zl-podpis{position:absolute;right:clamp(18px,2.2vw,30px);bottom:clamp(18px,2.2vw,28px);z-index:2;text-align:right}
+  .zl-podpis b{display:block;font-size:15px;font-weight:800;color:#ffffff}
+  .zl-podpis span{display:block;margin-top:2px;font-size:11.5px;color:rgba(255,255,255,0.75)}
+  @media (max-width:820px){
+    .v3-zl-in{grid-template-columns:1fr}
+    .zl-foto{order:-1;height:300px}
+    .zl-foto img{-webkit-mask-image:linear-gradient(to bottom,#000 70%,transparent 100%);mask-image:linear-gradient(to bottom,#000 70%,transparent 100%)}
+    .zl-t{padding-top:8px}
+  }
+
+  /* =====================================================================
+     METODA (v7) · porównanie z typowym projektem, nasza kolumna na
+     ciemnej karcie. Karta to osobny element siatki (.mt-tlo) rozpięty na
+     wszystkich wierszach trzeciej kolumny i wystający nad i pod tabelę;
+     komórki mają jawne wiersze, żeby mogły na nim stać.
+     ===================================================================== */
+  .mt-por{display:grid;grid-template-columns:minmax(0,2.5fr) minmax(0,3.6fr) minmax(0,5.2fr);margin:clamp(56px,6vw,88px) 0 0;padding:0 0 18px}
+  .mt-por > *{position:relative;z-index:1;min-width:0}
+  .mt-tlo{z-index:0 !important;grid-column:3;margin:-24px 0 -4px;border-radius:26px;
+    background:radial-gradient(640px 380px at 90% 108%,rgba(0,205,119,0.2),rgba(0,205,119,0) 70%),var(--ink);
+    box-shadow:0 60px 100px -60px rgba(7,20,13,0.8)}
+  /* v15: nagłówek naszej kolumny z sygnetem Let's automate i liczbą
+     wdrożeń; fazy z ikoną w kwadracie, nasze odpowiedzi z ptaszkiem,
+     wiersze wyższe i równiejsze. */
+  .mt-gl-r{align-self:end;padding:0 24px 18px 0;font-size:13.5px;font-weight:650;line-height:1.35;color:var(--t3)}
+  .mt-gl-m{display:flex;align-items:center;gap:12px;padding:8px clamp(20px,2.4vw,36px) 20px;color:#ffffff}
+  .mt-gl-m i{flex-shrink:0;display:grid;place-items:center;width:38px;height:38px;border-radius:10px;background:rgba(255,255,255,0.06);box-shadow:inset 0 0 0 1px rgba(255,255,255,0.1);color:var(--ziel)}
+  .mt-gl-m i svg{display:block;width:20px;height:20px;fill:currentColor}
+  .mt-gl-m b{display:block;font-size:16px;font-weight:750;letter-spacing:-0.015em}
+  .mt-gl-m small{display:block;margin-top:2px;font-size:12.5px;color:rgba(255,255,255,0.55)}
+  .mt-gl-m em{margin-left:auto;padding:6px 12px;border-radius:999px;background:rgba(0,205,119,0.14);font-style:normal;font-size:13px;font-weight:700;color:var(--ziel);white-space:nowrap}
+  .mt-k,.mt-r{padding:22px 24px 22px 0;border-top:1px solid var(--linia)}
+  .mt-k{display:flex;align-items:center;align-self:start;gap:12px;margin:0;font-size:15.5px;font-weight:700;letter-spacing:-0.01em;color:var(--t1)}
+  .mt-k > i{flex-shrink:0;display:grid;place-items:center;width:32px;height:32px;border-radius:9px;background:#ffffff;box-shadow:0 0 0 1px rgba(15,26,20,0.07)}
+  .mt-k .hi{display:block;width:15px;height:15px;fill:currentColor;color:var(--ziel-c)}
+  .mt-r,.mt-m,.mt-st{margin:0}
+  .mt-r{font-size:14.5px;line-height:1.55;color:#6a756e;text-wrap:pretty}
+  .mt-m{padding:22px clamp(20px,2.4vw,36px);border-top:1px solid rgba(255,255,255,0.08);color:rgba(255,255,255,0.7);font-size:14.5px;line-height:1.55;text-wrap:pretty}
+  .mt-m b{display:flex;align-items:center;gap:9px;margin-bottom:4px;font-size:16px;font-weight:700;letter-spacing:-0.015em;color:#ffffff}
+  .mt-m b svg{flex-shrink:0;display:block;width:16px;height:16px;padding:2px;border-radius:50%;background:var(--ziel);fill:var(--ink)}
+  .mt-k.p1,.mt-r.p1{border-top:1.5px solid var(--t1)}
+  .mt-m.p1{border-top-color:rgba(255,255,255,0.14)}
+  .mt-st{padding:18px clamp(20px,2.4vw,36px) 26px;border-top:1px solid rgba(255,255,255,0.1);font-size:13.5px;line-height:1.55;color:rgba(255,255,255,0.6)}
+  .mt-st a{display:inline-block;margin-top:6px;font-weight:700;color:var(--ziel);border-bottom:1px solid rgba(0,205,119,0.4);transition:border-color .15s}
+  .mt-st a:hover{border-color:var(--ziel)}
+  /* Węższe: wiersz pod wierszem — nazwa fazy, typowy projekt szarym
+     drukiem, nasza odpowiedź na ciemnym polu. */
+  @media (max-width:900px){
+    .mt-por{display:block;padding:0}
+    .mt-tlo,.mt-gl-r{display:none}
+    .mt-gl-m{margin-bottom:8px;padding:0;color:var(--t1)}
+    .mt-gl-m i{background:var(--ink)}
+    .mt-gl-m em{background:rgba(0,205,119,0.12);color:var(--ziel-c)}
+    .mt-k{align-items:center}
+    .mt-gl-m small{color:var(--t3)}
+    .mt-k{padding:22px 0 0;border-top:1px solid var(--linia)}
+    .mt-k.p1{margin-top:12px}
+    .mt-r,.mt-r.p1{padding:8px 0 0;border:0}
+    .mt-r::before{content:"Typowo: ";font-weight:650}
+    .mt-m{margin:12px 0 26px;padding:16px 18px;border:0 !important;border-radius:14px;background:var(--ink)}
+    .mt-st{margin-top:24px;padding:0;border:0;color:var(--t2)}
+    .mt-st a{color:var(--ziel-c);border-color:var(--ziel)}
+  }
+
+  /* =====================================================================
+     DOWODY v4 · trzy równe karty, czas sprawy w kaflach dni
+     Jeden kafel = jeden dzień roboczy, 11 kolumn w każdej karcie,
+     więc 6, 9 i 11 dni da się porównać wzrokiem między kartami.
+     ===================================================================== */
+  /* Rząd przewijany sięga krawędzi ekranu: sekcja nie ma poziomego
+     paddingu, nagłówek, stopka i cytat dostają go marginesem; % w --pad
+     liczy się wtedy od szerokości sekcji, tak jak w innych sekcjach. */
+  #dowody{padding-left:0;padding-right:0}
+  #dowody > :not(.dw-sc){margin-left:var(--pad) !important;margin-right:var(--pad) !important}
+  .dw-sc{display:flex;gap:clamp(12px,1.2vw,16px);margin-top:clamp(40px,4.4vw,64px);padding:2px var(--pad) 6px;overflow-x:auto;overscroll-behavior-x:contain;
+    scroll-snap-type:x mandatory;scroll-padding-inline:var(--pad);scrollbar-width:none}
+  .dw-sc::-webkit-scrollbar{display:none}
+  .dw-sc:focus-visible{outline:2px solid var(--ziel);outline-offset:-2px}
+  .dw4-k{flex:0 0 clamp(288px,24vw,340px);scroll-snap-align:start;display:flex;flex-direction:column;padding:22px 22px 20px;border-radius:20px;background:var(--papier)}
+  .dw4-p{font-size:12.5px;font-weight:700;color:var(--ziel-c)}
+  /* v15: karta prostsza — firma i wielkość w jednym wierszu, czas sprawy
+     jako dwa paski w jednej skali (11 dni), wartość na końcu paska; bez
+     kafli, bez dużej liczby i „było". */
+  .dw4-k h3{margin:8px 0 0;font-size:17px;font-weight:700;letter-spacing:-0.02em;line-height:1.25}
+  .dw4-k h3 small{display:block;margin-top:2px;font-size:12.5px;font-weight:400;letter-spacing:0;color:var(--t3)}
+  .dw5-pp{display:grid;gap:10px;margin-top:22px;padding:16px 0;border-top:1px solid var(--linia);border-bottom:1px solid var(--linia)}
+  .dw5-r{display:grid;grid-template-columns:38px minmax(0,1fr) auto;align-items:center;gap:10px}
+  .dw5-r span{font-size:12.5px;color:var(--t3)}
+  .dw5-r i{display:block;width:var(--u);height:10px;border-radius:3px}
+  .dw5-r.po i{background:var(--ziel)}
+  .dw5-r b{font-size:14px;font-weight:600;color:var(--t2);white-space:nowrap}
+  .dw5-r.po span{color:var(--t1);font-weight:650}
+  .dw5-r.po b{font-size:20px;font-weight:750;letter-spacing:-0.03em;color:var(--t1)}
+  .dw4-d{margin:16px 0 0;font-size:14px;line-height:1.55;color:var(--t2);text-wrap:pretty}
+  .dw4-jak{padding-bottom:2px;font-size:13.5px;font-weight:650;color:var(--ziel-c);border-bottom:1px solid rgba(10,122,82,0.35);transition:border-color .15s}
+  .dw4-jak:hover{border-color:var(--ziel-c)}
+  .dw-dol{display:flex;align-items:center;justify-content:space-between;gap:12px 24px;margin-top:18px}
+  .dw-str{display:flex;gap:8px}
+  .dw-str button{display:grid;place-items:center;width:44px;height:44px;border:0;border-radius:50%;background:var(--ink);color:#ffffff;cursor:pointer;transition:background .15s,opacity .15s,transform .15s}
+  .dw-str button:hover:not(:disabled){background:var(--ziel);color:var(--ink)}
+  .dw-str button:active:not(:disabled){transform:scale(.94)}
+  .dw-str button:disabled{opacity:0.22;cursor:default}
+  .dw-str .hi{display:block;width:16px;height:16px;fill:currentColor}
+  .dw-str button:focus-visible{outline:2px solid var(--ziel);outline-offset:2px}
+  @media (max-width:600px){ .dw4-k{flex-basis:84%} .dw-str{display:none} }
+  /* wejście w kadr: kafle „po" zapalają się po kolei */
+  .v4-dw.gra .dw5-r i{transform:scaleX(0);transform-origin:0 50%}
+  .v4-dw.gra.on .dw5-r i{transform:none;transition:transform .7s cubic-bezier(.3,.8,.3,1) .2s}
+  .v4-dw.gra.on .dw5-r.po i{transition-delay:calc(0.6s + var(--j) * 0.08s)}
+
+  /* =====================================================================
+     CYTAT
+     ===================================================================== */
+  .v3-cyt{margin-top:clamp(80px,9vw,140px) !important}
+  /* v10: pod kartami cytat stoi w tym samym odstępie, co pas pod nim */
+  #dowody .v3-cyt{margin-top:clamp(56px,7vw,96px) !important}
+  .v3-cyt blockquote{margin:0;max-width:1220px;font-size:clamp(28px,3.9vw,58px);line-height:1.08;letter-spacing:-0.042em;font-weight:650;color:var(--t1);text-wrap:balance}
+  .v3-cyt blockquote span{color:var(--ziel)}
+  .v3-cyt figcaption{display:flex;align-items:center;gap:18px;margin-top:clamp(28px,3.4vw,44px)}
+  /* plik znaku ma szerokie marginesy w środku, stąd wysokość jak w pasku logotypów */
+  .v3-cyt figcaption img{display:block;width:auto;height:60px;margin:-12px 0 -12px -10px;mix-blend-mode:multiply}
+  .v3-cyt figcaption > i{width:1px;height:34px;background:var(--linia)}
+  .v3-cyt figcaption b{display:block;font-size:15px;font-weight:750}
+  .v3-cyt figcaption span span{display:block;margin-top:2px;font-size:14px;color:var(--t2)}
+
+  /* =====================================================================
+     KONTAKT · plansza domyka stronę tak jak ją otwiera hero. Po lewej
+     nagłówek i portret człowieka, który odpisuje; po prawej trzy pola.
+     ===================================================================== */
+  /* v12: plansza leży na papierze, jak „Dla kogo" nad nią i FAQ pod nią
+     (biały pas nad i pod planszą przeszkadzał). Nad planszą odstęp daje
+     dół „Dla kogo"; pod nią dopełnienie do tej samej wysokości razem
+     z górnym paddingiem FAQ. FAQ dostaje ten sam papier (komponent ma
+     swój, lekko zielonkawy odcień). */
+  .v4-kt{padding:0 var(--ram) calc(clamp(88px,11vw,164px) - clamp(72px,9vw,110px));background:var(--papier);scroll-margin-top:84px}
+  #faq{background:#f4f3ee !important}
+  .kt-in{--kp:clamp(44px,5.6vw,80px);position:relative;overflow:hidden;border-radius:clamp(20px,2.2vw,32px);color:#ffffff;padding:var(--kp) 0 var(--kp) var(--pin);
+    display:grid;grid-template-columns:minmax(0,4.3fr) minmax(0,5fr) minmax(0,3.3fr);align-items:stretch;
+    background:
+      radial-gradient(900px 560px at 18% 112%,rgba(0,205,119,0.22),rgba(0,205,119,0) 70%),
+      radial-gradient(700px 420px at 60% -10%,rgba(0,205,119,0.08),rgba(0,205,119,0) 70%),
+      var(--ink)}
+  .kt-in > *{position:relative;z-index:1}
+  .v4-kt .hi{display:block;flex-shrink:0;fill:currentColor}
+  .kt-lewa{display:flex;flex-direction:column;min-width:0;padding-right:clamp(32px,4vw,72px)}
+  .kt-lewa .v3-sub{margin-top:clamp(20px,2vw,28px);max-width:420px}
+  .kt-kanaly{display:flex;flex-direction:column;align-items:flex-start;gap:10px;margin:auto 0 0;padding-top:36px;font-size:15px}
+  .kt-kanaly a{display:inline-flex;align-items:center;gap:10px;font-weight:600;color:#ffffff;transition:color .15s}
+  .kt-kanaly .hi{width:16px;height:16px;color:var(--ziel)}
+  .kt-kanaly a:hover{color:var(--ziel)}
+  /* Portret: trzecia kolumna na całą wysokość planszy, dosunięta do jej
+     prawej krawędzi (zaokrąglenie daje overflow planszy). Imię stoi na
+     ciemnej marynarce. */
+  .kt-os{align-self:stretch;position:relative;min-height:100%;margin:calc(var(--kp) * -1) 0;overflow:hidden;background:#d6dae3}
+  .kt-os img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 14%}
+  .kt-os::after{content:"";position:absolute;left:0;right:0;bottom:0;height:34%;background:linear-gradient(to top,rgba(7,20,13,0.7),rgba(7,20,13,0))}
+  .kt-os figcaption{position:absolute;left:24px;right:20px;bottom:22px;z-index:1}
+  .kt-os b{display:block;font-size:17px;font-weight:700;letter-spacing:-0.015em}
+  .kt-os figcaption span{display:block;margin-top:2px;font-size:13.5px;color:rgba(255,255,255,0.78)}
+  /* formularz */
+  /* Jasny panel formularza od górnej do dolnej krawędzi planszy, styka
+     się z portretem; treść stoi w nim pośrodku. Tło papierowe, nie białe:
+     biały panel zlewał się z tłem strony nad i pod planszą. Pola zostają
+     białe i odcinają się od panelu. */
+  .kt-karta{display:flex;flex-direction:column;justify-content:center;min-width:0;margin:calc(var(--kp) * -1) 0;padding:var(--kp) clamp(28px,3.2vw,52px);
+    background:var(--papier);color:var(--t1);box-shadow:inset -1px 0 0 rgba(15,26,20,0.08)}
+  .kt-lab{display:flex;align-items:baseline;gap:5px;margin:0 0 8px;font-size:13.5px;font-weight:650;color:var(--t1)}
+  .kt-lab .opt{margin-left:3px;font-size:12.5px;font-weight:500;color:var(--t3)}
+  .kt-lab .req{color:var(--ziel-c)}
+  .kt-2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
+  .kt-blok{margin-top:20px}
+  .kt-ramka{display:flex;align-items:center;border-radius:12px;background:#ffffff;
+    box-shadow:inset 0 0 0 1px rgba(15,26,20,0.14),0 1px 2px rgba(15,26,20,0.05);transition:box-shadow .15s}
+  .kt-ramka:hover{box-shadow:inset 0 0 0 1px rgba(15,26,20,0.28),0 1px 2px rgba(15,26,20,0.05)}
+  .kt-ramka:focus-within{box-shadow:inset 0 0 0 1.5px var(--ziel-c),0 0 0 4px rgba(0,205,119,0.16)}
+  .kt-ramka > .hi{flex-shrink:0;width:16px;height:16px;margin-left:15px;color:#a3aba5;transition:color .15s}
+  .kt-ramka:focus-within > .hi{color:var(--ziel-c)}
+  .kt-inp{flex:1;min-width:0;display:block;width:100%;height:50px;border:0;background:transparent;font:inherit;font-size:15px;color:var(--t1);padding:0 15px;outline:none}
+  .kt-ramka > .hi + .kt-inp{padding-left:10px}
+  .kt-inp::placeholder{color:#a3aba5}
+  textarea.kt-inp{height:auto;min-height:104px;padding:13px 15px;resize:vertical;line-height:1.5}
+  .kt-kier{position:relative;display:flex;align-items:center;flex-shrink:0}
+  .kt-kier select{appearance:none;-webkit-appearance:none;height:50px;border:0;background:transparent;font:inherit;font-size:15px;font-weight:600;color:var(--t1);padding:0 30px 0 15px;outline:none;cursor:pointer}
+  .kt-kier .hi{position:absolute;right:10px;width:14px;height:14px;color:var(--t3);pointer-events:none}
+  .kt-tel > i{flex-shrink:0;width:1px;height:22px;background:rgba(15,26,20,0.12)}
+  .kt-tel .kt-inp{padding-left:12px}
+  .kt-err{display:none;margin-top:6px;font-size:12.5px;font-weight:600;color:#b8432f}
+  .kt-pole.err .kt-err{display:block}
+  .kt-pole.err .kt-ramka{box-shadow:inset 0 0 0 1.5px #d0573f,0 0 0 4px rgba(208,87,63,0.1)}
+  .kt-zgoda{display:flex;align-items:flex-start;gap:11px;margin-top:20px;font-size:13px;line-height:1.5;color:var(--t2);cursor:pointer}
+  .kt-zgoda input{position:absolute;width:1px;height:1px;opacity:0}
+  .kt-cb{position:relative;flex-shrink:0;width:19px;height:19px;margin-top:1px;border-radius:6px;background:#ffffff;box-shadow:inset 0 0 0 1px rgba(15,26,20,0.24);transition:background .15s,box-shadow .15s}
+  .kt-cb svg{position:absolute;inset:0;margin:auto;opacity:0;transform:scale(.6);transition:opacity .15s,transform .2s cubic-bezier(.3,1.6,.5,1)}
+  .kt-zgoda:hover .kt-cb{box-shadow:inset 0 0 0 1px rgba(15,26,20,0.4)}
+  .kt-zgoda input:checked + .kt-cb{background:var(--ziel-c);box-shadow:none}
+  .kt-zgoda input:checked + .kt-cb svg{opacity:1;transform:none}
+  .kt-zgoda input:focus-visible + .kt-cb{outline:2px solid var(--ziel);outline-offset:2px}
+  .kt-zgoda.err .kt-cb{box-shadow:inset 0 0 0 1.5px #d0573f}
+  .kt-zgoda a{font-weight:650;color:var(--ziel-c);text-decoration:underline;text-underline-offset:2px}
+  .kt-hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+  /* Przycisk. Najazd: przez przycisk przechodzi błysk, a strzałka wyjeżdża
+     w prawo i wraca z lewej. Wysyłka: w kółku kręci się wskaźnik. Po
+     wysłaniu: ptaszek, chwilę później karta z potwierdzeniem. Pierwszy
+     błysk przechodzi sam, kiedy formularz wchodzi w kadr. */
+  .kt-btn{position:relative;overflow:hidden;isolation:isolate;display:flex;align-items:center;justify-content:space-between;gap:14px;width:100%;margin-top:24px;padding:8px 8px 8px 24px;
+    border:0;border-radius:999px;background:var(--ziel);color:var(--ink);font:inherit;font-size:16px;font-weight:700;letter-spacing:-0.01em;cursor:pointer;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,0.35),0 12px 26px -14px rgba(0,160,92,0.9);transition:transform .2s ease,box-shadow .25s ease,background .2s}
+  .kt-btn::before,.kt-btn::after{content:"";position:absolute;top:0;bottom:0;left:0;width:45%;z-index:-1;pointer-events:none;
+    background:linear-gradient(100deg,rgba(255,255,255,0),rgba(255,255,255,0.55) 50%,rgba(255,255,255,0));transform:translateX(-110%) skewX(-18deg)}
+  .kt-btn:hover{background:#13d986;transform:translateY(-1px);box-shadow:inset 0 1px 0 rgba(255,255,255,0.35),0 18px 34px -14px rgba(0,160,92,0.95)}
+  .kt-btn:hover::before{transform:translateX(330%) skewX(-18deg);transition:transform .85s cubic-bezier(.4,0,.2,1)}
+  .kt-btn:active{transform:translateY(0) scale(.985)}
+  .kt-btn:focus-visible{outline:2px solid #ffffff;outline-offset:3px}
+  .kt-karta.on .kt-btn::after{animation:kt-blysk 1.1s cubic-bezier(.4,0,.2,1) .7s both}
+  @keyframes kt-blysk{to{transform:translateX(330%) skewX(-18deg)}}
+  .kt-btn-k{position:relative;flex-shrink:0;width:40px;height:40px;border-radius:50%;background:var(--ink);color:var(--ziel);overflow:hidden}
+  .kt-btn-k svg{position:absolute;left:50%;top:50%;width:16px;height:16px;margin:-8px 0 0 -8px;fill:currentColor;transition:transform .4s cubic-bezier(.6,0,.2,1),opacity .2s}
+  .kt-btn-k .s2{transform:translateX(-28px)}
+  .kt-btn:hover .kt-btn-k .s1{transform:translateX(28px)}
+  .kt-btn:hover .kt-btn-k .s2{transform:none}
+  .kt-btn-k .kr{width:22px;height:22px;margin:-11px 0 0 -11px;fill:none;opacity:0}
+  .kt-btn-k .pt{opacity:0;transform:scale(.4)}
+  .kt-btn.wysyla{cursor:progress}
+  .kt-btn.wysyla .s1,.kt-btn.wysyla .s2,.kt-btn.wyslane .s1,.kt-btn.wyslane .s2{opacity:0}
+  .kt-btn.wysyla .kr{opacity:1;animation:kt-krec .8s linear infinite}
+  .kt-btn.wyslane .pt{opacity:1;transform:none;transition:transform .45s cubic-bezier(.3,1.6,.5,1),opacity .2s}
+  .kt-btn.wyslane .kt-btn-k{background:#ffffff;color:var(--ziel-c);transition:background .25s}
+  @keyframes kt-krec{to{transform:rotate(360deg)}}
+  .kt-btn:disabled{cursor:progress}
+  .kt-po{margin:12px 0 0;font-size:13px;line-height:1.5;color:var(--t3);text-align:center}
+  .kt-awaria{margin-top:16px;padding:14px 16px;border-radius:12px;background:#fdf1ee;color:#7a2c1e;font-size:13.5px;line-height:1.55}
+  .kt-awaria[hidden],.kt-ok[hidden],.kt-f[hidden]{display:none}
+  .kt-awaria strong{display:block;margin-bottom:2px}
+  .kt-awaria a{font-weight:700;color:#7a2c1e;text-decoration:underline}
+  .kt-ok{outline:none;padding:clamp(8px,2vw,24px) 0}
+  .kt-ok-ik{display:flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:50%;background:#e2f5ea;animation:kt-wej .5s cubic-bezier(.3,1.5,.5,1) both}
+  .kt-ok-ik path{stroke-dasharray:1;stroke-dashoffset:1;animation:kt-rysuj .45s ease .25s forwards}
+  @keyframes kt-wej{from{transform:scale(.5);opacity:0}}
+  @keyframes kt-rysuj{to{stroke-dashoffset:0}}
+  .kt-ok h3{margin:20px 0 0;font-size:26px;font-weight:750;letter-spacing:-0.025em}
+  .kt-ok > p{margin:8px 0 0;font-size:15px;line-height:1.6;color:var(--t2)}
+  .kt-ok > p b{color:var(--t1)}
+  @media (prefers-reduced-motion:reduce){
+    .kt-btn,.kt-btn-k svg{transition:none}
+    .kt-btn::before,.kt-btn::after{display:none}
+    .kt-btn:hover .kt-btn-k .s1{transform:none}
+    .kt-btn:hover .kt-btn-k .s2{transform:translateX(-28px)}
+    .kt-btn.wysyla .kr{animation:none}
+    .kt-ok-ik,.kt-ok-ik path{animation:none;stroke-dashoffset:0}
+  }
+  /* v12a: formularz na ciemnym tle planszy, bez osobnej ramki wokół
+     (druga ramka w planszy — odrzucona). Pola wyraźnie jaśniejsze od tła
+     („trochę za ciemne"), z jasną obwódką; etykiety większe i białe,
+     podpowiedzi w polach i zgoda jaśniejsze; tekst w polach 16 px. Pole
+     w fokusie dostaje zieloną obwódkę. */
+  .kt-ciemny .kt-karta{margin:0;padding:0 clamp(28px,3.2vw,52px) 0 0;background:none;color:#ffffff;box-shadow:none}
+  .kt-ciemny .kt-lab{margin-bottom:9px;font-size:14px;color:#ffffff}
+  .kt-ciemny .kt-lab .opt{font-size:13px;color:rgba(255,255,255,0.6)}
+  .kt-ciemny .kt-lab .req{color:var(--ziel)}
+  .kt-ciemny .kt-ramka{background:rgba(255,255,255,0.15);box-shadow:inset 0 0 0 1px rgba(255,255,255,0.3)}
+  .kt-ciemny .kt-ramka:hover{background:rgba(255,255,255,0.18);box-shadow:inset 0 0 0 1px rgba(255,255,255,0.46)}
+  .kt-ciemny .kt-ramka:focus-within{background:rgba(255,255,255,0.18);box-shadow:inset 0 0 0 1.5px var(--ziel),0 0 0 4px rgba(0,205,119,0.22)}
+  .kt-ciemny .kt-ramka > .hi{color:rgba(255,255,255,0.7)}
+  .kt-ciemny .kt-ramka:focus-within > .hi{color:var(--ziel)}
+  .kt-ciemny .kt-inp,.kt-ciemny .kt-kier select{height:52px;font-size:16px;color:#ffffff}
+  .kt-ciemny textarea.kt-inp{height:auto;min-height:108px}
+  .kt-ciemny .kt-inp::placeholder{color:rgba(255,255,255,0.6)}
+  .kt-ciemny .kt-inp:-webkit-autofill{-webkit-text-fill-color:#ffffff;transition:background-color 9999s ease 0s}
+  .kt-ciemny .kt-kier select option{color:#0f1a14}
+  .kt-ciemny .kt-kier .hi{color:rgba(255,255,255,0.7)}
+  .kt-ciemny .kt-tel > i{background:rgba(255,255,255,0.3)}
+  .kt-ciemny .kt-err{font-size:13px;color:#ffb3a2}
+  .kt-ciemny .kt-pole.err .kt-ramka{box-shadow:inset 0 0 0 1.5px #ff8a70,0 0 0 4px rgba(255,138,112,0.16)}
+  .kt-ciemny .kt-zgoda{font-size:13.5px;color:rgba(255,255,255,0.82)}
+  .kt-ciemny .kt-zgoda a{color:var(--ziel)}
+  .kt-ciemny .kt-cb{width:20px;height:20px;background:rgba(255,255,255,0.15);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,0.5)}
+  .kt-ciemny .kt-zgoda:hover .kt-cb{box-shadow:inset 0 0 0 1.5px rgba(255,255,255,0.75)}
+  .kt-ciemny .kt-zgoda input:checked + .kt-cb{background:var(--ziel);box-shadow:none}
+  .kt-ciemny .kt-cb svg{stroke:var(--ink)}
+  .kt-ciemny .kt-zgoda.err .kt-cb{box-shadow:inset 0 0 0 1.5px #ff8a70}
+  .kt-ciemny .kt-btn{box-shadow:inset 0 1px 0 rgba(255,255,255,0.35),0 14px 34px -14px rgba(0,205,119,0.55)}
+  .kt-ciemny .kt-po{font-size:13.5px;color:rgba(255,255,255,0.66)}
+  .kt-ciemny .kt-ok-ik{background:rgba(0,205,119,0.16)}
+  .kt-ciemny .kt-ok-ik svg{stroke:var(--ziel)}
+  .kt-ciemny .kt-ok > p{color:rgba(255,255,255,0.78)}
+  .kt-ciemny .kt-ok > p b{color:#ffffff}
+  .kt-ciemny .kt-ok a{color:var(--ziel) !important}
+  @media (max-width:1000px){
+    .kt-ciemny .kt-karta{margin:32px 0 0;padding:0;border-radius:0}
+  }
+  /* Na telefonie formularz idzie zaraz po nagłówku, portret i kanały
+     pod nim — bez tego pola zaczynałyby się poniżej zdjęcia. */
+  @media (max-width:1180px){
+    .kt-in{grid-template-columns:minmax(0,1fr) minmax(0,1.2fr) minmax(0,0.85fr)}
+    .kt-lewa{padding-right:32px}
+    .kt-2{grid-template-columns:1fr}
+    .kt-2 .kt-pole + .kt-pole{margin-top:4px}
+  }
+  /* Tablet i telefon: nagłówek → formularz → kto odpisuje (portret
+     w mniejszym kadrze obok imienia) → kanały. Portret na całą szerokość
+     robił tu z twarzy zbliżenie. */
+  @media (max-width:1000px){
+    .kt-in{display:flex;flex-direction:column;align-items:stretch;gap:0;padding:var(--kp) var(--pin)}
+    .kt-lewa{display:contents}
+    .kt-karta{order:1;margin:32px 0 0;padding:clamp(24px,4vw,36px);border-radius:24px;box-shadow:0 50px 90px -44px rgba(0,0,0,0.7)}
+    .kt-os{order:2;display:flex;align-items:center;gap:16px;min-height:0;margin:28px 0 0;overflow:visible;background:none}
+    .kt-os img{position:static;flex-shrink:0;width:96px;height:120px;border-radius:14px;background:#d6dae3;object-position:50% 12%}
+    .kt-os::after{display:none}
+    .kt-os figcaption{position:static}
+    .kt-kanaly{order:3;margin:0;padding-top:22px}
+    .kt-2{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+    .kt-2 .kt-pole + .kt-pole{margin-top:0}
+  }
+  @media (max-width:560px){
+    .kt-2{grid-template-columns:1fr}
+    .kt-2 .kt-pole + .kt-pole{margin-top:4px}
+    .kt-inp,.kt-kier select{font-size:16px}
+  }
+
+  /* hero na węższych ekranach: tekst i rysunek w jednej kolumnie */
+  @media (max-width:1060px){
+    .v4-hero-in{grid-template-columns:var(--pin) minmax(0,1fr) var(--pin);--zwis:clamp(90px,16vw,130px)}
+    .v4-hero-in::before,.v4-hero-in::after{grid-row:1 / 4}
+    .v4-hero-in > .v4-gl,.v4-hero-in > .os,.v4-hero-in > .hero-wid{grid-column:2}
+    .v4-hero-in > .v4-gl{grid-template-columns:1fr}
+    .v4-lewa{max-width:640px}
+  }
+  /* hero „obok" i „jasny": tekst w lewej kolumnie, rysunek w prawej, w środku
+     planszy; nic nie wisi pod krawędzią. „Jasny" na papierze, z ciemnym
+     drukiem i zielonym akcentem w ciemniejszym odcieniu. */
+  .v4-hero-in.obok{grid-template-columns:var(--pin) minmax(0,5fr) minmax(0,7fr) var(--pin);column-gap:clamp(28px,4vw,72px);padding-bottom:0}
+  .v4-hero-in.obok > .v4-gl{grid-column:2;grid-row:2;display:block;margin:clamp(56px,7vw,112px) 0}
+  .v4-hero-in.obok > .v4-gl .v3-h1{font-size:clamp(36px,3.9vw,58px);line-height:1}
+  .v4-hero-in.obok > .v4-gl .v4-lewa{margin-top:clamp(24px,2.6vw,36px)}
+  .v4-hero-in.obok > .hero-wid{grid-column:3;grid-row:2;align-self:center;margin:clamp(40px,5vw,80px) 0}
+  .v4-hero-in.jasny{color:var(--t1)}
+  .v4-hero-in.jasny::before{background:radial-gradient(760px 520px at 88% 110%,rgba(0,205,119,0.12),rgba(0,205,119,0) 70%),var(--papier)}
+  .v4-hero-in.jasny::after{opacity:0.05;mix-blend-mode:multiply}
+  .v4-hero-in.jasny .v3-h1{color:var(--t1)}
+  .v4-hero-in.jasny .v3-h1 span{color:var(--ziel-c)}
+  .v4-hero-in.jasny .v3-lead{color:var(--t2)}
+  .v4-hero-in.jasny .v3-lnk{color:var(--t1);border-bottom-color:rgba(15,26,20,0.25)}
+  .v4-hero-in.jasny .v3-lnk:hover{border-color:var(--ziel-c)}
+  @media (max-width:1060px){
+    .v4-hero-in.obok{grid-template-columns:var(--pin) minmax(0,1fr) var(--pin);column-gap:0}
+    .v4-hero-in.obok > .v4-gl{grid-column:2;margin:clamp(48px,8vw,80px) 0 0}
+    .v4-hero-in.obok > .hero-wid{grid-column:2;grid-row:3;margin:clamp(32px,5vw,56px) 0 clamp(40px,6vw,64px)}
+  }
+  /* FAQ (GcFaq) w tym samym papierze co sekcje nad nim — komponent ma swój,
+     lekko zielonkawy odcień. */
+  #faq{background:#f4f3ee !important}
+  /* hero bez rysunku: plansza kończy się pod tekstem */
+  .v4-hero-in.bez-wid{padding-bottom:0}
+  .v4-hero-in.bez-wid > .v4-gl{margin-bottom:clamp(56px,7vw,110px)}
+</style>

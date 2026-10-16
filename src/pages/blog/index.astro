@@ -1,0 +1,334 @@
+---
+// BAZA WIEDZY — /blog
+//
+// Adres jest ze starego bloga na Webflow (tam też „Baza wiedzy” stała pod
+// /blog), artykuły pod /post/<slug>, kategorie pod /blog-categories/<adres>.
+//
+// CZYM SIĘ RÓŻNI OD RODZEŃSTWA
+// Podstrony usługowe sprzedają usługę i każda ma własny rysunek niosący
+// argument. Ta strona niczego nie sprzedaje — jest spisem. Dlatego zamiast
+// mechanizmu wizualnego ma jedną rzecz do zrobienia: pokazać, co w środku
+// jest warte czterech minut czytania, i pozwolić to znaleźć.
+//
+// UKŁAD
+//   1. hero — zdanie o tym, co tu jest, i dwie liczby
+//   2. wyróżniony artykuł — jedyne miejsce z dużym stopniem pisma; obok
+//      kartka ze spisem treści, żeby było widać, co w środku, przed kliknięciem
+//   3. lista — wiersze na liniach, filtr po kategorii w jednej linii nad nimi;
+//      każda kategoria ma też własny adres (src/pages/blog-categories)
+//   4. nagrania — ciemny pas, klatki 16:9 (jedyne miejsce z kaflami; przy
+//      wideo miniatura jest treścią, nie ozdobą); filmy z kanału
+//      Automatyzacja Biznesu, osiem na start, reszta przyciskiem
+//   5. kontakt — wspólny moduł
+//
+// CZEGO TU NIE MA
+//   · wyszukiwarki — filtr po kategorii plus rozwijana lista wystarczają;
+//     pole wyszukiwania dokładać, gdy wpisów będzie ponad sto
+//   · paginacji z osobnymi adresami — lista rośnie na miejscu, przyciskiem
+//   · siatki równych kafli z artykułami — spis czyta się wierszami
+//   · miniatur przy wierszach — wpisy mają grafiki z kilku różnych okresów;
+//     rząd niedobranych miniatur wygląda gorzej niż sam tekst
+//
+// DO POTWIERDZENIA PRZED PUBLIKACJĄ
+//   · /og/baza-wiedzy.png — strona dziedziczy /og/hub.png
+import { getCollection } from 'astro:content';
+import { KATEGORIE } from '../../content/config';
+import { FILMY, KANAL_YT, miniatura, adresFilmu } from '../../data/filmy.js';
+import LaBase from '../../layouts/LaBase.astro';
+import GcCta from '../../components/GcCta.astro';
+import FiltrKategorii from '../../components/baza-wiedzy/FiltrKategorii.astro';
+import ListaArtykulow from '../../components/baza-wiedzy/ListaArtykulow.astro';
+import { adresArtykulu, czasCzytania, odmiana, najnowszePierwsze } from '../../components/baza-wiedzy/wspolne.js';
+
+const kanon = new URL('/blog', Astro.site).href;
+
+// Szkice zostają poza listą, ale renderują się pod własnym adresem — dzięki
+// temu da się wysłać link do przeczytania przed publikacją.
+const wszystkie = (await getCollection('artykuly', (a) => !a.data.szkic)).sort(najnowszePierwsze);
+
+// Spis treści wyróżnionego artykułu bierzemy z nagłówków drugiego stopnia,
+// a gdy ich nie ma — z trzeciego, tak samo jak na stronie artykułu. Wpisy
+// z Webflow mają w nagłówkach linki, więc zostaje z nich sam tekst.
+const spisTresci = (tresc) => {
+  const wzor = /^##\s/m.test(tresc) ? /^##\s+(.+)$/gm : /^###\s+(.+)$/gm;
+  return (tresc.match(wzor) || []).map((h) => h
+    .replace(/^#+\s+/, '')
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
+    .replace(/<[^>]+>/g, '')
+    .replace(/\\(.)/g, '$1'));
+};
+
+const dl = new Intl.DateTimeFormat('pl-PL', { day: 'numeric', month: 'long', year: 'numeric' });
+
+const wyrozniony = wszystkie.find((a) => a.data.wyrozniony) || wszystkie[0];
+
+// Tytuł jak na starym blogu („Baza wiedzy o automatyzacji”), bo pod nim
+// Google zna ten adres.
+const title = "Baza wiedzy o automatyzacji | Let's automate";
+const ileArt = `${wszystkie.length} ${odmiana(wszystkie.length, ['artykuł', 'artykuły', 'artykułów'])}`;
+const ileNagr = `${FILMY.length} ${odmiana(FILMY.length, ['nagranie', 'nagrania', 'nagrań'])}`;
+const description = `${ileArt} i ${ileNagr} o automatyzacji procesów w firmie: od czego zacząć, ile to kosztuje, co zautomatyzować w sprzedaży, marketingu i obsłudze klienta. Baza wiedzy Let's automate.`;
+
+// Pas nagrań pokazuje na start dwa rzędy po cztery klatki, a na telefonie,
+// gdzie klatki stoją jedna pod drugą, cztery. Resztę odsłania przycisk, tak
+// jak przy liście artykułów.
+const FILMY_NA_START = { kompy: 8, tel: 4 };
+
+const dane = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'CollectionPage', '@id': `${kanon}#strona`, url: kanon,
+      name: 'Baza wiedzy', description,
+      isPartOf: { '@id': new URL('/#organizacja', Astro.site).href },
+    },
+    {
+      '@type': 'ItemList', '@id': `${kanon}#artykuly`, numberOfItems: wszystkie.length,
+      itemListElement: wszystkie.map((a, i) => ({
+        '@type': 'ListItem', position: i + 1, name: a.data.tytul,
+        url: new URL(adresArtykulu(a.slug), Astro.site).href,
+      })),
+    },
+    {
+      '@type': 'BreadcrumbList', '@id': `${kanon}#okruszki`,
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Strona główna', item: new URL('/', Astro.site).href },
+        { '@type': 'ListItem', position: 2, name: 'Baza wiedzy', item: kanon },
+      ],
+    },
+  ],
+};
+---
+<LaBase title={title} description={description} ctaHref="#kontakt" ctaLabel="Umów rozmowę" nav="dlaczego-my" topbar={false}>
+<script type="application/ld+json" is:inline set:html={JSON.stringify(dane)} slot="head"></script>
+<style is:global slot="head">
+  /* ================= HERO ================= */
+  .bw-h1{font-size:clamp(38px,6.4vw,74px);line-height:0.98;letter-spacing:-0.042em;font-weight:800;color:#16211a;text-wrap:balance;margin:0;max-width:16ch}
+  .bw-lead{margin:clamp(20px,2.4vw,28px) 0 0;max-width:640px;font-size:clamp(16.5px,2vw,20px);line-height:1.55;color:#33413a;text-wrap:pretty}
+  /* Bez kropek między pozycjami: przy zawijaniu na telefonie separator
+     zostawał na końcu linii i wyglądał jak literówka. */
+  .bw-licz{display:flex;flex-wrap:wrap;gap:6px 26px;margin-top:clamp(24px,3vw,34px);font-size:14px;color:#637066}
+  .bw-licz b{font-weight:750;color:#16211a}
+
+  /* ================= WYRÓŻNIONY =================
+     Jedyne miejsce na stronie z dużym stopniem pisma i jedyne wcięcie.
+     Kartka po prawej pokazuje spis treści — po to, żeby dało się ocenić,
+     czy tekst jest o czymś, przed wejściem w niego. */
+  .bw-w{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:clamp(32px,5vw,72px);align-items:start;padding:clamp(30px,3.6vw,44px) 0 clamp(34px,4vw,50px);border-top:2px solid #16211a}
+  .bw-w-meta{display:flex;flex-wrap:wrap;align-items:center;gap:4px 18px;font-size:13px;color:#637066}
+  .bw-w-kat{font-weight:750;color:#0a7a52}
+  .bw-w-t{display:block;margin:14px 0 0;font-size:clamp(28px,4.4vw,50px);line-height:1.04;letter-spacing:-0.034em;font-weight:800;color:#16211a;text-wrap:balance;transition:color .18s}
+  a:hover .bw-w-t{color:#0a7a52}
+  .bw-w-l{margin:16px 0 0;max-width:56ch;font-size:clamp(15.5px,1.8vw,17.5px);line-height:1.62;color:#4c5850;text-wrap:pretty}
+  .bw-w-go{display:inline-flex;align-items:center;gap:8px;margin-top:20px;font-size:16px;font-weight:700;color:#0a7a52}
+  .bw-w-go i{font-style:normal;transition:transform .18s}
+  a:hover .bw-w-go i{transform:translateX(4px)}
+
+  .bw-kartka{background:#fbfcfa;border:1px solid #e7ece4;border-radius:14px;padding:22px 22px 18px}
+  .bw-kartka-h{font-size:12px;font-weight:700;letter-spacing:0.04em;color:#637066;padding-bottom:12px;border-bottom:1px solid #e7ece4}
+  .bw-kartka ol{list-style:none;margin:0;padding:12px 0 0;counter-reset:sp}
+  .bw-kartka li{counter-increment:sp;display:grid;grid-template-columns:26px minmax(0,1fr);gap:8px;padding:7px 0;font-size:13.5px;line-height:1.45;color:#33413a}
+  .bw-kartka li::before{content:counter(sp,decimal-leading-zero);font-family:ui-monospace,Menlo,monospace;font-size:11px;color:#b3bcb3}
+  @media (max-width:900px){ .bw-w{grid-template-columns:1fr;gap:28px} .bw-kartka{display:none} }
+
+  /* ================= FILTR + LISTA =================
+     Style filtra i wierszy siedzą w komponentach baza-wiedzy/, bo ta sama
+     lista stoi na stronach kategorii. */
+  .bw-pasek{display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:18px 40px}
+  .bw-pusto{padding:44px 0;font-size:15.5px;color:#637066}
+  /* Lista rośnie na miejscu zamiast rozbijać się na strony: adres zostaje
+     jeden, a wyszukiwarki widzą w źródle wszystkie wiersze naraz. */
+  .bw-wiecej{appearance:none;display:inline-flex;align-items:center;gap:9px;margin-top:clamp(26px,3vw,36px);padding:14px 24px;border:1px solid #d3ded1;border-radius:11px;background:#ffffff;font-family:inherit;font-size:15px;font-weight:650;color:#16211a;cursor:pointer;transition:border-color .16s,color .16s,background .16s}
+  .bw-wiecej:hover{border-color:#0a7a52;color:#0a7a52}
+  .bw-wiecej em{font-style:normal;color:#637066}
+
+  /* ================= NAGRANIA (ciemny pas) ================= */
+  .bw-fg{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(20px,2.6vw,34px);margin-top:clamp(30px,3.8vw,44px)}
+  .bw-fi{display:block}
+  .bw-klatka{position:relative;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:linear-gradient(150deg,#15412c,#0b2318);box-shadow:0 24px 48px -26px rgba(0,0,0,0.7)}
+  .bw-klatka img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s cubic-bezier(.4,0,.2,1)}
+  .bw-fi:hover .bw-klatka img{transform:scale(1.04)}
+  /* Znak odtwarzania w rogu, nie na środku — miniatury z kanału mają napis
+     przez środek klatki i krążek go zasłaniał. */
+  .bw-play{position:absolute;left:10px;bottom:10px;display:flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:50%;background:rgba(0,205,119,0.94);box-shadow:0 8px 20px -8px rgba(0,0,0,0.7);transition:transform .22s,background .22s}
+  .bw-fi:hover .bw-play{transform:scale(1.1)}
+  .bw-czas{position:absolute;right:9px;bottom:9px;padding:3px 7px;border-radius:6px;background:rgba(6,16,11,0.82);font-family:ui-monospace,Menlo,monospace;font-size:11px;color:#e8ece7}
+  .bw-ft{display:block;margin-top:14px;font-size:16px;font-weight:700;line-height:1.3;letter-spacing:-0.015em;color:#ffffff;text-wrap:pretty;transition:color .18s}
+  .bw-fi:hover .bw-ft{color:var(--la-accent,#00CD77)}
+  .bw-fd{display:block;margin-top:7px;font-size:13.5px;line-height:1.55;color:rgba(255,255,255,0.6);text-wrap:pretty}
+  .bw-wiecej-c{margin-top:clamp(34px,4vw,48px);border-color:rgba(255,255,255,0.22);background:transparent;color:#ffffff}
+  .bw-wiecej-c:hover{border-color:var(--la-accent,#00CD77);color:var(--la-accent,#00CD77)}
+  .bw-wiecej-c em{color:rgba(255,255,255,0.55)}
+  @media (max-width:1000px){ .bw-fg{grid-template-columns:1fr 1fr} }
+  @media (max-width:560px){ .bw-fg{grid-template-columns:1fr} }
+</style>
+
+<!-- ============ 1 · HERO ============ -->
+<div aria-hidden="true" style="position:absolute;left:0;right:0;top:0;height:640px;background:radial-gradient(900px 520px at 12% -10%, rgba(0,205,119,0.14), transparent 62%);pointer-events:none"></div>
+<section style="position:relative;padding:clamp(46px,6.4vw,92px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) clamp(34px,4.4vw,58px)">
+<h1 class="bw-h1">Zapisujemy to, czego uczą nas wdrożenia</h1>
+<p class="bw-lead">Artykuły o automatyzacji procesów i wdrażaniu AI w firmach, od podstaw po konkretne działy: sprzedaż, marketing, obsługę klienta i księgowość. Do tego nagrania z naszego kanału na YouTube.</p>
+<div class="bw-licz">
+<span><b>{wszystkie.length}</b> {odmiana(wszystkie.length, ['artykuł', 'artykuły', 'artykułów'])}</span>
+<span><b>{FILMY.length}</b> {odmiana(FILMY.length, ['nagranie', 'nagrania', 'nagrań'])}</span>
+<span>ostatni wpis {dl.format(wszystkie[0].data.data)}</span>
+</div>
+</section>
+
+<!-- ============ 2 · WYRÓŻNIONY ============ -->
+<section style="padding:0 max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) clamp(48px,6vw,76px)">
+<div class="bw-w">
+<a href={adresArtykulu(wyrozniony.slug)}>
+<div class="bw-w-meta">
+<span class="bw-w-kat">{KATEGORIE[wyrozniony.data.kategoria].nazwa}</span>
+<span>{dl.format(wyrozniony.data.data)}</span>
+<span>{czasCzytania(wyrozniony.body)} min czytania</span>
+</div>
+<span class="bw-w-t">{wyrozniony.data.tytul}</span>
+<p class="bw-w-l">{wyrozniony.data.lead}</p>
+<span class="bw-w-go">Czytaj <i aria-hidden="true">→</i></span>
+</a>
+<div class="bw-kartka">
+<div class="bw-kartka-h">W tekście</div>
+<ol>{spisTresci(wyrozniony.body).map((h) => <li><span>{h}</span></li>)}</ol>
+</div>
+</div>
+</section>
+
+<!-- ============ 3 · LISTA ============ -->
+<section id="artykuly" class="sec-pad" style="background:#f4f8f2;padding-top:clamp(52px,6.6vw,84px)">
+<div class="bw-pasek">
+<h2 class="h-mod" style="margin:0">Wszystkie artykuły</h2>
+<FiltrKategorii />
+</div>
+
+<ListaArtykulow artykuly={wszystkie}>
+<p class="bw-pusto" hidden>W tej kategorii nie ma jeszcze żadnego tekstu.</p>
+</ListaArtykulow>
+<button class="bw-wiecej" data-wiecej hidden>Pokaż starsze wpisy <em data-wiecej-ile></em></button>
+</section>
+
+<!-- ============ 4 · NAGRANIA ============
+     Jedyne kafle na stronie. Przy wideo klatka jest treścią: po miniaturze
+     poznaje się nagranie szybciej niż po tytule. Lista filmów: src/data/filmy.js.
+     Wszystkie klatki są w źródle; skrypt na dole chowa te poza pierwszymi
+     FILMY_NA_START i pokazuje przycisk z liczbą schowanych. -->
+<section id="nagrania" style="background:radial-gradient(900px 480px at 88% 0%, rgba(0,205,119,0.16), transparent 62%), #0e2b1d;padding:clamp(64px,8vw,104px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
+<div class="sec-head">
+<div>
+<h2 class="h-sec" style="margin:0;color:#ffffff;max-width:20ch;text-wrap:balance">Nagrania z kanału Automatyzacja Biznesu</h2>
+<p style="margin:18px 0 0;max-width:540px;font-size:16.5px;line-height:1.6;color:rgba(255,255,255,0.7);text-wrap:pretty">Rozmowy z ludźmi, którzy prowadzą nasze wdrożenia, i odcinki o pojedynczych procesach, od sprawdzania wpłat w banku po system dla firmy serwisowej.</p>
+</div>
+<a href={KANAL_YT} target="_blank" rel="noopener" class="btn-accent" style="display:inline-flex;align-items:center;gap:9px;background:var(--la-accent,#00CD77);color:#0b1a11;padding:14px 22px;border-radius:11px;font-weight:750;font-size:15px;white-space:nowrap">Kanał na YouTube ↗</a>
+</div>
+
+<div class="bw-fg" data-filmy={FILMY_NA_START.kompy} data-filmy-tel={FILMY_NA_START.tel}>
+{FILMY.map((f) => (
+  <a class="bw-fi" href={adresFilmu(f.yt)} target="_blank" rel="noopener">
+    <div class="bw-klatka">
+      <img src={miniatura(f.yt)} alt="" loading="lazy" decoding="async" />
+      <span class="bw-play" aria-hidden="true"><svg viewBox="0 0 24 24" width="17" height="17" fill="#0b1a11"><path d="M9 6.5l9 5.5-9 5.5z"/></svg></span>
+      <span class="bw-czas">{f.czas}</span>
+    </div>
+    <span class="bw-ft">{f.t}</span>
+    <span class="bw-fd">{f.d}</span>
+  </a>
+))}
+</div>
+<button class="bw-wiecej bw-wiecej-c" data-filmy-wiecej hidden>Pokaż starsze nagrania <em data-filmy-ile></em></button>
+</section>
+
+<!-- ============ 5 · KONTAKT ============ -->
+<GcCta
+  usluga="Baza wiedzy"
+  heading="Macie proces, o którym nie ma tu jeszcze tekstu?"
+  lead="Napiszcie, jak wygląda dzisiaj. Odpowiadamy tym samym, co w artykułach: liczbą, kolejnością i tym, czego nie warto budować."
+  eyebrow="Z pierwszej rozmowy wychodzicie z"
+  items={[
+    { t: 'Miarą stanu wyjściowego', d: 'czas sprawy w Waszym procesie, policzony na dwudziestu przypadkach' },
+    { t: 'Kolejnością', d: 'która rzecz pierwsza i dlaczego akurat ta' },
+    { t: 'Granicą', d: 'co w tym procesie nie zwróci się z automatyzacji' },
+  ]}
+  fieldLabel="Jak ten proces wygląda dzisiaj?"
+  placeholder="Np. oferty składamy z cennika w Excelu, trwa to trzy dni…"
+  badges={[
+    { i: 'klodka', t: 'Wasze dane bezpieczne' },
+    { i: 'kartka', t: 'NDA przed startem' },
+    { i: 'ptaszek', t: 'Bez prowizji od dostawców' },
+  ]}
+/>
+
+<script>
+  // ---- Filtr kategorii + rozwijanie listy ----
+  // Wiersze zostają w DOM-ie i tylko chowają się atrybutem `hidden`, żeby
+  // przełączanie nie kasowało pozycji scrolla i żeby wyszukiwarki widziały
+  // pełną listę w źródle. Na start pokazuje się PIERWSZE_N najnowszych;
+  // reszta wchodzi przyciskiem i zostaje odsłonięta do końca sesji.
+  (function(){
+    var PIERWSZE_N = 12;
+    var przyciski = document.querySelectorAll('.bw-f');
+    var wiersze = [].slice.call(document.querySelectorAll('.bw-r'));
+    var pusto = document.querySelector('.bw-pusto');
+    var wiecej = document.querySelector('[data-wiecej]');
+    var ile = document.querySelector('[data-wiecej-ile]');
+    if(!przyciski.length) return;
+
+    var kat = 'wszystkie';
+    var rozwiniete = false;
+
+    function odswiez(){
+      var pasujace = wiersze.filter(function(w){
+        return kat === 'wszystkie' || w.dataset.kat === kat;
+      });
+      wiersze.forEach(function(w){ w.hidden = true; });
+      var limit = rozwiniete ? pasujace.length : Math.min(PIERWSZE_N, pasujace.length);
+      pasujace.slice(0, limit).forEach(function(w){ w.hidden = false; });
+      if(pusto) pusto.hidden = pasujace.length > 0;
+      var zostalo = pasujace.length - limit;
+      if(wiecej){
+        wiecej.hidden = zostalo <= 0;
+        if(ile) ile.textContent = zostalo > 0 ? '(' + zostalo + ')' : '';
+      }
+    }
+
+    // Pozycje filtra są linkami do adresów kategorii. Zwykłe kliknięcie
+    // filtruje na miejscu; z Cmd/Ctrl/Shift albo środkowym przyciskiem
+    // przeglądarka otwiera adres kategorii jak każdy inny link.
+    przyciski.forEach(function(b){
+      b.addEventListener('click', function(e){
+        if(e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+        e.preventDefault();
+        kat = b.dataset.kat;
+        przyciski.forEach(function(x){
+          if(x === b) x.setAttribute('aria-current', 'true'); else x.removeAttribute('aria-current');
+        });
+        odswiez();
+      });
+    });
+
+    if(wiecej) wiecej.addEventListener('click', function(){ rozwiniete = true; odswiez(); });
+
+    odswiez();
+  })();
+
+  // ---- Nagrania: pierwsze klatki, reszta przyciskiem ----
+  (function(){
+    var siatka = document.querySelector('[data-filmy]');
+    var wiecej = document.querySelector('[data-filmy-wiecej]');
+    if(!siatka || !wiecej) return;
+    var tel = window.matchMedia('(max-width:560px)').matches;
+    var reszta = [].slice.call(siatka.children, Number(tel ? siatka.dataset.filmyTel : siatka.dataset.filmy));
+    if(!reszta.length) return;
+    reszta.forEach(function(k){ k.hidden = true; });
+    wiecej.querySelector('[data-filmy-ile]').textContent = '(' + reszta.length + ')';
+    wiecej.hidden = false;
+    wiecej.addEventListener('click', function(){
+      reszta.forEach(function(k){ k.hidden = false; });
+      wiecej.hidden = true;
+      // Fokus na pierwszą odsłoniętą klatkę, żeby klawiatura nie wypadła
+      // z sekcji razem ze schowanym przyciskiem.
+      reszta[0].focus();
+    });
+  })();
+</script>
+</LaBase>

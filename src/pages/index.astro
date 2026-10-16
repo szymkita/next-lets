@@ -1,5 +1,90 @@
 ---
 // STRONA GŁÓWNA — /
+// Od 16.10.2026 to wersja z /index-v9 (Szymon: „ustal to jako stronę główną").
+// Poprzednia strona główna: /index-old (noindex). Warianty pośrednie
+// /index-v2 … /index-v9 zostają z noindex do porównania; kolejne kroki
+// opisują komentarze niżej i docs/index-v2-koncepcja.md.
+//
+// Ostatni krok (z /index-v9):
+// Wygląd /index-v8 (Szymon, 16.10.2026: „bardziej mi się podobał design v8")
+// z poprawkami z pierwszej wersji v9, które nie dotyczą wyglądu:
+//   · tekst pod wykresem i w sekcji „Status quo" na „Wy", bez obietnicy
+//     w 2. osobie („Nie musisz wiedzieć… przejdziemy ją i z Tobą");
+//   · hasła przycisków: „Umów bezpłatną diagnozę", „Policzmy Wasz koszt
+//     status quo";
+//   · wykres odsłania się przy 12% sekcji w kadrze (na telefonie sekcja
+//     ma ok. 3 ekrany wysokości, 25% łapało się na styk).
+// Potem copy całej strony przeszło przez /miodkuj.
+//
+// Historia z /index-v8:
+// Kopia /index-v7 (16.10.2026) z poprawkami Szymona:
+//   · hero: z powrotem pierwotna aplikacja (pulpit z obecnej strony głównej);
+//     zostaje poprawka skalowania — makieta jest wyśrodkowana, a na
+//     telefonie widać środek pulpitu (wcześniej uciekała poza ekran);
+//   · „Tak wygląda firma napędzana AI w praktyce": nagłówek wyśrodkowany,
+//     karty dopracowane i wyrównane wierszami (subgrid);
+//   · opinie (poprawka tego samego dnia — wersja wyśrodkowana była za
+//     wysoka): cytat jak na podstronach usługowych (wygląd komponentu Cytat:
+//     duże zdanie do lewej, logo i osoba pod spodem), w sekcji efektów pod
+//     kartami, bez osobnej sekcji. Cztery opinie zmieniają się w tym samym
+//     miejscu (przenikanie co 8 s, dwie strzałki z podstron w rogu).
+//
+// Historia z /index-v7:
+// Kopia /index-v6 (16.10.2026) z poprawkami Szymona:
+//   · hero: trzy okna różnych aplikacji, w których praca dzieje się sama
+//     (obieg faktur, ofertownia, połączenia CRM–ERP–sklep) — zamiast planu
+//     pierwszych kroków; każde okno ma własny wygląd i rytm;
+//   · nowy podtytuł pod wykresem (bez „Nie wielka rewolucja, tylko…");
+//   · skala „firma napędzana AI" bez przykładów z fakturą;
+//   · opinie: tylko duże cytaty, przewijane w poziomie (strzałki, kropki,
+//     samo przewijanie, pauza pod kursorem), bez kart z mniejszymi opiniami;
+//   · nowy nagłówek kontaktu; „WiseGroup" pisane razem.
+//
+// Historia z /index-v6:
+// Kopia /index-v5 (16.10.2026) z poprawkami Szymona:
+//   · hero: tło, nagłówek i przyciski bez zmian, zamiast makiety pulpitu
+//     z licznikami dokument „Plan pierwszych kroków" — to, z czym klient
+//     wychodzi z bezpłatnej diagnozy: Wise AI Score i etap, trzy kroki (po
+//     jednym z każdej drogi oferty) z terminem, koszt status quo;
+//   · sekcja „firma napędzana AI": bez podpisu nad tezą i bez linku
+//     „Sprawdźcie, gdzie jest Wasza firma"; zamiast czterech kart jedna skala
+//     w czterech odcinkach, pod nią etapy i ta sama faktura na każdym etapie;
+//   · zielony pas „Czym jest" bez „z Warszawy" i na tym samym jasnozielonym
+//     tle co sekcja nad nim (bez białej przerwy);
+//   · typografia nowych części wyrównana do reszty strony: nagłówki 800,
+//     rozstrzelenie jak w .h-sec, cytaty w usługach mniejsze i grubsze.
+//
+// Historia z /index-v5:
+// Kopia /index-v4 (16.10.2026) z elementami z /index-v2, o które prosił Szymon:
+//   · duży nagłówek-teza (dwa tony, pierwsza połowa szara) w sekcji „Firma
+//     napędzana AI" — zamiast „to nie zespół, który używa ChatGPT";
+//   · karty efektów w wyglądzie z /index-v2 (dział, proces, duża liczba,
+//     Przed / Po ze znacznikami, usługa, która za wynikiem stoi);
+//   · duża opinia (komponent Cytat) w sekcji opinii, pod nią trzy pozostałe
+//     opinie spokojniej, bez taśmy;
+//   · kontakt z /index-v2 (komponent Kontakt: ciemna plansza, trzy pola,
+//     portret) z nowym nagłówkiem „Od czego zacząć i ile to kosztuje";
+//   · nagłówki bez kropek na całej stronie.
+// Styl.astro (wspólny wygląd podstron) jest dołączony dla Kontaktu i Cytatu;
+// jego reguły dla #faq i #dowody są niżej odwrócone (style is:global).
+//
+// Historia z /index-v4:
+// Plik nazywa się index-v4, bo pod index-v3 leży starszy wariant z września.
+// Powstała 16.10.2026 jako kopia obecnej strony głównej (stan z 14.10.2026)
+// z dwiema zmianami, o które prosił Szymon po obejrzeniu /index-v2:
+//   1. „Czym jest Let’s automate?" stoi w zielonym pasie ze zdjęciem
+//      (wygląd jak Pas z podstron usługowych), tuż przed usługami. Sekcja
+//      z wykresem pod hero jest taka jak na obecnej stronie głównej —
+//      wersję z definicją nad wykresem Szymon odrzucił 16.10.2026.
+//   2. Sekcja usług (#oferta) z /index-v2: trzy drogi jedna pod drugą, przy
+//      każdej usłudze zdanie, od którego zwykle zaczyna się rozmowa, termin
+//      albo cena z podstrony i strzałka. Zamiast zakładek, które krążyły
+//      same — wszystkie dziewięć usług widać naraz. Kolory, krój i skala
+//      nagłówków jak na reszcie tej strony.
+// Reszta strony bez zmian. Terminy i ceny w usługach są przepisane słowo
+// w słowo z podstron usługowych.
+//
+// STRONA GŁÓWNA — /
 // Wariant roboczy index-v2 wszedł tu 07.09.2026. Poprzednia wersja strony
 // siedzi w gicie (ostatni commit sprzed podmiany: 2414ed6).
 //
@@ -19,6 +104,88 @@
 //   już są, a pełny rejestr zespołu żyje na /dlaczego-my.
 //
 import Nawigacja from '../components/Nawigacja.astro';
+import { HI } from '../components/usluga/ikony';
+import Styl from '../components/usluga/Styl.astro';
+import Kontakt from '../components/usluga/Kontakt.astro';
+import Cytat from '../components/usluga/Cytat.astro';
+
+// Opinie do przewijanej taśmy: te same cztery cytaty, co na obecnej stronie
+// głównej (prawdziwe), każdy jako duży cytat. Logo tylko tam, gdzie mamy plik
+// znaku; X2O bez logo. h = wysokość pliku znaku na ekranie (pliki z CDN-u mają
+// szerokie marginesy w środku, stąd większe wartości).
+const NARS_LOGO = '/uploads/klienci/nars.svg';
+const X3D_LOGO = '/uploads/klienci/x3d.svg';
+const OPINIE_DUZE = [
+  { cytat: 'Let’s automate wziął pełną odpowiedzialność za projekt i dowiózł go do końca. To dlatego powierzyliśmy im kolejny, znacznie większy.',
+    kto: 'Jakub Ciołkowski', rola: 'Członek Zarządu, NARS Polska', logo: NARS_LOGO, alt: 'NARS Polska', lw: 235, lh: 88, h: 60 },
+  { cytat: 'Wprowadzenie danych trwało godzinę. Dziś przesłanie oferty to 10 minut — oszczędności liczymy w etatach.',
+    kto: 'Mateusz Chinczewski', rola: 'Prezes Zarządu, Finerto', logo: '/uploads/wisegroup/wg-finerto.svg', alt: 'Finerto', lw: 120, lh: 30, h: 24 },
+  { cytat: 'Bardzo dobrze zrozumieli nasze potrzeby i zaprojektowali scenariusz, który w pełni spełnił cele biznesowe. Otwartość i komunikacja to ich DNA.',
+    kto: 'Arkadiusz Andruch', rola: 'Prezes Zarządu, X2O' },
+  { cytat: 'Korzystamy z usług Let’s automate od roku. Świetna komunikacja, łatwo się dogadać, a jakość usług na wysokim poziomie.',
+    kto: 'Dominik Chylewski', rola: 'Wspólnik, X3D', logo: X3D_LOGO, alt: 'X3D', lw: 143, lh: 88, h: 60 },
+];
+
+// Karty efektów: te same cztery wyniki, co na obecnej stronie głównej
+// (realne wdrożenia), przy każdym usługa, która za nim stoi.
+const WYNIKI = [
+  { dz: 'Finanse', p: 'Obieg faktur kosztowych', l: '99,7%', ld: 'skuteczności księgowania',
+    przed: 'Trzy osoby przepisują faktury z maili, zaległości rosną.',
+    po: 'Faktury z maili księgują się same, zespół zajmuje się wyjątkami.',
+    u: 'Automatyzacja procesów z AI', h: '/rozwiazania-ai' },
+  { dz: 'Sprzedaż', p: 'Przygotowanie oferty', l: '−80%', ld: 'czasu przygotowania oferty',
+    przed: 'Oferta sklejana z CRM, cenników i maili zajmuje pół dnia.',
+    po: 'Szkic oferty powstaje z danych CRM w kilka minut, handlowiec go dopina.',
+    u: 'Systemy dopasowane do firmy', h: '/systemy-procesowe' },
+  { dz: 'Operacje', p: 'Raport tygodniowy', l: '65 h', ld: 'odzyskanych co miesiąc',
+    przed: 'Raport klejony z czterech arkuszy, decyzje na danych sprzed miesiąca.',
+    po: 'Dane spływają same, raport czeka w poniedziałek o 7:00.',
+    u: 'Integracje systemów', h: '/automatyzacje-integracje' },
+  { dz: 'Obsługa klienta', p: 'Pytania o zamówienia', l: '−90%', ld: 'zapytań obsługiwanych ręcznie',
+    przed: 'Zespół odpisuje na te same pytania kilkanaście razy dziennie.',
+    po: 'Agent AI odpowiada w kilka minut, z danymi zamówienia.',
+    u: 'Automatyzacja procesów z AI', h: '/rozwiazania-ai' },
+];
+
+// Usługi w trzech drogach (jak w megamenu). q = zdanie, od którego zwykle
+// zaczyna się rozmowa; d = termin albo cena z podstrony usługi.
+const DROGI = [
+  { id: 'wdrazamy', t: 'Wdrażamy AI', s: 'Gdy firma zaczyna pracować z AI', w: [
+    { q: 'Pomysłów na AI mamy kilkanaście i nie wiemy, od którego zacząć', u: 'Strategia AI', d: 'Trzy tygodnie, zwykle od 5 do 20\u00a0tys.\u00a0zł', h: '/strategia-ai' },
+    { q: 'Chcemy dać AI całej firmie, tylko nie wiemy, które narzędzie wybrać', u: 'Narzędzia AI dla całej firmy', d: 'Sześć tygodni od próby do ostatniego działu', h: '/wdrozenie-ai' },
+    { q: 'Ludzie mają licencje, a pracują tak samo jak rok temu', u: 'Szkolenia z AI', d: 'Program na dwanaście tygodni', h: '/szkolenia-ai' },
+  ] },
+  { id: 'budujemy', t: 'Budujemy za Was', s: 'Gdy gotowe programy nie pasują', w: [
+    { q: 'Oferta przechodzi przez trzy działy i pięć arkuszy', u: 'Systemy dopasowane do firmy', d: 'Pierwsza wersja na produkcji po sześciu tygodniach', h: '/systemy-procesowe' },
+    { q: 'Większość zgłoszeń wygląda tak samo, a każde czyta człowiek', u: 'Automatyzacja procesów z AI', d: 'Dziewięć tygodni od warsztatu do produkcji', h: '/rozwiazania-ai' },
+    { q: 'Mamy siedem narzędzi i żadne nie rozmawia z pozostałymi', u: 'Integracje systemów', d: 'Pierwsze połączenie na produkcji w kilka dni', h: '/automatyzacje-integracje' },
+  ] },
+  { id: 'budujecie', t: 'Budujecie sami z AI', s: 'Gdy Wasz zespół tworzy własne aplikacje', w: [
+    { q: 'Zespół zbudował aplikację z AI. Działa, tylko nikt nie wie, czy jest bezpieczna', u: 'Audyt aplikacji', d: 'Raport z kolejnością poprawek po pięciu dniach', h: '/guided-coding/audyt-aplikacji' },
+    { q: 'Każda kolejna zmiana w aplikacji psuje coś, co już działało', u: 'Bieżące wsparcie', d: 'Abonament od 2900\u00a0zł miesięcznie', h: '/guided-coding/biezace-wsparcie' },
+    { q: 'Chcemy, żeby nasi ludzie budowali z AI sami i robili to porządnie', u: 'Warsztaty dla zespołu', d: 'Cotygodniowe sesje na Waszym kodzie', h: '/guided-coding/transfer-know-how' },
+  ] },
+];
+
+// „Czym się różnimy”. Fakty za /dlaczego-my, /wisestack i Szymonem
+// (16.10.2026: „zawsze dajemy stałą cenę”). Uwagi Szymona do poprzedniej
+// wersji: aktywny link tylko przy Appto, Wingmana tu nie ma, a produkt to
+// doświadczenie z budowy własnej platformy. Każdy opis mieści się w jednej
+// linii na komputerze, bo sekcja nie może urosnąć (pięć wierszy zajmuje
+// tyle miejsca co wcześniej cztery).
+// o = HTML (link do Appto), stąd set:html.
+const ROZNICE = [
+  { t: 'Zawsze stała cena',
+    o: 'Cenę podajemy przed startem i nie rośnie, nawet gdy praca potrwa dłużej.' },
+  { t: 'Cały projekt robi nasz zespół',
+    o: 'Analitycy, developerzy, PM i QA pracują w jednym studiu, bez podwykonawców.' },
+  { t: 'Autorska metoda budowy systemów',
+    o: 'Budujemy z AI według WiseStacku, od spisania procesu po utrzymanie.' },
+  { t: 'Ekspertyza z własnego produktu AI',
+    o: 'Rozwijamy <a href="/produkty/appto">Appto</a>, platformę agentów AI.' },
+  { t: 'Zaplecze WiseGroup',
+    o: 'Stoi za nami grupa doradcza.' },
+];
 
 // Ściana opinii. Taśma musi być zawsze szersza niż DWA ekrany, inaczej po
 // przewinięciu pierwszego zestawu widać pustkę — przy dwóch kopiach taśma
@@ -40,7 +207,22 @@ const OPINIE = [
 ];
 
 import Stopka from '../components/Stopka.astro';
-import GcCta from '../components/GcCta.astro';
+import MetaStrony from '../components/MetaStrony.astro';
+import Zgody from '../components/Zgody.astro';
+
+// Opis i dane strukturalne strony głównej (MetaStrony). Tytuł zostaje bez
+// zmian; opis streszcza hero.
+const tytul = "Let's automate — Studio transformacji AI";
+const opis = "Let's automate projektuje i buduje oprogramowanie, które automatyzuje kluczowe procesy firmy: systemy na miarę, integracje i agentów AI. Od strategii po wdrożenie.";
+const witryna = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  '@id': new URL('/#witryna', Astro.site).href,
+  url: new URL('/', Astro.site).href,
+  name: "Let's automate",
+  inLanguage: 'pl-PL',
+  publisher: { '@id': new URL('/#organizacja', Astro.site).href },
+};
 
 ---
 <!DOCTYPE html>
@@ -48,7 +230,8 @@ import GcCta from '../components/GcCta.astro';
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Let's automate — Studio transformacji AI</title>
+<title>{tytul}</title>
+<MetaStrony title={tytul} description={opis} dane={[witryna]} />
 <link rel="icon" href="/uploads/logo-2.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
@@ -125,7 +308,19 @@ import GcCta from '../components/GcCta.astro';
   .dm-podpis b{display:block;font-size:15px;font-weight:800;color:#ffffff}
   .dm-podpis span{display:block;margin-top:2px;font-size:12.5px;color:rgba(255,255,255,0.7)}
   .dm-tresc{position:relative;z-index:2;max-width:min(56%,640px)}
-  @media (max-width:1100px){ .dm-tresc{max-width:min(64%,600px)} .dm-foto{width:min(44%,430px)} }
+  /* Punkty: stała kolumna numeru, żeby tytuły stały w jednej linii
+     (przy „auto” „01” było węższe od „02” i tytuły się rozjeżdżały). */
+  .dm-lista{margin-top:clamp(30px,3.6vw,44px)}
+  .dm-p{display:grid;grid-template-columns:22px minmax(0,1fr);column-gap:14px;align-items:baseline;padding:13px 0;border-top:1px solid rgba(255,255,255,0.11)}
+  .dm-p:first-child{border-top:0;padding-top:2px}
+  .dm-p:last-child{border-bottom:1px solid rgba(255,255,255,0.11)}
+  .dm-n{font-size:12px;font-weight:700;letter-spacing:0.06em;font-variant-numeric:tabular-nums;color:var(--la-accent,#00CD77)}
+  .dm-p h3{margin:0;font-size:17px;line-height:1.25;font-weight:750;letter-spacing:-0.01em;color:#ffffff;text-wrap:balance}
+  .dm-p p{margin:5px 0 0;font-size:14px;line-height:1.55;color:rgba(255,255,255,0.66);text-wrap:pretty}
+  .dm-p p :global(a){color:#ffffff;font-weight:650;text-decoration:underline;text-decoration-color:rgba(0,205,119,0.6);text-decoration-thickness:1.5px;text-underline-offset:4px;transition:text-decoration-color .15s}
+  .dm-p p :global(a:hover){text-decoration-color:#00CD77}
+  .dm-liczby{margin:22px 0 0 36px}
+  @media (max-width:1100px){ .dm-tresc{max-width:min(58%,560px)} .dm-foto{width:min(44%,430px)} }
   @media (max-width:860px){
     .dm-tresc{max-width:100%}
     .dm-foto{position:relative;right:auto;top:auto;bottom:auto;width:100%;height:250px;margin-bottom:30px;border-radius:18px;overflow:hidden}
@@ -292,32 +487,221 @@ import GcCta from '../components/GcCta.astro';
   @media (max-width:900px){
     input,select,textarea{font-size:16px !important}
   }
+
+  /* ---------- Czym jest — zielony pas (S3b) ----------
+     Wygląd jak komponent Pas z podstron usługowych (src/components/usluga/
+     Pas.astro): plansza w zieleni z równą białą ramą, tekst po lewej, twarz
+     w duotonie po prawej (szarość mnożona przez zieleń, maska od lewej). */
+  .la-zl{--ram:clamp(6px,0.9vw,14px);--pin:max(16px,calc(max(clamp(20px,5vw,56px),calc((100vw - 1440px) / 2)) - var(--ram)));padding:clamp(56px,7vw,96px) var(--ram) 0}
+  .la-zl-in{position:relative;overflow:hidden;display:grid;grid-template-columns:minmax(0,7.2fr) minmax(0,4.8fr);min-height:clamp(420px,36vw,540px);border-radius:clamp(20px,2.2vw,32px);background:var(--la-accent,#00CD77)}
+  .la-zl-t{position:relative;z-index:2;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;padding:clamp(40px,5vw,80px) var(--pin)}
+  .la-zl-pod{display:flex;align-items:center;gap:12px;margin:0;font-size:clamp(15px,1.25vw,17px);line-height:1.35;font-weight:700;letter-spacing:-0.005em;color:#07140d}
+  .la-zl-pod::before{content:"";flex-shrink:0;width:22px;height:2px;background:#07140d}
+  .la-zl-duzy{margin:clamp(18px,2vw,26px) 0 0;max-width:800px;font-size:clamp(30px,3.7vw,54px);line-height:1.03;letter-spacing:-0.045em;font-weight:750;color:#07140d;text-wrap:balance}
+  .la-zl-opis{margin:clamp(16px,1.8vw,22px) 0 0;max-width:600px;font-size:clamp(16px,1.3vw,18px);line-height:1.6;color:rgba(7,20,13,0.8);text-wrap:pretty}
+  .la-zl-btn{display:inline-flex;align-items:center;gap:14px;margin-top:clamp(26px,3vw,38px);padding:9px 9px 9px 24px;border-radius:999px;background:#07140d;color:#ffffff;font-weight:700;font-size:16px;letter-spacing:-0.01em;white-space:nowrap;transition:background .2s}
+  .la-zl-btn span{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;background:var(--la-accent,#00CD77);color:#07140d;font-size:15px;transition:transform .25s}
+  .la-zl-btn:hover{background:#163126}
+  .la-zl-btn:hover span{transform:translateX(3px)}
+  .la-zl-foto{position:relative;min-height:300px}
+  .la-zl-foto img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:58% 18%;filter:grayscale(1) contrast(1.12) brightness(1.04);mix-blend-mode:multiply;
+    -webkit-mask-image:linear-gradient(to right,transparent 0%,rgba(0,0,0,0.6) 16%,#000 36%);mask-image:linear-gradient(to right,transparent 0%,rgba(0,0,0,0.6) 16%,#000 36%)}
+  .la-zl-podpis{position:absolute;right:clamp(18px,2.2vw,30px);bottom:clamp(18px,2.2vw,28px);z-index:2;text-align:right}
+  .la-zl-podpis b{display:block;font-size:15px;font-weight:800;color:#ffffff}
+  .la-zl-podpis span{display:block;margin-top:2px;font-size:11.5px;color:rgba(255,255,255,0.78)}
+  @media (prefers-reduced-motion:reduce){ .la-zl-btn,.la-zl-btn span{transition:none} }
+  @media (max-width:820px){
+    .la-zl-in{grid-template-columns:1fr}
+    .la-zl-foto{order:-1;height:300px}
+    .la-zl-foto img{-webkit-mask-image:linear-gradient(to bottom,#000 70%,transparent 100%);mask-image:linear-gradient(to bottom,#000 70%,transparent 100%)}
+    .la-zl-t{padding-top:8px}
+  }
+  @media (max-width:400px){ .la-zl-btn{white-space:normal;line-height:1.25;padding-left:20px} }
+
+  /* ---------- Oferta (S4, z /index-v2) ----------
+     Wiersz: zdanie klienta | usługa z terminem | strzałka. Pod kursorem
+     wiersz dostaje tło sekcji z jasną zielenią, zdanie przesuwa się o krok. */
+  .of{margin-top:clamp(44px,5vw,64px)}
+  .of-kol{display:grid;grid-template-columns:minmax(0,3.6fr) minmax(0,8.4fr);gap:clamp(24px,4vw,64px);padding-bottom:14px;border-bottom:1.5px solid #16211a;font-size:13px;font-weight:650;color:#808b83}
+  .of-kol-p{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,15.5em) 40px;column-gap:clamp(20px,2.4vw,36px)}
+  .of-gr{display:grid;grid-template-columns:minmax(0,3.6fr) minmax(0,8.4fr);gap:18px clamp(24px,4vw,64px);padding:clamp(28px,3.2vw,44px) 0;border-bottom:1px solid #e7ece4;scroll-margin-top:100px}
+  .of-gl{align-self:start;position:sticky;top:110px}
+  .of-gl span{display:block;font-size:13px;font-weight:700;color:#0a7a52}
+  .of-gl h3{margin:10px 0 0;font-size:clamp(28px,3vw,42px);line-height:1.02;font-weight:800;letter-spacing:-0.035em;color:#16211a;text-wrap:balance}
+  .of-gl p{margin:12px 0 0;max-width:300px;font-size:15px;line-height:1.55;color:#637066}
+  .of-gr ul{margin:0;padding:0;list-style:none}
+  .of-gr li + li{border-top:1px solid #e7ece4}
+  .of-w{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,15.5em) 40px;gap:12px clamp(20px,2.4vw,36px);align-items:center;margin:0 -18px;padding:clamp(18px,1.9vw,24px) 18px;border-radius:18px;color:#16211a;transition:background .2s}
+  .of-w q{font-size:clamp(19px,1.75vw,25px);line-height:1.24;font-weight:650;letter-spacing:-0.022em;text-wrap:pretty;quotes:"„" "”" "‚" "’";transition:transform .4s cubic-bezier(.2,.7,.2,1)}
+  .of-w q::before{color:#0a7a52}
+  .of-u b{display:block;font-size:15.5px;font-weight:750;letter-spacing:-0.01em;color:#16211a}
+  .of-u em{display:block;margin-top:3px;font-style:normal;font-size:14px;line-height:1.45;color:#637066}
+  .of-w > i{justify-self:end;display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:#16211a;color:#ffffff;transition:background .2s,color .2s,transform .25s}
+  .of-w > i svg{width:15px;height:15px;fill:currentColor}
+  .of-w:hover{background:#f4f8f2}
+  .of-w:hover q{transform:translateX(8px)}
+  .of-w:hover > i{background:var(--la-accent,#00CD77);color:#0b1a11;transform:translateX(3px)}
+  .of-w:focus-visible{outline:2px solid var(--la-accent,#00CD77);outline-offset:2px}
+  .of-pom{display:flex;align-items:center;gap:14px;margin-top:clamp(28px,3vw,40px);margin-left:calc((100% - clamp(24px,4vw,64px)) * 0.3 + clamp(24px,4vw,64px))}
+  .of-pom > span{display:block;width:44px;height:44px;border-radius:50%;overflow:hidden;flex-shrink:0;background:#eef1ec}
+  .of-pom img{width:100%;height:100%;object-fit:cover;display:block}
+  .of-pom p{margin:0;font-size:15px;line-height:1.5;color:#4c5850}
+  .of-pom a{font-weight:700;color:#0a7a52}
+  @media (prefers-reduced-motion:reduce){ .of-w q,.of-w > i{transition:none} .of-w:hover q{transform:none} }
+  @media (max-width:900px){
+    .of-kol{display:none}
+    .of-gr{grid-template-columns:minmax(0,1fr)}
+    .of-gl{position:static}
+    .of-w{grid-template-columns:minmax(0,1fr) 40px;margin:0 -12px;padding:18px 12px}
+    .of-w q{grid-column:1 / -1}
+    .of-w:hover q{transform:none}
+    .of-pom{margin-left:0}
+  }
+
+  /* ---------- Teza i podpis (z /index-v2) ---------- */
+  .t5-pod{display:flex;align-items:center;gap:12px;margin:0;font-size:clamp(15px,1.25vw,17px);line-height:1.35;font-weight:700;letter-spacing:-0.005em;color:#16211a}
+  .t5-pod::before{content:"";flex-shrink:0;width:22px;height:2px;background:var(--la-accent,#00CD77)}
+  .t5-teza{margin:clamp(22px,2.6vw,34px) 0 0;max-width:1240px;font-size:clamp(32px,4.6vw,68px);line-height:1.03;letter-spacing:-0.047em;font-weight:700;color:#16211a;text-wrap:balance}
+  .t5-teza span{color:#8a958d}
+
+  /* ---------- Karty efektów (S6, z /index-v2) ---------- */
+  .w5{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-top:clamp(44px,5vw,64px)}
+  .w5-k{display:flex;flex-direction:column;padding:24px 24px 22px;border-radius:22px;background:#f4f8f2}
+  .w5-dz{font-size:12.5px;font-weight:700;color:#0a7a52}
+  .w5-k h3{margin:8px 0 0;font-size:17px;font-weight:750;letter-spacing:-0.02em;line-height:1.25;color:#16211a}
+  .w5-l{margin:clamp(22px,2.4vw,34px) 0 0;padding-bottom:20px;border-bottom:1px solid #dfe7dc}
+  .w5-l b{display:block;font-size:clamp(46px,4.4vw,68px);line-height:0.95;font-weight:800;letter-spacing:-0.06em;color:#0a7a52;white-space:nowrap}
+  .w5-l span{display:block;margin-top:8px;font-size:14px;color:#4c5850}
+  .w5-k dl{display:grid;gap:12px;margin:18px 0 0}
+  .w5-k dl div{display:grid;grid-template-columns:52px minmax(0,1fr);gap:8px}
+  .w5-k dt{display:flex;align-items:center;gap:6px;height:21px;font-size:12.5px;color:#9c5f14}
+  .w5-k dt i{flex-shrink:0;display:block;width:10px;height:10px;border-radius:2.5px}
+  .w5-k dt i.w5-przed{background:repeating-linear-gradient(135deg,rgba(214,134,30,0.6) 0 1.5px,rgba(214,134,30,0) 1.5px 4px),rgba(240,163,58,0.22);box-shadow:inset 0 1.5px 0 #e3962f}
+  .w5-k dd{margin:0;font-size:14px;line-height:1.5;color:#4c5850;text-wrap:pretty}
+  .w5-k dl div.po dt{color:#16211a;font-weight:650}
+  .w5-k dl div.po dt i{background:var(--la-accent,#00CD77)}
+  .w5-k dl div.po dd{color:#16211a}
+  .w5-u{display:inline-flex;align-items:center;gap:8px;align-self:flex-start;margin-top:auto;padding-top:22px;font-size:13.5px;font-weight:700;color:#0a7a52}
+  .w5-u span{transition:transform .2s}
+  .w5-u:hover span{transform:translateX(3px)}
+  @media (max-width:1100px){ .w5{grid-template-columns:repeat(2,minmax(0,1fr))} }
+  @media (max-width:600px){ .w5{grid-template-columns:minmax(0,1fr)} }
+
+
+  /* ---------- v6 · skala „firma napędzana AI" ---------- */
+  .sk{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0 clamp(16px,2.4vw,32px);margin:clamp(56px,6vw,88px) 0 0;padding:0;list-style:none}
+  .sk{grid-template-rows:repeat(4,auto)}
+  .sk li{display:grid;grid-row:span 4;grid-template-rows:subgrid;row-gap:0}
+  .sk-seg{position:relative;display:block;height:10px;border-radius:5px;background:#d5dfd3}
+  .sk-e2 .sk-seg{background:#a9c9b3}
+  .sk-e3 .sk-seg{background:#4fbf86}
+  .sk-e4 .sk-seg{background:var(--la-accent,#00CD77);box-shadow:0 0 18px rgba(0,205,119,0.55)}
+  .sk-tu{position:absolute;left:0;bottom:calc(100% + 12px);padding:5px 11px;border-radius:7px;background:#f9efd8;font-size:12px;font-weight:700;color:#8f6c1c;white-space:nowrap}
+  .sk-tu::after{content:"";position:absolute;left:16px;top:100%;border:6px solid transparent;border-top-color:#f9efd8}
+  .sk-nr{margin-top:22px;font-size:13px;font-weight:700;color:#637066}
+  .sk li h3{margin:6px 0 0;font-size:clamp(20px,1.9vw,25px);line-height:1.15;font-weight:800;letter-spacing:-0.02em;color:#16211a}
+  .sk-e4 h3{color:#0a7a52}
+  .sk li > p{margin:10px 0 0;font-size:15px;line-height:1.55;color:#4c5850;text-wrap:pretty}
+  @media (max-width:900px){
+    .sk{grid-template-columns:repeat(2,minmax(0,1fr));gap:48px 20px}
+  }
+  .sk-tu-m{display:none}
+  @media (max-width:560px){
+    .sk{grid-template-columns:minmax(0,1fr);gap:40px}
+    .sk-tu{display:none}
+    .sk-tu-m{display:inline-block;margin-left:10px;padding:3px 9px;border-radius:6px;background:#f9efd8;font-size:11.5px;font-weight:700;color:#8f6c1c;vertical-align:1px}
+  }
+
+  /* ---------- v6 · typografia nowych części jak reszta strony ---------- */
+  .t5-teza{max-width:1180px;font-size:clamp(32px,4.4vw,62px);line-height:1.05;font-weight:800;letter-spacing:-0.028em}
+  .t5-teza span{color:#9aa59d}
+  .la-zl-duzy{font-size:clamp(30px,4.6vw,52px);line-height:1.05;font-weight:800;letter-spacing:-0.028em}
+  .la-zl{background:#f4f8f2;padding:0 var(--ram) clamp(72px,9vw,110px)}
+  .of-gl h3{font-size:clamp(26px,2.6vw,36px);font-weight:800;letter-spacing:-0.025em}
+  .of-w q{font-size:clamp(18px,1.6vw,22px);line-height:1.3;font-weight:700;letter-spacing:-0.012em}
+  .w5-l b{letter-spacing:-0.045em}
+
+  /* ---------- v8 · efekty: nagłówek na środku, karty w subgridzie ---------- */
+  .w8-gl{max-width:880px;margin:0 auto;text-align:center}
+  .w8-gl .h-sec{margin:0;text-wrap:balance}
+  .w8-gl .sub{margin:18px auto 0;max-width:600px}
+  .w8{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:repeat(6,auto);gap:0 16px;margin-top:clamp(48px,5.4vw,72px)}
+  .w8-k{display:grid;grid-row:span 6;grid-template-rows:subgrid;row-gap:0;padding:28px 26px 24px;border-radius:22px;background:#f4f8f2;
+    transition:transform .35s cubic-bezier(.2,.8,.2,1),box-shadow .35s,background .3s}
+  .w8-k:hover{transform:translateY(-4px);background:#eff6ed;box-shadow:0 30px 60px -36px rgba(18,38,28,0.28)}
+  .w8-dz{font-size:12.5px;font-weight:700;color:#0a7a52}
+  .w8-k h3{margin:6px 0 0;font-size:18px;line-height:1.25;font-weight:800;letter-spacing:-0.02em;color:#16211a}
+  .w8-l{margin:28px 0 0;padding-bottom:22px;border-bottom:1px solid #dce5d9}
+  .w8-l b{display:block;font-size:clamp(48px,4.6vw,72px);line-height:0.95;font-weight:800;letter-spacing:-0.05em;color:#0a7a52;white-space:nowrap}
+  .w8-l span{display:block;margin-top:10px;font-size:14.5px;line-height:1.4;color:#4c5850}
+  .w8-pp{padding-top:18px}
+  .w8-pp > span{display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:700}
+  .w8-pp i{flex-shrink:0;width:8px;height:8px;border-radius:50%}
+  .w8-pp.przed > span{color:#9c5f14}
+  .w8-pp.przed i{background:#f0a33a}
+  .w8-pp.po > span{color:#0a7a52}
+  .w8-pp.po i{background:var(--la-accent,#00CD77);box-shadow:0 0 0 3px rgba(0,205,119,0.18)}
+  .w8-pp p{margin:6px 0 0;font-size:14.5px;line-height:1.5;color:#4c5850;text-wrap:pretty}
+  .w8-pp.po p{color:#16211a;font-weight:550}
+  .w8-u{align-self:end;display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:22px;padding-top:16px;border-top:1px solid #dce5d9;font-size:13.5px;font-weight:700;color:#0a7a52}
+  .w8-u span{transition:transform .2s}
+  .w8-k:hover .w8-u span{transform:translateX(3px)}
+  .w8-dol{display:flex;justify-content:center;margin-top:44px}
+  @media (prefers-reduced-motion:reduce){ .w8-k{transition:none} .w8-k:hover{transform:none} }
+  @media (max-width:1100px){ .w8{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:none;gap:16px} }
+  @media (max-width:600px){ .w8{grid-template-columns:minmax(0,1fr)} .w8-l{margin-top:22px} }
+
+  /* ---------- v8 · opinie: cytat jak na podstronach ---------- */
+  .op9{position:relative;margin-top:clamp(56px,7vw,96px)}
+  .op9-sl{display:grid}
+  /* margin:0 jak w komponencie Cytat; treść do dołu, żeby podpis każdej
+     opinii stał w jednej linii ze strzałkami */
+  .op9-k{grid-area:1 / 1;display:flex;flex-direction:column;justify-content:flex-end;margin:0;opacity:0;visibility:hidden;transition:opacity .6s ease,visibility 0s linear .6s}
+  .op9-k.on{opacity:1;visibility:visible;transition:opacity .6s ease .1s,visibility 0s}
+  .op9-str{position:absolute;right:0;bottom:0}
+  @media (prefers-reduced-motion:reduce){ .op9-k,.op9-k.on{transition:none} }
+  @media (max-width:600px){ .op9-str{position:static;display:flex !important;margin-top:24px} }
+</style>
+<style is:global>
+  /* Styl.astro (wspólny wygląd podstron) jest na tej stronie dla modułu
+     Kontakt i komponentu Cytat. Jego reguły dla #faq (papier) i #dowody
+     (marginesy pod przewijany rząd kart) dotyczą podstron — tu je odwracamy. */
+  html body #faq{background:#f4f8f2 !important}
+  html body #dowody > :not(.dw-sc){margin-left:0 !important;margin-right:0 !important}
+  /* opinie: odstęp daje opakowanie .op9, nie każdy cytat z osobna */
+  html body #dowody .op9 .v3-cyt{margin-top:0 !important}
+  /* v8: nagłówek efektów na środku — reguła wyżej zerowała jego margin:auto */
+  html body #dowody > .w8-gl{margin-left:auto !important;margin-right:auto !important}
+  /* Kontakt: plansza na bieli (na podstronach leży na papierze). */
+  .hp5-kt .v4-kt{padding:clamp(56px,7vw,96px) var(--ram);background:#ffffff}
+  .hp5-kt .kt-lewa .v3-h2{font-size:clamp(34px,3.9vw,58px)}
+  #diagnoza{scroll-margin-top:84px}
+  /* Opinia duża: bez górnego marginesu, który ma pod kartami na podstronach. */
+  /* v6: nagłówek kontaktu w typografii strony głównej (800, rozstrzelenie jak .h-sec). */
+  html body .hp5-kt .kt-lewa .v3-h2{font-size:clamp(30px,4.6vw,52px);line-height:1.05;font-weight:800;letter-spacing:-0.028em}
 </style>
 </head>
 <body>
+<Zgody />
 
 <div class="page">
 
 <Nawigacja ctaHref="#diagnoza" />
 
 <!-- ============ S1 · HERO ============ -->
-<!-- „Nordkam" w makiecie pulpitu to firma WYMYŚLONA. Wcześniej stało tu
-     Sevium — prawdziwy klient z paska logotypów niżej — razem z decyzją
-     o rabacie, co czytało się jak wyciek z cudzego CRM-u. Jeśli nazwa
-     kiedyś się zmieni, ma zostać fikcyjna. -->
 <div style="position:relative;overflow:hidden;min-height:100svh;display:flex;flex-direction:column">
 <div style="position:absolute;inset:0">
-<img src="https://images.pexels.com/photos/2559941/pexels-photo-2559941.jpeg?auto=compress&cs=tinysrgb&w=2200" alt="" style="position:absolute;left:-18%;top:-12%;width:136%;height:136%;object-fit:cover;transform:rotate(-3deg)">
+<img src="/uploads/zdjecia/pexels-2559941-2200.jpg" alt="" style="position:absolute;left:-18%;top:-12%;width:136%;height:136%;object-fit:cover;transform:rotate(-3deg)">
 <div style="position:absolute;inset:0;background:linear-gradient(180deg,#ffffff 0%,rgba(255,255,255,0.94) 16%,rgba(255,255,255,0.72) 36%,rgba(255,255,255,0.18) 66%,rgba(255,255,255,0) 100%);pointer-events:none"></div>
 </div>
 
 <div style="position:relative;z-index:2;flex:1;display:flex;flex-direction:column;align-items:center;text-align:center;padding:clamp(40px,6vw,64px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) 0">
 <div style="font-size:clamp(12px,1.6vw,14.5px);letter-spacing:0.34em;text-transform:uppercase;font-weight:700;color:#1d3527">Studio transformacji AI</div>
 <h1 style="margin:clamp(20px,3vw,32px) 0 0;font-size:clamp(29px,5.4vw,62px);line-height:1.06;letter-spacing:-0.035em;font-weight:800;color:#16211a;text-wrap:balance">
-<span style="display:block">Zmienimy Twoją firmę</span>
+<span style="display:block">Zmienimy Waszą firmę</span>
 <span style="display:block">w biznes napędzany przez AI</span>
 </h1>
-<p style="margin:28px 0 0;max-width:780px;font-size:clamp(16px,2.2vw,19.5px);line-height:1.55;color:#33413a;text-wrap:balance">Od strategii po wdrożenie — projektujemy i budujemy oprogramowanie, które zamienia kluczowe procesy Twojej firmy w przewagę nad konkurencją.</p>
+<p style="margin:28px 0 0;max-width:780px;font-size:clamp(16px,2.2vw,19.5px);line-height:1.55;color:#33413a;text-wrap:balance">Od strategii po wdrożenie projektujemy i budujemy oprogramowanie dla procesów, na których Wasza firma zarabia.</p>
 <div class="hero-actions" style="display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:20px 28px;margin-top:36px;margin-bottom:auto">
 <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
 <a href="#diagnoza" class="btn-dark" style="display:inline-flex;align-items:center;gap:10px;background:#16211a;color:#ffffff;padding:18px 32px;border-radius:12px;font-weight:650;font-size:16.5px;box-shadow:0 14px 30px -14px rgba(16,33,26,0.45)">Umów bezpłatną diagnozę <span aria-hidden="true">→</span></a>
@@ -442,34 +826,35 @@ import GcCta from '../components/GcCta.astro';
 <span style="position:relative;z-index:2;background:#ffffff;padding-right:12px;flex-shrink:0;max-width:210px;font-size:14px;line-height:1.45;color:#4c5850"><strong style="color:#16211a;font-weight:700">140+ firm</strong> zmienia z nami sposób działania</span>
 <div class="trust-logos" style="flex:1;filter:grayscale(1);opacity:0.55">
 <div class="trust-track">
-<img src="https://cdn.prod.website-files.com/625be9db7e9f071ffb58618a/682b89c78adefdc7985c534c_sports%20med_black.svg" alt="Sports Med" style="width:114px;height:28px;object-fit:contain">
-<img src="https://cdn.prod.website-files.com/625be9db7e9f071ffb58618a/682b89c78adefdc7985c5353_nars_black.svg" alt="NARS" style="width:114px;height:28px;object-fit:contain">
-<img src="https://cdn.prod.website-files.com/625be9db7e9f071ffb58618a/682b89c78adefdc7985c534e_sevium_black.svg" alt="Sevium" style="width:114px;height:28px;object-fit:contain">
-<img src="https://cdn.prod.website-files.com/625be9db7e9f071ffb58618a/682b89c78adefdc7985c5352_odo%2024_black.svg" alt="ODO 24" style="width:114px;height:28px;object-fit:contain">
-<img src="https://cdn.prod.website-files.com/625be9db7e9f071ffb58618a/682b89c78adefdc7985c534f_x3d_black.svg" alt="X3D" style="width:114px;height:28px;object-fit:contain">
-<img class="trust-dup" aria-hidden="true" src="https://cdn.prod.website-files.com/625be9db7e9f071ffb58618a/682b89c78adefdc7985c534c_sports%20med_black.svg" alt="" style="width:114px;height:28px;object-fit:contain">
-<img class="trust-dup" aria-hidden="true" src="https://cdn.prod.website-files.com/625be9db7e9f071ffb58618a/682b89c78adefdc7985c5353_nars_black.svg" alt="" style="width:114px;height:28px;object-fit:contain">
-<img class="trust-dup" aria-hidden="true" src="https://cdn.prod.website-files.com/625be9db7e9f071ffb58618a/682b89c78adefdc7985c534e_sevium_black.svg" alt="" style="width:114px;height:28px;object-fit:contain">
-<img class="trust-dup" aria-hidden="true" src="https://cdn.prod.website-files.com/625be9db7e9f071ffb58618a/682b89c78adefdc7985c5352_odo%2024_black.svg" alt="" style="width:114px;height:28px;object-fit:contain">
-<img class="trust-dup" aria-hidden="true" src="https://cdn.prod.website-files.com/625be9db7e9f071ffb58618a/682b89c78adefdc7985c534f_x3d_black.svg" alt="" style="width:114px;height:28px;object-fit:contain">
+<img src="/uploads/klienci/sports-med.svg" alt="Sports Med" style="width:114px;height:28px;object-fit:contain">
+<img src="/uploads/klienci/nars.svg" alt="NARS" style="width:114px;height:28px;object-fit:contain">
+<img src="/uploads/klienci/sevium.svg" alt="Sevium" style="width:114px;height:28px;object-fit:contain">
+<img src="/uploads/klienci/odo-24.svg" alt="ODO 24" style="width:114px;height:28px;object-fit:contain">
+<img src="/uploads/klienci/x3d.svg" alt="X3D" style="width:114px;height:28px;object-fit:contain">
+<img class="trust-dup" aria-hidden="true" src="/uploads/klienci/sports-med.svg" alt="" style="width:114px;height:28px;object-fit:contain">
+<img class="trust-dup" aria-hidden="true" src="/uploads/klienci/nars.svg" alt="" style="width:114px;height:28px;object-fit:contain">
+<img class="trust-dup" aria-hidden="true" src="/uploads/klienci/sevium.svg" alt="" style="width:114px;height:28px;object-fit:contain">
+<img class="trust-dup" aria-hidden="true" src="/uploads/klienci/odo-24.svg" alt="" style="width:114px;height:28px;object-fit:contain">
+<img class="trust-dup" aria-hidden="true" src="/uploads/klienci/x3d.svg" alt="" style="width:114px;height:28px;object-fit:contain">
 </div>
 </div>
 </div>
 
+<Styl />
+
 <!-- ============ S1b · DROGA POD HERO (wariant A — wykres + oś czasu) ============ -->
 <section id="sciezki" class="la-droga" style="padding:clamp(64px,9vw,104px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) clamp(56px,8vw,92px);scroll-margin-top:16px">
-<div style="text-align:center;font-size:clamp(22px,4.4vw,40px);line-height:1.18;letter-spacing:-0.028em;font-weight:750;color:#16211a">Żeby stać się firmą napędzaną AI, czasem najpierw trzeba</div>
+<div style="text-align:center;font-size:clamp(22px,4.4vw,40px);line-height:1.18;letter-spacing:-0.028em;font-weight:800;color:#16211a">Żeby stać się firmą napędzaną AI, czasem najpierw trzeba</div>
 <div class="rot-mask" style="height:60px;overflow:hidden;margin-top:-6px;-webkit-mask-image:linear-gradient(180deg,transparent 0,#000 16%,#000 84%,transparent 100%);mask-image:linear-gradient(180deg,transparent 0,#000 16%,#000 84%,transparent 100%)">
 <div id="rotator-col" style="display:flex;flex-direction:column;transition:transform 0.55s cubic-bezier(0.65,0,0.35,1);transform:translateY(0px)">
-<div class="rot-item" style="height:60px;line-height:60px;text-align:center;white-space:nowrap;font-size:clamp(13px,4vw,40px);letter-spacing:-0.028em;font-weight:750;color:#0a7a52">spisać procesy, które żyją w głowach ludzi</div>
-<div class="rot-item" style="height:60px;line-height:60px;text-align:center;white-space:nowrap;font-size:clamp(13px,4vw,40px);letter-spacing:-0.028em;font-weight:750;color:#0a7a52">zastąpić Excela prawdziwym systemem</div>
-<div class="rot-item" style="height:60px;line-height:60px;text-align:center;white-space:nowrap;font-size:clamp(13px,4vw,40px);letter-spacing:-0.028em;font-weight:750;color:#0a7a52">połączyć narzędzia, które się nie widzą</div>
-<div class="rot-item" style="height:60px;line-height:60px;text-align:center;white-space:nowrap;font-size:clamp(13px,4vw,40px);letter-spacing:-0.028em;font-weight:750;color:#0a7a52">sprawić, żeby raporty robiły się same</div>
-<div class="rot-item" style="height:60px;line-height:60px;text-align:center;white-space:nowrap;font-size:clamp(13px,4vw,40px);letter-spacing:-0.028em;font-weight:750;color:#0a7a52">zautomatyzować obieg faktur</div>
-<div class="rot-item" style="height:60px;line-height:60px;text-align:center;white-space:nowrap;font-size:clamp(13px,4vw,40px);letter-spacing:-0.028em;font-weight:750;color:#0a7a52">odciążyć zespół od kopiuj-wklej</div>
+<div class="rot-item" style="height:60px;line-height:60px;text-align:center;white-space:nowrap;font-size:clamp(13px,4vw,40px);letter-spacing:-0.028em;font-weight:800;color:#0a7a52">spisać procesy, które żyją w głowach ludzi</div>
+<div class="rot-item" style="height:60px;line-height:60px;text-align:center;white-space:nowrap;font-size:clamp(13px,4vw,40px);letter-spacing:-0.028em;font-weight:800;color:#0a7a52">zastąpić Excela prawdziwym systemem</div>
+<div class="rot-item" style="height:60px;line-height:60px;text-align:center;white-space:nowrap;font-size:clamp(13px,4vw,40px);letter-spacing:-0.028em;font-weight:800;color:#0a7a52">połączyć narzędzia, które się nie widzą</div>
+<div class="rot-item" style="height:60px;line-height:60px;text-align:center;white-space:nowrap;font-size:clamp(13px,4vw,40px);letter-spacing:-0.028em;font-weight:800;color:#0a7a52">sprawić, żeby raporty robiły się same</div>
+<div class="rot-item" style="height:60px;line-height:60px;text-align:center;white-space:nowrap;font-size:clamp(13px,4vw,40px);letter-spacing:-0.028em;font-weight:800;color:#0a7a52">zautomatyzować obieg faktur</div>
+<div class="rot-item" style="height:60px;line-height:60px;text-align:center;white-space:nowrap;font-size:clamp(13px,4vw,40px);letter-spacing:-0.028em;font-weight:800;color:#0a7a52">odciążyć zespół od kopiuj-wklej</div>
 </div>
 </div>
-<p style="margin:22px auto 0;max-width:620px;text-align:center;font-size:clamp(15px,2vw,17.5px);line-height:1.6;color:#4c5850;text-wrap:pretty">Nie wielka rewolucja, tylko kolejne procesy, które przestają być ręczne — krok po kroku, przez około 12 miesięcy.</p>
 
 <!-- Wykres: Wise AI Score w czasie -->
 <div class="droga-chart" style="position:relative;margin-top:clamp(40px,5vw,56px);height:clamp(240px,26vw,380px)">
@@ -530,7 +915,7 @@ import GcCta from '../components/GcCta.astro';
 <div class="dg-card" style="display:flex;flex-direction:column;transition-delay:.75s">
 <div style="font-weight:700;font-size:12px;color:#0a7a52;letter-spacing:0.06em">KROK 05</div>
 <div style="margin-top:10px;font-size:19px;font-weight:700;line-height:1.25;min-height:2.5em;color:#16211a">Firma napędzana AI</div>
-<p style="margin:8px 0 0;font-size:14px;line-height:1.6;color:#4c5850">AI napędza całą firmę. Konkurencja na Excelu po prostu nie nadąża.</p>
+<p style="margin:8px 0 0;font-size:14px;line-height:1.6;color:#4c5850">AI pracuje w procesach całej firmy. Konkurencja na Excelu nie nadąża.</p>
 </div>
 </div>
 
@@ -539,17 +924,17 @@ import GcCta from '../components/GcCta.astro';
 <!-- Podpis założyciela zdjęty 08.09.2026 — miejsce po nim dostało zdanie
      o zapleczu grupy, bo to ono jest tu różnicą wobec konkurencji. -->
 <div style="max-width:680px">
-<p style="margin:0;font-size:clamp(16px,2.2vw,18.5px);line-height:1.55;color:#4c5850;text-wrap:pretty">Nie musisz wiedzieć, od czego zacząć. <strong style="font-weight:700;color:#16211a">Przeszliśmy tę drogę ze 140 firmami — przejdziemy ją i z Tobą, krok po kroku.</strong></p>
+<p style="margin:0;font-size:clamp(16px,2.2vw,18.5px);line-height:1.55;color:#4c5850;text-wrap:pretty"><strong style="font-weight:700;color:#16211a">Przeszliśmy tę drogę z ponad 140 firmami.</strong> Na pierwszej rozmowie wskazujemy, od którego kroku zacząć.</p>
 <div style="display:flex;align-items:center;gap:12px;margin-top:14px">
-<span style="font-size:15px;line-height:1.5;color:#4c5850">Jedyna w Polsce firma wdrażająca AI, za którą stoi grupa doradcza</span>
-<img src="/uploads/wisegroup_logo_v2.webp" alt="Wise Group" style="height:16px;width:auto;display:block;flex-shrink:0;opacity:0.85">
+<span style="font-size:15px;line-height:1.5;color:#4c5850">Za nami stoi grupa doradcza</span>
+<img src="/uploads/wisegroup_logo_v2.webp" alt="WiseGroup" style="height:16px;width:auto;display:block;flex-shrink:0;opacity:0.85">
 </div>
 </div>
 <div class="droga-cta-btns" style="display:flex;flex-direction:column;align-items:flex-end;gap:13px;flex-shrink:0">
-<a href="#diagnoza" class="btn-dark" style="display:inline-flex;align-items:center;gap:10px;background:#16211a;color:#ffffff;padding:17px 30px;border-radius:12px;font-weight:650;font-size:16px;box-shadow:0 14px 30px -14px rgba(16,33,26,0.45)">Zrób pierwszy krok — umów bezpłatną diagnozę <span aria-hidden="true">→</span></a>
+<a href="#diagnoza" class="btn-dark" style="display:inline-flex;align-items:center;gap:10px;background:#16211a;color:#ffffff;padding:17px 30px;border-radius:12px;font-weight:650;font-size:16px;box-shadow:0 14px 30px -14px rgba(16,33,26,0.45)">Umów bezpłatną diagnozę <span aria-hidden="true">→</span></a>
 <!-- SCHOWANE 07.09.2026 — drugie CTA pod przyciskiem diagnozy. Zostaje w kodzie:
      wraca, gdy koszt status quo dostanie własny kalkulator, do którego ten link prowadzi. -->
-<a href="#diagnoza" class="lnk-green" style="display:none;font-size:15px;font-weight:700;color:#0a7a52">Wolisz sam? Zobacz, ile kosztuje Cię status quo →</a>
+<a href="#diagnoza" class="lnk-green" style="display:none;font-size:15px;font-weight:700;color:#0a7a52">Wolicie sami? Zobaczcie, ile kosztuje Was status quo →</a>
 </div>
 </div>
 </section>
@@ -558,17 +943,17 @@ import GcCta from '../components/GcCta.astro';
 <section id="stawka" style="padding:clamp(72px,10vw,120px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) clamp(72px,9vw,110px);scroll-margin-top:16px">
 <div class="s2-grid" style="display:grid;grid-template-columns:1fr 520px;gap:clamp(40px,6vw,88px);align-items:center">
 <div>
-<h2 class="h-sec" style="margin:0;text-wrap:pretty">Status quo też wystawia rachunek.</h2>
-<p class="sub" style="margin:20px 0 0;max-width:540px">Tylko nikt go nie podpisuje. Ręczne przepisywanie, fakturowanie, raporty klejone z Exceli — Twój zespół płaci go co miesiąc, godzinami. Policzmy go na Twoich danych.</p>
+<h2 class="h-sec" style="margin:0;text-wrap:pretty">Status quo też wystawia rachunek</h2>
+<p class="sub" style="margin:20px 0 0;max-width:540px">Tylko nikt go nie podpisuje. Za ręczne przepisywanie, fakturowanie i raporty klejone z Exceli Wasz zespół płaci co miesiąc godzinami pracy. Policzmy ten rachunek na Waszych danych.</p>
 <div class="stat-row" style="display:flex;align-items:baseline;gap:44px;margin-top:44px;padding-top:32px;border-top:1px solid #eef1ec">
-<div><span style="font-size:34px;font-weight:800;letter-spacing:-0.02em">78%</span><span style="display:block;margin-top:4px;font-size:13px;line-height:1.45;color:#637066;max-width:160px">firm używa już AI w min. jednym procesie</span></div>
+<div><span style="font-size:34px;font-weight:800;letter-spacing:-0.02em">78%</span><span style="display:block;margin-top:4px;font-size:13px;line-height:1.45;color:#637066;max-width:160px">firm używa już AI w&nbsp;co najmniej jednym procesie</span></div>
 <div><span style="font-size:34px;font-weight:800;letter-spacing:-0.02em">3,7×</span><span style="display:block;margin-top:4px;font-size:13px;line-height:1.45;color:#637066;max-width:160px">szybciej rosną firmy przebudowane pod AI</span></div>
 <div><span style="font-size:34px;font-weight:800;letter-spacing:-0.02em">2/3</span><span style="display:block;margin-top:4px;font-size:13px;line-height:1.45;color:#637066;max-width:180px">punktowych wdrożeń nie skaluje się bez systemów</span></div>
 </div>
 <div style="display:flex;align-items:center;flex-wrap:wrap;gap:20px 24px;margin-top:40px">
-<a href="#diagnoza" class="btn-dark" style="display:inline-flex;align-items:center;gap:10px;background:#16211a;color:#ffffff;padding:17px 30px;border-radius:12px;font-weight:650;font-size:16px">Policz koszt swojego status quo <span aria-hidden="true">→</span></a>
+<a href="#diagnoza" class="btn-dark" style="display:inline-flex;align-items:center;gap:10px;background:#16211a;color:#ffffff;padding:17px 30px;border-radius:12px;font-weight:650;font-size:16px">Policzmy Wasz koszt status quo <span aria-hidden="true">→</span></a>
 <!-- SCHOWANE 08.09.2026 — zostaje w kodzie, tak jak drugie CTA w sekcji drogi. -->
-<a href="#diagnoza" class="lnk-green" style="display:none;font-size:15.5px;font-weight:700;color:#0a7a52">Sprawdź, od czego zacząć →</a>
+<a href="#diagnoza" class="lnk-green" style="display:none;font-size:15.5px;font-weight:700;color:#0a7a52">Sprawdźcie, od czego zacząć →</a>
 </div>
 </div>
 
@@ -608,119 +993,78 @@ import GcCta from '../components/GcCta.astro';
 </section>
 
 <!-- ============ S3 · CO ZNACZY FIRMA NAPĘDZANA AI ============ -->
-<section id="napedzana-ai" style="background:#f4f8f2;padding:clamp(72px,9vw,110px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
-<div class="sec-head">
-<h2 class="h-sec" style="margin:0;max-width:640px;text-wrap:pretty">Firma napędzana AI to nie zespół, który używa <span style="color:#808b83;text-decoration:line-through;text-decoration-thickness:4px;text-decoration-color:var(--la-accent,#00CD77)">ChatGPT</span>.</h2>
-<p class="sub" style="margin:0 0 6px;max-width:460px">To firma, w której AI napędza procesy od wewnątrz — od pierwszego kontaktu po rozliczenie. <strong style="color:#16211a;font-weight:700">Gdzie na tej skali jest Twoja firma?</strong></p>
-</div>
+<section id="napedzana-ai" style="background:#f4f8f2;padding:clamp(72px,9vw,110px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) clamp(48px,5.4vw,72px);scroll-margin-top:16px">
+<!-- Teza w dwóch tonach (z /index-v2), bez podpisu nad nią. Pod nią jedna
+     skala w czterech odcinkach zamiast czterech kart: etapy to miejsca na
+     jednej osi, a nie cztery osobne rzeczy. Pod każdym etapem ta sama
+     faktura kosztowa — widać, co zmienia się w pracy. -->
+<h2 class="t5-teza"><span>AI w przeglądarce ma dziś prawie każdy zespół.</span> Firma napędzana AI ma je wpięte w procesy, od pierwszego kontaktu po rozliczenie</h2>
+<ol class="sk">
+<li class="sk-e1"><i class="sk-seg"></i><span class="sk-nr">Etap 1</span><h3>Ręczna firma</h3><p>Dane żyją w Excelu i mailach, a ludzie przepisują je między systemami.</p></li>
+<li class="sk-e2"><i class="sk-seg"><span class="sk-tu">większość firm jest tu</span></i><span class="sk-nr">Etap 2<span class="sk-tu-m">większość firm jest tu</span></span><h3>Punktowe automatyzacje</h3><p>Kilka skryptów i botów. Pomagają, ale każdy żyje osobno.</p></li>
+<li class="sk-e3"><i class="sk-seg"></i><span class="sk-nr">Etap 3</span><h3>Systemy zintegrowane</h3><p>Dane płyną między CRM, finansami i operacjami bez przepisywania.</p></li>
+<li class="sk-e4"><i class="sk-seg"></i><span class="sk-nr">Etap 4</span><h3>Napędzana AI</h3><p>AI pracuje w środku procesów, a ludzie prowadzą wyjątki.</p></li>
+</ol>
+</section>
 
-<div class="grid4" style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:22px;margin-top:64px">
-<div class="etap-card" style="background:#ffffff;border:1px solid #e7ece4;border-radius:16px;padding:26px 26px 24px">
-<span style="font-weight:700;font-size:12px;color:#637066;letter-spacing:0.06em">ETAP 1</span>
-<div style="margin-top:38px;height:4px;border-radius:2px;background:#e7ece4"><span style="display:block;width:25%;height:100%;border-radius:2px;background:#c3cbc2"></span></div>
-<div style="margin-top:18px;font-size:20px;font-weight:700;color:#4c5850">Ręczna firma</div>
-<p style="margin:8px 0 0;font-size:14px;line-height:1.55;color:#637066">Excel, maile, przepisywanie danych. Każdy wzrost wymaga nowych rąk.</p>
+<!-- ============ S3b · CZYM JEST — ZIELONY PAS ============
+     Pas jak na podstronach usługowych (zieleń, twarz w duotonie, ciemny
+     przycisk), tylko z dłuższym tekstem: podpis, zdanie „czym jesteśmy"
+     dużym stopniem, pod nim zakres pracy. Stoi tuż przed usługami — opis
+     prowadzi do trzech dróg. Style lokalne (la-zl-*), bo wspólny Styl.astro
+     przestawiłby na tej stronie #faq i #dowody. -->
+<section class="la-zl" aria-labelledby="czym-jest">
+<div class="la-zl-in">
+<div class="la-zl-t">
+<h2 id="czym-jest" class="la-zl-pod">Czym jest Let’s automate?</h2>
+<p class="la-zl-duzy">Studio transformacji AI, część WiseGroup</p>
+<p class="la-zl-opis">Pracujemy z firmami, które zatrudniają od kilkudziesięciu do kilkuset osób. Wprowadzamy AI do ich pracy, od strategii i narzędzi dla zespołów po systemy pod procesy, na których firma zarabia. Prowadzimy też zespoły klientów, które tworzą aplikacje z AI same.</p>
+<a href="#diagnoza" class="la-zl-btn">Umów bezpłatną diagnozę <span aria-hidden="true">→</span></a>
 </div>
-<div class="etap-card" style="background:#ffffff;border:1px solid #e7ece4;border-radius:16px;padding:26px 26px 24px">
-<div style="display:flex;align-items:center;justify-content:space-between;gap:10px"><span style="font-weight:700;font-size:12px;color:#637066;letter-spacing:0.06em">ETAP 2</span><span style="font-size:11.5px;font-weight:700;color:#8f6c1c;background:#f9efd8;padding:4px 10px;border-radius:7px">większość firm jest tu</span></div>
-<div style="margin-top:38px;height:4px;border-radius:2px;background:#e7ece4"><span style="display:block;width:50%;height:100%;border-radius:2px;background:#9fb3a3"></span></div>
-<div style="margin-top:18px;font-size:20px;font-weight:700;color:#4c5850">Punktowe automatyzacje</div>
-<p style="margin:8px 0 0;font-size:14px;line-height:1.55;color:#637066">Kilka skryptów i botów. Pomagają, ale każdy żyje osobno.</p>
+<div class="la-zl-foto">
+<img src="/szymon-negacz-spot.jpg" alt="Szymon Negacz, współwłaściciel Let's automate" width="1100" height="888" loading="lazy" decoding="async">
+<div class="la-zl-podpis"><b>Szymon Negacz</b><span>Współwłaściciel</span></div>
 </div>
-<div class="etap-card" style="background:#ffffff;border:1px solid #e7ece4;border-radius:16px;padding:26px 26px 24px">
-<span style="font-weight:700;font-size:12px;color:#637066;letter-spacing:0.06em">ETAP 3</span>
-<div style="margin-top:38px;height:4px;border-radius:2px;background:#e7ece4"><span style="display:block;width:75%;height:100%;border-radius:2px;background:#3f8f68"></span></div>
-<div style="margin-top:18px;font-size:20px;font-weight:700;color:#16211a">Systemy zintegrowane</div>
-<p style="margin:8px 0 0;font-size:14px;line-height:1.55;color:#4c5850">Dane płyną między CRM, finansami i operacjami bez przepisywania.</p>
-</div>
-<div class="etap-card" style="background:#0e2b1d;border:1px solid #0e2b1d;border-radius:16px;padding:26px 26px 24px">
-<span style="font-weight:700;font-size:12px;color:var(--la-accent,#00CD77);letter-spacing:0.06em">ETAP 4</span>
-<div style="margin-top:38px;height:4px;border-radius:2px;background:rgba(255,255,255,0.18)"><span style="display:block;width:100%;height:100%;border-radius:2px;background:var(--la-accent,#00CD77);box-shadow:0 0 14px rgba(0,205,119,0.6)"></span></div>
-<div style="margin-top:18px;font-size:20px;font-weight:800;color:#ffffff">Napędzana AI</div>
-<p style="margin:8px 0 0;font-size:14px;line-height:1.55;color:rgba(255,255,255,0.75)">AI podejmuje pracę w środku procesów: czyta, decyduje, wykonuje. Ludzie prowadzą wyjątki.</p>
-</div>
-</div>
-
-<div style="display:flex;justify-content:flex-end;margin-top:44px">
-<a href="#diagnoza" class="lnk-green" style="font-size:16px;font-weight:700;color:#0a7a52">Sprawdź, gdzie jest Twoja firma →</a>
 </div>
 </section>
 
-<!-- ============ S4 · OFERTA ============ -->
+<!-- ============ S4 · OFERTA (z /index-v2) ============
+     Trzy drogi jedna pod drugą. Po lewej nazwa drogi, po prawej trzy
+     wiersze: zdanie, od którego zwykle zaczyna się rozmowa, usługa z menu
+     z terminem albo ceną i strzałka. Cały wiersz jest linkiem. Kotwice
+     #oferta-wdrazamy / -budujemy / -budujecie łapią linki z megamenu. -->
 <section id="oferta" style="padding:clamp(72px,10vw,120px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) clamp(72px,9vw,110px);scroll-margin-top:16px">
 <div class="sec-head">
-<h2 class="h-sec" style="margin:0;max-width:600px;text-wrap:pretty">Trzy sposoby, w jakie z nami pracujesz.</h2>
-<p class="sub" style="margin:0 0 6px;max-width:470px">Wdrażamy AI w Twojej firmie, budujemy aplikacje za Ciebie albo prowadzimy Wasz zespół, gdy budujecie sami.</p>
+<h2 class="h-sec" style="margin:0;max-width:640px;text-wrap:pretty">Trzy sposoby, w jakie z&nbsp;nami pracujecie</h2>
+<p class="sub" style="margin:0 0 6px;max-width:470px">Wdrażamy AI w Waszej firmie, budujemy aplikacje za Was albo prowadzimy Wasz zespół, gdy budujecie sami.</p>
 </div>
 
-<div class="s4-grid" style="display:grid;grid-template-columns:360px 1fr;gap:clamp(32px,5vw,72px);margin-top:56px;align-items:start;background:#f4f8f2;border-radius:24px;padding:clamp(28px,4vw,44px) clamp(24px,4vw,48px) 40px">
-<div class="krok-tabs" style="display:flex;flex-direction:column;gap:6px">
-<button data-krok="wdrazamy" class="krok-tab" style="appearance:none;font-family:inherit;text-align:left;cursor:pointer;display:block;padding:16px 18px;border:none;border-radius:14px;background:transparent;box-shadow:none;transition:background 0.3s,box-shadow 0.3s">
-<span style="display:block;font-size:22px;font-weight:800;letter-spacing:-0.015em;color:#16211a">Wdrażamy AI</span><span style="display:block;margin-top:3px;font-size:13px;color:#637066">Gdy AI jeszcze nie weszło w procesy</span><span class="krok-pasek" aria-hidden="true"><i></i></span>
-</button>
-<button data-krok="budujemy" class="krok-tab" style="appearance:none;font-family:inherit;text-align:left;cursor:pointer;display:block;padding:16px 18px;border:none;border-radius:14px;background:transparent;box-shadow:none;transition:background 0.3s,box-shadow 0.3s">
-<span style="display:block;font-size:22px;font-weight:800;letter-spacing:-0.015em;color:#16211a">Budujemy aplikacje</span><span style="display:block;margin-top:3px;font-size:13px;color:#637066">Gdy żadne gotowe narzędzie nie pasuje</span><span class="krok-pasek" aria-hidden="true"><i></i></span>
-</button>
-<button data-krok="guided" class="krok-tab" style="appearance:none;font-family:inherit;text-align:left;cursor:pointer;display:block;padding:16px 18px;border:none;border-radius:14px;background:transparent;box-shadow:none;transition:background 0.3s,box-shadow 0.3s">
-<span style="display:block;font-size:22px;font-weight:800;letter-spacing:-0.015em;color:#16211a">Guided Coding</span><span style="display:block;margin-top:3px;font-size:13px;color:#637066">Gdy sami budujecie aplikacje z AI</span><span class="krok-pasek" aria-hidden="true"><i></i></span>
-</button>
-<!-- EKSPERYMENT 3 — pod zakładkami było puste miejsce, a wybór ścieżki
-     to najczęstsze miejsce, w którym ktoś utyka. -->
-<div style="display:flex;align-items:center;gap:13px;margin-top:26px;padding:14px 16px;background:#ffffff;border:1px solid #e7ece4;border-radius:14px">
-<!-- Plik jest już przycięty do kadru głowa-ramiona (320x320), więc w kółku
-     nie trzeba nic doskalowywać. Źródło: awatar ze Slacka, 512x512.
-     [do uzupełnienia] czyje to zdjęcie — alt jest bez nazwiska, dopóki nie wiem. -->
-<span style="display:block;width:48px;height:48px;border-radius:50%;overflow:hidden;flex-shrink:0;background:#eef1ec"><img src="/uploads/portret-oferta.jpg" alt="Konsultant Let's automate" width="96" height="96" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;display:block"></span>
-<div style="font-size:13.5px;line-height:1.45;color:#4c5850">Nie wiesz, która ścieżka?<br><a href="#diagnoza" class="lnk-green" style="font-weight:700;color:#0a7a52">Napisz do mnie →</a></div>
+<div class="of">
+<div class="of-kol" aria-hidden="true"><span></span><span class="of-kol-p"><span>Od tego zwykle zaczyna się rozmowa</span><span>Co wtedy proponujemy</span></span></div>
+{DROGI.map((g, gi) => (
+  <div class="of-gr" id={`oferta-${g.id}`}>
+    <div class="of-gl">
+      <span>{String(gi + 1).padStart(2, '0')}</span>
+      <h3>{g.t}</h3>
+      <p>{g.s}</p>
+    </div>
+    <ul>
+      {g.w.map((x) => (
+        <li><a class="of-w" href={x.h}>
+          <q>{x.q}</q>
+          <span class="of-u"><b>{x.u}</b><em>{x.d}</em></span>
+          <i aria-hidden="true"><svg viewBox="0 0 16 16" set:html={HI['arrow-right']}></svg></i>
+        </a></li>
+      ))}
+    </ul>
+  </div>
+))}
+<!-- Z poprzedniej wersji sekcji: pomoc w wyborze drogi. -->
+<div class="of-pom">
+<span><img src="/uploads/portret-oferta.jpg" alt="Konsultant Let's automate" width="96" height="96" loading="lazy" decoding="async"></span>
+<p>Nie wiecie, od której drogi zacząć? <a href="#diagnoza" class="lnk-green">Napiszcie do nas →</a></p>
 </div>
 </div>
-<div class="s4-layers" style="display:grid;align-items:start">
-<div class="krok-layer" data-layer="wdrazamy" style="grid-area:1/1;transition:opacity 0.45s cubic-bezier(0.4,0,0.2,1),transform 0.45s cubic-bezier(0.4,0,0.2,1)">
-<a href="/strategia-ai" class="row-lnk" style="display:grid;grid-template-columns:1fr 36px;gap:20px;align-items:baseline;padding:6px 4px 22px;border-bottom:1px solid #e7ece4;color:#16211a">
-<span><span style="display:block;font-size:clamp(20px,2.4vw,25px);font-weight:750;letter-spacing:-0.015em">Strategia transformacji AI</span><span style="display:block;margin-top:8px;font-size:14.5px;line-height:1.55;color:#4c5850;max-width:560px;text-wrap:balance">Kolejność wdrożeń z policzonym zwrotem z każdego kroku. Plan, który obroni się przed zarządem.</span></span>
-<span style="font-size:22px;color:#0a7a52;justify-self:end" aria-hidden="true">→</span>
-</a>
-<a href="/rozwiazania-ai" class="row-lnk" style="display:grid;grid-template-columns:1fr 36px;gap:20px;align-items:baseline;padding:20px 4px 20px;border-bottom:1px solid #e7ece4;color:#16211a">
-<span><span style="display:block;font-size:clamp(20px,2.4vw,25px);font-weight:750;letter-spacing:-0.015em">Indywidualne rozwiązania AI</span><span style="display:block;margin-top:8px;font-size:14.5px;line-height:1.55;color:#4c5850;max-width:560px;text-wrap:balance">Zbudowane pod Wasz przypadek i wpięte w systemy oraz dane, z których korzystacie na co dzień.</span></span>
-<span style="font-size:22px;color:#0a7a52;justify-self:end" aria-hidden="true">→</span>
-</a>
-<a href="/szkolenia-ai" class="row-lnk" style="display:grid;grid-template-columns:1fr 36px;gap:20px;align-items:baseline;padding:20px 4px 20px;border-bottom:1px solid #e7ece4;color:#16211a">
-<span><span style="display:block;font-size:clamp(20px,2.4vw,25px);font-weight:750;letter-spacing:-0.015em">Szkolenia i adopcja AI</span><span style="display:block;margin-top:8px;font-size:14.5px;line-height:1.55;color:#4c5850;max-width:560px;text-wrap:balance">Warsztaty na Waszych procesach i danych. Zespół pracuje po nowemu — i zostaje przy tym na dłużej.</span></span>
-<span style="font-size:22px;color:#0a7a52;justify-self:end" aria-hidden="true">→</span>
-</a>
-</div>
-<div class="krok-layer" data-layer="budujemy" style="grid-area:1/1;transition:opacity 0.45s cubic-bezier(0.4,0,0.2,1),transform 0.45s cubic-bezier(0.4,0,0.2,1)">
-<a href="/systemy-procesowe" class="row-lnk" style="display:grid;grid-template-columns:1fr 36px;gap:20px;align-items:baseline;padding:6px 4px 22px;border-bottom:1px solid #e7ece4;color:#16211a">
-<span><span style="display:block;font-size:clamp(20px,2.4vw,25px);font-weight:750;letter-spacing:-0.015em">Systemy dla kluczowych procesów</span><span style="display:block;margin-top:8px;font-size:14.5px;line-height:1.55;color:#4c5850;max-width:560px;text-wrap:balance">Proces, na którym firma zarabia — od zamówienia po odbiór — prowadzi system, który zna Wasze reguły.</span></span>
-<span style="font-size:22px;color:#0a7a52;justify-self:end" aria-hidden="true">→</span>
-</a>
-<a href="/systemy-dla-klientow" class="row-lnk" style="display:grid;grid-template-columns:1fr 36px;gap:20px;align-items:baseline;padding:20px 4px 20px;border-bottom:1px solid #e7ece4;color:#16211a">
-<span><span style="display:block;font-size:clamp(20px,2.4vw,25px);font-weight:750;letter-spacing:-0.015em">Systemy dla Waszych klientów</span><span style="display:block;margin-top:8px;font-size:14.5px;line-height:1.55;color:#4c5850;max-width:560px;text-wrap:balance">Klient sprawdza status, składa zamówienie i pobiera dokumenty sam, o każdej porze.</span></span>
-<span style="font-size:22px;color:#0a7a52;justify-self:end" aria-hidden="true">→</span>
-</a>
-<a href="/automatyzacje-integracje" class="row-lnk" style="display:grid;grid-template-columns:1fr 36px;gap:20px;align-items:baseline;padding:20px 4px 20px;border-bottom:1px solid #e7ece4;color:#16211a">
-<span><span style="display:block;font-size:clamp(20px,2.4vw,25px);font-weight:750;letter-spacing:-0.015em">Automatyzacje i integracje</span><span style="display:block;margin-top:8px;font-size:14.5px;line-height:1.55;color:#4c5850;max-width:560px;text-wrap:balance">CRM, finanse i operacje wymieniają dane same. Nikt niczego nie przepisuje.</span></span>
-<span style="font-size:22px;color:#0a7a52;justify-self:end" aria-hidden="true">→</span>
-</a>
-</div>
-<div class="krok-layer" data-layer="guided" style="grid-area:1/1;transition:opacity 0.45s cubic-bezier(0.4,0,0.2,1),transform 0.45s cubic-bezier(0.4,0,0.2,1)">
-<a href="/guided-coding/bez-dzialu-it" class="row-lnk" style="display:grid;grid-template-columns:1fr 36px;gap:20px;align-items:baseline;padding:6px 4px 22px;border-bottom:1px solid #e7ece4;color:#16211a">
-<span><span style="display:block;font-size:clamp(20px,2.4vw,25px);font-weight:750;letter-spacing:-0.015em">Dla zespołów nietechnicznych</span><span style="display:block;margin-top:8px;font-size:14.5px;line-height:1.55;color:#4c5850;max-width:560px;text-wrap:balance">Ludzie z biznesu budują sami, a my pilnujemy, żeby to, co powstaje, dało się utrzymać i rozwijać.</span></span>
-<span style="font-size:22px;color:#0a7a52;justify-self:end" aria-hidden="true">→</span>
-</a>
-<a href="/guided-coding/dla-zespolow" class="row-lnk" style="display:grid;grid-template-columns:1fr 36px;gap:20px;align-items:baseline;padding:20px 4px 20px;border-bottom:1px solid #e7ece4;color:#16211a">
-<span><span style="display:block;font-size:clamp(20px,2.4vw,25px);font-weight:750;letter-spacing:-0.015em">Dla zespołów technicznych</span><span style="display:block;margin-top:8px;font-size:14.5px;line-height:1.55;color:#4c5850;max-width:560px;text-wrap:balance">Wasz zespół wyciska z AI więcej: krótsza droga od napisanego kodu do działającej funkcji.</span></span>
-<span style="font-size:22px;color:#0a7a52;justify-self:end" aria-hidden="true">→</span>
-</a>
-<a href="/guided-coding/transfer-know-how" class="row-lnk" style="display:grid;grid-template-columns:1fr 36px;gap:20px;align-items:baseline;padding:20px 4px 20px;border-bottom:1px solid #e7ece4;color:#16211a">
-<span><span style="display:block;font-size:clamp(20px,2.4vw,25px);font-weight:750;letter-spacing:-0.015em">Szkolenia i transfer know-how</span><span style="display:block;margin-top:8px;font-size:14.5px;line-height:1.55;color:#4c5850;max-width:560px;text-wrap:balance">Program szkoleniowy projektowany po przeglądzie Waszego kodu i prowadzony na Waszej aplikacji.</span></span>
-<span style="font-size:22px;color:#0a7a52;justify-self:end" aria-hidden="true">→</span>
-</a>
-</div>
-</div>
-
-</div>
-
 </section>
 
 <!-- ============ S5 · DLACZEGO MY ============ -->
@@ -731,45 +1075,25 @@ import GcCta from '../components/GcCta.astro';
 </div>
 
 <div class="dm-tresc">
-<h2 class="h-sec" style="margin:0;color:#ffffff;text-wrap:pretty">Czym się różnimy od dziesiątek firm „od AI".</h2>
-<div style="margin-top:clamp(30px,3.6vw,44px)">
-<div style="display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:baseline;padding:2px 0 18px">
-<span style="font-size:12px;font-weight:700;color:var(--la-accent,#00CD77);letter-spacing:0.06em">01</span>
-<div>
-<div style="font-size:17px;font-weight:750;letter-spacing:-0.01em;color:#ffffff">Cały zespół, jedna odpowiedzialność</div>
-<p style="margin:5px 0 0;font-size:14px;line-height:1.55;color:rgba(255,255,255,0.62)">Analitycy, developerzy, PM i QA w jednym studiu — nie łańcuszek podwykonawców.</p>
-</div>
-</div>
-<div style="display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:baseline;padding:18px 0;border-top:1px solid rgba(255,255,255,0.11)">
-<span style="font-size:12px;font-weight:700;color:var(--la-accent,#00CD77);letter-spacing:0.06em">02</span>
-<div>
-<div style="font-size:17px;font-weight:750;letter-spacing:-0.01em;color:#ffffff">Własny produkt AI</div>
-<p style="margin:5px 0 0;font-size:14px;line-height:1.55;color:rgba(255,255,255,0.62)">appto.ai, zbudowany tą samą metodą, którą wdrażamy u Ciebie. <a href="https://appto.ai" style="font-weight:700;color:var(--la-accent,#00CD77)">appto.ai ↗</a></p>
-</div>
-</div>
-<div style="display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:baseline;padding:18px 0;border-top:1px solid rgba(255,255,255,0.11)">
-<span style="font-size:12px;font-weight:700;color:var(--la-accent,#00CD77);letter-spacing:0.06em">03</span>
-<div>
-<div style="font-size:17px;font-weight:750;letter-spacing:-0.01em;color:#ffffff">Zaplecze <span style="white-space:nowrap">Wise Group</span></div>
-<p style="margin:5px 0 0;font-size:14px;line-height:1.55;color:rgba(255,255,255,0.62)">SellWise, HireWise, AdWise. Rozumiemy biznes, nie tylko kod.</p>
-</div>
-</div>
-<div style="display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:baseline;padding:18px 0;border-top:1px solid rgba(255,255,255,0.11);border-bottom:1px solid rgba(255,255,255,0.11)">
-<span style="font-size:12px;font-weight:700;color:var(--la-accent,#00CD77);letter-spacing:0.06em">04</span>
-<div>
-<div style="font-size:17px;font-weight:750;letter-spacing:-0.01em;color:#ffffff">Stała cena, etap po etapie</div>
-<p style="margin:5px 0 0;font-size:14px;line-height:1.55;color:rgba(255,255,255,0.62)">Znasz koszt następnego kroku, zanim go zamówisz — bez roboczogodzin w ciemno.</p>
-</div>
+<h2 class="h-sec" style="margin:0;color:#ffffff;text-wrap:pretty">Czym się różnimy od dziesiątek firm „od AI”</h2>
+<div class="dm-lista">
+{ROZNICE.map((r, i) => (
+  <div class="dm-p">
+    <span class="dm-n">{String(i + 1).padStart(2, '0')}</span>
+    <div>
+      <h3>{r.t}</h3>
+      <p set:html={r.o}></p>
+    </div>
+  </div>
+))}
 </div>
 <!-- SCHOWANE 08.09.2026 — link do /dlaczego-my. Zostaje w kodzie: wraca,
      gdy skład studia i zasady rozliczeń mają być pokazywane. -->
 <a href="/dlaczego-my" class="lnk-accent" style="display:none;align-items:center;gap:9px;margin-top:26px;font-size:15.5px;font-weight:700;color:var(--la-accent,#00CD77)">Skład studia, zasady rozliczeń i sytuacje, w których odsyłamy gdzie indziej <span aria-hidden="true">&rarr;</span></a>
 
-<!-- Liczby wchodzą w tę samą numerację co cztery punkty wyżej — to piąta
-     różnica, tylko podana cyframi zamiast zdaniem. -->
-<div style="display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:center;padding:22px 0 0">
-<span style="font-weight:700;font-size:12px;letter-spacing:0.06em;color:var(--la-accent,#00CD77)">05</span>
-<div style="justify-self:start;display:inline-flex;align-items:center;gap:18px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.13);border-radius:14px;padding:12px 20px">
+<!-- Liczby bez numeru: to dowód dla wszystkich punktów naraz, nie piąta
+     różnica. Wcięte do kolumny tekstu, pod tytułami punktów. -->
+<div class="dm-liczby" style="display:flex;width:fit-content;align-items:center;gap:18px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.13);border-radius:14px;padding:12px 20px">
 <span><span style="display:block;font-size:19px;font-weight:800;color:#ffffff">200+</span><span style="display:block;margin-top:1px;font-size:11.5px;color:rgba(255,255,255,0.6)">wdrożeń</span></span>
 <span style="width:1px;height:28px;background:rgba(255,255,255,0.15)"></span>
 <span><span style="display:block;font-size:19px;font-weight:800;color:#ffffff">30+</span><span style="display:block;margin-top:1px;font-size:11.5px;color:rgba(255,255,255,0.6)">ekspertów</span></span>
@@ -777,136 +1101,66 @@ import GcCta from '../components/GcCta.astro';
 <span><span style="display:block;font-size:19px;font-weight:800;color:#ffffff">140+</span><span style="display:block;margin-top:1px;font-size:11.5px;color:rgba(255,255,255,0.6)">firm</span></span>
 </div>
 </div>
-</div>
-</div>
 </section>
 
 <!-- ============ S6 · DOWODY ============ -->
-<section id="dowody" style="padding:clamp(72px,9vw,110px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
-<div class="sec-head">
-<h2 class="h-sec" style="margin:0;max-width:560px;text-wrap:pretty">Tak wygląda firma napędzana AI w praktyce.</h2>
-<p class="sub" style="margin:0 0 6px;max-width:460px">Realne wdrożenia u naszych klientów — co robił zespół przed i jak ten sam proces działa po.</p>
+<section id="dowody" style="padding:clamp(80px,10vw,128px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
+<!-- v8: nagłówek na środku, karty wyrównane wierszami (subgrid) — liczby,
+     „Przed" i „Po" stoją na tej samej wysokości we wszystkich czterech. -->
+<div class="w8-gl">
+<h2 class="h-sec">Tak wygląda firma napędzana AI w&nbsp;praktyce</h2>
+<p class="sub">Realne wdrożenia u naszych klientów: co robił zespół przed i jak ten sam proces działa po.</p>
 </div>
-
-<div class="grid4" style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:22px;margin-top:60px">
-<div class="proof-card" style="background:#ffffff;border:1px solid #e7ece4;border-radius:18px;padding:30px 28px;box-shadow:0 24px 50px -34px rgba(18,38,28,0.14)">
-<div style="font-weight:700;font-size:11px;letter-spacing:0.07em;color:#808b83">FINANSE</div>
-<div style="margin-top:16px;font-size:56px;font-weight:800;letter-spacing:-0.035em;line-height:1">99,7<span style="color:var(--la-accent,#00CD77)">%</span></div>
-<div style="margin-top:8px;font-size:14px;font-weight:650;color:#4c5850">skuteczności księgowania</div>
-<div style="margin-top:22px;padding-top:18px;border-top:1px solid #eef1ec">
-<div style="font-size:12px;font-weight:700;letter-spacing:0.1em;color:#808b83">PRZED</div>
-<p style="margin:5px 0 0;font-size:13.5px;line-height:1.55;color:#637066">Trzy osoby przepisują faktury z maili. Zaległości rosną.</p>
-<div style="margin-top:13px;font-size:12px;font-weight:700;letter-spacing:0.1em;color:#0a7a52">PO</div>
-<p style="margin:5px 0 0;font-size:13.5px;line-height:1.55;color:#16211a">Obieg sam czyta, dekretuje i księguje. Zespół prowadzi wyjątki.</p>
+<div class="w8">
+{WYNIKI.map((x) => (
+  <article class="w8-k">
+    <span class="w8-dz">{x.dz}</span>
+    <h3>{x.p}</h3>
+    <p class="w8-l"><b>{x.l}</b><span>{x.ld}</span></p>
+    <div class="w8-pp przed"><span><i></i>Przed</span><p>{x.przed}</p></div>
+    <div class="w8-pp po"><span><i></i>Po</span><p>{x.po}</p></div>
+    <a class="w8-u" href={x.h}>{x.u}<span aria-hidden="true">→</span></a>
+  </article>
+))}
 </div>
+<div class="w8-dol"><a href="#dowody" class="lnk-green" style="font-size:16px;font-weight:700;color:#0a7a52">Zobaczcie wszystkie transformacje →</a></div>
+<!-- OPINIE: wygląd komponentu Cytat z podstron usługowych (klasy v3-cyt
+     ze Styl.astro), cztery cytaty w jednym miejscu. Wysokość = najdłuższy,
+     więc nic nie skacze. Strzałki jak przy przykładach na podstronach. -->
+<div id="opinie" class="v3 op9" data-op9 role="region" aria-roledescription="karuzela" aria-label="Opinie klientów">
+<div class="op9-sl">
+{OPINIE_DUZE.map((o, i) => (
+  <figure class={i === 0 ? 'v3-cyt op9-k on' : 'v3-cyt op9-k'} aria-hidden={i === 0 ? 'false' : 'true'} data-op9-k>
+    <blockquote><span>„</span>{o.cytat}</blockquote>
+    <figcaption>
+      {o.logo && <img src={o.logo} alt={o.alt} width={o.lw} height={o.lh} loading="lazy" style={o.h > 40 ? '' : `height:${o.h}px;margin:0`}>}
+      {o.logo && <i aria-hidden="true"></i>}
+      <span><b>{o.kto}</b><span>{o.rola}</span></span>
+    </figcaption>
+  </figure>
+))}
 </div>
-<div class="proof-card" style="background:#ffffff;border:1px solid #e7ece4;border-radius:18px;padding:30px 28px;box-shadow:0 24px 50px -34px rgba(18,38,28,0.14)">
-<div style="font-weight:700;font-size:11px;letter-spacing:0.07em;color:#808b83">SPRZEDAŻ</div>
-<div style="margin-top:16px;font-size:56px;font-weight:800;letter-spacing:-0.035em;line-height:1">−80<span style="color:var(--la-accent,#00CD77)">%</span></div>
-<div style="margin-top:8px;font-size:14px;font-weight:650;color:#4c5850">czasu przygotowania oferty</div>
-<div style="margin-top:22px;padding-top:18px;border-top:1px solid #eef1ec">
-<div style="font-size:12px;font-weight:700;letter-spacing:0.1em;color:#808b83">PRZED</div>
-<p style="margin:5px 0 0;font-size:13.5px;line-height:1.55;color:#637066">Oferta sklejana z CRM, cenników i maili — pół dnia pracy.</p>
-<div style="margin-top:13px;font-size:12px;font-weight:700;letter-spacing:0.1em;color:#0a7a52">PO</div>
-<p style="margin:5px 0 0;font-size:13.5px;line-height:1.55;color:#16211a">Szkic powstaje z danych CRM w minuty. Handlowiec dopina i wysyła.</p>
+<div class="dw-str op9-str">
+<button type="button" data-op9-wstecz aria-label="Poprzednia opinia"><svg class="hi" viewBox="0 0 16 16" set:html={HI['arrow-right']} style="transform:scaleX(-1)"></svg></button>
+<button type="button" data-op9-dalej aria-label="Następna opinia"><svg class="hi" viewBox="0 0 16 16" set:html={HI['arrow-right']}></svg></button>
 </div>
-</div>
-<div class="proof-card" style="background:#ffffff;border:1px solid #e7ece4;border-radius:18px;padding:30px 28px;box-shadow:0 24px 50px -34px rgba(18,38,28,0.14)">
-<div style="font-weight:700;font-size:11px;letter-spacing:0.07em;color:#808b83">OPERACJE</div>
-<div style="margin-top:16px;font-size:56px;font-weight:800;letter-spacing:-0.035em;line-height:1">65<span style="color:var(--la-accent,#00CD77)">h</span></div>
-<div style="margin-top:8px;font-size:14px;font-weight:650;color:#4c5850">odzyskane miesięcznie w operacjach</div>
-<div style="margin-top:22px;padding-top:18px;border-top:1px solid #eef1ec">
-<div style="font-size:12px;font-weight:700;letter-spacing:0.1em;color:#808b83">PRZED</div>
-<p style="margin:5px 0 0;font-size:13.5px;line-height:1.55;color:#637066">Raporty klejone z czterech Exceli, decyzje na danych sprzed miesiąca.</p>
-<div style="margin-top:13px;font-size:12px;font-weight:700;letter-spacing:0.1em;color:#0a7a52">PO</div>
-<p style="margin:5px 0 0;font-size:13.5px;line-height:1.55;color:#16211a">Dane spływają same, raport czeka w poniedziałek o 7:00.</p>
-</div>
-</div>
-<div class="proof-card" style="background:#ffffff;border:1px solid #e7ece4;border-radius:18px;padding:30px 28px;box-shadow:0 24px 50px -34px rgba(18,38,28,0.14)">
-<div style="font-weight:700;font-size:11px;letter-spacing:0.07em;color:#808b83">OBSŁUGA KLIENTA</div>
-<div style="margin-top:16px;font-size:56px;font-weight:800;letter-spacing:-0.035em;line-height:1">−90<span style="color:var(--la-accent,#00CD77)">%</span></div>
-<div style="margin-top:8px;font-size:14px;font-weight:650;color:#4c5850">zapytań obsługiwanych ręcznie</div>
-<div style="margin-top:22px;padding-top:18px;border-top:1px solid #eef1ec">
-<div style="font-size:12px;font-weight:700;letter-spacing:0.1em;color:#808b83">PRZED</div>
-<p style="margin:5px 0 0;font-size:13.5px;line-height:1.55;color:#637066">Zespół odpisuje na te same pytania kilkanaście razy dziennie.</p>
-<div style="margin-top:13px;font-size:12px;font-weight:700;letter-spacing:0.1em;color:#0a7a52">PO</div>
-<p style="margin:5px 0 0;font-size:13.5px;line-height:1.55;color:#16211a">Agent AI odpowiada w minutach, z danymi zamówienia.</p>
-</div>
-</div>
-</div>
-<div style="display:flex;justify-content:flex-end;margin-top:40px">
-<a href="#dowody" class="lnk-green" style="font-size:16px;font-weight:700;color:#0a7a52">Zobacz wszystkie transformacje →</a>
 </div>
 </section>
 
-<!-- ============ S7 · OPINIE ============ -->
-<section id="opinie" style="background:#f4f8f2;padding:clamp(72px,9vw,110px) 0;scroll-margin-top:16px;overflow:hidden">
-
-<div style="padding:0 max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2))">
-<div class="sec-head">
-<h2 class="h-sec" style="margin:0;max-width:500px;text-wrap:pretty">Nie musisz wierzyć nam na słowo.</h2>
-<p class="sub" style="margin:0 0 6px;max-width:460px">Firmy, które przeszły transformację razem z nami — o efektach współpracy własnymi słowami.</p>
+<!-- ============ S8 · FINAŁ ============
+     Kontakt z /index-v2 (komponent Kontakt z podstron: ciemna plansza,
+     formularz z trzema polami, portret osoby, która odpisuje). Kotwica
+     #diagnoza zostaje na opakowaniu, bo prowadzi do niej CTA w nawigacji
+     i linki w treści strony. -->
+<div id="diagnoza" class="v3 hp5-kt">
+<Kontakt tytul="Pierwszy krok ustalimy w 30 minut" lead="Napiszcie w dwóch zdaniach, co chcecie zmienić. Odpowiemy w jeden dzień roboczy z terminem bezpłatnej diagnozy." zrodlo="Strona główna" pytanie="Co chcecie zmienić?" podpowiedz="Np. oferta przechodzi przez trzy działy albo licencje Copilota leżą nieużywane…" />
 </div>
-</div>
-
-<!-- Ściana opinii (auto-przewijana) -->
-<div class="marq" style="margin-top:clamp(32px,4vw,48px)" role="region" aria-label="Opinie klientów">
-<div class="marq-track">
-{Array.from({ length: KOPIE }).map((_, k) => OPINIE.map((o) => (
-<figure class:list={['marq-card', k > 0 && 'marq-dup']} aria-hidden={k > 0 ? 'true' : undefined} style="margin:0">
-<div aria-hidden="true" style="font-size:13px;letter-spacing:2px;color:#0a7a52;margin-bottom:14px">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-<blockquote style="margin:0;flex:1;font-size:14.5px;line-height:1.6;color:#33413a;text-wrap:pretty">„<Fragment set:html={o.cytat} />"</blockquote>
-{o.odznaka && (
-<div style="display:inline-flex;align-items:center;gap:8px;margin-top:16px;background:#f4f8f2;border:1px solid #e7ece4;border-radius:8px;padding:6px 11px;align-self:flex-start">
-<span style="font-size:12.5px;font-weight:700;color:#808b83;text-decoration:line-through">{o.odznaka.z}</span>
-<span style="color:#0a7a52;font-weight:800" aria-hidden="true">&rarr;</span>
-<span style="font-size:12.5px;font-weight:800;color:#0a7a52">{o.odznaka.na}</span>
-</div>
-)}
-<figcaption style="margin-top:18px;padding-top:16px;border-top:1px solid #eef1ec">
-<span style="display:block;font-size:13.5px;font-weight:700;color:#16211a">{o.kto}</span>
-<span style="display:block;font-size:12px;color:#637066">{o.rola}</span>
-</figcaption>
-</figure>
-)))}
-</div>
-</div>
-
-</section>
-
-<!-- ============ S8 · FINAŁ ============ -->
-<!-- Do 22.09.2026 stała tu własna kopia modułu kontaktowego z polami, które
-     nigdzie nie prowadziły (przycisk był linkiem do #diagnoza). Teraz idzie
-     ten sam komponent, co na podstronach — z prawdziwą wysyłką na
-     /api/kontakt. Kotwica zostaje `#diagnoza`, bo prowadzi do niej CTA
-     w nawigacji i linki w treści strony. -->
-<GcCta
-  id="diagnoza"
-  usluga="Strona główna"
-  osoba="ty"
-  wiseLabel="Jesteśmy częścią"
-  heading="Od czego zacząć i ile to kosztuje"
-  lead="Trzydzieści minut na Twoich procesach. Bezpłatnie i bez oferty na koniec — jeśli nie widzimy sensownego pierwszego kroku, mówimy to na tym samym spotkaniu."
-  eyebrow="Wychodzisz z rozmowy z"
-  items={[
-    { t: 'Kosztem kolejnego etapu', d: 'ile kosztuje pierwszy krok i co za to dostajesz' },
-    { t: 'Planem działania', d: 'od którego procesu zaczynamy i dlaczego od tego' },
-    { t: 'Wise AI Score', d: 'punkt na skali, od którego ruszasz' },
-  ]}
-  fieldLabel="W czym możemy pomóc?"
-  placeholder="Np. chcemy zautomatyzować obieg faktur i połączyć CRM z ERP…"
-  badges={[
-    { i: 'klodka', t: 'Twoje dane bezpieczne' },
-    { i: 'kartka', t: 'NDA przed startem' },
-    { i: 'ptaszek', t: 'Bez zobowiązań' },
-  ]}
-/>
 
 <!-- ============ S9 · BAZA WIEDZY ============ -->
 <section id="wiedza" style="padding:clamp(64px,8vw,100px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
 <div class="s8-grid" style="display:grid;grid-template-columns:340px 1fr;gap:clamp(40px,6vw,88px);align-items:start">
 <div>
-<h2 class="h-mod" style="margin:0">Wolisz najpierw poczytać?</h2>
+<h2 class="h-mod" style="margin:0">Wolicie najpierw poczytać?</h2>
 <div style="display:flex;gap:22px;margin-top:18px;font-size:15px;font-weight:700">
 <a href="#wiedza" class="lnk-green" style="color:#0a7a52">Blog ↗</a>
 <a href="#wiedza" class="lnk-green" style="color:#0a7a52">YouTube ↗</a>
@@ -933,42 +1187,42 @@ import GcCta from '../components/GcCta.astro';
 <section id="faq" style="background:#f4f8f2;padding:clamp(72px,9vw,110px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2));scroll-margin-top:16px">
 <div class="faq-grid" style="display:grid;grid-template-columns:1fr 720px;gap:clamp(40px,6vw,88px);align-items:start">
 <div>
-<h2 class="h-sec" style="margin:0;text-wrap:pretty">Masz pytania?<br>Zaczynamy od odpowiedzi.</h2>
-<p class="sub" style="margin:20px 0 0;max-width:380px">Najczęstsze wątpliwości, zanim usiądziemy do rozmowy. Nie znalazłeś swojej?</p>
+<h2 class="h-sec" style="margin:0;text-wrap:pretty">Macie pytania?<br>Zaczynamy od odpowiedzi</h2>
+<p class="sub" style="margin:20px 0 0;max-width:380px">Najczęstsze wątpliwości, zanim usiądziemy do rozmowy. Nie znaleźliście swojej?</p>
 <!-- EKSPERYMENT 2 — „zadaj wprost" bez twarzy jest adresowane do nikogo. -->
 <div style="display:flex;align-items:center;gap:16px;margin-top:28px;padding-top:26px;border-top:1px solid #e3e9e1;max-width:380px">
 <span style="display:block;width:76px;height:76px;border-radius:50%;overflow:hidden;flex-shrink:0;background:#eef1ec"><img src="/szymon-kita.jpg" alt="Szymon Kita — założyciel Let's automate" width="152" height="152" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;object-position:50% 9%;display:block"></span>
 <div>
 <div style="font-size:15px;font-weight:750;color:#16211a">Szymon Kita</div>
 <div style="margin-top:2px;font-size:12.5px;color:#637066">założyciel, Let's automate</div>
-<a href="#diagnoza" class="lnk-green" style="display:inline-block;margin-top:7px;font-size:15px;font-weight:700;color:#0a7a52">Zadaj pytanie wprost →</a>
+<a href="#diagnoza" class="lnk-green" style="display:inline-block;margin-top:7px;font-size:15px;font-weight:700;color:#0a7a52">Zadajcie pytanie wprost →</a>
 </div>
 </div>
 </div>
 <div class="faq-list">
 <div class="faq-item open">
-<button class="faq-q" aria-expanded="true">Kiedy zobaczę pierwsze efekty?<span class="faq-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"></path></svg></span></button>
-<div class="faq-a"><div class="faq-a-inner">Pierwszy proces działa na produkcji zwykle w 2–6 tygodni — nie w kwartały. Pełna transformacja to droga na około 12 miesięcy, ale wartość wraca po każdym kroku, a nie dopiero na końcu.</div></div>
+<button class="faq-q" aria-expanded="true">Kiedy zobaczymy pierwsze efekty?<span class="faq-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"></path></svg></span></button>
+<div class="faq-a"><div class="faq-a-inner">Pierwszy proces działa na produkcji zwykle po 2–6 tygodniach. Pełna transformacja trwa około 12 miesięcy, ale wartość wraca po każdym kroku.</div></div>
 </div>
 <div class="faq-item">
 <button class="faq-q" aria-expanded="false">Ile to kosztuje?<span class="faq-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"></path></svg></span></button>
-<div class="faq-a"><div class="faq-a-inner">Zaczynamy od bezpłatnej diagnozy — najpierw liczymy, ile kosztuje Cię status quo. Wycenę wdrożenia dostajesz dopiero, gdy znamy zakres i policzony zwrot z każdego kroku. Żadnych abonamentów w ciemno.</div></div>
+<div class="faq-a"><div class="faq-a-inner">Zaczynamy od bezpłatnej diagnozy, na której liczymy, ile kosztuje Was status quo. Wycenę wdrożenia dostajecie, kiedy znamy zakres i policzony zwrot z każdego kroku. Abonamentów w ciemno nie sprzedajemy.</div></div>
 </div>
 <div class="faq-item">
 <button class="faq-q" aria-expanded="false">Czy nasze dane są bezpieczne?<span class="faq-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"></path></svg></span></button>
-<div class="faq-a"><div class="faq-a-inner">Tak. Pracujemy zgodnie z RODO, na Twojej infrastrukturze lub w wydzielonym środowisku. Twoje dane służą wyłącznie do działania Twoich procesów — nie trafiają do trenowania cudzych modeli.</div></div>
+<div class="faq-a"><div class="faq-a-inner">Tak. Pracujemy zgodnie z RODO, na Waszej infrastrukturze albo w wydzielonym środowisku. Wasze dane służą wyłącznie Waszym procesom i nie trafiają do trenowania cudzych modeli.</div></div>
 </div>
 <div class="faq-item">
-<button class="faq-q" aria-expanded="false">Mamy już jakieś narzędzia — zaczynamy od zera?<span class="faq-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"></path></svg></span></button>
-<div class="faq-a"><div class="faq-a-inner">Nie. Budujemy na tym, co już działa — łączymy Twój CRM, finanse i operacje, zamiast kazać Ci wszystko wymieniać. Software dopasowujemy do tego, jak pracujesz dzisiaj.</div></div>
+<button class="faq-q" aria-expanded="false">Mamy już jakieś narzędzia. Zaczynamy od zera?<span class="faq-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"></path></svg></span></button>
+<div class="faq-a"><div class="faq-a-inner">Nie. Budujemy na tym, co już działa: łączymy Wasz CRM, finanse i operacje bez wymiany wszystkiego na nowe. Oprogramowanie dopasowujemy do tego, jak pracujecie dzisiaj.</div></div>
 </div>
 <div class="faq-item">
-<button class="faq-q" aria-expanded="false">Czym różnicie się od firm „wdrażających ChatGPT"?<span class="faq-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"></path></svg></span></button>
-<div class="faq-a"><div class="faq-a-inner">Nie zostawiamy prezentacji ani bota na stronie. Zostawiamy działający software, który AI napędza od środka procesów — od ofertowania po rozliczenia. Za nami stoi też grupa doradcza, więc plan obroni się przed zarządem.</div></div>
+<button class="faq-q" aria-expanded="false">Czym różnicie się od firm „wdrażających ChatGPT”?<span class="faq-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"></path></svg></span></button>
+<div class="faq-a"><div class="faq-a-inner">Zostawiamy działające oprogramowanie, w którym AI pracuje w środku procesów, od ofertowania po rozliczenia. Za nami stoi też grupa doradcza, więc plan obroni się przed zarządem.</div></div>
 </div>
 <div class="faq-item">
 <button class="faq-q" aria-expanded="false">Co, jeśli zespół nie będzie chciał z tego korzystać?<span class="faq-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"></path></svg></span></button>
-<div class="faq-a"><div class="faq-a-inner">Dlatego nie znikamy po wdrożeniu. Szkolimy zespół, mierzymy realne użycie i rozwijamy system, aż nowy sposób pracy wejdzie w krew — a nie wróci do Excela po miesiącu.</div></div>
+<div class="faq-a"><div class="faq-a-inner">Po wdrożeniu zostajemy przy zespole: szkolimy ludzi i sprawdzamy, kto naprawdę korzysta z systemu. Rozwijamy go tak długo, aż nikt nie wraca do Excela.</div></div>
 </div>
 </div>
 </div>
@@ -986,15 +1240,53 @@ import GcCta from '../components/GcCta.astro';
     var frame = document.querySelector('.mockup-frame');
     var scale = document.querySelector('.mockup-scale');
     if(!frame || !scale) return;
+    // v7: środek zestawu (590 px) zawsze na środku kolumny. Wcześniej
+    // margin:auto przy pudełku szerszym niż kolumna zerował się, a skala
+    // od środka przesuwała makietę w prawo — na telefonie wypadała poza
+    // ekran. Poniżej 700 px widać środek pulpitu (główną kolumnę) w większej
+    // skali zamiast całego pulpitu w skali 0,3.
     function fit(){
       var w = frame.clientWidth;
-      var s = Math.min(1, w / 1180);
-      scale.style.transform = 'scale(' + s + ')';
+      var s = w < 700 ? w / 640 : Math.min(1, w / 1180);
+      scale.style.transformOrigin = 'top left';
+      scale.style.margin = '0';
+      scale.style.transform = 'translateX(' + (w / 2 - 590 * s) + 'px) scale(' + s + ')';
       frame.style.height = (400 * s) + 'px';
     }
     fit();
     window.addEventListener('resize', fit);
     window.addEventListener('load', fit);
+  })();
+
+
+  // ---- Opinie (v8): cztery cytaty w jednym miejscu ----
+  // Przenikanie co 8 s, gdy cytat jest na ekranie; pauza pod kursorem i przy
+  // fokusie; przy prefers-reduced-motion tylko strzałki.
+  (function(){
+    var w = document.querySelector('[data-op9]');
+    if(!w) return;
+    var k = Array.prototype.slice.call(w.querySelectorAll('[data-op9-k]'));
+    var red = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var CZAS = 8000, i = 0, timer = null, widoczna = false, pauza = false;
+    function plan(){
+      clearTimeout(timer);
+      if(red || pauza || !widoczna) return;
+      timer = setTimeout(function(){ pokaz(i + 1); }, CZAS);
+    }
+    function pokaz(n){
+      i = (n + k.length) % k.length;
+      k.forEach(function(el, j){ el.classList.toggle('on', j === i); el.setAttribute('aria-hidden', j === i ? 'false' : 'true'); });
+      plan();
+    }
+    w.querySelector('[data-op9-wstecz]').addEventListener('click', function(){ pokaz(i - 1); });
+    w.querySelector('[data-op9-dalej]').addEventListener('click', function(){ pokaz(i + 1); });
+    w.addEventListener('mouseenter', function(){ pauza = true; plan(); });
+    w.addEventListener('mouseleave', function(){ pauza = false; plan(); });
+    w.addEventListener('focusin', function(){ pauza = true; plan(); });
+    w.addEventListener('focusout', function(e){ if(!w.contains(e.relatedTarget)){ pauza = false; plan(); } });
+    if('IntersectionObserver' in window){
+      new IntersectionObserver(function(e){ widoczna = e[0].isIntersecting; plan(); }, { threshold: 0.5 }).observe(w);
+    } else { widoczna = true; plan(); }
   })();
 
   // ---- Rotator (S1b) — pionowe przewijanie fraz co 3s ----
@@ -1017,7 +1309,7 @@ import GcCta from '../components/GcCta.astro';
     if(!('IntersectionObserver' in window)){ sec.classList.add('in'); return; }
     var io = new IntersectionObserver(function(entries){
       entries.forEach(function(e){ if(e.isIntersecting){ sec.classList.add('in'); io.disconnect(); } });
-    }, { threshold: 0.25 });
+    }, { threshold: 0.12 });   // v9: sekcja na telefonie ma ok. 3 ekrany wysokości — 0.25 łapało się na styk
     io.observe(sec);
   })();
 
@@ -1043,85 +1335,22 @@ import GcCta from '../components/GcCta.astro';
     });
   })();
 
-  // ---- Zakładki oferty (S4) — Wdrażamy AI / Budujemy / Guided Coding ----
-  // Zakładki krążą same, dopóki nikt ich nie tknie: bez tego dwie trzecie
-  // oferty nigdy się nie pokazują. Pierwsze kliknięcie zatrzymuje rotację
-  // NA DOBRE — nic nie przełącza się pod ręką czytającego. Rotacja chodzi
-  // wyłącznie wtedy, gdy sekcja jest na ekranie, żeby nikt nie wracał
-  // do losowo przestawionej zakładki.
+  // ---- Oferta (S4) — linki dróg z megamenu ----
+  // Zakładek już nie ma: wszystkie trzy drogi stoją na stronie. Klik w nazwę
+  // drogi w megamenu (data-krok-link) przewija do jej grupy, jeśli link
+  // prowadzi na tę samą stronę.
   (function(){
-    var box = document.querySelector('.krok-tabs');
-    var tabs = document.querySelectorAll('.krok-tab');
-    var layers = document.querySelectorAll('.krok-layer');
-    if(!tabs.length) return;
-
-    var KROKI = ['wdrazamy','budujemy','guided'];
-    var CZAS = 7000;
     var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion:reduce)').matches;
-    var auto = !reduce, widoczna = false, biezacy = 'wdrazamy', timer = null;
-
-    function pasek(t, aktywna){
-      if(!t) return;
-      var i = t.querySelector('.krok-pasek i');
-      if(!i) return;
-      i.style.transition = 'none';
-      i.style.width = '0%';
-      if(aktywna && auto && widoczna){
-        void i.offsetWidth;                     // reflow, inaczej przeglądarka sklei oba zapisy w jeden
-        i.style.transition = 'width ' + CZAS + 'ms linear';
-        i.style.width = '100%';
-      }
-    }
-    function plan(){
-      clearTimeout(timer);
-      if(!auto || !widoczna) return;
-      timer = setTimeout(function(){
-        setKrok(KROKI[(KROKI.indexOf(biezacy) + 1) % KROKI.length]);
-      }, CZAS);
-    }
-    function setKrok(k, odUzytkownika){
-      if(odUzytkownika && auto){
-        auto = false;
-        clearTimeout(timer);
-        if(box) box.classList.add('krok-stop');
-      }
-      biezacy = k;
-      tabs.forEach(function(t){
-        var on = t.dataset.krok === k;
-        t.classList.toggle('krok-on', on);
-        t.style.background = on ? '#ffffff' : 'transparent';
-        t.style.boxShadow = on ? '0 12px 28px -16px rgba(12,28,20,0.3)' : 'none';
-        var num = t.querySelector('.krok-num');
-        if(num) num.style.color = on ? '#0a7a52' : '#808b83';
-        pasek(t, on);
-      });
-      layers.forEach(function(l){
-        var on = l.dataset.layer === k;
-        l.style.opacity = on ? '1' : '0';
-        l.style.transform = on ? 'translateY(0)' : 'translateY(14px)';
-        l.style.pointerEvents = on ? 'auto' : 'none';
-        l.classList.toggle('active', on);
-      });
-      plan();
-    }
-
-    tabs.forEach(function(t){ t.addEventListener('click', function(){ setKrok(t.dataset.krok, true); }); });
     document.querySelectorAll('[data-krok-link]').forEach(function(el){
-      el.addEventListener('click', function(){ setKrok(el.dataset.krokLink, true); });
+      var k = el.dataset.krokLink;
+      var cel = k && document.getElementById('oferta-' + k);
+      if(!cel) return;
+      el.addEventListener('click', function(e){
+        if(new URL(el.href, location.href).pathname !== location.pathname) return;
+        e.preventDefault();
+        cel.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+      });
     });
-    setKrok('wdrazamy');
-
-    var sec = document.getElementById('oferta');
-    if(sec && 'IntersectionObserver' in window){
-      new IntersectionObserver(function(e){
-        widoczna = e[0].isIntersecting;
-        if(widoczna){ pasek(document.querySelector('.krok-tab.krok-on'), true); plan(); }
-        else clearTimeout(timer);
-      }, {threshold:0.3}).observe(sec);
-    } else {
-      widoczna = true;
-      plan();
-    }
   })();
 
   // ---- Rachunek (S2) — licznik od 0 do wartości docelowej gdy widoczny ----

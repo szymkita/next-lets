@@ -1,0 +1,38 @@
+---
+// INDEKS ROZWIJANY pod definicją („Procesy, o których mówimy"): duża
+// typografia, numer, plus. Klik rozwija dwie kolumny (domyślnie „Dziś"
+// i „Z systemem") i opcjonalnie kartę przykładu z liczbą przed → po.
+// Bez dopisków typu „Wasz proces nazywa się pewnie inaczej".
+interface Pozycja {
+  t: string;
+  a: string;
+  b: string;
+  przyklad?: { f: string; przed: string; po: string; href?: string };
+}
+interface Props {
+  tytul: string;
+  pozycje: Pozycja[];
+  etykietaA?: string;
+  etykietaB?: string;
+}
+const { tytul, pozycje, etykietaA = 'Dziś', etykietaB = 'Z systemem' } = Astro.props;
+---
+<div class="v3-ix">
+<div class="ix-gl">
+<h3>{tytul}</h3>
+</div>
+{pozycje.map((x, i) => (
+  <details class="ix-w rv">
+    <summary>
+      <span class="ix-n">{String(i + 1).padStart(2, '0')}</span>
+      <span class="ix-t">{x.t}</span>
+      <span class="ix-plus" aria-hidden="true"></span>
+    </summary>
+    <div class="ix-roz">
+      <div><b>{etykietaA}</b><p>{x.a}</p></div>
+      <div><b>{etykietaB}</b><p>{x.b}</p></div>
+      {x.przyklad && <a href={x.przyklad.href || '#dowody'} class="ix-pr"><b>Przykład</b><span>{x.przyklad.f}</span><em><s>{x.przyklad.przed}</s> → {x.przyklad.po}</em></a>}
+    </div>
+  </details>
+))}
+</div>

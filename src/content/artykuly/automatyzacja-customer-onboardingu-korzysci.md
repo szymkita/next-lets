@@ -27,23 +27,21 @@ Powyższe problemy oznaczają ciągłe angażowanie uwagi zarówno klienta, jak 
 
 ## Jak automatyzacja usprawnia onboarding klientów? Oto kilka przykładów:
 
-### Integracja onboardingu z systemem CRM
+#### Integracja onboardingu z systemem CRM
 
-Pierwszą z korzyści jest możliwość połączenia procesu onboardingu wraz z obecnym systememCRM. W ten sposób wszystkie informacje o kliencie i przebiegu jego wprowadzania znajdziesz w jednym miejscu. To oznacza koniec z ciągłym sprawdzaniem konwersacji i zadawaniem tych samych pytań.
+Pierwszą z korzyści jest możliwość połączenia procesu onboardingu wraz z obecnym systemem CRM. W ten sposób wszystkie informacje o kliencie i przebiegu jego wprowadzania znajdziesz w jednym miejscu. To oznacza koniec z ciągłym sprawdzaniem konwersacji i zadawaniem tych samych pytań.
 
-### Cały onboarding w jednej ankiecie
+#### Cały onboarding w jednej ankiecie
 
-Dzięki automatyzacji możemy zamknąć wszystkie procesy związane z onboardingiem klienta w wygodnym i przyjemnym dla oka formularzu, który poprowadzi go za rękę, krok po kroku. Co to oznacza?
-
-Customowy formularz onboardingowy pozwoli obsłużyć **cały proces w jednym miejscu**, dzięki czemu nie zgubimy żadnych informacji i nie przytłoczymy klienta liczbą wiadomości oraz wymagań. To za jego pośrednictwem zostaną przesłane wszystkie potrzebne informacje i załączniki, a klient w kilka sekund podpisze wymagane zgody lub dokumenty – **bez konieczności drukowania, skanowania i wysyłania plików w mailach**.
+Dzięki automatyzacji możemy zamknąć wszystkie procesy związane z onboardingiem klienta w wygodnym i przyjemnym dla oka formularzu, który poprowadzi go za rękę, krok po kroku. Co to oznacza?<br><br>Customowy formularz onboardingowy pozwoli obsłużyć **cały proces w jednym miejscu**, dzięki czemu nie zgubimy żadnych informacji i nie przytłoczymy klienta liczbą wiadomości oraz wymagań. To za jego pośrednictwem zostaną przesłane wszystkie potrzebne informacje i załączniki, a klient w kilka sekund podpisze wymagane zgody lub dokumenty – **bez konieczności drukowania, skanowania i wysyłania plików w mailach**.
 
 Co więcej, cała komunikacja wraz z aktualizacjami o postępach onboardingu widoczna będzie w dedykowanym dashboardzie, który ułatwi monitorowanie przebiegu procesu.
 
-### Automatyczne kompletowanie i organizowanie plików dostarczanych przez klientów
+#### Automatyczne kompletowanie i organizowanie plików dostarczanych przez klientów
 
 Wysyłanie plików w załącznikach oraz późniejsze zapisywanie ich na dyskach to jeden z największych problemów w obsłudze klienta. To zazwyczaj powoduje niepotrzebny chaos organizacyjny i wydłuża proces onboardingu. **Po wdrożeniu automatyzacji cały obieg dokumentów zostanie usprawniony**. System sam pobierze i skataloguje otrzymane pliki, a wszystkie wrażliwe dane przechowywane będą na bezpiecznej platformie, do której zarówno Ty, jak i klient, będziecie mieć wygodny dostęp.
 
-### Większe bezpieczeństwo danych
+#### Większe bezpieczeństwo danych
 
 Opisane wyżej przeorganizowanie procesów związanych z pracą na danych klienta, to nie tylko większa wygoda, ale też **gwarancja bezpieczeństwa danych klienta**. Automatyzowanie całej procedury – od przesłania pliku, aż po jego skatalogowanie i wykorzystanie – pozwala nam zadbać o poufne informacje na każdym etapie. Wdrożenie automatyzacji oznacza wyeliminowanie ryzyka popełnienia błędu lub przypadkowego udostępnienia wrażliwych informacji.
 

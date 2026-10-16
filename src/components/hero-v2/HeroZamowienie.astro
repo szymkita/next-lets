@@ -1,0 +1,342 @@
+---
+// WARIANT B — „Zamówienie przez całą firmę" (16.10.2026)
+// Rama jak na podstronach usługowych w wariancie „obok": ciemna plansza,
+// tekst po lewej, okno po prawej, w środku planszy (nic nie wisi).
+//
+// Pulpit z wariantu A pokazuje firmę z góry; to okno pokazuje, jak jedna
+// sprawa przechodzi przez działy: mail klienta → potwierdzenie (handel) →
+// kompletacja (magazyn) → wysyłka → faktura i płatność (finanse). Większość
+// wpisów na osi „Przebieg" robi system, człowiek pojawia się tam, gdzie
+// trzeba coś zrobić rękami albo zdecydować.
+// Dwie sprawy na zmianę:
+//   · ZM-0913 — wszystko jest na stanie, ręcznie tylko pakowanie,
+//   · ZM-0914 — brakuje rury; zaopatrzenie decyduje o dwóch dostawach,
+//     klient się zgadza, magazyn pakuje pierwszą część.
+// Bez liczników i metryk czasu: godziny przy wpisach mówią same za siebie.
+// Stan w markupie to koniec pierwszej sprawy (bez JS i przy ograniczonym
+// ruchu); skrypt chowa wpisy i odgrywa przebieg, pauza poza kadrem.
+//
+// DO POTWIERDZENIA: firmy, osoby, ceny i numery są zmyślone; zdjęcia
+// zastępcze z public/makieta.
+import { IK } from './ikony';
+
+const OS = {
+  sys: { n: 'System' },
+  ak: { n: 'Anna Kowal', f: '/makieta/awatar-anna.webp' },
+  tw: { n: 'Tomasz Wilk', f: '/makieta/awatar-tomasz.webp' },
+  bn: { n: 'Bartek Nowicki', f: '/makieta/awatar-bartek.webp' },
+  jw: { n: 'Jan Wróbel', f: '/makieta/awatar-jakub.webp' },
+};
+const ETAPY = [
+  { t: 'Mail', d: 'poczta' },
+  { t: 'Potwierdzenie', d: 'handel' },
+  { t: 'Kompletacja', d: 'magazyn' },
+  { t: 'Wysyłka', d: 'logistyka' },
+  { t: 'Faktura', d: 'finanse' },
+  { t: 'Płatność', d: 'finanse' },
+];
+const zl = (v) => `${v.toLocaleString('pl-PL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} zł`;
+const netto = (poz) => poz.reduce((a, x) => a + x.n * x.c, 0);
+
+// e = etap, który wpis zamyka (albo, przy `tu`, na którym sprawa stoi).
+const ZAM = [
+  {
+    nr: 'ZM-0913', kl: 'Hydro-Serwis', tytul: 'Hydro-Serwis — zawory i rura PEX',
+    mail: 'mail od Pawła Lisa · czw 16.10, 8:14', plik: 'zamowienie_1610.pdf',
+    kontakt: 'Paweł Lis, zaopatrzenie', termin: 'pt 17.10, kurier',
+    stan: { ok: true, t: 'Zamknięta' }, etap: 6,
+    poz: [
+      { i: 'Zawór kulowy ½″ GW-GZ', n: 40, j: 'szt.', c: 42, st: 'na stanie' },
+      { i: 'Rura PEX-AL-PEX 16×2', n: 120, j: 'm', c: 7.8, st: 'na stanie' },
+      { i: 'Złączka zaciskowa 16 × ½″', n: 80, j: 'szt.', c: 9.4, st: 'na stanie' },
+      { i: 'Grupa pompowa DN25', n: 2, j: 'szt.', c: 1465, st: 'na stanie' },
+    ],
+    wpisy: [
+      { h: '8:14', k: 'sys', t: 'przeczytał mail i założył zamówienie', doc: 'zamowienie_1610.pdf', e: 0 },
+      { h: '8:14', k: 'sys', t: 'potwierdził stany w magazynie', e: 0 },
+      { h: '8:15', k: 'sys', t: 'wysłał potwierdzenie z terminem', doc: 'Potwierdzenie ZM-0913', e: 1 },
+      { h: '9:02', k: 'tw', t: 'skompletował i spakował dwie paczki', doc: 'WZ 10/221', e: 2 },
+      { h: '11:30', k: 'sys', t: 'zamówił kuriera, klient ma numer listu', e: 3 },
+      { h: '11:31', k: 'sys', t: 'wystawił i wysłał fakturę', doc: 'FV 10/418', e: 4, kw: true },
+      { h: 'pt 9:05', k: 'sys', t: 'dopasował przelew, sprawa zamknięta', e: 5 },
+    ],
+  },
+  {
+    nr: 'ZM-0914', kl: 'Wod-Kan', tytul: 'Wod-Kan — rura PEX i rozdzielacze',
+    mail: 'mail od Jana Wróbla · czw 16.10, 10:06', plik: 'zamowienie_wodkan.pdf',
+    kontakt: 'Jan Wróbel, właściciel', termin: '17.10 i 21.10',
+    stan: { ok: false, t: 'Część 1 z 2 w drodze' }, etap: 3,
+    poz: [
+      { i: 'Rura PEX-AL-PEX 16×2', n: 300, j: 'm', c: 7.8, st: '120 m we wtorek', brak: true },
+      { i: 'Kolano zaciskowe 16', n: 60, j: 'szt.', c: 11.2, st: 'na stanie' },
+      { i: 'Rozdzielacz 5-obwodowy', n: 3, j: 'szt.', c: 389, st: 'na stanie' },
+    ],
+    wpisy: [
+      { h: '10:06', k: 'sys', t: 'przeczytał mail i założył zamówienie', doc: 'zamowienie_wodkan.pdf', e: 0 },
+      { h: '10:06', k: 'sys', t: 'brakuje 120 m rury, pyta zaopatrzenie', e: 0, brak: true },
+      { h: '10:21', k: 'bn', t: 'rura we wtorek, reszta jedzie od razu', e: 0 },
+      { h: '10:22', k: 'sys', t: 'zaproponował klientowi dwie dostawy', doc: 'Potwierdzenie ZM-0914', e: 1 },
+      { h: '10:40', k: 'jw', t: 'zgoda na dwie dostawy', e: 1, klient: true },
+      { h: '11:15', k: 'tw', t: 'spakował pierwszą część', doc: 'WZ 10/224', e: 2 },
+      { h: '11:42', k: 'sys', t: 'zamówił kuriera dla pierwszej części', e: 3, tu: true },
+    ],
+  },
+].map((z) => ({ ...z, netto: zl(netto(z.poz)), brutto: zl(netto(z.poz) * 1.23) }));
+
+const sys = `<b class="hz-sys"><svg viewBox="0 0 16 16">${IK['fire']}</svg></b>`;
+const ARIA = 'Karta zamówienia w systemie firmy: zamówienie z maila przechodzi przez handel, magazyn, wysyłkę i finanse. Większość kroków robi system, ludzie pakują towar i decydują, gdy czegoś brakuje.';
+---
+<figure class="hz hero-wid" data-hz data-v="0" role="img" aria-label={ARIA}>
+<div class="hz-okno" aria-hidden="true">
+<div class="hz-tyt">
+<span class="hz-sw"><i></i><i></i><i></i></span>
+<span class="hz-tyt-t">Termo-Bud — Zamówienia</span>
+</div>
+<div class="hz-uk">
+<nav class="hz-rail">
+<b><svg viewBox="0 0 16 16" set:html={IK['fire']}></svg></b>
+<span><svg class="hi" viewBox="0 0 16 16" set:html={IK['home']}></svg></span>
+<span><svg class="hi" viewBox="0 0 16 16" set:html={IK['inbox']}></svg></span>
+<span class="on"><svg class="hi" viewBox="0 0 16 16" set:html={IK['archive-box']}></svg></span>
+<span><svg class="hi" viewBox="0 0 16 16" set:html={IK['document-text']}></svg></span>
+<span><svg class="hi" viewBox="0 0 16 16" set:html={IK['users']}></svg></span>
+<span class="dol"><svg class="hi" viewBox="0 0 16 16" set:html={IK['cog-6-tooth']}></svg></span>
+</nav>
+<div class="hz-widoki">
+{ZAM.map((z, v) => (
+<section class="hz-v" data-v={v}>
+<div class="hz-pasek">
+<span class="hz-bc"><svg class="hi" viewBox="0 0 16 16" set:html={IK['archive-box']}></svg><span>Zamówienia</span><svg class="hi" viewBox="0 0 16 16" set:html={IK['chevron-right']}></svg><b>{z.nr}</b></span>
+<span class="hz-akc"><span class="hz-ludzie">{(v === 0 ? ['ak', 'tw'] : ['ak', 'bn', 'tw']).map((k) => (<img src={OS[k].f} alt="" width="22" height="22" loading="lazy">))}</span><span class="hz-ib"><svg class="hi" viewBox="0 0 16 16" set:html={IK['arrow-down-tray']}></svg></span></span>
+</div>
+<div class="hz-tresc">
+<div class="hz-gl">
+<div>
+<h3>{z.tytul}</h3>
+<p><svg class="hi" viewBox="0 0 16 16" set:html={IK['envelope']}></svg>{z.mail}</p>
+</div>
+<span class={`hz-stan${z.stan.ok ? ' ok' : ''}`} data-stan>{z.stan.ok ? <svg class="hi" viewBox="0 0 16 16" set:html={IK['check-circle']}></svg> : <svg class="hi" viewBox="0 0 16 16" set:html={IK['truck']}></svg>}{z.stan.t}</span>
+</div>
+<ol class="hz-etapy" role="list">
+{ETAPY.map((x, i) => (<li class={i < z.etap ? 'ok' : i === z.etap ? 'tu' : ''} data-etap={i}><i></i><b>{x.t}</b><em>{x.d}</em></li>))}
+</ol>
+<div class="hz-kol">
+<div class="hz-przeb">
+<h4>Przebieg</h4>
+<div class="hz-okno-os" data-okno-os>
+<ol class="hz-os" role="list">
+{z.wpisy.map((w) => (
+  <li class={w.tu ? 'tu' : ''} data-wpis data-e={w.e}>
+    {w.k === 'sys' ? <Fragment set:html={sys} /> : <img src={OS[w.k].f} alt="" width="20" height="20" loading="lazy">}
+    <div>
+      <p><strong>{w.k === 'sys' ? 'System' : OS[w.k].n.split(' ')[0]}</strong>{w.klient && <span class="hz-kl">klient</span>} {w.brak && <i class="czk-j"></i>}{w.t}</p>
+      {w.doc && <span class="hz-doc"><svg class="hi" viewBox="0 0 16 16" set:html={IK[w.doc.endsWith('.pdf') ? 'paper-clip' : 'document-text']}></svg>{w.doc}{w.kw && <em>{z.brutto}</em>}</span>}
+    </div>
+    <time>{w.h}</time>
+  </li>
+))}
+</ol>
+</div>
+</div>
+<aside class="hz-bok">
+<div class="hz-wk"><span>Wartość netto</span><b>{z.netto}</b></div>
+<dl>
+<div><dt>Klient</dt><dd>{z.kl}</dd></div>
+<div><dt>Kontakt</dt><dd>{z.kontakt}</dd></div>
+<div><dt>Termin</dt><dd>{z.termin}</dd></div>
+</dl>
+<h4>Pozycje</h4>
+<ul class="hz-poz" role="list">
+{z.poz.map((x) => (
+  <li><span>{x.i}</span><em>{x.n} {x.j}</em><span class={x.brak ? 'brak' : ''}>{x.brak ? <i class="czk-j"></i> : <svg class="hi" viewBox="0 0 16 16" set:html={IK['check-circle']}></svg>}{x.st}</span></li>
+))}
+</ul>
+</aside>
+</div>
+</div>
+</section>
+))}
+</div>
+</div>
+</div>
+</figure>
+
+<script is:inline>
+(function(){
+  var fig = document.querySelector('[data-hz]');
+  if (!fig || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var widoki = fig.querySelectorAll('.hz-v');
+  fig.classList.add('gra');
+
+  // Stan startowy widoku: wpisy schowane, etapy puste, stan sprawy schowany.
+  function zeruj(v){
+    v.querySelectorAll('[data-wpis]').forEach(function(li){ li.classList.remove('on'); });
+    v.querySelector('.hz-os').style.transform = '';
+    v.querySelectorAll('[data-etap]').forEach(function(e, i){ e.className = i === 0 ? 'tu' : ''; });
+    v.querySelector('[data-stan]').classList.remove('on');
+  }
+  function etap(v, n, tu){
+    v.querySelectorAll('[data-etap]').forEach(function(e, i){ e.className = i < n ? 'ok' : (i === n ? 'tu' : ''); });
+  }
+
+  // Przebieg jednego widoku: wpis po wpisie, etap za etapem.
+  var akcje = [];
+  function plan(){
+    akcje = [];
+    [0, 1].forEach(function(nr){
+      var v = widoki[nr], wpisy = v.querySelectorAll('[data-wpis]');
+      akcje.push([nr === 0 ? 600 : 900, function(){ zeruj(v); fig.dataset.v = nr; }]);
+      wpisy.forEach(function(li){
+        akcje.push([nr === 0 ? 1050 : 1250, function(){
+          li.classList.add('on');
+          // Oś jedzie w górę, kiedy nowy wpis nie mieści się w oknie.
+          var ok = v.querySelector('[data-okno-os]'), os = v.querySelector('.hz-os');
+          // Przesuwa się o całe wpisy, żeby u góry nie wisiał sam załącznik.
+          var nad = li.offsetTop + li.offsetHeight - ok.clientHeight + 10, o = 0;
+          if (nad > 0) { var lis = os.children; for (var j = 0; j < lis.length; j++) { if (lis[j].offsetTop >= nad) { o = lis[j].offsetTop; break; } } }
+          os.style.transform = o ? 'translateY(' + (-o) + 'px)' : '';
+          var e = +li.dataset.e;
+          etap(v, li.classList.contains('tu') ? e : e + 1);
+        }]);
+      });
+      akcje.push([700, function(){ v.querySelector('[data-stan]').classList.add('on'); }]);
+      akcje.push([nr === 0 ? 3600 : 4400, function(){}]);
+    });
+  }
+  plan();
+  zeruj(widoki[0]); zeruj(widoki[1]);
+
+  var i = 0, widac = false, czeka = false, start = false;
+  function krok(){
+    if (!widac) { czeka = true; return; }
+    akcje[i][1]();
+    i = (i + 1) % akcje.length;
+    setTimeout(krok, akcje[i][0]);
+  }
+  new IntersectionObserver(function(w){
+    widac = w[0].isIntersecting;
+    if (widac && !start) { start = true; setTimeout(krok, 400); }
+    else if (widac && czeka) { czeka = false; setTimeout(krok, 900); }
+  }, { threshold: 0.25 }).observe(fig);
+})();
+</script>
+
+<style is:global>
+  .hz{--t1:#18181b;--t2:#52525b;--t3:#71717a;--t4:#a1a1aa;--lin:rgba(9,9,11,0.08);--lin2:rgba(9,9,11,0.05);
+    position:relative;margin:0;container-type:inline-size;font-size:12.5px;line-height:1.4;color:var(--t1);letter-spacing:-0.004em;-webkit-font-smoothing:antialiased}
+  .hz .hi{display:block;flex-shrink:0;width:16px;height:16px;fill:currentColor}
+  .hz-okno{position:relative;overflow:hidden;border-radius:12px;background:#ffffff;
+    box-shadow:0 0 0 1px rgba(255,255,255,0.14),0 0 0 1.5px rgba(0,0,0,0.3),0 50px 100px -40px rgba(0,0,0,0.9),0 18px 36px -20px rgba(0,0,0,0.55)}
+  .hz-tyt{position:relative;display:flex;align-items:center;height:36px;padding:0 12px;background:#f7f7f6;border-bottom:1px solid var(--lin)}
+  .hz-sw{display:flex;gap:7px}
+  .hz-sw i{display:block;width:11px;height:11px;border-radius:50%;background:#ff5f57;box-shadow:inset 0 0 0 0.5px rgba(0,0,0,0.18)}
+  .hz-sw i:nth-child(2){background:#febc2e}
+  .hz-sw i:nth-child(3){background:#28c840}
+  .hz-tyt-t{position:absolute;left:50%;transform:translateX(-50%);font-size:12px;font-weight:550;color:var(--t2);white-space:nowrap}
+
+  .hz-uk{display:grid;grid-template-columns:48px minmax(0,1fr);height:580px}
+  .hz-rail{display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 0;background:#fafaf9;border-right:1px solid var(--lin)}
+  .hz-rail > b{display:grid;place-items:center;width:26px;height:26px;margin-bottom:10px;border-radius:7px;background:#0f1a14;box-shadow:inset 0 1px 0 rgba(255,255,255,0.12)}
+  .hz-rail > b svg{width:13px;height:13px;fill:#00cd77}
+  .hz-rail > span{display:grid;place-items:center;width:32px;height:32px;border-radius:8px;color:var(--t4)}
+  .hz-rail > span.on{background:#ffffff;color:var(--t1);box-shadow:0 0 0 1px var(--lin),0 1px 2px rgba(0,0,0,0.05)}
+  .hz-rail > span.dol{margin-top:auto}
+
+  /* dwa widoki (dwie sprawy) w jednym miejscu; aktywny wskazuje data-v */
+  .hz-widoki{position:relative;min-width:0;min-height:0}
+  .hz-v{position:absolute;inset:0;display:flex;flex-direction:column;min-height:0;opacity:0;transform:translateY(6px);pointer-events:none;transition:opacity .25s ease,transform .3s ease}
+  .hz[data-v="0"] .hz-v[data-v="0"],.hz[data-v="1"] .hz-v[data-v="1"]{opacity:1;transform:none;transition:opacity .45s ease .2s,transform .6s cubic-bezier(.2,.8,.2,1) .2s}
+
+  .hz-pasek{display:flex;align-items:center;gap:10px;flex-shrink:0;height:48px;padding:0 12px 0 18px;border-bottom:1px solid var(--lin);white-space:nowrap}
+  .hz-bc{display:flex;align-items:center;gap:6px;min-width:0;font-size:12.5px;color:var(--t3)}
+  .hz-bc .hi{width:14px;height:14px;color:var(--t4)}
+  .hz-bc b{font-weight:550;color:var(--t1)}
+  .hz-akc{display:flex;align-items:center;gap:8px;margin-left:auto}
+  .hz-ludzie{display:flex}
+  .hz-ludzie img{display:block;width:22px;height:22px;margin-left:-6px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 2px #ffffff;outline:1px solid rgba(0,0,0,0.06);outline-offset:-1px}
+  .hz-ib{display:grid;place-items:center;width:30px;height:30px;border-radius:8px;color:var(--t3);box-shadow:inset 0 0 0 1px var(--lin)}
+  .hz-ib .hi{width:14px;height:14px}
+
+  .hz-tresc{flex:1;min-height:0;display:flex;flex-direction:column;padding:20px 22px 0}
+  .hz-gl{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}
+  .hz-gl h3{margin:0;font-size:17px;line-height:1.25;font-weight:600;letter-spacing:-0.02em}
+  .hz-gl p{display:flex;align-items:center;gap:6px;margin:5px 0 0;font-size:12px;color:var(--t3)}
+  .hz-gl p .hi{width:14px;height:14px;color:var(--t4)}
+  .hz-stan{display:flex;align-items:center;gap:6px;flex-shrink:0;margin-top:2px;font-size:12px;font-weight:550;color:#9c5f14;white-space:nowrap;transition:opacity .4s ease,transform .5s cubic-bezier(.2,.8,.2,1)}
+  .hz-stan .hi{width:14px;height:14px}
+  .hz-stan.ok{color:#047857}
+  .hz.gra .hz-stan:not(.on){opacity:0;transform:translateY(4px)}
+
+  /* etapy przez działy */
+  .hz-etapy{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));margin:18px 0 0;padding:0 0 16px;list-style:none;border-bottom:1px solid var(--lin)}
+  .hz-etapy li{position:relative;display:flex;flex-direction:column;gap:1px;padding-top:22px;min-width:0}
+  .hz-etapy li::before{content:"";position:absolute;left:14px;right:0;top:6px;height:2px;border-radius:1px;background:#ececec}
+  .hz-etapy li:last-child::before{display:none}
+  .hz-etapy li::after{content:"";position:absolute;left:14px;top:6px;height:2px;width:0;border-radius:1px;background:#10b981;transition:width .7s cubic-bezier(.4,0,.2,1)}
+  .hz-etapy li.ok:not(:last-child)::after{width:calc(100% - 14px)}
+  .hz-etapy i{position:absolute;left:0;top:0;width:14px;height:14px;border-radius:50%;background:#ffffff;box-shadow:inset 0 0 0 1.5px #d4d4d8;transition:background .3s,box-shadow .3s}
+  .hz-etapy li.ok i{background:#10b981;box-shadow:none}
+  .hz-etapy li.ok i::after{content:"";position:absolute;left:4.5px;top:3px;width:3px;height:6px;border:solid #ffffff;border-width:0 1.6px 1.6px 0;transform:rotate(45deg)}
+  .hz-etapy li.tu i{box-shadow:inset 0 0 0 1.5px #10b981,0 0 0 4px rgba(16,185,129,0.14)}
+  .hz-etapy li.tu i::after{content:"";position:absolute;inset:4px;border-radius:50%;background:#10b981;animation:hz-puls 1.6s ease-in-out infinite}
+  @keyframes hz-puls{0%,100%{opacity:1}50%{opacity:.35}}
+  .hz-etapy b{font-size:12px;font-weight:550;color:var(--t4);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:color .3s}
+  .hz-etapy li.ok b,.hz-etapy li.tu b{color:var(--t1)}
+  .hz-etapy em{font-style:normal;font-size:11px;color:var(--t4)}
+
+  .hz-kol{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 200px;gap:20px}
+  .hz-przeb{display:flex;flex-direction:column;min-width:0;min-height:0;padding-top:14px}
+  .hz-okno-os{flex:1;min-height:0;overflow:hidden;-webkit-mask-image:linear-gradient(180deg,transparent 0,#000 14px,#000 calc(100% - 18px),transparent);mask-image:linear-gradient(180deg,transparent 0,#000 14px,#000 calc(100% - 18px),transparent);padding-top:4px}
+  .hz h4{margin:0 0 10px;font-size:12px;font-weight:600}
+  .hz-os{position:relative;margin:0;padding:0;list-style:none;transition:transform .7s cubic-bezier(.4,0,.2,1)}
+  .hz-os li{position:relative;display:grid;grid-template-columns:20px minmax(0,1fr) auto;gap:10px;padding:0 0 13px;transition:opacity .45s ease,transform .55s cubic-bezier(.2,.8,.2,1)}
+  .hz-os li::before{content:"";position:absolute;left:10px;top:24px;bottom:2px;width:1px;background:var(--lin)}
+  .hz-os li:last-child::before{display:none}
+  .hz.gra .hz-os li:not(.on){opacity:0;transform:translateY(6px)}
+  .hz-os time{padding-top:3px;font-size:11px;color:var(--t4);text-align:right;white-space:nowrap}
+  .hz-os li > img,.hz-os li > .hz-sys{width:20px;height:20px;border-radius:50%;object-fit:cover}
+  .hz-os li > img{outline:1px solid rgba(0,0,0,0.06);outline-offset:-1px}
+  .hz-sys{display:grid;place-items:center;border-radius:6px !important;background:#0f1a14}
+  .hz-sys svg{width:11px;height:11px;fill:#00cd77}
+  .hz-os p{margin:0;padding-top:2px;font-size:12.5px;line-height:1.4;color:var(--t2)}
+  .hz-os p strong{font-weight:600;color:var(--t1)}
+  .hz-os p i{display:inline-block;width:14px;height:10px;margin-right:4px;border-radius:2px;vertical-align:-1px}
+  .hz-kl{display:inline-block;margin-left:5px;padding:0 5px;border-radius:4px;font-size:10.5px;line-height:16px;color:var(--t3);box-shadow:inset 0 0 0 1px var(--lin)}
+  .hz-os li.tu p strong::after{content:"";display:inline-block;width:6px;height:6px;margin:0 2px 1px 6px;vertical-align:1px;border-radius:50%;background:#10b981;animation:hz-puls 1.6s ease-in-out infinite}
+  .hz-doc{display:inline-flex;align-items:center;gap:6px;margin-top:7px;padding:4px 9px 4px 7px;border-radius:7px;background:#ffffff;font-size:11.5px;font-weight:550;color:var(--t1);box-shadow:0 0 0 1px var(--lin),0 1px 2px rgba(0,0,0,0.04)}
+  .hz-doc .hi{width:13px;height:13px;color:var(--t4)}
+  .hz-doc em{margin-left:4px;font-style:normal;font-weight:400;color:var(--t3)}
+
+  .hz-bok{min-width:0;min-height:0;overflow:hidden;padding:14px 0 0 18px;border-left:1px solid var(--lin)}
+  .hz-wk span{display:block;font-size:11.5px;color:var(--t3)}
+  .hz-wk b{display:block;margin-top:2px;font-size:22px;line-height:1.15;font-weight:600;letter-spacing:-0.03em;white-space:nowrap}
+  .hz-bok dl{margin:12px 0 16px;padding:8px 0;border-top:1px solid var(--lin);border-bottom:1px solid var(--lin)}
+  .hz-bok dl > div{display:grid;grid-template-columns:58px minmax(0,1fr);align-items:center;min-height:23px;font-size:11.5px}
+  .hz-bok dt{font-weight:500;color:var(--t2)}
+  .hz-bok dd{display:flex;align-items:center;gap:6px;min-width:0;margin:0;color:var(--t3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .hz-bok dd img{width:16px;height:16px;border-radius:50%;object-fit:cover}
+  .hz-poz{margin:0;padding:0;list-style:none}
+  .hz-poz li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:1px 8px;padding:7px 0;border-top:1px solid var(--lin2);font-size:11.5px}
+  .hz-poz li:first-child{border-top:0;padding-top:0}
+  .hz-poz li > span:first-child{min-width:0;font-weight:550;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .hz-poz li > em{font-style:normal;color:var(--t3);white-space:nowrap}
+  .hz-poz li > span:last-child{grid-column:1 / -1;display:flex;align-items:center;gap:5px;color:var(--t3)}
+  .hz-poz li > span:last-child .hi{width:12px;height:12px;color:#10b981}
+  .hz-poz li > span.brak{color:#9c5f14}
+  .hz-poz li > span.brak i{display:block;width:12px;height:9px;border-radius:2px}
+
+  @container (max-width:640px){
+    .hz-kol{grid-template-columns:minmax(0,1fr)}
+    .hz-bok{display:none}
+  }
+  @container (max-width:520px){
+    .hz-uk{grid-template-columns:minmax(0,1fr);height:540px}
+    .hz-rail,.hz-ludzie{display:none}
+    .hz-tresc{padding:16px 14px 0}
+    .hz-pasek{padding:0 12px 0 14px}
+    .hz-gl{flex-direction:column;gap:6px}
+    .hz-etapy em{display:none}
+    .hz-etapy b{font-size:10.5px}
+    .hz-os li{gap:9px}
+  }
+</style>

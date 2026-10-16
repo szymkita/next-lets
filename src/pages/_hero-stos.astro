@@ -1,0 +1,40 @@
+---
+// Stos maili z hero v4 wydzielony na potrzeby strony z wariantami hero
+// (/systemy-procesowe-hero), gdzie ten sam wątek stoi w trzech układach.
+// Plik z podkreślnikiem — Astro nie robi z niego podstrony.
+// Markup 1:1 z /systemy-procesowe-v4; dane liczy strona, która go wstawia.
+const { watek, temat, poGodz, pracaPo, koniec, pozycje, obieg } = Astro.props;
+---
+<div class="wt-stos" aria-hidden="true">
+{watek.map((m, i) => {
+  const k = watek.length - 1 - i;
+  const plik = m.zal && (m.zal.endsWith('.pdf') ? '#d0573f' : '#3d7a55');
+  return (
+  <article class="wt-m" style={`--j:${i};--k:${k};z-index:${i + 1}`} data-m data-sekw={JSON.stringify(m.sekw)}>
+    <header class="wt-mh">
+      <span class="wt-d"><i>{m.dt}</i><b>{m.dzien}</b></span>
+      <span class="wt-kto"><b>{m.od}</b><em> · {m.dz}</em><span class="do"> → {m.do}</span></span>
+      {m.chip ? <span class="wt-czk"><i class="czk-j"></i>{m.chip}</span> : <span></span>}
+      <time>{m.h}</time>
+    </header>
+    <div class="wt-mb">
+      <b class="wt-tem">{m.re && <span>{m.re}</span>}{m.klient ? 'Oferta – hala 42 × 18 m' : temat}{m.klient && <span class="wt-kl">do klienta</span>}</b>
+      <p>{m.t}</p>
+      {m.zal && <span class="wt-zal"><i style={`--plik:${plik}`}></i>{m.zal}</span>}
+    </div>
+  </article>
+  );
+})}
+<article class="wt-sys" data-sys>
+<div class="ws-pas"><i></i><span>Ofertowanie</span><span>/</span><b>Karta sprawy</b></div>
+<div class="ws-gl"><div><span>ZP-2484 · zapytanie z pon 7.09, 14:02</span><h3>Stalprofil · hala 42 × 18 m</h3></div><span class="ws-chip">Oferta wysłana</span></div>
+<div class="ws-czas"><b>{poGodz}<span>godziny</span></b><em>od zapytania do oferty · pracy {pracaPo} min · wysłana {koniec}</em></div>
+<div class="ws-poz">
+<span class="n"><span>Pozycja · ceny z ERP, stany z magazynu</span><span>Ilość</span><span>Stan</span></span>
+{pozycje.map((x) => (<span><span>{x.i}</span><span>{x.n}</span><em class={x.ok ? '' : 'brak'}>{x.st}</em></span>))}
+</div>
+<div class="ws-ob">
+{obieg.map((x) => (<div class={x.pom ? 'ws-k pom' : 'ws-k'}><b>{x.t}</b><span>{x.k}</span></div>))}
+</div>
+</article>
+</div>
