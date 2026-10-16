@@ -22,6 +22,8 @@
 //   5. kontakt — wspólny moduł
 //
 // CZEGO TU NIE MA
+//   · dat artykułów (decyzja z 16.10.2026) — kolejność listy nadal idzie
+//     od najnowszych, a data zostaje w danych strukturalnych artykułu
 //   · wyszukiwarki — filtr po kategorii plus rozwijana lista wystarczają;
 //     pole wyszukiwania dokładać, gdy wpisów będzie ponad sto
 //   · paginacji z osobnymi adresami — lista rośnie na miejscu, przyciskiem
@@ -57,8 +59,6 @@ const spisTresci = (tresc) => {
     .replace(/<[^>]+>/g, '')
     .replace(/\\(.)/g, '$1'));
 };
-
-const dl = new Intl.DateTimeFormat('pl-PL', { day: 'numeric', month: 'long', year: 'numeric' });
 
 const wyrozniony = wszystkie.find((a) => a.data.wyrozniony) || wszystkie[0];
 
@@ -171,7 +171,6 @@ const dane = {
 <div class="bw-licz">
 <span><b>{wszystkie.length}</b> {odmiana(wszystkie.length, ['artykuł', 'artykuły', 'artykułów'])}</span>
 <span><b>{FILMY.length}</b> {odmiana(FILMY.length, ['nagranie', 'nagrania', 'nagrań'])}</span>
-<span>ostatni wpis {dl.format(wszystkie[0].data.data)}</span>
 </div>
 </section>
 
@@ -181,7 +180,6 @@ const dane = {
 <a href={adresArtykulu(wyrozniony.slug)}>
 <div class="bw-w-meta">
 <span class="bw-w-kat">{KATEGORIE[wyrozniony.data.kategoria].nazwa}</span>
-<span>{dl.format(wyrozniony.data.data)}</span>
 <span>{czasCzytania(wyrozniony.body)} min czytania</span>
 </div>
 <span class="bw-w-t">{wyrozniony.data.tytul}</span>

@@ -5,7 +5,8 @@
 // adresami, pod którymi zna je Google (patrz src/content/config.ts).
 //
 // UKŁAD
-//   nagłówek (kategoria, data, czas czytania, tytuł, lead, autor)
+//   nagłówek (kategoria, czas czytania, tytuł, lead, autor); daty nie
+//   pokazujemy (decyzja z 16.10.2026), zostaje w danych strukturalnych
 //   → kolumna tekstu 720 px ze spisem treści przyklejonym po lewej
 //   → linki do usług, o których tekst mówi
 //   → dwa sąsiednie teksty
@@ -39,7 +40,6 @@ const { Content, headings } = await a.render();
 const kanon = new URL(adresArtykulu(a.slug), Astro.site).href;
 
 const czas = czasCzytania(a.body);
-const dl = new Intl.DateTimeFormat('pl-PL', { day: 'numeric', month: 'long', year: 'numeric' });
 const poziomSpisu = headings.some((h) => h.depth === 2) ? 2 : 3;
 const spis = headings.filter((h) => h.depth === poziomSpisu);
 
@@ -199,7 +199,6 @@ const dane = {
 <a href="/blog" class="art-wroc"><i aria-hidden="true">←</i> Baza wiedzy</a>
 <div class="art-meta">
 <a href={adresKategorii(a.data.kategoria)}>{kat.nazwa}</a>
-<time datetime={a.data.data.toISOString().slice(0, 10)}>{dl.format(a.data.data)}</time>
 <span>{czas} min czytania</span>
 </div>
 <h1 class="art-h1">{a.data.tytul}</h1>
