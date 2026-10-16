@@ -41,7 +41,7 @@ const {
   // (`FormularzLead` mówi to samo); strona z innym przebiegiem podstawia swoje.
   // Czasu rozmowy nie podajemy (16.10.2026): rzadko kończy się w 30 minut,
   // więc obietnicą jest to, że rozmowa do niczego nie zobowiązuje.
-  prowadzi = 'Szymon Kita, założyciel',
+  prowadzi = 'Szymon Kita, CEO Let’s automate',
   odpowiedz = 'jeden dzień roboczy',
   // Odznaki pod formularzem zależą od usługi: „Kod zostaje Wasz" ma sens
   // przy Guided Codingu, nie przy przeglądzie strategicznym.
@@ -148,8 +148,9 @@ const zrodlo = usluga ? `${usluga} · ${sciezka}` : sciezka;
 )}
 
 <div class="gc-field">
-<label class="gc-lab" for="gc-msg">{fieldLabel} <span class="gc-opt">nieobowiązkowe</span></label>
-<textarea class="inp gc-inp" id="gc-msg" name="wiadomosc" rows="3" placeholder={placeholder} style="resize:vertical;min-height:80px"></textarea>
+<label class="gc-lab" for="gc-msg">{fieldLabel} <span class="gc-req">*</span></label>
+<textarea class="inp gc-inp" id="gc-msg" name="wiadomosc" rows="3" placeholder={placeholder} aria-describedby="gc-err-msg" style="resize:vertical;min-height:80px"></textarea>
+<div class="gc-err" id="gc-err-msg">To pole jest wymagane.</div>
 </div>
 
 <label class="gc-zgoda" data-gc-zgoda-row for="gc-zgoda">
@@ -203,10 +204,10 @@ Odpisujemy w {odpowiedz} i proponujemy godzinę. Rozmowa jest bezpłatna i bez z
 </div>
 
 <div class="cta-portrait gc-portret">
-<img src="/szymon-kita.jpg" alt="Szymon Kita — założyciel Let's automate" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 16%;display:block">
+<img src="/szymon-kita.jpg" alt="Szymon Kita, CEO Let’s automate" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 16%;display:block">
 <div style="position:absolute;left:0;right:0;bottom:0;padding:30px 18px 14px;background:linear-gradient(to top,rgba(6,16,11,0.92),rgba(6,16,11,0.45) 55%,transparent)">
 <div style="font-size:14.5px;font-weight:800;color:#ffffff">Szymon Kita</div>
-<div style="margin-top:2px;font-size:11.5px;color:rgba(255,255,255,0.8)">prowadzi te rozmowy</div>
+<div style="margin-top:2px;font-size:11.5px;color:rgba(255,255,255,0.8)">CEO Let’s automate</div>
 </div>
 </div>
 </div>
@@ -360,7 +361,9 @@ Odpisujemy w {odpowiedz} i proponujemy godzinę. Rozmowa jest bezpłatna i bez z
 
     var REGULY = [
       { pole: 'email',   msg: 'Sprawdź adres e-mail.',   ok: function(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v); } },
-      { pole: 'telefon', msg: 'Sprawdź numer telefonu.', ok: function(v){ return v.replace(/\D/g, '').length >= 9; } }
+      { pole: 'telefon', msg: 'Sprawdź numer telefonu.', ok: function(v){ return v.replace(/\D/g, '').length >= 9; } },
+      // Opis sprawy obowiązkowy od 16.10.2026 (Szymon) — we wszystkich formularzach.
+      { pole: 'wiadomosc', msg: 'To pole jest wymagane.', ok: function(v){ return v.length > 0; } }
     ];
 
     // Endpoint rozróżnia „nie ma dokąd wysłać" od „kanał odpadł". Klient

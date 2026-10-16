@@ -1,0 +1,69 @@
+---
+// KONTAKT — /kontakt (16.10.2026)
+// Na starym serwisie /kontakt przekierowywał (Webflow, 301). Po przepięciu
+// domeny adres zwracał 404, więc dostał własną stronę (Szymon: „dorób u nas
+// stronę kontakt”).
+//
+// Jedno zadanie: dać się odezwać. Na górze moduł Kontakt z nagłówkiem h1
+// (formularz → /api/kontakt → webhook Make, mail i telefon, portret osoby,
+// która odpisuje), niżej dane, których szuka się na stronie kontaktu: adres
+// i dane spółki. Źródło danych jak w stopce (stopka-v2/dane.ts); te same
+// dane idą w JSON-LD organizacji (MetaStrony). WiseGroup stoi w pasie nad
+// stopką, więc tu go nie powtarzamy.
+import LaBase from '../layouts/LaBase.astro';
+import Styl from '../components/usluga/Styl.astro';
+import Anim from '../components/usluga/Anim.astro';
+import Kontakt from '../components/usluga/Kontakt.astro';
+import { KONTAKT, SPOLKA } from '../components/stopka-v2/dane';
+
+const title = "Kontakt | Let's automate";
+const description = `Kontakt z Let's automate: ${KONTAKT.email}, ${KONTAKT.tel}, ${SPOLKA.ulica}, ${SPOLKA.miasto}. Odpowiadamy w jeden dzień roboczy.`;
+const strona = {
+  '@context': 'https://schema.org',
+  '@type': 'ContactPage',
+  url: new URL('/kontakt', Astro.site).href,
+  name: 'Kontakt',
+  inLanguage: 'pl-PL',
+  about: { '@id': new URL('/#organizacja', Astro.site).href },
+};
+---
+<LaBase topbar={false} title={title} description={description} ctaHref="#kontakt" ctaLabel="Umów rozmowę" nav={null} dane={[strona]}>
+<style is:global slot="head">
+  /* Moduł Kontakt domyka zwykle stronę i nie ma odstępu nad sobą; tu jest
+     pierwszy, więc dostaje odstęp pod nawigacją i tło strony zamiast papieru
+     (jak plansza hero na podstronach usługowych). */
+  .kn .v4-kt{padding-top:clamp(8px,1.4vw,20px);padding-bottom:0;background:#ffffff}
+  .kn-dane{padding-top:clamp(64px,8vw,112px);padding-bottom:clamp(72px,9vw,128px)}
+  .kn-siatka{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(28px,4vw,64px);margin-top:clamp(28px,3vw,40px);padding-top:clamp(28px,3vw,40px);border-top:1px solid var(--linia)}
+  .kn-k{margin:0 0 10px;font-size:13.5px;font-weight:650;color:var(--t3)}
+  .kn-v{margin:0;font-size:clamp(17px,1.4vw,19px);line-height:1.6;color:var(--t1)}
+  .kn-v a{color:var(--t1);text-decoration:underline;text-decoration-color:rgba(10,122,82,0.4);text-decoration-thickness:1.5px;text-underline-offset:4px;transition:text-decoration-color .15s,color .15s}
+  .kn-v a:hover{color:var(--ziel-c);text-decoration-color:var(--ziel-c)}
+  @media (max-width:760px){ .kn-siatka{grid-template-columns:minmax(0,1fr)} }
+</style>
+
+<Styl />
+<Anim />
+
+<div class="v3 kn">
+<Kontakt h1 tytul="Kontakt" lead="Napiszcie w dwóch zdaniach, czego potrzebujecie. Odpowiemy w jeden dzień roboczy." zrodlo="Kontakt" pytanie="W czym możemy pomóc?" podpowiedz="Np. oferty liczymy ręcznie w Excelu albo chcemy wdrożyć AI w obsłudze klienta…" />
+
+<section class="v3-sek kn-dane" aria-labelledby="kn-dane-h">
+<h2 class="v3-h2m" id="kn-dane-h">Dane firmy</h2>
+<div class="kn-siatka">
+<div>
+<p class="kn-k">Adres</p>
+<p class="kn-v">{SPOLKA.nazwa}<br>{SPOLKA.ulica}<br>{SPOLKA.miasto}</p>
+</div>
+<div>
+<p class="kn-k">Rejestr</p>
+<p class="kn-v">NIP {SPOLKA.nip}<br>KRS {SPOLKA.krs}</p>
+</div>
+<div>
+<p class="kn-k">Bezpośrednio</p>
+<p class="kn-v"><a href={`mailto:${KONTAKT.email}`}>{KONTAKT.email}</a><br><a href={KONTAKT.telHref}>{KONTAKT.tel}</a><br><a href={KONTAKT.linkedin} target="_blank" rel="noopener">LinkedIn</a></p>
+</div>
+</div>
+</section>
+</div>
+</LaBase>

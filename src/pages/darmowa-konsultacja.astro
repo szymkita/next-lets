@@ -319,8 +319,9 @@ const dane = {
 </div>
 </div>
 <div class="kt-blok kt-pole">
-<label class="kt-lab" for="zg-msg">Czego dotyczy sprawa? <span class="opt">nieobowiązkowe</span></label>
-<div class="kt-ramka kt-ta"><textarea class="kt-inp" id="zg-msg" name="wiadomosc" rows="3" placeholder="Np. zapytania ofertowe przychodzą mailem, a potem przepisujemy je do Excela i do ERP…"></textarea></div>
+<label class="kt-lab" for="zg-msg">Czego dotyczy sprawa? <span class="req">*</span></label>
+<div class="kt-ramka kt-ta"><textarea class="kt-inp" id="zg-msg" name="wiadomosc" rows="3" placeholder="Np. zapytania ofertowe przychodzą mailem, a potem przepisujemy je do Excela i do ERP…" aria-describedby="zg-err-msg"></textarea></div>
+<div class="kt-err" id="zg-err-msg"></div>
 </div>
 <label class="kt-zgoda" data-zg-zgoda-row>
 <input type="checkbox" name="zgoda" data-zg-zgoda>
@@ -519,7 +520,9 @@ Możecie też napisać na <a href="mailto:hello@letsautomate.pl" data-zg-mailto>
     }
     var REGULY = [
       { pole: 'email', msg: 'Adres e-mail wygląda na niepełny.', ok: function(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v); } },
-      { pole: 'telefon', msg: 'Numer telefonu ma za mało cyfr.', ok: function(v){ return v.replace(/\D/g, '').length >= 9; } }
+      { pole: 'telefon', msg: 'Numer telefonu ma za mało cyfr.', ok: function(v){ return v.replace(/\D/g, '').length >= 9; } },
+      // Opis sprawy obowiązkowy od 16.10.2026 (Szymon) — we wszystkich formularzach.
+      { pole: 'wiadomosc', msg: 'To pole jest wymagane.', ok: function(v){ return v.length > 0; } }
     ];
     function pole(el){ return el && el.closest ? el.closest('.kt-pole') : null; }
     function blad(el, msg){ var f = pole(el); if(!f) return; f.classList.add('err'); el.setAttribute('aria-invalid', 'true'); f.querySelector('.kt-err').textContent = msg; }

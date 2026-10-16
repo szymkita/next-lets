@@ -59,6 +59,7 @@ export const FIRMA = [
   { t: 'Inspiracje', h: '/inspiracje' },
   { t: 'WiseStack', h: '/wisestack' },
   { t: 'Baza wiedzy', h: '/blog' },
+  { t: 'Kontakt', h: '/kontakt' },
 ];
 
 export const OBSZARY = [

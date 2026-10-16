@@ -14,17 +14,20 @@ interface Props {
   podpowiedz: string;      // placeholder pola opisowego
   osoba?: { foto: string; w: number; h: number; imie: string; rola: string };
   po?: string;             // zdanie pod przyciskiem
+  h1?: boolean;            // nagłówek strony (/kontakt), gdzie moduł stoi na górze
 }
 const {
   tytul, lead, zrodlo, pytanie, podpowiedz,
-  osoba = { foto: '/szymon-kita.jpg', w: 870, h: 1210, imie: 'Szymon Kita', rola: 'Założyciel, prowadzi pierwsze rozmowy' },
+  osoba = { foto: '/szymon-kita.jpg', w: 870, h: 1210, imie: 'Szymon Kita', rola: 'CEO Let’s automate' },
   po = 'Rozmowa jest bezpłatna i bez zobowiązań, online albo telefonicznie.',
+  h1 = false,
 } = Astro.props;
+const Naglowek = h1 ? 'h1' : 'h2';
 ---
 <section id="kontakt" class="v4-kt kt-ciemny">
 <div class="kt-in v3-ziarno">
 <div class="kt-lewa">
-<h2 class="v3-h2 jasny">{tytul}</h2>
+<Naglowek class="v3-h2 jasny">{tytul}</Naglowek>
 <p class="v3-sub jasny">{lead}</p>
 <p class="kt-kanaly"><a href="mailto:hello@letsautomate.pl"><svg class="hi" viewBox="0 0 16 16" aria-hidden="true" set:html={HI['envelope']}></svg>hello@letsautomate.pl</a><a href="tel:+48571399932"><svg class="hi" viewBox="0 0 16 16" aria-hidden="true" set:html={HI['phone']}></svg>+48 571 399 932</a></p>
 </div>
@@ -48,8 +51,9 @@ const {
 </div>
 </div>
 <div class="kt-blok kt-pole">
-<label class="kt-lab" for="kt-msg">{pytanie} <span class="opt">nieobowiązkowe</span></label>
-<div class="kt-ramka kt-ta"><textarea class="kt-inp" id="kt-msg" name="wiadomosc" rows="3" placeholder={podpowiedz}></textarea></div>
+<label class="kt-lab" for="kt-msg">{pytanie} <span class="req">*</span></label>
+<div class="kt-ramka kt-ta"><textarea class="kt-inp" id="kt-msg" name="wiadomosc" rows="3" placeholder={podpowiedz} aria-describedby="kt-err-msg"></textarea></div>
+<div class="kt-err" id="kt-err-msg"></div>
 </div>
 <label class="kt-zgoda" data-kt-zgoda-row>
 <input type="checkbox" name="zgoda" data-kt-zgoda>
@@ -119,7 +123,9 @@ Możecie też napisać na <a href="mailto:hello@letsautomate.pl" data-kt-mailto>
     });
     var REGULY = [
       { pole: 'email', msg: 'Adres e-mail wygląda na niepełny.', ok: function(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v); } },
-      { pole: 'telefon', msg: 'Numer telefonu ma za mało cyfr.', ok: function(v){ return v.replace(/\D/g, '').length >= 9; } }
+      { pole: 'telefon', msg: 'Numer telefonu ma za mało cyfr.', ok: function(v){ return v.replace(/\D/g, '').length >= 9; } },
+      // Opis sprawy obowiązkowy od 16.10.2026 (Szymon) — we wszystkich formularzach.
+      { pole: 'wiadomosc', msg: 'To pole jest wymagane.', ok: function(v){ return v.length > 0; } }
     ];
     function pole(el){ return el && el.closest ? el.closest('.kt-pole') : null; }
     function blad(el, msg){ var f = pole(el); if(!f) return; f.classList.add('err'); el.setAttribute('aria-invalid', 'true'); f.querySelector('.kt-err').textContent = msg; }

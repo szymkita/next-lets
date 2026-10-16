@@ -207,12 +207,12 @@ Wpisy przykładowe z szablonu: lorem ipsum w /automatyzacje/*, angielskie case s
 
 ## Przekierowane już na starym serwisie — 2 adr., 0 klik.
 
-Stary serwis przekierowuje te adresy (301). Nowa strona na razie nie, więc dadzą 404 — do dodania razem z resztą przekierowań.
+Stary serwis przekierowywał te adresy (301). Stan 16.10.2026: `/blog-categories/wszystko` przekierowuje na `/blog` (vercel.json), `/kontakt` ma własną stronę.
 
 | adres | klik. | wyśw. | poz. | nowa | odpowiednik | uwagi |
 |---|---:|---:|---:|---|---|---|
-| `/blog-categories/wszystko` | 0 | 0 | — | brak |  |  |
-| `/kontakt` | 0 | 0 | — | brak |  |  |
+| `/blog-categories/wszystko` | 0 | 0 | — | 301 | `/blog` |  |
+| `/kontakt` | 0 | 0 | — | jest | `/kontakt` | strona od 16.10.2026 |
 
 ## Subdomeny
 
