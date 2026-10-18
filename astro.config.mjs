@@ -1,4 +1,5 @@
-import { readdirSync } from 'node:fs';
+import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'astro/config';
 import rehypeArtykuly from './src/lib/rehype-artykuly.mjs';
 
@@ -21,6 +22,31 @@ const robocze = {
   },
 };
 
+// Komentarze HTML (<!-- … -->) w plikach .astro trafiają do gotowych stron
+// słowo w słowo, a jest w nich kuchnia projektu: decyzje, „DO POTWIERDZENIA”,
+// ścieżki do docs/. Po buildzie wycinamy je ze wszystkich stron w dist;
+// w źródłach zostają dla zespołu. Zawartość <script>, <style>, <textarea>
+// i <pre> zostaje nietknięta. Serwer deweloperski pokazuje je dalej.
+// Uwaga: komentarze // w skryptach is:inline idą na stronę bez zmian.
+const BEZ_KOMENTARZY = /(<(script|style|textarea|pre)\b[\s\S]*?<\/\2>)|<!--[\s\S]*?-->/gi;
+const bezKomentarzy = {
+  name: 'bez-komentarzy-html',
+  hooks: {
+    'astro:build:done': ({ dir, logger }) => {
+      const katalog = fileURLToPath(dir);
+      let strony = 0;
+      for (const plik of readdirSync(katalog, { recursive: true })) {
+        if (!plik.endsWith('.html')) continue;
+        const sciezka = `${katalog}/${plik}`;
+        const html = readFileSync(sciezka, 'utf8');
+        const czysty = html.replace(BEZ_KOMENTARZY, (_, blok) => blok || '');
+        if (czysty !== html) { writeFileSync(sciezka, czysty); strony++; }
+      }
+      logger.info(`komentarze HTML usunięte z ${strony} stron`);
+    },
+  },
+};
+
 // Adres serwisu idzie do canonical, sitemapy, robots.txt i og:image.
 // Na Vercelu wpisany na sztywno: www.letsautomate.pl, bo tam stary serwis
 // ma 97% widoczności w Google. Wcześniej brany był z
@@ -32,7 +58,7 @@ const site = process.env.VERCEL ? 'https://www.letsautomate.pl' : 'http://localh
 export default defineConfig({
   site,
   server: { port: 4321 },
-  integrations: [robocze],
+  integrations: [robocze, bezKomentarzy],
   // Markdown w serwisie to tylko artykuły bazy wiedzy — kotwice ze starego
   // bloga, numeracja list i linki zewnętrzne (opis w samym pliku).
   // `smartypants` wyłączony, bo 49 wpisów z Webflow ma stać znak w znak jak

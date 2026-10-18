@@ -16,6 +16,12 @@
 //     ma ok. 3 ekrany wysokości, 25% łapało się na styk).
 // Potem copy całej strony przeszło przez /miodkuj.
 //
+// Poprawki z przeglądu 18.10.2026: odmiana licznika w hero, plakietka
+// „większość firm jest tu” bez kursywy i w tym samym miejscu na wykresie
+// co w skali etapów, FAQ o terminach i cenie zgodne z podstronami, przyciski
+// z parametrem ?z= (odczytuje go /darmowa-konsultacja), tło hero w AVIF/WebP,
+// usunięty CSS po taśmie opinii, zakładkach oferty i starym megamenu.
+//
 // Historia z /index-v8:
 // Kopia /index-v7 (16.10.2026) z poprawkami Szymona:
 //   · hero: z powrotem pierwotna aplikacja (pulpit z obecnej strony głównej);
@@ -188,25 +194,6 @@ const ROZNICE = [
     o: 'Stoi za nami grupa doradcza.' },
 ];
 
-// Ściana opinii. Taśma musi być zawsze szersza niż DWA ekrany, inaczej po
-// przewinięciu pierwszego zestawu widać pustkę — przy dwóch kopiach taśma
-// miała 2860 px i dziura pojawiała się już na 1440 px. Stąd KOPIE = 5:
-// 20 kart to 7180 px, czyli pętla trzyma się do 3590 px szerokości okna.
-// Krok animacji musi równać się szerokości JEDNEGO zestawu: przy N kopiach
-// to -(100/N)% minus odstęp/N, czyli tutaj calc(-20% - 4px). Zmieniasz KOPIE
-// — zmieniasz też @keyframes marq-scroll.
-const KOPIE = 5;
-const OPINIE = [
-  { cytat: 'Wprowadzenie danych trwało godzinę. Dziś przesłanie oferty to <span style="color:#0a7a52;font-weight:700">10 minut</span> — oszczędności liczymy w etatach.',
-    odznaka: { z: '60 min', na: '10 min' }, kto: 'Mateusz Chinczewski', rola: 'Prezes Zarządu, Finerto' },
-  { cytat: 'Let\'s automate wziął pełną odpowiedzialność za projekt i dowiózł go do końca. To dlatego powierzyliśmy im kolejny, znacznie większy.',
-    kto: 'Jakub Ciołkowski', rola: 'Członek Zarządu, NARS Polska' },
-  { cytat: 'Bardzo dobrze zrozumieli nasze potrzeby i zaprojektowali scenariusz, który w pełni spełnił cele biznesowe. Otwartość i komunikacja to ich DNA.',
-    kto: 'Arkadiusz Andruch', rola: 'Prezes Zarządu, X2O' },
-  { cytat: 'Korzystamy z usług Let\'s automate od roku. Świetna komunikacja, łatwo się dogadać, a jakość usług na wysokim poziomie.',
-    kto: 'Dominik Chylewski', rola: 'Wspólnik, X3D' },
-];
-
 import Stopka from '../components/Stopka.astro';
 import MetaStrony from '../components/MetaStrony.astro';
 import Zgody from '../components/Zgody.astro';
@@ -236,7 +223,7 @@ const witryna = {
 <link rel="icon" href="/uploads/logo-2.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
-<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Schibsted+Grotesk:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Schibsted+Grotesk:wght@400..900&display=swap" rel="stylesheet">
 <style>
   :root{--la-accent:#00CD77}
   *{box-sizing:border-box}
@@ -248,36 +235,22 @@ const witryna = {
   a{color:inherit;text-decoration:none}
   ::selection{background:rgba(0,205,119,0.25)}
   input::placeholder,textarea::placeholder{color:#808b83}
-  .inp{background:#f6f9f5 !important;border-color:#e4ebe2 !important;border-radius:11px !important;padding:14px 16px !important;transition:border-color .15s,background .15s,box-shadow .15s}
-  .inp:focus{border-color:#0a7a52 !important;background:#ffffff !important;box-shadow:0 0 0 3px rgba(10,122,82,0.1)}
-  .phone-field{transition:border-color .15s,box-shadow .15s,background .15s}
-  .phone-field:focus-within{border-color:#0a7a52 !important;background:#ffffff !important;box-shadow:0 0 0 3px rgba(10,122,82,0.1)}
   @keyframes la-pulse{0%,100%{opacity:1}50%{opacity:.4}}
   @keyframes la-float{0%,100%{transform:translateY(-4px) rotate(var(--rot,0deg))}50%{transform:translateY(5px) rotate(var(--rot,0deg))}}
 
   .page{width:100%;margin:0 auto;background:#ffffff;color:#16211a}
 
   /* hover / focus */
-  .nav-lnk{padding:7px 11px;border-radius:9px;transition:color .15s,background .15s}
-  .nav-lnk:hover{color:#0a7a52 !important;background:rgba(10,122,82,0.07)}
   .btn-dark{transition:background .2s,color .2s}
   .btn-dark:hover{background:#0a7a52 !important;color:#fff !important}
   .btn-ghost{transition:color .15s,background .15s}
   .btn-ghost:hover{color:#0a7a52 !important;background:#fff !important}
-  .btn-accent{transition:background .2s}
-  .btn-accent:hover{background:#00b96c !important;color:#0b1a11 !important}
-  .btn-cta{transition:background .2s,box-shadow .2s}
-  .btn-cta:hover{background:#0c6a49 !important;box-shadow:0 14px 30px -14px rgba(10,122,82,0.6)}
   .lnk-green{transition:color .15s}
   .lnk-green:hover{color:#16211a !important}
   .lnk-accent{transition:color .15s}
   .lnk-accent:hover{color:#fff !important}
   .row-lnk{transition:color .15s}
   .row-lnk:hover{color:#0a7a52 !important}
-  .foot-lnk{transition:color .15s}
-  .foot-lnk:hover{color:#fff !important}
-  .inp{transition:border-color .15s}
-  .inp:focus{border-color:#0a7a52 !important}
 
   /* ---------- WARIANT A · DROGA POD HERO — reveal na scroll ---------- */
   .la-droga .dg-line{stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset 1.5s ease .1s}
@@ -294,6 +267,12 @@ const witryna = {
   .la-droga.in .dg-card{opacity:1;transform:none}
   @media (prefers-reduced-motion:reduce){
     .la-droga .dg-line,.la-droga .dg-fill,.la-droga .dg-dot,.la-droga .dg-conn,.la-droga .dg-chip,.la-droga .dg-card{transition:none}
+  }
+  /* Rotator na telefonie: fraza w tym samym stopniu co zdanie nad nią
+     (wcześniej 4vw i nowrap dawały 13–15,6 px przy 22 px zdania), łamie się
+     najwyżej na dwie linie, które mieszczą się w 60 px jednego wiersza. */
+  @media (max-width:600px){
+    .rot-item{display:flex;align-items:center;justify-content:center;white-space:normal !important;font-size:22px !important;line-height:1.15 !important;text-wrap:balance}
   }
 
   /* ---------- „CZYM SIĘ RÓŻNIMY" · zdjęcie wtopione w sekcję (wariant v2) ----------
@@ -331,16 +310,6 @@ const witryna = {
     .dm-podpis{right:auto;left:18px;bottom:14px;text-align:left}
   }
 
-  /* ---------- Zakładki oferty (S4) ----------
-     Pasek pokazuje, ile zostało do samoczynnej zmiany zakładki. Po pierwszym
-     kliknięciu rotacja gaśnie na dobre (klasa .krok-stop na kontenerze) —
-     wybór użytkownika nie może mu zniknąć spod kursora. */
-  .krok-pasek{display:block;height:2px;margin-top:12px;border-radius:2px;background:#e3e9e1;overflow:hidden;opacity:0;transition:opacity .25s}
-  .krok-tab.krok-on .krok-pasek{opacity:1}
-  .krok-tabs.krok-stop .krok-pasek{opacity:0 !important}
-  .krok-pasek i{display:block;height:100%;width:0;border-radius:2px;background:var(--la-accent,#00CD77)}
-  @media (prefers-reduced-motion:reduce){ .krok-pasek{display:none} }
-
   /* ---------- FAQ (akordeon) ---------- */
   .faq-item{border-top:1px solid #e7ece4}
   .faq-item:last-child{border-bottom:1px solid #e7ece4}
@@ -363,23 +332,6 @@ const witryna = {
   #la8-rachunek .rcpt-head{letter-spacing:0.2em}
   #la8-rachunek .rcpt-lbl{letter-spacing:0.14em}
 
-  /* ---------- OPINIE (ściana / marquee) ---------- */
-  .marq{position:relative;overflow:hidden;
-    -webkit-mask:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);
-            mask:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
-  .marq-track{display:flex;gap:20px;width:max-content;will-change:transform;animation:marq-scroll 46s linear infinite}
-  .marq:hover .marq-track{animation-play-state:paused}
-  .marq-card{flex:0 0 auto;width:min(340px,80vw);display:flex;flex-direction:column;background:#ffffff;border:1px solid #e7ece4;border-radius:16px;padding:24px 24px 20px}
-  /* Krok = szerokość jednego zestawu kart: -(100/KOPIE)% minus odstęp/KOPIE.
-     Przy KOPIE = 5 i gap 20px daje to calc(-20% - 4px). */
-  @keyframes marq-scroll{from{transform:translateX(0)}to{transform:translateX(calc(-20% - 4px))}}
-  @media (prefers-reduced-motion:reduce){
-    .marq{overflow-x:auto;-webkit-mask:none;mask:none;scroll-snap-type:x mandatory}
-    .marq-track{animation:none}
-    .marq-card{scroll-snap-align:start}
-    .marq-dup{display:none !important}
-  }
-
   /* ---------- Pozioma pętla logotypów w pasku trust (chowają się pod napisem) ---------- */
   .trust-logos{overflow:hidden;position:relative;z-index:1;margin-left:-76px}
   .trust-track{display:flex;align-items:center;gap:56px;width:max-content;animation:trust-scroll 30s linear infinite}
@@ -393,28 +345,20 @@ const witryna = {
     .droga-cards{grid-template-columns:repeat(3,1fr) !important;gap:28px 22px !important}
     /* minmax(0,1fr): samo `1fr` nie schodzi poniżej najszerszej treści
        w kolumnie — przy 320px makieta rachunku wypychała sekcję o 52px. */
-    .s2-grid,.s6-grid,.s9-grid{grid-template-columns:minmax(0,1fr) !important;gap:clamp(40px,6vw,64px) !important}
-    .grid4{grid-template-columns:1fr 1fr !important}
+    .s2-grid{grid-template-columns:minmax(0,1fr) !important;gap:clamp(40px,6vw,64px) !important}
   }
   @media (max-width:900px){
     .droga-cards{grid-template-columns:repeat(2,1fr) !important}
     .droga-cta{flex-direction:column !important;align-items:flex-start !important;gap:28px !important}
     .droga-cta-btns{align-items:stretch !important;width:100%}
     .droga-cta-btns a{justify-content:center !important;text-align:center}
-    .s4-grid,.s8-grid,.metody-grid{grid-template-columns:1fr !important;gap:48px !important}
-    .grid3{grid-template-columns:1fr !important;gap:32px !important}
-    .foot-grid{grid-template-columns:1fr 1fr !important;gap:40px !important}
-    .nav-menu{display:none !important}
-    .s4-layers{position:static !important;height:auto !important;min-height:0 !important}
-    .krok-layer{position:static !important;opacity:1 !important;transform:none !important;display:none !important}
-    .krok-layer.active{display:block !important}
+    .s8-grid{grid-template-columns:1fr !important;gap:48px !important}
     /* Palec potrzebuje więcej niż wysokość linijki tekstu: linki-odnośniki
        dostają zapas w pionie bez zmiany odstępów (ujemny margines go znosi). */
     .lnk-green,.row-lnk{padding-block:10px;margin-block:-10px}
   }
   @media (max-width:600px){
     .droga-cards{grid-template-columns:1fr !important;gap:24px !important}
-    .grid4,.grid2,.foot-grid{grid-template-columns:1fr !important}
     .hero-actions{flex-direction:column !important;align-items:stretch !important;width:100%}
     .hero-actions>div{width:100%}
     .hero-actions a{justify-content:center !important}
@@ -426,61 +370,16 @@ const witryna = {
     .trust-logos{flex:1 0 100% !important;margin-left:0 !important;overflow:hidden !important}
     .trust-track{gap:34px !important}
     .stat-row{flex-wrap:wrap !important;gap:24px 32px !important}
-    .metody-badge-row{flex-direction:column !important;align-items:flex-start !important;gap:16px !important}
-    .final-badge-row{flex-wrap:wrap !important}
-    .cta-card{grid-template-columns:1fr !important}
-    .cta-portrait{display:none !important}
   }
-  /* ---- sticky header + mega menu ---- */
-  .site-header{position:sticky;top:0;z-index:60;padding:0 clamp(16px,4vw,40px);transition:padding-top .35s cubic-bezier(.4,0,.2,1)}
-  .site-header.scrolled{padding-top:12px}
-  .nav-pill{display:flex;align-items:center;justify-content:space-between;gap:20px;max-width:1440px;margin:0 auto;padding:16px 14px 16px 8px;background:transparent;border:1px solid transparent;border-radius:18px;box-shadow:none;transition:max-width .4s cubic-bezier(.4,0,.2,1),padding .35s cubic-bezier(.4,0,.2,1),background .3s,border-color .3s,box-shadow .3s}
-  .site-header.scrolled .nav-pill{max-width:1180px;padding:8px 12px 8px 22px;background:rgba(255,255,255,0.78);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);border-color:rgba(255,255,255,0.6);box-shadow:0 16px 46px -18px rgba(18,38,28,0.34)}
-  .nav-item{display:flex;align-items:center}
-  .mega-wrap{position:absolute;top:calc(100% - 20px);left:50%;transform:translateX(-50%) translateY(6px);width:min(940px,calc(100vw - 40px));padding-top:34px;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .18s ease,transform .18s ease}
-  .nav-item:hover .mega-wrap,.nav-item:focus-within .mega-wrap{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0);pointer-events:auto}
-  .nav-caret{transition:transform .2s}
-  .nav-item:hover .nav-caret,.nav-item:focus-within .nav-caret{transform:rotate(180deg)}
-  .mega-eyebrow{font-weight:700;font-size:11px;letter-spacing:0.07em;text-transform:uppercase;color:#808b83;padding:0 11px;margin-bottom:6px}
-  .mega-item{display:block;padding:9px 11px;border-radius:11px;transition:background .15s}
-  .mega-item:hover{background:#f4f8f2}
-  .mega-t{display:block;font-size:14.5px;font-weight:650;color:#16211a;transition:color .15s}
-  .mega-item:hover .mega-t{color:#0a7a52}
-  .mega-d{display:block;margin-top:2px;font-size:12.5px;line-height:1.4;color:#637066}
-  .mega-feat{display:flex;flex-direction:column;justify-content:center;background:radial-gradient(120% 120% at 100% 0%, rgba(0,205,119,0.16), transparent 55%), #0e2b1d;border-radius:14px;padding:24px 22px;color:#ffffff;transition:transform .2s,box-shadow .2s}
-  .mega-feat:hover{transform:translateY(-2px);box-shadow:0 22px 44px -22px rgba(0,0,0,0.5)}
-  /* ---- Megamenu usług: triaż po sytuacji klienta ---- */
-  .usl-grid{display:grid;grid-template-columns:1fr 1fr 1fr;grid-template-rows:auto auto auto;gap:0 6px}
-  .usl-lane{display:grid;grid-template-rows:subgrid;grid-row:span 3;padding:15px 14px 11px;border-radius:14px;transition:background .2s}
-  .usl-top{align-self:start}
-  .usl-head{display:block;font-size:24px;font-weight:800;line-height:1.06;letter-spacing:-0.032em;text-wrap:balance;color:#16211a;transition:color .18s}
-  .usl-head:hover{color:#0a7a52}
-  .usl-sub{display:block;margin-top:9px;font-size:12.5px;line-height:1.45;color:#637066}
-  .usl-rule{display:block;width:26px;height:2px;margin:16px 0 15px;border-radius:2px;background:var(--la-accent,#00CD77);transition:width .28s cubic-bezier(.4,0,.2,1)}
-  .usl-lane:hover .usl-rule{width:78px}
-  .usl-list .mega-item{padding:7px 9px;margin-left:-9px;border-radius:10px}
-  .usl-list .mega-item:hover{background:#eef5ec}
-  .usl-list .mega-t{font-size:14px;font-weight:650}
-  .usl-list .mega-d{font-size:12px;color:#96a098}
-  @media (prefers-reduced-motion:reduce){ .usl-rule{transition:none} }
-  @media (max-width:900px){ .mega-wrap{display:none !important} }
   /* ---- Skala nagłówków ---- */
   .h-sec{font-size:clamp(30px,4.6vw,52px);line-height:1.05;letter-spacing:-0.028em;font-weight:800}
   .h-mod{font-size:clamp(24px,3.2vw,34px);line-height:1.1;letter-spacing:-0.02em;font-weight:800}
   .sub{font-size:17px;line-height:1.6;color:#4c5850;text-wrap:pretty}
   .sec-head{display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:24px 56px}
-  /* ---- Dowody (S5) ---- */
-  .proof-card{transition:transform .3s cubic-bezier(.4,0,.2,1),box-shadow .3s,border-color .3s}
-  .proof-card:hover{transform:translateY(-4px);border-color:var(--la-accent,#00CD77);box-shadow:0 30px 60px -30px rgba(18,38,28,0.24)}
-  @media (prefers-reduced-motion:reduce){ .proof-card{transition:none} .proof-card:hover{transform:none} }
-  /* ---- Karty etapów (S3) + wiersze oferty ---- */
-  .etap-card{transition:transform .3s cubic-bezier(.4,0,.2,1),box-shadow .3s,border-color .3s}
-  .etap-card:hover{transform:translateY(-4px);border-color:var(--la-accent,#00CD77);box-shadow:0 26px 54px -32px rgba(18,38,28,0.22)}
+  /* ---- Wiersze bazy wiedzy ---- */
   .row-lnk [aria-hidden="true"]{display:inline-block;transition:transform .18s}
   .row-lnk:hover [aria-hidden="true"]{transform:translateX(4px)}
-  @media (prefers-reduced-motion:reduce){ .etap-card,.row-lnk [aria-hidden="true"]{transition:none} .etap-card:hover{transform:none} .row-lnk:hover [aria-hidden="true"]{transform:none} }
-  .cta-contact{transition:color .15s}
-  .cta-contact:hover{color:var(--la-accent,#00CD77) !important}
+  @media (prefers-reduced-motion:reduce){ .row-lnk [aria-hidden="true"]{transition:none} .row-lnk:hover [aria-hidden="true"]{transform:none} }
 
   /* iOS Safari powiększa całą stronę, gdy kursor wchodzi w pole z krojem
      mniejszym niż 16px — po wyjściu z pola układ zostaje przesunięty.
@@ -560,34 +459,8 @@ const witryna = {
   }
 
   /* ---------- Teza i podpis (z /index-v2) ---------- */
-  .t5-pod{display:flex;align-items:center;gap:12px;margin:0;font-size:clamp(15px,1.25vw,17px);line-height:1.35;font-weight:700;letter-spacing:-0.005em;color:#16211a}
-  .t5-pod::before{content:"";flex-shrink:0;width:22px;height:2px;background:var(--la-accent,#00CD77)}
   .t5-teza{margin:clamp(22px,2.6vw,34px) 0 0;max-width:1240px;font-size:clamp(32px,4.6vw,68px);line-height:1.03;letter-spacing:-0.047em;font-weight:700;color:#16211a;text-wrap:balance}
   .t5-teza span{color:#8a958d}
-
-  /* ---------- Karty efektów (S6, z /index-v2) ---------- */
-  .w5{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-top:clamp(44px,5vw,64px)}
-  .w5-k{display:flex;flex-direction:column;padding:24px 24px 22px;border-radius:22px;background:#f4f8f2}
-  .w5-dz{font-size:12.5px;font-weight:700;color:#0a7a52}
-  .w5-k h3{margin:8px 0 0;font-size:17px;font-weight:750;letter-spacing:-0.02em;line-height:1.25;color:#16211a}
-  .w5-l{margin:clamp(22px,2.4vw,34px) 0 0;padding-bottom:20px;border-bottom:1px solid #dfe7dc}
-  .w5-l b{display:block;font-size:clamp(46px,4.4vw,68px);line-height:0.95;font-weight:800;letter-spacing:-0.06em;color:#0a7a52;white-space:nowrap}
-  .w5-l span{display:block;margin-top:8px;font-size:14px;color:#4c5850}
-  .w5-k dl{display:grid;gap:12px;margin:18px 0 0}
-  .w5-k dl div{display:grid;grid-template-columns:52px minmax(0,1fr);gap:8px}
-  .w5-k dt{display:flex;align-items:center;gap:6px;height:21px;font-size:12.5px;color:#9c5f14}
-  .w5-k dt i{flex-shrink:0;display:block;width:10px;height:10px;border-radius:2.5px}
-  .w5-k dt i.w5-przed{background:repeating-linear-gradient(135deg,rgba(214,134,30,0.6) 0 1.5px,rgba(214,134,30,0) 1.5px 4px),rgba(240,163,58,0.22);box-shadow:inset 0 1.5px 0 #e3962f}
-  .w5-k dd{margin:0;font-size:14px;line-height:1.5;color:#4c5850;text-wrap:pretty}
-  .w5-k dl div.po dt{color:#16211a;font-weight:650}
-  .w5-k dl div.po dt i{background:var(--la-accent,#00CD77)}
-  .w5-k dl div.po dd{color:#16211a}
-  .w5-u{display:inline-flex;align-items:center;gap:8px;align-self:flex-start;margin-top:auto;padding-top:22px;font-size:13.5px;font-weight:700;color:#0a7a52}
-  .w5-u span{transition:transform .2s}
-  .w5-u:hover span{transform:translateX(3px)}
-  @media (max-width:1100px){ .w5{grid-template-columns:repeat(2,minmax(0,1fr))} }
-  @media (max-width:600px){ .w5{grid-template-columns:minmax(0,1fr)} }
-
 
   /* ---------- v6 · skala „firma napędzana AI" ---------- */
   .sk{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0 clamp(16px,2.4vw,32px);margin:clamp(56px,6vw,88px) 0 0;padding:0;list-style:none}
@@ -620,7 +493,6 @@ const witryna = {
   .la-zl{background:#f4f8f2;padding:0 var(--ram) clamp(72px,9vw,110px)}
   .of-gl h3{font-size:clamp(26px,2.6vw,36px);font-weight:800;letter-spacing:-0.025em}
   .of-w q{font-size:clamp(18px,1.6vw,22px);line-height:1.3;font-weight:700;letter-spacing:-0.012em}
-  .w5-l b{letter-spacing:-0.045em}
 
   /* ---------- v8 · efekty: nagłówek na środku, karty w subgridzie ---------- */
   .w8-gl{max-width:880px;margin:0 auto;text-align:center}
@@ -692,7 +564,14 @@ const witryna = {
 <!-- ============ S1 · HERO ============ -->
 <div style="position:relative;overflow:hidden;min-height:100svh;display:flex;flex-direction:column">
 <div style="position:absolute;inset:0">
-<img src="/uploads/zdjecia/pexels-2559941-2200.jpg" alt="" style="position:absolute;left:-18%;top:-12%;width:136%;height:136%;object-fit:cover;transform:rotate(-3deg)">
+{/* Tło hero to największy element pierwszego ekranu: AVIF (ok. 200 KB)
+     i WebP zamiast JPEG-a 427 KB. Szerokość zostaje 2200 px — na telefonie
+     zdjęcie jest kadrowane po wysokości, mniejszy plik by się rozmył. */}
+<picture>
+<source srcset="/uploads/zdjecia/pexels-2559941-2200.avif" type="image/avif">
+<source srcset="/uploads/zdjecia/pexels-2559941-2200.webp" type="image/webp">
+<img src="/uploads/zdjecia/pexels-2559941-2200.jpg" alt="" width="2200" height="1467" fetchpriority="high" decoding="async" style="position:absolute;left:-18%;top:-12%;width:136%;height:136%;object-fit:cover;transform:rotate(-3deg)">
+</picture>
 <div style="position:absolute;inset:0;background:linear-gradient(180deg,#ffffff 0%,rgba(255,255,255,0.94) 16%,rgba(255,255,255,0.72) 36%,rgba(255,255,255,0.18) 66%,rgba(255,255,255,0) 100%);pointer-events:none"></div>
 </div>
 
@@ -705,14 +584,14 @@ const witryna = {
 <p style="margin:28px 0 0;max-width:780px;font-size:clamp(16px,2.2vw,19.5px);line-height:1.55;color:#33413a;text-wrap:balance">Mamy wszystko, czego potrzeba do tej zmiany: strategię, narzędzia, szkolenia i zespół, który zbuduje resztę. Zaczynamy tam, gdzie dziś jesteście.</p>
 <div class="hero-actions" style="display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:20px 28px;margin-top:36px;margin-bottom:auto">
 <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
-<a href="/darmowa-konsultacja" class="btn-dark" style="display:inline-flex;align-items:center;gap:10px;background:#16211a;color:#ffffff;padding:18px 32px;border-radius:12px;font-weight:650;font-size:16.5px;box-shadow:0 14px 30px -14px rgba(16,33,26,0.45)">Umów bezpłatną diagnozę <span aria-hidden="true">→</span></a>
+<a href="/darmowa-konsultacja?z=hero" class="btn-dark" style="display:inline-flex;align-items:center;gap:10px;background:#16211a;color:#ffffff;padding:18px 32px;border-radius:12px;font-weight:650;font-size:16.5px;box-shadow:0 14px 30px -14px rgba(16,33,26,0.45)">Umów bezpłatną diagnozę <span aria-hidden="true">→</span></a>
 </div>
 <div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding-top:2px">
-<a href="/darmowa-konsultacja" class="btn-ghost" style="display:inline-flex;align-items:center;gap:8px;font-size:16.5px;font-weight:700;color:#16211a;background:rgba(255,255,255,0.6);backdrop-filter:blur(4px);padding:18px 26px;border-radius:12px;border:1px solid rgba(22,33,26,0.16)">Mam konkretny projekt →</a>
+<a href="/darmowa-konsultacja?z=hero-projekt" class="btn-ghost" style="display:inline-flex;align-items:center;gap:8px;font-size:16.5px;font-weight:700;color:#16211a;background:rgba(255,255,255,0.6);backdrop-filter:blur(4px);padding:18px 26px;border-radius:12px;border:1px solid rgba(22,33,26,0.16)">Mam konkretny projekt →</a>
 </div>
 </div>
 
-<div class="mockup-frame" style="position:relative;width:100%;margin:clamp(40px,6vw,64px) auto 0">
+<div class="mockup-frame" aria-hidden="true" style="position:relative;width:100%;margin:clamp(40px,6vw,64px) auto 0">
 <div class="mockup-scale" style="position:relative;width:1180px;height:400px;margin:0 auto;transform-origin:top center">
 <div style="position:absolute;left:50%;top:-30px;transform:translateX(-50%);width:1000px;height:300px;background:radial-gradient(closest-side,rgba(0,205,119,0.3),rgba(0,205,119,0) 72%);filter:blur(46px);pointer-events:none"></div>
 
@@ -845,7 +724,7 @@ const witryna = {
 
 <!-- ============ S1b · DROGA POD HERO (wariant A — wykres + oś czasu) ============ -->
 <section id="sciezki" class="la-droga" style="padding:clamp(64px,9vw,104px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) clamp(56px,8vw,92px);scroll-margin-top:16px">
-<div style="text-align:center;font-size:clamp(22px,4.4vw,40px);line-height:1.18;letter-spacing:-0.028em;font-weight:800;color:#16211a">Żeby stać się firmą napędzaną AI, czasem najpierw trzeba</div>
+<h2 style="margin:0;text-align:center;font-size:clamp(22px,4.4vw,40px);line-height:1.18;letter-spacing:-0.028em;font-weight:800;color:#16211a">Żeby stać się firmą napędzaną AI, czasem najpierw trzeba</h2>
 <div class="rot-mask" style="height:60px;overflow:hidden;margin-top:-6px;-webkit-mask-image:linear-gradient(180deg,transparent 0,#000 16%,#000 84%,transparent 100%);mask-image:linear-gradient(180deg,transparent 0,#000 16%,#000 84%,transparent 100%)">
 <div id="rotator-col" style="display:flex;flex-direction:column;transition:transform 0.55s cubic-bezier(0.65,0,0.35,1);transform:translateY(0px)">
 <div class="rot-item" style="height:60px;line-height:60px;text-align:center;white-space:nowrap;font-size:clamp(13px,4vw,40px);letter-spacing:-0.028em;font-weight:800;color:#0a7a52">spisać procesy, które żyją w głowach ludzi</div>
@@ -873,10 +752,10 @@ const witryna = {
 <path class="dg-fill" d="M10,312 C145,312 145,271 280,271 C415,271 415,149 550,149 C685,149 685,88 820,88 C955,88 955,44 1090,44 C1190,44 1262,36 1328,30 L1328,360 L10,360 Z" fill="url(#la11a-tlfill)"></path>
 <path class="dg-line" d="M10,312 C145,312 145,271 280,271 C415,271 415,149 550,149 C685,149 685,88 820,88 C955,88 955,44 1090,44 C1190,44 1262,36 1328,30" fill="none" stroke="var(--la-accent,#00CD77)" stroke-width="3.5" stroke-linecap="round" pathLength="1"></path>
 </svg>
-<div style="font-weight:700;position:absolute;left:0;top:-4px;font-size:10.5px;letter-spacing:0.07em;color:#b6bfb6">WISE AI SCORE ↑</div>
-<div style="font-weight:700;position:absolute;right:4px;top:83.4%;transform:translateY(-50%);font-size:10.5px;letter-spacing:0.07em;color:#c3cbc2">ETAP 1</div>
-<div style="font-weight:700;position:absolute;right:4px;top:61%;transform:translateY(-50%);font-size:10.5px;letter-spacing:0.07em;color:#c3cbc2">ETAP 2</div>
-<div style="font-weight:700;position:absolute;right:4px;top:38.7%;transform:translateY(-50%);font-size:10.5px;letter-spacing:0.07em;color:#c3cbc2">ETAP 3</div>
+<div style="font-weight:700;position:absolute;left:0;top:-4px;font-size:10.5px;letter-spacing:0.07em;color:#637066">WISE AI SCORE ↑</div>
+<div style="font-weight:700;position:absolute;right:4px;top:83.4%;transform:translateY(-50%);font-size:10.5px;letter-spacing:0.07em;color:#637066">ETAP 1</div>
+<div style="font-weight:700;position:absolute;right:4px;top:61%;transform:translateY(-50%);font-size:10.5px;letter-spacing:0.07em;color:#637066">ETAP 2</div>
+<div style="font-weight:700;position:absolute;right:4px;top:38.7%;transform:translateY(-50%);font-size:10.5px;letter-spacing:0.07em;color:#637066">ETAP 3</div>
 <div style="position:absolute;right:4px;top:16.3%;transform:translateY(-50%);font-size:10.5px;letter-spacing:0.07em;font-weight:700;color:#0a7a52">ETAP 4</div>
 <div style="position:absolute;left:0.75%;top:82.11%;bottom:5.26%;width:0"><div class="dg-conn" style="height:100%;transition-delay:.15s"><span style="display:block;height:100%;border-left:1px dashed #d8dfd6"></span></div></div>
 <div style="position:absolute;left:21.08%;top:71.32%;bottom:5.26%;width:0"><div class="dg-conn" style="height:100%;transition-delay:.3s"><span style="display:block;height:100%;border-left:1px dashed #d8dfd6"></span></div></div>
@@ -888,7 +767,10 @@ const witryna = {
 <div style="position:absolute;left:41.42%;top:39.26%;width:0;height:0;z-index:3"><div class="dg-dot" style="transition-delay:.45s"><span style="position:absolute;left:0;top:0;transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;background:var(--la-accent,#00CD77);border:3px solid #ffffff;box-shadow:0 2px 10px rgba(12,28,20,0.3);display:block"></span><span style="position:absolute;left:0;top:-32px;transform:translateX(-50%);font-size:12.5px;font-weight:700;color:#16211a">62</span></div></div>
 <div style="position:absolute;left:61.75%;top:23.16%;width:0;height:0;z-index:3"><div class="dg-dot" style="transition-delay:.6s"><span style="position:absolute;left:0;top:0;transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;background:var(--la-accent,#00CD77);border:3px solid #ffffff;box-shadow:0 2px 10px rgba(12,28,20,0.3);display:block"></span><span style="position:absolute;left:0;top:-32px;transform:translateX(-50%);font-size:12.5px;font-weight:700;color:#16211a">80</span></div></div>
 <div style="position:absolute;left:82.08%;top:11.53%;width:0;height:0;z-index:3"><div class="dg-dot" style="transition-delay:.75s"><span style="position:absolute;left:0;top:0;transform:translate(-50%,-50%);width:16px;height:16px;border-radius:50%;background:var(--la-accent,#00CD77);border:3px solid #ffffff;box-shadow:0 0 18px rgba(0,205,119,0.65);display:block"></span><span style="position:absolute;left:0;top:-44px;transform:translateX(-50%);white-space:nowrap;display:inline-flex;align-items:center;gap:7px;background:#0e2b1d;color:#ffffff;font-size:12.5px;font-weight:700;padding:6px 13px;border-radius:8px"><span style="width:7px;height:7px;border-radius:50%;background:var(--la-accent,#00CD77);display:inline-block"></span>93 · napędzana AI</span></div></div>
-<div style="position:absolute;left:2.4%;top:calc(82.11% + 14px);z-index:2"><div class="dg-chip" style="transition-delay:.2s"><span style="display:inline-block;background:#f9efd8;color:#8f6c1c;font-size:11.5px;font-weight:700;padding:4px 11px;border-radius:7px;white-space:nowrap">większość firm startuje tu</span></div></div>
+{/* Plakietka przy drugim punkcie, z tym samym tekstem co w skali etapów
+     niżej (etap 2, punktowe automatyzacje). Przy pierwszym punkcie mówiła
+     „startuje tu”, a skala — że większość firm jest na etapie 2. */}
+<div style="position:absolute;left:22.7%;top:calc(71.32% + 14px);z-index:2"><div class="dg-chip" style="transition-delay:.35s"><span style="display:inline-block;background:#f9efd8;color:#8f6c1c;font-size:11.5px;font-weight:700;padding:4px 11px;border-radius:7px;white-space:nowrap">większość firm jest tu</span></div></div>
 </div>
 
 <!-- Oś czasu: 5 kroków / 12 miesięcy -->
@@ -932,7 +814,7 @@ const witryna = {
 </div>
 </div>
 <div class="droga-cta-btns" style="display:flex;flex-direction:column;align-items:flex-end;gap:13px;flex-shrink:0">
-<a href="/darmowa-konsultacja" class="btn-dark" style="display:inline-flex;align-items:center;gap:10px;background:#16211a;color:#ffffff;padding:17px 30px;border-radius:12px;font-weight:650;font-size:16px;box-shadow:0 14px 30px -14px rgba(16,33,26,0.45)">Umów bezpłatną diagnozę <span aria-hidden="true">→</span></a>
+<a href="/darmowa-konsultacja?z=wykres" class="btn-dark" style="display:inline-flex;align-items:center;gap:10px;background:#16211a;color:#ffffff;padding:17px 30px;border-radius:12px;font-weight:650;font-size:16px;box-shadow:0 14px 30px -14px rgba(16,33,26,0.45)">Umów bezpłatną diagnozę <span aria-hidden="true">→</span></a>
 <!-- SCHOWANE 07.09.2026 — drugie CTA pod przyciskiem diagnozy. Zostaje w kodzie:
      wraca, gdy koszt status quo dostanie własny kalkulator, do którego ten link prowadzi. -->
 <a href="/darmowa-konsultacja" class="lnk-green" style="display:none;font-size:15px;font-weight:700;color:#0a7a52">Wolicie sami? Zobaczcie, ile kosztuje Was status quo →</a>
@@ -947,12 +829,16 @@ const witryna = {
 <h2 class="h-sec" style="margin:0;text-wrap:pretty">Status quo też wystawia rachunek</h2>
 <p class="sub" style="margin:20px 0 0;max-width:540px">Tylko nikt go nie podpisuje. Za ręczne przepisywanie, fakturowanie i raporty klejone z Exceli Wasz zespół płaci co miesiąc godzinami pracy. Policzmy ten rachunek na Waszych danych.</p>
 <div class="stat-row" style="display:flex;align-items:baseline;gap:44px;margin-top:44px;padding-top:32px;border-top:1px solid #eef1ec">
-<div><span style="font-size:34px;font-weight:800;letter-spacing:-0.02em">78%</span><span style="display:block;margin-top:4px;font-size:13px;line-height:1.45;color:#637066;max-width:160px">firm używa już AI w&nbsp;co najmniej jednym procesie</span></div>
-<div><span style="font-size:34px;font-weight:800;letter-spacing:-0.02em">3,7×</span><span style="display:block;margin-top:4px;font-size:13px;line-height:1.45;color:#637066;max-width:160px">szybciej rosną firmy przebudowane pod AI</span></div>
-<div><span style="font-size:34px;font-weight:800;letter-spacing:-0.02em">2/3</span><span style="display:block;margin-top:4px;font-size:13px;line-height:1.45;color:#637066;max-width:180px">punktowych wdrożeń nie skaluje się bez systemów</span></div>
+{/* Liczby ze źródłem (18.10.2026). Poprzednie 78% było z raportu sprzed
+     roku, a 3,7× w badaniu IDC dla Microsoftu to zwrot z dolara wydanego
+     na AI generatywną, nie tempo wzrostu firm. */}
+<div><span style="font-size:34px;font-weight:800;letter-spacing:-0.02em">88%</span><span style="display:block;margin-top:4px;font-size:13px;line-height:1.45;color:#637066;max-width:160px">firm używa AI regularnie w&nbsp;co najmniej jednym dziale</span></div>
+<div><span style="font-size:34px;font-weight:800;letter-spacing:-0.02em">2/3</span><span style="display:block;margin-top:4px;font-size:13px;line-height:1.45;color:#637066;max-width:170px">firm nie zaczęło jeszcze wdrażać AI w&nbsp;całej organizacji</span></div>
+<div><span style="font-size:34px;font-weight:800;letter-spacing:-0.02em">60–70%</span><span style="display:block;margin-top:4px;font-size:13px;line-height:1.45;color:#637066;max-width:180px">czasu pracy pochłaniają zadania, które da się zautomatyzować z&nbsp;AI</span></div>
 </div>
+<p style="margin:16px 0 0;font-size:12px;line-height:1.5;color:#637066">Źródła: McKinsey, The state of AI in 2025; McKinsey, The economic potential of generative AI (2023)</p>
 <div style="display:flex;align-items:center;flex-wrap:wrap;gap:20px 24px;margin-top:40px">
-<a href="/darmowa-konsultacja" class="btn-dark" style="display:inline-flex;align-items:center;gap:10px;background:#16211a;color:#ffffff;padding:17px 30px;border-radius:12px;font-weight:650;font-size:16px">Policzmy Wasz koszt status quo <span aria-hidden="true">→</span></a>
+<a href="/darmowa-konsultacja?z=status-quo" class="btn-dark" style="display:inline-flex;align-items:center;gap:10px;background:#16211a;color:#ffffff;padding:17px 30px;border-radius:12px;font-weight:650;font-size:16px">Policzmy Wasz koszt status quo <span aria-hidden="true">→</span></a>
 <!-- SCHOWANE 08.09.2026 — zostaje w kodzie, tak jak drugie CTA w sekcji drogi. -->
 <a href="/darmowa-konsultacja" class="lnk-green" style="display:none;font-size:15.5px;font-weight:700;color:#0a7a52">Sprawdźcie, od czego zacząć →</a>
 </div>
@@ -1001,10 +887,10 @@ const witryna = {
      faktura kosztowa — widać, co zmienia się w pracy. -->
 <h2 class="t5-teza"><span>AI w przeglądarce ma dziś prawie każdy zespół.</span> Firma napędzana AI ma je wpięte w procesy, od pierwszego kontaktu po rozliczenie</h2>
 <ol class="sk">
-<li class="sk-e1"><i class="sk-seg"></i><span class="sk-nr">Etap 1</span><h3>Ręczna firma</h3><p>Dane żyją w Excelu i mailach, a ludzie przepisują je między systemami.</p></li>
-<li class="sk-e2"><i class="sk-seg"><span class="sk-tu">większość firm jest tu</span></i><span class="sk-nr">Etap 2<span class="sk-tu-m">większość firm jest tu</span></span><h3>Punktowe automatyzacje</h3><p>Kilka skryptów i botów. Pomagają, ale każdy żyje osobno.</p></li>
-<li class="sk-e3"><i class="sk-seg"></i><span class="sk-nr">Etap 3</span><h3>Systemy zintegrowane</h3><p>Dane płyną między CRM, finansami i operacjami bez przepisywania.</p></li>
-<li class="sk-e4"><i class="sk-seg"></i><span class="sk-nr">Etap 4</span><h3>Napędzana AI</h3><p>AI pracuje w środku procesów, a ludzie prowadzą wyjątki.</p></li>
+<li class="sk-e1"><span class="sk-seg"></span><span class="sk-nr">Etap 1</span><h3>Ręczna firma</h3><p>Dane żyją w Excelu i mailach, a ludzie przepisują je między systemami.</p></li>
+<li class="sk-e2"><span class="sk-seg"><span class="sk-tu">większość firm jest tu</span></span><span class="sk-nr">Etap 2<span class="sk-tu-m">większość firm jest tu</span></span><h3>Punktowe automatyzacje</h3><p>Kilka skryptów i botów. Pomagają, ale każdy żyje osobno.</p></li>
+<li class="sk-e3"><span class="sk-seg"></span><span class="sk-nr">Etap 3</span><h3>Systemy zintegrowane</h3><p>Dane płyną między CRM, finansami i operacjami bez przepisywania.</p></li>
+<li class="sk-e4"><span class="sk-seg"></span><span class="sk-nr">Etap 4</span><h3>Napędzana AI</h3><p>AI pracuje w środku procesów, a ludzie prowadzą wyjątki.</p></li>
 </ol>
 </section>
 
@@ -1020,7 +906,7 @@ const witryna = {
 <h2 id="czym-jest" class="la-zl-pod">Czym jest Let’s automate?</h2>
 <p class="la-zl-duzy">Studio transformacji AI, część WiseGroup</p>
 <p class="la-zl-opis">Pracujemy z firmami, które zatrudniają od kilkudziesięciu do kilkuset osób. Wprowadzamy AI do ich pracy, od strategii i narzędzi dla zespołów po systemy pod procesy, na których firma zarabia. Prowadzimy też zespoły klientów, które tworzą aplikacje z AI same.</p>
-<a href="/darmowa-konsultacja" class="la-zl-btn">Umów bezpłatną diagnozę <span aria-hidden="true">→</span></a>
+<a href="/darmowa-konsultacja?z=czym-jest" class="la-zl-btn">Umów bezpłatną diagnozę <span aria-hidden="true">→</span></a>
 </div>
 <div class="la-zl-foto">
 <img src="/szymon-negacz-spot.jpg" alt="Szymon Negacz, współwłaściciel Let's automate" width="1100" height="888" loading="lazy" decoding="async">
@@ -1063,7 +949,7 @@ const witryna = {
 <!-- Z poprzedniej wersji sekcji: pomoc w wyborze drogi. -->
 <div class="of-pom">
 <span><img src="/uploads/portret-oferta.jpg" alt="Konsultant Let's automate" width="96" height="96" loading="lazy" decoding="async"></span>
-<p>Nie wiecie, od której drogi zacząć? <a href="/darmowa-konsultacja" class="lnk-green">Napiszcie do nas →</a></p>
+<p>Nie wiecie, od której drogi zacząć? <a href="/darmowa-konsultacja?z=oferta" class="lnk-green">Napiszcie do nas →</a></p>
 </div>
 </div>
 </section>
@@ -1196,18 +1082,18 @@ const witryna = {
 <div>
 <div style="font-size:15px;font-weight:750;color:#16211a">Szymon Kita</div>
 <div style="margin-top:2px;font-size:12.5px;color:#637066">CEO Let’s automate</div>
-<a href="/darmowa-konsultacja" class="lnk-green" style="display:inline-block;margin-top:7px;font-size:15px;font-weight:700;color:#0a7a52">Zadajcie pytanie wprost →</a>
+<a href="/darmowa-konsultacja?z=faq" class="lnk-green" style="display:inline-block;margin-top:7px;font-size:15px;font-weight:700;color:#0a7a52">Zadajcie pytanie wprost →</a>
 </div>
 </div>
 </div>
 <div class="faq-list">
 <div class="faq-item open">
 <button class="faq-q" aria-expanded="true">Kiedy zobaczymy pierwsze efekty?<span class="faq-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"></path></svg></span></button>
-<div class="faq-a"><div class="faq-a-inner">Pierwszy proces działa na produkcji zwykle po 2–6 tygodniach. Pełna transformacja trwa około 12 miesięcy, ale wartość wraca po każdym kroku.</div></div>
+<div class="faq-a"><div class="faq-a-inner">Pierwszy dział pracuje z narzędziem AI od trzeciego tygodnia. Pierwsze uruchomienie systemu działa po sześciu tygodniach, a rozwiązanie AI pod jeden proces trafia na produkcję po dziewięciu. Pełna transformacja trwa około 12 miesięcy, ale wartość wraca po każdym kroku.</div></div>
 </div>
 <div class="faq-item">
 <button class="faq-q" aria-expanded="false">Ile to kosztuje?<span class="faq-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"></path></svg></span></button>
-<div class="faq-a"><div class="faq-a-inner">Zaczynamy od bezpłatnej diagnozy, na której liczymy, ile kosztuje Was status quo. Wycenę wdrożenia dostajecie, kiedy znamy zakres i policzony zwrot z każdego kroku. Abonamentów w ciemno nie sprzedajemy.</div></div>
+<div class="faq-a"><div class="faq-a-inner">Diagnoza jest bezpłatna i liczymy na niej, ile kosztuje Was status quo. Każdy kolejny etap, czyli projektowanie, wykonanie i następne moduły, ma stałą cenę, którą znacie przed jego zamówieniem.</div></div>
 </div>
 <div class="faq-item">
 <button class="faq-q" aria-expanded="false">Czy nasze dane są bezpieczne?<span class="faq-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"></path></svg></span></button>
@@ -1216,10 +1102,6 @@ const witryna = {
 <div class="faq-item">
 <button class="faq-q" aria-expanded="false">Mamy już jakieś narzędzia. Zaczynamy od zera?<span class="faq-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"></path></svg></span></button>
 <div class="faq-a"><div class="faq-a-inner">Nie. Budujemy na tym, co już działa: łączymy Wasz CRM, finanse i operacje bez wymiany wszystkiego na nowe. Oprogramowanie dopasowujemy do tego, jak pracujecie dzisiaj.</div></div>
-</div>
-<div class="faq-item">
-<button class="faq-q" aria-expanded="false">Czym różnicie się od firm „wdrażających ChatGPT”?<span class="faq-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"></path></svg></span></button>
-<div class="faq-a"><div class="faq-a-inner">Zostawiamy działające oprogramowanie, w którym AI pracuje w środku procesów, od ofertowania po rozliczenia. Za nami stoi też grupa doradcza, więc plan obroni się przed zarządem.</div></div>
 </div>
 <div class="faq-item">
 <button class="faq-q" aria-expanded="false">Co, jeśli zespół nie będzie chciał z tego korzystać?<span class="faq-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"></path></svg></span></button>
@@ -1291,16 +1173,24 @@ const witryna = {
   })();
 
   // ---- Rotator (S1b) — pionowe przewijanie fraz co 3s ----
+  // Kręci się tylko na ekranie; przy prefers-reduced-motion stoi na
+  // pierwszej frazie.
   (function(){
     var col = document.getElementById('rotator-col');
     if(!col) return;
+    if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     var count = col.children.length;
-    var i = 0;
-    setInterval(function(){
+    var i = 0, timer = null;
+    function krok(){
       i = (i + 1) % count;
       var h = col.children[0].offsetHeight || 60;
       col.style.transform = 'translateY(-' + (i * h) + 'px)';
-    }, 3000);
+    }
+    function start(){ if(!timer) timer = setInterval(krok, 3000); }
+    function stop(){ clearInterval(timer); timer = null; }
+    if('IntersectionObserver' in window){
+      new IntersectionObserver(function(e){ e[0].isIntersecting ? start() : stop(); }).observe(col.parentNode);
+    } else { start(); }
   })();
 
   // ---- Droga pod hero (S1b, wariant A) — reveal wykresu i osi czasu ----
@@ -1387,15 +1277,16 @@ const witryna = {
     var labelEl = document.getElementById('tasksLabel');
     if(!numEl) return;
     var n = 42;
-    function word(x){
+    // Odmiana całego sformułowania: „42 zadania zrobione”, „45 zadań zrobionych”.
+    function napis(x){
       var m10 = x % 10, m100 = x % 100;
-      return (m10 >= 2 && m10 <= 4 && !(m100 >= 12 && m100 <= 14)) ? 'zadania' : 'zadań';
+      return (m10 >= 2 && m10 <= 4 && !(m100 >= 12 && m100 <= 14)) ? 'zadania zrobione' : 'zadań zrobionych';
     }
     setInterval(function(){
       if(Math.random() < 0.45){
         n += 1;
         numEl.textContent = n;
-        if(labelEl) labelEl.textContent = n + ' ' + word(n) + ' zrobione dziś';
+        if(labelEl) labelEl.textContent = n + ' ' + napis(n) + ' dziś';
       }
     }, 5200);
   })();

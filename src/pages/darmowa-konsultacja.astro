@@ -492,6 +492,35 @@ Możecie też napisać na <a href="mailto:hello@letsautomate.pl" data-zg-mailto>
 />
 </div>
 
+{/* SKĄD PRZYSZEDŁ KLIENT (od 18.10.2026)
+     ?z= to przycisk, który przyprowadził na tę stronę (na głównej: hero,
+     hero-projekt, wykres, status-quo, czym-jest, oferta, faq), a ścieżka
+     z document.referrer — strona, z której kliknięto, także CTA w nawigacji.
+     Oba trafiają do źródła zgłoszenia, np. „… · hero · przycisk hero-projekt
+     · ze strony /”, i do zdarzeń pomiaru. Skrypt jest inline na końcu treści,
+     więc zmienia data-zrodlo, zanim przeczytają je skrypty formularzy (te
+     są modułami i ruszają dopiero po wczytaniu strony). Przy z=hero-projekt
+     pole opisu w hero pyta o projekt. Komentarz stoi tu, a nie w skrypcie,
+     bo treść skryptu inline idzie do HTML-a słowo w słowo. */}
+<script is:inline>
+  (function(){
+    var z = '', skad = '';
+    try { z = (new URLSearchParams(location.search).get('z') || '').toLowerCase().replace(/[^a-z0-9-]/g, '').slice(0, 40); } catch(e){}
+    try {
+      var r = document.referrer ? new URL(document.referrer) : null;
+      if(r && r.origin === location.origin && r.pathname !== location.pathname) skad = r.pathname;
+    } catch(e){}
+    if(!z && !skad) return;
+    var dopisek = (z ? ' · przycisk ' + z : '') + (skad ? ' · ze strony ' + skad : '');
+    document.querySelectorAll('[data-zrodlo]').forEach(function(f){ f.dataset.zrodlo += dopisek; });
+    if(z === 'hero-projekt'){
+      var lab = document.querySelector('label[for="zg-msg"]'), pole = document.getElementById('zg-msg');
+      if(lab && lab.firstChild) lab.firstChild.nodeValue = 'Opiszcie projekt ';
+      if(pole) pole.placeholder = 'Np. aplikacja do ofert, która pobiera ceny z ERP i wysyła ofertę do akceptacji kierownika…';
+    }
+  })();
+</script>
+
 <script>
   var redukcja = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 

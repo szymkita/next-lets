@@ -30,7 +30,9 @@ export default async function handler(req, res) {
   const email = CZYSC(dane.email, 160);
   const telefon = CZYSC(dane.telefon, 40);
   const wiadomosc = CZYSC(dane.wiadomosc, 4000);
-  const zrodlo = CZYSC(dane.zrodlo, 120) || 'nieznane';
+  // 240 znaków, bo /darmowa-konsultacja dopisuje do źródła przycisk (?z=)
+  // i stronę, z której ktoś przyszedł — adresy wpisów bywają długie.
+  const zrodlo = CZYSC(dane.zrodlo, 240) || 'nieznane';
   // Kod polecającego z `?ref=` w adresie (zapamiętany w przeglądarce, jak
   // na starym serwisie) — puste, gdy nikt nie polecił.
   const referrer = CZYSC(dane.referrer, 120);
