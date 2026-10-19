@@ -1,0 +1,211 @@
+---
+// SLAJDY — kilka ekranów aplikacji w jednym miejscu (hub /produkty: Appto,
+// Wingman AI, Oferty AI). Każdy ekran to okno w tych samych proporcjach,
+// z przezroczystymi rogami: public/produkty/slajdy/<s>.webp (1400 × 876,
+// okno 1100 × 688 w 2×) i <s>-tel.webp (692 × 1038, okno 346 × 519 w 2×).
+// Okna stoją wprost na tle sekcji, z cieniem, bez sceny pod spodem.
+// Slajd z filmem (pole yt = id z YouTube): miniatura z przyciskiem, film
+// ładuje się dopiero po kliknięciu (youtube-nocookie), pokaz wtedy staje.
+//
+// Tor przewija się natywnie (przeciąganie, gest na telefonie), kreski pod
+// sceną przełączają slajdy i pokazują czas do następnego. Pokaz rusza sam,
+// gdy jest w kadrze, staje po najechaniu i kończy się przy pierwszym ruchu
+// użytkownika; przy ograniczonym ruchu nie rusza wcale.
+interface Slajd { s?: string; yt?: string; t: string; d: string; alt?: string; play?: string }
+interface Props { slajdy: Slajd[]; nazwa: string }
+const { slajdy, nazwa } = Astro.props;
+const PLAY = '<path d="M3.5 2.4v11.2a.8.8 0 0 0 1.2.7l9.2-5.6a.8.8 0 0 0 0-1.4L4.7 1.7a.8.8 0 0 0-1.2.7Z"/>';
+const STRZALKA = '<path fill-rule="evenodd" d="M6.22 4.22a.75.75 0 0 1 1.06 0l3.25 3.25a.75.75 0 0 1 0 1.06l-3.25 3.25a.75.75 0 0 1-1.06-1.06L8.94 8 6.22 5.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd"/>';
+---
+<div class="sl" data-sl role="region" aria-roledescription="karuzela" aria-label={nazwa}>
+<div class="sl-tor" data-sl-tor>
+{slajdy.map((s, i) => (
+  <figure class={`sl-s${s.yt ? ' film' : ''}`} role="group" aria-roledescription="slajd" aria-label={`${i + 1} z ${slajdy.length}: ${s.t}`}>
+    {s.yt ? (
+      <div class="sl-ek">
+        <a class="sl-yt" href={`https://youtu.be/${s.yt}`} target="_blank" rel="noopener" data-sl-yt={s.yt} data-sl-tytul={s.t} aria-label={`Odtwórz film: ${s.t}`}>
+          <img src={`https://i.ytimg.com/vi/${s.yt}/maxresdefault.jpg`} alt="" width="1280" height="720" loading="lazy" decoding="async">
+          <span class="sl-play"><i><svg viewBox="0 0 16 16" aria-hidden="true" set:html={PLAY}></svg></i>{s.play ?? 'Odtwórz film'}</span>
+        </a>
+      </div>
+    ) : (
+      <div class="sl-ek">
+        <picture>
+          <source media="(max-width:640px)" srcset={`/produkty/slajdy/${s.s}-tel.webp`} width="692" height="1038">
+          <img src={`/produkty/slajdy/${s.s}.webp`} width="1400" height="876" alt={s.alt} loading="lazy" decoding="async">
+        </picture>
+      </div>
+    )}
+    <figcaption><b>{s.t}</b> {s.d}</figcaption>
+  </figure>
+))}
+</div>
+<div class="sl-dol">
+<div class="sl-pas">
+{slajdy.map((s, i) => (<button type="button" data-sl-i={i} aria-label={`Slajd ${i + 1}: ${s.t}`} aria-current={i === 0 ? 'true' : 'false'}><i></i></button>))}
+</div>
+<div class="sl-str">
+<button type="button" data-sl-krok="-1" aria-label="Poprzedni slajd"><svg viewBox="0 0 16 16" style="transform:scaleX(-1)" set:html={STRZALKA}></svg></button>
+<button type="button" data-sl-krok="1" aria-label="Następny slajd"><svg viewBox="0 0 16 16" set:html={STRZALKA}></svg></button>
+</div>
+</div>
+</div>
+
+<style is:global>
+  .sl{position:relative;min-width:0}
+  /* Tor wychodzi poza kolumnę o tyle, ile potrzebuje cień okna. */
+  .sl-tor{--pole:28px;position:relative;display:flex;gap:calc(var(--pole) * 3);margin:0 calc(var(--pole) * -1);padding:6px var(--pole) 40px;scroll-padding:0 var(--pole);overflow-x:auto;scroll-snap-type:x mandatory;overscroll-behavior-x:contain;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .sl-tor::-webkit-scrollbar{display:none}
+  .sl-s{flex:0 0 100%;min-width:0;margin:0;scroll-snap-align:start;scroll-snap-stop:always}
+  .sl-ek{aspect-ratio:1400 / 876}
+  .sl-ek img{display:block;width:100%;height:auto;filter:drop-shadow(0 26px 34px rgba(15,26,20,0.2)) drop-shadow(0 3px 8px rgba(15,26,20,0.1))}
+  /* film: ta sama ramka co okna, miniatura przycięta do jej proporcji */
+  .sl-yt{position:relative;display:block;width:100%;height:100%;overflow:hidden;border-radius:14px;background:#0b0f0c;box-shadow:0 26px 40px -24px rgba(15,26,20,0.45),0 3px 8px rgba(15,26,20,0.1);cursor:pointer}
+  .sl-yt img{width:100%;height:100%;object-fit:cover;filter:none;transition:transform .6s cubic-bezier(.2,.8,.2,1)}
+  .sl-yt::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(7,20,13,0) 55%,rgba(7,20,13,0.45) 100%);pointer-events:none}
+  .sl-play{position:absolute;z-index:1;left:50%;top:50%;display:flex;align-items:center;gap:12px;transform:translate(-50%,-50%);padding:8px 22px 8px 8px;border-radius:999px;background:var(--ziel,#00CD77);color:var(--ink,#0f1a14);font-size:15px;font-weight:700;white-space:nowrap;box-shadow:0 20px 40px -16px rgba(0,0,0,0.6);transition:transform .25s ease,background .2s}
+  .sl-play i{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:var(--ink,#0f1a14);color:var(--ziel,#00CD77)}
+  .sl-play svg{width:16px;height:16px;margin-left:2px;fill:currentColor}
+  .sl-yt:hover img{transform:scale(1.02)}
+  .sl-yt:hover .sl-play{transform:translate(-50%,-50%) scale(1.04)}
+  .sl-yt:focus-visible{outline:2px solid var(--ziel,#00CD77);outline-offset:4px}
+  .sl-yt iframe{position:absolute;inset:0;z-index:2;width:100%;height:100%;border:0}
+  .sl-yt.gra::after,.sl-yt.gra .sl-play{display:none}
+  .sl-s figcaption{margin-top:18px;max-width:560px;font-size:15px;line-height:1.55;color:var(--t2,#4c5850);text-wrap:pretty}
+  .sl-s figcaption b{font-weight:700;color:var(--t1,#16211a)}
+  .sl-dol{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:-22px}
+  .sl-pas{display:flex;gap:6px}
+  .sl-pas button{position:relative;width:34px;height:24px;padding:0;border:0;background:none;cursor:pointer}
+  .sl-pas i{position:absolute;left:0;right:0;top:50%;height:3px;margin-top:-1.5px;border-radius:2px;background:rgba(15,26,20,0.14);overflow:hidden}
+  .sl-pas i::after{content:"";position:absolute;inset:0;border-radius:inherit;background:var(--t1,#16211a);transform:scaleX(0);transform-origin:0 50%}
+  .sl-pas button[aria-current="true"] i::after,.sl-pas button.byl i::after{transform:none}
+  .sl-pas button.byl i::after{background:rgba(15,26,20,0.42)}
+  .sl.gra .sl-pas button[aria-current="true"] i::after{animation:sl-czas var(--sl-t,6s) linear both}
+  .sl.gra.pauza .sl-pas button[aria-current="true"] i::after{animation-play-state:paused}
+  @keyframes sl-czas{from{transform:scaleX(0)}to{transform:none}}
+  .sl-pas button:hover i{background:rgba(15,26,20,0.28)}
+  .sl-pas button:focus-visible,.sl-str button:focus-visible{outline:2px solid var(--ziel,#00CD77);outline-offset:2px;border-radius:6px}
+  .sl-str{display:flex;gap:8px}
+  .sl-str button{display:grid;place-items:center;width:38px;height:38px;padding:0;border:0;border-radius:50%;background:#ffffff;color:var(--t1,#16211a);cursor:pointer;box-shadow:0 0 0 1px rgba(15,26,20,0.12);transition:background .15s,color .15s}
+  .sl-str button:hover{background:var(--ink,#0f1a14);color:#ffffff}
+  .sl-str svg{display:block;width:16px;height:16px;fill:currentColor}
+  @media (max-width:640px){
+    .sl-tor{--pole:16px}
+    .sl-ek{aspect-ratio:692 / 1038}
+    .sl-s.film .sl-ek{aspect-ratio:16 / 9}
+    .sl-play{font-size:13.5px;padding:6px 16px 6px 6px}
+    .sl-play i{width:34px;height:34px}
+    .sl-s figcaption{font-size:14.5px}
+    .sl-pas{gap:5px}
+    .sl-pas button{width:24px}
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-sl]').forEach((sl) => {
+    const tor = sl.querySelector<HTMLElement>('[data-sl-tor]')!;
+    const slajdy = Array.from(tor.children) as HTMLElement[];
+    const kreski = Array.from(sl.querySelectorAll<HTMLButtonElement>('[data-sl-i]'));
+    const redukcja = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const CZAS = 6000;
+    let teraz = 0;
+    let auto = !redukcja;
+    let widoczny = false;
+    let pauza = false;
+    let zegar = 0;
+    // Pozycja, do której tor jedzie po kliknięciu; do tego czasu przewijanie
+    // nie przestawia kresek.
+    let cel = -1;
+
+    sl.style.setProperty('--sl-t', `${CZAS}ms`);
+
+    function planuj() {
+      window.clearTimeout(zegar);
+      if (auto && widoczny && !pauza) zegar = window.setTimeout(() => idz(teraz + 1), CZAS);
+    }
+    function zaznacz(i: number) {
+      teraz = i;
+      kreski.forEach((k, j) => {
+        k.setAttribute('aria-current', j === i ? 'true' : 'false');
+        k.classList.toggle('byl', j < i);
+      });
+      // Pasek czasu rusza od zera przy każdym slajdzie.
+      sl.classList.remove('gra');
+      void sl.offsetWidth;
+      if (auto && widoczny) sl.classList.add('gra');
+      planuj();
+    }
+    function idz(i: number) {
+      const n = (i + slajdy.length) % slajdy.length;
+      cel = slajdy[n].offsetLeft - slajdy[0].offsetLeft;
+      tor.scrollTo({ left: cel, behavior: redukcja ? 'auto' : 'smooth' });
+      zaznacz(n);
+    }
+    function zatrzymaj() {
+      if (!auto) return;
+      auto = false;
+      window.clearTimeout(zegar);
+      sl.classList.remove('gra');
+    }
+
+    kreski.forEach((k, i) => k.addEventListener('click', () => { zatrzymaj(); idz(i); }));
+    sl.querySelectorAll<HTMLButtonElement>('[data-sl-krok]').forEach((b) => {
+      b.addEventListener('click', () => { zatrzymaj(); idz(teraz + Number(b.dataset.slKrok)); });
+    });
+    sl.addEventListener('keydown', (e) => {
+      if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+      e.preventDefault();
+      zatrzymaj();
+      idz(teraz + (e.key === 'ArrowRight' ? 1 : -1));
+    });
+    // Przeciągnięcie albo gest na torze: pokaz staje, kreski idą za torem.
+    tor.addEventListener('pointerdown', () => { cel = -1; zatrzymaj(); }, { passive: true });
+    tor.addEventListener('wheel', (e) => { if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) { cel = -1; zatrzymaj(); } }, { passive: true });
+    let odczyt = 0;
+    tor.addEventListener('scroll', () => {
+      if (cel >= 0) {
+        if (Math.abs(tor.scrollLeft - cel) < 4) cel = -1;
+        return;
+      }
+      window.clearTimeout(odczyt);
+      odczyt = window.setTimeout(() => {
+        const krok = slajdy.length > 1 ? slajdy[1].offsetLeft - slajdy[0].offsetLeft : 1;
+        const i = Math.round(tor.scrollLeft / krok);
+        if (i !== teraz) zaznacz(i);
+      }, 120);
+    }, { passive: true });
+
+    // Film: ładuje się po kliknięciu, pokaz staje, żeby nie przewinął się dalej.
+    sl.querySelectorAll<HTMLAnchorElement>('[data-sl-yt]').forEach((a) => {
+      a.addEventListener('click', (e) => {
+        if (e.metaKey || e.ctrlKey || e.shiftKey) return;
+        e.preventDefault();
+        zatrzymaj();
+        const f = document.createElement('iframe');
+        f.src = `https://www.youtube-nocookie.com/embed/${a.dataset.slYt}?autoplay=1&rel=0&modestbranding=1`;
+        f.title = a.dataset.slTytul || 'Film';
+        f.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+        f.allowFullscreen = true;
+        a.classList.add('gra');
+        a.removeAttribute('href');
+        a.appendChild(f);
+      }, { once: true });
+    });
+
+    sl.addEventListener('mouseenter', () => { pauza = true; sl.classList.add('pauza'); window.clearTimeout(zegar); });
+    sl.addEventListener('mouseleave', () => { pauza = false; sl.classList.remove('pauza'); if (auto) zaznacz(teraz); });
+    sl.addEventListener('focusin', () => { pauza = true; sl.classList.add('pauza'); window.clearTimeout(zegar); });
+    sl.addEventListener('focusout', (e) => {
+      if (sl.contains(e.relatedTarget as Node)) return;
+      pauza = false; sl.classList.remove('pauza'); if (auto) zaznacz(teraz);
+    });
+
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver((w) => {
+        widoczny = w[0].isIntersecting;
+        if (widoczny) zaznacz(teraz);
+        else { window.clearTimeout(zegar); sl.classList.remove('gra'); }
+      }, { threshold: 0.4 }).observe(sl);
+    }
+  });
+</script>

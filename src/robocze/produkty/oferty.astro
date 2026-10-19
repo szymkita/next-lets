@@ -1,7 +1,10 @@
 ---
-// SYSTEM OFERT — /produkty/oferty (propozycja, 15.10.2026, noindex)
+// OFERTY AI — /produkty/oferty (propozycja, 15.10.2026, noindex)
 // Strona produktu w tym samym standardzie co /produkty/wingman
 // (docs/uslugi-standard.md). Koncepcja: docs/oferty-koncepcja.md.
+// 19.10.2026: nazwa „Oferty AI” (wcześniej „System ofert”) i nowa oferta
+// przykładowa (src/components/produkty/OfertaNordis.astro): ten sam dokument
+// w hero, w mapie czytania i w przepisie oferty (warstwy).
 //
 // SKĄD FAKTY — wyłącznie z repo ~/oferty-aisales (github szymkita/aisales-oferty):
 //   · skill .claude/skills/create-offer: oferta z transkrypcji rozmów (albo
@@ -25,20 +28,26 @@
 //     mapa czytania (uwaga i zasięg na osobnych osiach), lejek sekcji,
 //     sesje, które skoczyły do ceny, podsumowanie pytań do czatu.
 //
-// Przykład przez całą stronę (zmyślony): firma od ogrzewania hal wysyła
-// ofertę Nordisowi po rozmowie z 14 września — ta sama sprawa co na
+// Przykład przez całą stronę (zmyślony): firma od ogrzewania hal (Termaro)
+// wysyła ofertę Nordisowi po rozmowie z 14 września — ta sama sprawa co na
 // /produkty/wingman, bez łączenia produktów. 157 300 zł netto, ważna do
-// 18 września (posiedzenie zarządu), pięć sesji czytania.
+// 18 września (posiedzenie zarządu), pięć sesji czytania. Oferta w barwach
+// sprzedawcy (accentColor i logo firmy są w schemacie), ton „Państwo”.
 //
 // DO POTWIERDZENIA PRZED PUBLIKACJĄ:
-//   · nazwa produktu („System ofert"; aplikacja nazywa się „Oferty") i adres;
+//   · nazwa „Oferty AI” (ustalona przez Szymona 19.10.2026; aplikacja w repo
+//     nazywa się „Oferty”) i adres /produkty/oferty;
+//   · wygląd oferty w makiecie to propozycja nowej warstwy wizualnej
+//     (sekcje z typów schematu, kolor i logo sprzedawcy), nie zrzut
+//     dzisiejszej aplikacji;
 //   · model sprzedaży i cena — strony nie ma w repo, więc strona jest bez ceny,
 //     wezwanie: pokaz;
 //   · czy pisać o Claude wprost (skill działa w Claude Code);
 //   · przykład z ogrzewaniem sugeruje, że typy ofert i moduły układa się pod
 //     firmę klienta; w repo są typy Let's automate (warsztat zerowy, koncepcja
 //     systemu, audyt, program szkoleniowy) i moduły z jej cenami;
-//   · domena w pasku adresu (oferty.letsautomate.site) i slug przykładowy;
+//   · domena w pasku adresu (oferty.letsautomate.site); adres oferty to
+//     /oferta/nordis (Szymon, 19.10.2026; schemat dopuszcza słowne slugi);
 //   · Szymon w zielonym pasie, Piotr Wojciuk w kontakcie;
 //   · wszystkie liczby z mapy czytania i panelu są przykładowe.
 import LaBase from '../../layouts/LaBase.astro';
@@ -52,10 +61,11 @@ import Metoda from '../../components/usluga/Metoda.astro';
 import DlaKogo from '../../components/usluga/DlaKogo.astro';
 import Kontakt from '../../components/usluga/Kontakt.astro';
 import { HI } from '../../components/usluga/ikony';
+import OfertaNordis from '../../components/produkty/OfertaNordis.astro';
 
 const kanon = new URL('/produkty/oferty', Astro.site).href;
-const title = "System ofert z AI — oferty pisane z rozmowy i śledzone do decyzji | Let's automate";
-const description = 'System ofert pisze ofertę z transkrypcji rozmowy, po zatwierdzeniu koncepcji przez handlowca. Klient dostaje ją jako stronę z czatem i przyciskiem akceptacji, a panel pokazuje, co przeczytał i o co pytał.';
+const title = "Oferty AI — oferty pisane z rozmowy i śledzone do decyzji | Let's automate";
+const description = 'W Ofertach AI ofertę pisze Claude z transkrypcji rozmowy, po zatwierdzeniu koncepcji przez handlowca. Klient dostaje ją jako stronę w barwach Waszej firmy, z czatem i przyciskiem akceptacji, a panel pokazuje, co przeczytał i o co pytał.';
 
 // Ikony spoza HI (16 × 16, wypełnienie).
 const IK = {
@@ -67,40 +77,21 @@ const IK = {
   terminal: '<path fill-rule="evenodd" d="M2 4.25A2.25 2.25 0 0 1 4.25 2h7.5A2.25 2.25 0 0 1 14 4.25v7.5A2.25 2.25 0 0 1 11.75 14h-7.5A2.25 2.25 0 0 1 2 11.75v-7.5Zm2.97 1.22a.75.75 0 0 1 1.06 0l2 2a.75.75 0 0 1 0 1.06l-2 2a.75.75 0 1 1-1.06-1.06L6.44 8 4.97 6.53a.75.75 0 0 1 0-1.06ZM8.5 10a.75.75 0 0 0 0 1.5h2a.75.75 0 0 0 0-1.5h-2Z" clip-rule="evenodd"/>',
 };
 
-// ---- PRZYKŁAD: oferta dla Nordisu -------------------------------------------
-const OS = {
-  a: { n: 'Anna Kowal', f: '/makieta/awatar-anna.webp' },
-  m: { n: 'Michał Rudnik', f: '/makieta/awatar-michal.webp' },
-};
-const URL_OF = 'oferty.letsautomate.site/oferta/a7k2m9q4';
-const SYT = [
-  ['Hala 4 200 m², dwie strefy', 'Rampy i regały wysokiego składowania, dziś ogrzewane nagrzewnicami olejowymi.'],
-  ['Ok. 23 tys. zł miesięcznie zimą', 'Tyle kosztuje dziś olej w sezonie grzewczym.'],
-  ['Montaż robi Wasza ekipa', 'W ofercie jest projekt, dostawa i uruchomienie, bez montażu.'],
-  ['Ciepło od 1 listopada', 'Zamówienie do 25 września zdąży z dostawą przed sezonem.'],
-];
-const ETAPY = [
-  ['01', 'Projekt', '1 tydzień', 'Rozmieszczenie 16 promienników w dwóch strefach.'],
-  ['02', 'Dostawa', '4–5 tygodni', 'Promienniki i sterowanie na budowę.'],
-  ['03', 'Uruchomienie', '2 dni', 'Uruchomienie po montażu i szkolenie obsługi.'],
-];
-const W_CENIE = ['16 promienników gazowych 32 kW', 'sterowanie dwóch stref', 'projekt wykonawczy', 'uruchomienie i szkolenie'];
-const POZA = ['montaż — robi go ekipa Nordisu', 'instalacja gazowa do hali'];
-const KROKI = [
-  ['18 września', 'Decyzja zarządu'],
-  ['25 września', 'Zamówienie'],
-  ['1 listopada', 'Ciepło w hali'],
-];
+// ---- PRZYKŁAD: oferta dla Nordisu ------------------------------------------
+// Treść dokumentu: src/components/produkty/OfertaNordis.astro.
+const URL_OF = 'oferty.letsautomate.site/oferta/nordis';
 
 // ---- MAPA CZYTANIA (przykładowe dane, pięć sesji) ----------------------------
 // uwaga = średni czas w sekcji (s), zasieg = ile z pięciu sesji tam doszło.
+// k = klucz sekcji w OfertaNordis (pomniejszony podgląd obok liczb).
 const MAPA = [
-  { s: 'Nagłówek', h: 64, uwaga: 12, zasieg: 5 },
-  { s: 'Co zrozumieliśmy', h: 88, uwaga: 48, zasieg: 5 },
-  { s: 'Jak to zrobimy', h: 72, uwaga: 31, zasieg: 4 },
-  { s: 'Cena', h: 82, uwaga: 95, zasieg: 5, skok: true },
-  { s: 'Pytania i obiekcje', h: 66, uwaga: 40, zasieg: 3 },
-  { s: 'Następne kroki', h: 52, uwaga: 14, zasieg: 2 },
+  { k: 'naglowek', s: 'Nagłówek', uwaga: 12, zasieg: 5 },
+  { k: 'syt', s: 'Co zrozumieliśmy', uwaga: 48, zasieg: 5 },
+  { k: 'plan', s: 'Jak to zrobimy', uwaga: 31, zasieg: 4 },
+  { k: 'cena', s: 'Cena', uwaga: 95, zasieg: 5, skok: true },
+  { k: 'obiekcje', s: 'Pytania i obiekcje', uwaga: 40, zasieg: 3 },
+  { k: 'onas', s: 'Opinia', uwaga: 9, zasieg: 2 },
+  { k: 'kroki', s: 'Następne kroki', uwaga: 14, zasieg: 2 },
 ];
 const SESJE = 5;
 const UWAGA_MAX = Math.max(...MAPA.map((m) => m.uwaga));
@@ -181,13 +172,13 @@ const METODA = [
 // ---- PRZEPIS OFERTY (przykład: oferta dla Nordisu) ----------------------------
 // z = skąd się bierze sekcja: c = pisze Claude z rozmowy, m = moduł, b = biblioteka.
 const PRZEPIS = [
-  { s: 'Nagłówek', z: 'c', d: 'jedno zdanie o wartości' },
-  { s: 'Co zrozumieliśmy', z: 'c', d: 'z cytatem z rozmowy' },
-  { s: 'Jak to zrobimy', z: 'c', d: 'etapy z czasem' },
-  { s: 'Cena', z: 'm', d: 'co wchodzi, czego nie ma' },
-  { s: 'Pytania i obiekcje', z: 'b', d: 'odpowiedzi z biblioteki' },
-  { s: 'O nas', z: 'b', d: 'opinia dobrana do branży' },
-  { s: 'Następne kroki', z: 'm', d: 'decyzja i termin' },
+  { k: 'naglowek', s: 'Nagłówek', z: 'c', d: 'zdanie o wartości i trzy najważniejsze rzeczy' },
+  { k: 'syt', s: 'Co zrozumieliśmy', z: 'c', d: 'liczby klienta i cytat z rozmowy' },
+  { k: 'plan', s: 'Jak to zrobimy', z: 'c', d: 'etapy z czasem, do daty klienta' },
+  { k: 'cena', s: 'Cena', z: 'm', d: 'co wchodzi w cenę, a czego oferta nie obejmuje' },
+  { k: 'obiekcje', s: 'Pytania i obiekcje', z: 'b', d: 'odpowiedzi wybrane z biblioteki' },
+  { k: 'onas', s: 'Opinia', z: 'b', d: 'klient z tej samej branży' },
+  { k: 'kroki', s: 'Następne kroki', z: 'm', d: 'decyzja, zamówienie, termin' },
 ];
 const ZRODLA = {
   c: { t: 'pisze Claude', h: 'Pisze Claude z rozmowy', d: 'Sekcje, które są inne w każdej ofercie: sytuacja klienta, jego liczby i cytaty, zakres i etapy.' },
@@ -198,13 +189,13 @@ const ZRODLA = {
 // ---- DLA KOGO -----------------------------------------------------------------
 const DLA_KOGO = [
   { t: 'Wysyłacie ofertę po rozmowie z klientem', d: 'Oferta zależy od tego, co padło w rozmowie: zakresu, terminu, budżetu. Im więcej takich ofert w miesiącu, tym więcej czasu idzie na przepisywanie ustaleń.' },
-  { t: 'Oferta ma kilka części', d: 'Zakres, etapy, cena razem z tym, co w niej jest i czego nie ma, odpowiedzi na obiekcje. Pojedyncza pozycja z cennika systemu nie potrzebuje.' },
+  { t: 'Oferta ma kilka części', d: 'Zakres, etapy, cena razem z tym, co w niej jest i czego nie ma, odpowiedzi na obiekcje. Pojedyncza pozycja z cennika nie potrzebuje Ofert AI.' },
   { t: 'Macie zapis rozmowy albo notatki', d: 'Transkrypcja daje liczby i cytaty klienta. Z krótkiej notatki oferta też powstanie, tylko bez tabel z kosztami i bez cytatów.' },
   { t: 'Chcecie wiedzieć, co dzieje się po wysłaniu', d: 'Panel pokazuje czytanie i pytania do czatu, a akceptacja i prośba o rozmowę przychodzą jako powiadomienie.' },
 ];
 const NIE_TERAZ = [
   'Sprzedajecie z cennika, a oferta to jedna pozycja i cena. Wystarczy wtedy szablon w systemie sprzedaży.',
-  'Klient wymaga oferty w swoim formularzu, np. przetargowym. System pisze oferty jako strony.',
+  'Klient wymaga oferty w swoim formularzu, np. przetargowym, a tu oferta jest stroną internetową.',
 ];
 
 // ---- FAQ ----------------------------------------------------------------------
@@ -227,7 +218,7 @@ const faq = [
   },
   {
     q: 'Jak klient dostaje ofertę?',
-    a: 'Jako link do strony. W nagłówku stoi jego firma, osoba, do której piszecie, i termin ważności. Dostęp można ograniczyć do wybranych adresów e-mail albo do hasła.',
+    a: 'Jako link do strony z logo i kolorem Waszej firmy. W nagłówku stoją autor oferty, adresat i termin ważności. Dostęp można ograniczyć do wybranych adresów e-mail albo do hasła.',
   },
   {
     q: 'Co wie czat w ofercie?',
@@ -249,12 +240,12 @@ const dane = {
     {
       '@type': 'SoftwareApplication',
       '@id': `${kanon}#aplikacja`,
-      name: 'System ofert',
-      alternateName: ['Oferty', 'System ofert z AI'],
+      name: 'Oferty AI',
+      alternateName: ['Oferty', 'System ofert'],
       applicationCategory: 'BusinessApplication',
       operatingSystem: 'Web',
       url: kanon,
-      description: 'System, w którym Claude pisze ofertę handlową z transkrypcji rozmowy po zatwierdzeniu koncepcji przez handlowca. Oferta jest stroną z czatem i przyciskiem akceptacji, a panel pokazuje czytanie i pytania klienta.',
+      description: 'Aplikacja, w której Claude pisze ofertę handlową z transkrypcji rozmowy po zatwierdzeniu koncepcji przez handlowca. Oferta jest stroną z czatem i przyciskiem akceptacji, a panel pokazuje czytanie i pytania klienta.',
       publisher: { '@id': new URL('/#organizacja', Astro.site).href },
     },
     {
@@ -263,7 +254,7 @@ const dane = {
       itemListElement: [
         { '@type': 'ListItem', position: 1, name: 'Strona główna', item: new URL('/', Astro.site).href },
         { '@type': 'ListItem', position: 2, name: 'Produkty', item: new URL('/produkty', Astro.site).href },
-        { '@type': 'ListItem', position: 3, name: 'System ofert', item: kanon },
+        { '@type': 'ListItem', position: 3, name: 'Oferty AI', item: kanon },
       ],
     },
     {
@@ -274,9 +265,9 @@ const dane = {
   ],
 };
 
-const HERO_ARIA = 'Oferta dla Nordisu otwarta w przeglądarce: nagłówek z terminem ważności, sekcja „Co zrozumieliśmy”, etapy i cena 157 300 zł netto. Na dole pasek z przyciskami Akceptuję ofertę, Chcę porozmawiać i Zapytaj AI o ofertę. W czacie klient pyta, co wchodzi w cenę, a czat odpowiada z treści oferty. Po akceptacji sprzedawca dostaje powiadomienie.';
+const HERO_ARIA = 'Oferta dla Nordisu otwarta w przeglądarce, w barwach firmy, która ją wysyła: nagłówek „Ciepło w hali Nordisu od 1 listopada, w budżecie zarządu” z terminem ważności, trzy najważniejsze punkty, sekcja „Co zrozumieliśmy” z cytatem klienta, plan od zamówienia do uruchomienia i cena 157 300 zł netto. Na dole pasek z przyciskami Akceptuję ofertę, Chcę porozmawiać i Zapytaj AI o ofertę. W czacie klient pyta, co wchodzi w cenę, a asystent odpowiada z treści oferty. Po akceptacji sprzedawca dostaje powiadomienie.';
 ---
-<LaBase noindex topbar={false} title={title} description={description} ctaHref="#kontakt" ctaLabel="Umów pokaz" nav={null}>
+<LaBase noindex topbar={false} title={title} description={description} ctaLabel="Umów pokaz" nav={null}>
 <script type="application/ld+json" is:inline set:html={JSON.stringify(dane)} slot="head"></script>
 
 <style is:global slot="head">
@@ -293,82 +284,40 @@ const HERO_ARIA = 'Oferta dla Nordisu otwarta w przeglądarce: nagłówek z term
   /* =====================================================================
      HERO · oferta w przeglądarce, pasek decyzji, czat, powiadomienie
      ===================================================================== */
-  .oh{container-type:inline-size}
+  .oh{container-type:inline-size;--ak:#f2672a;--ak2:#ffb23f;--akc:#c2410c}
   .ob{position:relative;overflow:hidden;border-radius:14px;background:#ffffff;
     box-shadow:0 0 0 1px rgba(255,255,255,0.14),0 0 0 1.5px rgba(0,0,0,0.3),0 50px 100px -40px rgba(0,0,0,0.9),0 18px 36px -20px rgba(0,0,0,0.55)}
   .ob-tyt{display:flex;align-items:center;gap:14px;height:42px;padding:0 14px;background:#f4f5f3;border-bottom:1px solid var(--jl)}
   .ob-url{display:flex;align-items:center;justify-content:center;gap:7px;flex:1;max-width:460px;height:26px;margin:0 auto;padding:0 12px;border-radius:8px;background:#ffffff;box-shadow:inset 0 0 0 1px var(--jl);font-size:12px;color:var(--j2);white-space:nowrap;overflow:hidden}
   .ob-url .hi{width:12px;height:12px;color:var(--j3)}
   .ob-tyt::after{content:"";width:47px}
-  .ob-uk{position:relative;height:560px;overflow:hidden;background:#ffffff}
+  .ob-uk{position:relative;height:600px;overflow:hidden;background:#fffdfb}
   .ob-str{position:absolute;left:0;right:0;top:0;transition:transform 1.3s cubic-bezier(.65,0,.25,1)}
-  /* treść oferty */
-  .od-hero{padding:30px 60px 34px;background:linear-gradient(180deg,#dff4e7 0%,#f3faf5 60%,#ffffff 100%)}
-  .od-top{display:flex;justify-content:space-between;gap:16px;font-size:12px;font-weight:600;color:var(--j2)}
-  .od-top span:last-child{font-weight:500;color:var(--j3)}
-  .od-eb{display:flex;align-items:center;gap:10px;margin-top:30px;font-size:12px;font-weight:650;color:var(--wzc)}
-  .od-eb::before{content:"";width:22px;height:2px;background:var(--wz)}
-  .od-h1{margin:12px 0 0;max-width:640px;font-size:34px;line-height:1.06;letter-spacing:-0.035em;font-weight:750;color:var(--j1);text-wrap:balance}
-  .od-meta{display:flex;flex-wrap:wrap;gap:12px 34px;margin:24px 0 0}
-  .od-meta div{margin:0}
-  .od-meta dt{font-size:11.5px;color:var(--j3)}
-  .od-meta dd{margin:3px 0 0;display:flex;align-items:center;gap:7px;font-size:13px;font-weight:600}
-  .od-meta dd img{width:20px;height:20px;border-radius:50%;object-fit:cover}
-  .od-meta .waz dd{color:var(--wzc)}
-  .od-s{padding:34px 60px 0;max-width:820px}
-  .od-s > h3{margin:0;padding-top:16px;border-top:1px solid var(--jl);font-size:21px;font-weight:700;letter-spacing:-0.025em}
-  .od-s > p{margin:6px 0 0;font-size:13.5px;color:var(--j2)}
-  .od-syt{margin:14px 0 0;padding:0;list-style:none}
-  .od-syt li{display:grid;grid-template-columns:34px minmax(0,1fr);gap:8px;padding:11px 0;border-bottom:1px solid var(--jl2)}
-  .od-syt li span{font-family:var(--mono);font-size:12px;color:var(--j4);padding-top:2px}
-  .od-syt b{display:block;font-size:14px;font-weight:650}
-  .od-syt em{display:block;margin-top:2px;font-style:normal;font-size:13px;color:var(--j2)}
-  .od-cyt{margin:14px 0 0;padding:12px 16px;border-left:2px solid var(--wz);background:#f6faf7;font-size:14px;font-weight:500;color:var(--j1)}
-  .od-cyt small{display:block;margin-top:4px;font-size:11.5px;color:var(--j3)}
-  .od-et{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:14px}
-  .od-et div{padding:13px 14px;border-radius:12px;background:#f7f8f6;box-shadow:inset 0 0 0 1px var(--jl2)}
-  .od-et span{font-family:var(--mono);font-size:11px;color:var(--wzc)}
-  .od-et b{display:block;margin-top:4px;font-size:14px;font-weight:650}
-  .od-et em{display:block;margin-top:2px;font-style:normal;font-size:11.5px;color:var(--j3)}
-  .od-et p{margin:7px 0 0;font-size:12.5px;line-height:1.45;color:var(--j2)}
-  .od-cena{display:grid;grid-template-columns:minmax(0,0.9fr) minmax(0,1fr) minmax(0,1fr);gap:20px;align-items:start;margin-top:14px;padding:18px 20px;border-radius:14px;background:#f2faf5;box-shadow:inset 0 0 0 1px rgba(0,205,119,0.22)}
-  .od-cena > div:first-child b{display:block;font-size:28px;font-weight:750;letter-spacing:-0.04em;line-height:1}
-  .od-cena > div:first-child span{display:block;margin-top:5px;font-size:12px;color:var(--j2)}
-  .od-cena h4{margin:0 0 6px;font-size:12px;font-weight:650;color:var(--j2)}
-  .od-cena ul{margin:0;padding:0;list-style:none}
-  .od-cena li{position:relative;padding:3px 0 3px 18px;font-size:12.5px}
-  .od-cena li::before{content:"";position:absolute;left:2px;top:9px;width:8px;height:5px;border:solid var(--wzc);border-width:0 0 1.8px 1.8px;transform:rotate(-45deg)}
-  .od-cena .poza li::before{top:11px;width:8px;height:0;border-width:0 0 1.6px;border-color:var(--j4);transform:none}
-  .od-kroki{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:14px;padding-bottom:110px}
-  .od-kroki div{padding-top:10px;border-top:2px solid var(--wz)}
-  .od-kroki div + div{border-top-color:var(--jl)}
-  .od-kroki b{display:block;font-size:13.5px;font-weight:650}
-  .od-kroki span{font-size:12px;color:var(--j3)}
   /* pasek decyzji */
   .od-pasek{position:absolute;z-index:3;left:50%;bottom:16px;transform:translateX(-50%);display:flex;align-items:center;gap:8px;padding:7px;border-radius:999px;background:rgba(255,255,255,0.92);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);box-shadow:0 0 0 1px var(--jl),0 18px 40px -18px rgba(7,20,13,0.4);white-space:nowrap}
   .od-b{display:inline-flex;align-items:center;gap:7px;height:38px;padding:0 17px;border-radius:999px;font-size:13px;font-weight:650;color:var(--j1);box-shadow:inset 0 0 0 1px rgba(21,27,23,0.16);transition:transform .15s,box-shadow .2s,background .2s}
-  .od-b.gl{background:var(--wzc);color:#ffffff;box-shadow:none}
+  .od-b.gl{background:linear-gradient(100deg,#e2531f,var(--ak) 55%,#f58a2e);color:#ffffff;box-shadow:0 8px 18px -10px rgba(194,65,12,0.8)}
   .od-b .hi{width:13px;height:13px}
-  .od-b.wcis{transform:scale(.95);box-shadow:0 0 0 4px rgba(0,205,119,0.25)}
-  .od-gotowe{display:none;align-items:center;gap:8px;height:38px;padding:0 16px;font-size:13px;font-weight:600;color:var(--wzc)}
+  .od-b.wcis{transform:scale(.95);box-shadow:0 0 0 4px rgba(242,103,42,0.25)}
+  .od-gotowe{display:none;align-items:center;gap:8px;height:38px;padding:0 16px;font-size:13px;font-weight:600;color:var(--akc)}
   .od-gotowe .hi{width:16px;height:16px}
   .od-pasek.po .od-b{display:none}
   .od-pasek.po .od-gotowe{display:inline-flex}
   /* czat zadokowany */
-  .od-czat{position:absolute;z-index:4;top:14px;right:14px;bottom:76px;width:330px;display:flex;flex-direction:column;border-radius:16px;background:#ffffff;box-shadow:0 0 0 1px var(--jl),0 30px 60px -28px rgba(7,20,13,0.45);transition:opacity .35s ease,transform .45s cubic-bezier(.2,.8,.2,1)}
+  .od-czat{position:absolute;z-index:4;top:14px;right:14px;bottom:76px;width:330px;display:flex;flex-direction:column;border-radius:16px;background:rgba(255,255,255,0.96);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);box-shadow:0 0 0 1px var(--jl),0 30px 60px -28px rgba(7,20,13,0.45);transition:opacity .35s ease,transform .45s cubic-bezier(.2,.8,.2,1)}
   .od-czat.zam{opacity:0;transform:translateX(24px);pointer-events:none}
   .od-czat-gl{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--jl)}
-  .od-czat-gl > i{display:grid;place-items:center;width:28px;height:28px;border-radius:9px;background:var(--j1);color:var(--wz)}
+  .od-czat-gl > i{display:grid;place-items:center;width:28px;height:28px;border-radius:9px;background:linear-gradient(160deg,var(--ak2),var(--ak));color:#ffffff}
   .od-czat-gl > i .hi{width:13px;height:13px}
   .od-czat-gl b{display:block;font-size:13px;font-weight:650}
   .od-czat-gl span{display:block;font-size:11.5px;color:var(--j3)}
   .od-czat-tr{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:flex-end;gap:10px;padding:14px 16px;overflow:hidden}
   .od-msg{max-width:88%;padding:10px 13px;border-radius:14px;font-size:13px;line-height:1.5;transition:opacity .35s ease,transform .4s cubic-bezier(.2,.8,.2,1)}
-  .od-msg.kl{align-self:flex-end;background:var(--j1);color:#ffffff;border-bottom-right-radius:5px}
-  .od-msg.ai{align-self:flex-start;background:#f2f4f1;color:var(--j1);border-bottom-left-radius:5px}
+  .od-msg.kl{align-self:flex-end;background:#1b140f;color:#ffffff;border-bottom-right-radius:5px}
+  .od-msg.ai{align-self:flex-start;background:#fbf4ee;color:var(--j1);border-bottom-left-radius:5px}
   .od-msg.ai b{font-weight:650}
   .od-msg.ukr{opacity:0;transform:translateY(8px)}
-  .od-pisze{align-self:flex-start;display:none;gap:4px;padding:12px 14px;border-radius:14px;background:#f2f4f1}
+  .od-pisze{align-self:flex-start;display:none;gap:4px;padding:12px 14px;border-radius:14px;background:#fbf4ee}
   .od-pisze.on{display:flex}
   .od-pisze i{width:6px;height:6px;border-radius:50%;background:var(--j3);animation:of-krop 1s ease-in-out infinite}
   .od-pisze i:nth-child(2){animation-delay:.15s}
@@ -385,28 +334,24 @@ const HERO_ARIA = 'Oferta dla Nordisu otwarta w przeglądarce: nagłówek z term
   .od-sheet > div{width:min(380px,calc(100% - 32px));padding:22px;border-radius:18px;background:#ffffff;box-shadow:0 40px 80px -30px rgba(7,20,13,0.5)}
   .od-sheet h4{margin:0;font-size:17px;font-weight:700;letter-spacing:-0.02em}
   .od-sheet p{margin:6px 0 0;font-size:12.5px;line-height:1.5;color:var(--j2)}
-  .od-sheet-akc{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}
+  .od-uwagi{display:block;margin-top:14px;padding:10px 12px;height:54px;border-radius:10px;box-shadow:inset 0 0 0 1px rgba(21,27,23,0.14);font-size:12.5px;color:var(--j4)}
+  .od-sheet-akc{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
   /* powiadomienie u sprzedawcy */
   .oh-pow{position:absolute;z-index:6;top:-22px;right:-12px;display:flex;align-items:flex-start;gap:11px;width:300px;padding:13px 15px;border-radius:16px;background:rgba(14,19,16,0.94);color:#f3f6f4;box-shadow:inset 0 0 0 1px rgba(255,255,255,0.08),0 30px 60px -24px rgba(0,0,0,0.7);transition:opacity .4s ease,transform .5s cubic-bezier(.2,.8,.2,1)}
   .oh-pow.zam{opacity:0;transform:translateY(-10px)}
-  .oh-pow > i{display:grid;place-items:center;flex-shrink:0;width:30px;height:30px;border-radius:9px;background:rgba(0,205,119,0.16);color:var(--wz)}
+  .oh-pow > i{display:grid;place-items:center;flex-shrink:0;width:30px;height:30px;border-radius:9px;background:rgba(242,103,42,0.18);color:var(--ak2)}
   .oh-pow > i .hi{width:15px;height:15px}
   .oh-pow b{display:block;font-size:13px;font-weight:650}
+  .oh.gra .od-pas-b,.oh.gra .od-bud-p i{transform:scaleX(0)}
+  .oh.gra.plan .od-pas-b{transform:none;transition:transform .9s cubic-bezier(.2,.8,.2,1) calc(.5s + var(--i) * .16s)}
+  .oh.gra.cena .od-bud-p i{transform:none;transition:transform 1.1s cubic-bezier(.2,.8,.2,1) .6s}
   .oh-pow span{display:block;margin-top:2px;font-size:11.5px;color:rgba(243,246,244,0.6)}
   @container (max-width:900px){
-    .od-hero{padding:24px 26px 26px}
-    .od-s{padding:28px 26px 0}
-    .od-h1{font-size:26px}
     .od-czat{width:290px}
-    .od-cena{grid-template-columns:minmax(0,1fr)}
   }
   @container (max-width:640px){
-    .ob-uk{height:520px}
+    .ob-uk{height:540px}
     .ob-url{font-size:11px}
-    .od-hero{padding:20px 18px 22px}
-    .od-s{padding:24px 18px 0}
-    .od-h1{font-size:22px}
-    .od-et,.od-kroki{grid-template-columns:minmax(0,1fr)}
     .od-czat{left:10px;right:10px;width:auto;top:auto;height:330px}
     .od-start{display:none}
     .od-pasek{gap:5px;padding:5px}
@@ -417,36 +362,46 @@ const HERO_ARIA = 'Oferta dla Nordisu otwarta w przeglądarce: nagłówek z term
 
   /* =====================================================================
      DLACZEGO · mapa czytania jednej oferty
-     Sekcje w skali długości dokumentu, obok uwaga (średni czas) i zasięg
-     (kropka = sesja). Dwie osie osobno, jak w panelu: mają różne mianowniki.
+     Jak w panelu: prawdziwy dokument w pasmach sekcji, obok uwaga (średni
+     czas) i zasięg (kropka = sesja). Dwie osie osobno: różne mianowniki.
      ===================================================================== */
-  .mc-gl,.mc-w{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr) minmax(0,0.75fr);gap:clamp(14px,2vw,32px);align-items:center;margin:0 clamp(2px,0.8vw,14px)}
+  .mc-gl,.mc-w{display:grid;grid-template-columns:minmax(0,0.8fr) 300px minmax(0,1.15fr) minmax(0,0.75fr);gap:clamp(14px,2vw,32px);align-items:center;margin:0 clamp(2px,0.8vw,14px)}
   .mc-gl{padding-bottom:12px;border-bottom:1.5px solid var(--t1);font-size:12.5px;font-weight:650;color:var(--t2)}
   .mc-gl span small{font-weight:500;color:var(--t3)}
-  .mc-w{border-bottom:1px solid var(--linia)}
-  .mc-d{position:relative;display:flex;align-items:center;gap:12px;height:var(--h);margin:6px 0;padding:0 16px;border-radius:12px;background:#ffffff;box-shadow:0 0 0 1px rgba(15,26,20,0.06)}
-  .mc-d b{font-size:14.5px;font-weight:650;letter-spacing:-0.01em}
-  .mc-d em{margin-left:auto;font-style:normal;font-size:12px;font-weight:650;color:var(--ziel-c);white-space:nowrap}
-  .mc-d::before{content:"";position:absolute;left:16px;right:40%;bottom:12px;height:5px;border-radius:3px;background:repeating-linear-gradient(90deg,rgba(15,26,20,0.07) 0 60%,transparent 60% 64%)}
-  .mc-u{display:flex;align-items:center;gap:12px}
+  .mc-w{align-items:stretch;border-bottom:1px solid var(--linia)}
+  .mc-w > div{display:flex;align-items:center}
+  .mc-n{flex-direction:column;align-items:flex-start !important;justify-content:center;gap:4px}
+  .mc-n b{font-size:14.5px;font-weight:650;letter-spacing:-0.01em}
+  .mc-n em{font-style:normal;font-size:12px;font-weight:650;line-height:1.35;color:var(--ziel-c)}
+  .mc-p{position:relative;align-items:stretch !important;background:#fffdfb;box-shadow:1px 0 0 rgba(15,26,20,0.08),-1px 0 0 rgba(15,26,20,0.08)}
+  .mc-gl + .mc-w .mc-p{border-radius:10px 10px 0 0;overflow:hidden}
+  .mc-w:last-child .mc-p{border-radius:0 0 10px 10px;overflow:hidden}
+  .mc-pd{width:1000px;zoom:0.3;container-type:inline-size;pointer-events:none}
+  .mc-pd .od-kroki{padding-bottom:40px}
+  .mc-pd .od-slonce .f{animation:none}
+  .mc-u{gap:12px}
   .mc-u i{display:block;flex:none;width:var(--u);height:14px;border-radius:4px;background:var(--ziel);transform-origin:0 50%}
   .mc-u span{font-size:13px;font-weight:600;color:var(--t2);white-space:nowrap}
-  .mc-z{display:flex;align-items:center;gap:6px}
+  .mc-z{gap:6px}
   .mc-z i{display:block;width:12px;height:12px;border-radius:50%;box-shadow:inset 0 0 0 1.5px rgba(15,26,20,0.22)}
   .mc-z i.on{background:var(--t1);box-shadow:none}
   .mc-z span{margin-left:8px;font-size:13px;color:var(--t2);white-space:nowrap}
   .mc.gra .mc-u i{transform:scaleX(0)}
   .mc.gra .mc-z i.on{background:transparent;box-shadow:inset 0 0 0 1.5px rgba(15,26,20,0.22)}
-  .mc.gra .mc-d em{opacity:0}
+  .mc.gra .mc-n em{opacity:0}
   .mc.gra.on .mc-u i{transform:none;transition:transform .8s cubic-bezier(.2,.8,.2,1) calc(0.2s + var(--j) * 0.18s)}
   .mc.gra.on .mc-z i.on{background:var(--t1);box-shadow:none;transition:background .25s ease calc(1.2s + var(--j) * 0.12s + var(--k) * 0.06s),box-shadow .25s ease calc(1.2s + var(--j) * 0.12s + var(--k) * 0.06s)}
-  .mc.gra.on .mc-d em{opacity:1;transition:opacity .4s ease 2.4s}
+  .mc.gra.on .mc-n em{opacity:1;transition:opacity .4s ease 2.4s}
   .bez,.bez *{transition:none !important}
+  @media (max-width:1100px){
+    .mc-gl,.mc-w{grid-template-columns:minmax(0,0.8fr) 220px minmax(0,1fr) minmax(0,0.8fr)}
+    .mc-pd{zoom:0.22}
+  }
   @media (max-width:760px){
     .mc-gl{display:none}
-    .mc-w{grid-template-columns:minmax(0,1fr) minmax(0,1fr);row-gap:8px;padding:10px 0}
-    .mc-d{grid-column:1 / -1;height:auto;min-height:48px;margin:0}
-    .mc-d::before{display:none}
+    .mc-w{grid-template-columns:minmax(0,1fr) minmax(0,1fr);row-gap:8px;padding:12px 0}
+    .mc-n{grid-column:1 / -1}
+    .mc-p{display:none !important}
     .mc-u i{width:calc(var(--u) * 0.55)}
   }
 
@@ -533,21 +488,57 @@ const HERO_ARIA = 'Oferta dla Nordisu otwarta w przeglądarce: nagłówek z term
   /* =====================================================================
      PRZEPIS OFERTY · skąd się bierze każda sekcja
      ===================================================================== */
-  .pp{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px;margin-top:clamp(48px,5vw,72px)}
-  .pp-s{display:flex;flex-direction:column;min-height:150px;padding:14px 14px 13px;border-radius:16px}
-  .pp-s span{font-family:var(--mono);font-size:11px;opacity:0.7}
-  .pp-s b{display:block;margin-top:8px;font-size:15px;font-weight:700;letter-spacing:-0.015em;line-height:1.2}
-  .pp-s small{display:block;margin-top:4px;font-size:12.5px;line-height:1.4;opacity:0.75}
-  .pp-s em{margin-top:auto;padding-top:12px;font-style:normal;font-size:12px;font-weight:650}
-  .pp-s.c{background:#e6f7ee;color:var(--t1)} .pp-s.c em{color:var(--ziel-c)}
-  .pp-s.m{background:var(--ink);color:#ffffff} .pp-s.m em{color:var(--ziel)}
-  .pp-s.b{background:var(--papier);color:var(--t1);box-shadow:inset 0 0 0 1px rgba(15,26,20,0.08)} .pp-s.b em{color:var(--t2)}
-  .pp-op{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(20px,3vw,48px);margin-top:clamp(28px,3vw,40px)}
-  .pp-op div{padding-top:16px;border-top:1.5px solid var(--t1)}
+  /* Warstwy: sekcje tej samej oferty w rzucie, rozsunięte. Krawędź warstwy
+     w kolorze źródła (Claude, moduł, biblioteka), podpis po lewej. */
+  .ex{--kc:#00CD77;--km:#0f1a14;--kb:#d8ccb8;position:relative;margin-top:clamp(40px,5vw,72px);padding:40px 0 110px}
+  .ex-w{position:relative;display:grid;grid-template-columns:minmax(0,1fr) 560px minmax(0,0.5fr);align-items:center;height:116px;z-index:calc(20 - var(--i))}
+  .ex-w:first-child{height:150px}
+  .ex-w.c{--k:var(--kc)} .ex-w.m{--k:var(--km)} .ex-w.b{--k:var(--kb)}
+  .ex-t{position:relative;grid-column:1;justify-self:end;max-width:300px;padding-right:96px;text-align:right}
+  .ex-t::after{content:"";position:absolute;right:14px;top:14px;width:70px;height:1px;background:linear-gradient(90deg,transparent,rgba(15,26,20,0.35))}
+  .ex-t b{display:block;font-size:17px;font-weight:700;letter-spacing:-0.018em;line-height:1.2}
+  .ex-t b span{margin-right:8px;font-family:var(--mono);font-size:11.5px;font-weight:500;color:var(--t3)}
+  .ex-t small{display:block;margin-top:3px;font-size:13.5px;line-height:1.45;color:var(--t2)}
+  .ex-t em{display:inline-flex;align-items:center;gap:7px;margin-top:8px;font-style:normal;font-size:12.5px;font-weight:650;color:var(--t1)}
+  .ex-t em i{width:9px;height:9px;border-radius:3px;background:var(--k);box-shadow:inset 0 0 0 1px rgba(15,26,20,0.12)}
+  .ex-pl{grid-column:2;position:relative;align-self:center;height:0}
+  .ex-3d{position:absolute;left:50%;top:50%;width:500px;transform:translate(-50%,-50%) perspective(2600px) rotateX(54deg) rotateZ(-34deg);transform-style:preserve-3d}
+  .ex-3d::before{content:"";position:absolute;inset:0;border-radius:14px;background:var(--k);transform:translateZ(-9px)}
+  .ex-3d::after{content:"";position:absolute;inset:10% 6%;border-radius:30px;background:rgba(15,26,20,0.3);filter:blur(26px);transform:translateZ(-70px)}
+  .ex-in{position:relative;overflow:hidden;border-radius:14px;background:#fffdfb;box-shadow:inset 0 0 0 1px rgba(15,26,20,0.07)}
+  .ex-pd{width:1000px;zoom:0.5;container-type:inline-size;pointer-events:none}
+  .ex-pd .od-kroki{padding-bottom:36px}
+  .ex-pd .od-slonce .f{animation:none}
+  .ex.gra .ex-w{transform:translateY(calc(var(--i) * -80px))}
+  .ex.gra .ex-t{opacity:0;transform:translateX(-10px)}
+  .ex.gra.on .ex-w{transform:none;transition:transform 1.3s cubic-bezier(.2,.8,.2,1) calc(.2s + var(--i) * .04s)}
+  .ex.gra.on .ex-t{opacity:1;transform:none;transition:opacity .5s ease calc(.9s + var(--i) * .12s),transform .5s ease calc(.9s + var(--i) * .12s)}
+  .pp-op{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(20px,3vw,48px);margin-top:clamp(12px,2vw,24px)}
+  .pp-op div{padding-top:16px;border-top:3px solid var(--k)}
+  .pp-op .c{--k:#00CD77} .pp-op .m{--k:#0f1a14} .pp-op .b{--k:#d8ccb8}
   .pp-op b{display:block;font-size:17px;font-weight:700;letter-spacing:-0.015em}
   .pp-op p{margin:6px 0 0;font-size:15px;line-height:1.6;color:var(--t2);text-wrap:pretty}
-  @media (max-width:1100px){ .pp{grid-template-columns:repeat(4,minmax(0,1fr))} }
-  @media (max-width:700px){ .pp{grid-template-columns:repeat(2,minmax(0,1fr))} .pp-op{grid-template-columns:minmax(0,1fr)} .pp-s{min-height:120px} }
+  @media (max-width:1180px){
+    .ex-w{grid-template-columns:minmax(0,1fr) 440px minmax(0,0.3fr);height:96px}
+    .ex-w:first-child{height:124px}
+    .ex-3d{width:400px}
+    .ex-pd{zoom:0.4}
+    .ex-t{padding-right:72px}
+    .ex-t::after{width:50px}
+  }
+  @media (max-width:860px){
+    .ex{padding:0}
+    .ex-w,.ex-w:first-child{grid-template-columns:minmax(0,1fr);height:auto;margin-top:28px}
+    .ex-t{grid-column:1;justify-self:start;max-width:none;padding:0 0 12px;text-align:left}
+    .ex-t::after{display:none}
+    .ex-pl{grid-column:1;height:auto}
+    .ex-3d{position:relative;left:0;top:0;width:100%;transform:none}
+    .ex-3d::before{transform:translate(0,6px);z-index:-1}
+    .ex-3d::after{display:none}
+    .ex-pd{zoom:0.34}
+    .ex.gra .ex-w,.ex.gra .ex-t{transform:none;opacity:1}
+    .pp-op{grid-template-columns:minmax(0,1fr)}
+  }
 
   @media (prefers-reduced-motion:reduce){ .od-pisze i{animation:none} }
 </style>
@@ -560,47 +551,14 @@ const HERO_ARIA = 'Oferta dla Nordisu otwarta w przeglądarce: nagłówek z term
      Oferta dla Nordisu w przeglądarce. Pętla: klient przewija do ceny,
      pyta czat, co wchodzi w cenę, akceptuje ofertę; u sprzedawcy pojawia
      się powiadomienie. Stan w markupie: czat otwarty z odpowiedzią. -->
-<Hero lead="Ofertę pisze Claude z transkrypcji rozmowy, kiedy handlowiec zatwierdzi jej koncepcję. Klient dostaje ją jako stronę z czatem i przyciskiem akceptacji, a panel pokazuje, co przeczytał." cta={{ href: '#kontakt', t: 'Umów pokaz' }} link={{ href: '#jak-wyglada', t: 'Zobacz, jak działa →' }}>
+<Hero lead="Ofertę pisze Claude z transkrypcji rozmowy, kiedy handlowiec zatwierdzi jej koncepcję. Klient dostaje ją jako stronę w barwach Waszej firmy, z czatem i przyciskiem akceptacji, a panel pokazuje, co przeczytał." cta={{ href: '#kontakt', t: 'Umów pokaz' }} link={{ href: '#jak-wyglada', t: 'Zobacz, jak działa →' }}>
 <Fragment slot="h1">Oferty pisane z rozmowy i <span>śledzone aż do decyzji klienta</span></Fragment>
 
 <figure class="of oh hero-wid" data-oh role="img" aria-label={HERO_ARIA}>
 <div class="ob" aria-hidden="true">
 <div class="ob-tyt"><span class="of-sw"><i></i><i></i><i></i></span><span class="ob-url"><svg class="hi" viewBox="0 0 16 16" set:html={IK.klodka}></svg>{URL_OF}</span></div>
 <div class="ob-uk">
-<div class="ob-str" data-oh-str>
-<header class="od-hero">
-<div class="od-top"><span>Twoja firma</span><span>Oferta · 15 września 2026</span></div>
-<p class="od-eb">Oferta dla Nordisu</p>
-<h3 class="od-h1">Ciepło w hali Nordisu od 1&nbsp;listopada, w budżecie zarządu</h3>
-<dl class="od-meta">
-<div><dt>Przygotowała</dt><dd><img src={OS.a.f} alt="" width="20" height="20" loading="lazy">{OS.a.n}</dd></div>
-<div><dt>Dla</dt><dd>{OS.m.n}, Nordis sp. z o.o.</dd></div>
-<div class="waz"><dt>Ważna do</dt><dd>18 września 2026</dd></div>
-</dl>
-</header>
-<section class="od-s" data-oh-k="syt">
-<h3>Co zrozumieliśmy</h3>
-<p>Po rozmowie 14 września</p>
-<ol class="od-syt">{SYT.map(([b, e], i) => (<li><span>{String(i + 1).padStart(2, '0')}</span><div><b>{b}</b><em>{e}</em></div></li>))}</ol>
-<blockquote class="od-cyt">„Ogrzewanie musi ruszyć od pierwszego listopada.”<small>{OS.m.n}, Nordis</small></blockquote>
-</section>
-<section class="od-s">
-<h3>Jak to zrobimy</h3>
-<div class="od-et">{ETAPY.map(([n, t, c, d]) => (<div><span>{n}</span><b>{t}</b><em>{c}</em><p>{d}</p></div>))}</div>
-</section>
-<section class="od-s" data-oh-k="cena">
-<h3>Cena</h3>
-<div class="od-cena">
-<div><b>157 300 zł</b><span>netto, płatność po uruchomieniu</span></div>
-<div><h4>W cenie</h4><ul>{W_CENIE.map((x) => (<li>{x}</li>))}</ul></div>
-<div class="poza"><h4>Poza ofertą</h4><ul>{POZA.map((x) => (<li>{x}</li>))}</ul></div>
-</div>
-</section>
-<section class="od-s">
-<h3>Następne kroki</h3>
-<div class="od-kroki">{KROKI.map(([d, t]) => (<div><b>{t}</b><span>{d}</span></div>))}</div>
-</section>
-</div>
+<div class="ob-str" data-oh-str><OfertaNordis /></div>
 
 <div class="od-pasek" data-oh-pasek>
 <span class="od-b gl" data-oh-b="acc">Akceptuję ofertę</span>
@@ -610,20 +568,21 @@ const HERO_ARIA = 'Oferta dla Nordisu otwarta w przeglądarce: nagłówek z term
 </div>
 
 <aside class="od-czat" data-oh-czat>
-<div class="od-czat-gl"><i><svg class="hi" viewBox="0 0 16 16" set:html={IK.iskra}></svg></i><div><b>Zapytaj o ofertę</b><span>Odpowiada na podstawie tej oferty</span></div></div>
+<div class="od-czat-gl"><i><svg class="hi" viewBox="0 0 16 16" set:html={IK.iskra}></svg></i><div><b>Asystent oferty</b><span>Odpowiada wyłącznie z treści tego dokumentu</span></div></div>
 <div class="od-czat-tr">
 <div class="od-msg kl" data-oh-m="q">Co dokładnie wchodzi w cenę?</div>
 <div class="od-pisze" data-oh-pisze><i></i><i></i><i></i></div>
-<div class="od-msg ai" data-oh-m="a">W cenie jest <b>16 promienników 32 kW</b>, sterowanie dwóch stref, projekt i uruchomienie ze szkoleniem. Montażu nie ma, bo robi go Wasza ekipa.</div>
+<div class="od-msg ai" data-oh-m="a">W cenie jest <b>16 promienników gazowych 32 kW</b>, sterowanie dwóch stref, projekt wykonawczy oraz uruchomienie ze szkoleniem obsługi. Montażu w cenie nie ma, bo wykonuje go Państwa ekipa.</div>
 </div>
 <div class="od-start"><span>Ile to potrwa?</span><span>Od czego zaczynamy?</span></div>
-<div class="od-pole">Zadaj pytanie o ofertę…<i><svg class="hi" viewBox="0 0 16 16" set:html={IK.wyslij}></svg></i></div>
+<div class="od-pole">Napisz pytanie…<i><svg class="hi" viewBox="0 0 16 16" set:html={IK.wyslij}></svg></i></div>
 </aside>
 
 <div class="od-sheet zam" data-oh-sheet>
 <div>
 <h4>Akceptujecie tę ofertę?</h4>
 <p>Potwierdzenie trafi od razu do nas. Wystawimy fakturę i zarezerwujemy termin.</p>
+<span class="od-uwagi">Uwagi (opcjonalnie)</span>
 <div class="od-sheet-akc"><span class="od-b">Anuluj</span><span class="od-b gl" data-oh-b="tak">Tak, akceptujemy</span></div>
 </div>
 </div>
@@ -636,17 +595,17 @@ const HERO_ARIA = 'Oferta dla Nordisu otwarta w przeglądarce: nagłówek z term
 <!-- ============ 2 · CZYM JEST ============ -->
 <section id="czym-jest" class="v3-sek v3-papier">
 <div class="v3-def">
-<h2 class="v3-h2m">Czym jest system ofert?</h2>
+<h2 class="v3-h2m">Czym są Oferty AI?</h2>
 <div>
-<p class="v3-def-duzy rv">System ofert to aplikacja, w której Claude pisze ofertę handlową z transkrypcji rozmowy z klientem, kiedy handlowiec zatwierdzi jej koncepcję. Oferta jest stroną z czatem i przyciskiem akceptacji, a panel pokazuje, co klient z nią zrobił po wysłaniu.</p>
+<p class="v3-def-duzy rv">Oferty AI to aplikacja, w której Claude pisze ofertę handlową z transkrypcji rozmowy z klientem, kiedy handlowiec zatwierdzi jej koncepcję. Oferta jest stroną w barwach Waszej firmy, z czatem i przyciskiem akceptacji, a panel pokazuje, co klient z nią zrobił po wysłaniu.</p>
 </div>
 </div>
 
-<Procesy tytul="Co robi system" pozycje={PROCESY} etykietaB="W systemie ofert" />
+<Procesy tytul="Co robią Oferty AI" pozycje={PROCESY} etykietaB="W Ofertach AI" />
 </section>
 
 <!-- ============ 2b · ZIELONY PAS ============ -->
-<Pas tekst="Handlowiec zatwierdza koncepcję oferty, a resztę pisze Claude" foto="/szymon-kita.jpg" fotoW={870} fotoH={1210} alt="Szymon Kita, założyciel Let's automate" imie="Szymon Kita" rola="Założyciel" cta="Umów pokaz" />
+<Pas tekst="Handlowiec zatwierdza koncepcję oferty, a resztę pisze Claude" foto="/szymon-kita.jpg" fotoW={870} fotoH={1210} alt="Szymon Kita, CEO Let’s automate" imie="Szymon Kita" rola="CEO Let’s automate" cta="Umów pokaz" />
 
 <!-- ============ 3 · DLACZEGO ============
      Teza z panelu: cisza po wysłaniu jest informacją, której zwykle nie ma.
@@ -660,10 +619,11 @@ const HERO_ARIA = 'Oferta dla Nordisu otwarta w przeglądarce: nagłówek z term
 <figure class="dl-kafel mc" data-anim data-gra>
 <div class="ts4-gl"><b>Oferta dla Nordisu · pięć sesji</b><button type="button" class="ts4-znow" data-znow aria-label="Odtwórz rysunek jeszcze raz"><svg viewBox="0 0 16 16" set:html={HI['arrow-path']}></svg></button></div>
 <div role="img" aria-label={`Mapa czytania oferty dla Nordisu, pięć sesji. ${MAPA.map((m) => `${m.s}: średnio ${czas(m.uwaga)}, doszło ${m.zasieg} z ${SESJE} sesji`).join('; ')}. Trzy sesje przeskoczyły z nagłówka do ceny.`}>
-<div class="mc-gl" aria-hidden="true"><span>Sekcja oferty</span><span>Uwaga <small>· średni czas w sekcji</small></span><span>Zasięg <small>· sesje, które doszły</small></span></div>
+<div class="mc-gl" aria-hidden="true"><span>Sekcja oferty</span><span>Dokument</span><span>Uwaga <small>· średni czas w sekcji</small></span><span>Zasięg <small>· sesje, które doszły</small></span></div>
 {MAPA.map((m, j) => (
   <div class="mc-w" aria-hidden="true">
-    <div class="mc-d" style={`--h:${m.h}px`}><b>{m.s}</b>{m.skok && <em>3 sesje przeskoczyły tu z nagłówka</em>}</div>
+    <div class="mc-n"><b>{m.s}</b>{m.skok && <em>3 sesje przeskoczyły tu z nagłówka</em>}</div>
+    <div class="mc-p"><div class="mc-pd"><OfertaNordis tylko={[m.k]} /></div></div>
     <div class="mc-u"><i style={`--u:${(m.uwaga / UWAGA_MAX * 78).toFixed(1)}%;--j:${j}`}></i><span>{czas(m.uwaga)}</span></div>
     <div class="mc-z">{Array.from({ length: SESJE }, (_, k) => (<i class={k < m.zasieg ? 'on' : ''} style={`--j:${j};--k:${k}`}></i>))}<span>{m.zasieg} z {SESJE}</span></div>
   </div>
@@ -680,7 +640,7 @@ const HERO_ARIA = 'Oferta dla Nordisu otwarta w przeglądarce: nagłówek z term
 <p class="v3-sub jasny">Klient widzi ofertę i pasek decyzji. Handlowiec widzi to, co dzieje się przed nią i po niej.</p>
 </div>
 
-<div class="v3-zak" role="tablist" aria-label="Widoki systemu ofert">
+<div class="v3-zak" role="tablist" aria-label="Widoki Ofert AI">
 {ZAKLADKI.map((z, i) => (<button type="button" role="tab" id={`zak-${i}`} aria-controls={`widok-${i}`} aria-selected={i === 0 ? 'true' : 'false'} tabindex={i === 0 ? 0 : -1} data-zak>{z.t}</button>))}
 </div>
 
@@ -759,29 +719,34 @@ const HERO_ARIA = 'Oferta dla Nordisu otwarta w przeglądarce: nagłówek z term
 </section>
 
 <!-- ============ 5 · PORÓWNANIE ============ -->
-<Metoda tytul="Czym to się różni od oferty w Wordzie?" sub="Oferta z szablonu powstaje ręcznie i znika w skrzynce klienta. W systemie ofert powstaje z rozmowy, a po wysłaniu dalej daje sygnał." wiersze={METODA} typowy="Oferta w edytorze<br>i w PDF-ie" liczba="" podpis="System ofert" stopka={`System ofert budujemy i rozwijamy w Let’s automate.<br><a href="#kontakt">Umów pokaz →</a>`} id="porownanie" />
+<Metoda tytul="Czym to się różni od oferty w Wordzie?" sub="Oferta z szablonu powstaje ręcznie i znika w skrzynce klienta. W Ofertach AI powstaje z rozmowy, a po wysłaniu dalej daje sygnał." wiersze={METODA} typowy="Oferta w edytorze<br>i w PDF-ie" liczba="" podpis="Oferty AI" stopka={`Oferty AI budujemy i rozwijamy w Let’s automate.<br><a href="#kontakt">Umów pokaz →</a>`} id="porownanie" />
 
 <!-- ============ 6 · Z CZEGO SKŁADA SIĘ OFERTA ============
-     Przepis jednej oferty (przykład: Nordis). Kafle jednego źródła w jednym
-     kolorze; źródło podpisane w każdym kaflu, więc bez legendy. -->
+     Ta sama oferta rozłożona na sekcje. Kolor krawędzi warstwy mówi, skąd
+     sekcja się bierze; podpis przy każdej warstwie, więc bez legendy. -->
 <section id="przepis" class="v3-sek">
 <div class="v8-gl">
 <h2 class="v3-h2">Z czego składa się oferta</h2>
 <p class="v3-sub">Typ oferty ustala kolejność sekcji. Część pisze Claude z rozmowy, reszta wchodzi z modułów i z biblioteki, więc cena i opinie są takie same w każdym miejscu.</p>
 </div>
-<div class="pp">
-{PRZEPIS.map((p, i) => (<div class={`pp-s ${p.z} rv`}><span>{String(i + 1).padStart(2, '0')}</span><b>{p.s}</b><small>{p.d}</small><em>{ZRODLA[p.z].t}</em></div>))}
+<div class="ex" data-anim data-gra role="img" aria-label={`Oferta dla Nordisu rozłożona na sekcje: ${PRZEPIS.map((p) => `${p.s} (${ZRODLA[p.z].t})`).join(', ')}.`}>
+{PRZEPIS.map((p, i) => (
+  <div class={`ex-w ${p.z}`} style={`--i:${i}`} aria-hidden="true">
+    <div class="ex-t"><b><span>{String(i + 1).padStart(2, '0')}</span>{p.s}</b><small>{p.d}</small><em><i></i>{ZRODLA[p.z].t}</em></div>
+    <div class="ex-pl"><div class="ex-3d"><div class="ex-in"><div class="ex-pd"><OfertaNordis tylko={[p.k]} /></div></div></div></div>
+  </div>
+))}
 </div>
 <div class="pp-op">
-{['c', 'm', 'b'].map((k) => (<div class="rv"><b>{ZRODLA[k].h}</b><p>{ZRODLA[k].d}</p></div>))}
+{['c', 'm', 'b'].map((k) => (<div class={`${k} rv`}><b>{ZRODLA[k].h}</b><p>{ZRODLA[k].d}</p></div>))}
 </div>
 </section>
 
 <!-- ============ 7 · DLA KOGO ============ -->
-<DlaKogo tytul="Dla kogo jest system ofert" sub="Najczęściej firmy, w których ofertę pisze handlowiec po rozmowie z klientem." warunki={DLA_KOGO} nie={NIE_TERAZ} />
+<DlaKogo tytul="Dla kogo są Oferty AI" sub="Najczęściej firmy, w których ofertę pisze handlowiec po rozmowie z klientem." warunki={DLA_KOGO} nie={NIE_TERAZ} />
 
 <!-- ============ 8 · KONTAKT ============ -->
-<Kontakt tytul="Pokażemy system na przykładowej ofercie" lead="Napiszcie, ile ofert wysyłacie w miesiącu i jak dziś powstają. Odpowiemy w jeden dzień roboczy." zrodlo="System ofert" pytanie="Jak dziś powstają Wasze oferty?" podpowiedz="Np. Word i PDF, kilkanaście ofert miesięcznie…" osoba={{ foto: '/piotr-wojciuk.jpg', w: 1002, h: 1100, imie: 'Piotr Wojciuk', rola: 'New Business Lead' }} />
+<Kontakt tytul="Pokażemy Oferty AI na przykładowej ofercie" lead="Napiszcie, ile ofert wysyłacie w miesiącu i jak dziś powstają. Odpowiemy w jeden dzień roboczy." zrodlo="Oferty AI" pytanie="Jak dziś powstają Wasze oferty?" podpowiedz="Np. Word i PDF, kilkanaście ofert miesięcznie…" osoba={{ foto: '/piotr-wojciuk.jpg', w: 1002, h: 1100, imie: 'Piotr Wojciuk', rola: 'New Business Lead' }} />
 </div>
 
 <GcFaq heading="Pytania przed decyzją" ctaLabel="Zadajcie nam swoje →" items={faq} />
@@ -790,7 +755,8 @@ const HERO_ARIA = 'Oferta dla Nordisu otwarta w przeglądarce: nagłówek z term
   var redukcja = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // ---- HERO: klient czyta ofertę, pyta czat, akceptuje ----
-  // Markup trzyma stan końcowy: czat otwarty z odpowiedzią.
+  // Markup trzyma stan końcowy: czat otwarty z odpowiedzią, paski planu
+  // i budżetu pełne.
   (function(){
     var fig = document.querySelector('[data-oh]');
     if(!fig || redukcja || !('IntersectionObserver' in window)) return;
@@ -802,6 +768,7 @@ const HERO_ARIA = 'Oferta dla Nordisu otwarta w przeglądarce: nagłówek z term
     var pasek = fig.querySelector('[data-oh-pasek]');
     var pow = fig.querySelector('[data-oh-pow]');
     var bieg = 0, widoczny = false, gra = false;
+    fig.classList.add('gra');
     function przycisk(n){ return fig.querySelector('[data-oh-b="' + n + '"]'); }
     function wcisnij(n){ var b = przycisk(n); b.classList.add('wcis'); setTimeout(function(){ b.classList.remove('wcis'); }, 380); }
     function przewin(k){
@@ -813,14 +780,17 @@ const HERO_ARIA = 'Oferta dla Nordisu otwarta w przeglądarce: nagłówek z term
       str.style.transition = 'none'; przewin(null); void str.offsetWidth; str.style.transition = '';
       czat.classList.add('zam'); q.classList.add('ukr'); a.classList.add('ukr'); pisze.classList.remove('on');
       sheet.classList.add('zam'); pasek.classList.remove('po'); pow.classList.add('zam');
+      fig.classList.remove('plan', 'cena');
     }
     async function przebieg(){
       var nr = ++bieg; reset();
-      if(!await czekaj(1800, nr)) return;
+      if(!await czekaj(2400, nr)) return;
       przewin('syt');
+      if(!await czekaj(2800, nr)) return;
+      przewin('plan'); fig.classList.add('plan');
+      if(!await czekaj(3200, nr)) return;
+      przewin('cena'); fig.classList.add('cena');
       if(!await czekaj(2600, nr)) return;
-      przewin('cena');
-      if(!await czekaj(2200, nr)) return;
       wcisnij('ai');
       if(!await czekaj(300, nr)) return;
       czat.classList.remove('zam');

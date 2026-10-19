@@ -18,8 +18,6 @@ const STRONY = [
   { u: '/systemy-dla-klientow', p: '0.9' },
   { u: '/automatyzacje-integracje', p: '0.9' },
   { u: '/produkty', p: '0.9' },
-  { u: '/produkty/appto', p: '0.8' },
-  { u: '/produkty/wingman', p: '0.8' },
   { u: '/inspiracje', p: '0.9' },
   { u: '/blog', p: '0.8' },
   { u: '/guided-coding', p: '0.8' },

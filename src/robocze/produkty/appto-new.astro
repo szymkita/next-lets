@@ -1,0 +1,453 @@
+---
+// APPTO — /produkty/appto, wersja 5 (19.10.2026), lokalnie pod /produkty/appto-new
+// Przebudowa obecnej strony (wersja 4, src/pages/produkty/appto.astro) przed
+// pokazaniem Produktów w menu. Po „podmień” ten plik idzie do src/pages/produkty/
+// appto.astro, a wersja 4 do src/robocze/produkty/appto-v4.astro.
+// Koncepcja i historia: docs/appto-new-koncepcja.md (rozdział „Wersja 5”).
+//
+// KIERUNEK zostaje z wersji 4 (Szymon, 16.10.2026): poza aplikacją to jest też
+// nasza metoda wdrożenia. Bez wydań, bez przykładu oferty i maili, bez sekcji
+// ról i bez odesłań do podstron appto.ai (jedno wyjście: „Załóż konto”).
+// Zmiany względem wersji 4:
+//   · zdanie „od audytu procesów do pracy z AI na co dzień” stało trzy razy
+//     (lead, definicja, teza) — zostało tylko w tezie;
+//   · pod definicją indeks „Co Appto zmienia w pracy zespołu” (Dziś / W Appto),
+//     cztery pary z appto.ai (kohorta.ts → appto.pairs);
+//   · dziesięć kroków ułożonych w cztery etapy, każdy z tym, co zostaje
+//     w firmie (wyniki faz z /pl/wdrozenie-indywidualne);
+//   · trzy drogi z tymi samymi trzema wierszami (kto prowadzi, czas, koszt),
+//     żeby dało się je porównać wzrokiem;
+//   · ciemna scena z jednym wdrożeniem tydzień po tygodniu (kohorta.ts →
+//     study, opublikowane na appto.ai/pl/wdrozenie-kohortowe);
+//   · FAQ: poprawiony koszt (opłata zależy od progu wielkości zespołu, nie jest
+//     „niezależna od liczby osób”), doszły czas wdrożenia i integracje.
+//
+// SKĄD FAKTY (repo ApptoAI/landing-page, ~/appto-landing-page):
+//   · dziesięć kroków i trzy drogi: src/data/home.ts (method, rollout);
+//   · geneza: /pl/czym-jest-appto („pięć osób, pięć czatów, firmowe dane
+//     w cudzym AI”);
+//   · cztery pary Dziś / W Appto: src/data/kohorta.ts (appto.pairs);
+//   · wyniki etapów, czas (audyt 1–2 tyg., całość od kilku tygodni do kilku
+//     miesięcy), wycena po audycie: /pl/wdrozenie-indywidualne;
+//   · program w grupie firm (spotkania na żywo osobno dla każdej roli, stała
+//     cena za zespół): src/data/kohorta.ts;
+//   · koszt (dostęp dla zespołu zależny od progu + kredyty, 10 000 na start,
+//     bez karty), integracje (40+), dane (UE, maskowanie, DPA): pricing.ts,
+//     home.ts (faq), chrome.ts.
+//
+// DO POTWIERDZENIA PRZED PUBLIKACJĄ:
+//   · podział dziesięciu kroków na etapy (Diagnoza, Budowa, Pilotaż, Cała
+//     firma) jest nasz, appto.ai pokazuje kroki bez etapów;
+//   · scena z przykładem: appto.ai nazywa je „testowym wdrożeniem w metodyce
+//     kohorty”; procesem z audytu jest ofertowanie (to nie jest blok
+//     „To samo zlecenie” z wersji 3, ale też dotyczy ofert);
+//   · stała cena wdrożenia z opiekunem — appto.ai mówi „wycena pod zakres,
+//     ustalana po audycie”, stała cena wynika z zasady Let’s automate;
+//   · kohorta: sześć tygodni (strona główna appto.ai) czy osiem (strona
+//     programu) — strona bez liczby;
+//   · Szymon w zielonym pasie, Piotr Wojciuk w kontakcie.
+import LaBase from '../../layouts/LaBase.astro';
+import GcFaq from '../../components/GcFaq.astro';
+import Styl from '../../components/usluga/Styl.astro';
+import Anim from '../../components/usluga/Anim.astro';
+import Hero from '../../components/usluga/Hero.astro';
+import Procesy from '../../components/usluga/Procesy.astro';
+import Pas from '../../components/usluga/Pas.astro';
+import DlaKogo from '../../components/usluga/DlaKogo.astro';
+import Kontakt from '../../components/usluga/Kontakt.astro';
+
+const kanon = new URL('/produkty/appto', Astro.site).href;
+const KONTO = 'https://chat.appto.ai/sign-up';
+// Film „Poznaj appto" (kanał appto na YouTube, 1:59, 16:9, publikacja 25.08.2026).
+const YT_ID = 'uSPPN1-unaI';
+const YT_URL = `https://youtu.be/${YT_ID}`;
+
+const title = "Appto — platforma AI dla całej firmy i metoda jej wdrożenia | Let's automate";
+const description = 'Appto to platforma AI dla całej firmy, zbudowana w Let’s automate. Zespół pracuje w niej z GPT, Claude i Gemini na wspólnej wiedzy firmy. Wdrażamy ją według metody w czterech etapach: samodzielnie, z opiekunem albo w grupie firm.';
+
+// ---- CZYM JEST: indeks Dziś / W Appto (kohorta.ts → appto.pairs) -------------
+const ZMIANY = [
+  {
+    t: 'Jedna przestrzeń dla zespołu',
+    a: 'Każdy pracuje we własnym czacie. Trzydzieści osób to trzydzieści historii rozmów, z których każda zna tylko swojego właściciela.',
+    b: 'Zespół korzysta z jednej bazy wiedzy i wspólnego kontekstu firmy. Historia pracy i dostępy zostają po stronie firmy.',
+  },
+  {
+    t: 'Asystenci wspólni dla działu',
+    a: 'Dobry sposób pracy z AI zna jedna osoba i trzyma go we własnych poleceniach.',
+    b: 'To, co zadziałało, zapisujecie raz jako asystenta albo umiejętność. Reszta zespołu używa tego od ręki, a wiedza zostaje w firmie, kiedy autor odchodzi.',
+  },
+  {
+    t: 'Praca na danych z Waszych narzędzi',
+    a: 'AI nie zna Waszych dokumentów ani CRM-u, więc pracuje na tym, co ktoś zdąży wkleić do okna czatu.',
+    b: 'Appto ma dostęp do dysku, poczty, CRM-a i ponad 40 innych narzędzi. Czyta z nich dane i zapisuje w nich wyniki.',
+  },
+  {
+    t: 'Kontrola nad tym, co wychodzi z firmy',
+    a: 'Nie wiadomo, kto korzysta z AI, na jakich danych i co trafia do modeli.',
+    b: 'Dostępy ustawiacie dla każdej osoby z jednego panelu. Dane są na serwerach w Unii Europejskiej, dane osobowe są maskowane, zanim trafią do modelu, a modele nie uczą się na Waszych danych.',
+  },
+];
+
+// ---- METODA: dziesięć kroków z appto.ai w czterech etapach --------------------
+// Kroki 1:1 z home.ts (method), „use-case’ów” → „zastosowań”. Wyniki etapów
+// z faz /pl/wdrozenie-indywidualne („Plan wdrożenia na miarę + wycena”,
+// „Działające narzędzia AI”, „Cały zespół pracuje z AI”, „Zespół rozwija
+// temat dalej, bez nas”) i z kohorty („+90 dni: wskaźniki zestawione
+// z punktem startu”).
+const ETAPY = [
+  { n: 'Diagnoza', kroki: ['Audyt procesów', 'Wybór zastosowań'], wynik: 'Mapa procesów z liczbą godzin w tygodniu i plan wdrożenia' },
+  { n: 'Budowa', kroki: ['Konfiguracja asystentów', 'Baza wiedzy firmy', 'Podłączenie narzędzi'], wynik: 'Asystenci na procesach, które zabierają najwięcej czasu, z wiedzą firmy i podłączonymi narzędziami' },
+  { n: 'Pilotaż', kroki: ['Szkolenie zespołów', 'Pilotaż w dziale'], wynik: 'Jeden dział pracuje w Appto na własnych zadaniach' },
+  { n: 'Cała firma', kroki: ['Wdrożenie w firmie', 'Pomiar i wyniki', 'Adopcja i rozwój'], wynik: 'Wyniki zestawione z punktem startu i ludzie, którzy sami budują kolejnych asystentów' },
+];
+// Numer pierwszego kroku etapu (0–9) — do kolumn siatki i opóźnień animacji.
+let licz = 0;
+const ETAPY_S = ETAPY.map((e) => { const od = licz; licz += e.kroki.length; return { ...e, od }; });
+
+// ---- TRZY DROGI (home.ts → rollout; czas i koszt: wdrozenie-indywidualne,
+//      kohorta.ts, pricing.ts) ---------------------------------------------------
+const DROGI = [
+  {
+    t: 'Samodzielnie',
+    d: 'Zakładacie konto i zespół, wybieracie gotowych asystentów i podłączacie swoje narzędzia. Metoda prowadzi Was krok po kroku.',
+    w: [
+      ['Prowadzi', 'Wasz zespół'],
+      ['Start', 'od razu, bez rozmowy z nami'],
+      ['Koszt', 'dostęp do Appto i kredyty za zadania, na start 10 000 kredytów'],
+    ],
+    l: { h: KONTO, t: 'Załóż konto na appto.ai ↗', zew: true },
+  },
+  {
+    t: 'Z opiekunem',
+    d: 'Wdrażamy Appto razem z Wami. Opiekun z Let’s automate projektuje wszystko pod Wasze procesy i prowadzi Was od audytu do chwili, w której zespół rozwija Appto sam.',
+    w: [
+      ['Prowadzi', 'opiekun z Let’s automate'],
+      ['Czas', 'od kilku tygodni do kilku miesięcy, zależnie od liczby działów'],
+      ['Koszt', 'stała cena, cenę budowy znacie po diagnozie'],
+    ],
+    l: { h: '#kontakt', t: 'Umów rozmowę →' },
+  },
+  {
+    t: 'W grupie firm',
+    d: 'Prowadzony program, który przechodzicie razem z innymi firmami. Co tydzień spotkania na żywo, osobno dla zespołu, managera i zarządu.',
+    w: [
+      ['Prowadzi', 'mentor i program'],
+      ['Czas', 'wspólny start i jeden kalendarz dla wszystkich firm'],
+      ['Koszt', 'stała cena za zespół, niższa niż we wdrożeniu jeden na jeden'],
+    ],
+    l: { h: '#kontakt', t: 'Zapytaj o najbliższą grupę →' },
+  },
+];
+
+// ---- JEDNO WDROŻENIE (kohorta.ts → study, liczby 1:1) -------------------------
+const PRZYKLAD = [
+  { k: '5 tygodni przed startem', b: '9', u: 'godzin tygodniowo', d: 'Audyt: 13 wywiadów i mapa 5 procesów. Najwięcej czasu zabiera ofertowanie, więc od niego zaczyna się budowa.' },
+  { k: 'Tydzień 1', s: '90 min', b: '22', u: 'minuty', d: 'Tyle trwa szkic oferty. Sześć osób ze sprzedaży pracuje w Appto na własnych dealach.' },
+  { k: 'Tydzień 4', b: '3', u: 'umiejętności w pracy', d: 'Szkic oferty, follow-up i ocena leadów na danych z systemu CRM. Cotygodniową godzinę z AI prowadzą już dwie osoby z zespołu.' },
+  { k: 'Tydzień 8', s: '5 dni', b: '1', u: 'dzień', d: 'Tyle zajmuje nowemu sales managerowi wejście w narzędzia zespołu. Umiejętności jest sześć.' },
+  { k: '90 dni później', b: '+2', u: 'umiejętności', d: 'Zespół dobudował je sam, bez naszego udziału. Ofertowanie zostało w nowym rytmie.' },
+];
+
+// ---- DLA KOGO -----------------------------------------------------------------
+const DLA_KOGO = [
+  { t: 'AI już jest, ale każdy używa go po swojemu', d: 'Prywatne konta, różne narzędzia, pliki wklejane do czatu. Od tego stanu metoda zaczyna, od audytu procesów.' },
+  { t: 'Zespół od 10 do 500 osób', d: 'Poniżej często wystarczą gotowe narzędzia. Powyżej robimy wdrożenia z większym wsparciem.' },
+  { t: 'Macie własne procedury i wiedzę', d: 'Cenniki, umowy, standardy odpowiedzi, ustalenia z wątków. Appto zaczyna się opłacać, kiedy jest co wnieść do bazy wiedzy firmy.' },
+];
+const NIE_TERAZ = [
+  'Zespół ma kilka osób i jeden proces. Wtedy zwykle wystarczy gotowe narzędzie AI.',
+  'Firma ma już Copilota albo ChatGPT w planie firmowym i chce je dobrze wdrożyć. Tym zajmuje się <a href="/wdrozenie-ai" style="font-weight:700;color:#0a7a52">wdrożenie AI w firmie</a>.',
+];
+
+// ---- FAQ ----------------------------------------------------------------------
+const faq = [
+  { q: 'Czym Appto różni się od ChatGPT czy Copilota?', a: 'Modele są te same: GPT, Claude, Gemini. Różni się to, czyj kontekst jest w grze. ChatGPT pamięta w obrębie konta jednej osoby, a Copilot bierze kontekst z jej plików i maili w usługach Microsoftu. W Appto kontekst jest wspólny dla całego zespołu: jedna baza wiedzy, asystenci dla działów i dostępy ustawiane z jednego panelu. Do tego dochodzi metoda, która prowadzi firmę przez wdrożenie.' },
+  { q: 'Czy możemy zacząć sami?', a: 'Tak. Konto zakłada się na appto.ai bez karty i bez rozmowy z nami, a na start jest 10 000 kredytów. Metoda prowadzi przez kolejne kroki także wtedy, gdy wdrażacie się samodzielnie.' },
+  { q: 'Ile trwa wdrożenie?', a: 'Diagnoza zajmuje zwykle tydzień albo dwa. Całe wdrożenie z opiekunem trwa od kilku tygodni do kilku miesięcy, zależnie od liczby działów i narzędzi. Program w grupie firm ma wspólny start i jeden kalendarz dla wszystkich.' },
+  { q: 'Ile to kosztuje?', a: 'Za Appto płaci się za dostęp do platformy, jeden dla całego zespołu i zależny od progu wielkości zespołu, oraz kredytami za pracę, którą Appto wykona. Wdrożenie z opiekunem ma stałą cenę: po diagnozie znacie cenę budowy, zanim ją zamówicie. Program w grupie firm ma stałą cenę za zespół.' },
+  { q: 'Gdzie są nasze dane?', a: 'Na serwerach w Unii Europejskiej, w osobnej przestrzeni firmy, z umową powierzenia danych. Dane osobowe z plików są maskowane, zanim trafią do modelu, a modele nie uczą się na Waszych danych.' },
+  { q: 'Jakie narzędzia można podłączyć?', a: 'Slack, Teams, Gmail i Outlook, Google Drive, Notion, HubSpot, Pipedrive, ifirma, Stripe i ponad 40 innych. Czego brakuje, dopinamy pod Wasz proces.' },
+];
+
+const dane = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'SoftwareApplication',
+      '@id': `${kanon}#aplikacja`,
+      name: 'Appto',
+      alternateName: ['appto', 'appto.ai'],
+      applicationCategory: 'BusinessApplication',
+      operatingSystem: 'Web',
+      url: kanon,
+      sameAs: ['https://appto.ai'],
+      description: 'Platforma AI dla całej firmy, zbudowana w Let’s automate, wdrażana według metody w czterech etapach: diagnoza, budowa, pilotaż w jednym dziale i cała firma.',
+      publisher: { '@id': new URL('/#organizacja', Astro.site).href },
+    },
+    {
+      '@type': 'VideoObject',
+      name: 'Poznaj appto',
+      description: 'Dwuminutowy film o platformie Appto.',
+      thumbnailUrl: `https://i.ytimg.com/vi/${YT_ID}/maxresdefault.jpg`,
+      embedUrl: `https://www.youtube-nocookie.com/embed/${YT_ID}`,
+      contentUrl: YT_URL,
+      duration: 'PT1M59S',
+      uploadDate: '2026-08-25',
+    },
+    {
+      '@type': 'BreadcrumbList',
+      '@id': `${kanon}#okruszki`,
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Strona główna', item: new URL('/', Astro.site).href },
+        { '@type': 'ListItem', position: 2, name: 'Produkty', item: new URL('/produkty', Astro.site).href },
+        { '@type': 'ListItem', position: 3, name: 'Appto', item: kanon },
+      ],
+    },
+    {
+      '@type': 'FAQPage',
+      '@id': `${kanon}#faq`,
+      mainEntity: faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a.replace(/<[^>]+>/g, '') } })),
+    },
+  ],
+};
+---
+<LaBase topbar={false} title={title} description={description} ctaLabel="Umów rozmowę" nav={null}>
+<script type="application/ld+json" is:inline set:html={JSON.stringify(dane)} slot="head"></script>
+
+<style is:global slot="head">
+  /* Style tej strony. Wspólny wygląd: src/components/usluga/Styl.astro. */
+
+  /* ---- hero: film „Poznaj appto" (YouTube) ----
+     Podgląd z miniaturą; odtwarzacz (youtube-nocookie) ładuje się dopiero po
+     kliknięciu. Bez JS link prowadzi do filmu na YouTube. */
+  .yt{position:relative;display:block;width:100%;aspect-ratio:16 / 9;border-radius:clamp(10px,1.2vw,18px);overflow:hidden;background:#0b0f0c;cursor:pointer;
+    box-shadow:0 0 0 1px rgba(255,255,255,0.14),0 0 0 1.5px rgba(0,0,0,0.3),0 50px 100px -40px rgba(0,0,0,0.9),0 18px 36px -20px rgba(0,0,0,0.55)}
+  .yt img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .6s cubic-bezier(.2,.8,.2,1)}
+  .yt::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(7,20,13,0) 55%,rgba(7,20,13,0.55) 100%);pointer-events:none}
+  .yt-play{position:absolute;z-index:1;left:50%;top:50%;display:flex;align-items:center;gap:14px;transform:translate(-50%,-50%);padding:10px 26px 10px 10px;border-radius:999px;background:var(--ziel);color:var(--ink);font-size:16px;font-weight:700;letter-spacing:-0.01em;white-space:nowrap;box-shadow:0 20px 40px -16px rgba(0,0,0,0.6);transition:transform .25s ease,background .2s}
+  .yt-play i{display:grid;place-items:center;width:46px;height:46px;border-radius:50%;background:var(--ink);color:var(--ziel)}
+  .yt-play svg{width:18px;height:18px;margin-left:3px;fill:currentColor}
+  .yt-meta{position:absolute;z-index:1;left:clamp(16px,2vw,28px);bottom:clamp(14px,1.8vw,24px);font-size:14px;font-weight:600;color:rgba(255,255,255,0.85)}
+  .yt:hover img{transform:scale(1.02)}
+  .yt:hover .yt-play{transform:translate(-50%,-50%) scale(1.04);background:#25dd8b}
+  .yt:focus-visible{outline:2px solid var(--ziel);outline-offset:4px}
+  .yt iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+  .yt.gra::after,.yt.gra .yt-play,.yt.gra .yt-meta{display:none}
+  @media (max-width:560px){ .yt-play{padding:8px 18px 8px 8px;font-size:14px} .yt-play i{width:38px;height:38px} .yt-meta{display:none} }
+
+  /* =====================================================================
+     METODA · dziesięć kroków w czterech etapach
+     Jedna linia przez wszystkie kroki; nad nią klamry etapów, pod krokami
+     białe karty z tym, co zostaje w firmie. Linia zapala się od lewej
+     liniowo (--krok na węzeł), węzły w jej takt, nagłówek etapu z pierwszym
+     węzłem, karta po ostatnim. Poniżej 1180 px etapy stoją w siatce bez linii.
+     ===================================================================== */
+  .mt4{--eh:62px;--krok:.24s;position:relative;display:grid;grid-template-columns:repeat(10,minmax(0,1fr));margin:0 clamp(2px,0.8vw,14px)}
+  .mt4::before,.mt4::after{content:"";position:absolute;left:5%;right:5%;top:calc(var(--eh) + 19px);height:2px;border-radius:1px}
+  .mt4::before{background:rgba(15,26,20,0.12)}
+  .mt4::after{background:var(--ziel);transform-origin:0 50%}
+  .mt4-e{grid-column:var(--a) / var(--b);display:flex;flex-direction:column;min-width:0}
+  .mt4-gl{position:relative;height:var(--eh);display:flex;flex-direction:column;align-items:center;padding:0 8px;text-align:center}
+  .mt4-gl span{font-size:12.5px;font-weight:700;color:var(--ziel-c)}
+  .mt4-gl b{margin-top:2px;font-size:17px;font-weight:700;letter-spacing:-0.018em;color:var(--t1)}
+  .mt4-gl::after{content:"";position:absolute;left:calc(50% / var(--n));right:calc(50% / var(--n));bottom:8px;height:7px;border:1.5px solid rgba(15,26,20,0.32);border-bottom:0;border-radius:3px 3px 0 0}
+  .mt4-k{display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));margin:0;padding:0;list-style:none}
+  .mt4-k li{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:14px;padding:0 6px;text-align:center}
+  .mt4-k i{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:#ffffff;box-shadow:0 0 0 2px var(--ziel),0 0 0 7px var(--papier);font-style:normal;font-size:13px;font-weight:700;color:var(--ziel-c)}
+  .mt4-k b{font-size:14.5px;font-weight:650;letter-spacing:-0.01em;line-height:1.3;color:var(--t1);text-wrap:balance}
+  .mt4-wy{flex:1;margin:clamp(26px,2.6vw,36px) 6px 0;padding:16px 18px 18px;border-radius:16px;background:#ffffff;box-shadow:0 1px 0 rgba(15,26,20,0.04),0 22px 40px -28px rgba(15,26,20,0.32)}
+  .mt4-wy span{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:650;color:var(--t3)}
+  .mt4-wy span::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--ziel)}
+  .mt4-wy p{margin:8px 0 0;font-size:14.5px;line-height:1.5;font-weight:600;letter-spacing:-0.006em;color:var(--t1);text-wrap:pretty}
+  .mt4.gra::after{transform:scaleX(0)}
+  .mt4.gra .mt4-k li,.mt4.gra .mt4-gl{opacity:0;translate:0 8px}
+  .mt4.gra .mt4-wy{opacity:0;translate:0 14px}
+  .mt4.gra.on::after{transform:none;transition:transform calc(var(--krok) * 9) linear .2s}
+  .mt4.gra.on .mt4-k li{opacity:1;translate:0 0;transition:opacity .4s ease calc(0.2s + var(--j) * var(--krok)),translate .5s cubic-bezier(.2,.8,.2,1) calc(0.2s + var(--j) * var(--krok))}
+  .mt4.gra.on .mt4-gl{opacity:1;translate:0 0;transition:opacity .4s ease calc(0.1s + var(--j0) * var(--krok)),translate .5s cubic-bezier(.2,.8,.2,1) calc(0.1s + var(--j0) * var(--krok))}
+  .mt4.gra.on .mt4-wy{opacity:1;translate:0 0;transition:opacity .5s ease calc(0.45s + var(--j1) * var(--krok)),translate .6s cubic-bezier(.2,.8,.2,1) calc(0.45s + var(--j1) * var(--krok))}
+  @media (max-width:1180px){
+    .mt4{grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(28px,4vw,44px) clamp(16px,2.4vw,28px)}
+    .mt4::before,.mt4::after{display:none}
+    .mt4-e{grid-column:auto}
+    .mt4-gl{height:auto;flex-direction:row;align-items:baseline;gap:10px;padding:0 0 14px;margin-bottom:6px;border-bottom:1.5px solid var(--t1);text-align:left}
+    .mt4-gl::after{display:none}
+    .mt4-k{grid-template-columns:minmax(0,1fr)}
+    .mt4-k li{flex-direction:row;gap:14px;padding:8px 0;text-align:left}
+    .mt4-k i{flex-shrink:0;width:34px;height:34px;font-size:12px;box-shadow:0 0 0 2px var(--ziel)}
+    .mt4-wy{flex:0 0 auto;margin:14px 0 0}
+  }
+  @media (max-width:640px){ .mt4{grid-template-columns:minmax(0,1fr)} }
+
+  /* =====================================================================
+     TRZY DROGI · te same trzy wiersze w każdej karcie
+     Środkowa (z opiekunem) szersza: usługę docelową wyróżnia szerokość.
+     ===================================================================== */
+  .dr{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr) minmax(0,1fr);gap:clamp(14px,1.6vw,22px);margin-top:clamp(28px,3vw,40px)}
+  .dr-k{display:flex;flex-direction:column;padding:clamp(22px,2.4vw,30px);border-radius:22px;background:var(--papier)}
+  .dr-k h4{margin:0;font-size:clamp(20px,1.8vw,24px);font-weight:700;letter-spacing:-0.025em;line-height:1.15}
+  .dr-k > p{margin:12px 0 0;font-size:15.5px;line-height:1.6;color:var(--t2);text-wrap:pretty}
+  .dr-k dl{margin:20px 0 0;border-top:1px solid var(--linia)}
+  .dr-k dl div{display:grid;grid-template-columns:76px minmax(0,1fr);gap:12px;padding:11px 0;border-bottom:1px solid var(--linia2)}
+  .dr-k dt{font-size:13px;font-weight:650;line-height:1.5;color:var(--t3)}
+  .dr-k dd{margin:0;font-size:14.5px;line-height:1.5;color:var(--t1);text-wrap:pretty}
+  .dr-k a{align-self:flex-start;margin-top:auto;padding:24px 0 2px;font-size:15px;font-weight:650;color:var(--t1);border-bottom:1px solid rgba(15,26,20,0.25);transition:border-color .2s}
+  .dr-k a:hover{border-color:var(--ziel-c)}
+  @media (max-width:900px){ .dr{grid-template-columns:minmax(0,1fr)} }
+
+  /* =====================================================================
+     JEDNO WDROŻENIE · pięć przystanków na jednej linii (ciemna scena)
+     Duża liczba w bieli, wartość sprzed wdrożenia przekreślona w bursztynie
+     (bursztyn = stan „przed” na całej stronie). Linia zapala się od lewej,
+     kropki przystanków w jej takt. Poniżej 900 px linia idzie w dół.
+     ===================================================================== */
+  .cs{--krok:.5s;position:relative;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:0 clamp(18px,2.4vw,40px);margin:clamp(52px,5.4vw,80px) 0 0;padding:0;list-style:none}
+  .cs::before,.cs::after{content:"";position:absolute;left:8px;right:0;top:7px;height:2px;border-radius:1px}
+  .cs::before{background:rgba(255,255,255,0.14)}
+  .cs::after{background:var(--ziel);transform-origin:0 50%}
+  .cs-p{position:relative;padding-top:38px}
+  .cs-p::before{content:"";position:absolute;left:0;top:0;width:16px;height:16px;border-radius:50%;background:var(--ziel);box-shadow:0 0 0 5px var(--ink),0 0 18px rgba(0,205,119,0.55)}
+  .cs-k{font-size:13.5px;font-weight:650;color:rgba(255,255,255,0.62)}
+  .cs-l{display:flex;align-items:baseline;flex-wrap:wrap;gap:2px 10px;margin-top:18px}
+  .cs-l s{width:100%;font-size:15px;font-weight:600;color:var(--burs-j);text-decoration-thickness:1.5px}
+  .cs-l s.cs-pusty{visibility:hidden}
+  .cs-l b{font-size:clamp(44px,4.6vw,68px);font-weight:700;letter-spacing:-0.05em;line-height:0.95;color:#ffffff}
+  .cs-l small{font-size:15px;font-weight:600;letter-spacing:-0.01em;color:rgba(255,255,255,0.78)}
+  .cs-d{margin:16px 0 0;font-size:15px;line-height:1.58;color:rgba(255,255,255,0.68);text-wrap:pretty}
+  .cs.gra::after{transform:scaleX(0)}
+  .cs.gra .cs-p{opacity:0;translate:0 10px}
+  .cs.gra .cs-p::before{background:var(--ink);box-shadow:0 0 0 5px var(--ink),inset 0 0 0 2px rgba(255,255,255,0.3)}
+  .cs.gra.on::after{transform:none;transition:transform calc(var(--krok) * 5) linear .2s}
+  .cs.gra.on .cs-p{opacity:1;translate:0 0;transition:opacity .5s ease calc(0.1s + var(--j) * var(--krok)),translate .6s cubic-bezier(.2,.8,.2,1) calc(0.1s + var(--j) * var(--krok))}
+  .cs.gra.on .cs-p::before{background:var(--ziel);box-shadow:0 0 0 5px var(--ink),0 0 18px rgba(0,205,119,0.55);transition:background .3s ease calc(0.2s + var(--j) * var(--krok)),box-shadow .3s ease calc(0.2s + var(--j) * var(--krok))}
+  @media (max-width:900px){
+    .cs{grid-template-columns:minmax(0,1fr);row-gap:36px}
+    .cs::before,.cs::after{left:7px;right:auto;top:8px;bottom:8px;width:2px;height:auto}
+    .cs::after{transform-origin:50% 0}
+    .cs.gra::after{transform:scaleY(0)}
+    .cs-p{padding:0 0 0 40px}
+    .cs-l{margin-top:10px}
+  }
+</style>
+
+<div class="v3">
+<Styl />
+<Anim />
+
+<!-- ============ 1 · HERO ============ -->
+<Hero lead="Zespół pracuje w Appto z AI, które zna dokumenty, procedury i dane firmy. Platformę rozwijamy w Let’s automate i wdrażamy według własnej metody, którą możecie przejść sami, z naszym opiekunem albo w grupie firm." cta={{ href: '#kontakt', t: 'Umów rozmowę' }} link={{ href: '#metoda', t: 'Jak wygląda wdrożenie →' }}>
+<Fragment slot="h1">Platforma AI dla całej firmy <span>razem z metodą wdrożenia</span></Fragment>
+<div class="hero-wid">
+<a class="yt" href={YT_URL} target="_blank" rel="noopener" data-yt={YT_ID} aria-label="Odtwórz film „Poznaj appto” (2 minuty)">
+<img src={`https://i.ytimg.com/vi/${YT_ID}/maxresdefault.jpg`} alt="" width="1280" height="720" loading="eager" decoding="async">
+<span class="yt-play"><i><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 2.4v11.2a.8.8 0 0 0 1.2.7l9.2-5.6a.8.8 0 0 0 0-1.4L4.7 1.7a.8.8 0 0 0-1.2.7Z"/></svg></i>Poznaj appto w 2 minuty</span>
+<span class="yt-meta">Film z kanału appto · YouTube</span>
+</a>
+</div>
+</Hero>
+
+<!-- ============ 2 · CZYM JEST ============
+     Definicja z genezą, pod nią indeks czterech zmian (Dziś / W Appto). -->
+<section id="czym-jest" class="v3-sek v3-papier">
+<div class="v3-def">
+<h2 class="v3-h2m">Czym jest Appto?</h2>
+<div>
+<p class="v3-def-duzy rv">Appto to platforma AI dla całej firmy, zbudowana w Let’s automate. Zespół pracuje w niej z modelami GPT, Claude i Gemini na wspólnej wiedzy firmy. Powstała z naszych wdrożeń AI, w których wracał ten sam obraz: pięć osób, pięć czatów i firmowe dane na prywatnych kontach.</p>
+</div>
+</div>
+<Procesy tytul="Co Appto zmienia w pracy zespołu" pozycje={ZMIANY} etykietaB="W Appto" />
+</section>
+
+<!-- ============ 2b · ZIELONY PAS ============ -->
+<Pas tekst="Na Appto pracujemy sami, więc pokaz robimy na naszych prawdziwych zadaniach" foto="/szymon-kita.jpg" fotoW={870} fotoH={1210} alt="Szymon Kita, CEO Let’s automate" imie="Szymon Kita" rola="CEO Let’s automate" cta="Umów pokaz" />
+
+<!-- ============ 3 · METODA ============
+     Teza: samo konto niczego nie zmienia, do Appto dokładamy metodę.
+     Blok 1: dziesięć kroków w czterech etapach z tym, co zostaje w firmie.
+     Blok 2: trzy sposoby przejścia, porównywalne wiersz po wierszu. -->
+<section id="metoda" class="v3-sek">
+<h2 class="v3-h2m">Dlaczego Appto to także metoda</h2>
+<p class="v3-teza rv"><span>Samo konto w narzędziu AI niczego w firmie nie zmienia.</span> Do Appto dokładamy metodę, która prowadzi zespół od audytu procesów do pracy z AI na co dzień</p>
+
+<div class="dl-blok">
+<div class="dl-gl"><h3>Dziesięć kroków w czterech etapach</h3><p>Każdy etap kończy się czymś, co zostaje w firmie. Pilotaż idzie w jednym dziale, a reszta firmy dołącza, kiedy ten dział pracuje w Appto na co dzień. Przy wdrożeniu z opiekunem cenę kolejnego etapu znacie, zanim go zamówicie.</p></div>
+<figure class="dl-kafel">
+<div class="ts4-gl"><b>Metoda wdrożenia Appto</b></div>
+<div class="mt4" data-anim data-gra role="list" aria-label="Dziesięć kroków metody wdrożenia Appto w czterech etapach">
+{ETAPY_S.map((e, ei) => (
+  <section class="mt4-e" role="listitem" style={`--a:${e.od + 1};--b:${e.od + e.kroki.length + 1};--n:${e.kroki.length};--j0:${e.od};--j1:${e.od + e.kroki.length - 1}`} aria-label={`Etap ${ei + 1}: ${e.n}`}>
+    <div class="mt4-gl"><span>Etap {ei + 1}</span><b>{e.n}</b></div>
+    <ol class="mt4-k" start={e.od + 1}>
+      {e.kroki.map((k, ki) => (<li style={`--j:${e.od + ki}`}><i aria-hidden="true">{String(e.od + ki + 1).padStart(2, '0')}</i><b>{k}</b></li>))}
+    </ol>
+    <div class="mt4-wy"><span>Zostaje w firmie</span><p>{e.wynik}</p></div>
+  </section>
+))}
+</div>
+</figure>
+</div>
+
+<div class="dl-blok">
+<div class="dl-gl"><h3>Trzy sposoby, żeby przejść metodę</h3><p>Metoda jest ta sama. Różni się to, kto prowadzi zespół przez kolejne etapy i ile robicie sami.</p></div>
+<div class="dr">
+{DROGI.map((d) => (
+  <article class="dr-k rv">
+    <h4>{d.t}</h4>
+    <p>{d.d}</p>
+    <dl>{d.w.map(([k, v]) => (<div><dt>{k}</dt><dd>{v}</dd></div>))}</dl>
+    <a href={d.l.h} target={d.l.zew ? '_blank' : undefined} rel={d.l.zew ? 'noopener' : undefined}>{d.l.t}</a>
+  </article>
+))}
+</div>
+</div>
+</section>
+
+<!-- ============ 4 · JEDNO WDROŻENIE ============
+     Ciemna scena: inny obiekt niż sąsiedzi (prawdziwa firma, nie schemat).
+     Dane 1:1 z appto.ai (kohorta.ts → study). -->
+<section id="przyklad" class="v3-sek v3-scena v3-ziarno">
+<div class="v8-gl">
+<h2 class="v3-h2 jasny">Jedno wdrożenie, tydzień po tygodniu</h2>
+<p class="v3-sub jasny">Firma usługowa B2B z 35 osobami przeszła metodę w programie dla grupy firm. Dane z testowego wdrożenia, zaokrąglone.</p>
+</div>
+<ol class="cs" data-anim data-gra>
+{PRZYKLAD.map((p, j) => (
+  <li class="cs-p" style={`--j:${j}`}>
+    <span class="cs-k">{p.k}</span>
+    <div class="cs-l">{p.s ? <s>{p.s}</s> : <s class="cs-pusty" aria-hidden="true">&nbsp;</s>}<b>{p.b}</b><small>{p.u}</small></div>
+    <p class="cs-d">{p.d}</p>
+  </li>
+))}
+</ol>
+</section>
+
+<!-- ============ 5 · DLA KOGO ============ -->
+<DlaKogo tytul="Dla kogo jest Appto" sub="Najczęściej firmy, w których AI już jest, ale każdy korzysta z niego inaczej." warunki={DLA_KOGO} nie={NIE_TERAZ} />
+
+<!-- ============ 6 · KONTAKT ============ -->
+<Kontakt tytul="Zacznijmy od jednego działu" lead="Napiszcie, ile osób ma pracować z Appto i od którego działu chcecie zacząć. Odpowiemy w jeden dzień roboczy." zrodlo="Appto" pytanie="Od którego działu chcecie zacząć?" podpowiedz="Np. obsługa klienta, 25 osób…" osoba={{ foto: '/piotr-wojciuk.jpg', w: 1002, h: 1100, imie: 'Piotr Wojciuk', rola: 'New Business Lead' }} />
+</div>
+
+<GcFaq heading="Pytania przed decyzją" ctaLabel="Zadajcie nam swoje →" items={faq} />
+
+<script>
+  // ---- Hero: film ładuje się dopiero po kliknięciu ----
+  (function(){
+    var a = document.querySelector('[data-yt]');
+    if(!a) return;
+    a.addEventListener('click', function(e){
+      if(e.metaKey || e.ctrlKey || e.shiftKey) return;
+      e.preventDefault();
+      var f = document.createElement('iframe');
+      f.src = 'https://www.youtube-nocookie.com/embed/' + a.dataset.yt + '?autoplay=1&rel=0&modestbranding=1';
+      f.title = 'Poznaj appto';
+      f.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+      f.allowFullscreen = true;
+      a.classList.add('gra');
+      a.removeAttribute('href');
+      a.appendChild(f);
+    }, { once: true });
+  })();
+</script>
+</LaBase>

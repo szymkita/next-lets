@@ -1,0 +1,322 @@
+---
+// DEMO — panel z formularzem „Umów demo” dla jednego produktu (hub /produkty);
+// przy Wingmanie „Chcę dowiedzieć się więcej” (licencje, nie demo).
+// Otwiera go każdy link z data-pokaz="appto|wingman|oferty"; bez JS link
+// prowadzi do formularza na dole strony (#kontakt). Na pulpicie panel wysuwa
+// się z prawej, na telefonie od dołu. Klient zostaje w miejscu, w którym czytał.
+//
+// Formularz robi to samo co Kontakt.astro: POST na /api/kontakt z tymi samymi
+// polami, walidacją, pułapką na boty i obsługą awarii; zdarzenia dla GTM
+// (cta_klik, formularz_start, formularz_sukces, formularz_blad,
+// formularz_wyslany) z usługą „Produkty · <produkt>”. Treść formularza ani dane
+// kontaktowe nie trafiają do zdarzeń.
+//
+// Link z kampanii /produkty?demo=oferty (appto, wingman) otwiera panel od razu.
+import { HI } from '../usluga/ikony';
+
+const PRODUKTY = {
+  appto: {
+    nazwa: 'Appto',
+    tytul: 'Demo Appto',
+    lead: 'Na demo pokażemy, jak wprowadzić AI do firmy według jednego standardu: wspólni asystenci działów na wiedzy firmy i wdrożenie od diagnozy po całą firmę.',
+    pytanie: 'Jak dziś zespół korzysta z AI?',
+    podpowiedz: 'Np. 40 osób, każdy ma swoje konto ChatGPT…',
+    przycisk: 'Umów demo',
+    ok: 'Odpiszemy w jeden dzień roboczy i ustalimy termin demo.',
+    stopka: 'New Business Lead. Demo jest bezpłatne i bez zobowiązań, online.',
+  },
+  wingman: {
+    nazwa: 'Wingman AI',
+    tytul: 'Dowiedzcie się więcej o Wingmanie',
+    lead: 'Transkrypcja na żywo, podpowiedzi w trakcie rozmowy i notatka w CRM po niej. Napiszcie, ilu handlowców ma z niego korzystać, a odpiszemy z warunkami licencji i pomocą przy konfiguracji.',
+    pytanie: 'Ilu handlowców i jaki CRM?',
+    podpowiedz: 'Np. pięć osób, Pipedrive…',
+    przycisk: 'Wyślij',
+    ok: 'Odpiszemy w jeden dzień roboczy z warunkami licencji.',
+    stopka: 'New Business Lead. Rozmowa jest bezpłatna i bez zobowiązań.',
+  },
+  oferty: {
+    nazwa: 'Oferty AI',
+    tytul: 'Demo Ofert AI',
+    lead: 'Na demo pokażemy, jak z rozmowy powstaje oferta, co widzi w niej klient i co pokazuje panel po wysłaniu.',
+    pytanie: 'Jak dziś powstają Wasze oferty?',
+    podpowiedz: 'Np. Word i PDF, kilkanaście ofert miesięcznie…',
+    przycisk: 'Umów demo',
+    ok: 'Odpiszemy w jeden dzień roboczy i ustalimy termin demo.',
+    stopka: 'New Business Lead. Demo jest bezpłatne i bez zobowiązań, online.',
+  },
+};
+---
+<dialog class="pp-d" data-pp aria-labelledby="pp-tytul">
+<div class="pp-in">
+<button type="button" class="pp-x" data-pp-zamknij aria-label="Zamknij"><svg viewBox="0 0 16 16" aria-hidden="true" set:html={HI['x-mark']}></svg></button>
+<p class="pp-k" data-pp-nazwa>Appto</p>
+<h2 class="pp-h" id="pp-tytul" data-pp-tytul>Demo Appto</h2>
+<p class="pp-lead" data-pp-lead>{PRODUKTY.appto.lead}</p>
+
+<form class="pp-f" data-pp-form novalidate>
+<div class="pp-pole">
+<label class="pp-lab" for="pp-email">E-mail <span>*</span></label>
+<input class="pp-inp" id="pp-email" name="email" type="email" inputmode="email" autocomplete="email" placeholder="jan@firma.pl" aria-describedby="pp-err-email">
+<div class="pp-err" id="pp-err-email"></div>
+</div>
+<div class="pp-pole">
+<label class="pp-lab" for="pp-tel">Telefon <span>*</span></label>
+<div class="pp-tel">
+<select name="kierunkowy" aria-label="Numer kierunkowy"><option value="+48">+48</option><option value="+49">+49</option><option value="+44">+44</option><option value="+380">+380</option><option value="+420">+420</option><option value="+1">+1</option></select>
+<input class="pp-inp" id="pp-tel" name="telefon" type="tel" inputmode="tel" autocomplete="tel-national" placeholder="571 000 000" aria-describedby="pp-err-tel">
+</div>
+<div class="pp-err" id="pp-err-tel"></div>
+</div>
+<div class="pp-pole">
+<label class="pp-lab" for="pp-msg" data-pp-pytanie>{PRODUKTY.appto.pytanie} <span>*</span></label>
+<textarea class="pp-inp" id="pp-msg" name="wiadomosc" rows="3" placeholder={PRODUKTY.appto.podpowiedz} aria-describedby="pp-err-msg"></textarea>
+<div class="pp-err" id="pp-err-msg"></div>
+</div>
+<label class="pp-zgoda" data-pp-zgoda-row>
+<input type="checkbox" name="zgoda" data-pp-zgoda>
+<span>Wyrażam zgodę na kontakt i przetwarzanie moich danych w celu obsługi zapytania. <a href="/polityka-prywatnosci">Polityka prywatności</a>.</span>
+</label>
+<div class="pp-hp" aria-hidden="true"><label for="pp-www">Nie wypełniaj tego pola</label><input id="pp-www" name="firma_www" type="text" tabindex="-1" autocomplete="off"></div>
+<button type="submit" class="pp-btn" data-pp-submit><span data-pp-label>Umów demo</span><svg viewBox="0 0 16 16" aria-hidden="true" set:html={HI['arrow-right']}></svg></button>
+<div class="pp-awaria" data-pp-awaria hidden>
+<strong data-pp-awaria-t>Zgłoszenie nie doszło.</strong>
+<span data-pp-awaria-d>Wpisane dane zostały w formularzu — spróbujcie jeszcze raz za chwilę.</span>
+Możecie też napisać na <a href="mailto:hello@letsautomate.pl" data-pp-mailto>hello@letsautomate.pl</a> albo zadzwonić: <a href="tel:+48571399932">+48 571 399 932</a>.
+</div>
+</form>
+
+<div class="pp-ok" data-pp-ok role="status" tabindex="-1" hidden>
+<span class="pp-ok-ik"><svg viewBox="0 0 16 16" aria-hidden="true" set:html={HI.check}></svg></span>
+<h3>Mamy Wasze zapytanie</h3>
+<p><span data-pp-ok-t>Odpiszemy w jeden dzień roboczy i ustalimy termin demo.</span> Odpowiedź przyjdzie na <b data-pp-echo>adres z formularza</b>.</p>
+<button type="button" class="pp-btn jasny" data-pp-zamknij>Wróć do strony</button>
+</div>
+
+<div class="pp-os">
+<img src="/piotr-wojciuk.jpg" alt="" width="1002" height="1100" loading="lazy" decoding="async">
+<p><b>Odpisze Piotr Wojciuk</b><span data-pp-stopka>New Business Lead. Demo jest bezpłatne i bez zobowiązań, online.</span></p>
+</div>
+</div>
+</dialog>
+
+<script type="application/json" data-pp-dane set:html={JSON.stringify(PRODUKTY)}></script>
+
+<style is:global>
+  .pp-d{position:fixed;inset:0 0 0 auto;width:min(460px,100vw);max-width:none;height:100dvh;max-height:none;margin:0;padding:0;border:0;background:#ffffff;color:var(--t1,#16211a);box-shadow:-30px 0 80px -20px rgba(7,20,13,0.35);overflow:auto;overscroll-behavior:contain}
+  /* strona pod otwartym panelem się nie przewija */
+  html:has(.pp-d[open]){overflow:hidden}
+  .pp-d::backdrop{background:rgba(9,17,13,0.42);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+  .pp-d[open]{animation:pp-wjazd .38s cubic-bezier(.2,.8,.2,1)}
+  .pp-d[open]::backdrop{animation:pp-tlo .3s ease}
+  @keyframes pp-wjazd{from{transform:translateX(40px);opacity:0}to{transform:none;opacity:1}}
+  @keyframes pp-tlo{from{opacity:0}to{opacity:1}}
+  .pp-in{position:relative;display:flex;flex-direction:column;min-height:100%;padding:34px 34px 28px;box-sizing:border-box}
+  .pp-x{position:absolute;top:18px;right:18px;display:grid;place-items:center;width:38px;height:38px;padding:0;border:0;border-radius:50%;background:#f2f3f1;color:var(--t1,#16211a);cursor:pointer}
+  .pp-x:hover{background:var(--ink,#0f1a14);color:#ffffff}
+  .pp-x svg{width:16px;height:16px;fill:currentColor}
+  .pp-k{margin:0;font-size:13px;font-weight:650;color:var(--ziel-c,#0a7a52)}
+  .pp-h{margin:6px 0 0;padding-right:40px;font-size:30px;line-height:1.08;font-weight:750;letter-spacing:-0.035em}
+  .pp-lead{margin:12px 0 0;font-size:15.5px;line-height:1.6;color:var(--t2,#4c5850);text-wrap:pretty}
+  .pp-f{margin-top:26px}
+  .pp-pole + .pp-pole{margin-top:14px}
+  .pp-lab{display:block;margin-bottom:6px;font-size:13.5px;font-weight:650}
+  .pp-lab span{color:#c2410c}
+  .pp-inp,.pp-tel select{box-sizing:border-box;width:100%;height:46px;padding:0 14px;border:0;border-radius:12px;background:#f5f6f4;box-shadow:inset 0 0 0 1px rgba(15,26,20,0.1);font:inherit;font-size:15px;color:var(--t1,#16211a);transition:box-shadow .15s,background .15s}
+  textarea.pp-inp{height:auto;min-height:92px;padding:12px 14px;resize:vertical;line-height:1.5}
+  .pp-inp:focus,.pp-tel select:focus{outline:none;background:#ffffff;box-shadow:inset 0 0 0 1.5px var(--ziel-c,#0a7a52)}
+  .pp-tel{display:grid;grid-template-columns:92px minmax(0,1fr);gap:8px}
+  .pp-pole.err .pp-inp{box-shadow:inset 0 0 0 1.5px #d14b1d;background:#fff8f5}
+  .pp-err{min-height:0;margin-top:5px;font-size:12.5px;color:#c2410c}
+  .pp-err:empty{display:none}
+  .pp-zgoda{display:flex;align-items:flex-start;gap:10px;margin-top:16px;font-size:12.5px;line-height:1.5;color:var(--t2,#4c5850);cursor:pointer}
+  .pp-zgoda input{flex:none;width:18px;height:18px;margin:1px 0 0;accent-color:var(--ziel-c,#0a7a52)}
+  .pp-zgoda.err{color:#c2410c}
+  .pp-zgoda a{color:var(--ziel-c,#0a7a52);font-weight:600}
+  .pp-hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+  .pp-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;height:52px;margin-top:20px;border:0;border-radius:999px;background:var(--ziel,#00CD77);color:var(--ink,#0f1a14);font:inherit;font-size:16px;font-weight:700;cursor:pointer;transition:background .15s,transform .15s}
+  .pp-btn:hover{background:#25dd8b}
+  .pp-btn:disabled{opacity:.7;cursor:default}
+  .pp-btn svg{width:16px;height:16px;fill:currentColor}
+  .pp-btn.jasny{background:var(--ink,#0f1a14);color:#ffffff}
+  .pp-awaria{margin-top:14px;padding:12px 14px;border-radius:12px;background:#fff4ee;font-size:13px;line-height:1.55;color:#7a2e0e}
+  .pp-awaria strong,.pp-awaria span{display:block}
+  .pp-awaria a{color:#7a2e0e;font-weight:700}
+  .pp-ok{margin-top:30px}
+  .pp-ok:focus{outline:none}
+  .pp-ok-ik{display:grid;place-items:center;width:52px;height:52px;border-radius:50%;background:#e3f8ee;color:var(--ziel-c,#0a7a52)}
+  .pp-ok-ik svg{width:24px;height:24px;fill:currentColor}
+  .pp-ok h3{margin:16px 0 0;font-size:24px;font-weight:750;letter-spacing:-0.03em}
+  .pp-ok p{margin:8px 0 0;font-size:15.5px;line-height:1.6;color:var(--t2,#4c5850)}
+  .pp-os{display:flex;align-items:center;gap:14px;margin-top:auto;padding-top:26px}
+  .pp-os img{flex:none;width:52px;height:52px;border-radius:50%;object-fit:cover;object-position:50% 20%}
+  .pp-os p{margin:0;font-size:13px;line-height:1.5;color:var(--t2,#4c5850)}
+  .pp-os b{display:block;font-size:14px;color:var(--t1,#16211a)}
+  @media (max-width:640px){
+    .pp-d{inset:auto 0 0 0;width:100vw;height:auto;max-height:92dvh;border-radius:22px 22px 0 0;box-shadow:0 -20px 60px -20px rgba(7,20,13,0.35)}
+    .pp-d[open]{animation-name:pp-wjazd-dol}
+    @keyframes pp-wjazd-dol{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+    .pp-in{padding:26px 20px calc(22px + env(safe-area-inset-bottom))}
+    .pp-x{top:14px;right:14px;width:44px;height:44px}
+    .pp-h{font-size:26px}
+    .pp-os{padding-top:20px}
+  }
+  @media (prefers-reduced-motion:reduce){ .pp-d[open],.pp-d[open]::backdrop{animation:none} }
+</style>
+
+<script>
+  (() => {
+    const d = document.querySelector<HTMLDialogElement>('[data-pp]');
+    if (!d || typeof d.showModal !== 'function') return;
+    const PRODUKTY = JSON.parse(document.querySelector('[data-pp-dane]')?.textContent || '{}');
+    const form = d.querySelector<HTMLFormElement>('[data-pp-form]')!;
+    const okBox = d.querySelector<HTMLElement>('[data-pp-ok]')!;
+    const btn = d.querySelector<HTMLButtonElement>('[data-pp-submit]')!;
+    const etykieta = d.querySelector<HTMLElement>('[data-pp-label]')!;
+    const zgoda = d.querySelector<HTMLInputElement>('[data-pp-zgoda]')!;
+    const wierszZgody = d.querySelector<HTMLElement>('[data-pp-zgoda-row]')!;
+    const awaria = d.querySelector<HTMLElement>('[data-pp-awaria]')!;
+    const ENDPOINT = '/api/kontakt', MAIL = 'hello@letsautomate.pl';
+    const el = (n: string) => form.elements.namedItem(n) as HTMLInputElement;
+    let produkt = 'appto', zrodlo = '', wysylam = false, zaczety = false;
+
+    function pomiar(nazwa: string, powod?: string) {
+      const dane: Record<string, string> = { event: nazwa, usluga: zrodlo, strona: location.pathname };
+      if (powod) dane.powod = powod;
+      try {
+        (window as any).dataLayer = (window as any).dataLayer || [];
+        (window as any).dataLayer.push(dane);
+        document.dispatchEvent(new CustomEvent('la:pomiar', { detail: dane }));
+      } catch (e) {}
+    }
+    function ustaw(klucz: string) {
+      const p = PRODUKTY[klucz];
+      if (!p) return false;
+      produkt = klucz;
+      zrodlo = `Produkty · ${p.nazwa} · ${location.pathname}`;
+      d.querySelector('[data-pp-nazwa]')!.textContent = p.nazwa;
+      d.querySelector('[data-pp-tytul]')!.textContent = p.tytul;
+      d.querySelector('[data-pp-lead]')!.textContent = p.lead;
+      d.querySelector('[data-pp-pytanie]')!.innerHTML = `${p.pytanie} <span>*</span>`;
+      el('wiadomosc').placeholder = p.podpowiedz;
+      etykieta.textContent = p.przycisk;
+      d.querySelector('[data-pp-ok-t]')!.textContent = p.ok;
+      d.querySelector('[data-pp-stopka]')!.textContent = p.stopka;
+      return true;
+    }
+    function otworz(klucz: string) {
+      if (!ustaw(klucz)) return;
+      // Po wysłaniu panel otwiera się z czystym formularzem.
+      if (!okBox.hidden) { okBox.hidden = true; form.hidden = false; form.reset(); btn.disabled = false; zaczety = false; ustaw(klucz); }
+      d.showModal();
+      pomiar('cta_klik');
+      // Kursor w pierwszym polu tylko przy myszy: na telefonie klawiatura
+      // od razu zasłoniłaby panel, zanim ktoś przeczyta, o co pytamy.
+      if (window.matchMedia('(pointer: fine)').matches) setTimeout(() => el('email').focus({ preventScroll: true }), 60);
+    }
+    document.querySelectorAll<HTMLAnchorElement>('[data-pokaz]').forEach((a) => {
+      a.addEventListener('click', (e) => {
+        if (e.metaKey || e.ctrlKey || e.shiftKey) return;
+        e.preventDefault();
+        otworz(a.dataset.pokaz || '');
+      });
+    });
+    d.querySelectorAll('[data-pp-zamknij]').forEach((b) => b.addEventListener('click', () => d.close()));
+    // Klik w tło zamyka panel.
+    d.addEventListener('click', (e) => { if (e.target === d) d.close(); });
+
+    const REGULY = [
+      { pole: 'email', msg: 'Adres e-mail wygląda na niepełny.', ok: (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v) },
+      { pole: 'telefon', msg: 'Numer telefonu ma za mało cyfr.', ok: (v: string) => v.replace(/\D/g, '').length >= 9 },
+      { pole: 'wiadomosc', msg: 'To pole jest wymagane.', ok: (v: string) => v.length > 0 },
+    ];
+    const pole = (x: Element | null) => x?.closest('.pp-pole') as HTMLElement | null;
+    function blad(x: HTMLInputElement, msg: string) { const f = pole(x); if (!f) return; f.classList.add('err'); x.setAttribute('aria-invalid', 'true'); f.querySelector('.pp-err')!.textContent = msg; }
+    function dobrze(x: HTMLInputElement) { const f = pole(x); if (!f) return; f.classList.remove('err'); x.removeAttribute('aria-invalid'); f.querySelector('.pp-err')!.textContent = ''; }
+    function sprawdz() {
+      let pierwszy: HTMLInputElement | null = null;
+      REGULY.forEach((r) => {
+        const x = el(r.pole), v = (x.value || '').trim();
+        if (v && r.ok(v)) dobrze(x);
+        else { blad(x, v ? r.msg : 'To pole jest wymagane.'); if (!pierwszy) pierwszy = x; }
+      });
+      wierszZgody.classList.toggle('err', !zgoda.checked);
+      if (!zgoda.checked && !pierwszy) pierwszy = zgoda;
+      return pierwszy as HTMLInputElement | null;
+    }
+    form.addEventListener('input', (e) => {
+      const t = e.target as HTMLInputElement;
+      if (pole(t)) dobrze(t);
+      if (!zaczety) { zaczety = true; pomiar('formularz_start'); }
+    });
+    zgoda.addEventListener('change', () => wierszZgody.classList.toggle('err', !zgoda.checked));
+    const telefon = () => (el('kierunkowy').value + ' ' + (el('telefon').value || '').trim()).trim();
+    const opis = () => (el('wiadomosc').value || '').trim();
+    function pokazOk() {
+      const mail = (el('email').value || '').trim();
+      if (mail) d.querySelector('[data-pp-echo]')!.textContent = mail;
+      pomiar('formularz_sukces');
+      form.hidden = true;
+      okBox.hidden = false;
+      okBox.focus();
+    }
+    const AWARIE: Record<string, [string, string]> = {
+      'brak-konfiguracji': ['Formularz jest chwilowo wyłączony.', 'Zgłoszenie nie zostało wysłane, a ponowna próba nic nie zmieni.'],
+      domyslna: ['Zgłoszenie nie doszło.', 'Wpisane dane zostały w formularzu — spróbujcie jeszcze raz za chwilę.'],
+    };
+    function pokazAwarie(kod?: string) {
+      pomiar('formularz_blad', kod || 'domyslna');
+      const tr = AWARIE[kod || ''] || AWARIE.domyslna;
+      awaria.querySelector('[data-pp-awaria-t]')!.textContent = tr[0];
+      awaria.querySelector('[data-pp-awaria-d]')!.textContent = tr[1];
+      (awaria.querySelector('[data-pp-mailto]') as HTMLAnchorElement).href = 'mailto:' + MAIL
+        + '?subject=' + encodeURIComponent('Zapytanie ze strony — ' + PRODUKTY[produkt].nazwa)
+        + '&body=' + encodeURIComponent('E-mail: ' + (el('email').value || '').trim() + '\nTelefon: ' + telefon() + '\n\n' + opis());
+      awaria.hidden = false;
+    }
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (wysylam) return;
+      const zly = sprawdz();
+      if (zly) { zly.focus(); return; }
+      wysylam = true;
+      btn.disabled = true;
+      const napis = etykieta.textContent;
+      etykieta.textContent = 'Wysyłam…';
+      awaria.hidden = true;
+      let polecenie = '';
+      try { polecenie = localStorage.getItem('referrer') || ''; } catch (err) {}
+      fetch(ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          email: (el('email').value || '').trim(),
+          telefon: telefon(),
+          wiadomosc: `${PRODUKTY[produkt].nazwa}: ${opis()}`,
+          firma_www: el('firma_www').value || '',
+          zrodlo,
+          referrer: polecenie,
+        }),
+      })
+        .then((r) => {
+          if (r.ok) {
+            (window as any).dataLayer = (window as any).dataLayer || [];
+            (window as any).dataLayer.push({ event: 'formularz_wyslany', zrodlo });
+            wysylam = false;
+            return pokazOk();
+          }
+          return r.json().catch(() => ({})).then((j: any) => { throw new Error(j.blad || 'domyslna'); });
+        })
+        .catch((err) => {
+          wysylam = false;
+          btn.disabled = false;
+          etykieta.textContent = napis;
+          pokazAwarie(err && err.message);
+        });
+    });
+
+    // Link z kampanii: /produkty?demo=oferty otwiera panel od razu.
+    const zLinku = new URLSearchParams(location.search).get('demo');
+    if (zLinku && PRODUKTY[zLinku.toLowerCase()]) otworz(zLinku.toLowerCase());
+  })();
+</script>

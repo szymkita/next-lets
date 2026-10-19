@@ -3,4 +3,6 @@
 // inspiracje i know-how, zostaw tę samą bazę wiedzy, potem to przywrócimy”,
 // a potem „stopkę też odchudź”. Strony działają dalej pod swoimi adresami
 // i są w sitemapie, znika tylko link. Przywrócenie: true.
-export const POKAZ = { produkty: false, knowhow: false, inspiracje: false };
+// 19.10.2026: produkty z powrotem (Szymon: „podepnij produkty do nawigacji”) —
+// zwykły link do huba /produkty, bez rozwijanej listy (PRODUKTY_LISTA w Nawigacja.astro).
+export const POKAZ = { produkty: true, knowhow: false, inspiracje: false };

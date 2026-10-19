@@ -1,13 +1,23 @@
 // Odbiór zgłoszeń z formularzy na stronie. Funkcja Vercela (katalog /api
 // działa obok statycznego builda Astro).
 //
-// Dokąd trafia zgłoszenie, decydują zmienne środowiskowe:
+// Każde zgłoszenie zapisuje się najpierw w prywatnym magazynie Vercel Blob
+// „zgloszenia-strona” (fra1, podłączony do projektu 19.10.2026, zmienna
+// BLOB_READ_WRITE_TOKEN), jako plik zgloszenia/RRRR-MM/<czas>.json. To kopia
+// na wypadek, gdyby webhook nie był ustawiony albo padł. Podgląd zgłoszeń:
+// `npm run zgloszenia` (scripts/zgloszenia.mjs).
+//
+// Dalej zgłoszenie idzie kanałami ze zmiennych środowiskowych:
 //   WEBHOOK_URL        — dowolny webhook przyjmujący JSON (Make, n8n, Zapier).
 //                        Docelowy kanał: scenariusz w Make.
 //   SLACK_WEBHOOK_URL  — webhook przychodzący na kanał Slacka,
 //   RESEND_API_KEY + LEAD_TO (+ LEAD_FROM) — mail przez Resend.
-// Można ustawić kilka naraz. Dopóki nie ma żadnej, funkcja zwraca 503,
-// a formularz pokazuje telefon i adres mailowy — zgłoszenie nie ginie po cichu.
+// Można ustawić kilka naraz. Zgłoszenie uznajemy za przyjęte, gdy zadziałał
+// choć jeden kanał (zapis w Blob też się liczy). Gdy nie ma żadnego albo
+// wszystkie padły, funkcja zwraca 503/502, a formularz pokazuje telefon
+// i adres mailowy — zgłoszenie nie ginie po cichu.
+import { put } from '@vercel/blob';
+
 
 const CZYSC = (v, max) => String(v == null ? '' : v).replace(/\s+/g, ' ').trim().slice(0, max);
 const MAIL_OK = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
@@ -52,8 +62,21 @@ export default async function handler(req, res) {
   ].filter((x) => x !== null).join('\n');
 
   const wysylki = [];
+  const kanaly = [];
+  if (process.env.BLOB_READ_WRITE_TOKEN || process.env.BLOB_STORE_ID) {
+    kanaly.push('blob');
+    const plik = `zgloszenia/${kiedy.slice(0, 7)}/${kiedy.replace(/[:.]/g, '-')}.json`;
+    wysylki.push(
+      put(plik, JSON.stringify({ email, telefon, wiadomosc, zrodlo, referrer, kiedy }, null, 2), {
+        access: 'private',
+        addRandomSuffix: true,
+        contentType: 'application/json',
+      }).then(() => ({ ok: true }))
+    );
+  }
 
   if (process.env.WEBHOOK_URL) {
+    kanaly.push('webhook');
     wysylki.push(
       fetch(process.env.WEBHOOK_URL, {
         method: 'POST',
@@ -64,6 +87,7 @@ export default async function handler(req, res) {
   }
 
   if (process.env.SLACK_WEBHOOK_URL) {
+    kanaly.push('slack');
     wysylki.push(
       fetch(process.env.SLACK_WEBHOOK_URL, {
         method: 'POST',
@@ -74,6 +98,7 @@ export default async function handler(req, res) {
   }
 
   if (process.env.RESEND_API_KEY && process.env.LEAD_TO) {
+    kanaly.push('resend');
     wysylki.push(
       fetch('https://api.resend.com/emails', {
         method: 'POST',
@@ -98,11 +123,14 @@ export default async function handler(req, res) {
   }
 
   const wyniki = await Promise.allSettled(wysylki);
-  const udane = wyniki.filter((w) => w.status === 'fulfilled' && w.value && w.value.ok);
-  if (!udane.length) {
-    console.error('[kontakt] wszystkie kanały odpadły:', wyniki.map((w) => w.reason || (w.value && w.value.status)));
+  const dziala = (w) => w.status === 'fulfilled' && w.value && w.value.ok;
+  const padly = wyniki.map((w, i) => (dziala(w) ? null : `${kanaly[i]}: ${w.reason || (w.value && w.value.status)}`)).filter(Boolean);
+  if (padly.length === wyniki.length) {
+    console.error('[kontakt] wszystkie kanały odpadły:', padly);
     return res.status(502).json({ blad: 'dostarczenie' });
   }
+  // Część kanałów padła (np. webhook), ale zgłoszenie jest zapisane gdzie indziej.
+  if (padly.length) console.error('[kontakt] nie wszystkie kanały zadziałały:', padly);
 
   return res.status(200).json({ ok: true });
 }

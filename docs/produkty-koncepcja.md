@@ -5,6 +5,78 @@ Strony: `src/pages/produkty/index.astro` (hub `/produkty`) oraz
 09.09.2026. Do serwisu doszła też zakładka **Produkty** w nawigacji
 i kolumna **PRODUKTY** w stopce.
 
+> **19.10.2026 — nowy hub (propozycja):** `src/robocze/produkty/index-new.astro`,
+> lokalnie pod `/produkty/index-new`, w standardzie podstron
+> (`docs/uslugi-standard.md`). Obecny hub poniżej opisuje Wingmana z
+> ofertowaniem i oceną jakości rozmów (tych funkcji nie ma), obiecuje „pokaz
+> pół godziny” i wdrożenie Wingmana przez nasz zespół. Nowy układ: hero bez
+> rysunku → Appto (tekst + film) → Wingman (makieta z jego strony + tekst,
+> kolumny odwrócone) → „Kiedy gotowy produkt nie wystarczy” z trzema
+> usługami „Budujemy za Was” → kontakt „Zacznijmy od pokazu” → FAQ. Obraz
+> Wingmana to zrzut makiety z `/produkty/wingman`
+> (`public/produkty/wingman-pulpit.webp`, na telefonie `wingman-pasek.webp`).
+> Tego samego dnia (prośba Szymona „dodaj tam ten system do ofert”) doszedł
+> trzeci produkt, System ofert (tekst + oferta u klienta z czatem, link do
+> `/produkty/oferty`), a w hero spis trzech produktów zamiast rozwijanej
+> listy w menu (`docs/nawigacja-decyzje.md`). Tła: Appto biel, Wingman
+> papier, System ofert biel, „Kiedy gotowy produkt nie wystarczy” papier,
+> bo kontakt potrzebuje papieru nad planszą.
+> Później tego dnia produkt dostał nazwę **Oferty AI**. Pojedyncze obrazy
+> przy Wingmanie i Ofertach AI zastąpiły **slajdy** (prośba Szymona: „dodaj
+> jakieś slajdy, które pokazują kilka ekranów systemu do ofert, przy wingman
+> w sumie też warto”): po sześć ekranów z makiet na stronach produktów,
+> komponent `src/components/produkty/Slajdy.astro`, pliki
+> `public/produkty/slajdy/` (pulpit 1400 px i osobne zrzuty wersji na
+> telefon). Ekrany stoją na ciemnej scenie, pod nią opis i kreski z czasem
+> do następnego slajdu; pokaz rusza sam w kadrze, staje po najechaniu
+> i kończy się przy pierwszym kliknięciu albo geście.
+>
+> **19.10.2026, kolejna runda (uwagi Szymona):**
+> - **Hero** mówi o tym, co aplikacje dają zespołowi klienta: „Gotowe
+>   aplikacje AI do pracy z klientem i w całej firmie” (wcześniej „które
+>   piszemy i rozwijamy sami” — skupienie na nas). Pod tekstem kompozycja:
+>   okno Appto (makieta Inbox AI ze strony głównej appto.ai), pasek Wingmana
+>   z kartą odpowiedzi, telefon klienta z ofertą z Ofert AI. Elementy są
+>   kotwicami do sekcji, zamiast spisu produktów.
+> - **Bez podstron produktów** na razie: przyciski „Umów pokaz …” prowadzą do
+>   kontaktu, a nazwa produktu trafia na początek pola zapytania. Linki
+>   zewnętrzne: appto.ai, film o Appto, gowingman.app.
+> - **Slajdy** przy wszystkich trzech produktach, bez ciemnej sceny; każde okno
+>   w tych samych proporcjach (1100 × 688, na telefonie 346 × 519). Appto:
+>   makiety z appto.ai (Inbox AI w dwóch stanach, Agenci, Baza wiedzy, Czat,
+>   Rutyny) zamiast filmu. Oferty AI: panel i mapa czytania to prawdziwy
+>   interfejs aplikacji uruchomionej lokalnie na przykładowych danych.
+> - **Logo Appto** prawdziwe (`public/appto/appto-logo-full.svg`).
+>
+> **Później 19.10.2026:** w Appto film wrócił jako pierwszy slajd (miniatura,
+> odtwarzanie na miejscu), ekranów trzy (Inbox AI, asystent, baza wiedzy) —
+> Szymon dorzuci kolejne. Wiersze pod opisem mówią, co produkt robi: Appto —
+> Zadania, Wiedza, Narzędzia, Kontrola (zamiast Dla kogo / Wdrożenie / Start /
+> Dane); Wingman — Przed rozmową, W trakcie, Po rozmowie, Licencja. Link
+> `/produkty?produkt=oferty#kontakt` (albo `appto`, `wingman`) wpisuje produkt
+> w formularz — do kampanii, póki nie ma podstron.
+>
+> **Jeszcze później 19.10.2026:** przyciski otwierają panel z boku (na
+> telefonie od dołu) z krótkim formularzem pod produkt
+> (`src/components/produkty/PokazPanel.astro`, ten sam `/api/kontakt` i te same
+> zdarzenia co `Kontakt.astro`, źródło „Produkty · <produkt>”); klient zostaje
+> przy produkcie. Słowo „demo” zamiast „pokaz” (Szymon): „Umów demo Appto”,
+> „Umów demo Ofert AI”, przy Wingmanie „Chcę dowiedzieć się więcej” (warunki
+> licencji). Link z kampanii: `/produkty?demo=oferty`. Formularz na dole: „Nie
+> wiecie, od której zacząć?”. Appto opisane jako standard pracy z AI i sposób
+> na wprowadzenie AI do firmy; Wingman z transkrypcją na żywo. Etykiety-pigułki
+> w hero zastąpił podpis pod sceną (znak, nazwa, jedno zdanie). W „Kiedy gotowy
+> produkt nie wystarczy” doszły Strategia AI i Szkolenia z AI. Bez linku do
+> gowingman.app.
+>
+> Podpisy wróciły do grafik w hero (Szymon: podpis pod sceną wyglądał
+> gorzej): sam tekst na planszy, nazwa i jedno zdanie, cienka linia do
+> krawędzi elementu zakończona punktem; podpis Wingmana w ciemnym pasie po
+> lewej od okna Appto. Na telefonie rząd nazw pod sceną. Oferty AI mają cenę:
+> **8 900 zł netto jednorazowo za wdrożenie**, zmiany i dopasowanie
+> rozliczane godzinowo, jeśli potrzebne (stawki godzinowej strona nie podaje).
+> Reszta tego dokumentu opisuje hub z 09.09.2026.
+
 ---
 
 ## Po co ta zakładka

@@ -78,8 +78,8 @@ const USLUGI = [
 // Opis Wingmana jak w stopce: ofertowania i oceny rozmów w produkcie nie ma
 // (docs/wingman-koncepcja.md). Od 16.10.2026 prowadzi na /produkty/wingman.
 const PRODUKTY = [
-  { t: 'Appto', d: 'Agenci AI dla całej firmy', h: '/produkty/appto', znak: 'appto' },
-  { t: 'Wingman', d: 'Podpowiedzi i notatki w trakcie rozmowy', h: '/produkty/wingman', znak: 'wingman' },
+  { t: 'Appto', d: 'Agenci AI dla całej firmy', h: '/produkty#appto', znak: 'appto' },
+  { t: 'Wingman', d: 'Podpowiedzi i notatki w trakcie rozmowy', h: '/produkty#wingman', znak: 'wingman' },
 ];
 
 // Ikony trzymamy jako ścieżki, nie jako gotowe <svg> — ten sam rysunek idzie
@@ -98,7 +98,13 @@ const KNOWHOW = [
 // Produkty, Know-how i Inspiracje schowane na start produkcji — przełącznik
 // w src/data/menu.js (wspólny ze stopką). Dopóki Know-how jest schowane,
 // Baza wiedzy stoi w menu jako osobny link.
+//
+// Produkty jako zwykły link do huba /produkty, bez rozwijanej listy (Szymon,
+// 19.10.2026: przy kilku produktach panel wyglądał pusto obok mega menu Usług,
+// a hub ma spis produktów w hero). Markup listy został niżej — powrót: true.
+const PRODUKTY_LISTA = false;
 const POZOSTALE = [
+  { t: 'Produkty', h: '/produkty', pokaz: POKAZ.produkty && !PRODUKTY_LISTA },
   { t: 'Baza wiedzy', h: '/blog', pokaz: !POKAZ.knowhow },
   { t: 'Inspiracje', h: '/inspiracje', pokaz: POKAZ.inspiracje },
   { t: 'Dlaczego my', h: '/dlaczego-my' },
@@ -186,7 +192,7 @@ const POZOSTALE = [
 </div>
 </div>
 -->
-{POKAZ.produkty && (
+{POKAZ.produkty && PRODUKTY_LISTA && (
 <div class="nav-item" style="position:relative">
 <a href="/produkty" class="nav-lnk" style="display:inline-flex;align-items:center;gap:5px;color:#2c3a30">Produkty <svg class="nav-caret" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></a>
 <div class="mega-wrap pd-wrap">
@@ -254,7 +260,7 @@ const POZOSTALE = [
 {u.poz.map((p) => <a href={p.h} class="np-poz"><span class="np-t">{p.t}</span><span class="np-d">{p.d}</span></a>)}
 </section>
 ))}
-{POKAZ.produkty && (
+{POKAZ.produkty && PRODUKTY_LISTA && (
 <section class="np-grupa">
 <span class="np-glowa np-glowa-txt">Produkty</span>
 {PRODUKTY.map((p) => (

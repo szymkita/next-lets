@@ -121,6 +121,14 @@ plus pułapka `firma_www`. Każde dodatkowe pole endpoint wyrzuci.
 przynajmniej jednej zmiennej: `WEBHOOK_URL`, `SLACK_WEBHOOK_URL` albo
 `RESEND_API_KEY` + `LEAD_TO`.
 
+**Od 19.10.2026** każde zgłoszenie zapisuje się też w prywatnym magazynie
+Vercel Blob `zgloszenia-strona` (region fra1, podłączony do projektu, zmienna
+`BLOB_READ_WRITE_TOKEN` we wszystkich środowiskach), jako
+`zgloszenia/RRRR-MM/<czas>.json`. Zgłoszenie jest przyjęte, gdy zadziałał choć
+jeden kanał, więc przy braku albo awarii webhooka zostaje kopia. Podgląd:
+`vercel env pull .env.local`, potem `npm run zgloszenia` (ostatnie 20),
+`npm run zgloszenia -- 2026-10` (cały miesiąc).
+
 ---
 
 ## 7 · Do potwierdzenia przed publikacją

@@ -5,6 +5,42 @@ była propozycją pod `/produkty/appto-new`; tego dnia Szymon kazał wystawić
 najnowsze wersje stron. Poprzednie: `src/robocze/produkty/appto-old.astro`
 (strona z kartą agenta) i `appto-v2.astro` — tylko lokalnie.
 
+## Wersja 5 (19.10.2026, propozycja)
+
+Plik: `src/robocze/produkty/appto-new.astro`, lokalnie pod
+`/produkty/appto-new`. Zlecenie Szymona: „przeanalizuj strony produktowe,
+dopracuj design i treści, szczególnie appto, przygotuj je do publikacji”.
+Kierunek z wersji 4 zostaje (aplikacja plus metoda wdrożenia; bez wydań,
+oferty, maili, ról i odesłań do podstron appto.ai).
+
+Co poprawia względem wersji 4:
+
+- zdanie „od audytu procesów do pracy z AI na co dzień” stało trzy razy
+  (lead, definicja, teza), zostało tylko w tezie;
+- FAQ mówiło, że opłata za Appto jest „niezależna od liczby osób”; cennik
+  appto.ai ma progi wielkości zespołu (opłata nie zależy od liczby
+  zalogowanych) — poprawione;
+- dziesięć kroków było samymi etykietami; teraz stoją w czterech etapach
+  (Diagnoza, Budowa, Pilotaż, Cała firma), a pod każdym jest to, co zostaje
+  w firmie (wyniki faz z `/pl/wdrozenie-indywidualne`);
+- nagłówek kontaktu „Porozmawiajmy o wdrożeniu Appto” wychodził przy 1440 px
+  na pole e-mail; teraz „Zacznijmy od jednego działu”, jak inne podstrony.
+
+| # | Sekcja | Tło | Nośnik |
+|---|---|---|---|
+| 1 | hero | ciemna plansza | ten sam nagłówek i film; lead bez powtórzenia definicji |
+| 2 | czym jest | papier | definicja z genezą + indeks „Co Appto zmienia w pracy zespołu” (Dziś / W Appto, cztery pary z `kohorta.ts → appto.pairs`) |
+| 3 | zielony pas | biel | bez zmian |
+| 4 | metoda | biel | teza + dziesięć kroków w czterech etapach z wynikami + trzy drogi z tymi samymi wierszami (prowadzi, czas, koszt) |
+| 5 | jedno wdrożenie | ciemna scena | firma usługowa B2B, 35 osób: 9 h tygodniowo na oferty → szkic w 22 min zamiast 90 → 3 umiejętności → wejście nowej osoby w 1 dzień zamiast 5 → +2 umiejętności bez nas (`kohorta.ts → study`, opublikowane na appto.ai) |
+| 6 | dla kogo | papier | bez zmian |
+| 7 | kontakt | papier | „Zacznijmy od jednego działu” |
+| 8 | FAQ | papier | sześć pytań: ChatGPT/Copilot, start samemu, czas, koszt, dane, integracje |
+
+Do potwierdzenia: podział kroków na etapy (nasz), przykład z testowego
+wdrożenia (dotyczy ofert), stała cena przy opiekunie (appto.ai mówi
+„wycena po audycie”), kohorta 6 czy 8 tygodni (strona bez liczby).
+
 ## Historia
 
 - **15.10.2026, wersja 1:** strona funkcji (agenci, rutyny, kontekst,

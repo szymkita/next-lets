@@ -1,0 +1,381 @@
+---
+// OFERTA DLA NORDISU — przykładowy dokument z Ofert AI (/produkty/oferty).
+// Ten sam dokument stoi na stronie trzy razy: w hero (okno przeglądarki
+// z przewijaniem, czatem i akceptacją), w mapie czytania (pomniejszone
+// sekcje obok uwagi i zasięgu) i w przepisie oferty (warstwy).
+//
+// Sekcje odpowiadają typom ze schematu ~/oferty-aisales/src/schema:
+// hero + highlights, situation (z cytatem), process/timeline, pricing,
+// faq (biblioteka), about z opinią (biblioteka), next-steps. Sprzedawca
+// (Termaro) i jego kolor są zmyślone: oferta wychodzi w barwach firmy, która
+// ją wysyła (accentColor, logo firmy w metadanych). Ton „Państwo”, bo tak
+// handlowiec odpowiedział na pytanie o ton w koncepcji (zakładka sceny).
+//
+// Wygląd dokumentu to propozycja nowej warstwy wizualnej ofert, nie zrzut
+// dzisiejszej aplikacji.
+//
+// Props:
+//   tylko — klucze sekcji do pokazania (domyślnie wszystkie), w kolejności
+//           dokumentu: naglowek, syt, plan, cena, obiekcje, onas, kroki.
+import { HI } from '../usluga/ikony';
+
+interface Props { tylko?: string[] }
+const { tylko } = Astro.props;
+const jest = (k: string) => !tylko || tylko.includes(k);
+// Dokument stoi na stronie kilka razy, więc gradienty SVG mają własne id.
+const uid = `od${Math.random().toString(36).slice(2, 8)}`;
+
+const IK = {
+  ogien: '<path fill-rule="evenodd" d="M8.074.945A4.993 4.993 0 0 0 6 5v.032c.004.6.114 1.176.311 1.709.16.428-.204.91-.61.7a5.023 5.023 0 0 1-1.868-1.677c-.202-.304-.648-.363-.848-.058a6 6 0 1 0 8.017-1.901l-.004-.007a4.98 4.98 0 0 1-2.18-2.574c-.116-.31-.477-.472-.744-.28Zm.78 6.178a3.001 3.001 0 1 1-3.473 4.341c-.205-.365.215-.694.62-.59a4.008 4.008 0 0 0 1.873.03c.288-.065.413-.386.321-.666A3.997 3.997 0 0 1 8 8.999c0-.585.126-1.14.351-1.641a.42.42 0 0 1 .503-.235Z" clip-rule="evenodd"/>',
+  flaga: '<path d="M3 2.75a.75.75 0 0 1 1.5 0v.43c1.88-.73 3.53-.33 4.95.07 1.36.38 2.49.69 3.73.07A.6.6 0 0 1 14 3.85v6.1a.75.75 0 0 1-.4.66c-1.79.9-3.37.46-4.73.08-1.36-.38-2.55-.71-4.37.07v2.49a.75.75 0 0 1-1.5 0V2.75Z"/>',
+};
+
+const OS = {
+  a: { n: 'Anna Kowal', f: '/makieta/awatar-anna.webp' },
+  m: { n: 'Michał Rudnik', f: '/makieta/awatar-michal.webp' },
+  t: { n: 'Tomasz Wierzba', f: '/makieta/awatar-tomasz.webp' },
+};
+
+const NAJ = [
+  { ik: IK.ogien, t: 'Ciepło od 1 listopada', d: 'Przy zamówieniu do 25 września dostawa zdąży przed sezonem.' },
+  { ik: HI['squares-2x2'], t: 'Dwie strefy, osobne sterowanie', d: 'Rampy i regały wysokiego składowania grzane niezależnie.' },
+  { ik: HI.banknotes, t: '157 300 zł netto', d: 'W budżecie zarządu, płatność po uruchomieniu.' },
+];
+const SYT = [
+  ['Hala 4 200 m², dwie strefy', 'Rampy i regały wysokiego składowania, dziś ogrzewane nagrzewnicami olejowymi.'],
+  ['Ok. 23 tys. zł miesięcznie zimą', 'Tyle kosztuje dziś olej w sezonie grzewczym.'],
+  ['Montaż robi Państwa ekipa', 'W ofercie jest projekt, dostawa i uruchomienie, bez montażu.'],
+  ['Budżet do 180 tys. zł netto', 'Decyzja na posiedzeniu zarządu 18 września.'],
+];
+
+// Oś planu: od 15 września (dzień oferty) do 8 listopada, 54 dni.
+const DNI = 54;
+const x = (d: number) => `${(d / DNI * 100).toFixed(2)}%`;
+const MIESIACE = [
+  { t: 'wrzesień', k: 'wrz.', od: 0, do: 16 },
+  { t: 'październik', k: 'paź.', od: 16, do: 47 },
+  { t: 'listopad', k: 'lis.', od: 47, do: 54 },
+];
+const TYGODNIE = [7, 14, 21, 28, 35, 42, 49];
+const PASKI = [
+// poz = gdzie stoi podpis paska: p — za paskiem, w — w pasku, l — przed paskiem.
+  { t: 'Projekt', c: '1 tydzień', d: 'rozmieszczenie 16 promienników', od: 10, do: 17, poz: 'p' },
+  { t: 'Dostawa', c: '4 tygodnie', d: 'promienniki i sterowanie', od: 10, do: 38, poz: 'w' },
+  { t: 'Montaż', c: 'Państwa ekipa', d: '', od: 38, do: 44, poz: 'l', ich: true },
+  { t: 'Uruchomienie', c: '2 dni', d: 'i szkolenie obsługi', od: 45, do: 47, poz: 'l' },
+];
+const PUNKTY = [
+  { t: 'Decyzja zarządu', d: 3, k: '18.09' },
+  { t: 'Zamówienie', d: 10, k: '25.09' },
+];
+
+const W_CENIE = ['16 promienników gazowych 32 kW', 'sterowanie dwóch stref', 'projekt wykonawczy', 'uruchomienie i szkolenie obsługi'];
+const POZA = ['montaż, który wykonuje ekipa Nordisu', 'instalacja gazowa do hali'];
+const OBIEKCJE = [
+  ['„Czy montaż możemy zrobić sami?”', 'Tak. Projekt wykonawczy pokazuje miejsce i wysokość zawieszenia każdego promiennika, a uruchomienie robimy po montażu, razem z Państwa ekipą.'],
+  ['„Co, jeśli dostawa się opóźni?”', 'Termin dostawy potwierdzamy w dniu zamówienia. Zamówienie do 25 września zostawia tydzień zapasu przed 1 listopada.'],
+];
+const KROKI = [
+  ['18 września', 'Decyzja zarządu', 'Akceptacja tej oferty wystarczy.'],
+  ['25 września', 'Zamówienie', 'Potwierdzamy termin dostawy.'],
+  ['1 listopada', 'Ciepło w hali', 'Uruchomienie i szkolenie obsługi.'],
+];
+---
+<div class="od">
+{jest('naglowek') && (
+<section class="od-s od-nag" data-sek="naglowek" data-oh-k="naglowek">
+<header class="od-hero">
+<svg class="od-slonce" viewBox="0 0 520 260" aria-hidden="true">
+<defs>
+<radialGradient id={`${uid}-g`} cx="50%" cy="100%" r="100%"><stop offset="0" stop-color="#fff4e4"/><stop offset=".5" stop-color="#ffc46a"/><stop offset=".8" stop-color="#f98d3c"/><stop offset="1" stop-color="#f2672a"/></radialGradient>
+<linearGradient id={`${uid}-r`} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f2672a" stop-opacity="0"/><stop offset="1" stop-color="#f2672a" stop-opacity=".55"/></linearGradient>
+</defs>
+<circle class="r" cx="260" cy="260" r="250" stroke={`url(#${uid}-r)`}/><circle class="r" cx="260" cy="260" r="205" stroke={`url(#${uid}-r)`}/><circle class="r" cx="260" cy="260" r="160" stroke={`url(#${uid}-r)`}/>
+<circle class="f" cx="260" cy="260" r="120"/><circle class="f" cx="260" cy="260" r="120"/><circle class="f" cx="260" cy="260" r="120"/>
+<circle class="s" cx="260" cy="260" r="112" fill={`url(#${uid}-g)`}/>
+</svg>
+<div class="od-top">
+<span class="od-logo"><i aria-hidden="true"></i>Termaro</span>
+<span class="od-nr">Oferta dla Nordisu · 15 września 2026</span>
+</div>
+<p class="od-eb">Ogrzewanie hali magazynowej</p>
+<p class="od-h1">Ciepło w hali Nordisu <em>od&nbsp;1&nbsp;listopada</em>, w&nbsp;budżecie zarządu</p>
+<dl class="od-meta">
+<div><dt>Przygotowała</dt><dd><img src={OS.a.f} alt="" width="22" height="22" loading="lazy">{OS.a.n}</dd></div>
+<div><dt>Dla</dt><dd><img src={OS.m.f} alt="" width="22" height="22" loading="lazy">{OS.m.n}, Nordis sp. z o.o.</dd></div>
+<div class="waz"><dt>Ważna do</dt><dd><svg class="hi" viewBox="0 0 16 16" set:html={HI.clock}></svg>18 września 2026</dd></div>
+</dl>
+</header>
+<ul class="od-naj">
+{NAJ.map((n) => (<li><i><svg class="hi" viewBox="0 0 16 16" set:html={n.ik}></svg></i><b>{n.t}</b><span>{n.d}</span></li>))}
+</ul>
+</section>
+)}
+
+{jest('syt') && (
+<section class="od-s od-syt" data-sek="syt" data-oh-k="syt">
+<div class="od-gl"><p class="od-k">Po rozmowie 14 września</p><p class="od-h">Co zrozumieliśmy</p></div>
+<div class="od-syt-in">
+<ol>{SYT.map(([b, e], i) => (<li><span>{String(i + 1).padStart(2, '0')}</span><div><b>{b}</b><em>{e}</em></div></li>))}</ol>
+<blockquote class="od-cyt">
+<p>„Ogrzewanie musi ruszyć od pierwszego listopada.”</p>
+<footer><img src={OS.m.f} alt="" width="34" height="34" loading="lazy"><span><b>{OS.m.n}</b>dyrektor operacyjny, Nordis</span></footer>
+</blockquote>
+</div>
+</section>
+)}
+
+{jest('plan') && (
+<section class="od-s od-plan" data-sek="plan" data-oh-k="plan">
+<div class="od-gl"><p class="od-k">Od zamówienia do ciepła w pięć tygodni</p><p class="od-h">Jak to zrobimy</p></div>
+<div class="od-gantt">
+<div class="od-gm">{MIESIACE.map((m) => (<span style={`left:${x(m.od)};width:${x(m.do - m.od)}`}><b>{m.t}</b><i>{m.k}</i></span>))}</div>
+<div class="od-gp">
+{TYGODNIE.map((d) => (<i class="od-gt" style={`left:${x(d)}`}></i>))}
+{PUNKTY.map((p, i) => (<span class="od-pkt" style={`left:${x(p.d)};top:${2 + i * 19}px`}><b>{p.k}</b>{p.t}</span>))}
+{PASKI.map((p, i) => (
+  <div class={`od-pas ${p.poz}${p.ich ? ' ich' : ''}`} style={`--l:${x(p.od)};--w:${x(p.do - p.od)};--i:${i}`}>
+    <span class="od-pas-b"></span>
+    <span class="od-pas-t"><b>{p.t}</b> {p.c}{p.d && <em> · {p.d}</em>}</span>
+  </div>
+))}
+<span class="od-cel" style={`left:${x(47)}`}>Ciepło w hali <b>1.11</b><svg class="hi" viewBox="0 0 16 16" set:html={IK.flaga}></svg></span>
+</div>
+</div>
+</section>
+)}
+
+{jest('cena') && (
+<section class="od-s od-cena" data-sek="cena" data-oh-k="cena">
+<div class="od-cena-in">
+<div class="od-cena-l">
+<p class="od-k">Cena za całość</p>
+<p class="od-kw">157&nbsp;300&nbsp;zł</p>
+<p class="od-kw-p">netto, płatność po uruchomieniu</p>
+<div class="od-bud" style="--b:87.4%">
+<div class="od-bud-t"><span>W budżecie zarządu</span><span>do 180&nbsp;000 zł</span></div>
+<div class="od-bud-p"><i></i></div>
+</div>
+</div>
+<div class="od-cena-r">
+<div><p class="od-h5">W cenie</p><ul class="tak">{W_CENIE.map((t) => (<li>{t}</li>))}</ul></div>
+<div><p class="od-h5">Poza ofertą</p><ul class="nie">{POZA.map((t) => (<li>{t}</li>))}</ul></div>
+</div>
+</div>
+</section>
+)}
+
+{jest('obiekcje') && (
+<section class="od-s od-ob" data-sek="obiekcje" data-oh-k="obiekcje">
+<div class="od-gl"><p class="od-k">Pytania, które zwykle padają</p><p class="od-h">Pytania i obiekcje</p></div>
+<dl>{OBIEKCJE.map(([q, a]) => (<div><dt>{q}</dt><dd>{a}</dd></div>))}</dl>
+</section>
+)}
+
+{jest('onas') && (
+<section class="od-s od-onas" data-sek="onas" data-oh-k="onas">
+<figure>
+<blockquote>„Promienniki uruchomili w dwa dni, a na rampach jest ciepło od pierwszej zmiany.”</blockquote>
+<figcaption><img src={OS.t.f} alt="" width="40" height="40" loading="lazy"><span><b>{OS.t.n}</b>kierownik magazynu, centrum logistyczne pod Łodzią</span></figcaption>
+</figure>
+</section>
+)}
+
+{jest('kroki') && (
+<section class="od-s od-kroki" data-sek="kroki" data-oh-k="kroki">
+<div class="od-gl"><p class="od-k">157 300 zł netto, płatne po uruchomieniu</p><p class="od-h">Następne kroki</p></div>
+<ol>{KROKI.map(([d, t, o], i) => (<li class={i === 2 ? 'cel' : ''}><span>{d}</span><b>{t}</b><em>{o}</em></li>))}</ol>
+<p class="od-stopka"><span class="od-logo"><i aria-hidden="true"></i>Termaro</span><span>Anna Kowal · doradca techniczny</span></p>
+</section>
+)}
+</div>
+
+<style is:global>
+  /* Dokument oferty. Kolor sprzedawcy w --ak (accentColor oferty). */
+  .od{--ak:#f2672a;--ak2:#ffb23f;--akc:#c2410c;--akj:#fff4ea;--d1:#1b140f;--d2:#5b524c;--d3:#8f8680;--dl:rgba(27,20,15,0.09);--dl2:rgba(27,20,15,0.055);
+    position:relative;background:#fffdfb;color:var(--d1);font-size:13px;line-height:1.5;letter-spacing:-0.005em;text-align:left;-webkit-font-smoothing:antialiased}
+  :where(.od) .hi{display:block;flex-shrink:0;width:16px;height:16px;fill:currentColor}
+  :where(.od) img{display:block;border-radius:50%;object-fit:cover}
+  :where(.od) :is(ol,ul,dl,dd,p,blockquote,figure){margin:0;padding:0}
+  :where(.od) :is(ol,ul){list-style:none}
+  /* Treść w kolumnie do 1080 px, tło na całą szerokość okna. */
+  .od{--bok:max(64px,calc((100% - 1080px) / 2))}
+  .od-s{position:relative;padding:44px var(--bok) 0}
+  .od-k{font-size:12px;font-weight:600;color:var(--akc)}
+  .od-gl .od-h{margin-top:4px;font-size:25px;line-height:1.1;font-weight:750;letter-spacing:-0.03em}
+  .od-logo{display:inline-flex;align-items:center;gap:8px;font-size:15px;font-weight:800;letter-spacing:-0.03em;color:var(--d1)}
+  .od-logo i{position:relative;width:20px;height:20px;border-radius:6px;background:linear-gradient(160deg,var(--ak2),var(--ak) 60%,#d9481c);overflow:hidden}
+  .od-logo i::before{content:"";position:absolute;left:50%;bottom:-6px;width:13px;height:13px;margin-left:-6.5px;border-radius:50%;background:#fff6ec;box-shadow:0 0 0 2.5px rgba(255,246,236,0.45),0 0 0 5px rgba(255,246,236,0.18)}
+
+  /* nagłówek */
+  .od-s.od-nag{padding:0}
+  .od-hero{position:relative;overflow:hidden;padding:26px var(--bok) 92px;background:
+      radial-gradient(70% 120% at 88% 108%,rgba(255,138,61,0.55) 0%,rgba(255,178,63,0.22) 36%,transparent 70%),
+      radial-gradient(40% 70% at 64% 100%,rgba(242,103,42,0.32) 0%,transparent 70%),
+      linear-gradient(180deg,#fff7ef 0%,#ffefe1 100%)}
+  .od-hero::before{content:"";position:absolute;inset:0;background:
+      linear-gradient(rgba(27,20,15,0.05) 1px,transparent 1px) 0 0/100% 32px,
+      linear-gradient(90deg,rgba(27,20,15,0.05) 1px,transparent 1px) 0 0/32px 100%;
+    -webkit-mask:radial-gradient(60% 90% at 85% 100%,#000 0%,transparent 75%);mask:radial-gradient(60% 90% at 85% 100%,#000 0%,transparent 75%);pointer-events:none}
+  .od-hero > *{position:relative}
+  /* znak sprzedawcy w dużej skali: słońce wschodzące zza kart */
+  .od-hero > .od-slonce{position:absolute;right:calc(var(--bok) - 40px);bottom:0;width:520px;height:260px;overflow:visible;pointer-events:none}
+  .od-slonce .s{filter:drop-shadow(0 0 36px rgba(255,150,60,0.55))}
+  .od-slonce .r{fill:none;stroke-width:1.2}
+  .od-slonce .f{fill:none;stroke:#f58a2e;stroke-width:1.5;opacity:0;transform-origin:260px 260px;animation:od-fala 7.5s cubic-bezier(.3,.6,.4,1) infinite}
+  .od-slonce .f:nth-of-type(5){animation-delay:2.5s}
+  .od-slonce .f:nth-of-type(6){animation-delay:5s}
+  @keyframes od-fala{0%{transform:scale(.95);opacity:0}15%{opacity:.7}100%{transform:scale(2.15);opacity:0}}
+  @media (prefers-reduced-motion:reduce){ .od-slonce .f{animation:none} }
+  .od-top{display:flex;align-items:center;justify-content:space-between;gap:16px}
+  .od-nr{font-size:12px;font-weight:550;color:var(--d2)}
+  .od-eb{display:flex;align-items:center;gap:10px;margin-top:46px;font-size:12.5px;font-weight:650;color:var(--akc)}
+  .od-eb::before{content:"";width:26px;height:2px;border-radius:1px;background:linear-gradient(90deg,var(--ak),var(--ak2))}
+  .od-h1{max-width:780px;margin-top:14px;font-size:46px;line-height:1.02;letter-spacing:-0.045em;font-weight:780;color:var(--d1);text-wrap:balance}
+  .od-h1 em{font-style:italic;font-weight:700;letter-spacing:-0.035em;background:linear-gradient(100deg,#e2531f 10%,var(--ak2) 95%);-webkit-background-clip:text;background-clip:text;color:transparent;padding-right:0.04em}
+  .od-meta{display:flex;flex-wrap:wrap;gap:12px 38px;margin-top:30px}
+  .od-meta dt{font-size:11.5px;color:var(--d3)}
+  .od-meta dd{display:flex;align-items:center;gap:8px;margin-top:4px;font-size:13px;font-weight:620}
+  .od-meta dd img{width:22px;height:22px}
+  .od-meta .waz dd{color:var(--akc)}
+  .od-meta .waz .hi{width:14px;height:14px}
+  .od-naj{position:relative;z-index:1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:-58px var(--bok) 0}
+  .od-naj li{display:grid;grid-template-columns:auto minmax(0,1fr);gap:3px 12px;align-items:start;padding:16px 18px 17px;border-radius:16px;background:rgba(255,255,255,0.74);-webkit-backdrop-filter:blur(22px) saturate(1.4);backdrop-filter:blur(22px) saturate(1.4);box-shadow:0 0 0 1px var(--dl),0 24px 40px -26px rgba(122,52,12,0.45)}
+  .od-naj i{grid-row:span 2;display:grid;place-items:center;width:34px;height:34px;border-radius:11px;background:linear-gradient(160deg,#fff1e2,#ffe0c4);color:var(--akc);box-shadow:inset 0 0 0 1px rgba(242,103,42,0.18)}
+  .od-naj b{font-size:14.5px;font-weight:700;letter-spacing:-0.015em}
+  .od-naj span{font-size:12px;line-height:1.45;color:var(--d2)}
+
+  /* co zrozumieliśmy */
+  .od-syt-in{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:22px;margin-top:18px}
+  .od-syt ol li{display:grid;grid-template-columns:30px minmax(0,1fr);gap:8px;padding:11px 0;border-top:1px solid var(--dl)}
+  .od-syt ol li:last-child{border-bottom:1px solid var(--dl)}
+  .od-syt ol span{padding-top:2px;font-family:var(--mono,ui-monospace,monospace);font-size:11.5px;color:var(--ak)}
+  .od-syt ol b{display:block;font-size:14px;font-weight:680;letter-spacing:-0.01em}
+  .od-syt ol em{display:block;margin-top:1px;font-style:normal;font-size:12.5px;color:var(--d2)}
+  .od-cyt{position:relative;display:flex;flex-direction:column;justify-content:space-between;gap:20px;padding:22px 24px;border-radius:20px;background:linear-gradient(165deg,#2a1c13 0%,#1b140f 70%);color:#fff7f0;overflow:hidden}
+  .od-cyt::before{content:"“";position:absolute;right:16px;top:-26px;font-size:150px;line-height:1;font-weight:800;color:rgba(255,178,63,0.16)}
+  .od-cyt::after{content:"";position:absolute;left:-30%;bottom:-60%;width:120%;height:100%;background:radial-gradient(closest-side,rgba(242,103,42,0.35),transparent);pointer-events:none}
+  .od-cyt p{position:relative;font-size:22px;line-height:1.18;letter-spacing:-0.03em;font-weight:700;text-wrap:balance}
+  .od-cyt footer{position:relative;display:flex;align-items:center;gap:10px;font-size:12px;color:rgba(255,247,240,0.62)}
+  .od-cyt footer img{width:34px;height:34px;box-shadow:0 0 0 2px rgba(255,178,63,0.5)}
+  .od-cyt footer b{display:block;font-size:13px;font-weight:650;color:#fff7f0}
+
+  /* plan */
+  .od-gantt{margin-top:18px;padding:16px 18px 14px;border-radius:18px;background:#fbf7f3;box-shadow:inset 0 0 0 1px var(--dl2)}
+  .od-gm{position:relative;height:18px;font-size:11px;font-weight:650;color:var(--d3)}
+  .od-gm span{position:absolute;top:0;padding-left:8px;border-left:1px solid var(--dl);white-space:nowrap;overflow:hidden}
+  .od-gm b{font-weight:inherit}
+  .od-gm i{display:none;font-style:normal}
+  .od-gp{position:relative;padding:50px 0 30px}
+  .od-gt{position:absolute;top:0;bottom:0;width:1px;background:var(--dl2)}
+  .od-pkt{position:absolute;bottom:0;display:flex;align-items:flex-start;gap:6px;transform:translateX(-4px);font-size:11.5px;line-height:14px;color:var(--d2);white-space:nowrap}
+  .od-pkt::before{content:"";flex:none;width:8px;height:8px;margin-top:3px;border-radius:50%;background:#fffdfb;box-shadow:inset 0 0 0 2px var(--d1)}
+  .od-pkt b{font-family:var(--mono,ui-monospace,monospace);font-size:11px;font-weight:500;color:var(--d1)}
+  .od-pkt::after{content:"";position:absolute;left:3.5px;top:15px;bottom:0;width:1px;background:repeating-linear-gradient(180deg,var(--d3) 0 3px,transparent 3px 6px);opacity:0.45}
+  .od-pas{position:relative;height:30px;margin-top:8px}
+  .od-pas-b{position:absolute;top:0;bottom:0;left:var(--l);width:var(--w);border-radius:8px;background:linear-gradient(90deg,var(--ak),var(--ak2));box-shadow:0 8px 16px -10px rgba(194,65,12,0.7);transform-origin:0 50%}
+  .od-pas.ich .od-pas-b{background:repeating-linear-gradient(135deg,rgba(27,20,15,0.16) 0 5px,rgba(27,20,15,0.05) 5px 10px);box-shadow:inset 0 0 0 1px rgba(27,20,15,0.18)}
+  .od-pas-t{position:absolute;top:50%;transform:translateY(-50%);left:calc(var(--l) + var(--w) + 10px);font-size:12px;color:var(--d2);white-space:nowrap}
+  .od-pas-t b{font-weight:680;color:var(--d1)}
+  .od-pas-t em{font-style:normal;color:var(--d3)}
+  .od-pas.l .od-pas-t{left:auto;right:calc(100% - var(--l) + 10px)}
+  .od-pas.w .od-pas-t{left:calc(var(--l) + 12px);color:rgba(255,255,255,0.85)}
+  .od-pas.w .od-pas-t b{color:#ffffff}
+  .od-pas.w .od-pas-t em{color:rgba(255,255,255,0.75)}
+  .od-cel{position:absolute;bottom:4px;display:flex;align-items:center;gap:6px;transform:translateX(calc(-100% + 8px));font-size:12px;font-weight:650;color:var(--akc);white-space:nowrap}
+  .od-cel .hi{width:14px;height:14px}
+  .od-cel b{font-family:var(--mono,ui-monospace,monospace);font-weight:500}
+  .od-plan .od-gp::after{content:"";position:absolute;top:0;bottom:0;left:calc(47 / 54 * 100%);width:2px;margin-left:-1px;border-radius:1px;background:linear-gradient(180deg,transparent,var(--ak) 30%,var(--ak))}
+
+  /* cena */
+  .od-cena{padding-top:44px}
+  .od-cena-in{position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:34px;padding:30px 32px 32px;border-radius:22px;overflow:hidden;color:#fff7f0;background:
+      radial-gradient(80% 110% at 0% 100%,rgba(242,103,42,0.42) 0%,transparent 60%),
+      radial-gradient(50% 80% at 30% 120%,rgba(255,178,63,0.35) 0%,transparent 70%),
+      linear-gradient(160deg,#2a1c13 0%,#140e0a 75%);box-shadow:0 30px 60px -36px rgba(80,30,5,0.8)}
+  .od-cena .od-k{color:var(--ak2)}
+  .od-kw{margin-top:8px;font-size:58px;line-height:0.95;font-weight:800;letter-spacing:-0.055em;background:linear-gradient(180deg,#ffffff 30%,#ffd9b0 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .od-kw-p{margin-top:8px;font-size:13px;color:rgba(255,247,240,0.7)}
+  .od-bud{margin-top:26px;max-width:330px}
+  .od-bud-t{display:flex;justify-content:space-between;font-size:11.5px;color:rgba(255,247,240,0.6)}
+  .od-bud-t span:first-child{color:#fff7f0;font-weight:600}
+  .od-bud-p{position:relative;height:6px;margin-top:8px;border-radius:3px;background:rgba(255,247,240,0.14)}
+  .od-bud-p i{position:absolute;left:0;top:0;bottom:0;width:var(--b);border-radius:3px;background:linear-gradient(90deg,var(--ak),var(--ak2));box-shadow:0 0 14px rgba(255,178,63,0.6);transform-origin:0 50%}
+  .od-cena-r{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,0.9fr);gap:22px;align-content:start;padding-left:30px;border-left:1px solid rgba(255,247,240,0.12)}
+  .od-cena-r .od-h5{font-size:12px;font-weight:650;color:rgba(255,247,240,0.6)}
+  .od-cena-r ul{margin-top:8px}
+  .od-cena-r li{position:relative;padding:4px 0 4px 20px;font-size:13px;line-height:1.4}
+  .od-cena-r .tak li::before{content:"";position:absolute;left:2px;top:9px;width:8px;height:4.5px;border:solid var(--ak2);border-width:0 0 1.8px 1.8px;transform:rotate(-45deg)}
+  .od-cena-r .nie li{color:rgba(255,247,240,0.68)}
+  .od-cena-r .nie li::before{content:"";position:absolute;left:2px;top:12px;width:9px;height:1.6px;background:rgba(255,247,240,0.4)}
+
+  /* obiekcje */
+  .od-ob dl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:16px}
+  .od-ob dl div{padding:16px 18px;border-radius:16px;background:#fbf7f3;box-shadow:inset 0 0 0 1px var(--dl2)}
+  .od-ob dt{font-size:14.5px;font-weight:700;letter-spacing:-0.015em}
+  .od-ob dd{margin-top:6px;font-size:12.5px;line-height:1.5;color:var(--d2)}
+
+  /* o nas */
+  .od-onas figure{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:28px;align-items:end;padding:26px 0 22px;border-top:1px solid var(--dl);border-bottom:1px solid var(--dl)}
+  .od-onas blockquote{font-size:24px;line-height:1.16;letter-spacing:-0.035em;font-weight:720;text-wrap:balance}
+  .od-onas blockquote::first-letter{color:var(--ak)}
+  .od-onas figcaption{display:flex;align-items:center;gap:11px;max-width:250px;font-size:12px;line-height:1.4;color:var(--d2)}
+  .od-onas figcaption img{width:40px;height:40px}
+  .od-onas figcaption b{display:block;font-size:13px;font-weight:650;color:var(--d1)}
+
+  /* następne kroki */
+  .od-kroki{padding-bottom:104px}
+  .od-kroki ol{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:16px;counter-reset:k}
+  .od-kroki li{position:relative;padding:14px 16px 15px;border-radius:16px;background:#fbf7f3;box-shadow:inset 0 0 0 1px var(--dl2)}
+  .od-kroki li.cel{background:linear-gradient(150deg,#fff1e2,#ffe2c7);box-shadow:inset 0 0 0 1px rgba(242,103,42,0.25)}
+  .od-kroki li span{font-family:var(--mono,ui-monospace,monospace);font-size:11px;color:var(--akc)}
+  .od-kroki li b{display:block;margin-top:5px;font-size:15px;font-weight:700;letter-spacing:-0.015em}
+  .od-kroki li em{display:block;margin-top:2px;font-style:normal;font-size:12px;color:var(--d2)}
+  .od-stopka{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:34px;padding-top:18px;border-top:1px solid var(--dl);font-size:12px;color:var(--d3)}
+  .od-stopka .od-logo{font-size:13px}
+  .od-stopka .od-logo i{width:16px;height:16px;border-radius:5px}
+  .od-stopka .od-logo i::before{width:10px;height:10px;margin-left:-5px;bottom:-5px}
+
+  /* węższy dokument (okno w hero na tablecie i telefonie) */
+  @container (max-width:900px){
+    .od-s{padding:36px 28px 0}
+    .od-s.od-nag{padding:0}
+    .od-hero{padding:22px 28px 84px}
+    .od-hero > .od-slonce{right:-20px;width:400px;height:200px}
+    .od-h1{font-size:34px}
+    .od-naj{margin:-54px 28px 0}
+    .od-naj li{grid-template-columns:minmax(0,1fr);padding:14px}
+    .od-naj i{grid-row:auto;margin-bottom:6px}
+    .od-cena-in{grid-template-columns:minmax(0,1fr);gap:24px}
+    .od-cena-r{padding-left:0;padding-top:22px;border-left:0;border-top:1px solid rgba(255,247,240,0.12)}
+    .od-syt-in{grid-template-columns:minmax(0,1fr)}
+    .od-onas figure{grid-template-columns:minmax(0,1fr)}
+  }
+  @container (max-width:640px){
+    .od-s{padding:30px 18px 0}
+    .od-s.od-nag{padding:0}
+    .od-hero{padding:18px 18px 22px}
+    .od-hero > .od-slonce{right:-70px;width:260px;height:130px}
+    .od-gm b{display:none}
+    .od-gm i{display:inline}
+    .od-nr{display:none}
+    .od-eb{margin-top:28px}
+    .od-h1{font-size:27px}
+    .od-meta{gap:10px 22px;margin-top:20px}
+    .od-meta > div:nth-child(2){display:none}
+    .od-naj{grid-template-columns:minmax(0,1fr);gap:8px;margin:14px 18px 0}
+    .od-naj li{grid-template-columns:auto minmax(0,1fr);padding:12px 14px}
+    .od-naj i{grid-row:span 2;margin:0}
+    .od-gl .od-h{font-size:21px}
+    .od-cyt p{font-size:19px}
+    .od-gantt{padding:12px 12px 10px}
+    .od-pas-t em{display:none}
+    .od-pkt{font-size:0;gap:0}
+    .od-pkt b{font-size:10.5px;margin-left:4px}
+    .od-kw{font-size:44px}
+    .od-cena-in{padding:24px 20px}
+    .od-cena-r{grid-template-columns:minmax(0,1fr)}
+    .od-ob dl,.od-kroki ol{grid-template-columns:minmax(0,1fr)}
+    .od-onas blockquote{font-size:20px}
+  }
+</style>

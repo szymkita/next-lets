@@ -110,3 +110,16 @@ linijka w tej samej kolumnie, bez przestawiania układu. Markup starej wersji
   `/wisestack`) działają dalej i są w sitemapie.
 - **Stopka chowa to samo** (ten sam przełącznik): w kolumnie „Firma” zostały
   Dlaczego my i Baza wiedzy, zeszły Produkty, Inspiracje i WiseStack.
+
+### Produkty jako zwykły link (19.10.2026)
+
+- **Bez rozwijanej listy.** Po pytaniu „może faktycznie nie ma sensu robić
+  mega menu dla produktów?” Szymon przyjął propozycję: „Produkty” w belce
+  i w panelu mobilnym to zwykły link do huba `/produkty`, obok Bazy wiedzy,
+  Dlaczego my i Kontaktu. Panel z kilkoma pozycjami wyglądał pusto obok mega
+  menu Usług, a hub ma w hero spis produktów (Appto, Wingman AI, Oferty AI)
+  z kotwicami do ich sekcji.
+- **Przełącznik:** stała `PRODUKTY_LISTA` w `src/components/Nawigacja.astro`
+  (`false`). Markup listy i panelu mobilnego został; `true` go przywraca.
+- Widoczność dalej steruje `POKAZ.produkty` w `src/data/menu.js` — do
+  publikacji huba `false`.

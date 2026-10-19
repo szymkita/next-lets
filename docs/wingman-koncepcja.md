@@ -5,7 +5,8 @@ Pierwsza wersja 15.10.2026, tego samego dnia dwie rundy poprawek Szymona.
 Opublikowana 16.10.2026 (bez `noindex`, w sitemapie); menu i stopka prowadzą
 tu zamiast na `/produkty#wingman`, opis w menu jak w stopce („Podpowiedzi
 i notatki w trakcie rozmowy”). Sekcja Wingmana na `/produkty` dalej obiecuje
-ofertowanie i ocenę jakości — do poprawienia.
+ofertowanie i ocenę jakości — do poprawienia (19.10.2026: poprawione w propozycji
+nowego huba, `src/robocze/produkty/index-new.astro`).
 
 ---
 
