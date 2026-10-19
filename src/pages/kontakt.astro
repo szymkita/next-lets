@@ -1,23 +1,38 @@
 ---
-// KONTAKT — /kontakt (16.10.2026)
-// Na starym serwisie /kontakt przekierowywał (Webflow, 301). Po przepięciu
-// domeny adres zwracał 404, więc dostał własną stronę (Szymon: „dorób u nas
-// stronę kontakt”).
+// KONTAKT — /kontakt. Od 19.10.2026 stoi tu dawna /kontakt-v2 (Szymon:
+// „podmień tę stronę jako właściwą”); poprzednia wersja: /kontakt-old.
 //
-// Jedno zadanie: dać się odezwać. Na górze moduł Kontakt z nagłówkiem h1
-// (formularz → /api/kontakt → webhook Make, mail i telefon, portret osoby,
-// która odpisuje), niżej dane, których szuka się na stronie kontaktu: adres
-// i dane spółki. Źródło danych jak w stopce (stopka-v2/dane.ts); te same
-// dane idą w JSON-LD organizacji (MetaStrony). WiseGroup stoi w pasie nad
-// stopką, więc tu go nie powtarzamy.
+// Szymon o /kontakt: „popraw design strony kontaktu, aktualnie średnio mi się
+// podoba”. Poprzednia wersja była ciemnym modułem Kontakt, który stoi też na dole każdej
+// podstrony i w hero /darmowa-konsultacja, więc wyglądała jak powtórka, a pod
+// nim była lista „Dane firmy” na pustym tle.
+//
+// Tu strona ma własny, jasny układ: po lewej nagłówek, jedno zdanie i kanały
+// dużym stopniem (e-mail z przyciskiem „Kopiuj”, telefon, LinkedIn) oraz dane
+// spółki; po prawej formularz na papierowej karcie z Piotrem, który odpowiada
+// na zgłoszenia (te same trzy pola i ta sama umowa z /api/kontakt co w module
+// Kontakt). Mapy nie ma: pod adresem na Nowym Świecie nie przyjmujemy gości
+// (Szymon, 19.10.2026), więc adres stoi tylko w danych spółki.
+//
+// Potwierdzenie po wysłaniu: znak z ptaszkiem i falą, termin odpowiedzi
+// liczony do konkretnego dnia (następny dzień roboczy, z polskimi świętami)
+// i wysłana wiadomość jako dymek ze stanem „Doszła”, żeby było widać, co do
+// nas trafiło. Podgląd bez wysyłania: /kontakt?sukces=1
+//
+// Formularz ma własne atrybuty (data-kn-*) i własny skrypt, bo skrypt modułu
+// Kontakt jest w jego komponencie; przy następnej zmianie formularzy warto
+// wyciągnąć wspólny skrypt.
+//
+// DO POTWIERDZENIA
+//   1. Piotr Wojciuk przy formularzu jako osoba, która odpisuje.
 import LaBase from '../layouts/LaBase.astro';
 import Styl from '../components/usluga/Styl.astro';
-import Anim from '../components/usluga/Anim.astro';
-import Kontakt from '../components/usluga/Kontakt.astro';
-import { KONTAKT, SPOLKA } from '../components/stopka-v2/dane';
+import { HI } from '../components/usluga/ikony';
+import { KONTAKT, SPOLKA, IKONA_LINKEDIN } from '../components/stopka-v2/dane';
 
 const title = "Kontakt | Let's automate";
 const description = `Kontakt z Let's automate: ${KONTAKT.email}, ${KONTAKT.tel}, ${SPOLKA.ulica}, ${SPOLKA.miasto}. Odpowiadamy w jeden dzień roboczy.`;
+const ZRODLO = 'Kontakt';
 const strona = {
   '@context': 'https://schema.org',
   '@type': 'ContactPage',
@@ -28,42 +43,421 @@ const strona = {
 };
 ---
 <LaBase topbar={false} title={title} description={description} ctaLabel="Umów rozmowę" nav={null} dane={[strona]}>
-<style is:global slot="head">
-  /* Moduł Kontakt domyka zwykle stronę i nie ma odstępu nad sobą; tu jest
-     pierwszy, więc dostaje odstęp pod nawigacją i tło strony zamiast papieru
-     (jak plansza hero na podstronach usługowych). */
-  .kn .v4-kt{padding-top:clamp(8px,1.4vw,20px);padding-bottom:0;background:#ffffff}
-  .kn-dane{padding-top:clamp(64px,8vw,112px);padding-bottom:clamp(72px,9vw,128px)}
-  .kn-siatka{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(28px,4vw,64px);margin-top:clamp(28px,3vw,40px);padding-top:clamp(28px,3vw,40px);border-top:1px solid var(--linia)}
-  .kn-k{margin:0 0 10px;font-size:13.5px;font-weight:650;color:var(--t3)}
-  .kn-v{margin:0;font-size:clamp(17px,1.4vw,19px);line-height:1.6;color:var(--t1)}
-  .kn-v a{color:var(--t1);text-decoration:underline;text-decoration-color:rgba(10,122,82,0.4);text-decoration-thickness:1.5px;text-underline-offset:4px;transition:text-decoration-color .15s,color .15s}
-  .kn-v a:hover{color:var(--ziel-c);text-decoration-color:var(--ziel-c)}
-  @media (max-width:760px){ .kn-siatka{grid-template-columns:minmax(0,1fr)} }
-</style>
-
 <Styl />
-<Anim />
 
 <div class="v3 kn">
-<Kontakt h1 tytul="Kontakt" lead="Napiszcie w dwóch zdaniach, czego potrzebujecie. Odpowiemy w jeden dzień roboczy." zrodlo="Kontakt" pytanie="W czym możemy pomóc?" podpowiedz="Np. oferty liczymy ręcznie w Excelu albo chcemy wdrożyć AI w obsłudze klienta…" />
+<section class="kn-gora" aria-labelledby="kn-h1">
+<div class="kn-lewa">
+<h1 class="kn-h1" id="kn-h1">Kontakt</h1>
+<p class="kn-lead">Napiszcie albo zadzwońcie. Odpowiadamy w jeden dzień roboczy.</p>
 
-<section class="v3-sek kn-dane" aria-labelledby="kn-dane-h">
-<h2 class="v3-h2m" id="kn-dane-h">Dane firmy</h2>
-<div class="kn-siatka">
-<div>
-<p class="kn-k">Adres</p>
-<p class="kn-v">{SPOLKA.nazwa}<br>{SPOLKA.ulica}<br>{SPOLKA.miasto}</p>
+<dl class="kn-kanaly">
+<div class="kn-kanal">
+<dt>E-mail</dt>
+<dd>
+<a class="kn-duzy" href={`mailto:${KONTAKT.email}`}>{KONTAKT.email}</a>
+<button type="button" class="kn-kopiuj" data-kn-kopiuj={KONTAKT.email}><svg class="hi" viewBox="0 0 16 16" aria-hidden="true" set:html={HI['document-duplicate']}></svg><span data-kn-kopiuj-t>Kopiuj</span></button>
+</dd>
 </div>
-<div>
-<p class="kn-k">Rejestr</p>
-<p class="kn-v">NIP {SPOLKA.nip}<br>KRS {SPOLKA.krs}</p>
+<div class="kn-kanal">
+<dt>Telefon</dt>
+<dd><a class="kn-duzy" href={KONTAKT.telHref}>{KONTAKT.tel}</a></dd>
 </div>
-<div>
-<p class="kn-k">Bezpośrednio</p>
-<p class="kn-v"><a href={`mailto:${KONTAKT.email}`}>{KONTAKT.email}</a><br><a href={KONTAKT.telHref}>{KONTAKT.tel}</a><br><a href={KONTAKT.linkedin} target="_blank" rel="noopener">LinkedIn</a></p>
+<div class="kn-kanal">
+<dt>LinkedIn</dt>
+<dd><a class="kn-sredni" href={KONTAKT.linkedin} target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d={IKONA_LINKEDIN} /></svg>Let’s automate<span aria-hidden="true">↗</span></a></dd>
+</div>
+<div class="kn-kanal kn-spolka">
+<dt>Dane spółki</dt>
+<dd>
+<p>{SPOLKA.nazwa}<br>{SPOLKA.ulica}, {SPOLKA.miasto}</p>
+<p>NIP {SPOLKA.nip}<br>KRS {SPOLKA.krs}</p>
+</dd>
+</div>
+</dl>
+</div>
+
+<div class="kn-forma" data-kn-karta>
+<div class="kn-kto">
+<img src="/piotr-avatar.jpg" alt="" width="240" height="240" loading="eager" decoding="async">
+<p><b>Odpowie Piotr Wojciuk</b><span>New Business Lead</span></p>
+</div>
+
+<form class="kt-f" data-kn-form data-zrodlo={`${ZRODLO} · ${Astro.url.pathname}`} novalidate>
+<div class="kt-2">
+<div class="kt-pole">
+<label class="kt-lab" for="kn-email">E-mail <span class="req">*</span></label>
+<div class="kt-ramka"><svg class="hi" viewBox="0 0 16 16" aria-hidden="true" set:html={HI['envelope']}></svg><input class="kt-inp" id="kn-email" name="email" type="email" inputmode="email" autocomplete="email" placeholder="jan@firma.pl" aria-describedby="kn-err-email"></div>
+<div class="kt-err" id="kn-err-email"></div>
+</div>
+<div class="kt-pole">
+<label class="kt-lab" for="kn-tel">Telefon <span class="req">*</span></label>
+<div class="kt-ramka kt-tel">
+<span class="kt-kier"><select name="kierunkowy" aria-label="Numer kierunkowy"><option value="+48">+48</option><option value="+49">+49</option><option value="+44">+44</option><option value="+380">+380</option><option value="+420">+420</option><option value="+1">+1</option></select><svg class="hi" viewBox="0 0 16 16" aria-hidden="true" set:html={HI['chevron-down']}></svg></span>
+<i aria-hidden="true"></i>
+<input class="kt-inp" id="kn-tel" name="telefon" type="tel" inputmode="tel" autocomplete="tel-national" placeholder="571 000 000" aria-describedby="kn-err-tel">
+</div>
+<div class="kt-err" id="kn-err-tel"></div>
+</div>
+</div>
+<div class="kt-blok kt-pole">
+<label class="kt-lab" for="kn-msg">W czym możemy pomóc? <span class="req">*</span></label>
+<div class="kt-ramka kt-ta"><textarea class="kt-inp" id="kn-msg" name="wiadomosc" rows="4" placeholder="Np. oferty liczymy ręcznie w Excelu albo chcemy wdrożyć AI w obsłudze klienta…" aria-describedby="kn-err-msg"></textarea></div>
+<div class="kt-err" id="kn-err-msg"></div>
+</div>
+<label class="kt-zgoda" data-kn-zgoda-row>
+<input type="checkbox" name="zgoda" data-kn-zgoda>
+<span class="kt-cb"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="#ffffff" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg></span>
+<span>Wyrażam zgodę na kontakt i przetwarzanie moich danych w celu obsługi zapytania. <a href="/polityka-prywatnosci">Polityka prywatności</a>.</span>
+</label>
+<div class="kt-hp" aria-hidden="true"><label for="kn-www">Nie wypełniaj tego pola</label><input id="kn-www" name="firma_www" type="text" tabindex="-1" autocomplete="off"></div>
+<button type="submit" class="kt-btn" data-kn-submit>
+<span class="kt-btn-t" data-kn-label>Wyślij wiadomość</span>
+<span class="kt-btn-k" aria-hidden="true">
+<svg class="s1" viewBox="0 0 16 16" set:html={HI['arrow-right']}></svg>
+<svg class="s2" viewBox="0 0 16 16" set:html={HI['arrow-right']}></svg>
+<svg class="kr" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="30 100"/></svg>
+<svg class="pt" viewBox="0 0 16 16" set:html={HI['check']}></svg>
+</span>
+</button>
+<p class="kt-po">Bezpłatnie i bez zobowiązań.</p>
+<div class="kt-awaria" data-kn-awaria hidden>
+<strong data-kn-awaria-t>Zgłoszenie nie doszło.</strong>
+<span data-kn-awaria-d>Wpisane dane zostały w formularzu — spróbujcie jeszcze raz za chwilę.</span>
+Możecie też napisać na <a href={`mailto:${KONTAKT.email}`} data-kn-mailto>{KONTAKT.email}</a> albo zadzwonić: <a href={KONTAKT.telHref}>{KONTAKT.tel}</a>.
+</div>
+</form>
+
+<div class="kn-ok" data-kn-ok role="status" tabindex="-1" hidden>
+<div class="kn-ok-znak" aria-hidden="true">
+<i></i><i></i>
+<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" pathLength="1" /></svg>
+</div>
+<h2 class="kn-ok-h">Mamy Waszą wiadomość</h2>
+<p class="kn-ok-p">Piotr odpisze na <b data-kn-echo>podany adres</b> <span data-kn-termin>w jeden dzień roboczy</span>.</p>
+
+<figure class="kn-ok-dymek">
+<figcaption>
+<span>Wasza wiadomość</span>
+<span class="kn-ok-stan"><time data-kn-czas></time><svg viewBox="0 0 20 12" aria-hidden="true"><path class="p1" d="M1.5 6.2l3.4 3.4L11.5 3" pathLength="1" /><path class="p2" d="M8.6 8.9l.7.7L15.9 3" pathLength="1" /></svg>Doszła</span>
+</figcaption>
+<blockquote data-kn-tresc></blockquote>
+<p class="kn-ok-dane"><span data-kn-e></span><span data-kn-t></span></p>
+</figure>
+
+<p class="kn-ok-stopka">Sprawa pilna? Zadzwońcie: <a href={KONTAKT.telHref}>{KONTAKT.tel}</a>.<br>Literówka w adresie? Napiszcie na <a href={`mailto:${KONTAKT.email}`}>{KONTAKT.email}</a>.</p>
 </div>
 </div>
 </section>
 </div>
+
+<style>
+  .kn{background:#ffffff}
+  .kn .hi{display:block;flex-shrink:0;fill:currentColor}
+
+  /* Kanały po lewej, formularz po prawej. */
+  .kn-gora{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.08fr);gap:clamp(40px,6vw,112px);align-items:start;padding:clamp(40px,6vw,88px) var(--pad) clamp(72px,8vw,128px)}
+  .kn-h1{margin:0;font-size:clamp(56px,8.4vw,128px);line-height:.9;letter-spacing:-0.055em;font-weight:700;color:var(--t1)}
+  .kn-lead{margin:clamp(20px,2.2vw,32px) 0 0;max-width:420px;font-size:clamp(17px,1.4vw,20px);line-height:1.55;color:var(--t2);text-wrap:pretty}
+
+  .kn-kanaly{margin:clamp(40px,5vw,72px) 0 0;border-top:1px solid var(--linia)}
+  .kn-kanal{display:grid;grid-template-columns:108px minmax(0,1fr);align-items:baseline;gap:16px;padding:clamp(18px,1.8vw,26px) 0;border-bottom:1px solid var(--linia)}
+  .kn-kanal dt{font-size:13.5px;font-weight:650;color:var(--t3)}
+  .kn-kanal dd{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;margin:0;min-width:0}
+  .kn-duzy{font-size:clamp(22px,2.3vw,34px);line-height:1.15;font-weight:650;letter-spacing:-0.03em;color:var(--t1);text-decoration:none;
+    background:linear-gradient(var(--ziel),var(--ziel)) 0 100% / 0 2px no-repeat;padding-bottom:3px;transition:background-size .3s cubic-bezier(.4,0,.2,1),color .15s;overflow-wrap:anywhere}
+  .kn-duzy:hover{color:var(--ziel-c);background-size:100% 2px}
+  .kn-sredni{display:inline-flex;align-items:center;gap:10px;font-size:clamp(17px,1.4vw,20px);font-weight:600;letter-spacing:-0.015em;color:var(--t1);transition:color .15s}
+  .kn-sredni svg{width:18px;height:18px;fill:currentColor}
+  .kn-sredni span{color:var(--t3);font-weight:500;transition:transform .2s,color .15s}
+  .kn-sredni:hover{color:var(--ziel-c)}
+  .kn-sredni:hover span{color:var(--ziel-c);transform:translate(2px,-2px)}
+  .kn-kopiuj{display:inline-flex;align-items:center;gap:7px;height:32px;padding:0 12px;border:0;border-radius:8px;background:var(--papier);color:var(--t2);font:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:background .15s,color .15s}
+  .kn-kopiuj .hi{width:14px;height:14px}
+  .kn-kopiuj:hover{background:#e9e8e0;color:var(--t1)}
+  .kn-kopiuj.ok{background:#e2f5ea;color:var(--ziel-c)}
+  .kn-kopiuj:focus-visible{outline:2px solid var(--ziel-c);outline-offset:2px}
+  .kn-spolka dd{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:16px;align-items:start}
+  .kn-spolka p{margin:0;font-size:14.5px;line-height:1.6;color:var(--t2)}
+
+  /* Formularz na papierowej karcie; pola białe jak w module Kontakt. */
+  .kn-forma{position:relative;isolation:isolate;overflow:hidden;padding:clamp(24px,3vw,44px);border-radius:clamp(18px,1.8vw,26px);background:var(--papier)}
+  .kn-kto{display:flex;align-items:center;gap:14px;margin:0 0 clamp(22px,2.4vw,30px);padding-bottom:clamp(20px,2.2vw,26px);border-bottom:1px solid var(--linia)}
+  .kn-kto img{width:52px;height:52px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 3px #ffffff}
+  .kn-kto p{margin:0;font-size:15px;line-height:1.35}
+  .kn-kto b{display:block;font-weight:700;letter-spacing:-0.01em;color:var(--t1)}
+  .kn-kto span{display:block;margin-top:2px;font-size:13.5px;color:var(--t3)}
+  .kn-forma .kt-inp,.kn-forma .kt-kier select{font-size:16px}
+  .kn-forma textarea.kt-inp{min-height:132px}
+  .kn-forma .kt-btn:focus-visible{outline-color:var(--ziel-c)}
+  .kt-f{transition:opacity .22s ease,transform .22s ease}
+  .kt-f.znika{opacity:0;transform:translateY(-8px)}
+
+  /* ---- Potwierdzenie ----
+     Karta dostaje zielone światło od góry, znak z ptaszkiem wskakuje,
+     rozchodzą się od niego dwie fale, a treść wchodzi po kolei. Wysłana
+     wiadomość stoi w dymku jak w komunikatorze; dwa ptaszki stanu
+     dorysowują się na końcu. Wysokość potwierdzenia na szerokim ekranie
+     ustawia skrypt (tyle, ile miał formularz), żeby strona nie podskoczyła. */
+  .kn-forma::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:0;transition:opacity .9s ease;
+    background:radial-gradient(520px 300px at 50% -60px,rgba(0,205,119,0.22),rgba(0,205,119,0) 70%),linear-gradient(180deg,#eef7f1,rgba(238,247,241,0) 340px)}
+  .kn-forma.wyslano::before{opacity:1}
+  .kn-ok{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;outline:none;padding:clamp(4px,1vw,12px) 0}
+  .kn-ok[hidden]{display:none}
+
+  .kn-ok-znak{position:relative;display:grid;place-items:center;width:76px;height:76px;margin-bottom:24px}
+  .kn-ok-znak::before{content:"";position:absolute;inset:0;border-radius:50%;background:var(--ziel);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,0.4),0 14px 30px -12px rgba(0,160,92,0.75)}
+  .kn-ok-znak svg{position:relative;width:38px;height:38px;fill:none;stroke:var(--ink);stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+  .kn-ok-znak path{stroke-dasharray:1;stroke-dashoffset:0}
+  .kn-ok-znak i{position:absolute;inset:0;border-radius:50%;box-shadow:0 0 0 2px rgba(0,205,119,0.55);opacity:0}
+
+  .kn-ok-h{margin:0;font-size:clamp(26px,2.6vw,36px);line-height:1.08;letter-spacing:-0.035em;font-weight:700;color:var(--t1);text-wrap:balance}
+  .kn-ok-p{margin:12px 0 0;max-width:420px;font-size:clamp(15.5px,1.2vw,17px);line-height:1.55;color:var(--t2);text-wrap:pretty}
+  .kn-ok-p b{color:var(--t1);font-weight:650;overflow-wrap:anywhere}
+  .kn-ok-p [data-kn-termin]{white-space:nowrap}
+
+  .kn-ok-dymek{transform-origin:100% 100%;width:min(100%,440px);margin:clamp(24px,2.6vw,32px) 0 0;padding:16px 18px 14px;border-radius:18px 18px 6px 18px;background:#ffffff;text-align:left;
+    box-shadow:0 1px 2px rgba(7,20,13,.05),0 16px 36px -20px rgba(7,20,13,.35)}
+  .kn-ok-dymek figcaption{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:12.5px;font-weight:600;color:var(--t3)}
+  .kn-ok-stan{display:inline-flex;align-items:center;gap:6px;color:var(--ziel-c)}
+  .kn-ok-stan time{margin-right:2px;font-weight:500;color:var(--t3)}
+  .kn-ok-stan svg{width:20px;height:12px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+  .kn-ok-stan path{stroke-dasharray:1;stroke-dashoffset:0}
+  .kn-ok-dymek blockquote{margin:10px 0 0;font-size:15px;line-height:1.55;color:var(--t1);white-space:pre-line;overflow-wrap:anywhere;
+    display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:5;overflow:hidden}
+  .kn-ok-dane{display:flex;flex-wrap:wrap;gap:4px 14px;margin:12px 0 0;padding-top:10px;border-top:1px solid var(--linia2);font-size:13px;color:var(--t3)}
+  .kn-ok-dane span{overflow-wrap:anywhere}
+
+  .kn-ok-stopka{margin:clamp(22px,2.4vw,28px) 0 0;font-size:13.5px;line-height:1.65;color:var(--t3)}
+  .kn-ok-stopka a{font-weight:650;color:var(--ziel-c);white-space:nowrap}
+  .kn-ok-stopka a:hover{text-decoration:underline;text-underline-offset:2px}
+
+  /* Ruch potwierdzenia (bez niego, gdy system prosi o ograniczenie animacji). */
+  @media (prefers-reduced-motion:no-preference){
+    .kn-ok:not([hidden]) > *{animation:kn-wej .6s cubic-bezier(.2,.7,.2,1) both}
+    .kn-ok:not([hidden]) > .kn-ok-h{animation-delay:.18s}
+    .kn-ok:not([hidden]) > .kn-ok-p{animation-delay:.26s}
+    .kn-ok:not([hidden]) > .kn-ok-dymek{animation:kn-dymek .7s cubic-bezier(.2,.8,.2,1) .4s both}
+    .kn-ok:not([hidden]) > .kn-ok-stopka{animation-delay:.56s}
+    .kn-ok:not([hidden]) > .kn-ok-znak{animation:none}
+    .kn-ok:not([hidden]) .kn-ok-znak::before{animation:kn-znak .6s cubic-bezier(.3,1.6,.5,1) both}
+    .kn-ok:not([hidden]) .kn-ok-znak path{stroke-dashoffset:1;animation:kn-rysuj .4s cubic-bezier(.6,0,.3,1) .3s forwards}
+    .kn-ok:not([hidden]) .kn-ok-znak i{animation:kn-fala 1.3s cubic-bezier(.2,.6,.3,1) .25s}
+    .kn-ok:not([hidden]) .kn-ok-znak i + i{animation-delay:.5s}
+    .kn-ok:not([hidden]) .kn-ok-stan path{stroke-dashoffset:1;animation:kn-rysuj .25s ease 1.05s forwards}
+    .kn-ok:not([hidden]) .kn-ok-stan path.p2{animation-delay:1.25s}
+  }
+  @keyframes kn-wej{from{opacity:0;transform:translateY(12px)}}
+  @keyframes kn-dymek{from{opacity:0;transform:translateY(22px) scale(.96)}}
+  @keyframes kn-znak{from{opacity:0;transform:scale(.4)}}
+  @keyframes kn-rysuj{to{stroke-dashoffset:0}}
+  @keyframes kn-fala{0%{opacity:.9;transform:scale(1)}100%{opacity:0;transform:scale(2.3)}}
+
+  @media (max-width:1200px){
+    .kn-kanal{grid-template-columns:minmax(0,1fr);gap:6px}
+  }
+  @media (max-width:1000px){
+    .kn-gora{grid-template-columns:minmax(0,1fr)}
+    .kn-lead{max-width:520px}
+  }
+  @media (max-width:760px){
+    .kn-gora{padding-top:28px;gap:36px}
+    .kn-kanaly{margin-top:32px}
+    .kn-forma{margin:0 calc(var(--pad) * -1 + 8px);padding:22px 20px 24px}
+    .kn-forma .kt-2{grid-template-columns:minmax(0,1fr)}
+    .kn-spolka dd{grid-template-columns:minmax(0,1fr);gap:8px}
+    .kn-ok{padding:12px 0 4px}
+  }
+</style>
+
+<script>
+  // Kopiowanie adresu e-mail.
+  document.querySelectorAll<HTMLButtonElement>('[data-kn-kopiuj]').forEach(function(b){
+    var t = b.querySelector('[data-kn-kopiuj-t]');
+    var czas: number | undefined;
+    b.addEventListener('click', function(){
+      var tekst = b.dataset.knKopiuj || '';
+      (navigator.clipboard ? navigator.clipboard.writeText(tekst) : Promise.reject()).then(function(){
+        b.classList.add('ok'); if(t) t.textContent = 'Skopiowane';
+        clearTimeout(czas);
+        czas = window.setTimeout(function(){ b.classList.remove('ok'); if(t) t.textContent = 'Kopiuj'; }, 1800);
+      }).catch(function(){ location.href = 'mailto:' + tekst; });
+    });
+  });
+
+  // Termin odpowiedzi: następny dzień roboczy po dniu wysłania (weekendy
+  // i polskie święta ustawowe, z Wigilią od 2025 r.). „jutro” albo dzień
+  // tygodnia z datą, np. „najpóźniej w poniedziałek, 26 października”.
+  function wielkanoc(r: number){
+    var a = r % 19, b = Math.floor(r / 100), c = r % 100, d = Math.floor(b / 4), e = b % 4;
+    var f = Math.floor((b + 8) / 25), g = Math.floor((b - f + 1) / 3), h = (19 * a + b - d - g + 15) % 30;
+    var i = Math.floor(c / 4), k = c % 4, l = (32 + 2 * e + 2 * i - h - k) % 7, m = Math.floor((a + 11 * h + 22 * l) / 451);
+    return new Date(r, Math.floor((h + l - 7 * m + 114) / 31) - 1, ((h + l - 7 * m + 114) % 31) + 1);
+  }
+  function swieto(d: Date){
+    var md = (d.getMonth() + 1) + '-' + d.getDate();
+    if(['1-1', '1-6', '5-1', '5-3', '8-15', '11-1', '11-11', '12-24', '12-25', '12-26'].indexOf(md) > -1) return true;
+    var w = wielkanoc(d.getFullYear()).getTime(), dzien = 864e5;
+    var t = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+    return Math.round((t - w) / dzien) === 1 || Math.round((t - w) / dzien) === 60;
+  }
+  function termin(teraz: Date){
+    var d = new Date(teraz.getFullYear(), teraz.getMonth(), teraz.getDate());
+    do { d.setDate(d.getDate() + 1); } while(d.getDay() === 0 || d.getDay() === 6 || swieto(d));
+    var jutro = new Date(teraz.getFullYear(), teraz.getMonth(), teraz.getDate() + 1).getTime() === d.getTime();
+    var data = d.toLocaleDateString('pl-PL', { day: 'numeric', month: 'long' });
+    var DNI = ['', 'w poniedziałek', 'we wtorek', 'w środę', 'w czwartek', 'w piątek'];
+    return 'najpóźniej ' + (jutro ? 'jutro' : DNI[d.getDay()]) + ', ' + data;
+  }
+
+  // ---- Formularz ----
+  // Ta sama umowa z /api/kontakt i te same zdarzenia co w module Kontakt
+  // (src/components/usluga/Kontakt.astro). DO ZDARZEŃ (dataLayer) NIE
+  // WCHODZI TREŚĆ FORMULARZA ANI DANE KONTAKTOWE — dymek w potwierdzeniu
+  // pokazuje je tylko na stronie.
+  (function(){
+    var redukcja = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var form = document.querySelector<HTMLFormElement>('[data-kn-form]');
+    if(!form) return;
+    var f = form;
+    var ENDPOINT = '/api/kontakt', MAIL = 'hello@letsautomate.pl';
+    var karta = document.querySelector<HTMLElement>('[data-kn-karta]')!;
+    var okBox = document.querySelector<HTMLElement>('[data-kn-ok]')!;
+    var btn = f.querySelector<HTMLButtonElement>('[data-kn-submit]')!, etykieta = f.querySelector('[data-kn-label]')!;
+    var zgoda = f.querySelector<HTMLInputElement>('[data-kn-zgoda]')!, wierszZgody = f.querySelector('[data-kn-zgoda-row]')!;
+    var awaria = f.querySelector<HTMLElement>('[data-kn-awaria]')!;
+    var zrodlo = f.dataset.zrodlo || '';
+    var wysylam = false, zaczety = false;
+    var el = function(n: string){ return f.elements.namedItem(n) as HTMLInputElement; };
+    function pomiar(nazwa: string, powod?: string){
+      var dane: Record<string, string> = { event: nazwa, usluga: zrodlo, strona: location.pathname };
+      if(powod) dane.powod = powod;
+      try {
+        (window as any).dataLayer = (window as any).dataLayer || [];
+        (window as any).dataLayer.push(dane);
+        document.dispatchEvent(new CustomEvent('la:pomiar', { detail: dane }));
+      } catch(e){}
+    }
+    var REGULY = [
+      { pole: 'email', msg: 'Adres e-mail wygląda na niepełny.', ok: function(v: string){ return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v); } },
+      { pole: 'telefon', msg: 'Numer telefonu ma za mało cyfr.', ok: function(v: string){ return v.replace(/\D/g, '').length >= 9; } },
+      { pole: 'wiadomosc', msg: 'To pole jest wymagane.', ok: function(v: string){ return v.length > 0; } }
+    ];
+    function pole(x: Element | null){ return x && x.closest ? x.closest('.kt-pole') : null; }
+    function blad(x: HTMLElement, msg: string){ var p = pole(x); if(!p) return; p.classList.add('err'); x.setAttribute('aria-invalid', 'true'); p.querySelector('.kt-err')!.textContent = msg; }
+    function dobrze(x: HTMLElement){ var p = pole(x); if(!p) return; p.classList.remove('err'); x.removeAttribute('aria-invalid'); }
+    function sprawdz(){
+      var pierwszy: HTMLElement | null = null;
+      REGULY.forEach(function(r){
+        var x = el(r.pole), v = (x.value || '').trim();
+        if(v && r.ok(v)) dobrze(x);
+        else { blad(x, v ? r.msg : 'To pole jest wymagane.'); if(!pierwszy) pierwszy = x; }
+      });
+      wierszZgody.classList.toggle('err', !zgoda.checked);
+      if(!zgoda.checked && !pierwszy) pierwszy = zgoda;
+      return pierwszy as HTMLElement | null;
+    }
+    f.addEventListener('input', function(e){
+      var t = e.target as HTMLElement;
+      if(pole(t)) dobrze(t);
+      if(!zaczety){ zaczety = true; pomiar('formularz_start'); }
+    });
+    zgoda.addEventListener('change', function(){ wierszZgody.classList.toggle('err', !zgoda.checked); });
+    function telefon(){ return ((f.elements.namedItem('kierunkowy') as HTMLSelectElement).value + ' ' + (el('telefon').value || '').trim()).trim(); }
+    function opis(){ return (el('wiadomosc').value || '').trim(); }
+    function ustaw(sel: string, tekst: string){ var x = okBox.querySelector(sel); if(x) x.textContent = tekst; }
+
+    function pokazOk(podglad?: boolean){
+      var mail = (el('email').value || '').trim(), teraz = new Date();
+      ustaw('[data-kn-echo]', mail || 'podany adres');
+      ustaw('[data-kn-termin]', termin(teraz));
+      ustaw('[data-kn-czas]', teraz.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' }));
+      ustaw('[data-kn-tresc]', opis());
+      ustaw('[data-kn-e]', mail);
+      ustaw('[data-kn-t]', telefon());
+      if(!podglad) pomiar('formularz_sukces');
+      // Na szerokim ekranie potwierdzenie zajmuje miejsce formularza.
+      if(window.matchMedia('(min-width: 1001px)').matches) okBox.style.minHeight = f.offsetHeight + 'px';
+      function zamien(){
+        f.hidden = true;
+        okBox.hidden = false;
+        karta.classList.add('wyslano');
+        okBox.focus({ preventScroll: true });
+        var gora = karta.getBoundingClientRect().top;
+        if(gora < 72 || gora > window.innerHeight * 0.5) window.scrollTo({ top: window.scrollY + gora - 88, behavior: redukcja ? 'auto' : 'smooth' });
+      }
+      if(redukcja) return zamien();
+      f.classList.add('znika');
+      setTimeout(zamien, 230);
+    }
+    var AWARIE: Record<string, string[]> = {
+      'brak-konfiguracji': ['Formularz jest chwilowo wyłączony.', 'Zgłoszenie nie zostało wysłane, a ponowna próba nic nie zmieni.'],
+      'domyslna': ['Zgłoszenie nie doszło.', 'Wpisane dane zostały w formularzu — spróbujcie jeszcze raz za chwilę.']
+    };
+    function pokazAwarie(kod?: string){
+      pomiar('formularz_blad', kod || 'domyslna');
+      var tr = AWARIE[kod || ''] || AWARIE.domyslna;
+      awaria.querySelector('[data-kn-awaria-t]')!.textContent = tr[0];
+      awaria.querySelector('[data-kn-awaria-d]')!.textContent = tr[1];
+      (awaria.querySelector('[data-kn-mailto]') as HTMLAnchorElement).href = 'mailto:' + MAIL
+        + '?subject=' + encodeURIComponent('Zapytanie ze strony — ' + zrodlo)
+        + '&body=' + encodeURIComponent('E-mail: ' + (el('email').value || '').trim() + '\nTelefon: ' + telefon() + '\n\n' + opis());
+      awaria.hidden = false;
+      awaria.scrollIntoView({ block: 'nearest' });
+    }
+    f.addEventListener('submit', function(e){
+      e.preventDefault();
+      if(wysylam) return;
+      var zly = sprawdz();
+      if(zly){ zly.focus(); return; }
+      wysylam = true;
+      btn.disabled = true;
+      btn.classList.add('wysyla');
+      var napis = etykieta.textContent;
+      etykieta.textContent = 'Wysyłam…';
+      awaria.hidden = true;
+      function polecenie(){ try { return localStorage.getItem('referrer') || ''; } catch(e) { return ''; } }
+      fetch(ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({
+          email: (el('email').value || '').trim(),
+          telefon: telefon(),
+          wiadomosc: opis(),
+          firma_www: el('firma_www').value || '',
+          zrodlo: zrodlo,
+          referrer: polecenie()
+        })
+      })
+        .then(function(r){
+          if(r.ok){
+            (window as any).dataLayer = (window as any).dataLayer || [];
+            (window as any).dataLayer.push({ event: 'formularz_wyslany', zrodlo: zrodlo });
+            btn.classList.remove('wysyla');
+            btn.classList.add('wyslane');
+            etykieta.textContent = 'Wysłane';
+            return redukcja ? pokazOk() : setTimeout(pokazOk, 700);
+          }
+          return r.json().catch(function(){ return {}; }).then(function(j: any){ throw new Error(j.blad || 'domyslna'); });
+        })
+        .catch(function(err){
+          wysylam = false;
+          btn.disabled = false;
+          btn.classList.remove('wysyla');
+          etykieta.textContent = napis;
+          pokazAwarie(err && err.message);
+        });
+    });
+
+    // Podgląd potwierdzenia bez wysyłania: ?sukces=1 (przykładowe dane,
+    // bez zdarzeń w pomiarze).
+    if(new URLSearchParams(location.search).get('sukces') === '1'){
+      el('email').value = 'jan@firma.pl';
+      el('telefon').value = '571 000 000';
+      el('wiadomosc').value = 'Oferty liczymy ręcznie w Excelu i każda zajmuje handlowcowi pół dnia. Chcemy to uporządkować, najlepiej jeszcze w tym kwartale.';
+      setTimeout(function(){ pokazOk(true); }, 500);
+    }
+  })();
+</script>
 </LaBase>
