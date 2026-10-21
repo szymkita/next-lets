@@ -34,13 +34,17 @@ import { POKAZ } from '../data/menu.js';
 const { ctaHref = '/darmowa-konsultacja', topbar = true } = Astro.props;
 
 // Triaż po sytuacji klienta: trzy pasy, w każdym trzy usługi.
-// `krok` przełącza warstwę w sekcji #oferta na stronie głównej (index.astro).
+// Nazwy pasów nie są linkami (21.10.2026, Szymon: huby usług na produkcji
+// „nieklikalne”, dopracujemy je później). Wcześniej dwa prowadziły na
+// /#oferta, a trzeci na hub /guided-coding. Huby czekają w src/robocze/
+// (/wdrazamy-ai, /budujemy-za-was, /guided-coding-v2); przy publikacji pas
+// dostaje z powrotem `href` (docs/huby-koncepcja.md §9).
 const USLUGI = [
   {
     // Pas 1: nikt nie buduje oprogramowania — plan, gotowe narzędzie, ludzie.
     // Nazwa produktu stoi w opisie, nie w tytule — klient, który nie zna Appto,
     // ma od razu wiedzieć, co dostaje. AI wbudowane w proces stoi w pasie 2.
-    pas: 'Wdrażamy AI', href: '/#oferta', krok: 'wdrazamy',
+    pas: 'Wdrażamy AI',
     sub: 'Gdy firma zaczyna pracować z AI',
     poz: [
       { t: 'Strategia AI', d: 'Od czego zacząć i ile to zwróci', h: '/strategia-ai' },
@@ -50,7 +54,7 @@ const USLUGI = [
   },
   {
     // Pas 2: budujemy my, pod proces klienta.
-    pas: 'Budujemy za Was', href: '/#oferta', krok: 'budujemy',
+    pas: 'Budujemy za Was',
     sub: 'Gdy gotowe programy nie pasują',
     poz: [
       { t: 'Systemy dopasowane do firmy', d: 'Proces, na którym zarabiacie, w jednym systemie', h: '/systemy-procesowe' },
@@ -61,7 +65,7 @@ const USLUGI = [
   {
     // Pas 3: buduje zespół klienta. Pozycje to formy zakupu, nie typy zespołów —
     // typ zespołu (z działem IT / bez) klient wybiera na stronie.
-    pas: 'Budujecie sami z AI', href: '/guided-coding', krok: null,
+    pas: 'Budujecie sami z AI',
     sub: 'Gdy Wasz zespół tworzy własne aplikacje',
     poz: [
       { t: 'Audyt aplikacji', d: 'Co grozi awarią i co poprawić najpierw', h: '/guided-coding/audyt-aplikacji' },
@@ -127,7 +131,7 @@ const POZOSTALE = [
 <div class="usl-grid">
 {USLUGI.map((u) => (
 <div class="usl-lane">
-<div class="usl-top"><a href={u.href} data-krok-link={u.krok} class="usl-head">{u.pas}</a><span class="usl-sub">{u.sub}</span></div>
+<div class="usl-top"><span class="usl-head">{u.pas}</span><span class="usl-sub">{u.sub}</span></div>
 <span class="usl-rule" aria-hidden="true"></span>
 <div class="usl-list">
 {u.poz.map((p) => <a href={p.h} class="mega-item"><span class="mega-t">{p.t}</span><span class="mega-d">{p.d}</span></a>)}
@@ -242,7 +246,10 @@ const POZOSTALE = [
 
 <!-- PANEL MOBILNY — pełny ekran, tylko do 900px. Megamenu żyje z najazdu myszą,
      więc na dotyku jest bezużyteczne; tu ta sama lista leży rozwinięta, żeby
-     wejście na podstronę było jednym kliknięciem. -->
+     wejście na podstronę było jednym kliknięciem. Usługi w wersji zwartej
+     (21.10.2026, „sekcja usług jest za duża”): nazwa pasa jako mały nagłówek,
+     same nazwy usług bez opisów — reszta menu mieści się na drugim ekranie,
+     a nie na trzecim. -->
 <div class="nav-panel" id="navPanel" aria-hidden="true">
 <div class="np-pasek">
 <a href="/" class="nav-logo" aria-label="Let's automate — strona główna">
@@ -254,10 +261,9 @@ const POZOSTALE = [
 </div>
 <nav class="np-tresc" aria-label="Menu główne">
 {USLUGI.map((u) => (
-<section class="np-grupa">
-<a href={u.href} data-krok-link={u.krok} class="np-glowa">{u.pas}</a>
-<span class="np-sub">{u.sub}</span>
-{u.poz.map((p) => <a href={p.h} class="np-poz"><span class="np-t">{p.t}</span><span class="np-d">{p.d}</span></a>)}
+<section class="np-grupa np-usl">
+<p class="np-pas">{u.pas}</p>
+{u.poz.map((p) => <a href={p.h} class="np-poz"><span class="np-t">{p.t}</span></a>)}
 </section>
 ))}
 {POKAZ.produkty && PRODUKTY_LISTA && (
@@ -376,8 +382,7 @@ const POZOSTALE = [
   .usl-grid{display:grid;grid-template-columns:1fr 1fr 1fr;grid-template-rows:auto auto auto;gap:0 6px}
   .usl-lane{display:grid;grid-template-rows:subgrid;grid-row:span 3;padding:15px 14px 11px;border-radius:14px;transition:background .2s}
   .usl-top{align-self:start}
-  .usl-head{display:block;font-size:24px;font-weight:800;line-height:1.06;letter-spacing:-0.032em;text-wrap:balance;color:#16211a;transition:color .18s}
-  .usl-head:hover{color:#0a7a52}
+  .usl-head{display:block;font-size:24px;font-weight:800;line-height:1.06;letter-spacing:-0.032em;text-wrap:balance;color:#16211a}
   .usl-sub{display:block;margin-top:9px;font-size:12.5px;line-height:1.45;color:#637066}
   .usl-rule{display:block;width:26px;height:2px;margin:16px 0 15px;border-radius:2px;background:var(--la-accent,#00CD77);transition:width .28s cubic-bezier(.4,0,.2,1)}
   .usl-lane:hover .usl-rule{width:78px}
@@ -409,15 +414,19 @@ const POZOSTALE = [
   .np-tresc{padding:8px 16px 40px}
   .np-grupa{display:block;padding:20px 0;border-bottom:1px solid #eef1ec}
   .np-glowa{display:block;font-size:23px;font-weight:800;line-height:1.1;letter-spacing:-0.03em;color:#16211a}
-  .np-sub{display:block;margin-top:5px;font-size:13px;line-height:1.45;color:#637066}
   .np-poz{display:block;margin-top:4px;padding:11px 12px 11px 0;border-radius:11px}
   .np-poz:first-of-type{margin-top:12px}
   .np-poz-ic{display:flex;align-items:center;gap:12px}
   .np-t{display:block;font-size:15.5px;font-weight:650;color:#16211a}
   .np-d{display:block;margin-top:2px;font-size:12.5px;line-height:1.4;color:#637066}
   .np-glowa-txt{color:#16211a}
-  .np-reszta{display:flex;flex-direction:column;padding:12px 0 4px}
-  .np-lnk{padding:13px 0;font-size:16px;font-weight:600;color:#2c3a30}
+  /* usługi w wersji zwartej: mały nagłówek pasa i same nazwy */
+  .np-usl{padding:14px 0 10px}
+  .np-pas{margin:0 0 2px;font-size:13px;font-weight:700;line-height:1.3;color:#0a7a52}
+  .np-usl .np-poz,.np-usl .np-poz:first-of-type{margin:0;padding:8px 0}
+  .np-usl .np-t{font-size:16px;font-weight:600;line-height:1.3}
+  .np-reszta{display:grid;grid-template-columns:1fr 1fr;column-gap:16px;padding:8px 0 2px}
+  .np-lnk{padding:11px 0;font-size:16px;font-weight:600;color:#2c3a30}
   .np-cta{display:flex;align-items:center;justify-content:center;margin-top:14px;padding:16px 20px;border-radius:12px;
     background:#16211a;color:#ffffff;font-size:15.5px;font-weight:700}
   .np-kontakt{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:20px;font-size:14px;color:#4c5850}

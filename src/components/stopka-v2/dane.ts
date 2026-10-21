@@ -40,8 +40,9 @@ export const DROGI = [
   {
     pas: 'Budujecie sami z AI',
     sub: 'Gdy Wasz zespół tworzy własne aplikacje',
+    // Bez pozycji „Guided coding” (hub /guided-coding): od 21.10.2026 huby
+    // usług nie mają linków, dopóki ich nie dopracujemy (Nawigacja.astro).
     poz: [
-      { t: 'Guided coding', h: '/guided-coding' },
       { t: 'Audyt aplikacji', h: '/guided-coding/audyt-aplikacji' },
       { t: 'Bieżące wsparcie', h: '/guided-coding/biezace-wsparcie' },
       { t: 'Warsztaty dla zespołu', h: '/guided-coding/transfer-know-how' },

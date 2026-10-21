@@ -918,8 +918,9 @@ const witryna = {
 <!-- ============ S4 · OFERTA (z /index-v2) ============
      Trzy drogi jedna pod drugą. Po lewej nazwa drogi, po prawej trzy
      wiersze: zdanie, od którego zwykle zaczyna się rozmowa, usługa z menu
-     z terminem albo ceną i strzałka. Cały wiersz jest linkiem. Kotwice
-     #oferta-wdrazamy / -budujemy / -budujecie łapią linki z megamenu. -->
+     z terminem albo ceną i strzałka. Cały wiersz jest linkiem. Nazwy dróg
+     w megamenu od 21.10.2026 nie są linkami (huby w pracy), więc kotwice
+     #oferta-wdrazamy / -budujemy / -budujecie zostają tylko jako adresy. -->
 <section id="oferta" style="padding:clamp(72px,10vw,120px) max(clamp(20px,5vw,56px),calc((100% - 1440px) / 2)) clamp(72px,9vw,110px);scroll-margin-top:16px">
 <div class="sec-head">
 <h2 class="h-sec" style="margin:0;max-width:640px;text-wrap:pretty">Trzy sposoby, w jakie z&nbsp;nami pracujecie</h2>
@@ -1222,24 +1223,6 @@ const witryna = {
           item.classList.add('open');
           btn.setAttribute('aria-expanded', 'true');
         }
-      });
-    });
-  })();
-
-  // ---- Oferta (S4) — linki dróg z megamenu ----
-  // Zakładek już nie ma: wszystkie trzy drogi stoją na stronie. Klik w nazwę
-  // drogi w megamenu (data-krok-link) przewija do jej grupy, jeśli link
-  // prowadzi na tę samą stronę.
-  (function(){
-    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion:reduce)').matches;
-    document.querySelectorAll('[data-krok-link]').forEach(function(el){
-      var k = el.dataset.krokLink;
-      var cel = k && document.getElementById('oferta-' + k);
-      if(!cel) return;
-      el.addEventListener('click', function(e){
-        if(new URL(el.href, location.href).pathname !== location.pathname) return;
-        e.preventDefault();
-        cel.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
       });
     });
   })();
