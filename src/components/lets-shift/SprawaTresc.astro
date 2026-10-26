@@ -1,0 +1,30 @@
+---
+// JEDNA SPRAWA · treść jednej firmy: opis, rysunek z paskiem kroków
+// i panelami (SprawaPanel) oraz kroki z tekstem. Z odlozone=true panel
+// pierwszego kroku stoi w HTML, a panele 2–6 w <template data-shz-t>;
+// skrypt strony wstawia je, zanim sekcja wejdzie w kadr.
+import SprawaPanel from './SprawaPanel.astro';
+interface Props { s: any; odlozone?: boolean }
+const { s, odlozone = false } = Astro.props;
+const aria = `${s.t}. ${s.z} ${s.kroki.map((k: any, i: number) => `Krok ${i + 1}, ${k.t}. Dziś: ${k.dc[1]} ${k.dc[2]}, ${k.dc[3]}. Po zmianie: ${k.pc}`).join(' ')}`;
+---
+<p class="sh-sx-z">{s.z}</p>
+<div class="u4z-g">
+<div class="u4z-wiz sh-z-wiz" data-shz data-krok="0" role="img" aria-label={aria}>
+<div class="u4z-kar" aria-hidden="true">
+<ol class="sh-z-et">{s.kroki.map((k: any, i: number) => <li><b>{i + 1}</b>{k.t}</li>)}</ol>
+<div class="sh-z-st">
+{odlozone
+  ? (<><SprawaPanel s={s} k={s.kroki[0]} i={0} /><template data-shz-t>{s.kroki.slice(1).map((k: any, j: number) => <SprawaPanel s={s} k={k} i={j + 1} />)}</template></>)
+  : s.kroki.map((k: any, i: number) => <SprawaPanel s={s} k={k} i={i} />)}
+</div>
+</div>
+</div>
+<div class="u4z-kroki">
+{s.kroki.map((k: any, i: number) => (
+  <div class={`u4z-k${i === 0 ? ' on' : ''}`} data-shz-k={i}><div><em>Krok {i + 1} z {s.kroki.length} · {k.t.toLowerCase()}</em><h3>{k.h}</h3><p>{k.o}</p>
+  {i === s.kroki.length - 1 && (<a href="#kontakt" class="u6-mc"><img src="/lets-shift/piotr-wojciuk-120.jpg" alt="" width="120" height="132" loading="lazy" decoding="async"><span><b>Zacznijmy od bezpłatnej diagnozy Waszej firmy</b><span class="nw">Umów rozmowę z Piotrem <span aria-hidden="true">→</span></span></span></a>)}
+  </div></div>
+))}
+</div>
+</div>

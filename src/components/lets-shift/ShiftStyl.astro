@@ -1,0 +1,298 @@
+---
+// STYLE „JAK LET’S UP” DLA /lets-shift (26.10.2026, odchudzenie strony).
+// Tylko te reguły z src/components/lu/LuStyl.astro, które trafiają w tę
+// stronę (sprawdzone na zbudowanym HTML razem z treścią w <template>
+// i klasami dodawanymi skryptami: on, gra, anim, bez, sh-z-mob itd.).
+// Reguły skopiowane 1:1, w tej samej kolejności, z komentarzami sekcji.
+// LuStyl zostaje bez zmian (używa go kilkanaście innych stron). Gdy strona
+// dostanie nowy klocek z Let’s Up, jego reguły trzeba dopisać tutaj.
+---
+<style is:global>
+  /* krój GeistApp: wycinki Outlooka, Appto i okno pulpitu w hero */
+  @font-face{font-family:"GeistApp";src:url("/appto/kit/fonts/geist-latin-ext-wght-normal.woff2") format("woff2");font-weight:100 900;font-display:swap;unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+  @font-face{font-family:"GeistApp";src:url("/appto/kit/fonts/geist-latin-wght-normal.woff2") format("woff2");font-weight:100 900;font-display:swap;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+  /* =====================================================================
+     WSPÓLNE TEJ STRONY · duży stopień nagłówków i plansze
+     ===================================================================== */
+  .u2-h2{margin:0;font-size:clamp(40px,6.2vw,100px);line-height:0.94;letter-spacing:-0.055em;font-weight:700;color:var(--t1);text-wrap:balance}
+  .u2-h2 span{color:var(--ziel-c)}
+  .u2-h2.jasny{color:#ffffff}
+  .u2-h2.jasny span{color:var(--ziel)}
+  .u2-pl{padding:0 var(--ram)}
+  .u2-pl-in{position:relative;border-radius:clamp(20px,2.2vw,32px);color:#ffffff;
+    background:radial-gradient(900px 600px at 85% 110%,rgba(0,205,119,0.2),rgba(0,205,119,0) 70%),radial-gradient(700px 420px at 6% -10%,rgba(0,205,119,0.08),rgba(0,205,119,0) 70%),var(--ink)}
+  .u2-pl-in.v3-ziarno::after{border-radius:inherit}
+  .u2-pl-in > *{position:relative;z-index:1}
+
+  /* =====================================================================
+     7 · APPTO na ciemnej scenie (.u2a-)
+     ===================================================================== */
+  .u2a{padding-top:clamp(56px,7vw,96px)}
+  .u2a-in{padding:clamp(64px,8vw,130px) var(--pin) clamp(48px,6vw,96px);text-align:center}
+  .u2a-in .u2-h2{max-width:1100px;margin:0 auto}
+
+  .u2a-sc{position:relative;margin-top:clamp(48px,6vw,88px);perspective:1800px;text-align:left}
+  .u2a-sc::before{content:"";position:absolute;left:8%;right:8%;bottom:-6%;height:60%;border-radius:50%;background:radial-gradient(closest-side,rgba(0,205,119,0.4),rgba(0,205,119,0));filter:blur(30px)}
+
+  /* =====================================================================
+     10 · DLA KOGO (.u2dk-)
+     ===================================================================== */
+  .u2dk-gl{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:24px clamp(32px,5vw,96px);align-items:end}
+  .u2dk-g{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:16px;margin-top:clamp(40px,4.4vw,64px)}
+  .u2dk-t{padding:clamp(24px,3vw,44px);border-radius:26px;background:var(--papier)}
+  .u2dk-t.nie{background:#ffffff;box-shadow:inset 0 0 0 1px var(--linia)}
+  .u2dk-t h3{margin:0;font-size:clamp(20px,1.8vw,26px);font-weight:700;letter-spacing:-0.03em}
+  .u2dk-t ul{margin:20px 0 0;padding:0;list-style:none}
+  .u2dk-t li{display:grid;grid-template-columns:28px minmax(0,1fr);gap:14px;padding:16px 0;border-top:1px solid var(--linia)}
+  .u2dk-t li i{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--ziel)}
+  .u2dk-t li i svg{width:14px;height:14px;fill:var(--ink)}
+  .u2dk-t.nie li i{background:transparent;box-shadow:inset 0 0 0 1.5px rgba(15,26,20,0.25)}
+  .u2dk-t.nie li i svg{fill:var(--t3)}
+  .u2dk-t li b{display:block;font-size:17px;font-weight:700;letter-spacing:-0.02em;line-height:1.25}
+  .u2dk-t li span{display:block;margin-top:4px;font-size:14.5px;line-height:1.55;color:var(--t2)}
+  .u2dk-t li span a{font-weight:650;color:var(--ziel-c);text-decoration:underline;text-underline-offset:2px}
+  @media (max-width:900px){ .u2dk-gl,.u2dk-g{grid-template-columns:1fr} }
+
+  /* =====================================================================
+     v3 · 12 · DLA KOGO: nagłówek na całą szerokość, dwa wiersze
+     ===================================================================== */
+  .u2dk-gl{display:block}
+  .u2dk-gl .u2-h2{max-width:none;font-size:clamp(40px,5.7vw,94px)}
+  .u2dk-gl .v3-sub{margin-top:24px;max-width:620px}
+
+  /* =====================================================================
+     v4 · pismo Appto (Geist) do okien aplikacji
+     ===================================================================== */
+  .agf{display:block;flex:none}
+
+  /* =====================================================================
+     v4 · 5 · GDZIE ZNIKA CZAS ZLECENIA — układ z v2 (taśma, legenda,
+     kolejka do właściciela, rachunek), model z v3 (.u4z-)
+     ===================================================================== */
+  .u4z{padding-top:clamp(56px,7vw,96px)}
+  .u4z-in{padding:clamp(56px,7vw,110px) var(--pin) clamp(40px,5vw,80px)}
+  .u4z-gl{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:24px clamp(32px,5vw,96px);align-items:end}
+  .u4z-g{display:grid;grid-template-columns:minmax(0,7.2fr) minmax(0,4.8fr);gap:clamp(32px,5vw,88px);margin-top:clamp(40px,5vw,72px)}
+  .u4z-wiz{position:sticky;top:110px;align-self:start}
+  .u4z-kar{position:relative;padding:clamp(22px,2.6vw,36px);border-radius:24px;background:rgba(255,255,255,0.045);box-shadow:inset 0 0 0 1px rgba(255,255,255,0.09)}
+
+  .u4z-kroki{padding-bottom:20vh}
+  .u4z-k{display:flex;align-items:center;min-height:72vh}
+  .u4z-k:first-child{min-height:56vh;align-items:flex-start;padding-top:8px}
+  .u4z-k > div{opacity:0.3;transition:opacity .4s}
+  .u4z-k.on > div{opacity:1}
+  .u4z-k em{display:block;font-style:normal;font-size:14px;font-weight:700;color:var(--ziel)}
+  .u4z-k h3{margin:12px 0 0;font-size:clamp(26px,2.6vw,40px);font-weight:700;letter-spacing:-0.04em;line-height:1.05;text-wrap:balance}
+  .u4z-k p{margin:16px 0 0;font-size:16px;line-height:1.62;color:rgba(255,255,255,0.7);text-wrap:pretty}
+  @media (prefers-reduced-motion:reduce){
+    .u4z-k > div{transition:none}
+  }
+  @media (max-width:900px){
+    .u4z-gl,.u4z-g{grid-template-columns:1fr}
+    .u4z-g{gap:0}
+    .u4z-wiz{top:74px;z-index:2}
+    .u4z-kar{padding:16px;background:rgba(10,24,17,0.95);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+
+    .u4z-k,.u4z-k:first-child{min-height:68vh;align-items:flex-end;padding:0 0 6vh}
+  }
+
+  /* =====================================================================
+     v4 · 6 · PIĘĆ CZĘŚCI: karty ze sceną z aplikacji (.u4p-)
+     ===================================================================== */
+  .u4p-st{margin-top:clamp(48px,5vw,80px)}
+  .u4p-k{position:relative;display:grid;grid-template-columns:minmax(0,4.3fr) minmax(0,7.7fr);gap:0;margin-top:20px;padding:12px;border-radius:30px;background:#ffffff;
+    box-shadow:0 0 0 1px rgba(15,26,20,0.05),0 34px 70px -52px rgba(15,26,20,0.45);transform-origin:50% 0;transform:scale(var(--s,1))}
+  .u4p-k::after{content:"";position:absolute;inset:0;border-radius:inherit;background:var(--papier);opacity:var(--o,0);pointer-events:none}
+  .u4p-meta{display:flex;flex-direction:column;padding:clamp(22px,2.6vw,40px) clamp(20px,2.6vw,40px)}
+
+  .u4p-meta h3{margin:14px 0 0;font-size:clamp(28px,2.8vw,44px);font-weight:700;letter-spacing:-0.045em;line-height:1;text-wrap:balance}
+  .u4p-meta p{margin:16px 0 0;max-width:380px;font-size:16.5px;line-height:1.55;color:var(--t2);text-wrap:pretty}
+  .u4p-meta small{margin-top:auto;padding-top:22px;font-size:13.5px;line-height:1.45;color:var(--t3)}
+  .u4p-sc{position:relative;overflow:hidden;min-height:clamp(380px,32vw,460px);border-radius:22px;
+    background:radial-gradient(520px 340px at 85% 0%,rgba(0,205,119,0.16),rgba(0,205,119,0) 70%),linear-gradient(180deg,#eef3ec,#e6eee5)}
+  .u4p-sc > *{position:absolute}
+  @media (min-width:1000px) and (min-height:760px){
+    .u4p-k{position:sticky;top:calc(100px + var(--i) * 16px)}
+    .u4p-k + .u4p-k{margin-top:24vh}
+    .u4p-st{padding-bottom:6vh}
+  }
+  @media (max-width:900px){
+    .u4p-k{grid-template-columns:1fr}
+    .u4p-sc{min-height:360px}
+  }
+
+  /* =====================================================================
+     v4 · 7 · SYSTEM Z AI: trzy okna w wyglądzie Appto (.u4a-, .ap-)
+     ===================================================================== */
+  .u3a-zak{display:inline-flex;flex-wrap:wrap;justify-content:center;gap:4px;margin-top:clamp(30px,3.6vw,48px);padding:5px;border-radius:999px;background:rgba(255,255,255,0.06);box-shadow:inset 0 0 0 1px rgba(255,255,255,0.1)}
+  .u3a-zak button{appearance:none;display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border:0;border-radius:999px;background:none;font:inherit;font-size:14.5px;font-weight:650;color:rgba(255,255,255,0.7);cursor:pointer;transition:background .25s,color .25s}
+  .u3a-zak button em{font-style:normal;font-size:12px;font-weight:700;color:var(--ziel)}
+  .u3a-zak button:hover{color:#ffffff}
+  .u3a-zak button[aria-selected="true"]{background:#ffffff;color:var(--ink)}
+  .u3a-zak button[aria-selected="true"] em{color:var(--ziel-c)}
+  .u3a-zak button:focus-visible{outline:2px solid var(--ziel);outline-offset:2px}
+  .u2a-sc .u3a-tor{transform:rotateX(calc(var(--t,0) * 20deg)) scale(calc(1 - var(--t,0) * 0.08));transform-origin:50% 0;will-change:transform}
+  .u3a-tor{display:flex;gap:56px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;scrollbar-width:none;padding:6px 0 26px}
+  .u3a-tor::-webkit-scrollbar{display:none}
+  .u3a-sl{flex:0 0 100%;min-width:0;scroll-snap-align:start;scroll-snap-stop:always}
+
+  .u3a-dol{display:flex;justify-content:space-between;align-items:flex-start;gap:16px 40px;margin-top:10px;text-align:left}
+  .u3a-dol p{margin:0;max-width:680px;font-size:16px;line-height:1.55;color:rgba(255,255,255,0.72)}
+  .u3a-dol p b{display:block;margin-bottom:4px;font-size:20px;font-weight:700;letter-spacing:-0.02em;color:#ffffff}
+  .u3a-dol p[hidden]{display:none}
+  .u3a-str{display:flex;flex-shrink:0;gap:8px}
+  .u3a-str button{display:grid;place-items:center;width:46px;height:46px;border:0;border-radius:50%;background:rgba(255,255,255,0.1);color:#ffffff;cursor:pointer;transition:background .15s,opacity .15s}
+  .u3a-str button:hover:not(:disabled){background:var(--ziel);color:var(--ink)}
+  .u3a-str button:disabled{opacity:0.3;cursor:default}
+  .u3a-str svg{width:16px;height:16px;fill:currentColor}
+  .u3a-str button:focus-visible{outline:2px solid var(--ziel);outline-offset:2px}
+  /* =====================================================================
+     v4 · 8 · WYNIKI: cztery równe karty, wiersze wyrównane (.u4w-)
+     ===================================================================== */
+  .u4w-g{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:auto;gap:16px;margin-top:clamp(48px,5vw,80px)}
+  .u4w-k{display:grid;grid-row:span 6;grid-template-rows:subgrid;row-gap:0;padding:clamp(20px,2vw,28px);border-radius:24px;background:var(--papier)}
+  .u4w-k .dz{font-size:13px;font-weight:700;color:var(--ziel-c)}
+  .u4w-k h3{margin:6px 0 0;font-size:18px;font-weight:700;letter-spacing:-0.02em;line-height:1.25}
+  .u4w-k .l{margin:clamp(22px,2.4vw,34px) 0 0;font-size:clamp(56px,5.6vw,92px);font-weight:750;letter-spacing:-0.065em;line-height:0.85;color:var(--t1);white-space:nowrap}
+  .u4w-k .l small{font-size:0.48em;letter-spacing:-0.03em;color:var(--ziel-c)}
+  .u4w-k .ld{margin:10px 0 0;font-size:14px;line-height:1.4;color:var(--t2)}
+  .u4w-k dl{margin:20px 0 0;padding-top:16px;border-top:1px solid var(--linia)}
+  .u4w-k dl div{display:grid;grid-template-columns:2.8em minmax(0,1fr);gap:10px;font-size:14px;line-height:1.5}
+  .u4w-k dl div + div{margin-top:8px}
+  .u4w-k dt{font-size:12.5px;font-weight:700;color:var(--t3);padding-top:1px}
+  .u4w-k dd{margin:0;color:var(--t2)}
+  .u4w-k dl div.po dt{color:var(--ziel-c)}
+  .u4w-k dl div.po dd{color:var(--t1)}
+  .u4w-k a{display:inline-flex;align-items:center;gap:8px;align-self:end;margin-top:20px;font-size:13.5px;font-weight:650;color:var(--ziel-c)}
+  .u4w-k a span{transition:transform .18s}
+  .u4w-k a:hover span{transform:translateX(4px)}
+  .u4w-g.gra .l{opacity:0;transform:translateY(20px)}
+  .u4w-g.gra.on .l{opacity:1;transform:none;transition:opacity .6s ease,transform .8s cubic-bezier(.2,.8,.2,1)}
+  .u4w-g.gra.on .u4w-k:nth-child(2) .l{transition-delay:.12s}
+  .u4w-g.gra.on .u4w-k:nth-child(3) .l{transition-delay:.24s}
+  .u4w-g.gra.on .u4w-k:nth-child(4) .l{transition-delay:.36s}
+  @media (max-width:1100px){ .u4w-g{grid-template-columns:repeat(2,minmax(0,1fr))} }
+  @media (max-width:560px){ .u4w-g{grid-template-columns:1fr} }
+
+  /* =====================================================================
+     v4 · 9 · SCHODY: stopnie stykają się w jedną bryłę, każdy ma zielony
+     wierzch i ciemny bok, opisy w jednym wierszu pod spodem (.u4s-)
+     ===================================================================== */
+  .u4s{margin:clamp(56px,6vw,96px) 0 0}
+  .u4s-g{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));grid-template-rows:clamp(260px,26vw,400px) auto auto auto;column-gap:0}
+  .u4s-e{display:contents}
+  .u4s-st{position:relative;grid-row:1;align-self:end;height:calc(var(--h) * 1%);margin-right:-1px;padding:clamp(18px,1.8vw,26px) clamp(14px,1.6vw,22px) clamp(14px,1.6vw,20px);color:#ffffff;
+    display:flex;flex-direction:column;justify-content:space-between;
+    background:linear-gradient(180deg,color-mix(in srgb,#0f3324 calc(var(--i) * 18%),#0b1f16),#07140d);box-shadow:inset 1px 0 0 rgba(255,255,255,0.05)}
+  .u4s-st::before{content:"";position:absolute;left:0;right:0;top:-14px;height:14px;background:linear-gradient(180deg,#6af5b6,#00CD77);clip-path:polygon(14px 0,100% 0,100% 100%,0 100%)}
+  .u4s-e:first-child .u4s-st{border-radius:0 0 0 14px}
+  .u4s-e:nth-child(5) .u4s-st{border-radius:0 0 14px 0}
+  .u4s-st em{font-style:normal;font-size:clamp(34px,3.4vw,56px);font-weight:750;letter-spacing:-0.065em;line-height:0.85;color:var(--ziel)}
+  .u4s-st b{font-size:clamp(15px,1.3vw,19px);font-weight:700;letter-spacing:-0.02em;line-height:1.15;text-wrap:balance}
+  .u4s-op{grid-row:2;padding:20px clamp(14px,1.6vw,24px) 0 0}
+  .u4s-op p{margin:0;font-size:14.5px;line-height:1.55;color:var(--t2);text-wrap:pretty}
+  .u4s-op span{display:flex;align-items:flex-start;gap:8px;margin-top:14px;padding-top:12px;border-top:1px solid var(--linia);font-size:13.5px;font-weight:650;line-height:1.35;color:var(--t1)}
+  .u4s-op span svg{flex-shrink:0;width:15px;height:15px;margin-top:1px;fill:var(--ziel-c)}
+
+  .u4s.gra .u4s-st{clip-path:inset(100% 0 0 0)}
+  .u4s.gra .u4s-st::before{opacity:0}
+  .u4s.gra.on .u4s-st{clip-path:inset(-20px 0 0 0);transition:clip-path .7s cubic-bezier(.5,0,.2,1) calc(var(--i) * 0.15s)}
+  .u4s.gra.on .u4s-st::before{opacity:1;transition:opacity .3s ease calc(var(--i) * 0.15s + .5s)}
+  @media (max-width:1000px){
+    .u4s-g{display:flex;flex-direction:column}
+    .u4s-e{display:block;margin-bottom:24px}
+    .u4s-e:nth-of-type(-n+2){order:1}
+
+    .u4s-e:nth-of-type(n+3){order:3}
+
+    .u4s-st{height:auto;width:calc(46% + var(--h) * 0.54%);flex-direction:row;align-items:center;justify-content:flex-start;gap:14px;margin:14px 0 0;border-radius:0 12px 12px 0 !important}
+    .u4s-st em{font-size:30px}
+    .u4s-op{padding:14px 0 0}
+
+    .u4s.gra .u4s-st{clip-path:inset(-20px 100% 0 0)}
+    .u4s.gra.on .u4s-st{clip-path:inset(-20px 0 0 0)}
+  }
+
+  /* kontakt na papierze sekcji „Dla kogo”, bez osobnego pasa tła */
+  #dla-kogo{background:var(--papier)}
+  #dla-kogo .u2dk-t{background:#ffffff}
+  #dla-kogo .u2dk-t.nie{background:transparent;box-shadow:inset 0 0 0 1px var(--linia)}
+
+  /* =====================================================================
+     v5 · drobne wspólne
+     ===================================================================== */
+  .nw{white-space:nowrap;font-style:normal}
+
+  /* =====================================================================
+     v5 · GDZIE ZNIKA CZAS: ta sama forma, spokojniej — bez karty wokół
+     rysunku, płaskie paski, siatka godzin pod taśmą, legenda bez kolorów
+     ===================================================================== */
+  .u4z-kar{padding:0;border-radius:0;background:none;box-shadow:none}
+
+  /* =====================================================================
+     v5 · SCHODY: klamra pod stopniami 2–5 zamiast pigułek (.u5s-kl)
+     ===================================================================== */
+  .u5s-kl{grid-column:2 / 6;grid-row:3;position:relative;margin-top:26px;height:14px;border:1.5px solid var(--t2);border-top:0;border-radius:0 0 8px 8px}
+  .u5s-kl span{position:absolute;left:50%;top:100%;transform:translate(-50%,-50%);padding:0 14px;background:var(--papier);font-size:14px;font-weight:650;color:var(--t1);white-space:nowrap}
+  .u4s-op small{display:block;margin-top:8px;font-size:13.5px;line-height:1.45;color:var(--ziel-c);font-weight:600}
+  .u4s{padding-bottom:20px}
+  @media (max-width:1000px){
+    .u5s-kl{order:6;height:auto;margin:6px 0 0;padding:12px 0 0 14px;border:0;border-left:2px solid var(--ziel-c);border-radius:0}
+    .u5s-kl span{position:static;transform:none;padding:0;background:none;white-space:normal}
+  }
+
+  /* =====================================================================
+     v6 · GDZIE ZNIKA CZAS: rysunek niżej, stany 0–4 opowiadają usługę.
+     Paski: cz = praca zespołu, sy = przejmują połączone narzędzia,
+     ai = przygotowuje AI. W kroku 0 wszystko zielone; w krokach 1 i 2
+     część się podświetla, po 0,8 s znika.
+     ===================================================================== */
+  .u6z .u4z-wiz{top:clamp(116px,calc(50vh - 255px),220px)}
+  .u6z .u4z-k{min-height:68vh}
+
+  /* małe wezwanie na końcu opowieści */
+  .u6-mc{display:inline-flex;align-items:center;gap:14px;margin-top:28px;padding:9px 22px 9px 9px;border-radius:999px;background:rgba(255,255,255,0.06);box-shadow:inset 0 0 0 1px rgba(255,255,255,0.14);color:#ffffff;text-decoration:none;transition:background .2s,box-shadow .2s}
+  .u6-mc img{flex:none;width:50px;height:50px;border-radius:50%;object-fit:cover;object-position:50% 18%;box-shadow:0 0 0 2px rgba(0,205,119,0.6)}
+  .u6-mc > span{display:flex;flex-direction:column;gap:2px;font-size:14px;line-height:1.35;color:var(--ziel)}
+  .u6-mc b{font-size:15.5px;font-weight:700;color:#ffffff}
+  .u6-mc:hover{background:rgba(0,205,119,0.14);box-shadow:inset 0 0 0 1px rgba(0,205,119,0.5)}
+  .u6-mc:focus-visible{outline:2px solid var(--ziel);outline-offset:3px}
+
+  @media (max-width:900px){
+    .u6z .u4z-wiz{top:84px}
+
+    .u6z .u4z-k,.u6z .u4z-k:first-child{min-height:70vh}
+    .u6-mc{padding-right:16px}
+    .u6-mc img{width:42px;height:42px}
+  }
+
+  /* =====================================================================
+     v6 · SYSTEM Z AI: okna na płótnie 1920 × 1040 skalowanym do slajdu
+     (--k z skryptu); pasek okna wspólny, środek każdego okna inny
+     ===================================================================== */
+  .u2a-sc .u3a-tor{transform:translateY(calc(var(--t,0) * 56px)) scale(calc(1 - var(--t,0) * 0.05));transform-origin:50% 0}
+
+  @media (max-width:900px){
+    .u3a-dol{flex-direction:column}
+    .u2a-sc .u3a-tor{transform:none}
+  }
+
+  /* =====================================================================
+     v6 · OPINIE: karuzela ze strony głównej (.op9), strzałki pod cytatem
+     ===================================================================== */
+  .op9{position:relative;margin-top:clamp(44px,5vw,72px)}
+  .op9-sl{display:grid}
+  .op9-k{grid-area:1 / 1;display:flex;flex-direction:column;justify-content:flex-end;margin:0 !important;opacity:0;visibility:hidden;transition:opacity .6s ease,visibility 0s linear .6s}
+  .op9-k.on{opacity:1;visibility:visible;transition:opacity .6s ease .1s,visibility 0s}
+  .op9-str{position:absolute;right:0;bottom:0;display:flex !important;align-items:center;gap:8px}
+  .op9-lk{margin-right:8px;font-size:14px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--t3)}
+  @media (prefers-reduced-motion:reduce){ .op9-k,.op9-k.on{transition:none} }
+  @media (max-width:600px){ .op9-str{position:static;margin-top:24px} }
+
+  #koszty .cta2{margin-top:clamp(40px,5vw,64px)}
+
+  /* =====================================================================
+     v6 · KONTAKT nad FAQ: krótszy nagłówek, mniejszy stopień
+     ===================================================================== */
+  .u6-kon .kt-lewa .v3-h2{font-size:clamp(32px,3.6vw,54px);line-height:1.04}
+</style>

@@ -1,0 +1,93 @@
+---
+// CO MOŻEMY DLA WAS ZBUDOWAĆ · treść zakładek 3–5 (n = 2 integracje,
+// 3 szkolenie działu, 4 szyte na miarę z animacją). Wydzielone
+// z lets-shift.astro 26.10.2026: zakładki stoją w <template> do pierwszego
+// wyboru. Treść <template> musi być komponentem — kompilator Astro psuje
+// znaczniki <i>, <em>, <small> wpisane wprost w <template>.
+import { twarz } from './twarze';
+interface Props { n: number }
+const { n } = Astro.props;
+const ADOPCJA = [
+  { t: 'Warsztat na Waszych procesach i danych', k: 'tydzień 1' },
+  { t: 'Gotowe rutyny dla każdej roli', k: 'tydzień 2' },
+  { t: 'Powrót do zespołu', k: 'tydzień 4' },
+  { t: 'Kto pracuje nowym sposobem', k: 'tydzień 12' },
+];
+const SZ_KROKI = ['Szkic z warsztatu', 'Moduły systemu', 'Połączenia', 'Agenci AI', 'Działa'];
+const SZ_MOD = [
+  { x: 52, sz: 'zamówienie z maila', t: 'Zamówienia', w: 'ZS-2026-0412 · Hydro-Tech', ik: 'lista', a: 'prz' },
+  { x: 278, sz: 'oferta, rabaty Ewy', t: 'Oferty', w: 'OF-0388 · 14 440 zł', ik: 'dok', a: 'of' },
+  { x: 504, sz: 'kartka na halę', t: 'Plan hali', w: 'linia 2 · jutro 7:00', ik: 'hala', a: 'plan' },
+  { x: 730, sz: 'stany? Access', t: 'Magazyn', w: '380 korpusów zarezerwowanych', ik: 'pudlo', a: 'erp' },
+  { x: 956, sz: 'kurier + faktura', t: 'Wysyłki i faktury', w: 'FV 0412/10 · DPD', ik: 'auto', a: 'st' },
+];
+const SZ_NARZ: [number, number, string, string, number[]][] = [
+  [104, 96, 'Outlook', '/appto/brands/outlook.svg', [0]],
+  [420, 520, 'ERP', 'ERP', [1, 3]],
+  [782, 96, 'Sklep B2B', '/appto/brands/shopify.svg', [3]],
+  [1008, 520, 'Kurier', 'DPD', [4]],
+  [1008, 96, 'Raport', '/appto/brands/looker.svg', [4]],
+];
+const SZ_IK: Record<string, string> = {
+  lista: '<path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/>',
+  dok: '<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/>',
+  hala: '<path d="M3 21V9l6 3V9l6 3V5h6v16z"/>',
+  pudlo: '<path d="M3 8l9-5 9 5v8l-9 5-9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/>',
+  auto: '<path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z"/><circle cx="7" cy="18" r="1.8"/><circle cx="17" cy="18" r="1.8"/>',
+};
+const SZ_ARIA = 'Animacja: jak powstaje rozwiązanie szyte na miarę. Najpierw szkic procesu z warsztatu z działem obsługi zamówień: zamówienie z maila, oferta, kartka na halę, stany w magazynie, kurier i faktura. Potem w tych miejscach pojawiają się moduły systemu: zamówienia, oferty, plan hali, magazyn, wysyłki i faktury. Następnie połączenia z narzędziami firmy: Outlook, ERP, sklep B2B, kurier i raport. Potem w modułach włączają się agenci AI. Na końcu napis: działa, zamówienie ZS-2026-0412 przeszło przez wszystkie moduły.';
+const UCZESTNICY = [
+  { n: 'Marta', f: '/lets-shift/awatar-marta.webp' }, { n: 'Ewa', f: '/lets-shift/awatar-ewa.webp' }, { n: 'Kasia', f: '/lets-shift/awatar-kasia.webp' },
+  { n: 'Jakub', f: '/lets-shift/awatar-jakub.webp' }, { n: 'Bartek', f: '/lets-shift/awatar-bartek.webp' }, { n: 'Anna', f: '/lets-shift/awatar-anna.webp' },
+  { n: 'Tomasz', f: '/lets-shift/awatar-tomasz.webp' }, { n: 'Michał', f: '/lets-shift/awatar-michal.webp' },
+];
+const IG_LOG = [
+  ['10:42', 'Zamówienia z maila', 'ZS-2026-0413 · Instal-Bud trafiło do systemu zamówień'],
+  ['10:41', 'Zamówienia do ERP', 'ZS-2026-0412 · Hydro-Tech zapisane w ERP'],
+  ['10:40', 'Stany w sklepie B2B', 'ZK-DN50-PN40: 412 → 380 szt.'],
+  ['06:00', 'Wyciągi bankowe', '14 operacji przeniesionych do ERP'],
+];
+const POLACZENIA = [
+  { t: 'Zamówienia z maila', z: 'Outlook', zi: '/appto/brands/outlook.svg', do: 'System zamówień', ds: 'A', p: '10:42', f: 'kasia' },
+  { t: 'Zamówienia do ERP', z: 'System zamówień', zs: 'A', do: 'ERP', ds: 'ERP', p: '10:41', f: 'kasia' },
+  { t: 'Stany w sklepie B2B', z: 'Moduł magazynu', zs: 'M', do: 'Sklep B2B', di: '/appto/brands/shopify.svg', p: '10:40', f: 'bartek' },
+  { t: 'Etykiety kurierów', z: 'Moduł magazynu', zs: 'M', do: 'Kurierzy', ds: 'DPD', p: '10:37', f: 'bartek' },
+  { t: 'Wyciągi bankowe', z: 'Bank', zs: 'B', do: 'ERP', ds: 'ERP', p: '06:00', f: 'michal' },
+  { t: 'Raport dla zarządu', z: 'Jedna baza', zs: 'DB', do: 'Looker Studio', di: '/appto/brands/looker.svg', p: '07:00', f: 'michal' },
+];
+---
+{n === 2 && (<>
+<div class="sh-ig" role="img" aria-label="Rejestr połączeń producenta armatury: zamówienia z maila do systemu, zamówienia do ERP, stany w sklepie B2B, etykiety kurierów, wyciągi bankowe i raport dla zarządu. Każde połączenie działa, ma przebiegi z ostatnich 24 godzin, ostatni przebieg i właściciela.">
+<div class="sh-ig-ch" aria-hidden="true"><i></i><i></i><i></i><span>polaczenia.armatura.pl</span></div>
+<div class="sh-ig-h" aria-hidden="true"><div><b>Połączenia</b><small>producent armatury · {POLACZENIA.length} aktywnych</small></div><span class="tb"><span class="on">Wszystkie</span><span>Alarmy <em>0</em></span><span>Wstrzymane</span></span></div>
+<div class="sh-ig-t" aria-hidden="true">
+<div class="sh-ig-r n"><span>Połączenie</span><span>Przebiegi · 24 h</span><span>Ostatni</span><span>Właściciel</span><span>Stan</span></div>
+{POLACZENIA.map((p, pi) => <div class="sh-ig-r"><div class="nz"><span class="zn">{p.zi ? <img decoding="async" src={p.zi} alt="" width="16" height="16" loading="lazy"> : <b>{p.zs}</b>}</span><i>→</i><span class="zn">{p.di ? <img decoding="async" src={p.di} alt="" width="16" height="16" loading="lazy"> : <b>{p.ds}</b>}</span><p><b>{p.t}</b><small>{p.z} → {p.do}</small></p></div><span class="pr">{Array.from({ length: 24 }).map((_, h) => <i style={`height:${30 + ((h * 37 + pi * 11) % 70)}%`}></i>)}</span><time>{p.p}</time><span class="wl"><img decoding="async" src={`/lets-shift/awatar-${p.f}.webp`} alt="" width="96" height="96" loading="lazy"></span><span class="st">działa</span></div>)}
+</div>
+<div class="sh-ig-lg" aria-hidden="true"><p class="h">Ostatnie przebiegi</p>{IG_LOG.map(([c, t, d]) => <p class="r"><time>{c}</time><b>{t}</b><span>{d}</span><i>działa</i></p>)}</div>
+</div>
+</>)}
+{n === 3 && (<>
+<div class="sh-ad" role="img" aria-label="Szkolenie działu obsługi zamówień: osiem osób z działu, warsztat na ich procesach i danych w pierwszym tygodniu, gotowe rutyny dla każdej roli w drugim, powrót do zespołu w czwartym, a w dwunastym tygodniu sprawdzenie, kto pracuje nowym sposobem.">
+<div class="sh-ad-g" aria-hidden="true"><b>Szkolenie działu obsługi zamówień</b><span>8 osób · na zadaniach z bieżącego tygodnia</span></div>
+<div class="sh-ad-os" aria-hidden="true">{UCZESTNICY.map((u) => <span><img decoding="async" src={u.f} alt="" width="96" height="96" loading="lazy"><b>{u.n}</b></span>)}</div>
+<ol class="sh-ad-kr" aria-hidden="true">{ADOPCJA.map((a, i) => <li><em>{a.k}</em><b>{a.t}</b>{i < 2 ? <i class="ok">zrobione</i> : <i>w planie</i>}</li>)}</ol>
+</div>
+</>)}
+{n === 4 && (<>
+<div class="sz" data-sz data-st="5" role="img" aria-label={SZ_ARIA}>
+<div class="sz-in" aria-hidden="true">
+<ol class="sz-kr">{SZ_KROKI.map((k, i) => <li><i>{i + 1}</i>{k}</li>)}</ol>
+<p class="sz-kartka">Warsztat z obsługą zamówień, 14.10</p>
+<svg class="sz-l" viewBox="0 0 1180 700" preserveAspectRatio="none">
+<g class="sk">{SZ_MOD.slice(0, -1).map((m) => <path d={`M${m.x + 176} 325 C ${m.x + 200} 310, ${m.x + 205} 340, ${m.x + 222} 325`} />)}</g>
+<g class="po">{SZ_NARZ.flatMap(([x, y, , , mods]) => mods.map((mi) => { const m = SZ_MOD[mi]; const cx = x + 75, cy = y < 300 ? y + 44 : y; const mx = m.x + 86, my = y < 300 ? 250 : 400; return <path d={`M${cx} ${cy} C ${cx} ${(cy + my) / 2}, ${mx} ${(cy + my) / 2}, ${mx} ${my}`} />; }))}</g>
+</svg>
+{SZ_MOD.map((m) => <p class="sz-sk" style={`left:calc(${m.x} * var(--c))`}>{m.sz}</p>)}
+{SZ_NARZ.map(([x, y, t, im]) => <span class="sz-n" style={`left:calc(${x} * var(--c));top:calc(${y} * var(--c))`}>{im.startsWith('/') ? <img decoding="async" src={im} alt="" width="22" height="22" loading="lazy"> : <em>{im}</em>}{t}</span>)}
+{SZ_MOD.map((m, i) => <div class="sz-m" style={`left:calc(${m.x} * var(--c));--n:${i};transition-delay:${i * 0.12}s`}><span class="ic" set:html={`<svg viewBox="0 0 24 24">${SZ_IK[m.ik]}</svg>`}></span><b>{m.t}</b><small>{m.w}</small><span class="ag"><Fragment set:html={twarz(m.a, 24)} /><i></i><span>pracuje</span></span></div>)}
+<span class="sz-tok"></span>
+<p class="sz-ok"><i><svg viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></i><span><b>Działa.</b> Zamówienie ZS-2026-0412 przeszło przez wszystkie moduły.</span></p>
+</div>
+</div>
+</>)}

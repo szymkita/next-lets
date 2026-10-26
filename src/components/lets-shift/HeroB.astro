@@ -1,0 +1,710 @@
+---
+// HERO B (25.10.2026, trzecia wersja) — „To samo zamówienie: dziś i po
+// programie”, hero strony /lets-shift (wybór Szymona z /lets-shift-hero).
+// Szymon do drugiej wersji: „realniejsze daj, może bez tej stopki;
+// zdecydowanie trzeba poprawić design aplikacji po prawej, zrób to jako
+// pulpit, realistyczniej, mniej AI”.
+//
+// Obie strony suwaka to pulpit tego samego komputera, jak zrzut ekranu:
+// ta sama spokojna tapeta i pasek zadań w stylu Windows 11 (przyciski
+// z nazwami okien, zegar).
+//   DZIŚ (czwartek 24.10, 10:14) — pasek zadań zatłoczony (Outlook z 47,
+//     Teams, pięć okien Excela, ERP, Access, zdjęcie karty). Problemy
+//     widać w samych aplikacjach: flaga i trzecia wiadomość w wątku
+//     Hydro-Tech, arkusz ofert „tylko do odczytu, edytuje: Ewa Lis” z #N/D!
+//     i #ADR!, folder z 37 cennikami, stary ERP z błędem zapisu i „próba 3”
+//     (użytkownik KLIS), Access z danymi z 21.10, zdjęcie karty produkcji
+//     bez podpisu, raport Michała z #ADR!, powiadomienia Windows
+//     (nieodebrane połączenia od klienta, SMS kierowcy bez CMR, błąd zapisu
+//     Excela). Ludzie jako ślady: nadawca maila, wiadomości w Teams, autor
+//     pliku, pismo na karcie. Karteczki na monitorze zostają.
+//   PO PROGRAMIE (poniedziałek 21.10, 9:53) — na pasku trzy aplikacje.
+//     Główne okno: system zamówień firmy w przeglądarce, zaprojektowany
+//     jak dojrzała aplikacja biznesowa (13 px, neutralne kolory, jeden
+//     akcent): nawigacja modułów, lista zamówień ze statusami, otwarte
+//     ZS-2026-0412 z pozycjami, terminem, dokumentami i historią, w której
+//     automatyzacja to zwykłe wpisy systemu z etykietą „automatycznie”,
+//     a człowiek ma nazwisko. Jedyny wyjątek jako pasek w zamówieniu
+//     („Klient prosi o dostawę 28.10 — decyzja: Kasia Lis”). Obok Outlook
+//     z tym samym wątkiem i wysłanym potwierdzeniem, w rogu powiadomienie
+//     systemowe o zapisie w ERP. Bez twarzy agentów, iskierek i poświat.
+// Suwak: mysz, dotyk, klawiatura, jeden przejazd sam; wpisy historii
+// wchodzą po kolei, kiedy suwak odsłoni „po”. Bez JS i przy ograniczonym
+// ruchu: stan końcowy. Poniżej 761 px przełącznik dwóch pełnych widoków
+// (płótno 360 × 900, mniej okien), raz przełącza się sam.
+// 26.10.2026 Szymon: strona produkcyjna, liczby prawdziwe, bez oznaczeń
+// przykład/demo. Awatary osób z /lets-shift/ (kopie z /makieta).
+import SysArmatura from './SysArmatura.astro';
+const NB = ' ';
+
+// ---- DZIŚ ----------------------------------------------------------------
+const MAILE = [
+  { kto: 'Jan Nowak (Hydro-Tech)', f: '/lets-shift/awatar-jakub.webp', t: 'RE: RE: FW: Zamówienie DN50 — pilne!!', n: 3, p: 'Trzecie przypomnienie. Czekamy od poniedziałku…', cz: 'pn 9:12', fl: 1, wz: 1, sel: 1 },
+  { kto: 'Termo-Serwis', t: 'Zapytanie: głowice termostatyczne, 900 szt.', p: 'Prosimy o cenę do piątku.', cz: 'wt 14:30', nw: 1 },
+  { kto: 'Domtex', t: 'Reklamacja partii 0921', p: 'W załączniku zdjęcia uszkodzeń.', cz: 'wt 11:05', fl: 1 },
+  { kto: 'DPD Polska', t: 'Przesyłka wstrzymana: brak dokumentu', p: 'Uzupełnij dane nadawcy.', cz: 'śr 8:40', nw: 1 },
+];
+const ARK = [
+  { n: '12', c: ['Instal-Bud', 'Bateria K-20', '120', '212,00', '8%', '23 404,80'] },
+  { n: '13', c: ['Hydro-Tech', 'Zawór kul. DN50', '400', '#N/D!', '6%', '#N/D!'], on: 1 },
+  { n: '14', c: ['Domtex', 'Zestaw podtynk.', '60', '805,00', '5%', '45 885,00'] },
+  { n: '15', c: ['Termo-Serwis', 'Złączka PEX 16', '2000', '4,92', '#ADR!', '#ADR!'] },
+  { n: '16', c: ['Hydro-Tech', 'Zawór kul. DN25', '800', '21,10', '6%', '15 867,20'] },
+];
+const CENNIKI = [
+  { t: 'cennik_2026.xlsx', d: '12.10.2026' },
+  { t: 'cennik_2026_NOWY.xlsx', d: '14.10.2026' },
+  { t: 'cennik_2026_NOWY_Ewa.xlsx', d: '20.10.2026', on: 1 },
+  { t: 'cennik_STARY_nie_ruszać.xlsx', d: '03.02.2023' },
+  { t: 'cennik_hurt_v3_ostateczny.xlsx', d: '28.09.2026' },
+  { t: 'cennik_2026 — kopia.xlsx', d: '14.10.2026' },
+];
+const STANY = [
+  ['ZK-DN50-PN40', 'Zawór kulowy DN50', '412', '380'],
+  ['ZK-DN25-PN40', 'Zawór kulowy DN25', '1 120', '800'],
+  ['GT-30-M30', 'Głowica termost.', '2 340', '900'],
+];
+const TEAMS = [
+  { f: 'marta', n: 'Marta Wróbel', t: 'Kto ma aktualny cennik?', cz: '9:58' },
+  { f: 'kasia', n: 'Kasia Lis', t: 'ERP nie zapisuje zamówienia Hydro-Tech. Próba 3.', cz: '10:06' },
+  { f: 'tomasz', n: 'Tomasz Kruk', t: 'Wrzuciłem zdjęcie karty 1182, brak podpisu', cz: '10:09', z: 'karta_1182.jpg' },
+  { f: 'michal', n: 'Michał Zając', t: 'Raport bez stanów, Access ma dane z 21.10', cz: '10:12', m: 'nm' },
+];
+const PLIKI = ['sprzedaz_X.xlsx', 'magazyn.xlsx', 'produkcja_wrz.xlsx', 'finanse_v2.xlsx'];
+
+// ---- pasek zadań (Windows 11, przyciski z nazwami okien) -----------------
+// i = ikona aplikacji, t = nazwa okna, b = plakietka, on = okno aktywne,
+// m = 'nm' ukryte na telefonie (zostaje sama ikona przy m = 'ik')
+const ZAD_DZIS = [
+  { i: 'fold', t: 'Cenniki' },
+  { i: 'ol', t: 'Odebrane — Kasia Lis — Outlook', b: '47' },
+  { i: 'tm', t: 'Zespół handlowy | Teams', b: '3' },
+  { i: 'xl', t: 'oferty_2026_v14_FINAL_poprawione(2)', on: 1 },
+  { i: 'xl', t: 'cennik_2026_NOWY_Ewa' },
+  { i: 'xl', t: 'raport_zarzad_PIATEK' },
+  { i: 'xl', t: 'magazyn_stany_wrz' },
+  { i: 'xl', t: 'Zeszyt1' },
+  { i: 'erp', t: 'ERP 2009 — Zamówienia sprzedaży' },
+  { i: 'acc', t: 'Magazyn : Baza danych' },
+  { i: 'foto', t: 'karta_1182.jpg — Zdjęcia' },
+];
+// ---- PO ZMIANIE: własny system firmy (SysArmatura.astro) ------------------
+const ZAD_PO = [
+  { i: 'sys', t: 'ZS-2026-0412 · Armatura — system firmy', on: 1 },
+  { i: 'ol', t: 'RE: Zamówienie DN50 — Outlook' },
+  { i: 'tm', t: 'Zespół handlowy | Teams' },
+];
+const WATEK = [
+  { kto: 'Jan Nowak', f: '/lets-shift/awatar-jakub.webp', cz: 'pn 9:12', t: 'Zamówienie: zawory kulowe DN50, 400 szt.' },
+  { kto: 'Zamówienia Armatura', my: 1, cz: '9:13', t: 'Oferta OF-0388 w załączniku' },
+  { kto: 'Jan Nowak', f: '/lets-shift/awatar-jakub.webp', cz: '9:47', t: 'Akceptujemy ofertę.' },
+];
+
+const IK: Record<string, string> = {
+  inbox: '<path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>',
+  czat: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+  ksiazka: '<path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/>',
+  dol: '<path d="m6 9 6 6 6-6"/>', prawo: '<path d="m9 6 6 6-6 6"/>', x: '<path d="M18 6 6 18M6 6l12 12"/>', ok: '<path d="m5 12.5 4.5 4.5L19 7.5"/>',
+  suw: '<path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/>',
+  link: '<circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="m8.2 10.9 7.6-3.8M8.2 13.1l7.6 3.8"/>',
+  baza: '<ellipse cx="12" cy="6" rx="7" ry="2.6"/><path d="M5 6v12c0 1.4 3.1 2.6 7 2.6s7-1.2 7-2.6V6M5 12c0 1.4 3.1 2.6 7 2.6s7-1.2 7-2.6"/>',
+  dom: '<path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10"/>',
+  mail: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>',
+  dok: '<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/>',
+  lista: '<path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/>',
+  hala: '<path d="M3 21V9l6 3V9l6 3V5h6v16z"/>',
+  pudlo: '<path d="M3 8l9-5 9 5v8l-9 5-9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/>',
+  auto: '<path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z"/><circle cx="7" cy="18" r="1.8"/><circle cx="17" cy="18" r="1.8"/>',
+  fakt: '<path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/>',
+  ludzie: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.4 3.4-5 6.5-5s5.7 1.6 6.5 5"/><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8M18.5 15.3c1.6.7 2.6 2.3 3 4.7"/>',
+  wyk: '<path d="M4 20V4M4 20h16"/><path d="M8 16v-5M12 16V8M16 16v-7"/>',
+  szuk: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
+  dzw: '<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/>',
+  pdf: '<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/>',
+  zeg: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
+  str: '<path d="m9 6 6 6-6 6"/>',
+  wiecej: '<circle cx="5" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="19" cy="12" r="1.2"/>',
+  druk: '<path d="M7 9V3h10v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M7 14h10v7H7z"/>',
+  klip: '<path d="m16 6-8.4 8.6a2 2 0 0 0 2.8 2.8l8.4-8.6a4 4 0 1 0-5.6-5.6L4.8 11.8a6 6 0 1 0 8.5 8.5L21 12.5"/>',
+  odp: '<path d="M9 17 4 12l5-5"/><path d="M20 18v-2a4 4 0 0 0-4-4H4"/>',
+  wifi: '<path d="M2 8.5a15 15 0 0 1 20 0M5 12a10 10 0 0 1 14 0M8.5 15.5a5 5 0 0 1 7 0"/><circle cx="12" cy="19" r="1"/>',
+  glos: '<path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/>',
+  gora: '<path d="m6 15 6-6 6 6"/>',
+  tel: '<rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M10.5 18.5h3"/>',
+};
+const ik = (n: string) => `<svg class="shb-ik" viewBox="0 0 24 24" aria-hidden="true">${IK[n]}</svg>`;
+// Ikony aplikacji na pasku zadań i w oknach (kolorowe kafelki jak w Windows).
+const APP: Record<string, string> = {
+  fold: '<svg viewBox="0 0 24 24"><path d="M2.5 6.5A1.5 1.5 0 0 1 4 5h5l2 2h9a1.5 1.5 0 0 1 1.5 1.5v10A1.5 1.5 0 0 1 20 20H4a1.5 1.5 0 0 1-1.5-1.5z" fill="#f4c542" stroke="#c99a1d" stroke-width="1"/></svg>',
+  ol: '<img src="/appto/brands/outlook.svg" alt="" width="20" height="20">',
+  tm: '<img src="/appto/brands/teams.svg" alt="" width="20" height="20">',
+  xl: '<span class="shb-ap" style="background:#217346">X</span>',
+  erp: '<span class="shb-ap" style="background:#5b6670">E</span>',
+  acc: '<span class="shb-ap" style="background:#a4373a">A</span>',
+  foto: '<span class="shb-ap" style="background:linear-gradient(135deg,#3aa0ff,#7b61ff)"><svg viewBox="0 0 24 24"><path d="m4 17 5-5 4 4 3-3 4 4" fill="none" stroke="#fff" stroke-width="2"/></svg></span>',
+  sys: '<span class="shb-ap" style="background:#1F4FA8"><i class="shb-mk"></i></span>',
+};
+const START = '<svg viewBox="0 0 24 24"><rect x="3" y="3" width="8.4" height="8.4" fill="#1f8ae0"/><rect x="12.6" y="3" width="8.4" height="8.4" fill="#2b95ea"/><rect x="3" y="12.6" width="8.4" height="8.4" fill="#1580d8"/><rect x="12.6" y="12.6" width="8.4" height="8.4" fill="#1f8ae0"/></svg>';
+
+const ARIA = 'To samo zamówienie u producenta armatury na pulpicie tego samego komputera, dziś i po programie, rozdzielone suwakiem. Dziś, w czwartek o 10:14: na pasku zadań jedenaście okien, w tym Outlook z 47 nieprzeczytanymi, Teams i pięć plików Excela. W Outlooku oflagowany wątek „RE: RE: FW: Zamówienie DN50 — pilne!!” od Jana Nowaka z Hydro-Tech, trzecia wiadomość od poniedziałku. Arkusz ofert w wersji „v14_FINAL_poprawione(2)” otwarty tylko do odczytu, bo edytuje go Ewa Lis, z błędami #N/D! i #ADR!. W folderze 37 cenników. Stary ERP nie zapisuje zamówienia, Kasia Lis próbuje trzeci raz. Access ma stany z 21 października. Zdjęcie papierowej karty produkcji bez podpisu. W Teams: kto ma aktualny cennik, ERP nie zapisuje zamówienia, raport bez stanów z magazynu. Powiadomienia: trzy nieodebrane połączenia od klienta, SMS kierowcy bez CMR, Excel nie może zapisać pliku. Po zmianie, w poniedziałek o 9:53: na pasku trzy aplikacje. W przeglądarce własny system firmy Armatura, widok zamówienia ZS-2026-0412: 400 zaworów kulowych DN50, wartość 14 440 zł netto, termin 30.10, produkcja na linii 2 jutro o 7:00. Kroki: przyjęte 9:12, oferta 9:13, akceptacja 9:47, ERP 9:48. Oś aktywności: agent przyjęć zamówień utworzył zamówienie z maila, agent ofert wysłał ofertę z cennika 2026, Jan Nowak zaakceptował ofertę, agent ERP zapisał zamówienie w ERP, agent planowania wstawił zlecenie na linię 2, agent statusów wysłał klientowi potwierdzenie. Do decyzji Kasi Lis jedna sprawa: klient prosi o dostawę 28.10 zamiast 30.10. W menu systemu panel Agenci firmy. Obok Outlook z wysłanym potwierdzeniem i powiadomienie systemu o zapisie w ERP.';
+---
+<section class="shb">
+<div class="shb-pl v3-ziarno">
+<div class="shb-gl">
+<div>
+<p class="shb-marka"><b>Let’s Shift</b><span>Program transformacji dla małych, średnich i dużych firm</span></p>
+<h1 class="shb-h1">Przenosimy firmę do czasów AI <span>razem z tym, co w niej działa</span></h1>
+</div>
+<div class="shb-pr">
+<p class="shb-lead">Let’s Shift to program dla firm, które działają od lat i mają sprawdzony sposób pracy. Zmieniamy narzędzia firmy etapami, dział po dziale, a prowadzący co tydzień mówi, co trzeba przygotować po stronie firmy. Tak wygląda jedno zamówienie przed zmianą i po niej.</p>
+<div class="v3-akcje"><a href="#kontakt" class="v3-btn">Umów rozmowę <span aria-hidden="true">→</span></a></div>
+</div>
+</div>
+
+<figure class="shb-fig" data-shb>
+<div class="shb-prz" role="group" aria-label="Widok zamówienia">
+<button type="button" aria-pressed="false" data-shb-t="dzis">Dziś</button>
+<button type="button" aria-pressed="true" data-shb-t="po">Po zmianie</button>
+</div>
+<div class="shb-ram">
+<div class="shb-cv" role="img" aria-label={ARIA}>
+
+{/* ============ DZIŚ ============ */}
+<div class="shb-dz" aria-hidden="true">
+
+<div class="shb-w shb-ol" style="--x:16;--y:40;--w:456;--r:-1;--mx:8;--my:14;--mw:322;--mr:-1.2">
+<div class="shb-ol-g"><img src="/appto/brands/outlook.svg" alt="" width="18" height="18"><b>Outlook</b><span class="sz"><Fragment set:html={ik('szuk')} />Szukaj</span></div>
+<div class="shb-ol-in">
+<div class="shb-ol-fo nm"><p class="on"><span>Odebrane</span><b>47</b></p><p><span>Robocze</span><i>3</i></p><p><span>Wysłane</span></p><p><span>Zamówienia</span><b>12</b></p><p><span>Reklamacje</span><b>4</b></p></div>
+<div class="shb-ol-li">
+<div class="shb-ol-h"><b>Odebrane</b><span>Priorytetowe</span><span class="on">Inne</span></div>
+{MAILE.map((m, i) => (
+  <div class={`shb-ol-m${m.sel ? ' sel' : ''}${m.nw ? ' nw' : ''}${i > 2 ? ' nm' : ''}`}>
+    {m.f ? <img src={m.f} alt="" width="96" height="96"> : <i>{m.kto.slice(0, 1)}</i>}
+    <div><p class="k"><b>{m.kto}</b>{m.n && <em>{m.n}</em>}<time>{m.cz}</time></p><p class="t">{m.wz && <span class="wz">!</span>}{m.t}</p><p class="p">{m.p}</p></div>
+    {m.fl && <span class="fl"><svg viewBox="0 0 16 16"><path d="M3 14V2.5M3 3h8.5l-2 3 2 3H3"/></svg></span>}
+  </div>
+))}
+</div>
+</div>
+</div>
+
+<div class="shb-w shb-xl" style="--x:448;--y:74;--w:500;--r:0.8;--mx:24;--my:204;--mw:328;--mr:1">
+<div class="shb-xl-g"><span class="lg">X</span><b>oferty_2026_v14_FINAL_poprawione(2).xlsx</b><span class="nm">· Tylko do odczytu · Excel</span></div>
+<div class="shb-xl-rb nm"><span>Plik</span><span class="on">Narzędzia główne</span><span>Wstawianie</span><span>Formuły</span><span>Dane</span><span>Recenzja</span></div>
+<div class="shb-xl-lk"><img src="/lets-shift/awatar-ewa.webp" alt="" width="96" height="96"><span><b>Tylko do odczytu.</b> Plik edytuje: Ewa Lis</span><i>Powiadom mnie</i></div>
+<div class="shb-xl-fx nm"><i>fx</i>=WYSZUKAJ.PIONOWO(C13;'[cennik_2026_NOWY_Ewa.xlsx]Arkusz1'!A:F;5;0)</div>
+<table><thead><tr><th></th>{['A', 'B', 'C', 'D', 'E', 'F'].map((c) => <th>{c}</th>)}</tr></thead>
+<tbody>{ARK.map((r) => <tr class={r.on ? 'on' : ''}><th>{r.n}</th>{r.c.map((c, j) => <td class={`${j >= 2 ? 'n' : ''}${c.startsWith('#') ? ' bl' : ''}`}>{c}</td>)}</tr>)}</tbody></table>
+<div class="shb-xl-tb nm"><span class="on">oferty</span><span>oferty (2)</span><span>stare_NIE_UŻYWAĆ</span><span>Arkusz7</span></div>
+</div>
+
+<div class="shb-w shb-fo nm" style="--x:944;--y:38;--w:320;--r:1.4">
+<div class="shb-fo-g"><svg viewBox="0 0 24 24"><path d="M3 6.5A1.5 1.5 0 0 1 4.5 5H9l2 2h8.5A1.5 1.5 0 0 1 21 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 17.5z"/></svg><b>Cenniki</b></div>
+<div class="shb-fo-a">\\serwer\handel\Cenniki</div>
+<div class="shb-fo-k"><span>Nazwa</span><span>Data modyfikacji</span></div>
+{CENNIKI.map((c) => <div class={`shb-fo-r${c.on ? ' on' : ''}`}><span class="x">X</span><b>{c.t}</b><time>{c.d}</time></div>)}
+<div class="shb-fo-d">37 elementów · zaznaczono 1</div>
+</div>
+
+<div class="shb-w shb-erp" style="--x:28;--y:330;--w:432;--r:-0.6;--mx:8;--my:430;--mw:300;--mr:-0.8">
+<p class="shb-erp-g">ERP 2009 · Zamówienia sprzedaży [KLIS]<span><i>_</i><i>□</i><i>×</i></span></p>
+<p class="shb-erp-m nm"><span>Plik</span><span>Edycja</span><span>Kartoteki</span><span>Raporty</span><span>Pomoc</span></p>
+<div class="shb-erp-f">
+<label>Kontrahent<span>HYDRO-TECH SP. Z O.O.</span></label>
+<label>Indeks<span>ZK-DN50-PN40</span></label>
+<label>Ilość<span>400</span></label>
+<label class="nm">Cena<span class="pusto">&nbsp;</span></label>
+<label class="nm">Termin<span>30.10.2026</span></label>
+<p><b>Zapisz</b><b>Anuluj</b></p>
+</div>
+<p class="shb-erp-s"><span>Próba zapisu: 3</span><span>Użytkownik: KLIS</span></p>
+</div>
+<div class="shb-w shb-blad" style="--x:246;--y:432;--w:318;--r:0;--mx:62;--my:524;--mw:282;--mr:0">
+<p class="shb-erp-g">ERP 2009<span><i>×</i></span></p>
+<div class="shb-blad-in"><span class="x">×</span><p><b>Nie można zapisać rekordu. Spróbuj ponownie.</b><small>Kod błędu: 0x80040E2F</small></p></div>
+<p class="shb-blad-ok"><b>OK</b></p>
+</div>
+
+<div class="shb-w shb-acc nm" style="--x:572;--y:392;--w:340;--r:1.2">
+<div class="shb-acc-g"><span class="lg">A</span><b>Magazyn : Baza danych</b><span>— Access</span></div>
+<div class="shb-acc-t"><span class="on">Stany</span><span>Rezerwacje</span><span>Przyjęcia</span></div>
+<table><thead><tr><th>Indeks</th><th>Nazwa</th><th>Stan</th><th>Rez.</th></tr></thead><tbody>{STANY.map((r) => <tr>{r.map((c, j) => <td class={j >= 2 ? 'n' : ''}>{c}</td>)}</tr>)}</tbody></table>
+<p class="shb-acc-s"><span>Rekord: 1 z 214</span><span>Dane z: 21.10.2026 16:40</span></p>
+</div>
+
+<div class="shb-w shb-zd nm" style="--x:944;--y:270;--w:316;--r:1">
+<div class="shb-zd-g"><span>karta_1182.jpg</span><i>— Zdjęcia</i></div>
+<div class="shb-zd-in">
+<div class="shb-kar">
+<span class="tasma"></span><span class="kubek"></span>
+<p class="g"><b>Karta produkcji 1182</b><span>hala 2</span></p>
+<p class="r"><em>wyrób</em><i>zawory DN50 — 400 szt.</i></p>
+<p class="r"><em>toczenie</em><i>OK, 11:20</i></p>
+<p class="r"><em>przyniósł</em><i>Tomasz</i></p>
+<p class="r"><em>podpis bryg.</em><i class="pusto"></i></p>
+<i class="dop">brak podpisu!</i>
+</div>
+</div>
+</div>
+
+<div class="shb-w shb-tm" style="--x:20;--y:536;--w:394;--r:-0.8;--mx:8;--my:640;--mw:344;--mr:-0.6">
+<div class="shb-tm-g"><img src="/appto/brands/teams.svg" alt="" width="16" height="16"><b>Zespół handlowy</b><span>Czat · 6 osób</span></div>
+{TEAMS.map((c) => <div class={`shb-tm-m${c.m ? ' ' + c.m : ''}`}><img src={`/lets-shift/awatar-${c.f}.webp`} alt="" width="96" height="96"><p><b>{c.n}</b><time>{c.cz}</time><span>{c.t}</span>{c.z && <i>{c.z}</i>}</p></div>)}
+</div>
+
+<div class="shb-w shb-rap nm" style="--x:428;--y:548;--w:470;--r:0.6">
+<div class="shb-xl-g"><span class="lg">X</span><b>raport_zarzad_PIATEK.xlsx</b><span>· Excel</span></div>
+<div class="shb-rap-in">
+<div class="pl">{PLIKI.map((p) => <span><i>X</i>{p}</span>)}</div>
+<svg viewBox="0 0 40 100" preserveAspectRatio="none"><path d="M2 10 C 24 10, 16 50, 38 50 M2 37 C 22 37, 18 50, 38 50 M2 63 C 22 63, 18 50, 38 50 M2 90 C 24 90, 16 50, 38 50"/></svg>
+<div class="wy"><p><span>Przychód</span><b>1 284 300</b></p><p><span>Marża</span><b class="bl">#ADR!</b></p><p><span>Stany magazynu</span><b class="bl">#N/D!</b></p><p><span>Zamówienia</span><b>212</b></p></div>
+</div>
+<p class="shb-rap-s"><span>Autor: Michał Zając</span><span>Zmodyfikowano: dziś, 9:58</span></p>
+</div>
+
+<div class="shb-tst" style="--x:1010;--y:478;--mx:112;--my:792">
+<div class="shb-to"><p class="a"><span class="ap"><Fragment set:html={ik('tel')} /></span>Łącze z telefonem<i>teraz</i></p><b>Jan Nowak (Hydro-Tech)</b><span>3 nieodebrane połączenia</span></div>
+<div class="shb-to nm"><p class="a"><span class="ap"><Fragment set:html={ik('tel')} /></span>Łącze z telefonem<i>10:11</i></p><b>Kierowca DW 4K21</b><span>Gdzie mam jechać? Nie mam CMR</span></div>
+<div class="shb-to nm"><p class="a"><span class="shb-ap" style="background:#217346">X</span>Excel<i>10:13</i></p><b>Nie można zapisać pliku</b><span>oferty_2026_v14… edytuje: Ewa Lis</span></div>
+</div>
+
+<p class="shb-kk k1" style="--x:340;--y:250;--r:-5;--mx:244;--my:152;--mr:5">Oddzwonić do Hydro-Tech!!</p>
+<p class="shb-kk k2 nm" style="--x:952;--y:236;--r:4">Cennik → zapytać Ewę</p>
+<p class="shb-kk k3 nm" style="--x:846;--y:520;--r:-3">Raport na piątek</p>
+
+<div class="shb-tb">
+<span class="st" set:html={START}></span><span class="sr"><Fragment set:html={ik('szuk')} /><em>Wyszukaj</em></span>
+{ZAD_DZIS.map((z) => <span class={`zd${z.on ? ' on' : ''}`}><span class="ic" set:html={APP[z.i]}></span><em>{z.t}</em>{z.b && <b>{z.b}</b>}</span>)}
+<span class="tr"><Fragment set:html={ik('gora')} /><Fragment set:html={ik('wifi')} /><Fragment set:html={ik('glos')} /><span class="zg"><b>10:14</b><small>24.10.2026</small></span><span class="pw"><Fragment set:html={ik('dzw')} /><i></i></span></span>
+</div>
+</div>
+
+{/* ============ PO PROGRAMIE ============ */}
+<div class="shb-po" data-shb-po aria-hidden="true">
+
+<div class="shb-sys" style="--x:16;--y:26;--w:950;--mx:6;--my:10;--mw:348"><SysArmatura /></div>
+
+<div class="shb-w shb-ol po nm" style="--x:978;--y:58;--w:286;--r:0">
+<div class="shb-ol-g"><img src="/appto/brands/outlook.svg" alt="" width="18" height="18"><b>Outlook</b></div>
+<div class="shb-ow">
+<p class="tt">RE: Zamówienie DN50</p>
+{WATEK.map((w) => <div class="zw">{w.my ? <span class="sa">A</span> : <img src={w.f} alt="" width="96" height="96">}<p><b>{w.kto}</b><span>{w.t}</span></p><time>{w.cz}</time></div>)}
+<div class="ro">
+<p class="od"><span class="sa">A</span><span><b>Zamówienia Armatura</b><small>Do: Jan Nowak · 9:50</small></span></p>
+<p>Potwierdzamy zamówienie <b>ZS-2026-0412</b>: zawory kulowe DN50 PN40, 400 szt. Termin dostawy: <b>30.10.2026</b>.</p>
+<span class="zal"><Fragment set:html={ik('pdf')} />PZ-0412.pdf</span>
+</div>
+<div class="zw nw"><img src="/lets-shift/awatar-jakub.webp" alt="" width="96" height="96"><p><b>Jan Nowak</b><span>Czy dostawa 28.10 byłaby możliwa?</span></p><time>9:52</time></div>
+</div>
+</div>
+
+<div class="shb-tst po nm" style="--x:1006;--y:588;--mx:96;--my:786">
+<div class="shb-to"><p class="a"><span class="shb-ap" style="background:#1F4FA8"><i class="shb-mk"></i></span>Armatura · Agent ERP<i>9:48</i></p><b>Zamówienie ZS-2026-0412 zapisane w ERP</b><span>Hydro-Tech · 400 szt. · termin 30.10</span></div>
+</div>
+
+<div class="shb-tb">
+<span class="st" set:html={START}></span><span class="sr"><Fragment set:html={ik('szuk')} /><em>Wyszukaj</em></span>
+{ZAD_PO.map((z) => <span class={`zd${z.on ? ' on' : ''}`}><span class="ic" set:html={APP[z.i]}></span><em>{z.t}</em></span>)}
+<span class="tr"><Fragment set:html={ik('gora')} /><Fragment set:html={ik('wifi')} /><Fragment set:html={ik('glos')} /><span class="zg"><b>9:53</b><small>21.10.2026</small></span><span class="pw"><Fragment set:html={ik('dzw')} /></span></span>
+</div>
+</div>
+
+</div>
+<p class="shb-et l" aria-hidden="true">Dziś</p>
+<p class="shb-et r" aria-hidden="true">Po zmianie</p>
+<div class="shb-uch" role="slider" tabindex="0" aria-label="Porównanie: dziś i po zmianie" aria-valuemin="0" aria-valuemax="100" aria-valuenow="36" aria-valuetext="więcej po zmianie" data-shb-uch><span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3.5 1.5 8 6 12.5M10 3.5 14.5 8 10 12.5"/></svg></span></div>
+</div>
+</figure>
+</div>
+</section>
+
+<style is:global>
+  /* Wymiary rysunku w jednostkach płótna: Nu = N/1280 szerokości (na
+     telefonie N/360), więc okna skalują się razem z tekstem. */
+  .shb{--zwis:clamp(150px,15vw,240px);padding:0 var(--ram) var(--zwis);overflow-x:clip}
+  .shb-pl{position:relative;display:flow-root;padding:clamp(36px,4.4vw,72px) var(--pin) 0;border-radius:clamp(20px,2.2vw,32px);color:#ffffff;
+    background:radial-gradient(1100px 640px at 70% 100%,rgba(0,205,119,0.22),rgba(0,205,119,0) 70%),radial-gradient(700px 420px at 4% -10%,rgba(0,205,119,0.08),rgba(0,205,119,0) 70%),var(--ink)}
+  .shb-pl.v3-ziarno::after{border-radius:inherit}
+  .shb-pl > *{position:relative;z-index:1}
+  .shb-gl{display:grid;grid-template-columns:minmax(0,7.2fr) minmax(0,4.8fr);gap:28px clamp(32px,5vw,96px);align-items:end}
+  .shb-marka{display:flex;align-items:center;flex-wrap:wrap;gap:6px 14px;margin:0 0 clamp(22px,2.6vw,36px);font-size:15px;line-height:1.3;color:rgba(255,255,255,0.68)}
+  .shb-marka b{font-size:18px;font-weight:800;letter-spacing:-0.025em;color:#ffffff}
+  .shb-marka span{padding-left:14px;border-left:1.5px solid rgba(255,255,255,0.24)}
+  .shb-h1{margin:0;font-size:clamp(40px,5.4vw,88px);line-height:0.95;letter-spacing:-0.055em;font-weight:700;text-wrap:balance}
+  .shb-h1 span{color:var(--ziel)}
+  .shb-lead{margin:0;font-size:clamp(16px,1.25vw,19px);line-height:1.6;color:rgba(255,255,255,0.74);text-wrap:pretty}
+  .shb-pr .v3-akcje{margin-top:24px}
+
+  .shb-fig{margin:clamp(36px,4.4vw,64px) 0 calc(var(--zwis) * -1)}
+  .shb-prz{display:none}
+  .shb-ram{--p:36%;position:relative;border-radius:20px;overflow:hidden;touch-action:pan-y;cursor:ew-resize;user-select:none;-webkit-user-select:none;
+    box-shadow:0 0 0 1px rgba(255,255,255,0.16),0 70px 100px -60px rgba(7,20,13,0.75),0 26px 50px -30px rgba(7,20,13,0.45)}
+  .shb-cv{position:relative;aspect-ratio:1280 / 760;container-type:inline-size;--u:calc(100cqw / 1280);overflow:hidden}
+  .shb-dz,.shb-po{position:absolute;inset:0}
+  .shb-dz,.shb-po{background:radial-gradient(calc(1200 * var(--u)) calc(700 * var(--u)) at 30% 20%,#e6ecf2 0%,rgba(230,236,242,0) 60%),linear-gradient(165deg,#d7dee6 0%,#c3cdd8 100%)}
+  .shb-dz{z-index:0}
+  .shb-po{z-index:1;clip-path:inset(0 0 0 var(--p))}
+  .shb-ram.anim .shb-po{transition:clip-path .75s cubic-bezier(.6,0,.2,1)}
+
+  /* ---- DZIŚ: okna ---- */
+  .shb-w{position:absolute;left:calc(var(--x) * var(--u));top:calc(var(--y) * var(--u));width:calc(var(--w) * var(--u));transform:rotate(calc(var(--r) * 1deg));
+    overflow:hidden;border-radius:calc(8 * var(--u));background:#ffffff;color:#242424;font-family:"Segoe UI",system-ui,-apple-system,sans-serif;font-size:calc(13 * var(--u));line-height:1.3;
+    box-shadow:0 0 0 1px rgba(0,0,0,0.13),0 calc(22 * var(--u)) calc(40 * var(--u)) calc(-22 * var(--u)) rgba(15,26,20,0.6),0 calc(4 * var(--u)) calc(10 * var(--u)) calc(-4 * var(--u)) rgba(0,0,0,0.18)}
+  .shb-w p{margin:0}
+  /* Excel */
+  .shb-xl-g{display:flex;align-items:center;gap:calc(8 * var(--u));padding:calc(7 * var(--u)) calc(10 * var(--u));background:#217346;color:#ffffff;font-size:calc(12.5 * var(--u));white-space:nowrap;overflow:hidden}
+  .shb-xl-g .lg{flex:none;display:grid;place-items:center;width:calc(18 * var(--u));height:calc(18 * var(--u));border-radius:calc(3 * var(--u));background:#ffffff;color:#217346;font-size:calc(11 * var(--u));font-weight:800}
+  .shb-xl-g b{min-width:0;font-weight:600;overflow:hidden;text-overflow:ellipsis}
+  .shb-xl-g > span:last-child{opacity:0.75}
+  .shb-xl-rb{display:flex;gap:calc(14 * var(--u));padding:calc(5 * var(--u)) calc(10 * var(--u)) calc(4 * var(--u));border-bottom:1px solid #dddddd;background:#f3f3f3;font-size:calc(11.5 * var(--u));color:#444444}
+  .shb-xl-rb .on{color:#217346;font-weight:600;box-shadow:inset 0 calc(-2 * var(--u)) 0 #217346}
+  .shb-xl-lk{display:flex;align-items:center;gap:calc(8 * var(--u));padding:calc(6 * var(--u)) calc(10 * var(--u));border-bottom:1px solid #f1d78a;background:#fff4ce;font-size:calc(12.5 * var(--u));color:#3a2e00}
+  .shb-xl-lk img{flex:none;width:calc(22 * var(--u));height:calc(22 * var(--u));border-radius:50%;object-fit:cover}
+  .shb-xl-lk b{font-weight:600}
+  .shb-xl-lk i{flex:none;margin-left:auto;padding:calc(2 * var(--u)) calc(8 * var(--u));border:1px solid #c8a13a;border-radius:calc(3 * var(--u));background:#ffffff;font-style:normal;font-size:calc(11.5 * var(--u))}
+  .shb-xl-fx{display:flex;gap:calc(8 * var(--u));padding:calc(4 * var(--u)) calc(10 * var(--u));border-bottom:1px solid #e1e1e1;font-family:Consolas,"Courier New",monospace;font-size:calc(11.5 * var(--u));color:#333333;white-space:nowrap;overflow:hidden}
+  .shb-xl-fx i{font-family:"Segoe UI",sans-serif;color:#888888}
+  .shb-xl table,.shb-acc table{width:100%;border-collapse:collapse;table-layout:fixed;font-family:Calibri,"Segoe UI",sans-serif;font-size:calc(12.5 * var(--u))}
+  .shb-xl th,.shb-xl td,.shb-acc th,.shb-acc td{height:calc(25 * var(--u));padding:0 calc(6 * var(--u));border:1px solid #e1e1e1;font-weight:400;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .shb-xl thead th,.shb-xl tbody th{background:#f3f3f3;color:#555555;font-size:calc(11 * var(--u));text-align:center}
+  .shb-xl tr > :first-child{width:calc(28 * var(--u))}
+  .shb-xl td.n,.shb-acc td.n{text-align:right}
+  .shb-xl tr.on td{background:#eef6f0}
+  .shb-xl td.bl,.shb-rap .bl{background:#fde7e9;color:#c42b1c;font-weight:700}
+  .shb-xl tr.on td.bl{box-shadow:inset 0 0 0 calc(2 * var(--u)) #217346}
+  .shb-xl-tb{display:flex;gap:calc(2 * var(--u));padding:calc(4 * var(--u)) calc(8 * var(--u));border-top:1px solid #dddddd;background:#f3f3f3;font-size:calc(11 * var(--u));color:#555555}
+  .shb-xl-tb span{padding:calc(2 * var(--u)) calc(8 * var(--u))}
+  .shb-xl-tb .on{background:#ffffff;color:#217346;font-weight:600;box-shadow:inset 0 calc(-2 * var(--u)) 0 #217346}
+  /* folder z cennikami */
+  .shb-fo-g{display:flex;align-items:center;gap:calc(8 * var(--u));padding:calc(8 * var(--u)) calc(12 * var(--u));border-bottom:1px solid #e1e1e1;background:#f3f3f3;font-size:calc(13 * var(--u));white-space:nowrap;overflow:hidden}
+  .shb-fo-g svg{flex:none;width:calc(18 * var(--u));height:calc(18 * var(--u));fill:#f4c542;stroke:#c99a1d;stroke-width:1}
+  .shb-fo-g span{min-width:0;overflow:hidden;text-overflow:ellipsis;font-size:calc(11.5 * var(--u));color:#666666}
+  .shb-fo-k{display:grid;grid-template-columns:minmax(0,1fr) calc(84 * var(--u));padding:calc(5 * var(--u)) calc(12 * var(--u)) calc(4 * var(--u)) calc(38 * var(--u));border-bottom:1px solid #eeeeee;font-size:calc(11 * var(--u));color:#777777}
+  .shb-fo-r{display:grid;grid-template-columns:calc(16 * var(--u)) minmax(0,1fr) calc(84 * var(--u));gap:calc(10 * var(--u));align-items:center;padding:calc(4 * var(--u)) calc(12 * var(--u));font-size:calc(12.5 * var(--u))}
+  .shb-fo-r .x{display:grid;place-items:center;width:calc(16 * var(--u));height:calc(19 * var(--u));border-radius:calc(2 * var(--u));background:#217346;color:#ffffff;font-size:calc(9 * var(--u));font-weight:800}
+  .shb-fo-r b{font-weight:400;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .shb-fo-r time{font-size:calc(11.5 * var(--u));color:#777777}
+  .shb-fo-r.on{background:#cce4f7}
+  .shb-fo-d{display:flex;justify-content:space-between;align-items:center;padding:calc(7 * var(--u)) calc(12 * var(--u)) calc(9 * var(--u));border-top:1px solid #eeeeee;font-size:calc(11.5 * var(--u));color:#666666}
+  /* stary ERP i okno błędu (Windows classic) */
+  .shb-erp,.shb-blad{border-radius:0;border:calc(2 * var(--u)) solid;border-color:#ffffff #6f6f6f #6f6f6f #ffffff;background:#d4d0c8;font-family:Tahoma,Verdana,sans-serif;font-size:calc(12 * var(--u));color:#000000}
+  .shb-erp-g{display:flex;justify-content:space-between;align-items:center;padding:calc(3 * var(--u)) calc(4 * var(--u)) calc(3 * var(--u)) calc(7 * var(--u));background:linear-gradient(90deg,#0a246a,#3a6ea5);color:#ffffff;font-size:calc(11.5 * var(--u));font-weight:700}
+  .shb-erp-g span{display:flex;gap:calc(2 * var(--u))}
+  .shb-erp-g i{display:grid;place-items:center;width:calc(16 * var(--u));height:calc(14 * var(--u));border:1px solid;border-color:#ffffff #404040 #404040 #ffffff;background:#d4d0c8;color:#000000;font-style:normal;font-size:calc(9 * var(--u))}
+  .shb-erp-m{display:flex;gap:calc(12 * var(--u));padding:calc(3 * var(--u)) calc(8 * var(--u));border-bottom:1px solid #a0a0a0;font-size:calc(11.5 * var(--u))}
+  .shb-erp-f{display:grid;gap:calc(6 * var(--u));padding:calc(10 * var(--u)) calc(12 * var(--u)) calc(8 * var(--u))}
+  .shb-erp-f label{display:grid;grid-template-columns:calc(80 * var(--u)) minmax(0,1fr);align-items:center}
+  .shb-erp-f label span{padding:calc(2 * var(--u)) calc(5 * var(--u));border:calc(2 * var(--u)) solid;border-color:#6f6f6f #ffffff #ffffff #6f6f6f;background:#ffffff;font-family:"Courier New",monospace;font-size:calc(12 * var(--u));white-space:nowrap;overflow:hidden}
+  .shb-erp-f label span.pusto{background:#ffffc8}
+  .shb-erp-f p{display:flex;justify-content:flex-end;gap:calc(6 * var(--u));margin-top:calc(4 * var(--u))}
+  .shb-erp-f p b,.shb-blad-ok b{padding:calc(2 * var(--u)) calc(16 * var(--u));border:calc(2 * var(--u)) solid;border-color:#ffffff #404040 #404040 #ffffff;font-weight:400}
+  .shb-erp-s{padding:calc(2 * var(--u)) calc(7 * var(--u));border-top:1px solid #808080;font-size:calc(11 * var(--u));color:#7a1d1d}
+  .shb-blad{z-index:5;box-shadow:0 calc(30 * var(--u)) calc(50 * var(--u)) calc(-16 * var(--u)) rgba(0,0,0,0.6)}
+  .shb-blad-in{display:flex;align-items:flex-start;gap:calc(12 * var(--u));padding:calc(14 * var(--u)) calc(14 * var(--u)) calc(6 * var(--u))}
+  .shb-blad-in .x{flex:none;display:grid;place-items:center;width:calc(32 * var(--u));height:calc(32 * var(--u));border-radius:50%;background:#d7261e;color:#ffffff;font-size:calc(22 * var(--u));font-weight:700;line-height:1;box-shadow:inset 0 0 0 calc(2 * var(--u)) rgba(255,255,255,0.6)}
+  .shb-blad-in b{display:block;font-weight:400;font-size:calc(12.5 * var(--u))}
+  .shb-blad-in small{display:block;margin-top:calc(5 * var(--u));font-size:calc(11 * var(--u));color:#444444}
+  .shb-blad-ok{display:flex;justify-content:center;padding:calc(6 * var(--u)) 0 calc(12 * var(--u))}
+  .shb-blad-ok b{outline:1px dotted #000000;outline-offset:calc(-5 * var(--u))}
+  /* Access */
+  .shb-acc-g{display:flex;align-items:center;gap:calc(8 * var(--u));padding:calc(7 * var(--u)) calc(10 * var(--u));background:#a4373a;color:#ffffff;font-size:calc(12.5 * var(--u))}
+  .shb-acc-g .lg{display:grid;place-items:center;width:calc(18 * var(--u));height:calc(18 * var(--u));border-radius:calc(3 * var(--u));background:#ffffff;color:#a4373a;font-size:calc(11 * var(--u));font-weight:800}
+  .shb-acc-g b{font-weight:600}
+  .shb-acc-g span:last-child{opacity:0.75}
+  .shb-acc-t{display:flex;align-items:flex-end;gap:calc(2 * var(--u));padding:calc(6 * var(--u)) calc(10 * var(--u)) 0;border-bottom:1px solid #dddddd;background:#f3f3f3;font-size:calc(12 * var(--u))}
+  .shb-acc-t span{padding:calc(4 * var(--u)) calc(10 * var(--u))}
+  .shb-acc-t .on{margin-bottom:-1px;border:1px solid #dddddd;border-bottom-color:#ffffff;background:#ffffff;font-weight:600}
+  .shb-acc-t em{margin:0 0 calc(5 * var(--u)) auto}
+  .shb-acc thead th{background:#f7f7f7;font-size:calc(11.5 * var(--u));font-weight:600;color:#555555}
+  .shb-acc td{color:#555555}
+  .shb-acc-s{padding:calc(6 * var(--u)) calc(10 * var(--u));background:#f3f3f3;font-size:calc(11 * var(--u));color:#7a1d1d}
+  /* papierowa karta produkcji */
+  .shb-kar{overflow:visible;padding:calc(16 * var(--u)) calc(16 * var(--u)) calc(22 * var(--u));border-radius:calc(2 * var(--u));background:#fbf6e4;color:#2b2a1f;box-shadow:0 calc(20 * var(--u)) calc(30 * var(--u)) calc(-16 * var(--u)) rgba(15,26,20,0.5)}
+  .shb-kar .tasma{position:absolute;left:50%;top:calc(-11 * var(--u));width:calc(86 * var(--u));height:calc(22 * var(--u));margin-left:calc(-43 * var(--u));background:rgba(236,214,160,0.85);transform:rotate(-4deg);box-shadow:0 1px 2px rgba(0,0,0,0.08)}
+  .shb-kar .kubek{position:absolute;right:calc(10 * var(--u));top:calc(62 * var(--u));width:calc(76 * var(--u));height:calc(76 * var(--u));border-radius:50%;box-shadow:inset 0 0 0 calc(5 * var(--u)) rgba(122,82,40,0.16),0 0 0 calc(2 * var(--u)) rgba(122,82,40,0.08);pointer-events:none}
+  .shb-kar .g{display:flex;justify-content:space-between;gap:calc(8 * var(--u));margin:0 0 calc(8 * var(--u));padding-bottom:calc(6 * var(--u));border-bottom:calc(1.5 * var(--u)) solid #2b2a1f;font-size:calc(12.5 * var(--u))}
+  .shb-kar .g span{font-size:calc(11 * var(--u));color:#6b6550}
+  .shb-kar .r{display:grid;grid-template-columns:calc(58 * var(--u)) minmax(0,1fr);align-items:baseline;padding:calc(4 * var(--u)) 0;border-bottom:1px dashed rgba(43,42,31,0.25);font-size:calc(11 * var(--u))}
+  .shb-kar .r em{font-style:normal;color:#6b6550}
+  .shb-kar .r i{font-family:'Caveat',cursive;font-style:normal;font-size:calc(19 * var(--u));line-height:1;color:#25358a}
+  .shb-kar .r i.pusto{display:block;height:calc(18 * var(--u))}
+
+  /* karteczki */
+  .shb-kk{position:absolute;z-index:6;left:calc(var(--x) * var(--u));top:calc(var(--y) * var(--u));width:calc(150 * var(--u));margin:0;padding:calc(12 * var(--u)) calc(12 * var(--u)) calc(14 * var(--u));background:#fdeb8f;
+    box-shadow:0 calc(12 * var(--u)) calc(20 * var(--u)) calc(-12 * var(--u)) rgba(0,0,0,0.45);font-family:'Caveat',cursive;font-size:calc(21 * var(--u));font-weight:600;line-height:1.05;color:#3b3412;transform:rotate(calc(var(--r) * 1deg))}
+  .shb-kk.k2{background:#ffd6e0}
+  .shb-kk.k3{background:#ffdcae}
+  /* suwak */
+  .shb-uch{position:absolute;top:0;bottom:0;left:var(--p);z-index:10;width:44px;margin-left:-22px;display:grid;place-items:center;outline:none;cursor:ew-resize;touch-action:none}
+  .shb-uch::before{content:"";position:absolute;top:0;bottom:0;left:50%;width:3px;margin-left:-1.5px;background:#ffffff;box-shadow:0 0 0 1px rgba(15,26,20,0.15),0 0 18px rgba(0,0,0,0.25)}
+  .shb-uch span{position:relative;display:grid;place-items:center;width:46px;height:46px;border-radius:50%;background:#ffffff;box-shadow:0 8px 20px -6px rgba(0,0,0,0.45),0 0 0 1px rgba(15,26,20,0.1)}
+  .shb-uch svg{width:18px;height:18px;fill:none;stroke:#0f1a14;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .shb-uch:focus-visible span{box-shadow:0 0 0 3px var(--ziel),0 8px 20px -6px rgba(0,0,0,0.45)}
+  .shb-ram.anim .shb-uch{transition:left .75s cubic-bezier(.6,0,.2,1)}
+
+  /* raport dla zarządu */
+  .shb-rap-in{display:grid;grid-template-columns:calc(150 * var(--u)) calc(40 * var(--u)) minmax(0,1fr);gap:calc(6 * var(--u));align-items:center;padding:calc(12 * var(--u)) calc(12 * var(--u)) calc(46 * var(--u))}
+  .shb-rap .pl span{display:flex;align-items:center;gap:calc(6 * var(--u));margin:calc(3 * var(--u)) 0;padding:calc(3 * var(--u)) calc(7 * var(--u));border-radius:calc(4 * var(--u));background:#f3f3f3;font-size:calc(11.5 * var(--u));white-space:nowrap}
+  .shb-rap .pl i{display:grid;place-items:center;width:calc(13 * var(--u));height:calc(15 * var(--u));border-radius:calc(2 * var(--u));background:#217346;color:#ffffff;font-style:normal;font-size:calc(8 * var(--u));font-weight:800}
+  .shb-rap svg{width:100%;height:calc(110 * var(--u))}
+  .shb-rap svg path{fill:none;stroke:#9aa29e;stroke-width:1.2;stroke-dasharray:3 4;vector-effect:non-scaling-stroke}
+  .shb-rap .wy p{display:flex;justify-content:space-between;margin:-1px 0 0;padding:calc(5 * var(--u)) calc(8 * var(--u));border:1px solid #e1e1e1;font-family:Calibri,"Segoe UI",sans-serif;font-size:calc(12.5 * var(--u))}
+  .shb-rap .wy b{padding:0 calc(4 * var(--u));font-weight:600}
+  /* ---- etykiety stron suwaka ---- */
+  .shb-et{position:absolute;top:10px;z-index:9;margin:0;padding:4px 11px 5px;border-radius:999px;font-size:13px;font-weight:700;line-height:1.2;pointer-events:none;box-shadow:0 4px 12px -4px rgba(0,0,0,0.35)}
+  .shb-et.l{left:10px;background:#1b1f23;color:#ffffff}
+  .shb-et.r{right:10px;background:#ffffff;color:#1b1f23}
+
+  /* ---- Outlook ---- */
+  .shb-ol-g{display:flex;align-items:center;gap:calc(8 * var(--u));padding:calc(7 * var(--u)) calc(12 * var(--u));background:#0f6cbd;color:#ffffff;font-size:calc(13 * var(--u))}
+  .shb-ol-g img{width:calc(18 * var(--u));height:calc(18 * var(--u));padding:calc(1 * var(--u));border-radius:calc(3 * var(--u));background:#ffffff}
+  .shb-ol-g .sz{display:flex;align-items:center;gap:calc(6 * var(--u));margin-left:auto;width:calc(160 * var(--u));padding:calc(3 * var(--u)) calc(10 * var(--u));border-radius:calc(4 * var(--u));background:rgba(255,255,255,0.88);color:#616161;font-size:calc(12 * var(--u))}
+  .shb-ol-g .sz .shb-ik{width:calc(13 * var(--u));height:calc(13 * var(--u))}
+  .shb-ol-in{display:grid;grid-template-columns:calc(112 * var(--u)) minmax(0,1fr)}
+  .shb-ol-fo{padding:calc(8 * var(--u)) 0;border-right:1px solid #e6e6e6;background:#fafafa;font-size:calc(12.5 * var(--u))}
+  .shb-ol-fo p{display:flex;justify-content:space-between;gap:calc(6 * var(--u));padding:calc(5 * var(--u)) calc(8 * var(--u)) calc(5 * var(--u)) calc(12 * var(--u));white-space:nowrap}
+  .shb-ol-fo span{overflow:hidden;text-overflow:ellipsis}
+  .shb-ol-fo p.on{background:#dfeaf7;box-shadow:inset calc(3 * var(--u)) 0 0 #0f6cbd;font-weight:600}
+  .shb-ol-fo b{color:#0f6cbd;font-weight:700}
+  .shb-ol-fo i{font-style:normal;color:#616161}
+  .shb-ol-h{display:flex;align-items:center;gap:calc(12 * var(--u));padding:calc(8 * var(--u)) calc(12 * var(--u)) calc(7 * var(--u));border-bottom:1px solid #e6e6e6;font-size:calc(12.5 * var(--u));color:#616161}
+  .shb-ol-h b{margin-right:auto;font-size:calc(14 * var(--u));color:#242424}
+  .shb-ol-h .on{color:#0f6cbd;font-weight:600;box-shadow:inset 0 calc(-2 * var(--u)) 0 #0f6cbd}
+  .shb-ol-m{position:relative;display:grid;grid-template-columns:calc(28 * var(--u)) minmax(0,1fr);gap:calc(9 * var(--u));padding:calc(8 * var(--u)) calc(28 * var(--u)) calc(8 * var(--u)) calc(10 * var(--u));border-bottom:1px solid #eeeeee}
+  .shb-ol-m > img,.shb-ol-m > i{width:calc(28 * var(--u));height:calc(28 * var(--u));border-radius:50%;object-fit:cover}
+  .shb-ol-m > i{display:grid;place-items:center;background:#e8e8e8;color:#616161;font-style:normal;font-size:calc(12 * var(--u));font-weight:700}
+  .shb-ol-m .k{display:flex;align-items:center;gap:calc(6 * var(--u));font-size:calc(12.5 * var(--u))}
+  .shb-ol-m .k b{min-width:0;font-weight:400;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .shb-ol-m .k em{flex:none;padding:0 calc(5 * var(--u));border-radius:calc(8 * var(--u));background:#e1e1e1;font-style:normal;font-size:calc(11 * var(--u));font-weight:600;color:#424242}
+  .shb-ol-m time{flex:none;margin-left:auto;font-size:calc(11.5 * var(--u));color:#616161}
+  .shb-ol-m .t{margin-top:calc(1 * var(--u));font-size:calc(12.5 * var(--u));white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .shb-ol-m .t .wz{margin-right:calc(5 * var(--u));font-weight:800;color:#c50f1f}
+  .shb-ol-m .p{margin-top:calc(1 * var(--u));font-size:calc(12 * var(--u));color:#707070;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .shb-ol-m.nw .k b,.shb-ol-m.nw .t{font-weight:700}
+  .shb-ol-m.sel{background:#fdf3f4;box-shadow:inset calc(3 * var(--u)) 0 0 #c50f1f}
+  .shb-ol-m.sel .k b,.shb-ol-m.sel .t{font-weight:700}
+  .shb-ol-m.sel time{color:#c50f1f;font-weight:600}
+  .shb-ol-m .fl{position:absolute;right:calc(9 * var(--u));top:calc(10 * var(--u))}
+  .shb-ol-m .fl svg{display:block;width:calc(14 * var(--u));height:calc(14 * var(--u));fill:#d13438;stroke:#d13438;stroke-width:1.4;stroke-linejoin:round}
+
+  /* ---- folder, ERP, Access: drobne różnice względem wersji 2 ---- */
+  .shb-fo-a{padding:calc(5 * var(--u)) calc(12 * var(--u));border-bottom:1px solid #e1e1e1;font-size:calc(11.5 * var(--u));color:#555555}
+  .shb-fo-d{justify-content:flex-start}
+  .shb-erp-s{display:flex;gap:calc(16 * var(--u));color:#000000}
+  .shb-erp-s span:first-child{color:#a31515;font-weight:700}
+  .shb-acc-s{display:flex;justify-content:space-between;color:#555555}
+
+  /* ---- Zdjęcia: fotografia karty produkcji ---- */
+  .shb-zd{background:#202020;color:#ffffff}
+  .shb-zd-g{display:flex;gap:calc(6 * var(--u));padding:calc(8 * var(--u)) calc(12 * var(--u));font-size:calc(12.5 * var(--u))}
+  .shb-zd-g i{font-style:normal;color:rgba(255,255,255,0.6)}
+  .shb-zd-in{padding:calc(16 * var(--u)) calc(30 * var(--u)) calc(22 * var(--u));background:#2b2b2b}
+  .shb-zd .shb-kar{transform:rotate(-2.5deg);filter:sepia(0.12) brightness(0.97)}
+  .shb-kar .dop{position:absolute;right:calc(8 * var(--u));bottom:calc(-4 * var(--u));font-family:'Caveat',cursive;font-style:normal;font-size:calc(22 * var(--u));font-weight:600;color:#c62828;transform:rotate(-7deg)}
+
+  /* ---- Teams ---- */
+  .shb-tm-g{display:flex;align-items:center;gap:calc(7 * var(--u));padding:calc(7 * var(--u)) calc(12 * var(--u));border-bottom:1px solid #e3e3ee;background:#ebebf5;font-size:calc(12.5 * var(--u))}
+  .shb-tm-g img{width:calc(16 * var(--u));height:calc(16 * var(--u))}
+  .shb-tm-g span{margin-left:auto;font-size:calc(11.5 * var(--u));color:#616161}
+  .shb-tm-m{display:grid;grid-template-columns:calc(28 * var(--u)) minmax(0,1fr);gap:calc(9 * var(--u));padding:calc(4 * var(--u)) calc(12 * var(--u))}
+  .shb-tm-m img{width:calc(28 * var(--u));height:calc(28 * var(--u));border-radius:50%;object-fit:cover}
+  .shb-tm-m p{min-width:0}
+  .shb-tm-m b{font-size:calc(12 * var(--u));font-weight:600}
+  .shb-tm-m time{margin-left:calc(6 * var(--u));font-size:calc(11 * var(--u));color:#888888}
+  .shb-tm-m span{display:block;font-size:calc(13 * var(--u));white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .shb-tm-m i{display:inline-block;margin-top:calc(2 * var(--u));padding:calc(2 * var(--u)) calc(7 * var(--u));border:1px solid #d6d6e0;border-radius:calc(4 * var(--u));font-style:normal;font-size:calc(11.5 * var(--u));color:#464775}
+
+  /* ---- raport: stopka z autorem ---- */
+  .shb-rap-s{display:flex;justify-content:space-between;padding:calc(4 * var(--u)) calc(12 * var(--u));border-top:1px solid #dddddd;background:#217346;color:rgba(255,255,255,0.9);font-size:calc(11 * var(--u))}
+
+  /* ---- powiadomienia Windows ---- */
+  .shb-tst{position:absolute;z-index:6;left:calc(var(--x) * var(--u));top:calc(var(--y) * var(--u));width:calc(254 * var(--u));display:flex;flex-direction:column;gap:calc(6 * var(--u))}
+  .shb-to{padding:calc(8 * var(--u)) calc(12 * var(--u)) calc(9 * var(--u));border-radius:calc(8 * var(--u));background:rgba(249,249,249,0.97);color:#1b1b1b;font-family:"Segoe UI",system-ui,sans-serif;font-size:calc(12.5 * var(--u));line-height:1.3;
+    box-shadow:0 0 0 1px rgba(0,0,0,0.08),0 calc(16 * var(--u)) calc(30 * var(--u)) calc(-14 * var(--u)) rgba(0,0,0,0.45)}
+  .shb-to .a{display:flex;align-items:center;gap:calc(7 * var(--u));margin:0 0 calc(6 * var(--u));font-size:calc(11.5 * var(--u));color:#5f5f5f}
+  .shb-to .a i{margin-left:auto;font-style:normal}
+  .shb-to .ap{display:grid;place-items:center;width:calc(16 * var(--u));height:calc(16 * var(--u));border-radius:calc(4 * var(--u));background:#3b6fd4;color:#ffffff}
+  .shb-to .ap .shb-ik{width:calc(11 * var(--u));height:calc(11 * var(--u));stroke-width:2.2}
+  .shb-to .shb-ap{width:calc(16 * var(--u));height:calc(16 * var(--u));font-size:calc(9.5 * var(--u))}
+  .shb-to b{display:block;font-weight:600}
+  .shb-to > span{display:block;color:#424242}
+
+  /* ---- ikona aplikacji ---- */
+  .shb-ap{display:inline-grid;place-items:center;flex:none;width:calc(18 * var(--u));height:calc(18 * var(--u));border-radius:calc(4 * var(--u));color:#ffffff;font-family:"Segoe UI",system-ui,sans-serif;font-size:calc(11 * var(--u));font-weight:800;line-height:1}
+  .shb-ap svg{width:72%;height:72%}
+
+  /* ---- pasek zadań Windows 11 ---- */
+  .shb-tb{position:absolute;left:0;right:0;bottom:0;z-index:8;height:calc(48 * var(--u));display:flex;align-items:center;gap:calc(3 * var(--u));padding:0 calc(8 * var(--u));border-top:1px solid rgba(0,0,0,0.08);
+    background:rgba(238,241,245,0.92);font-family:"Segoe UI",system-ui,sans-serif;font-size:calc(11.5 * var(--u));color:#1b1b1b;white-space:nowrap}
+  .shb-tb .st{display:grid;place-items:center;width:calc(38 * var(--u));height:calc(38 * var(--u));border-radius:calc(5 * var(--u))}
+  .shb-tb .st svg{width:calc(20 * var(--u));height:calc(20 * var(--u))}
+  .shb-tb .sr{display:flex;align-items:center;gap:calc(6 * var(--u));height:calc(32 * var(--u));margin-right:calc(4 * var(--u));padding:0 calc(12 * var(--u));border-radius:calc(16 * var(--u));background:#ffffff;box-shadow:inset 0 0 0 1px rgba(0,0,0,0.08);color:#5f5f5f}
+  .shb-tb .sr .shb-ik{width:calc(14 * var(--u));height:calc(14 * var(--u))}
+  .shb-tb .sr em{font-style:normal}
+  .shb-tb .zd{position:relative;display:flex;align-items:center;gap:calc(7 * var(--u));min-width:0;max-width:calc(150 * var(--u));height:calc(38 * var(--u));padding:0 calc(9 * var(--u));border-radius:calc(5 * var(--u))}
+  .shb-tb .zd::after{content:"";position:absolute;left:50%;bottom:calc(2 * var(--u));width:calc(6 * var(--u));height:calc(3 * var(--u));margin-left:calc(-3 * var(--u));border-radius:calc(2 * var(--u));background:#8a8a8a}
+  .shb-tb .zd.on{background:rgba(255,255,255,0.75);box-shadow:inset 0 0 0 1px rgba(0,0,0,0.05)}
+  .shb-tb .zd.on::after{width:calc(16 * var(--u));margin-left:calc(-8 * var(--u));background:#0067c0}
+  .shb-tb .ic{position:relative;display:grid;place-items:center;flex:none;width:calc(20 * var(--u));height:calc(20 * var(--u))}
+  .shb-tb .ic img,.shb-tb .ic svg{width:calc(20 * var(--u));height:calc(20 * var(--u))}
+  .shb-tb .ic .shb-ap{width:calc(20 * var(--u));height:calc(20 * var(--u));font-size:calc(11.5 * var(--u))}
+  .shb-tb .zd em{min-width:0;overflow:hidden;text-overflow:ellipsis;font-style:normal}
+  .shb-tb .zd b{position:absolute;left:calc(19 * var(--u));top:calc(3 * var(--u));min-width:calc(15 * var(--u));padding:0 calc(4 * var(--u));border-radius:calc(8 * var(--u));background:#c42b1c;color:#ffffff;font-size:calc(9.5 * var(--u));font-weight:700;line-height:calc(15 * var(--u));text-align:center}
+  .shb-tb .tr{display:flex;align-items:center;gap:calc(10 * var(--u));margin-left:auto;padding-left:calc(10 * var(--u));color:#3b3b3b}
+  .shb-tb .tr .shb-ik{width:calc(15 * var(--u));height:calc(15 * var(--u))}
+  .shb-tb .zg{display:flex;flex-direction:column;align-items:flex-end;font-size:calc(11.5 * var(--u));line-height:1.25}
+  .shb-tb .zg b{font-weight:400}
+  .shb-tb .zg small{font-size:calc(11.5 * var(--u))}
+  .shb-tb .pw{position:relative}
+  .shb-tb .pw i{position:absolute;right:calc(-3 * var(--u));top:calc(-3 * var(--u));width:calc(7 * var(--u));height:calc(7 * var(--u));border-radius:50%;background:#0067c0}
+
+  .shb-ik{flex:none;width:calc(18 * var(--u));height:calc(18 * var(--u));fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  /* Outlook z wątkiem po programie */
+  .shb-ol.po{display:flex;flex-direction:column}
+  .shb-ow{padding:calc(10 * var(--u)) calc(12 * var(--u)) calc(12 * var(--u))}
+  .shb-ow .tt{margin:0 0 calc(8 * var(--u));font-size:calc(15 * var(--u));font-weight:600}
+  .shb-ow .zw{display:grid;grid-template-columns:calc(24 * var(--u)) minmax(0,1fr) auto;gap:calc(8 * var(--u));align-items:center;padding:calc(6 * var(--u)) calc(8 * var(--u));border-radius:calc(6 * var(--u));background:#f5f5f5;margin-bottom:calc(4 * var(--u));font-size:calc(12 * var(--u))}
+  .shb-ow .zw img,.shb-ow .sa{width:calc(24 * var(--u));height:calc(24 * var(--u));border-radius:50%;object-fit:cover}
+  .shb-ow .sa{display:grid;place-items:center;background:#1f3a8a;color:#ffffff;font-size:calc(11 * var(--u));font-weight:800}
+  .shb-ow .zw p{min-width:0}
+  .shb-ow .zw b{display:block;font-weight:600}
+  .shb-ow .zw p span{display:block;color:#616161;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .shb-ow .zw time{font-size:calc(11.5 * var(--u));color:#616161}
+  .shb-ow .zw.nw{background:#ebf3fc;box-shadow:inset calc(3 * var(--u)) 0 0 #0f6cbd}
+  .shb-ow .zw.nw b,.shb-ow .zw.nw p span{color:#242424;font-weight:700}
+  .shb-ow .ro{margin:calc(2 * var(--u)) 0 calc(6 * var(--u));padding:calc(10 * var(--u)) calc(12 * var(--u)) calc(12 * var(--u));border:1px solid #e6e6e6;border-radius:calc(6 * var(--u));font-size:calc(12.5 * var(--u));line-height:1.45}
+  .shb-ow .ro p + p{margin-top:calc(6 * var(--u))}
+  .shb-ow .od{display:flex;align-items:center;gap:calc(8 * var(--u));margin-bottom:calc(8 * var(--u))}
+  .shb-ow .od b{display:block;font-weight:600}
+  .shb-ow .od small{display:block;font-size:calc(11.5 * var(--u));color:#616161}
+  .shb-ow .zal{display:inline-flex;align-items:center;gap:calc(6 * var(--u));margin-top:calc(8 * var(--u));padding:calc(4 * var(--u)) calc(9 * var(--u));border:1px solid #e1e1e1;border-radius:calc(5 * var(--u));font-size:calc(12 * var(--u))}
+  .shb-ow .zal .shb-ik{width:calc(14 * var(--u));height:calc(14 * var(--u));color:#b42318}
+  /* ruch: wpisy historii po kolei, powiadomienie na końcu */
+
+  /* ---- telefon (przełącznik) ---- */
+  @media (max-width:1000px){ .shb-gl{grid-template-columns:1fr} }
+  @media (max-width:760px){
+    .shb{--zwis:420px}
+    .shb-marka span{padding-left:0;border-left:0;width:100%}
+    .shb-prz{display:flex;width:max-content;margin:0 auto 14px;padding:4px;border-radius:999px;background:rgba(255,255,255,0.08);box-shadow:inset 0 0 0 1px rgba(255,255,255,0.14)}
+    .shb-prz button{appearance:none;border:0;padding:9px 18px;border-radius:999px;background:none;font:inherit;font-size:14.5px;font-weight:650;color:rgba(255,255,255,0.75);cursor:pointer}
+    .shb-prz button[aria-pressed="true"]{background:#ffffff;color:var(--ink)}
+    .shb-prz button:focus-visible{outline:2px solid var(--ziel);outline-offset:2px}
+    .shb-ram{--p:0%;cursor:default;border-radius:16px}
+    .shb-uch,.shb-et{display:none}
+    .shb-cv{aspect-ratio:360 / 900;--u:calc(100cqw / 360)}
+    .shb-w{left:calc(var(--mx) * var(--u));top:calc(var(--my) * var(--u));width:calc(var(--mw) * var(--u));transform:rotate(calc(var(--mr) * 1deg))}
+    .shb-kk,.shb-tst{left:calc(var(--mx) * var(--u));top:calc(var(--my) * var(--u))}
+    .shb-kk{width:calc(104 * var(--u));font-size:calc(19 * var(--u));transform:rotate(calc(var(--mr) * 1deg))}
+    .shb-tst{width:calc(240 * var(--u))}
+    .shb-cv .nm{display:none !important}
+    .shb-ol-in{grid-template-columns:1fr}
+    .shb-ol-m .p{display:none}
+    .shb-xl tr > :nth-child(4),.shb-xl tr > :nth-child(7){display:none}
+    .shb-xl-lk i{display:none}
+    .shb-tb{gap:calc(2 * var(--u));padding:0 calc(6 * var(--u))}
+    .shb-tb .sr,.shb-tb .zd em,.shb-tb .tr > .shb-ik,.shb-tb .pw{display:none}
+    .shb-tb .zd{padding:0 calc(6 * var(--u))}
+    .shb-tb .zd b{left:calc(16 * var(--u))}
+    .shb-tb .zd:nth-of-type(n+8){display:none}
+  }
+    position:absolute;left:calc(var(--x) * var(--u));top:calc(var(--y) * var(--u));width:calc(var(--w) * var(--u));bottom:calc(62 * var(--u));display:flex;flex-direction:column;overflow:hidden;
+    border-radius:calc(8 * var(--u));background:var(--pg);color:var(--ink);font-family:"GeistApp",system-ui,sans-serif;font-size:calc(13.5 * var(--u));line-height:1.35;
+    box-shadow:0 0 0 1px rgba(0,0,0,0.12),0 calc(30 * var(--u)) calc(60 * var(--u)) calc(-30 * var(--u)) rgba(15,26,40,0.55),0 calc(4 * var(--u)) calc(12 * var(--u)) calc(-4 * var(--u)) rgba(0,0,0,0.15)}
+  .shb-po.gra .shb-tst{opacity:0;transform:translateX(calc(30 * var(--u)))}
+  .shb-po.gra.on .shb-tst{opacity:1;transform:none;transition:opacity .35s ease 1.3s,transform .45s cubic-bezier(.2,.8,.2,1) 1.3s}
+  /* ---- PO ZMIANIE: własny system firmy w oknie przeglądarki ---- */
+  .shb-sys{position:absolute;left:calc(var(--x) * var(--u));top:calc(var(--y) * var(--u));width:calc(var(--w) * var(--u));bottom:calc(62 * var(--u));overflow:hidden;border-radius:calc(8 * var(--u));
+    box-shadow:0 0 0 1px rgba(0,0,0,0.12),0 calc(30 * var(--u)) calc(60 * var(--u)) calc(-30 * var(--u)) rgba(15,26,40,0.55),0 calc(4 * var(--u)) calc(12 * var(--u)) calc(-4 * var(--u)) rgba(0,0,0,0.15)}
+  .shb-mk{position:relative;display:block;width:45%;height:45%;border-radius:50%;box-shadow:inset 0 0 0 calc(1.6 * var(--u)) #ffffff}
+  .shb-mk::before{content:"";position:absolute;left:-30%;right:-30%;top:50%;height:calc(1.6 * var(--u));margin-top:calc(-0.8 * var(--u));background:#ffffff}
+  /* ruch: wpisy osi aktywności po kolei, karta decyzji, powiadomienie */
+  .shb-po.gra .sa-ak li{opacity:0;transform:translateY(6px)}
+  .shb-po.gra .sa-dc{opacity:0;transform:translateY(8px)}
+  .shb-po.gra .shb-tst{opacity:0;transform:translateX(30px)}
+  .shb-po.gra.on .sa-ak li{opacity:1;transform:none;transition:opacity .3s ease calc(var(--i) * .32s + .2s),transform .4s ease calc(var(--i) * .32s + .2s)}
+  .shb-po.gra.on .sa-dc{opacity:1;transform:none;transition:opacity .4s ease 2.3s,transform .5s cubic-bezier(.2,.8,.2,1) 2.3s}
+  .shb-po.gra.on .shb-tst{opacity:1;transform:none;transition:opacity .35s ease 1.4s,transform .45s cubic-bezier(.2,.8,.2,1) 1.4s}
+  @media (max-width:760px){
+    .shb-sys{left:calc(var(--mx) * var(--u));top:calc(var(--my) * var(--u));width:calc(var(--mw) * var(--u));bottom:calc(58 * var(--u))}
+  }
+</style>
+
+<script>
+  // Suwak porównania „dziś / po zmianie”. Na pulpicie: przeciąganie
+  // (mysz, dotyk), klawiatura (strzałki, Home, End) i jeden przejazd, gdy
+  // obraz wejdzie w kadr: w stronę „dziś”, potem „po zmianie” (wtedy rusza
+  // historia zamówienia), na koniec powrót. Na telefonie przełącznik dwóch
+  // pełnych widoków; raz przełącza się sam. Bez JS i przy ograniczonym
+  // ruchu: stan końcowy, bez przejazdu.
+  (function(){
+    var fig = document.querySelector('[data-shb]') as HTMLElement | null;
+    if(!fig) return;
+    var ram = fig.querySelector('.shb-ram') as HTMLElement;
+    var uch = fig.querySelector('[data-shb-uch]') as HTMLElement;
+    var po = fig.querySelector('[data-shb-po]') as HTMLElement;
+    var przyc = Array.prototype.slice.call(fig.querySelectorAll('[data-shb-t]')) as HTMLElement[];
+    var redukcja = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var maIO = 'IntersectionObserver' in window;
+    var mq = window.matchMedia('(max-width:760px)');
+    var p = mq.matches ? 0 : 36, ruszyl = false, ciagnie = false, grane = false;
+    function ustaw(v: number){
+      p = Math.max(0, Math.min(100, v));
+      ram.style.setProperty('--p', p.toFixed(2) + '%');
+      uch.setAttribute('aria-valuenow', String(Math.round(p)));
+      uch.setAttribute('aria-valuetext', p < 35 ? 'więcej po zmianie' : p > 65 ? 'więcej dziś' : 'pół na pół');
+    }
+    function graj(){ if(grane) return; grane = true; requestAnimationFrame(function(){ po.classList.add('on'); }); }
+    function tryb(t: string, anim: boolean){
+      ram.classList.toggle('anim', anim && !redukcja);
+      ustaw(t === 'po' ? 0 : 100);
+      przyc.forEach(function(b){ b.setAttribute('aria-pressed', b.dataset.shbT === t ? 'true' : 'false'); });
+      if(t === 'po') graj();
+    }
+    przyc.forEach(function(b){ b.addEventListener('click', function(){ ruszyl = true; tryb(b.dataset.shbT || 'po', true); }); });
+    function zX(x: number){ var r = ram.getBoundingClientRect(); ustaw(((x - r.left) / r.width) * 100); }
+    ram.addEventListener('pointerdown', function(e){
+      if(mq.matches) return;
+      ruszyl = true; ciagnie = true; ram.classList.remove('anim');
+      ram.setPointerCapture(e.pointerId); zX(e.clientX); graj();
+    });
+    ram.addEventListener('pointermove', function(e){ if(ciagnie) zX(e.clientX); });
+    ram.addEventListener('pointerup', function(){ ciagnie = false; });
+    ram.addEventListener('pointercancel', function(){ ciagnie = false; });
+    uch.addEventListener('keydown', function(e){
+      var k = e.key, d = k === 'ArrowLeft' ? -5 : k === 'ArrowRight' ? 5 : 0;
+      if(k === 'Home'){ ustaw(0); } else if(k === 'End'){ ustaw(100); } else if(d){ ustaw(p + d); } else return;
+      e.preventDefault(); ruszyl = true; ram.classList.remove('anim'); graj();
+    });
+    if(redukcja || !maIO) return;
+    po.classList.add('gra');
+    if(mq.matches) tryb('dzis', false); else ustaw(36);
+    function przejazd(){
+      var punkty = [[0, 36], [1100, 95], [2600, 95], [4200, 4], [7600, 4], [8700, 36]], t0 = 0;
+      function krok(t: number){
+        if(ruszyl) return;
+        if(!t0) t0 = t;
+        var dt = t - t0;
+        if(dt > 2500) graj();
+        for(var i = 1; i < punkty.length; i++){
+          if(dt <= punkty[i][0]){
+            var a = punkty[i - 1], b = punkty[i], q = (dt - a[0]) / (b[0] - a[0]);
+            q = q < 0.5 ? 2 * q * q : 1 - Math.pow(-2 * q + 2, 2) / 2;
+            ustaw(a[1] + (b[1] - a[1]) * q);
+            requestAnimationFrame(krok); return;
+          }
+        }
+        ustaw(36);
+      }
+      requestAnimationFrame(krok);
+    }
+    var io = new IntersectionObserver(function(w){
+      if(!w[0].isIntersecting) return;
+      io.disconnect();
+      if(mq.matches) setTimeout(function(){ if(!ruszyl) tryb('po', true); }, 2600);
+      else setTimeout(przejazd, 500);
+    }, { threshold: 0.35 });
+    io.observe(ram);
+  })();
+</script>

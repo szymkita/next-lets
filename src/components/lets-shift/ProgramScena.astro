@@ -1,0 +1,144 @@
+---
+// CO ROBIMY W PROGRAMIE · scena jednej karty (n = 0…4): spis systemów
+// z decyzjami, plan firmy po zmianie, planer etapów, identyfikatory
+// „było → jest”, segregatory wiedzy firmy. Wydzielone z lets-shift.astro
+// 26.10.2026: sceny stoją w <template> i trafiają na stronę przed kadrem.
+// Treść <template> musi być komponentem — kompilator Astro psuje
+// znaczniki <i>, <em>, <s>, <small> wpisane wprost w <template>.
+import { twarz } from './twarze';
+interface Props { n: number }
+const { n } = Astro.props;
+type Dec = 'zo' | 'la' | 'wy' | 'wl';
+const DEC: Record<Dec, string> = { zo: 'zostaje', la: 'łączymy', wy: 'wymieniamy', wl: 'wyłączamy' };
+const ELEMENTY = 24;
+const ILE: Record<Dec, number> = { zo: 7, la: 6, wy: 7, wl: 4 };
+const REJESTR = [
+  { d: 'wy' as Dec, w: [
+    { t: '37 arkuszy ofert', r: '2013', p: 'aktualną wersję zna jedna osoba' },
+    { t: 'Access w magazynie', r: '2011', p: 'autor odszedł, nikt go nie rozwija' },
+    { t: 'Karty produkcji', r: '1994', p: 'dane z hali docierają po dniu' },
+  ] },
+  { d: 'la' as Dec, w: [
+    { t: 'Poczta zamówień', r: '2010', p: 'zamówienia przepisywane do ERP' },
+    { t: 'Panele kurierów', r: '2017', p: 'trzy logowania przy każdej wysyłce' },
+  ] },
+  { d: 'zo' as Dec, w: [
+    { t: 'ERP', r: '2009', p: 'działa jako księga firmy' },
+    { t: 'Kadry i płace', r: '2014', p: 'działa, bez styku z resztą' },
+  ] },
+  { d: 'wl' as Dec, w: [
+    { t: 'CRM', r: '2019', p: 'dane z jednego kwartału' },
+    { t: 'Intranet', r: '2012', p: 'treści są już na dysku' },
+  ] },
+];
+const ARCH = [
+  { t: 'ludzie decydują', ludzie: true, b: [['handlowcy', 1], ['magazyn i hala', 2], ['zarząd', 3], ['obsługa klienta', 3]] },
+  { t: 'AI w pracy', b: [['asystent ofert', 1], ['odczyt zamówień z maili', 1], ['obieg reklamacji', 3]] },
+  { t: 'systemy procesów', b: [['oferty i zamówienia', 1], ['magazyn', 2], ['hala', 2], ['sklep B2B', 2], ['jakość', 3], ['raport', 3]] },
+  { t: 'dane w jednym miejscu', b: [['ERP · księga', 1], ['jedna baza klientów i produktów', 1], ['jeden cennik', 1]], szer: 1 },
+] as { t: string; ludzie?: boolean; szer?: number; b: [string, number][] }[];
+const IKW: Record<string, string> = {
+  dok: '<path d="M6 3h8l5 5v13H6z"/><path d="M14 3v5h5M9 13h7M9 17h5"/>',
+  box: '<path d="M3 8l9-5 9 5v8l-9 5-9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/>',
+  tel: '<rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M10.5 18.5h3"/>',
+  kal: '<rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 9.5h17M8 3v4M16 3v4M7.5 13.5h3M13.5 13.5h3M7.5 16.5h3"/>',
+  rek: '<path d="M4 5h16v11H9l-5 4z"/><path d="M12 8.5v3.2M12 13.6v.1"/>',
+  isk: '<path d="M12 3.5l1.6 4.9 4.9 1.6-4.9 1.6L12 16.5l-1.6-4.9L5.5 10l4.9-1.6z"/><path d="M18 15.5l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z"/>',
+};
+const FALE_NARZ = [
+  { f: 'etap 1', k: 'kw. 1–2', n: [
+    { t: 'System ofert i zamówień', ik: 'dok' },
+    { t: 'Poczta zamówień', s: 'Outlook', img: '/appto/brands/outlook.svg' },
+    { t: 'Asystent ofert', s: 'w systemie ofert', ik: 'isk' },
+  ], off: ['37 arkuszy ofert', 'zamowienia2@'] },
+  { f: 'etap 2', k: 'kw. 3–4', n: [
+    { t: 'Moduł magazynu', ik: 'box' },
+    { t: 'Aplikacja na hali', ik: 'tel' },
+    { t: 'Plan hali', ik: 'kal' },
+  ], off: ['Access', 'drugi program', 'karty z papieru'] },
+  { f: 'etap 3', k: 'kw. 5–6', n: [
+    { t: 'Raport zarządu', s: 'Looker Studio', img: '/appto/brands/looker.svg' },
+    { t: 'Obieg reklamacji z AI', ik: 'rek' },
+    { t: 'Zgłoszenia do jakości', s: 'Teams', img: '/appto/brands/teams.svg' },
+  ], off: ['CRM z 2019 r.', 'intranet'] },
+];
+const ROLE = [
+  { n: 'Kasia', f: 'kasia', dz: 'obsługa zamówień', a: 'przepisuje zamówienia z maila do ERP', b: 'wyjątki w zamówieniach', fala: 'etap 1' },
+  { n: 'Ewa', f: 'ewa', dz: 'dział handlowy', a: 'jedyna zna arkusz cen', b: 'właścicielka jednego cennika', fala: 'etap 1' },
+  { n: 'Tomasz', f: 'tomasz', dz: 'produkcja', a: 'nosi karty produkcji z hali do biura', b: 'planuje pracę hali', fala: 'etap 2' },
+  { n: 'Michał', f: 'michal', dz: 'kontroling', a: 'co piątek eksportuje raport', b: 'analizuje odchylenia w raporcie', fala: 'etap 3' },
+];
+// Karta 5 · wiedza firmy: segregatory na półce, każdy z właścicielem;
+// jeden wysunięty, z kartą źródła (w Appto: Kontekst › Sprzedaż).
+const SEGR = [
+  { t: 'Cennik 2026', s: 'z rabatami', f: 'ewa', k: '#0d6b4a' },
+  { t: 'Zasady rabatów', s: 'progi i wyjątki', f: 'ewa', k: '#2f5d8a', wy: 1 },
+  { t: 'Karty techniczne', s: 'DN15–DN100', f: 'tomasz', k: '#6b5b45' },
+  { t: 'Reklamacje', s: 'procedura', f: 'anna', k: '#8a3b3b' },
+  { t: 'Warunki dostaw', s: 'kurierzy i terminy', f: 'bartek', k: '#46524b' },
+  { t: 'Wzory ofert', s: '24 szablony', f: 'marta', k: '#2b2f36' },
+];
+const ZASADY = ['Stały klient: rabat do 6%', 'Powyżej 300 szt.: dodatkowe 2%', 'Marża poniżej 18%: decyzja Ewy'];
+---
+{n === 0 && (<>
+<div class="sh-r1 tyl"></div>
+<div class="sh-r1">
+<header><b>Spis systemów i decyzji · {ELEMENTY} elementy</b><span>producent armatury · zatwierdzony przez zarząd po mapie</span></header>
+<div class="sh-r1-k"><span>element</span><span>od</span><span>decyzja</span><span>powód</span></div>
+{REJESTR.map((g) => (<>
+  <p class={`sh-r1-g sh-d${g.d}`}><i></i>{DEC[g.d]} · {ILE[g.d]}</p>
+  {g.w.map((w) => <div class={`sh-r1-w sh-d${g.d}`}><b>{w.t}</b><span>{w.r}</span><em class="sh-pc">{DEC[g.d]}</em><p>{w.p}</p></div>)}
+</>))}
+</div>
+</>)}
+{n === 1 && (<>
+<div class="sh-r2">
+<div class="sh-r2-ar">
+{ARCH.map((w) => (
+  <div class={`sh-r2-w${w.ludzie ? ' l' : ''}${w.szer ? ' d' : ''}${w.t === 'AI w pracy' ? ' ai' : ''}`}>
+    <em>{w.t}</em>
+    <div>{w.b.map(([b, f], i) => <span class={`sh-r2-b${w.szer && i === 1 ? ' sz' : ''}`}>{w.ludzie && <svg viewBox="0 0 20 20"><circle cx="10" cy="7" r="3.2"/><path d="M3.5 17c.8-3.4 3.4-5.2 6.5-5.2s5.7 1.8 6.5 5.2"/></svg>}{b}<i>f{f}</i></span>)}</div>
+  </div>
+))}
+<div class="sh-r2-tab"><b>Plan firmy po zmianie</b><span>arkusz 2 z 5</span><span>rew. B · mapa</span><span>architekt</span><span><svg viewBox="0 0 74 20"><path d="M3 14c4-1 6-9 9-9 2 0 0 9 3 9s4-6 7-6 1 6 4 6 5-4 8-4c2 0 2 3 5 3s6-3 9-5 5 2 8 2 6-2 10-3"/></svg></span></div>
+</div>
+</div>
+</>)}
+{n === 2 && (<>
+<div class="sh-r3">
+<div class="sh-r3-kw">{[1, 2, 3, 4, 5, 6].map((n) => <span>kw. {n}</span>)}</div>
+<div class="sh-r3-f">
+{FALE_NARZ.map((f) => (
+  <div class="sh-r3-c">
+    <p class="sh-r3-pas">{f.f}<small>{f.k}</small></p>
+    <ul>{f.n.map((n) => <li><span class={`sh-r3-ik${n.img ? '' : ' wl'}`}>{n.img ? <img decoding="async" src={n.img} alt="" width="22" height="22" loading="lazy"> : <svg viewBox="0 0 24 24" set:html={IKW[n.ik!]}></svg>}</span><span class="tx"><b>{n.t}</b>{n.s && <small>{n.s}</small>}</span></li>)}</ul>
+    <p class="sh-r3-off"><em>wyłączamy:</em>{' '}{f.off.map((o, i) => <>{i > 0 && ', '}<s>{o}</s></>)}</p>
+  </div>
+))}
+</div>
+</div>
+</>)}
+{n === 3 && (<>
+<div class="sh-r4">
+{ROLE.map((r, i) => (
+  <div class="sh-r4-id" style={`--t:${[34, 58, 42, 66][i]}px;--r:${[-1.6, 1.2, -0.8, 1.8][i]}deg`}>
+    <div class="sh-r4-k">
+      <img decoding="async" src={`/lets-shift/awatar-${r.f}.webp`} alt="" width="96" height="96" loading="lazy">
+      <b>{r.n}</b><small>{r.dz}</small>
+      <dl><div><dt>było</dt><dd><s>{r.a}</s></dd></div><div class="po"><dt>jest</dt><dd>{r.b}</dd></div></dl>
+      <em>{r.fala}</em>
+    </div>
+  </div>
+))}
+</div>
+</>)}
+{n === 4 && (<>
+<div class="sh-r5-pol">{SEGR.map((g, i) => <span class={`sh-r5-s${g.wy ? ' wy' : ''}`} style={`--k:${g.k};--i:${i}`}><b>{g.t}</b><small>{g.s}</small><i class="ot"></i><img decoding="async" src={`/lets-shift/awatar-${g.f}.webp`} alt="" width="96" height="96" loading="lazy"></span>)}</div>
+<div class="sh-r5-dk">
+<p class="sh-r5-dk-g"><b>Zasady rabatów</b><span>źródło wiedzy</span></p>
+<ol>{ZASADY.map((z) => <li>{z}</li>)}</ol>
+<p class="sh-r5-wl"><img decoding="async" src="/lets-shift/awatar-ewa.webp" alt="" width="96" height="96" loading="lazy"><span><b>Właścicielka: Ewa Lis</b><small>aktualizacja 20.10.2026</small></span></p>
+<p class="sh-r5-ap"><img decoding="async" loading="lazy" src="/appto/sygnet-mark.svg" alt="" width="14" height="11"><span>w Appto: Kontekst › Sprzedaż</span><Fragment set:html={twarz('of', 18)} /><span>korzysta Agent ofert</span></p>
+</div>
+<div class="sh-r5-dl"></div>
+</>)}

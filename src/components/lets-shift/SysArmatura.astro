@@ -1,0 +1,265 @@
+---
+// SYSTEM FIRMY „ARMATURA” (26.10.2026) — własny system zamówień producenta
+// armatury zbudowany przez nas, z agentami AI wbudowanymi w system. Używa
+// go hero B na /lets-shift (strona „po zmianie”) i zakładka „Własny system
+// firmy” w sekcji „Co możemy dla Was zbudować”. Szymon: „miał być super
+// fajny system, a wciąż jest Appto”.
+// Wygląd jak dojrzały produkt szyty na miarę: Inter, gęsta typografia,
+// cienkie linie, jeden akcent marki klienta (kobalt). Widok zamówienia
+// ZS-2026-0412: nawigacja modułów z panelem „Agenci firmy”, nagłówek
+// zamówienia, kroki z godzinami, oś aktywności (ludzie i agenci), karta
+// decyzji Kasi, pozycje i dokumenty. Twarze agentów z src/lib/agent-face.ts.
+// Rozmiar: jednostka --s = 1/1000 szerokości komponentu (container query),
+// poniżej 620 px szerokości układ w jednej kolumnie (--s = 1/390).
+// Ruch: klasy .gra / .on na dowolnym przodku (hero) — wpisy osi wchodzą
+// po kolei, potem karta decyzji.
+// Twarze agentów jako odwołania do zestawu symboli (twarze.ts); zestaw
+// wstawia strona (lets-shift.astro) raz, przed hero.
+import { twarz } from './twarze';
+interface Props { chrome?: boolean }
+const { chrome = true } = Astro.props;
+const tw = (k: string, s = 24) => twarz(k, s);
+const NB = ' ';
+const I: Record<string, string> = {
+  szuk: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
+  mail: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>',
+  dok: '<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/>',
+  lista: '<path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/>',
+  hala: '<path d="M3 21V9l6 3V9l6 3V5h6v16z"/>',
+  pudlo: '<path d="M3 8l9-5 9 5v8l-9 5-9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/>',
+  auto: '<path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z"/><circle cx="7" cy="18" r="1.8"/><circle cx="17" cy="18" r="1.8"/>',
+  fakt: '<path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/>',
+  wyk: '<path d="M4 20V4M4 20h16"/><path d="M8 16v-5M12 16V8M16 16v-7"/>',
+  ludzie: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.4 3.4-5 6.5-5s5.7 1.6 6.5 5"/><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8M18.5 15.3c1.6.7 2.6 2.3 3 4.7"/>',
+  dzw: '<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/>',
+  druk: '<path d="M7 9V3h10v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M7 14h10v7H7z"/>',
+  wiecej: '<circle cx="5" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="19" cy="12" r="1.3"/>',
+  ok: '<path d="m5 12.5 4.5 4.5L19 7.5"/>',
+  baza: '<ellipse cx="12" cy="6" rx="7" ry="2.6"/><path d="M5 6v12c0 1.4 3.1 2.6 7 2.6s7-1.2 7-2.6V6M5 12c0 1.4 3.1 2.6 7 2.6s7-1.2 7-2.6"/>',
+  zeg: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
+  dol: '<path d="m6 9 6 6 6-6"/>',
+};
+const ik = (n: string) => `<svg class="sa-i" viewBox="0 0 24 24" aria-hidden="true">${I[n]}</svg>`;
+const NAV = [
+  { g: 'Sprzedaż', p: [['mail', 'Zapytania', '6'], ['dok', 'Oferty', ''], ['lista', 'Zamówienia', '', 1]] },
+  { g: 'Operacje', p: [['hala', 'Produkcja', ''], ['pudlo', 'Magazyn', ''], ['auto', 'Wysyłki', '']] },
+  { g: 'Finanse', p: [['fakt', 'Faktury', ''], ['wyk', 'Raporty', '']] },
+];
+const AGENCI = [
+  ['prz', 'Przyjęcia zamówień', 'pracuje'], ['of', 'Oferty', 'pracuje'], ['erp', 'Zapis w ERP', 'czeka'],
+  ['plan', 'Planowanie hali', 'pracuje'], ['st', 'Statusy dla klientów', 'czeka'],
+];
+const KROKI = [['Przyjęte', '9:12'], ['Oferta', '9:13'], ['Akceptacja', '9:47'], ['ERP', '9:48'], ['Produkcja', 'jutro 7:00', 1]];
+// [kto: agent albo zdjęcie, nazwa, czynność, szczegół, załącznik, godzina]
+const AKT: [string, string, string, string, string, string][] = [
+  ['prz', 'Agent przyjęć zamówień', 'utworzył zamówienie z maila', '400 × ZK-DN50-PN40 · termin 30.10', 'mail:mail od Jana Nowaka', '9:12'],
+  ['of', 'Agent ofert', 'wysłał ofertę z cennika 2026', 'rabat 6% jak w III kw. · 14 440,00 zł netto', 'dok:OF-0388.pdf', '9:13'],
+  ['@jakub', 'Jan Nowak, Hydro-Tech', 'zaakceptował ofertę', 'przez link w ofercie', '', '9:47'],
+  ['erp', 'Agent ERP', 'zapisał zamówienie w ERP', 'pozycje zgodne z ofertą', 'baza:ERP · ZS-2026-0412', '9:48'],
+  ['plan', 'Agent planowania', 'wstawił zlecenie na linię 2', 'start jutro 7:00 · 380 korpusów zarezerwowanych', '', '9:49'],
+  ['st', 'Agent statusów', 'wysłał klientowi potwierdzenie', 'z terminem i linkiem do statusu', 'dok:PZ-0412.pdf', '9:50'],
+];
+const DOK = [['OF-0388', 'Oferta', 'wysłana 9:13', ''], ['PZ-0412', 'Potwierdzenie', 'wysłane 9:50', ''], ['WZ 0412/10', 'Wydanie z magazynu', 'po produkcji', 'sz'], ['FV 0412/10', 'Faktura', 'po wysyłce', 'sz']];
+---
+<div class={`sa${chrome ? ' ch' : ''}`}>
+<div class="sa-in">
+{chrome && (<div class="sa-chr">
+<div class="sa-tabs"><span class="tab"><span class="mk sm"><i></i></span>ZS-2026-0412 · Armatura<em>×</em></span><span class="pl">+</span><span class="ok-w"><i>–</i><i>□</i><i>×</i></span></div>
+<div class="sa-adr"><span class="nv">‹ &nbsp;› &nbsp;⟳</span><span class="url"><b>system.armatura.pl</b>/zamowienia/ZS-2026-0412</span></div>
+</div>)}
+<div class="sa-app">
+<aside class="sa-sb">
+<div class="sa-br"><span class="mk"><i></i></span><span><b>Armatura</b><small>System firmy</small></span><Fragment set:html={ik('dol')} /></div>
+<p class="sa-sz"><Fragment set:html={ik('szuk')} /><span>Szukaj</span><kbd>⌘K</kbd></p>
+{NAV.map((g) => (<div class="sa-ng"><p class="h">{g.g}</p>{g.p.map(([i, t, n, on]: any) => <p class={`it${on ? ' on' : ''}`}><Fragment set:html={ik(i)} /><span>{t}</span>{n && <em>{n}</em>}</p>)}</div>))}
+<div class="sa-ng ag"><p class="h">Agenci firmy</p>{AGENCI.map(([a, t, s]) => <p class="it"><Fragment set:html={tw(a, 18)} /><span>{t}</span><i class={s === 'pracuje' ? 'on' : ''} title={s}></i></p>)}</div>
+<div class="sa-me"><img src="/lets-shift/awatar-kasia.webp" alt="" width="96" height="96"><span><b>Kasia Lis</b><small>Obsługa zamówień</small></span></div>
+</aside>
+<main class="sa-m">
+<div class="sa-top"><p class="bc"><span>Zamówienia</span><i>/</i><b>ZS-2026-0412</b></p><span class="pr"><span class="vw"><img src="/lets-shift/awatar-marta.webp" alt="" width="96" height="96"><img src="/lets-shift/awatar-tomasz.webp" alt="" width="96" height="96"></span><Fragment set:html={ik('dzw')} /></span></div>
+<header class="sa-hd">
+<div><p class="nr"><b>ZS-2026-0412</b><span class="st"><i></i>W planie</span></p><p class="kl">Hydro-Tech sp. z o.o. · Jan Nowak · zawory kulowe DN50, 400{NB}szt.</p></div>
+<span class="bt"><Fragment set:html={ik('druk')} />Drukuj</span><span class="bt ic" set:html={ik('wiecej')}></span>
+</header>
+<dl class="sa-fk"><div><dt>Wartość netto</dt><dd>14{NB}440,00{NB}zł</dd></div><div><dt>Termin dostawy</dt><dd>30.10.2026</dd></div><div><dt>Produkcja</dt><dd>linia 2 · jutro 7:00</dd></div><div><dt>Opiekun</dt><dd><img src="/lets-shift/awatar-kasia.webp" alt="" width="96" height="96">Kasia Lis</dd></div></dl>
+<ol class="sa-kr">{KROKI.map(([t, c, n]: any, i) => <li class={n ? 'n' : ''} style={`--i:${i}`}><i></i><b>{t}</b><time>{c}</time></li>)}</ol>
+<div class="sa-zk"><span class="on">Przegląd</span><span>Pozycje <em>1</em></span><span>Dokumenty <em>4</em></span><span>Korespondencja <em>5</em></span></div>
+<div class="sa-gr">
+<section class="sa-ak">
+<p class="sa-h">Aktywność<span>dziś, 21 października</span></p>
+<ol>{AKT.map(([a, k, co, sz, z, c], i) => {
+  const zl = z ? z.split(':') : null;
+  return (<li style={`--i:${i}`} class={a.startsWith('@') ? 'cz' : 'ag'}>
+    <span class="av">{a.startsWith('@') ? <img src={`/lets-shift/awatar-${a.slice(1)}.webp`} alt="" width="96" height="96"> : <Fragment set:html={tw(a, 24)} />}</span>
+    <div><p class="l1"><b>{k}</b> {co}</p><p class="l2">{sz}</p>{zl && <p class="zl"><Fragment set:html={ik(zl[0])} />{zl[1]}</p>}</div>
+    <time>{c}</time>
+  </li>); })}</ol>
+</section>
+<section class="sa-bk">
+<div class="sa-dc">
+<p class="h"><span>Do decyzji</span><time>9:52</time></p>
+<p class="ag"><Fragment set:html={tw('plan', 20)} /><span><b>Agent planowania</b> przygotował</span></p>
+<p class="tx">Hydro-Tech prosi o dostawę <b>28.10</b> zamiast 30.10. Linia 2 ma wolne okno w środę, materiał jest na stanie.</p>
+<p class="bt"><b>Przesuń na 28.10</b><span>Zostaw 30.10</span></p>
+<p class="kt"><img src="/lets-shift/awatar-kasia.webp" alt="" width="96" height="96">Decyduje Kasia Lis</p>
+</div>
+<div class="sa-po">
+<p class="sa-h">Pozycje</p>
+<p class="rw"><span><b>Zawór kulowy DN50 PN40</b><small>ZK-DN50-PN40 · 400 szt. × 36,10 zł</small></span><b>14{NB}440,00</b></p>
+</div>
+<div class="sa-dk">
+<p class="sa-h">Dokumenty</p>
+{DOK.map(([n, t, s, k]) => <p class={`rw${k ? ' ' + k : ''}`}><Fragment set:html={ik('dok')} /><span><b>{n}</b><small>{t} · {s}</small></span></p>)}
+</div>
+</section>
+</div>
+</main>
+</div>
+</div>
+</div>
+
+<style is:global>
+  /* Jednostka: Ns = N/1000 szerokości komponentu (na wąskim: N/390). */
+  .sa{--br:#1F4FA8;--brt:#EEF3FC;--tx:#101828;--t2:#475467;--t3:#667085;--t4:#98A2B3;--li:#EAECF0;--li2:#F2F4F7;--sb:#F9FAFB;
+    position:relative;width:100%;height:100%;container-type:inline-size;overflow:hidden;background:#ffffff;color:var(--tx);
+    font-family:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;font-feature-settings:"cv11","ss01";-webkit-font-smoothing:antialiased}
+  .sa p{margin:0}
+  .sa-in{--s:calc(100cqw / 1000);display:flex;flex-direction:column;height:100%;font-size:calc(13 * var(--s));line-height:1.4}
+  .sa-i{flex:none;width:calc(15 * var(--s));height:calc(15 * var(--s));fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+  .sa .agf{display:block;flex:none;border-radius:28%}
+  .sa .mk{position:relative;display:grid;place-items:center;flex:none;width:calc(28 * var(--s));height:calc(28 * var(--s));border-radius:calc(8 * var(--s));background:var(--br);box-shadow:inset 0 calc(-2 * var(--s)) 0 rgba(0,0,0,0.18)}
+  .sa .mk i{position:relative;width:calc(14 * var(--s));height:calc(14 * var(--s));border-radius:50%;box-shadow:inset 0 0 0 calc(2.4 * var(--s)) #ffffff}
+  .sa .mk i::before{content:"";position:absolute;left:calc(-4 * var(--s));right:calc(-4 * var(--s));top:50%;height:calc(2.4 * var(--s));margin-top:calc(-1.2 * var(--s));background:#ffffff;border-radius:calc(2 * var(--s))}
+  .sa .mk.sm{width:calc(16 * var(--s));height:calc(16 * var(--s));border-radius:calc(5 * var(--s))}
+  .sa .mk.sm i{width:calc(8 * var(--s));height:calc(8 * var(--s));box-shadow:inset 0 0 0 calc(1.6 * var(--s)) #ffffff}
+  .sa .mk.sm i::before{left:calc(-2.5 * var(--s));right:calc(-2.5 * var(--s));height:calc(1.6 * var(--s));margin-top:calc(-0.8 * var(--s))}
+  /* okno przeglądarki */
+  .sa-tabs{display:flex;align-items:flex-end;gap:calc(6 * var(--s));height:calc(34 * var(--s));padding-left:calc(10 * var(--s));background:#E3E6EA;font-size:calc(12 * var(--s));color:#1f2328}
+  .sa-tabs .tab{display:flex;align-items:center;gap:calc(8 * var(--s));width:calc(250 * var(--s));height:calc(28 * var(--s));padding:0 calc(10 * var(--s));border-radius:calc(8 * var(--s)) calc(8 * var(--s)) 0 0;background:#F6F7F9}
+  .sa-tabs .tab em{margin-left:auto;font-style:normal;color:#6b7280}
+  .sa-tabs .pl{align-self:center;font-size:calc(15 * var(--s));color:#4b5563}
+  .sa-tabs .ok-w{display:flex;align-self:stretch;margin-left:auto}
+  .sa-tabs .ok-w i{display:grid;place-items:center;width:calc(42 * var(--s));font-style:normal;color:#374151}
+  .sa-adr{display:flex;align-items:center;gap:calc(12 * var(--s));height:calc(34 * var(--s));padding:0 calc(12 * var(--s));border-bottom:1px solid var(--li);background:#F6F7F9;font-size:calc(12.5 * var(--s));color:#4b5563}
+  .sa-adr .url{flex:1;padding:calc(4 * var(--s)) calc(12 * var(--s));border-radius:calc(14 * var(--s));background:#ECEFF3;color:#6b7280}
+  .sa-adr .url b{font-weight:500;color:#1f2328}
+  /* aplikacja */
+  .sa-app{flex:1;display:grid;grid-template-columns:calc(200 * var(--s)) minmax(0,1fr);min-height:0}
+  .sa-sb{display:flex;flex-direction:column;gap:calc(4 * var(--s));padding:calc(14 * var(--s)) calc(10 * var(--s)) calc(12 * var(--s));border-right:1px solid var(--li);background:var(--sb);overflow:hidden}
+  .sa-br{display:flex;align-items:center;gap:calc(9 * var(--s));padding:calc(2 * var(--s)) calc(6 * var(--s)) calc(10 * var(--s))}
+  .sa-br b{display:block;font-size:calc(14 * var(--s));font-weight:650;letter-spacing:-0.01em}
+  .sa-br small{display:block;font-size:calc(11 * var(--s));color:var(--t3)}
+  .sa-br > .sa-i{margin-left:auto;width:calc(13 * var(--s));height:calc(13 * var(--s));color:var(--t4)}
+  .sa-sz{display:flex;align-items:center;gap:calc(7 * var(--s));margin:0 calc(2 * var(--s)) calc(6 * var(--s)) !important;padding:calc(6 * var(--s)) calc(8 * var(--s));border:1px solid var(--li);border-radius:calc(8 * var(--s));background:#ffffff;font-size:calc(12.5 * var(--s));color:var(--t4)}
+  .sa-sz .sa-i{width:calc(13 * var(--s));height:calc(13 * var(--s))}
+  .sa-sz kbd{margin-left:auto;padding:0 calc(5 * var(--s));border:1px solid var(--li);border-radius:calc(4 * var(--s));font-family:inherit;font-size:calc(10.5 * var(--s));color:var(--t3)}
+  .sa-ng{margin-top:calc(6 * var(--s))}
+  .sa-ng .h{padding:calc(4 * var(--s)) calc(8 * var(--s));font-size:calc(11 * var(--s));font-weight:600;color:var(--t4)}
+  .sa-ng .it{display:flex;align-items:center;gap:calc(9 * var(--s));height:calc(28 * var(--s));padding:0 calc(8 * var(--s));border-radius:calc(7 * var(--s));font-size:calc(13 * var(--s));font-weight:500;color:var(--t2)}
+  .sa-ng .it .sa-i{color:var(--t4)}
+  .sa-ng .it em{margin-left:auto;font-style:normal;font-size:calc(11.5 * var(--s));color:var(--t3)}
+  .sa-ng .it.on{background:#ffffff;color:var(--tx);box-shadow:0 0 0 1px var(--li),0 calc(1 * var(--s)) calc(2 * var(--s)) rgba(16,24,40,0.05)}
+  .sa-ng .it.on .sa-i{color:var(--br)}
+  .sa-ng.ag .it{height:calc(27 * var(--s));font-size:calc(12.5 * var(--s))}
+  .sa-ng.ag .it span{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .sa-ng.ag .it i{flex:none;margin-left:auto;width:calc(7 * var(--s));height:calc(7 * var(--s));border-radius:50%;background:#D0D5DD}
+  .sa-ng.ag .it i.on{background:#12B76A;box-shadow:0 0 0 calc(3 * var(--s)) rgba(18,183,106,0.16)}
+  .sa-me{display:flex;align-items:center;gap:calc(9 * var(--s));margin-top:auto;padding:calc(10 * var(--s)) calc(6 * var(--s)) 0;border-top:1px solid var(--li)}
+  .sa-me img{width:calc(26 * var(--s));height:calc(26 * var(--s));border-radius:50%;object-fit:cover}
+  .sa-me b{display:block;font-size:calc(12.5 * var(--s));font-weight:600}
+  .sa-me small{display:block;font-size:calc(11 * var(--s));color:var(--t3)}
+  .sa-m{display:flex;flex-direction:column;min-width:0;min-height:0;background:#ffffff}
+  .sa-top{display:flex;align-items:center;justify-content:space-between;height:calc(44 * var(--s));padding:0 calc(24 * var(--s));border-bottom:1px solid var(--li)}
+  .sa-top .bc{display:flex;align-items:center;gap:calc(8 * var(--s));font-size:calc(13 * var(--s));color:var(--t3)}
+  .sa-top .bc i{font-style:normal;color:var(--t4)}
+  .sa-top .bc b{font-weight:550;color:var(--tx)}
+  .sa-top .pr{display:flex;align-items:center;gap:calc(14 * var(--s));color:var(--t3)}
+  .sa-top .vw{display:flex}
+  .sa-top .vw img{width:calc(22 * var(--s));height:calc(22 * var(--s));margin-left:calc(-6 * var(--s));border-radius:50%;object-fit:cover;box-shadow:0 0 0 calc(2 * var(--s)) #ffffff}
+  .sa-hd{display:flex;align-items:flex-start;gap:calc(8 * var(--s));padding:calc(18 * var(--s)) calc(24 * var(--s)) 0}
+  .sa-hd > div{flex:1;min-width:0}
+  .sa-hd .nr{display:flex;align-items:center;gap:calc(10 * var(--s))}
+  .sa-hd .nr b{font-size:calc(21 * var(--s));font-weight:650;letter-spacing:-0.02em}
+  .sa-hd .st{display:inline-flex;align-items:center;gap:calc(6 * var(--s));padding:calc(2 * var(--s)) calc(9 * var(--s));border-radius:999px;background:var(--brt);font-size:calc(12 * var(--s));font-weight:550;color:var(--br)}
+  .sa-hd .st i{width:calc(6 * var(--s));height:calc(6 * var(--s));border-radius:50%;background:var(--br)}
+  .sa-hd .kl{margin-top:calc(3 * var(--s)) !important;font-size:calc(13 * var(--s));color:var(--t3)}
+  .sa-hd .bt{display:flex;align-items:center;gap:calc(6 * var(--s));height:calc(30 * var(--s));padding:0 calc(11 * var(--s));border:1px solid var(--li);border-radius:calc(8 * var(--s));font-size:calc(12.5 * var(--s));font-weight:550;color:var(--t2);box-shadow:0 calc(1 * var(--s)) calc(2 * var(--s)) rgba(16,24,40,0.05)}
+  .sa-hd .bt.ic{padding:0 calc(8 * var(--s))}
+  .sa-fk{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin:calc(16 * var(--s)) calc(24 * var(--s)) 0;border:1px solid var(--li);border-radius:calc(10 * var(--s))}
+  .sa-fk div{padding:calc(9 * var(--s)) calc(12 * var(--s))}
+  .sa-fk div + div{border-left:1px solid var(--li)}
+  .sa-fk dt{font-size:calc(11.5 * var(--s));color:var(--t3)}
+  .sa-fk dd{display:flex;align-items:center;gap:calc(6 * var(--s));margin:calc(2 * var(--s)) 0 0;font-size:calc(13.5 * var(--s));font-weight:600;white-space:nowrap}
+  .sa-fk dd img{width:calc(18 * var(--s));height:calc(18 * var(--s));border-radius:50%;object-fit:cover}
+  .sa-kr{position:relative;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));margin:calc(16 * var(--s)) calc(24 * var(--s)) 0;padding:0;list-style:none}
+  .sa-kr::before{content:"";position:absolute;left:calc(6 * var(--s));right:20%;top:calc(5 * var(--s));height:calc(2 * var(--s));background:var(--br)}
+  .sa-kr::after{content:"";position:absolute;left:80%;right:calc(6 * var(--s));top:calc(5 * var(--s));height:calc(2 * var(--s));background:repeating-linear-gradient(90deg,var(--li) 0 calc(4 * var(--s)),transparent calc(4 * var(--s)) calc(7 * var(--s)))}
+  .sa-kr li{position:relative;z-index:1;padding-top:calc(18 * var(--s));font-size:calc(12 * var(--s))}
+  .sa-kr li i{position:absolute;left:0;top:0;width:calc(12 * var(--s));height:calc(12 * var(--s));border-radius:50%;background:var(--br);box-shadow:0 0 0 calc(3 * var(--s)) #ffffff}
+  .sa-kr li b{display:block;font-weight:600}
+  .sa-kr li time{display:block;font-size:calc(11.5 * var(--s));color:var(--t3)}
+  .sa-kr li.n i{background:#ffffff;box-shadow:inset 0 0 0 calc(2 * var(--s)) var(--br),0 0 0 calc(3 * var(--s)) #ffffff}
+  .sa-kr li.n b{color:var(--br)}
+  .sa-zk{display:flex;gap:calc(20 * var(--s));margin:calc(16 * var(--s)) calc(24 * var(--s)) 0;border-bottom:1px solid var(--li);font-size:calc(13 * var(--s));font-weight:500;color:var(--t3)}
+  .sa-zk span{padding:0 0 calc(9 * var(--s))}
+  .sa-zk em{margin-left:calc(3 * var(--s));padding:0 calc(6 * var(--s));border-radius:999px;background:var(--li2);font-style:normal;font-size:calc(11 * var(--s));color:var(--t2)}
+  .sa-zk .on{color:var(--tx);box-shadow:inset 0 calc(-2 * var(--s)) 0 var(--br)}
+  .sa-gr{flex:1;display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:calc(22 * var(--s));min-height:0;padding:calc(14 * var(--s)) calc(24 * var(--s)) 0;overflow:hidden}
+  .sa-h{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:calc(8 * var(--s)) !important;font-size:calc(12.5 * var(--s));font-weight:600;color:var(--tx)}
+  .sa-h span{font-weight:400;color:var(--t4)}
+  .sa-ak ol{position:relative;margin:0;padding:0;list-style:none}
+  .sa-ak ol::before{content:"";position:absolute;left:calc(12 * var(--s));top:calc(6 * var(--s));bottom:calc(16 * var(--s));width:1px;background:var(--li)}
+  .sa-ak li{position:relative;display:grid;grid-template-columns:calc(26 * var(--s)) minmax(0,1fr) auto;gap:calc(11 * var(--s));padding:0 0 calc(12 * var(--s))}
+  .sa-ak .av{position:relative;z-index:1;width:calc(26 * var(--s));height:calc(26 * var(--s));padding:calc(1 * var(--s));border-radius:calc(9 * var(--s));background:#ffffff}
+  .sa-ak .av .agf{width:calc(24 * var(--s));height:calc(24 * var(--s))}
+  .sa-ak .av img{width:calc(24 * var(--s));height:calc(24 * var(--s));border-radius:50%;object-fit:cover}
+  .sa-ak .l1{font-size:calc(13 * var(--s));line-height:1.35;color:var(--t2)}
+  .sa-ak .l1 b{font-weight:600;color:var(--tx)}
+  .sa-ak .l1 em{display:inline-block;margin-left:calc(6 * var(--s));padding:0 calc(5 * var(--s));border:1px solid var(--li);border-radius:calc(4 * var(--s));font-style:normal;font-size:calc(10.5 * var(--s));font-weight:500;line-height:1.5;color:var(--t3);vertical-align:calc(1 * var(--s))}
+  .sa-ak .l2{margin-top:calc(1 * var(--s)) !important;font-size:calc(12 * var(--s));color:var(--t3)}
+  .sa-ak .zl{display:inline-flex;align-items:center;gap:calc(6 * var(--s));margin-top:calc(6 * var(--s)) !important;padding:calc(3 * var(--s)) calc(8 * var(--s));border:1px solid var(--li);border-radius:calc(7 * var(--s));font-size:calc(11.5 * var(--s));font-weight:500;color:var(--t2);box-shadow:0 calc(1 * var(--s)) calc(2 * var(--s)) rgba(16,24,40,0.04)}
+  .sa-ak .zl .sa-i{width:calc(13 * var(--s));height:calc(13 * var(--s));color:var(--br)}
+  .sa-ak time{font-size:calc(11.5 * var(--s));color:var(--t4);font-variant-numeric:tabular-nums}
+  .sa-bk{display:flex;flex-direction:column;gap:calc(14 * var(--s));min-width:0}
+  .sa-dc{padding:calc(13 * var(--s)) calc(14 * var(--s)) calc(14 * var(--s));border-radius:calc(12 * var(--s));background:#ffffff;box-shadow:0 0 0 calc(1.5 * var(--s)) var(--br),0 calc(10 * var(--s)) calc(24 * var(--s)) calc(-12 * var(--s)) rgba(31,79,168,0.35)}
+  .sa-dc .h{display:flex;justify-content:space-between;align-items:center;font-size:calc(11.5 * var(--s));font-weight:600;color:var(--br)}
+  .sa-dc .h time{font-weight:400;color:var(--t4)}
+  .sa-dc .ag{display:flex;align-items:center;gap:calc(7 * var(--s));margin-top:calc(9 * var(--s)) !important;font-size:calc(12 * var(--s));color:var(--t3)}
+  .sa-dc .ag b{font-weight:600;color:var(--tx)}
+  .sa-dc .tx{margin-top:calc(7 * var(--s)) !important;font-size:calc(13.5 * var(--s));line-height:1.45}
+  .sa-dc .tx b{font-weight:650}
+  .sa-dc .bt{display:flex;flex-wrap:wrap;gap:calc(7 * var(--s));margin-top:calc(11 * var(--s)) !important}
+  .sa-dc .bt > *{display:flex;align-items:center;height:calc(30 * var(--s));padding:0 calc(12 * var(--s));border-radius:calc(8 * var(--s));font-size:calc(12.5 * var(--s));font-weight:600}
+  .sa-dc .bt b{background:var(--br);color:#ffffff;box-shadow:0 calc(1 * var(--s)) calc(2 * var(--s)) rgba(16,24,40,0.1),inset 0 calc(-1 * var(--s)) 0 rgba(0,0,0,0.15)}
+  .sa-dc .bt span{border:1px solid var(--li);color:var(--t2)}
+  .sa-dc .kt{display:flex;align-items:center;gap:calc(7 * var(--s));margin-top:calc(10 * var(--s)) !important;padding-top:calc(9 * var(--s));border-top:1px solid var(--li2);font-size:calc(11.5 * var(--s));color:var(--t3)}
+  .sa-dc .kt img{width:calc(18 * var(--s));height:calc(18 * var(--s));border-radius:50%;object-fit:cover}
+  .sa-po .rw,.sa-dk .rw{display:flex;align-items:center;justify-content:space-between;gap:calc(10 * var(--s));padding:calc(7 * var(--s)) 0;border-top:1px solid var(--li2)}
+  .sa-po .rw > span,.sa-dk .rw > span{min-width:0}
+  .sa-po b,.sa-dk b{display:block;font-size:calc(12.5 * var(--s));font-weight:600}
+  .sa-po small,.sa-dk small{display:block;font-size:calc(11.5 * var(--s));color:var(--t3)}
+  .sa-po .rw > b{font-variant-numeric:tabular-nums;white-space:nowrap}
+  .sa-dk .rw{justify-content:flex-start}
+  .sa-dk .rw .sa-i{color:var(--br)}
+  .sa-dk .rw.sz .sa-i{color:var(--t4)}
+  .sa-dk .rw.sz b{color:var(--t3);font-weight:500}
+  /* wąski kontener: jedna kolumna */
+  @container (max-width:620px){
+    .sa-in{--s:calc(100cqw / 390)}
+    .sa-tabs,.sa-sb,.sa-adr .nv,.sa-hd .bt,.sa-zk,.sa-top .vw,.sa-dk,.sa-po{display:none}
+    .sa-app{grid-template-columns:1fr}
+    .sa-top{height:calc(40 * var(--s));padding:0 calc(14 * var(--s))}
+    .sa-hd{padding:calc(12 * var(--s)) calc(14 * var(--s)) 0}
+    .sa-hd .nr b{font-size:calc(18 * var(--s))}
+    .sa-hd .kl{font-size:calc(12 * var(--s))}
+    .sa-fk{grid-template-columns:repeat(2,minmax(0,1fr));margin:calc(12 * var(--s)) calc(14 * var(--s)) 0}
+    .sa-fk div:nth-child(3){border-left:0}
+    .sa-fk div:nth-child(n+3){border-top:1px solid var(--li)}
+    .sa-kr{margin:calc(12 * var(--s)) calc(14 * var(--s)) 0}
+    .sa-kr li{font-size:calc(10.5 * var(--s))}
+    .sa-kr li time{font-size:calc(10 * var(--s))}
+    .sa-gr{display:flex;flex-direction:column-reverse;justify-content:flex-end;gap:calc(12 * var(--s));padding:calc(12 * var(--s)) calc(14 * var(--s)) 0}
+    .sa-ak li:nth-child(n+5){display:none}
+    .sa-ak .zl{display:none}
+  }
+</style>

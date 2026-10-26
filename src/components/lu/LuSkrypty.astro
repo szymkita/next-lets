@@ -1,0 +1,281 @@
+---
+// ZACHOWANIA „JAK LET’S UP”: skrypty z /lets-up-v6 (telefon w hero,
+// słowa zapalane w definicji, opowieść przyklejona do przewijania, stos
+// kart, przesuwany pokaz okien, rząd sytuacji, skalowanie okien 1920 × 1040,
+// kroki Appto, karuzela opinii). Każdy blok szuka swojego data-atrybutu
+// i nic nie robi, jeśli strona go nie ma. Opis: docs/podstrony-w-stylu-lets-up.md.
+---
+<script>
+  var redukcja = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var ma = 'IntersectionObserver' in window;
+
+  // Jeden wspólny nasłuch przewijania dla rysunków zależnych od położenia
+  // (definicja, stos kart, pochylenie okien), liczony raz na klatkę.
+  var naPrzewijanie: Array<() => void> = [];
+  (function(){
+    var czeka = false;
+    function klatka(){ czeka = false; naPrzewijanie.forEach(function(f){ f(); }); }
+    function pros(){ if(!czeka){ czeka = true; requestAnimationFrame(klatka); } }
+    window.addEventListener('scroll', pros, { passive: true });
+    window.addEventListener('resize', pros);
+    window.addEventListener('load', pros);
+    setTimeout(pros, 50);
+  })();
+  function wKadrze(el: Element, start: () => void, stop: () => void, prog?: number){
+    if(!ma) return;
+    var io = new IntersectionObserver(function(w){ if(w[0].isIntersecting) start(); else stop(); }, { threshold: prog || 0.3 });
+    io.observe(el);
+  }
+
+  // ---- HERO: telefon właściciela, „Dziś” → „Z Let’s Up” ----
+  // Wiadomości spadają co 0,6 s, potem ekran przechodzi w stan „Z Let’s Up”:
+  // grupa spraw obsłużonych bez właściciela i dwie decyzje; na pierwszą
+  // przychodzi odpowiedź. Pętla, dopóki telefon jest w kadrze. Klik
+  // w przełącznik zatrzymuje pokaz i zostawia wybrany stan.
+  (function(){
+    var f = document.querySelector('[data-u3h]') as HTMLElement | null;
+    if(!f) return;
+    var chaos = f.querySelector('[data-u3h-chaos]') as HTMLElement;
+    var n = (Array.prototype.slice.call(chaos.querySelectorAll('.u2t-n')) as HTMLElement[]).reverse();
+    var dec = f.querySelector('[data-u3h-dec]') as HTMLElement;
+    var tak = f.querySelector('[data-u3h-tak]') as HTMLElement;
+    var przyc = Array.prototype.slice.call(document.querySelectorAll('[data-u3h-tryb]')) as HTMLElement[];
+    var timery: number[] = [], sam = !redukcja && ma, widac = false;
+    function tryb(t: string){
+      f!.dataset.tryb = t;
+      przyc.forEach(function(b){ b.setAttribute('aria-pressed', b.dataset.u3hTryb === t ? 'true' : 'false'); });
+    }
+    function czysc(){ timery.forEach(function(t){ clearTimeout(t); }); timery = []; }
+    function od(ms: number, fn: () => void){ timery.push(window.setTimeout(fn, ms)); }
+    function pokaz(){
+      czysc();
+      chaos.classList.add('gra');
+      n.forEach(function(x){ x.classList.remove('on'); });
+      dec.classList.remove('zrob'); tak.classList.remove('kl');
+      tryb('dzis');
+      n.forEach(function(x, i){ od(300 + i * 600, function(){ x.classList.add('on'); }); });
+      var t0 = 300 + n.length * 600 + 1000;
+      od(t0, function(){ tryb('po'); });
+      od(t0 + 2600, function(){ tak.classList.add('kl'); });
+      od(t0 + 2900, function(){ dec.classList.add('zrob'); });
+      od(t0 + 7600, function(){ if(widac && sam) pokaz(); });
+    }
+    przyc.forEach(function(b){
+      b.addEventListener('click', function(){
+        sam = false; czysc();
+        chaos.classList.remove('gra');
+        dec.classList.remove('zrob'); tak.classList.remove('kl');
+        tryb(b.dataset.u3hTryb || 'po');
+      });
+    });
+    if(!sam) return;
+    wKadrze(f, function(){ if(!widac){ widac = true; if(sam) pokaz(); } }, function(){ if(widac){ widac = false; czysc(); } }, 0.25);
+  })();
+
+  // ---- DEFINICJA: słowa zapalają się w rytmie przewijania ----
+  (function(){
+    var p = document.querySelector('[data-u2d]') as HTMLElement | null;
+    if(!p || redukcja) return;
+    var w = Array.prototype.slice.call(p.querySelectorAll('.w')) as HTMLElement[];
+    p.classList.add('gra');
+    var ost = -1;
+    naPrzewijanie.push(function(){
+      var r = p!.getBoundingClientRect(), vh = window.innerHeight;
+      var x = (vh * 0.82 - r.top) / (r.height + vh * 0.25);
+      var k = Math.max(0, Math.min(w.length, Math.round(x * w.length)));
+      if(k === ost) return;
+      ost = k;
+      w.forEach(function(s, j){ s.classList.toggle('on', j < k); });
+    });
+  })();
+
+  // ---- OPOWIEŚĆ: krok w środku ekranu ustawia stan rysunku ----
+  // W krokach 1 i 2 część paska najpierw się podświetla, a po 0,8 s znika
+  // (opóźnienie w CSS); licznik czasu zmienia się razem z nią.
+  (function(){
+    var wiz = document.querySelector('[data-u4z]') as HTMLElement | null;
+    if(!wiz || !ma) return;
+    var kroki = Array.prototype.slice.call(document.querySelectorAll('[data-u4z-k]')) as HTMLElement[];
+    var czas = wiz.querySelector('[data-u4z-czas]') as HTMLElement;
+    var timer = 0, biez = -1;
+    function ustaw(k: number){
+      if(k === biez) return;
+      var wprzod = k > biez;
+      biez = k;
+      wiz!.dataset.krok = String(k);
+      kroki.forEach(function(x, j){ x.classList.toggle('on', j === k); });
+      var cel = k >= 2 ? czas.dataset.c2 : k === 1 ? czas.dataset.c1 : czas.dataset.c0;
+      clearTimeout(timer);
+      timer = window.setTimeout(function(){ czas.textContent = cel || ''; }, wprzod && (k === 1 || k === 2) && !redukcja ? 1100 : 0);
+    }
+    var io = new IntersectionObserver(function(w){
+      w.forEach(function(e){ if(e.isIntersecting) ustaw(Number((e.target as HTMLElement).dataset.u4zK)); });
+    }, { rootMargin: '-45% 0px -45% 0px' });
+    kroki.forEach(function(k){ io.observe(k); });
+  })();
+
+  // ---- STOS KART: poprzednia karta cofa się, kiedy nachodzi następna ----
+  (function(){
+    var st = document.querySelector('[data-u4p]') as HTMLElement | null;
+    if(!st || redukcja) return;
+    var k = Array.prototype.slice.call(st.querySelectorAll('.u4p-k')) as HTMLElement[];
+    var mq = window.matchMedia('(min-width:1000px) and (min-height:760px)');
+    naPrzewijanie.push(function(){
+      if(!mq.matches){ k.forEach(function(x){ x.style.removeProperty('--s'); x.style.removeProperty('--o'); }); return; }
+      for(var i = 0; i < k.length - 1; i++){
+        var a = k[i].getBoundingClientRect(), b = k[i + 1].getBoundingClientRect();
+        var pr = Math.max(0, Math.min(1, (a.bottom - b.top) / a.height));
+        k[i].style.setProperty('--s', String(1 - pr * 0.05));
+        k[i].style.setProperty('--o', String(pr * 0.5));
+      }
+    });
+  })();
+
+  // ---- SYSTEM Z AI: okna pochylone w głąb prostują się przy przewijaniu ----
+  (function(){
+    var sc = document.querySelector('[data-u2a]') as HTMLElement | null;
+    if(!sc || redukcja) return;
+    var mq = window.matchMedia('(min-width:901px)');
+    naPrzewijanie.push(function(){
+      if(!mq.matches) return;
+      var r = sc!.getBoundingClientRect(), vh = window.innerHeight;
+      var t = Math.max(0, Math.min(1, (r.top - vh * 0.18) / (vh * 0.62)));
+      sc!.style.setProperty('--t', t.toFixed(3));
+    });
+  })();
+
+  // ---- SYSTEM Z AI: przesuwany pokaz (zakładki, strzałki, gest) ----
+  (function(){
+    var tor = document.querySelector('[data-u3a-tor]') as HTMLElement | null;
+    if(!tor) return;
+    var sl = Array.prototype.slice.call(tor.children) as HTMLElement[];
+    var zak = Array.prototype.slice.call(document.querySelectorAll('[data-u3a-zak]')) as HTMLElement[];
+    var opisy = Array.prototype.slice.call(document.querySelectorAll('[data-u3a-p]')) as HTMLElement[];
+    var str = Array.prototype.slice.call(document.querySelectorAll('[data-u3a-krok]')) as HTMLButtonElement[];
+    var biez = 0;
+    function krok(){ return sl.length > 1 ? sl[1].offsetLeft - sl[0].offsetLeft : tor!.clientWidth; }
+    function idz(i: number, fokus?: boolean){
+      i = Math.max(0, Math.min(sl.length - 1, i));
+      tor!.scrollTo({ left: i * krok(), behavior: redukcja ? 'auto' : 'smooth' });
+      if(fokus) zak[i].focus();
+    }
+    function stan(){
+      var i = Math.max(0, Math.min(sl.length - 1, Math.round(tor!.scrollLeft / krok())));
+      biez = i;
+      zak.forEach(function(b, j){ b.setAttribute('aria-selected', j === i ? 'true' : 'false'); b.tabIndex = j === i ? 0 : -1; });
+      opisy.forEach(function(p, j){ p.hidden = j !== i; });
+      if(str[0]) str[0].disabled = i === 0;
+      if(str[1]) str[1].disabled = i === sl.length - 1;
+    }
+    zak.forEach(function(b, i){
+      b.addEventListener('click', function(){ idz(i); });
+      b.addEventListener('keydown', function(e){
+        if(e.key === 'ArrowRight'){ e.preventDefault(); idz(i + 1, true); }
+        if(e.key === 'ArrowLeft'){ e.preventDefault(); idz(i - 1, true); }
+      });
+    });
+    str.forEach(function(b){ b.addEventListener('click', function(){ idz(biez + Number(b.dataset.u3aKrok)); }); });
+    var czeka = false;
+    tor.addEventListener('scroll', function(){ if(!czeka){ czeka = true; requestAnimationFrame(function(){ czeka = false; stan(); }); } }, { passive: true });
+    window.addEventListener('resize', stan);
+    stan();
+  })();
+
+  // ---- BRZMI ZNAJOMO: rząd sytuacji, strzałki przewijają o jedną kartę ----
+  (function(){
+    var sc = document.querySelector('[data-u5s]') as HTMLElement | null;
+    if(!sc) return;
+    var k = Array.prototype.slice.call(sc.children) as HTMLElement[];
+    var str = Array.prototype.slice.call(document.querySelectorAll('[data-u5s-k]')) as HTMLButtonElement[];
+    var lk = document.querySelector('[data-u5s-lk]') as HTMLElement | null;
+    function krok(){ return k.length > 1 ? k[1].offsetLeft - k[0].offsetLeft : 320; }
+    function stan(){
+      var max = sc!.scrollWidth - sc!.clientWidth - 2;
+      if(str[0]) str[0].disabled = sc!.scrollLeft <= 2;
+      if(str[1]) str[1].disabled = sc!.scrollLeft >= max;
+      var od = Math.round(sc!.scrollLeft / krok());
+      var ile = Math.max(1, Math.floor((sc!.clientWidth + 8) / krok()));
+      var do_ = Math.min(k.length, od + ile);
+      if(lk) lk.textContent = (ile === 1 ? String(od + 1) : (od + 1) + '–' + do_) + ' z ' + k.length;
+    }
+    str.forEach(function(b){ b.addEventListener('click', function(){ sc!.scrollBy({ left: Number(b.dataset.u5sK) * krok(), behavior: redukcja ? 'auto' : 'smooth' }); }); });
+    sc.addEventListener('scroll', stan, { passive: true });
+    window.addEventListener('resize', stan);
+    stan();
+  })();
+
+  // ---- OKNA: płótno 1920 × 1040 skalowane do szerokości slajdu ----
+  // Na wąskim ekranie okno pokazuje wycinek (data-mw: szerokość wycinka,
+  // data-mx: przesunięcie w lewo, oba w pikselach płótna).
+  (function(){
+    var ok = Array.prototype.slice.call(document.querySelectorAll('[data-o6]')) as HTMLElement[];
+    if(!ok.length) return;
+    function licz(){
+      ok.forEach(function(o){
+        var w = o.clientWidth;
+        if(!w) return;
+        var maly = w < 700;
+        var lw = maly ? Number(o.dataset.mw || 900) : 1920;
+        o.style.setProperty('--k', (w / lw).toFixed(4));
+        o.style.setProperty('--x', maly ? -Number(o.dataset.mx || 0) + 'px' : '0px');
+      });
+    }
+    licz();
+    if('ResizeObserver' in window){ var ro = new ResizeObserver(licz); ok.forEach(function(o){ ro.observe(o); }); }
+    else window.addEventListener('resize', licz);
+  })();
+
+  // ---- APPTO: kroki agenta jak w produkcie ----
+  // Nagłówek, potem „Appto używa Gmail / Arkuszy Google / czyta Kontekst”
+  // z ptaszkiem, odpowiedź z dokumentem i panel dokumentu. Rusza, kiedy
+  // slajd z Appto jest widoczny; bez JS i przy ograniczonym ruchu widać
+  // stan końcowy.
+  (function(){
+    var f = document.querySelector('[data-k6]') as HTMLElement | null;
+    if(!f || redukcja || !ma) return;
+    var el = Array.prototype.slice.call(f.querySelectorAll('[data-k6-s]')) as HTMLElement[];
+    var timery: number[] = [], widac = false, bylo = false;
+    function stan(n: number){ el.forEach(function(e){ e.classList.toggle('on', Number(e.dataset.k6S) <= n); }); }
+    function czysc(){ timery.forEach(function(t){ clearTimeout(t); }); timery = []; }
+    function pokaz(){
+      czysc();
+      f!.classList.add('gra');
+      stan(-1);
+      [0, 1, 2, 3, 4, 5].forEach(function(n, i){ timery.push(window.setTimeout(function(){ stan(n); }, 500 + i * 900)); });
+    }
+    f.classList.add('gra');
+    stan(5);
+    wKadrze(f, function(){ if(!widac){ widac = true; if(!bylo){ bylo = true; pokaz(); } } }, function(){ widac = false; }, 0.55);
+  })();
+
+  // ---- OPINIE: cztery cytaty w jednym miejscu (karuzela ze strony głównej) ----
+  // Przenikanie co 8 s, gdy cytat jest na ekranie; pauza pod kursorem i przy
+  // fokusie; przy prefers-reduced-motion tylko strzałki.
+  (function(){
+    var w = document.querySelector('[data-op9]') as HTMLElement | null;
+    if(!w) return;
+    var k = Array.prototype.slice.call(w.querySelectorAll('[data-op9-k]')) as HTMLElement[];
+    var lk = w.querySelector('[data-op9-lk]') as HTMLElement | null;
+    var CZAS = 8000, i = 0, timer = 0, widoczna = false, pauza = false;
+    function plan(){
+      clearTimeout(timer);
+      if(redukcja || pauza || !widoczna) return;
+      timer = window.setTimeout(function(){ pokaz(i + 1); }, CZAS);
+    }
+    function pokaz(n: number){
+      i = (n + k.length) % k.length;
+      k.forEach(function(el, j){ el.classList.toggle('on', j === i); el.setAttribute('aria-hidden', j === i ? 'false' : 'true'); });
+      if(lk) lk.textContent = (i + 1) + ' z ' + k.length;
+      plan();
+    }
+    (w.querySelector('[data-op9-wstecz]') as HTMLElement).addEventListener('click', function(){ pokaz(i - 1); });
+    (w.querySelector('[data-op9-dalej]') as HTMLElement).addEventListener('click', function(){ pokaz(i + 1); });
+    w.addEventListener('mouseenter', function(){ pauza = true; plan(); });
+    w.addEventListener('mouseleave', function(){ pauza = false; plan(); });
+    w.addEventListener('focusin', function(){ pauza = true; plan(); });
+    w.addEventListener('focusout', function(e){ if(!w!.contains(e.relatedTarget as Node)){ pauza = false; plan(); } });
+    if(ma){
+      new IntersectionObserver(function(e){ widoczna = e[0].isIntersecting; plan(); }, { threshold: 0.5 }).observe(w);
+    } else { widoczna = true; plan(); }
+  })();
+</script>

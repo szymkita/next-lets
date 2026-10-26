@@ -1,0 +1,1768 @@
+---
+// LET’S SHIFT — /lets-shift (opublikowana 26.10.2026; komponenty w
+// src/components/lets-shift, warianty hero na /lets-shift-hero w src/robocze)
+// 26.10.2026 Szymon: strona produkcyjna, liczby prawdziwe, bez oznaczeń
+// przykład/demo (w treści, alt, aria-label, title, JSON-LD i FAQ). Starsze
+// dopiski „poglądowy” w komentarzach niżej są historią decyzji.
+// 26.10.2026 odchudzenie (wygląd bez zmian): przykłady 2 i 3 w „Jedna
+// sprawa”, panele kroków 2–6 pierwszego przykładu i zakładki 3–5 w „Co
+// możemy dla Was zbudować” stoją w <template> i trafiają do strony przy
+// pierwszym wyborze albo tuż przed wejściem sekcji w kadr; zakładka 1
+// klonuje system Armatura z hero zamiast renderować go drugi raz; twarze
+// agentów to <use> z jednego zestawu symboli (_lets-shift/twarze.ts);
+// zamiast LuStyl tylko potrzebne reguły (_lets-shift/ShiftStyl.astro).
+// Program transformacji dla małych, średnich i dużych firm z wypracowanym
+// sposobem działania. Koncepcja: docs/lets-shift-koncepcja.md. Wygląd:
+// system z /lets-up-v6 (LuStyl, LuSkrypty), pomysł własny: mapa systemów
+// firmy i cztery decyzje (zostaje / łączymy / wymieniamy / wyłączamy).
+//
+// KOLEJNOŚĆ (po uwagach Szymona z 26.10.2026, czwarta runda)
+//   1 hero B (src/robocze/_lets-shift/HeroB.astro) — suwak: pulpit dziś
+//     i własny system firmy „Armatura” po zmianie
+//     (src/robocze/_lets-shift/SysArmatura.astro: widok zamówienia z osią
+//     aktywności ludzi i agentów, kartą decyzji Kasi i panelem „Agenci
+//     firmy”); hero A, C, D na /lets-shift-hero;
+//   2 loga; 3 „Systemy zbierane latami” — spis z natury;
+//   4 „Czym jest Let’s Shift?”: odpowiedź i dokument „Program w skrócie”;
+//   5 SEKCJA-PODPIS „Jedna sprawa, dziś i po zmianie” — przełącznik trzech
+//     przykładów nad opowieścią przyklejoną do przewijania; panele „Dziś”
+//     (wycinki prawdziwych narzędzi) i „Po zmianie” (wycinki systemu firmy
+//     w wyglądzie z hero, z marką każdej firmy); na końcu wezwanie do
+//     bezpłatnej diagnozy (Piotr);
+//   6 „Co robimy w programie” — stos kart (efekt dla firmy w nagłówku),
+//     przyklejanie od 620 px wysokości okna; 6a zielony pas (Piotr);
+//   7 „Co możemy dla Was zbudować” — pięć zakładek (własny system, Appto
+//     i agenci AI, integracje, kompetencje zespołu, szyte na miarę
+//     z animacją), opis nad dużym oknem; zdanie o kontach;
+//     7a „Kompetencje do całej transformacji” (WiseGroup);
+//   8 „Ekspertyza po naszej stronie, decyzje po Waszej” — wzór #zespol
+//     z /dlaczego-my-v11: akapit o podziale pracy, pięć portretów
+//     schodkowo, wstęga z sygnetem ze zdaniem o kontroli (bez kart);
+//   9 wyniki i opinie; 10 „Jak przebiega program”; 11 „Ile kosztuje”;
+//   12 dla kogo; 13 kontakt nad FAQ. Od 8 do 12 ciągłe tło (papier).
+//
+// KLOCKI LET’S UP, KTÓRYCH TU NIE MA: telefon i przełącznik „Dziś / Z …”,
+//   rząd „Brzmi znajomo?” (zastępuje go spis z natury), taśma zlecenia,
+//   wykres „nożyce”, słowa zapalane w definicji, schody (etapy i ceny
+//   niesie metryczka, opowieść i rachunek).
+//
+// ODSTĘPSTWA OD KONCEPCJI
+//   · „łączymy” przy ERP i sklepie B2B: na mapie każdy kafel ma jedną
+//     decyzję, więc ERP i sklep B2B mają „zostaje”, a „ERP z resztą”
+//     i „sklep B2B z magazynem” to kafle przejść danych („Eksport z ERP,
+//     plik CSV co noc”, „Stany do sklepu, plik raz dziennie”), które po
+//     etapach stają się połączeniami na szynie danych. Liczby 7/6/7/4 bez
+//     zmian;
+//   · lata i dopiski w spisie z natury i w rejestrze (2013, 2017, 2011…)
+//     dopisane dla kompletu, przykład poglądowy;
+//   · nowy podpis Michała („analizuje odchylenia w raporcie”) — koncepcja
+//     go nie podaje.
+//
+// DO POTWIERDZENIA (z koncepcji): nazwa i grupa docelowa; model handlowy
+//   (stała cena mapy i etapu, miesięczna opłata za prowadzenie, licencje
+//   osobno); „po mapie możecie zakończyć” i decyzja po każdym etapie;
+//   długość etapów (kwartały), praca równoległa; role i zdjęcia zespołu po
+//   naszej stronie (zdjęcia z /team bez nazwisk); cały przykład producenta
+//   armatury (osoby z /makieta, liczby na slajdzie przeglądu, marki
+//   narzędzi w planerze etapów: Outlook, ChatGPT, Looker Studio, Teams);
+//   blok w megamenu.
+// DO POTWIERDZENIA (nowe w tej wersji): role i zdjęcia w „Jak pracujemy
+//   razem” (Jakub Markiewicz jako prowadzący programu, Marcel Bilski jako
+//   architekt, analitycy, zespół wdrożeń i trener adopcji ze zdjęć /team
+//   bez nazwisk; sponsor i właścicielka etapu z /makieta); rytm spotkań
+//   (tydzień, miesiąc, kwartał); które produkty pokazujemy w „Co możemy
+//   dla Was zbudować” i czy Oferty AI i Wingman pasują do programu;
+//   opisy firm WiseGroup (SellWise przy zmianie ofertowania); osoby
+//   i czynności w opowieści o zamówieniu (Bartek w magazynie, Marta
+//   jako handlowiec).
+// DO POTWIERDZENIA (26.10.2026, piąta i szósta runda): sekcja „Ekspertyza
+//   po naszej stronie, decyzje po Waszej” — czas po stronie firmy (kilka
+//   rozmów na początku, sponsor ok. 1 h, właściciel etapu ok. 3 h
+//   w tygodniu) i zdanie o kontroli (cotygodniowy status). Portrety i role
+//   1:1 z /dlaczego-my-v11.
+// DO POTWIERDZENIA (26.10.2026, trzecia runda): czas na tydzień na rolę
+//   (sponsor ok. 1 h, właściciel etapu ok. 3 h, osoby z działu ok. 2 h
+//   w tygodniach szkoleń) i wydarzenia w kalendarzu; treść kroków w trzech
+//   przykładach (osoby, firmy, numery, godziny, nazwy agentów).
+// DO POTWIERDZENIA (26.10.2026, druga runda): trzy przykłady w „Jedna
+//   sprawa” (firmy, osoby, numery, czasy, nazwy agentów: zgłoszeń,
+//   przydziałów, protokołów, magazynu, rozliczeń, zapytań, umów, godzin);
+//   zdania przy kompetencjach WiseGroup (Finerto: finanse i prawo);
+//   wygląd oferty na mapę i planu etapów (pozycje planu z przykładu,
+//   „utrzymanie i rozwój” miesięcznie).
+// DO POTWIERDZENIA (26.10.2026): opisy firm WiseGroup (SellWise jako
+//   strategia i doradztwo biznesowe, Finerto jako finanse); osoby i role
+//   w „Jak pracujemy razem” i podpis Jakuba Markiewicza na dokumencie
+//   programu; treść kanału w Slacku; model ceny w schodach (utrzymanie
+//   i rozwój miesięcznie, „Etap 1” jako proces, na którym firma zarabia);
+//   nazwy i czynności agentów Appto (przyjęć zamówień, ofert, ERP,
+//   planowania, statusów); czy Piotr zostaje w zielonym pasie, na końcu
+//   opowieści i w kontakcie.
+// DO POTWIERDZENIA (hero B): cały przykład zamówienia Hydro-Tech (osoby
+//   i nazwiska, godziny, numery ZS-2026-0412 i OF-0388, kwoty, Jan Nowak
+//   na zdjęciu z /makieta, adres armatura.app); wygląd narzędzi „dziś”
+//   (Windows 11, Outlook, Excel, Access, Teams, stary ERP) jako typowy
+//   obraz firmy, nie konkretnego klienta.
+import LaBase from '../layouts/LaBase.astro';
+import GcFaq from '../components/GcFaq.astro';
+import Styl from '../components/usluga/Styl.astro';
+import Anim from '../components/usluga/Anim.astro';
+import Loga from '../components/usluga/Loga.astro';
+import Pas from '../components/usluga/Pas.astro';
+import CtaPasek from '../components/usluga/CtaPasek.astro';
+import Kontakt from '../components/usluga/Kontakt.astro';
+import ShiftStyl from '../components/lets-shift/ShiftStyl.astro';
+import LuSkrypty from '../components/lu/LuSkrypty.astro';
+import HeroB from '../components/lets-shift/HeroB.astro';
+import SprawaTresc from '../components/lets-shift/SprawaTresc.astro';
+import ProgramScena from '../components/lets-shift/ProgramScena.astro';
+import BudujemyZakladka from '../components/lets-shift/BudujemyZakladka.astro';
+import { zestawTwarzy } from '../components/lets-shift/twarze';
+import { HI, SYGNET } from '../components/usluga/ikony';
+
+const kanon = new URL('/lets-shift', Astro.site).href;
+const NB = ' ';
+
+// Dane scen „Co robimy w programie” (spis, plan, planer, role, wiedza):
+// _lets-shift/ProgramScena.astro; zakładek 3–5 „Co możemy dla Was
+// zbudować”: _lets-shift/BudujemyZakladka.astro.
+
+// ---- SPIS Z NATURY (sekcja 3) -----------------------------------------------
+const SPIS = [
+  { t: 'ERP', r: '2009', o: 'nikt nie chce go ruszać' },
+  { t: '37 arkuszy ofert', r: '2013', o: 'wersję aktualną zna Ewa' },
+  { t: 'CRM', r: '2019', o: 'dane z jednego kwartału' },
+  { t: 'Raport dla zarządu', r: '2017', o: 'dwa dni klejenia co miesiąc' },
+  { t: 'Karty produkcji na papierze', r: '1994', o: 'Tomasz nosi je do biura' },
+  { t: 'Access w magazynie', r: '2011', o: 'napisał go pracownik, który odszedł w 2016 r.' },
+  { t: 'Wyjątki w cenach', r: '2015', o: 'zna je trzech handlowców' },
+  { t: 'Druga skrzynka zamówień', r: '2021', o: 'od awarii, miała być na tydzień' },
+];
+const SPIS_ARIA = `Spis z natury systemów i narzędzi producenta armatury, osiem pozycji z rokiem i notatką ołówkiem: ${SPIS.map((s) => `${s.t}, od ${s.r}: ${s.o}`).join('; ')}.`;
+
+// ---- CZYM JEST LET’S SHIFT? (sekcja 4) ----------------------------------------
+// Odpowiedź zwykłym zdaniem, obok metryczka programu, pod spodem cztery
+// decyzje w jednym pasie z przykładem z mapy.
+const SKROT = [
+  { t: 'Dla kogo', d: 'Małe, średnie i duże firmy, które działają od lat, mają sprawdzony sposób pracy i systemy zbierane latami.' },
+  { t: 'Co zmieniamy', d: 'Wszystkie systemy, arkusze i miejsca, w których dane przenoszą ludzie. Przy każdym decydujemy, czy zostaje, łączymy je, wymieniamy czy wyłączamy.' },
+  { t: 'Kto prowadzi', d: 'Jeden prowadzący po naszej stronie, który co tydzień mówi, co trzeba przygotować po stronie firmy. Po Waszej stronie sponsor w zarządzie i właściciel każdego etapu.' },
+  { t: 'Co zostaje u Was', d: 'Spis systemów z decyzjami, plan firmy po zmianie, nowe systemy z dokumentacją i konta na Waszej firmie.' },
+  { t: 'Jak płacicie', d: 'Stała cena mapy znana przed startem. Cenę każdego etapu znacie, zanim go zamówicie.' },
+];
+const OS_ETAPOW = [
+  { t: 'Mapa', k: '6 tygodni' },
+  { t: 'Etap 1', k: 'dział po dziale' },
+  { t: 'Etap 2', k: '' },
+  { t: 'Etap 3', k: '' },
+  { t: 'Rozwój', k: 'firma sama' },
+];
+
+// ---- JEDNA SPRAWA, DZIŚ I PO PROGRAMIE (sekcja 5) ---------------------------
+// Trzy przykłady z przełącznikiem: zamówienie u producenta, zgłoszenie
+// serwisowe i projekt dla klienta w firmie usługowej B2B. Każdy krok: dziś
+// (kto, co robi ręcznie, narzędzie, czas) i po programie (kto: agent albo
+// człowiek, wejście → wynik, czas). Jeden krok w przykładzie to decyzja
+// człowieka. Przykłady poglądowe (firmy, osoby z /makieta, numery, czasy).
+// Twarze agentów: zestaw symboli w _lets-shift/twarze.ts (AGENCI), tu tylko
+// odwołania <use>.
+// Każdy krok: t (nazwa na pasku), h i o (tekst po prawej), dz / po
+// (wycinek prawdziwego narzędzia: mail, xl, erp, foto, teams, tel; po
+// programie: rek, inbox, out, dec), dc (kto i co robi dziś, czas), pc (jedno
+// zdanie, co zrobił system). Przykłady poglądowe, DO POTWIERDZENIA.
+type Art = Record<string, any>;
+type Krok = { t: string; h: string; o: string; dz: Art; dc: [string, string, string, string]; po: Art; pc: string };
+const SPRAWY: { k: string; mk: string[]; t: string; z: string; kroki: Krok[] }[] = [
+  { k: 'zamowienie', mk: ['Armatura', '#1F4FA8', '#EEF3FC'], t: 'Zamówienie u producenta', z: 'Producent armatury, 320 osób. Stały klient Hydro-Tech zamawia mailem 400 zaworów kulowych DN50.', kroki: [
+    { t: 'Zamówienie', h: 'Zamówienie z maila trafia od razu do systemu', o: 'Dziś zamówienia przychodzą na dwie skrzynki, a Kasia przepisuje je do arkusza. Po zmianie agent przyjęć czyta maila, rozpoznaje klienta i produkty i zakłada zamówienie.',
+      dz: { k: 'mail', box: 'zamowienia2@armatura.pl', m: [
+        { from: 'Jan Nowak (Hydro-Tech)', f: 'jakub', subj: 'RE: RE: FW: Zamówienie DN50 — pilne!!', prev: 'Trzecie przypomnienie. Czekamy od poniedziałku…', cz: 'pn 9:12', n: 3, fl: 1, sel: 1 },
+        { from: 'Termo-Serwis', subj: 'Zapytanie: głowice termostatyczne', prev: 'Prosimy o cenę do piątku.', cz: 'wt 14:30', nw: 1 } ] },
+      dc: ['kasia', 'Kasia', 'przepisuje zamówienie z maila do arkusza', '15 min'],
+      po: { k: 'rek', sys: 'Zamówienia', id: 'ZS-2026-0412', st: 'Nowe', a: 'prz', pola: [['Klient', 'Hydro-Tech sp. z o.o.'], ['Pozycja', 'Zawór kulowy DN50 PN40'], ['Ilość', '400 szt.'], ['Termin', '30.10.2026']], stopka: 'Agent przyjęć zamówień · z maila Jana Nowaka', cz: '9:12' },
+      pc: 'Agent przyjęć założył zamówienie z maila w minutę.' },
+    { t: 'Oferta', h: 'Ofertę liczy agent, handlowiec ją wysyła', o: 'Dziś oferta powstaje w jednym z 37 arkuszy, a aktualny cennik zna tylko Ewa. Po zmianie agent ofert liczy ją z cennika 2026 i historii klienta, a Marta sprawdza i wysyła.',
+      dz: { k: 'xl', plik: 'oferty_2026_v14_FINAL_poprawione(2).xlsx', lock: ['ewa', 'Ewa Lis'], kol: ['', 'A', 'D', 'E', 'F'], w: [['12', 'Instal-Bud', '212,00', '8%', '23 404,80'], ['13', 'Hydro-Tech', '#N/D!', '6%', '#N/D!'], ['14', 'Termo-Serwis', '4,92', '#ADR!', '#ADR!']], hi: 1 },
+      dc: ['ewa', 'Ewa', 'szuka aktualnego cennika i liczy rabat', '2 dni'],
+      po: { k: 'inbox', r: [['of', 'Oferta OF-0388 dla Hydro-Tech', 'Agent ofert · 14 440 zł netto, rabat 6%', '9:13']], hist: [['marta', 'Marta Wróbel', 'sprawdziła i wysłała ofertę', '9:13'], ['jakub', 'Jan Nowak, Hydro-Tech', 'zaakceptował ofertę', '9:47']] },
+      pc: 'Oferta wyszła po minucie, klient zaakceptował ją przed dziesiątą.' },
+    { t: 'Zapis w ERP', h: 'Zamówienie zapisuje się w ERP samo', o: 'Dziś zaakceptowaną ofertę Kasia przepisuje do ERP z 2009 r., czasem po kilka razy. Po zmianie ERP zostaje, a zamówienie trafia do niego z systemu z tymi samymi pozycjami.',
+      dz: { k: 'erp', tyt: 'ERP 2009 · Zamówienia sprzedaży [KLIS]', pola: [['Kontrahent', 'HYDRO-TECH SP. Z O.O.'], ['Indeks', 'ZK-DN50-PN40'], ['Ilość', '400']], st: 'Próba zapisu: 3', bl: 'Nie można zapisać rekordu. Spróbuj ponownie.' },
+      dc: ['kasia', 'Kasia', 'wpisuje ofertę do ERP, trzecia próba zapisu', '40 min'],
+      po: { k: 'inbox', r: [['erp', 'Zapisane w ERP: ZS-2026-0412', 'Agent ERP · 1 pozycja, 14 440 zł netto', '9:48']], hist: [['erp', 'Agent ERP', 'sprawdził zgodność pozycji z ofertą', '9:48']] },
+      pc: 'Agent ERP zapisał zamówienie z tymi samymi pozycjami co w ofercie.' },
+    { t: 'Produkcja', h: 'Plan hali powstaje z zamówienia', o: 'Dziś karta produkcji krąży na papierze, a biuro zna status zlecenia dzień później. Po zmianie agent planowania wstawia zlecenie na linię i rezerwuje materiał, a Tomasz układa kolejność.',
+      dz: { k: 'foto', plik: 'karta_1182.jpg', tyt: 'Karta produkcji 1182', sub: 'hala 2', w: [['wyrób', 'zawory DN50 — 400 szt.'], ['toczenie', 'OK, 11:20'], ['przyniósł', 'Tomasz'], ['podpis bryg.', '']], brak: 'brak podpisu!' },
+      dc: ['tomasz', 'Tomasz', 'nosi kartę produkcji z hali do biura', '1 dzień'],
+      po: { k: 'rek', sys: 'Plan hali', id: 'Zlecenie P-1182', st: 'Zaplanowane', a: 'plan', pola: [['Linia', 'linia 2'], ['Start', '22.10, 7:00'], ['Materiał', '380 korpusów zarezerwowanych'], ['Brygadzista', 'Tomasz Kruk']], stopka: 'Agent planowania · z zamówienia ZS-2026-0412', cz: '9:49' },
+      pc: 'Zlecenie stoi w planie hali z zarezerwowanym materiałem.' },
+    { t: 'Prośba klienta', h: 'Do człowieka trafia tylko decyzja', o: 'Dziś zmiana terminu to telefony na halę i do klienta. Po zmianie agent planowania sprawdza wolne okna na linii, a Kasia decyduje jednym kliknięciem.',
+      dz: { k: 'teams', kan: 'Obsługa zamówień', m: [['kasia', 'Kasia Lis', '10:31', 'Hydro-Tech chce dostawę 28.10. Ktoś wie, czy hala da radę?'], ['tomasz', 'Tomasz Kruk', '11:02', 'Nie wiem, karta jeszcze w biurze. Zadzwoń do brygadzisty.']] },
+      dc: ['kasia', 'Kasia', 'dzwoni na halę i do klienta, żeby ustalić termin', 'pół dnia'],
+      po: { k: 'dec', a: 'plan', ag: 'Agent planowania', f: 'kasia', o: 'Kasia Lis', q: 'Hydro-Tech prosi o dostawę 28.10 zamiast 30.10. Linia 2 ma wolne okno w środę.', tak: 'Przesuń na 28.10', nie: 'Zostaw 30.10', wyn: 'Przesunięte na 28.10, klient dostał nowy termin' },
+      pc: 'Kasia zdecydowała w minutę, resztę zrobił system.' },
+    { t: 'Wysyłka i faktura', h: 'Etykieta i faktura powstają z danych zamówienia', o: 'Dziś Bartek wpisuje adres w trzech panelach kurierów, a kierowca dzwoni po CMR. Po zmianie agent statusów wysyła klientowi termin, fakturę i dokumenty z danych zamówienia.',
+      dz: { k: 'tel', cz: '10:21', n: [['msg', '10:11', 'Kierowca DW 4K21', 'Gdzie mam jechać? Nie mam CMR'], ['box', '10:13', 'DPD Polska', 'Przesyłka wstrzymana: brak dokumentu'], ['tel', '10:20', 'Jan Nowak (Hydro-Tech)', '2 nieodebrane połączenia']] },
+      dc: ['bartek', 'Bartek', 'wpisuje adres w panelu kuriera i szuka CMR', '30 min'],
+      po: { k: 'out', od: 'Zamówienia Armatura', do: 'Jan Nowak, Hydro-Tech', tem: 'Zamówienie ZS-2026-0412 w drodze', tr: 'Zamówienie wyjechało dziś o 14:00. Dostawa 28.10.2026. Status sprawdzą Państwo pod linkiem w stopce.', zal: ['FV 0412-10.pdf', 'CMR_0412.pdf'], cz: '14:02', a: 'st', ag: 'Agent statusów' },
+      pc: 'Klient dostał fakturę, dokumenty i link do statusu bez telefonu.' },
+  ] },
+  { k: 'serwis', mk: ['Serwis-Druk', '#0E7C66', '#E7F4F0'], t: 'Zgłoszenie serwisowe', z: 'Firma serwisowa, 60 techników. Drukarnia Kolor-Pak zgłasza mailem awarię drukarki na linii 2.', kroki: [
+    { t: 'Zgłoszenie', h: 'Zgłoszenie z maila zakłada się samo', o: 'Dziś Kasia przepisuje zgłoszenia z maila do arkusza i dopytuje o szczegóły. Po zmianie agent zgłoszeń czyta maila i zdjęcie błędu i zakłada zgłoszenie z priorytetem.',
+      dz: { k: 'mail', box: 'serwis@serwis-druk.pl', m: [
+        { from: 'Kolor-Pak · Utrzymanie ruchu', subj: 'PILNE: drukarka na linii 2 stoi', prev: 'W załączniku zdjęcie błędu z panelu. Proszę o technika dziś.', cz: '8:41', fl: 1, sel: 1, zal: 'IMG_2231.jpg' },
+        { from: 'Druk-Max', subj: 'Pytanie o przegląd w listopadzie', prev: 'Czy możemy umówić termin…', cz: '8:12', nw: 1 } ] },
+      dc: ['kasia', 'Kasia', 'przepisuje zgłoszenie z maila do arkusza', '15 min'],
+      po: { k: 'rek', sys: 'Zgłoszenia', id: 'Z-2231', st: 'Priorytet wysoki', stc: 'am', a: 'zg', pola: [['Klient', 'Kolor-Pak'], ['Urządzenie', 'drukarka X400, linia 2'], ['Błąd', 'kod E-47, zdjęcie z panelu'], ['Umowa', 'serwis w 24 h']], stopka: 'Agent zgłoszeń · z maila klienta', cz: '8:42' },
+      pc: 'Agent zgłoszeń założył zgłoszenie z kodem błędu i priorytetem.' },
+    { t: 'Przydział technika', h: 'Technika dobiera system', o: 'Dziś Marta dzwoni do techników i sprawdza grafik w Excelu. Po zmianie agent przydziałów wybiera technika z uprawnieniami, który jest najbliżej, i wpisuje wizytę do kalendarza.',
+      dz: { k: 'xl', plik: 'grafik_serwisu_PAZDZIERNIK.xlsx', kol: ['', 'A', 'B', 'C', 'D'], w: [['4', 'Technik', 'pon', 'wt', 'śr'], ['5', 'Tomasz K.', 'Łódź', '?', 'urlop?'], ['6', 'Adrian P.', 'Kutno', 'Kutno', '#N/D!'], ['7', 'Rafał O.', '—', 'Płock', 'Płock']], hi: 1, nag: 1 },
+      dc: ['marta', 'Marta', 'dzwoni do techników i sprawdza, kto jest blisko', '40 min'],
+      po: { k: 'inbox', r: [['prd', 'Tomasz Kruk → Kolor-Pak, dziś 13:00', 'Agent przydziałów · zgłoszenie Z-2231', '8:43']], hist: [['prd', 'Agent przydziałów', '18 km od klienta, uprawnienia do serii X400', '8:43'], ['tomasz', 'Tomasz Kruk', 'potwierdził wizytę w aplikacji', '8:50']] },
+      pc: 'Agent przydziałów wybrał technika i wpisał wizytę w kalendarz.' },
+    { t: 'Wizyta i protokół', h: 'Protokół powstaje z notatki głosowej', o: 'Dziś technik wypełnia protokół na papierze, a wieczorem przepisuje go do arkusza. Po zmianie nagrywa notatkę głosową i robi zdjęcia, a klient podpisuje protokół na tablecie.',
+      dz: { k: 'foto', plik: 'protokol_2231.jpg', tyt: 'Protokół serwisowy', sub: 'Kolor-Pak', w: [['urządzenie', 'X400, linia 2'], ['przyczyna', 'głowica?'], ['części', 'G-12 (?)'], ['podpis klienta', '']], brak: 'nieczytelne!' },
+      dc: ['tomasz', 'Tomasz', 'wypełnia protokół na papierze, wieczorem go przepisuje', '45 min'],
+      po: { k: 'rek', sys: 'Protokoły', id: 'P-2231', st: 'Podpisany', a: 'prot', pola: [['Przyczyna', 'zużyta głowica G-12'], ['Czas naprawy', '1 h 40 min'], ['Części', 'głowica G-12, 1 szt.'], ['Podpis klienta', 'J. Wójcik, 14:52']], stopka: 'Agent protokołów · z notatki głosowej i 4 zdjęć', cz: '14:55' },
+      pc: 'Protokół z przyczyną, częściami i podpisem jest gotowy przed wyjazdem technika.' },
+    { t: 'Części', h: 'Części rezerwują się z protokołu', o: 'Dziś Bartek sprawdza stany w arkuszach trzech magazynów. Po zmianie agent magazynu rezerwuje część tam, gdzie jest na stanie, i zamawia kuriera.',
+      dz: { k: 'xl', plik: 'stany_czesci_3_magazyny.xlsx', kol: ['', 'A', 'B', 'C', 'D'], w: [['2', 'Indeks', 'Łódź', 'Kutno', 'Płock'], ['3', 'G-12', '2', '#N/D!', '0'], ['4', 'G-14', '#ADR!', '1', '3']], hi: 1, nag: 1 },
+      dc: ['bartek', 'Bartek', 'sprawdza stan części w arkuszach trzech magazynów', '1 h'],
+      po: { k: 'inbox', r: [['mag', 'Głowica G-12 zarezerwowana · Łódź', 'Agent magazynu · zgłoszenie Z-2231', '15:01']], hist: [['mag', 'Agent magazynu', 'kurier na jutro 9:00, list przewozowy gotowy', '15:02']] },
+      pc: 'Część jest zarezerwowana, a kurier zamówiony na następny ranek.' },
+    { t: 'Naprawa poza umową', h: 'Wycena poza umową od razu trafia do decyzji', o: 'Dziś kierownik dowiaduje się o naprawie poza umową, kiedy klient się upomina. Po zmianie agent rozliczeń sprawdza umowę i od razu przygotowuje wycenę do decyzji.',
+      dz: { k: 'mail', box: 'serwis@serwis-druk.pl', m: [
+        { from: 'Kolor-Pak · Zakupy', subj: 'RE: Naprawa X400 — dlaczego nie mamy wyceny?', prev: 'Minął tydzień od wizyty technika…', cz: 'wt 11:20', n: 2, fl: 1, sel: 1 },
+        { from: 'Kolor-Pak · Zakupy', subj: 'Naprawa X400 — prośba o wycenę', prev: 'Prosimy o wycenę części poza umową.', cz: '14.10' } ] },
+      dc: ['pawel', 'Paweł', 'dostaje sprawę po tygodniu, kiedy klient się upomina', '1 tydzień'],
+      po: { k: 'dec', a: 'roz', ag: 'Agent rozliczeń', f: 'pawel', o: 'Paweł Kowal', q: 'Naprawa wychodzi poza umowę serwisową: 3 400 zł netto. Klient prosi o rabat.', tak: 'Zatwierdź z rabatem 10%', nie: 'Bez rabatu', wyn: 'Zatwierdzone z rabatem 10%, klient dostał wycenę' },
+      pc: 'Paweł zatwierdził wycenę tego samego dnia.' },
+    { t: 'Faktura i raport', h: 'Faktura i raport dla klienta powstają same', o: 'Dziś Ewa zbiera protokoły i godziny do faktur na koniec miesiąca. Po zmianie agent rozliczeń wystawia fakturę po zakończeniu naprawy i wysyła klientowi raport.',
+      dz: { k: 'teams', kan: 'Księgowość', m: [['ewa', 'Ewa Lis', '16:40', 'Brakuje 14 protokołów do faktur za październik.'], ['marta', 'Marta Wróbel', '16:52', 'Technicy jeszcze nie przepisali. Do piątku?']] },
+      dc: ['ewa', 'Ewa', 'zbiera protokoły i godziny do faktur na koniec miesiąca', '2 dni'],
+      po: { k: 'out', od: 'Serwis', do: 'Kolor-Pak, utrzymanie ruchu', tem: 'Naprawa Z-2231: raport i faktura', tr: 'Przyczyna awarii: zużyta głowica G-12. Czas naprawy: 1 h 40 min. Zalecamy przegląd głowic na liniach 1 i 3.', zal: ['FV 2231-10.pdf', 'Raport_Z-2231.pdf'], cz: '16:05', a: 'roz', ag: 'Agent rozliczeń' },
+      pc: 'Klient dostał fakturę i raport z zaleceniami tego samego dnia.' },
+  ] },
+  { k: 'projekt', mk: ['Projekty HVAC', '#6941C6', '#F3EFFC'], t: 'Projekt dla klienta B2B', z: 'Biuro projektowe, 45 osób. Logipark pyta o projekt instalacji wentylacji w hali 4 000 m².', kroki: [
+    { t: 'Zapytanie', h: 'Zapytanie spisuje się samo', o: 'Dziś Jakub przepisuje brief z maila i notatek ze spotkania. Po zmianie agent zapytań zakłada kartę zapytania z maila i nagrania spotkania.',
+      dz: { k: 'mail', box: 'biuro@projekty-hvac.pl', m: [
+        { from: 'Karol Nowicki (Logipark)', f: 'bartek', subj: 'Projekt wentylacji hali — notatki po spotkaniu', prev: 'W załączniku rzut hali i nasze uwagi. Termin 15.12…', cz: 'wt 16:20', sel: 1, zal: 'rzut_hali.pdf' },
+        { from: 'Kalendarz', subj: 'Nagranie spotkania z Logiparkiem jest gotowe', prev: '58 min · transkrypcja w załączniku', cz: 'wt 15:40', nw: 1 } ] },
+      dc: ['jakub', 'Jakub', 'przepisuje brief z maila i notatek ze spotkania', '1 h'],
+      po: { k: 'rek', sys: 'Zapytania', id: 'ZP-118', st: 'Do oferty', a: 'zap', pola: [['Klient', 'Logipark'], ['Zakres', 'wentylacja hali 4 000 m²'], ['Termin', '15.12.2026'], ['Źródło', 'mail i nagranie spotkania']], stopka: 'Agent zapytań · z maila i nagrania', cz: '16:24' },
+      pc: 'Agent zapytań założył kartę z zakresem i terminem projektu.' },
+    { t: 'Oferta', h: 'Oferta ze stawek i podobnych projektów', o: 'Dziś Marta liczy godziny w arkuszu i składa ofertę w Wordzie. Po zmianie agent ofert przygotowuje ją ze stawek i podobnych projektów, a Marta sprawdza i wysyła.',
+      dz: { k: 'xl', plik: 'wycena_Logipark_v3_MW.xlsx', kol: ['', 'A', 'B', 'C'], w: [['3', 'Projekt koncepcyjny', '40', '?'], ['4', 'Projekt wykonawczy', '96', '#ADR!'], ['5', 'Nadzór', '24', '2 880'], ['6', 'Razem', '160', '#ADR!']], hi: 3 },
+      dc: ['marta', 'Marta', 'liczy godziny w arkuszu i składa ofertę w Wordzie', '1 dzień'],
+      po: { k: 'inbox', r: [['of', 'Oferta OF-118 dla Logiparku', 'Agent ofert · 160 godzin w trzech etapach', '9:05']], hist: [['marta', 'Marta Wróbel', 'sprawdziła i wysłała ofertę', '9:20'], ['bartek', 'Karol Nowicki, Logipark', 'zaakceptował ofertę', '14:10']] },
+      pc: 'Oferta z harmonogramem do 15.12 była gotowa następnego ranka.' },
+    { t: 'Umowa', h: 'Umowa powstaje z zaakceptowanej oferty', o: 'Dziś Ewa wkleja dane do wzoru umowy i sprawdza zapisy. Po zmianie agent umów przygotowuje umowę z oferty, a Ewa sprawdza ją przed wysłaniem.',
+      dz: { k: 'teams', kan: 'Administracja', m: [['ewa', 'Ewa Lis', '9:40', 'Który wzór umowy jest aktualny? Mam trzy na dysku.'], ['marta', 'Marta Wróbel', '10:15', 'Ten z marca, ale bez nowej klauzuli o karach.']] },
+      dc: ['ewa', 'Ewa', 'wkleja dane do wzoru umowy i sprawdza zapisy', '2 h'],
+      po: { k: 'out', od: 'Biuro projektowe', do: 'Karol Nowicki, Logipark', tem: 'Umowa U-118 do podpisu', tr: 'W załączniku umowa na projekt wentylacji hali z harmonogramem płatności w trzech etapach.', zal: ['U-118.pdf'], cz: '15:30', a: 'um', ag: 'Agent umów' },
+      pc: 'Umowa z harmonogramem płatności wyszła do podpisu w dniu akceptacji.' },
+    { t: 'Praca zespołu', h: 'Godziny zbierają się same', o: 'Dziś w piątek każdy wpisuje godziny z pamięci. Po zmianie agent godzin składa kartę czasu z kalendarzy i zadań zespołu, a kierowniczka widzi postęp codziennie.',
+      dz: { k: 'xl', plik: 'godziny_PAZDZIERNIK.xlsx', kol: ['', 'A', 'B', 'C', 'D'], w: [['2', 'Osoba', 'pon', 'wt', 'śr'], ['3', 'Tomasz K.', '8', '?', '6'], ['4', 'Jakub S.', '', '', '#N/D!'], ['5', 'Michał Z.', '4', '4', '?']], hi: 2, nag: 1 },
+      dc: ['tomasz', 'Tomasz', 'w piątek wpisuje godziny z pamięci', '30 min co tydzień'],
+      po: { k: 'rek', sys: 'Projekty', id: 'Logipark · karta czasu', st: 'Na czas', a: 'god', pola: [['Przepracowane', '62 ze 160 h'], ['Etap 1', 'zamknięty'], ['Etap 2', 'w toku, 18 h'], ['Źródło', 'kalendarze i zadania']], stopka: 'Agent godzin · aktualizacja codziennie', cz: '7:00' },
+      pc: 'Karta czasu jest aktualna każdego ranka, bez wpisywania godzin.' },
+    { t: 'Zmiana zakresu', h: 'Zmiana zakresu trafia do decyzji od razu', o: 'Dziś o dodatkowej pracy kierowniczka dowiaduje się przy fakturze. Po zmianie agent godzin zauważa pracę poza umową i przekazuje ją do decyzji.',
+      dz: { k: 'teams', kan: 'Projekt Logipark', m: [['tomasz', 'Tomasz Kruk', '13:05', 'Robimy już projekt magazynu dla Logiparku? Klient pyta o rysunki.'], ['marta', 'Marta Wróbel', '13:40', 'Pierwsze słyszę. To jest w umowie?']] },
+      dc: ['marta', 'Marta', 'dowiaduje się o dodatkowej pracy przy fakturze', 'koniec projektu'],
+      po: { k: 'dec', a: 'god', ag: 'Agent godzin', f: 'marta', o: 'Marta Wróbel', q: 'Logipark dorzuca projekt magazynu: około 40 godzin więcej.', tak: 'Aneks do umowy', nie: 'Osobna oferta', wyn: 'Aneks wysłany do podpisu' },
+      pc: 'Marta zdecydowała, zanim zespół zaczął dodatkową pracę.' },
+    { t: 'Rozliczenie i raport', h: 'Raport i faktura za etap wychodzą same', o: 'Dziś Michał skleja raport dla klienta z arkusza godzin. Po zmianie agent rozliczeń wystawia fakturę za zamknięty etap i wysyła klientowi raport z postępem.',
+      dz: { k: 'xl', plik: 'raport_Logipark_X.xlsx', kol: ['', 'A', 'B'], w: [['2', 'Postęp', '?'], ['3', 'Godziny', '#ADR!'], ['4', 'Ryzyka', 'do uzupełnienia']], hi: 1 },
+      dc: ['michal', 'Michał', 'skleja raport dla klienta z arkusza godzin', 'pół dnia'],
+      po: { k: 'out', od: 'Biuro projektowe', do: 'Karol Nowicki, Logipark', tem: 'Etap 1 zamknięty: raport i faktura', tr: 'Postęp: 62 ze 160 godzin, etap 1 zamknięty. Ryzyko: termin rysunków magazynu, opis w raporcie.', zal: ['FV 118-1.pdf', 'Raport_etap_1.pdf'], cz: '7:05', a: 'roz', ag: 'Agent rozliczeń' },
+      pc: 'Klient dostał raport z postępem razem z fakturą za etap.' },
+  ] },
+];
+// ---- CO PROWADZIMY PRZEZ CAŁY PROGRAM (sekcja 6) ------------------------------
+// Nagłówek karty = efekt dla firmy, etykieta = co robimy, opis = jak do
+// tego dochodzimy (Szymon: „mamy się skupiać na efektach”).
+const CZESCI = [
+  { e: 'Spis systemów i decyzje', t: 'Wiecie, co zmienić najpierw i dlaczego', d: 'Spisujemy każdy system, arkusz i miejsce, w którym dane przenoszą ludzie. Przy każdym zapisujemy decyzję i jej powód, a kolejność zmian wynika z tego, co najbardziej spowalnia firmę.', n: 'Spis prowadzimy przez cały program.' },
+  { e: 'Plan firmy po zmianie', t: 'Dane w jednym miejscu, systemy połączone ze sobą', d: 'Rysujemy firmę po zmianie: jedną bazę danych, systemy działów, które z niej korzystają, i miejsca, w których pracuje AI.', n: 'Każdy etap dokłada do niej swoją część.' },
+  { e: 'Wdrożenia etapami', t: 'Nowe systemy wchodzą, a firma pracuje dalej', d: 'Wdrażamy dział po dziale. Przez kilka tygodni nowy system pracuje obok starego, a stary wyłączamy, kiedy zespół pracuje już w nowym.', n: 'Cenę etapu znacie przed jego startem.' },
+  { e: `Ludzie i${NB}nowe role`, t: 'Ludzie przestają przepisywać, zajmują się klientami i wyjątkami', d: 'Osoby, które dziś przenoszą dane, dostają nowe zadania. Szkolimy je na zadaniach ich działu.', n: 'Każdy etap ma właściciela po Waszej stronie.' },
+  { e: 'Wiedza firmy', t: 'AI korzysta z Waszych zasad, cenników i procedur', d: 'Spisujemy zasady, cenniki i procedury w jednym miejscu, a każde źródło dostaje właściciela, który dba o jego aktualność.', n: 'Agenci w Appto korzystają z tej samej wiedzy co zespół.' },
+];
+
+// ---- EKSPERTYZA PO NASZEJ STRONIE, DECYZJE PO WASZEJ (sekcja 8) ---------------
+// Szymon (piąta runda): „cała ekspertyza jest po naszej stronie… potrzebujemy
+// Was do decyzji i do opowiedzenia, jak pracujecie… wyważ narrację, żeby nikt
+// nie pomyślał, że to jest bez kontroli”. Szósta runda: „jest lepiej, ale nie
+// podoba mi się… zainspiruj się »Dlaczego my?«, bo już jest dużo takich kart”
+// (chodziło o nową wersję, src/robocze/dlaczego-my-v11.astro, #zespol).
+// Dlatego bez kart i kafli: nagłówek .v8-gl, pięć portretów schodkowo
+// i jedna wstęga z sygnetem ze zdaniem o kontroli. Osoby, role, zdjęcia
+// i kadry 1:1 z LUDZIE w dlaczego-my-v11. Godziny po stronie firmy
+// (ok. 1 h, ok. 3 h w tygodniu) i cotygodniowy status DO POTWIERDZENIA.
+const ZESPOL = [
+  { n: 'Szymon Kita', r: 'CEO Let’s automate', f: '/lets-shift/zespol-szymon-kita.jpg', w: 640, h: 1012, poz: '47% 50%' },
+  { n: 'Marcel Bilski', r: 'Tech Lead', f: '/lets-shift/zespol-marcel-bilski.jpg', w: 640, h: 1347, poz: '50% 50%' },
+  { n: 'Piotr Wojciuk', r: 'New Business Lead', f: '/lets-shift/zespol-piotr-wojciuk.jpg', w: 640, h: 703, poz: '46% 50%' },
+  { n: 'Szymon Negacz', r: 'Współwłaściciel', f: '/lets-shift/zespol-szymon-negacz.jpg', w: 640, h: 517, poz: '53% 50%' },
+  { n: 'Jakub Markiewicz', r: 'AI Consultant & Developer', f: '/jakub-markiewicz.jpg', w: 512, h: 500, poz: '50% 50%' },
+];
+// Rozmyte osoby na krańcach rzędu (Szymon: „jakby tam były dodatkowe
+// osoby po lewej i prawej, żeby zasygnalizować, że jest nas więcej”).
+// Zdjęcia z /team, bez podpisów; tylko od 1100 px szerokości.
+const ZESPOL_DUCHY = ['/team/kamil-gorski.png', '/team/adam-szarzanowicz.png'];
+
+// ---- CO MOŻEMY DLA WAS ZBUDOWAĆ (sekcja 9) ------------------------------------
+// Opisy produktów z src/pages/produkty/index.astro, zrzuty z
+// public/produkty/slajdy. Własny system: okno w wyglądzie .zs6 z Let’s Up,
+// z zamówieniami producenta armatury (przykład poglądowy).
+const BUDUJEMY = [
+  { t: 'Własny system firmy', d: 'System dopasowany do firmy, budowany pod proces, na którym zarabiacie, z agentami AI w środku. Prowadzi sprawę przez wszystkie działy.', h: '/systemy-procesowe', l: 'Systemy dopasowane do firmy' },
+  { t: 'Appto i agenci AI', d: 'Narzędzie AI dla wszystkich działów: asystenci, którzy znają dokumenty i procedury firmy. Wdrażamy też Copilota, Gemini albo ChatGPT, bez prowizji od dostawców.', h: '/wdrozenie-ai', l: 'Narzędzia AI dla całej firmy' },
+  { t: 'Integracje', d: 'Łączymy CRM, ERP, magazyn, sklep i pocztę tak, żeby nikt nie przepisywał danych. Każde połączenie ma właściciela i alarm.', h: '/automatyzacje-integracje', l: 'Integracje systemów' },
+  { t: 'Kompetencje zespołu', d: 'Warsztat na Waszych procesach i danych, gotowe rutyny dla każdej roli i powrót do zespołu po kilku tygodniach. W dwunastym tygodniu sprawdzamy, kto pracuje nowym sposobem.', h: '/szkolenia-ai', l: 'Szkolenia z AI' },
+  { t: 'Szyte na miarę', d: 'Każde rozwiązanie projektujemy od zera pod Waszą firmę: od szkicu procesu z warsztatu z zespołem do działającego systemu z połączeniami i agentami.', h: '/systemy-procesowe', l: 'Jak projektujemy systemy' },
+];
+const SYS_ARIA = 'Własny system firmy producenta armatury, widok zamówienia ZS-2026-0412 dla Hydro-Tech: menu modułów (zapytania, oferty, zamówienia, produkcja, magazyn, wysyłki, faktury, raporty) i panel agentów firmy, kroki zamówienia z godzinami, oś aktywności, w której obok ludzi pracują agenci AI (przyjęcia zamówień, oferty, zapis w ERP, planowanie hali, statusy dla klientów), karta decyzji dla Kasi Lis, pozycje i dokumenty.';
+// Kompetencje programu (WiseGroup) jako klocki wokół Let’s automate. Role
+// według FAQ grupy i uwag Szymona (Finerto: finanse i prawo). Zdania „kiedy
+// potrzebna” zachowawcze, DO POTWIERDZENIA.
+const KOMP = [
+  { n: 'SellWise', logo: '/uploads/wisegroup/wg-sellwise.svg', w: 152, h: 22, url: 'https://www.sellwise.pl', e: 'Strategia i doradztwo biznesowe', d: 'Kiedy zmiana systemów zmienia model działania firmy albo sposób sprzedaży.', s: 'l', r: 1 },
+  { n: 'AdWise', logo: '/uploads/wisegroup/wg-adwise.svg', w: 146, h: 20, url: 'https://adwise.pl', e: 'Marketing', d: 'Kiedy firma po zmianie obsłuży więcej klientów i chce ich pozyskać.', s: 'l', r: 2 },
+  { n: 'HireWise', logo: '/uploads/wisegroup/wg-hirewise.svg', w: 159, h: 20, url: 'https://hirewise.pl', e: 'Ludzie i rekrutacja', d: 'Kiedy po zmianie powstają nowe role i zespół trzeba uzupełnić.', s: 'p', r: 1 },
+  { n: 'Finerto', logo: '/uploads/wisegroup/wg-finerto.svg', w: 79, h: 18, url: 'https://finerto.pl', e: 'Finanse i prawo', d: 'Kiedy zmiana dotyka finansów firmy, umów albo przepisów.', s: 'p', r: 2 },
+];
+
+// ---- WYNIKI I OPINIE: prawdziwe, ze strony głównej (jak w lets-up-v6) ------
+const WYNIKI = [
+  { dz: 'Sprzedaż', p: 'Przygotowanie oferty', l: '−80', j: '%', ld: 'czasu przygotowania oferty',
+    przed: 'Oferta sklejana z CRM, cenników i maili przez pół dnia.', po: 'Szkic z danych CRM w kilka minut.',
+    u: 'Systemy dopasowane do firmy', h: '/systemy-procesowe' },
+  { dz: 'Operacje', p: 'Raport tygodniowy', l: '65', j: ' h', ld: 'odzyskanych co miesiąc',
+    przed: 'Raport klejony z czterech arkuszy.', po: 'Dane spływają same, raport czeka w poniedziałek o 7:00.',
+    u: 'Integracje systemów', h: '/automatyzacje-integracje' },
+  { dz: 'Finanse', p: 'Obieg faktur kosztowych', l: '99,7', j: '%', ld: 'skuteczności księgowania',
+    przed: 'Trzy osoby przepisują faktury z maili.', po: 'Faktury księgują się same, zespół bierze wyjątki.',
+    u: 'Automatyzacja procesów z AI', h: '/rozwiazania-ai' },
+  { dz: 'Obsługa klienta', p: 'Pytania o zamówienia', l: '−90', j: '%', ld: 'zapytań obsługiwanych ręcznie',
+    przed: 'Te same odpowiedzi kilkanaście razy dziennie.', po: 'Agent AI odpowiada w kilka minut, z danymi zamówienia.',
+    u: 'Automatyzacja procesów z AI', h: '/rozwiazania-ai' },
+];
+const OPINIE = [
+  { cytat: 'Let’s automate wziął pełną odpowiedzialność za projekt i dowiózł go do końca. To dlatego powierzyliśmy im kolejny, znacznie większy.',
+    kto: 'Jakub Ciołkowski', rola: 'Członek Zarządu, NARS Polska', logo: '/uploads/klienci/nars.svg', alt: 'NARS Polska', lw: 235, lh: 88, h: 60 },
+  { cytat: 'Wprowadzenie danych trwało godzinę. Dziś przesłanie oferty to 10 minut — oszczędności liczymy w etatach.',
+    kto: 'Mateusz Chinczewski', rola: 'Prezes Zarządu, Finerto', logo: '/uploads/wisegroup/wg-finerto.svg', alt: 'Finerto', lw: 120, lh: 30, h: 24 },
+  { cytat: 'Bardzo dobrze zrozumieli nasze potrzeby i zaprojektowali scenariusz, który w pełni spełnił cele biznesowe. Otwartość i komunikacja to ich DNA.',
+    kto: 'Arkadiusz Andruch', rola: 'Prezes Zarządu, X2O' },
+  { cytat: 'Korzystamy z usług Let’s automate od roku. Świetna komunikacja, łatwo się dogadać, a jakość usług na wysokim poziomie.',
+    kto: 'Dominik Chylewski', rola: 'Wspólnik, X3D', logo: '/uploads/klienci/x3d.svg', alt: 'X3D', lw: 143, lh: 88, h: 60 },
+];
+
+// ---- JAK PRZEBIEGA PROGRAM (sekcja 11): schody bez cen ------------------------
+const DROGA = [
+  { t: 'Rozmowa', d: 'Poznajemy firmę i sprawdzamy, czy potrzebny jest program, czy wystarczy jedna zmiana.', h: 34 },
+  { t: `Mapa ·${NB}6${NB}tygodni`, d: 'Spisujemy systemy, przy każdym podejmujemy decyzję i rysujemy plan firmy po zmianie. Powstaje plan etapów z ceną każdego.', x: 'Po mapie możecie zakończyć, a plan zostaje u Was.', h: 50 },
+  { t: 'Etap 1', d: 'Proces, na którym firma zarabia: nowy system, połączenia, agenci AI i szkolenie działu. Stare narzędzia wyłączamy po pracy równoległej.', h: 66 },
+  { t: `Etapy 2 i${NB}3`, d: 'Kolejne obszary firmy według planu z mapy. O każdym decyduje zarząd na przeglądzie poprzedniego.', h: 82 },
+  { t: `Utrzymanie i${NB}rozwój`, d: 'Opiekujemy się systemami i agentami, a firma wprowadza kolejne zmiany według tych samych zasad.', h: 100 },
+];
+const DROGA_ARIA = 'Przebieg programu jako pięć stopni w górę: rozmowa, mapa przez sześć tygodni, etap 1, etapy 2 i 3, utrzymanie i rozwój. Po mapie można zakończyć, a plan zostaje u klienta.';
+// ---- ILE KOSZTUJE (sekcja 12): oferta na mapę i fragment planu etapów ------
+// Kwoty zamazane i zastąpione zerami, żeby z kodu strony nie dało się ich
+// odczytać.
+const PLAN_ET = [
+  { t: 'Etap 1', z: 'Oferty i zamówienia: system, połączenie z ERP, agenci przyjęć i ofert', k: 'kw. 1–2', c: '000 000 zł' },
+  { t: 'Etap 2', z: 'Magazyn i hala: moduł magazynu, aplikacja na hali, sklep B2B', k: 'kw. 3–4', c: '000 000 zł' },
+  { t: 'Etap 3', z: 'Zarząd i obsługa: raport z jednej bazy, obieg reklamacji', k: 'kw. 5–6', c: '000 000 zł' },
+  { t: 'Utrzymanie i rozwój', z: 'Opieka nad systemami i agentami', k: 'od kw. 7', c: '00 000 zł / mies.' },
+];
+
+// ---- DLA KOGO -----------------------------------------------------------------
+const TAK = [
+  { t: 'Firma ma wypracowany sposób działania i chce go zachować', d: 'Program przenosi to, co działa, na systemy z czasów AI.' },
+  { t: 'Systemów jest kilkanaście i część przestała nadążać', d: 'Arkusze, stare programy i miejsca, w których dane przenoszą ludzie.' },
+  { t: 'Jest sponsor w zarządzie', d: 'Osoba, która zatwierdza plan i decyduje o kolejnych etapach.' },
+  { t: 'Firma może prowadzić zmianę przez kilka kwartałów', d: 'Etapy idą jeden po drugim, dział po dziale.' },
+];
+const NIE = [
+  { t: 'Wystarczy Wam jedna zmiana', d: 'Np. połączenie dwóch systemów albo jeden proces w nowym systemie. Szybciej będzie zamówić usługę: <a href="/automatyzacje-integracje">integracje systemów</a> albo <a href="/systemy-procesowe">systemy dopasowane do firmy</a>.' },
+  { t: 'Najpierw musicie wybrać kolejność inicjatyw', d: 'Od tego jest <a href="/strategia-ai">strategia AI</a>: trzy tygodnie, dokument i decyzja zarządu.' },
+  { t: 'Firma jest w trakcie zmiany modelu biznesowego', d: 'Mapa zrobiona dziś niewiele powie o firmie za pół roku.' },
+  { t: 'Jesteście mikro- lub małą firmą, której przybywa pracy', d: 'Dla takich firm jest <a href="/lets-up">Let’s Up</a>, program wokół jednego ograniczenia.' },
+];
+
+// ---- FAQ ------------------------------------------------------------------------
+const faq = [
+  { q: 'Nie mamy działu IT ani doświadczenia z AI. Czy to dla nas?',
+    a: 'Tak. Program prowadzi jeden prowadzący po naszej stronie, a nasz zespół robi analizę, projekt, wdrożenia i dokumentację. Po stronie firmy potrzebny jest sponsor w zarządzie i właściciel każdego etapu, który zna swój dział. Osoby z działu szkolimy na ich własnych zadaniach, a prowadzący co tydzień mówi, co trzeba przygotować po stronie firmy.' },
+  { q: 'Czy musimy wymienić ERP?',
+    a: 'Nie ma takiego założenia. O każdym systemie decydujemy na mapie i zapisujemy powód tej decyzji. U producenta armatury z tej strony ERP z 2009 r. zostaje jako księga firmy, a łączymy go z nowymi systemami. Każdą wymianę zatwierdza zarząd razem z planem etapów.' },
+  { q: 'Ile trwa program?',
+    a: 'Mapa trwa sześć tygodni. Liczba i długość etapów wynikają z mapy: u producenta armatury z tej strony to trzy etapy po dwa kwartały. Plan etapów z kosztami dostajecie po mapie, zanim zdecydujecie o pierwszym etapie.' },
+  { q: 'Czy firma zatrzyma się na czas zmian?',
+    a: 'Nie. Każdy etap obejmuje jeden obszar firmy, a nowy system przez kilka tygodni pracuje obok starego. Stary wyłączamy, kiedy zespół pracuje już w nowym.' },
+  { q: 'Czy możemy zakończyć po mapie albo po pierwszym etapie?',
+    a: 'Tak. Po mapie zostaje u Was spis systemów z decyzjami, plan firmy po zmianie i plan etapów z kosztami. O każdym kolejnym etapie decyduje zarząd na przeglądzie po poprzednim.' },
+  { q: 'Kto jest właścicielem kodu i danych?',
+    a: 'Wy. Konta projektu, od repozytorium po klucze do modeli AI, zakładamy na Waszą firmę, a my dostajemy do nich dostęp imiennie. Kiedy współpraca się kończy, odbieracie nam te dostępy i nie potrzebujecie od nas żadnej licencji.' },
+  { q: 'Co z ludźmi, których praca się zmieni?',
+    a: 'Osoby, które dziś przenoszą dane między systemami, najlepiej znają wyjątki i zasady firmy, więc w nowym układzie zajmują się właśnie nimi. Nowe role opisujemy w planie każdego etapu, a szkolenia prowadzimy na zadaniach działu.' },
+  { q: 'Czym Let’s Shift różni się od strategii AI i od Let’s Up?',
+    a: 'Strategia AI to trzy tygodnie, po których zarząd wie, od czego zacząć i ile to zwróci. Let’s Up to program dla mikro- i małych firm, którym przybywa pracy, prowadzony wokół jednego ograniczenia. Let’s Shift przechodzi przez wszystkie systemy firmy w kolejnych etapach.' },
+  { q: 'Czy musimy korzystać z Appto?',
+    a: 'Nie. Appto to nasz produkt i jedna z możliwości dla asystentów AI w firmie. Projektujemy też własne systemy i wdrażamy AI w narzędziach, które już macie.' },
+  { q: 'Jak liczycie koszt?',
+    a: 'Mapa ma stałą cenę znaną przed startem. Każdy kolejny etap ma stałą cenę, którą podajemy po mapie, zanim go zamówicie. Utrzymanie i rozwój po programie rozliczamy miesięcznie. Licencje i utrzymanie nowych systemów są osobno, w planie kosztów, razem z kosztami systemów, które wyłączamy.' },
+];
+
+const dane = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Service',
+      '@id': `${kanon}#usluga`,
+      name: 'Let’s Shift',
+      alternateName: ['Program Let’s Shift', 'Program transformacji dla małych, średnich i dużych firm'],
+      serviceType: 'Program transformacji firmy na systemy z czasów AI, prowadzony etapami',
+      url: kanon,
+      description: 'Program dla firm z wypracowanym sposobem działania: mapa wszystkich systemów z decyzją przy każdym (zostaje, łączymy, wymieniamy, wyłączamy), plan firmy po zmianie, wdrożenia etapami dział po dziale z pracą równoległą, nowe role zespołu i przegląd zarządu co kwartał.',
+      provider: { '@id': new URL('/#organizacja', Astro.site).href },
+      areaServed: { '@type': 'Country', name: 'Polska' },
+      audience: { '@type': 'BusinessAudience', name: 'Małe, średnie i duże firmy' },
+    },
+    {
+      '@type': 'BreadcrumbList',
+      '@id': `${kanon}#okruszki`,
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Strona główna', item: new URL('/', Astro.site).href },
+        { '@type': 'ListItem', position: 2, name: 'Let’s Shift', item: kanon },
+      ],
+    },
+    {
+      '@type': 'FAQPage',
+      '@id': `${kanon}#faq`,
+      mainEntity: faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a.replace(/<[^>]+>/g, '') } })),
+    },
+  ],
+};
+
+const title = "Let’s Shift — program transformacji dla małych, średnich i dużych firm | Let's automate";
+const description = 'Let’s Shift przenosi firmę z wypracowanym sposobem działania na systemy z czasów AI. Przy każdym systemie decydujemy, czy zostaje, łączymy go, wymieniamy czy wyłączamy, a zmiany wdrażamy etapami, dział po dziale.';
+---
+<LaBase topbar={false} title={title} description={description} ctaLabel="Umów rozmowę" nav="uslugi">
+<script type="application/ld+json" is:inline set:html={JSON.stringify(dane)} slot="head"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=Inter:wght@400;500;600;700&display=swap" slot="head">
+
+<ShiftStyl />
+<style is:global>
+  /* Rysunki tej strony, przedrostek sh-. Wspólny wygląd: Styl.astro
+     (usługi) i LuStyl.astro (Let’s Up). Kolory decyzji: jedno źródło
+     niżej, na jasnym (--d) i na ciemnym tle (--dj). */
+  .sh{--d-zo:#5d6862;--d-la:#127f93;--d-wy:#0a7a52;--d-wl:#a8650f;
+    --dj-zo:#b6c1bb;--dj-la:#5ccfe0;--dj-wy:#00CD77;--dj-wl:#f0a33a;
+    --sh-ez:cubic-bezier(.55,0,.2,1);--olowek:'Caveat',cursive}
+  .sh-dzo{--d:var(--d-zo);--dj:var(--dj-zo)}
+  .sh-dla{--d:var(--d-la);--dj:var(--dj-la)}
+  .sh-dwy{--d:var(--d-wy);--dj:var(--dj-wy)}
+  .sh-dwl{--d:var(--d-wl);--dj:var(--dj-wl)}
+
+  /* pieczątka: małe litery, kolor decyzji, ramka jak odbita tuszem */
+  .sh-pc{display:inline-block;padding:1px 7px 2px;border:1.5px solid var(--d);border-radius:5px;background:color-mix(in srgb,var(--d) 7%,#ffffff);
+    font-style:normal;font-size:12px;font-weight:700;line-height:1.25;letter-spacing:0.01em;color:var(--d);white-space:nowrap;transform:rotate(-3deg)}
+
+  /* =====================================================================
+     3 · SYSTEMY ZBIERANE LATAMI: spis z natury na podkładce
+     ===================================================================== */
+  .sh-s-g{display:grid;grid-template-columns:minmax(0,5.2fr) minmax(0,6.8fr);gap:clamp(40px,6vw,110px);align-items:center}
+  .sh-s-teza{margin:clamp(28px,3vw,44px) 0 0;max-width:560px;font-size:clamp(22px,2.1vw,32px);line-height:1.22;letter-spacing:-0.03em;font-weight:600;color:var(--t1);text-wrap:pretty}
+  .sh-s-teza em{font-style:normal;color:var(--ziel-c)}
+  .sh-s-pod{position:relative;margin:0;padding:34px 22px 22px;border-radius:18px;transform:rotate(1.2deg);
+    background:linear-gradient(160deg,#c9a57c,#b78f63 60%,#a98258);box-shadow:inset 0 0 0 1px rgba(0,0,0,0.08),inset 0 2px 0 rgba(255,255,255,0.25),0 50px 80px -40px rgba(15,26,20,0.55),0 20px 30px -20px rgba(15,26,20,0.3)}
+  .sh-s-kl{position:absolute;left:50%;top:-16px;width:150px;height:46px;transform:translateX(-50%);border-radius:10px 10px 14px 14px;
+    background:linear-gradient(180deg,#e9ecea,#aab1ad 55%,#8d9490);box-shadow:0 6px 10px -4px rgba(0,0,0,0.35),inset 0 1px 0 rgba(255,255,255,0.8)}
+  .sh-s-kl::after{content:"";position:absolute;left:50%;top:9px;width:34px;height:10px;transform:translateX(-50%);border-radius:6px;background:#6d7470;box-shadow:inset 0 2px 3px rgba(0,0,0,0.4)}
+  .sh-s-k{padding:30px 28px 22px;border-radius:4px;background:#fffefa;box-shadow:0 2px 6px rgba(0,0,0,0.12)}
+  .sh-s-k header{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:4px 16px;padding-bottom:12px;border-bottom:1.5px solid var(--t1)}
+  .sh-s-k header b{font-size:19px;font-weight:750;letter-spacing:-0.02em}
+  .sh-s-k header span{font-size:12.5px;color:var(--t3)}
+  .sh-s-kol,.sh-s-k li{display:grid;grid-template-columns:1.9em minmax(0,1fr) 3.4em minmax(0,1.15fr);gap:12px;align-items:baseline}
+  .sh-s-kol{padding:9px 0 6px;font-size:11.5px;font-weight:650;color:var(--t3)}
+  .sh-s-k ol{margin:0;padding:0;list-style:none}
+  .sh-s-k li{padding:9px 0 8px;border-top:1px solid rgba(15,26,20,0.1);font-size:14.5px;line-height:1.3}
+  .sh-s-k li em{font-style:normal;font-size:12px;color:var(--t3);font-variant-numeric:tabular-nums}
+  .sh-s-k li b{font-weight:650}
+  .sh-s-k li span{font-family:var(--mono);font-size:12.5px;color:var(--t2)}
+  .sh-s-k li i{font-family:var(--olowek);font-style:normal;font-size:20px;font-weight:500;line-height:1.05;color:#4f5551;transform:rotate(-1.2deg);transform-origin:0 50%}
+  .sh-s-k footer{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin-top:10px;padding-top:12px;border-top:1px solid rgba(15,26,20,0.1);font-size:12px;color:var(--t3)}
+  .sh-s-k footer i{font-family:var(--olowek);font-style:normal;font-size:22px;color:#4f5551}
+  @media (max-width:1000px){ .sh-s-g{grid-template-columns:1fr} .sh-s-pod{transform:none} }
+  @media (max-width:600px){
+    .sh-s-pod{padding:30px 10px 10px}
+    .sh-s-k{padding:22px 14px 16px}
+    .sh-s-kol{display:none}
+    .sh-s-k li{grid-template-columns:1.6em minmax(0,1fr) auto;gap:4px 8px}
+    .sh-s-k li i{grid-column:2 / -1;font-size:19px}
+  }
+
+  /* =====================================================================
+     4 · CZYM JEST LET’S SHIFT? odpowiedź i dokument „Program w skrócie”
+     ===================================================================== */
+  .sh-cz-g{display:grid;grid-template-columns:minmax(0,5.6fr) minmax(0,6.4fr);gap:clamp(40px,6vw,110px);align-items:start}
+  .sh-cz-odp{margin:clamp(28px,3vw,44px) 0 0;max-width:600px;font-size:clamp(20px,1.75vw,25px);line-height:1.45;letter-spacing:-0.015em;color:var(--t1);text-wrap:pretty}
+  .sh-cz-dok{position:relative;margin:0;padding:10px 0 20px}
+  .sh-cz-tyl{position:absolute;left:5%;right:-2%;top:22px;bottom:6px;border-radius:6px;background:#fbfaf6;transform:rotate(2.2deg);box-shadow:0 0 0 1px rgba(15,26,20,0.06),0 20px 40px -30px rgba(15,26,20,0.4)}
+  .sh-cz-k{position:relative;padding:clamp(26px,3vw,44px) clamp(24px,3vw,48px) clamp(22px,2.4vw,34px);border-radius:6px;background:#ffffff;transform:rotate(-0.6deg);
+    box-shadow:0 0 0 1px rgba(15,26,20,0.06),0 50px 80px -50px rgba(15,26,20,0.5),0 16px 30px -24px rgba(15,26,20,0.3)}
+  .sh-cz-k header{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-bottom:14px;border-bottom:1px solid var(--linia)}
+  .sh-cz-k header .lg{display:flex;align-items:center;gap:9px}
+  .sh-cz-k header svg{width:22px;height:22px;fill:var(--ziel-c)}
+  .sh-cz-k header b{font-size:17px;font-weight:800;letter-spacing:-0.025em}
+  .sh-cz-k header > span:last-child{font-size:12.5px;color:var(--t3)}
+  .sh-cz-k h3{margin:22px 0 0;font-size:clamp(26px,2.4vw,36px);font-weight:700;letter-spacing:-0.04em;line-height:1.05}
+  .sh-cz-os{position:relative;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));margin:22px 0 6px;padding:0;list-style:none}
+  .sh-cz-os::before{content:"";position:absolute;left:6px;right:20%;top:6px;height:2px;background:linear-gradient(90deg,var(--ziel-c) 0 20%,rgba(10,122,82,0.35) 20% 100%)}
+  .sh-cz-os li{position:relative;padding-top:22px;font-size:14px;line-height:1.25}
+  .sh-cz-os li::before{content:"";position:absolute;left:0;top:0;width:14px;height:14px;border-radius:50%;background:#ffffff;box-shadow:inset 0 0 0 2px var(--ziel-c)}
+  .sh-cz-os li:first-child::before{background:var(--ziel-c)}
+  .sh-cz-os li:last-child::before{box-shadow:inset 0 0 0 2px var(--t3)}
+  .sh-cz-os b{display:block;font-weight:700}
+  .sh-cz-os small{display:block;margin-top:2px;font-size:12.5px;color:var(--t3)}
+  .sh-cz-k dl{margin:18px 0 0}
+  .sh-cz-k dl > div{display:grid;grid-template-columns:8.6em minmax(0,1fr);gap:4px 20px;padding:13px 0;border-top:1px solid var(--linia2)}
+  .sh-cz-k dt{padding-top:1px;font-size:13.5px;font-weight:700;color:var(--ziel-c)}
+  .sh-cz-k dd{margin:0;font-size:15.5px;line-height:1.5;color:var(--t1)}
+  .sh-cz-k footer{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-top:10px;padding-top:16px;border-top:1px solid var(--linia)}
+  .sh-cz-k .pd i{display:block;font-family:var(--olowek);font-style:normal;font-size:30px;font-weight:600;line-height:1;color:#25358a;transform:rotate(-3deg);transform-origin:0 100%}
+  .sh-cz-k .pd small{display:block;margin-top:4px;padding-top:4px;border-top:1px solid var(--linia);font-size:12.5px;color:var(--t3)}
+  .sh-cz-k .dt{font-size:12.5px;color:var(--t3)}
+  @media (max-width:1000px){ .sh-cz-g{grid-template-columns:1fr} }
+  @media (max-width:600px){
+    .sh-cz-tyl{display:none}
+    .sh-cz-k{transform:none;padding:22px 18px 18px}
+    .sh-cz-os li{font-size:12px}
+    .sh-cz-os small{display:none}
+    .sh-cz-k dl > div{grid-template-columns:1fr;gap:2px}
+    .sh-cz-k footer{flex-direction:column;align-items:flex-start}
+  }
+
+  /* =====================================================================
+     5 · JEDNA SPRAWA, DZIŚ I PO PROGRAMIE (.sh-z-, .sh-sx-, .sh-zw): opowieść
+     przyklejona do przewijania z przełącznikiem trzech przykładów; wycinki
+     w stylach hero (klasy shb-* z HeroB i system firmy .sh-zw.sys, --u = 1px)
+     ===================================================================== */
+  #sprawa{background:var(--papier)}
+  .sh-z .u4z-gl .u2-h2{font-size:clamp(40px,5vw,82px)}
+  .sh-sx-zak{display:inline-flex;flex-wrap:wrap;gap:4px;margin-top:clamp(32px,4vw,52px);padding:5px;border-radius:999px;background:rgba(255,255,255,0.06);box-shadow:inset 0 0 0 1px rgba(255,255,255,0.1)}
+  .sh-sx-zak button{appearance:none;padding:10px 18px;border:0;border-radius:999px;background:none;font:inherit;font-size:14.5px;font-weight:650;color:rgba(255,255,255,0.7);cursor:pointer;transition:background .25s,color .25s}
+  .sh-sx-zak button:hover{color:#ffffff}
+  .sh-sx-zak button[aria-selected="true"]{background:#ffffff;color:var(--ink)}
+  .sh-sx-zak button:focus-visible{outline:2px solid var(--ziel);outline-offset:2px}
+  .sh-sx-z{margin:18px 0 0;max-width:760px;font-size:clamp(16px,1.3vw,19px);line-height:1.5;color:rgba(255,255,255,0.78)}
+  .sh-z .u4z-g{margin-top:clamp(24px,3vw,40px)}
+  .sh-z .u4z-kar{padding:0;background:none}
+  .sh-z-et{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;margin:0 0 20px;padding:0;list-style:none}
+  .sh-z-et li{position:relative;padding-top:12px;font-size:12.5px;font-weight:600;line-height:1.25;color:rgba(255,255,255,0.45);transition:color .3s ease}
+  .sh-z-et li::before{content:"";position:absolute;left:0;right:0;top:0;height:3px;border-radius:2px;background:rgba(255,255,255,0.14);transition:background .3s ease}
+  .sh-z-et li b{display:block;font-size:11px;font-weight:700;opacity:0.8}
+  .sh-z-st{display:grid}
+  .sh-z-s{grid-area:1 / 1;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start;opacity:0;visibility:hidden;transform:translateY(8px);transition:opacity .4s ease,transform .45s ease,visibility 0s linear .4s}
+  .sh-z-p > em{display:block;margin-bottom:10px;font-style:normal;font-size:14px;font-weight:700;color:rgba(255,255,255,0.6)}
+  .sh-z-p.po > em{color:var(--ziel)}
+  .sh-z-cap{display:flex;align-items:center;gap:10px;margin:12px 0 0;font-size:14.5px;line-height:1.4;color:rgba(255,255,255,0.75)}
+  .sh-z-cap img,.sh-z-cap .tw .agf{flex:none;width:30px;height:30px;border-radius:50%;object-fit:cover}
+  .sh-z-cap b{color:#ffffff;font-weight:650}
+  .sh-z-cap i{font-style:normal;font-weight:650;color:#ffc879}
+  .sh-z-cap.po{color:#ffffff}
+  .sh-z-wiz[data-krok="0"] .sh-z-s0,.sh-z-wiz[data-krok="1"] .sh-z-s1,.sh-z-wiz[data-krok="2"] .sh-z-s2,.sh-z-wiz[data-krok="3"] .sh-z-s3,.sh-z-wiz[data-krok="4"] .sh-z-s4,.sh-z-wiz[data-krok="5"] .sh-z-s5{opacity:1;visibility:visible;transform:none;transition:opacity .4s ease,transform .45s ease,visibility 0s}
+  .sh-z-wiz[data-krok="0"] .sh-z-et li:nth-child(-n+1),.sh-z-wiz[data-krok="1"] .sh-z-et li:nth-child(-n+2),.sh-z-wiz[data-krok="2"] .sh-z-et li:nth-child(-n+3),.sh-z-wiz[data-krok="3"] .sh-z-et li:nth-child(-n+4),.sh-z-wiz[data-krok="4"] .sh-z-et li:nth-child(-n+5),.sh-z-wiz[data-krok="5"] .sh-z-et li{color:rgba(255,255,255,0.75)}
+  .sh-z-wiz[data-krok="0"] .sh-z-et li:nth-child(-n+1)::before,.sh-z-wiz[data-krok="1"] .sh-z-et li:nth-child(-n+2)::before,.sh-z-wiz[data-krok="2"] .sh-z-et li:nth-child(-n+3)::before,.sh-z-wiz[data-krok="3"] .sh-z-et li:nth-child(-n+4)::before,.sh-z-wiz[data-krok="4"] .sh-z-et li:nth-child(-n+5)::before,.sh-z-wiz[data-krok="5"] .sh-z-et li::before{background:rgba(255,255,255,0.45)}
+  .sh-z-wiz[data-krok="0"] .sh-z-et li:nth-child(1),.sh-z-wiz[data-krok="1"] .sh-z-et li:nth-child(2),.sh-z-wiz[data-krok="2"] .sh-z-et li:nth-child(3),.sh-z-wiz[data-krok="3"] .sh-z-et li:nth-child(4),.sh-z-wiz[data-krok="4"] .sh-z-et li:nth-child(5),.sh-z-wiz[data-krok="5"] .sh-z-et li:nth-child(6){color:#ffffff}
+  .sh-z-wiz[data-krok="0"] .sh-z-et li:nth-child(1)::before,.sh-z-wiz[data-krok="1"] .sh-z-et li:nth-child(2)::before,.sh-z-wiz[data-krok="2"] .sh-z-et li:nth-child(3)::before,.sh-z-wiz[data-krok="3"] .sh-z-et li:nth-child(4)::before,.sh-z-wiz[data-krok="4"] .sh-z-et li:nth-child(5)::before,.sh-z-wiz[data-krok="5"] .sh-z-et li:nth-child(6)::before{background:var(--ziel)}
+  .sh-z .u4z-k em{font-size:13.5px}
+  .sh-z .u6-mc{margin-top:30px}
+  /* wspólna rama wycinka */
+  .sh-zw{--u:1px;position:relative;overflow:hidden;border-radius:8px;background:#ffffff;color:#242424;font-family:"Segoe UI",system-ui,-apple-system,sans-serif;font-size:13px;line-height:1.3;
+    box-shadow:0 0 0 1px rgba(255,255,255,0.12),0 24px 40px -24px rgba(0,0,0,0.7)}
+  .sh-zw p{margin:0}
+  .sh-zw .ok{display:grid;place-items:center;flex:none;width:18px;height:18px;border-radius:50%;background:#059669;color:#ffffff}
+  .sh-zw .ok .shb-ik{width:11px;height:11px;stroke-width:3;fill:none;stroke:currentColor}
+  .sh-zw .shb-ol-m{padding-right:30px}
+  .sh-zw-za{display:inline-flex;align-items:center;gap:5px;margin-top:6px;padding:2px 8px;border:1px solid #e1e1e1;border-radius:4px;font-size:11.5px;color:#424242;background:#ffffff}
+  .sh-zw.shb-xl table{font-size:12.5px}
+  .sh-zw.shb-xl tr.ng td{font-weight:700;color:#333333;background:#f7f7f7}
+  .sh-zw.erp{overflow:visible;padding-bottom:92px;background:none;box-shadow:none}
+  .sh-zw.erp .shb-erp{box-shadow:0 24px 40px -24px rgba(0,0,0,0.7)}
+  .sh-zw.erp .shb-erp-s{display:flex;justify-content:space-between}
+  .sh-zw.erp .shb-erp-s span:first-child{color:#a31515;font-weight:700}
+  .sh-zw.erp .shb-blad{position:absolute;left:24%;right:-2%;top:88px;box-shadow:0 20px 34px -12px rgba(0,0,0,0.6)}
+  .sh-zw.shb-zd{background:#202020;color:#ffffff}
+  .sh-zw.shb-zd .shb-zd-in{padding:14px 26px 22px}
+  /* telefon: ekran blokady z powiadomieniami */
+  .sh-zw.tel{padding:16px 12px 14px;border-radius:22px;background:linear-gradient(180deg,#3d4c5c,#1a222b);color:#ffffff;font-family:-apple-system,system-ui,sans-serif}
+  .sh-zw.tel .zg{margin:0 0 12px;text-align:center;font-size:40px;font-weight:600;line-height:1}
+  .sh-zw.tel .zg small{display:block;margin-top:4px;font-size:12px;font-weight:500;color:rgba(255,255,255,0.75)}
+  .sh-zw.tel .nt{display:grid;grid-template-columns:30px minmax(0,1fr);gap:9px;align-items:start;margin-top:6px;padding:9px 11px;border-radius:14px;background:rgba(245,246,245,0.88);color:#111111}
+  .sh-zw.tel .ap{display:grid;place-items:center;width:30px;height:30px;border-radius:8px;background:#34c759;color:#ffffff}
+  .sh-zw.tel .nt.box .ap{background:#d22630}
+  .sh-zw.tel .nt.tel .ap{background:#34c759}
+  .sh-zw.tel .nt.msg .ap{background:#30a0f0}
+  .sh-zw.tel .ap svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2;stroke-linejoin:round}
+  .sh-zw.tel .nt b{font-size:13px;font-weight:650}
+  .sh-zw.tel .nt time{float:right;font-size:11.5px;color:#666666}
+  .sh-zw.tel .nt span{display:block;font-size:13px;line-height:1.3}
+  .sh-zw.tel .nt.tel span{color:#c42b1c;font-weight:600}
+  /* System firmy (ten sam wygląd co w hero): rekord, aktywność, decyzja */
+  .sh-zw.sys{--tx:#101828;--t2:#475467;--t3:#667085;--t4:#98A2B3;--li:#EAECF0;--li2:#F2F4F7;
+    padding:0;background:#ffffff;color:var(--tx);font-family:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:13px;-webkit-font-smoothing:antialiased}
+  .sh-zw.sys .agf{display:block;flex:none;border-radius:28%}
+  .sh-zw.sys .zs-g{display:flex;align-items:center;gap:7px;padding:10px 14px;border-bottom:1px solid var(--li);background:#F9FAFB;font-size:12.5px;color:var(--t3)}
+  .sh-zw.sys .zs-g > i{font-style:normal;color:var(--t4)}
+  .sh-zw.sys .zs-g b{font-weight:600;color:var(--tx);white-space:nowrap}
+  .sh-zw.sys .zs-g{white-space:nowrap;overflow:hidden}
+  .sh-zw.sys .zs-g .st{margin-left:auto;padding:2px 9px;border-radius:999px;background:var(--brt);font-size:11.5px;font-weight:550;color:var(--br);white-space:nowrap}
+  .sh-zw.sys .mk{position:relative;display:grid;place-items:center;flex:none;width:18px;height:18px;border-radius:5px;background:var(--br)}
+  .sh-zw.sys .mk i{position:relative;width:9px;height:9px;border-radius:50%;box-shadow:inset 0 0 0 1.6px #ffffff}
+  .sh-zw.sys .mk i::before{content:"";position:absolute;left:-3px;right:-3px;top:50%;height:1.6px;margin-top:-0.8px;background:#ffffff}
+  .sh-zw.sys .ok{background:#12B76A}
+  .sh-zw.sys .zs-p{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));margin:0;padding:6px 14px 2px}
+  .sh-zw.sys .zs-p div{padding:8px 0;border-bottom:1px solid var(--li2)}
+  .sh-zw.sys .zs-p div:nth-child(odd){padding-right:12px}
+  .sh-zw.sys .zs-p dt{font-size:11.5px;color:var(--t3)}
+  .sh-zw.sys .zs-p dd{margin:3px 0 0;padding:2px 7px;width:fit-content;max-width:100%;border-radius:5px;background:var(--brt);font-size:13px;font-weight:550;line-height:1.35;color:var(--tx)}
+  .sh-zw.sys .zs-s{display:flex;align-items:center;gap:8px;padding:9px 14px 11px;font-size:12px;color:var(--t3)}
+  .sh-zw.sys .zs-s img{width:22px;height:22px;border-radius:50%;object-fit:cover}
+  .sh-zw.sys .zs-s > span:not(.ok){flex:1;min-width:0}
+  .sh-zw.sys .zs-s b{font-weight:600;color:var(--tx)}
+  .sh-zw.sys .zs-s time{color:var(--t4)}
+  .sh-zw.sys .zs-w{display:grid;grid-template-columns:28px minmax(0,1fr) auto 18px;gap:10px;align-items:center;margin:10px 12px 0;padding:10px 12px;border-radius:10px;background:#ffffff;box-shadow:0 0 0 1.5px var(--br),0 8px 18px -12px rgba(16,24,40,0.35)}
+  .sh-zw.sys .zs-w b{display:block;font-size:13.5px;font-weight:600}
+  .sh-zw.sys .zs-w small{display:block;font-size:12px;color:var(--t3)}
+  .sh-zw.sys .zs-w time,.sh-zw.sys .zs-a time{font-size:11.5px;color:var(--t4);font-variant-numeric:tabular-nums}
+  .sh-zw.sys .zs-a{position:relative;margin:10px 0 0;padding:0 14px 10px;list-style:none}
+  .sh-zw.sys .zs-a li{display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:10px;align-items:center;padding:7px 0;border-top:1px solid var(--li2)}
+  .sh-zw.sys .zs-a li > img{width:22px;height:22px;border-radius:50%;object-fit:cover}
+  .sh-zw.sys .zs-a p{min-width:0;font-size:12.5px;line-height:1.35;color:var(--t2)}
+  .sh-zw.sys .zs-a p b{font-weight:600;color:var(--tx)}
+  .sh-zw.sys .zs-d{margin:10px 12px 0;padding:12px 13px;border-radius:10px;box-shadow:0 0 0 1.5px var(--br),0 8px 18px -12px rgba(16,24,40,0.35)}
+  .sh-zw.sys .dc-g{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--t3)}
+  .sh-zw.sys .dc-g b{font-weight:600;color:var(--tx)}
+  .sh-zw.sys .dc-q{margin-top:8px !important;font-size:13.5px;line-height:1.45}
+  .sh-zw.sys .dc-b{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px !important}
+  .sh-zw.sys .dc-b > *{display:flex;align-items:center;height:30px;padding:0 12px;border-radius:8px;font-size:12.5px;font-weight:600}
+  .sh-zw.sys .dc-b b{background:var(--br);color:#ffffff}
+  .sh-zw.sys .dc-b span{border:1px solid var(--li);color:var(--t2)}
+  /* Outlook: wysłana wiadomość */
+  .sh-zw.out .ou{padding:12px 14px 12px}
+  .sh-zw.out .ou-t{font-size:15px;font-weight:600}
+  .sh-zw.out .ou-o{display:flex;align-items:center;gap:9px;margin-top:9px !important}
+  .sh-zw.out .sa{display:grid;place-items:center;flex:none;width:28px;height:28px;border-radius:50%;background:#1f3a8a;color:#ffffff;font-size:12px;font-weight:800}
+  .sh-zw.out .ou-o b{display:block;font-size:12.5px;font-weight:600}
+  .sh-zw.out .ou-o small{display:block;font-size:11.5px;color:#616161}
+  .sh-zw.out .ou-o time{margin-left:auto;font-size:11.5px;color:#616161}
+  .sh-zw.out .ou-b{margin-top:10px !important;font-size:13px;line-height:1.45;color:#242424}
+  .sh-zw.out .ou-z{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px !important}
+  .sh-zw.out .ou-z span{display:inline-flex;align-items:center;gap:5px;padding:4px 9px;border:1px solid #e1e1e1;border-radius:5px;font-size:12px}
+  .sh-zw.out .ou-z svg{width:13px;height:13px;fill:none;stroke:#b42318;stroke-width:1.8}
+  .sh-zw.out .ou-a{display:flex;align-items:center;gap:7px;margin-top:10px !important;padding-top:9px;border-top:1px solid #eeeeee;font-family:"GeistApp",system-ui,sans-serif;font-size:12px;color:rgba(20,20,20,.6)}
+  .sh-zw.out .ou-a .ok{margin-left:auto}
+  @media (prefers-reduced-motion:reduce){ .sh-z-s{transition:none} }
+  @media (max-width:900px){
+    .sh-sx-zak{display:flex;flex-wrap:nowrap;max-width:100%;overflow-x:auto;scrollbar-width:none;border-radius:999px}
+    .sh-sx-zak::-webkit-scrollbar{display:none}
+    .sh-sx-zak button{flex:none;padding:8px 13px;font-size:13.5px;white-space:nowrap}
+    .sh-z .u4z-kar{padding:12px;background:rgba(10,24,17,0.97)}
+    .sh-z-et{gap:3px;margin-bottom:10px}
+    .sh-z-et li{padding-top:8px;font-size:0}
+    .sh-z-et li b{font-size:10px}
+    .sh-z-s{grid-template-columns:minmax(0,1fr);gap:10px}
+    .sh-z .u4z-g{grid-template-columns:minmax(0,1fr)}
+    .sh-z .u4z-kroki,.sh-z .u4z-k,.sh-z .u4z-k > div{min-width:0}
+    .sh-z-p > em{margin-bottom:5px;font-size:12px}
+    .sh-zw{max-height:146px}
+    .sh-zw.erp{max-height:none;padding-bottom:88px}
+    .sh-zw.erp .shb-blad{top:54px;left:16%;right:0}
+    .sh-zw.erp .shb-erp-f label:nth-child(n+2),.sh-zw.erp .shb-blad-in small{display:none}
+    .sh-zw .shb-ol-m.nw,.sh-zw .shb-ol-m:nth-child(n+3),.sh-zw .shb-tm-m:nth-child(n+3),.sh-zw.sys .zs-a,.sh-zw.shb-xl tr:nth-child(n+3),.sh-zw .shb-xl-fx,.sh-zw.tel .nt:nth-child(n+3),.sh-zw.tel .zg,.sh-zw.sys .zs-p div:nth-child(n+3),.sh-zw.out .ou-b,.sh-zw.out .ou-a{display:none}
+    .sh-zw.tel{padding:8px}
+    .sh-zw.shb-zd .shb-zd-in{padding:8px 20px 12px}
+    .sh-zw.shb-zd .shb-kar .r:nth-of-type(2),.sh-zw.shb-zd .shb-kar .r:nth-of-type(3){display:none}
+    .sh-z-cap{margin-top:6px;font-size:12.5px}
+    .sh-z-cap img,.sh-z-cap .tw .agf{width:24px;height:24px}
+    .sh-z .u4z-k,.sh-z .u4z-k:first-child{min-height:86vh}
+    /* Panele „Dziś / Po zmianie” przenosi skrypt do kroków (sh-z-mob):
+       przyklejony rysunek zajmował cały ekran i zasłaniał tekst kroku. */
+    .sh-z-mob .u4z-wiz{display:none}
+    .sh-z-mob .u4z-k,.sh-z-mob .u4z-k:first-child{display:block;min-height:0;padding:30px 0 6px;align-items:initial}
+    .sh-z-mob .u4z-k:not(:first-child){margin-top:26px;border-top:1px solid rgba(255,255,255,0.1)}
+    .sh-z-mob .u4z-k > div{opacity:1}
+    .sh-z-mob .u4z-kroki{padding-bottom:0}
+    .sh-z-mob .u4z-kroki > .sh-z-s{display:grid;margin-top:16px;opacity:1;visibility:visible;transform:none}
+    .sh-z-mob .u4z-kroki > .u6-mc{margin-top:26px}
+    /* przy kroku (bez przyklejonego rysunku) wycinki nie muszą być przycięte */
+    .sh-z-mob .u4z-kroki > .sh-z-s .sh-zw{max-height:none}
+    /* pięć zakładek w jednym przewijanym rzędzie zamiast owalu w kilku wierszach */
+    .sh-bu .u3a-zak{display:flex;flex-wrap:nowrap;justify-content:flex-start;max-width:100%;overflow-x:auto;scrollbar-width:none;border-radius:999px}
+    .sh-bu .u3a-zak::-webkit-scrollbar{display:none}
+    .sh-bu .u3a-zak button{flex:none;white-space:nowrap}
+  }
+
+  /* =====================================================================
+     6 · CO PROWADZIMY: pięć scen w pięciu językach obrazu
+     ===================================================================== */
+  /* stos kart: równe wysokości jak w lets-up-v6, przyklejanie od 760 px */
+  .sh-pr-e{font-size:13.5px;font-weight:700;color:var(--ziel-c)}
+  .sh-pr .u4p-meta h3{margin-top:10px;font-size:clamp(25px,2.3vw,36px);line-height:1.05}
+  .sh-pr .u4p-k{height:clamp(400px,33vw,460px)}
+  .sh-pr .u4p-sc{min-height:0;height:100%}
+  @media (max-width:900px){ .sh-pr .u4p-k{height:auto} .sh-pr .u4p-sc{height:auto;min-height:360px} }
+  /* Stos jak w Let’s Up, ale od 620 px wysokości okna (LuStyl włącza go
+     dopiero od 760 px): karty przyklejają się i nachodzą na siebie, niższe
+     okno = niższa karta. Cofanie poprzedniej karty liczy skrypt tej strony
+     (zmienne --ss i --oo), bo LuSkrypty działa tylko od 760 px. */
+  @media (min-width:1000px) and (min-height:620px){
+    .sh-pr .u4p-k{position:sticky;top:calc(92px + var(--i) * 14px);height:clamp(380px,calc(100vh - 170px),460px);transform:scale(var(--ss,var(--s,1)))}
+    .sh-pr .u4p-k::after{opacity:var(--oo,var(--o,0))}
+    .sh-pr .u4p-k + .u4p-k{margin-top:22vh}
+    .sh-pr .u4p-st{padding-bottom:4vh}
+  }
+  /* 1 · rejestr decyzji: wydruk z pieczątkami */
+  .sh-r1{left:7%;right:7%;top:28px;bottom:-40px;padding:24px 26px;border-radius:12px;background:#ffffff;box-shadow:0 30px 60px -30px rgba(15,26,20,0.45),0 0 0 1px rgba(15,26,20,0.05)}
+  .sh-r1.tyl{left:12%;right:3%;top:16px;transform:rotate(2.5deg);background:#f8f8f5;box-shadow:0 0 0 1px rgba(15,26,20,0.05)}
+  .sh-r1 header{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:4px 14px;padding-bottom:12px;border-bottom:1.5px solid var(--t1)}
+  .sh-r1 header b{font-size:15px;font-weight:750}
+  .sh-r1 header span{font-size:12px;color:var(--t3)}
+  .sh-r1-k,.sh-r1-w{display:grid;grid-template-columns:minmax(0,1.25fr) 3em 7.4em minmax(0,1.6fr);gap:12px;align-items:center}
+  .sh-r1-k{padding:8px 0 4px;font-size:11px;font-weight:650;color:var(--t3)}
+  .sh-r1-g{display:flex;align-items:center;gap:8px;margin:10px 0 0;padding:6px 0 4px;font-size:12px;font-weight:700;color:var(--d)}
+  .sh-r1-g i{width:8px;height:8px;border-radius:2px;background:var(--d)}
+  .sh-r1-w{padding:7px 0;border-top:1px solid var(--linia2);font-size:13px;line-height:1.3}
+  .sh-r1-w b{font-weight:650}
+  .sh-r1-w > span{font-family:var(--mono);font-size:12px;color:var(--t3)}
+  .sh-r1-w .sh-pc{justify-self:start;font-size:11px}
+  .sh-r1-w p{margin:0;color:var(--t2)}
+  /* 2 · architektura docelowa: rysunek techniczny */
+  .sh-r2-sc{background:#0f2b33 !important}
+  .sh-r2{inset:0;padding:22px 24px 20px;color:#e6f3f1;font-size:12px;
+    background:linear-gradient(rgba(170,230,220,0.06) 1px,transparent 1px) 0 0/20px 20px,linear-gradient(90deg,rgba(170,230,220,0.06) 1px,transparent 1px) 0 0/20px 20px,
+      linear-gradient(rgba(170,230,220,0.1) 1px,transparent 1px) 0 0/100px 100px,linear-gradient(90deg,rgba(170,230,220,0.1) 1px,transparent 1px) 0 0/100px 100px,radial-gradient(600px 400px at 80% 0%,rgba(0,205,119,0.16),transparent 70%),#0f2b33}
+  .sh-r2-ar{--rg:clamp(20px,2.6vw,36px);position:relative;height:100%;display:flex;flex-direction:column;gap:var(--rg);padding:22px 18px 18px;border:1px solid rgba(220,245,240,0.45)}
+  .sh-r2-w{display:grid;grid-template-columns:118px minmax(0,1fr);gap:12px;align-items:center}
+  .sh-r2-w > em{font-style:normal;font-size:12px;color:rgba(220,245,240,0.62);font-family:var(--mono);letter-spacing:-0.02em}
+  .sh-r2-w > div{display:flex;flex-wrap:wrap;gap:8px}
+  .sh-r2-b{position:relative;flex:1 1 0;min-width:0;padding:11px 9px;border:1px solid rgba(220,245,240,0.75);border-radius:3px;font-size:12.5px;line-height:1.25;text-align:center;color:#f2fbf9}
+  .sh-r2-b::after{content:"";position:absolute;left:50%;top:100%;height:calc(var(--rg) + 1px);border-left:1px dashed rgba(220,245,240,0.45)}
+  .sh-r2-b > i{position:absolute;right:3px;top:-8px;padding:0 3px;background:#0f2b33;font-style:normal;font-family:var(--mono);font-size:10px;line-height:14px;color:#7ff0c0}
+  .sh-r2-w.d .sh-r2-b::after{display:none}
+  .sh-r2-w.d .sh-r2-b.sz{flex-grow:2.2;border-width:1.5px;border-color:#7ff0c0;color:#ffffff}
+  .sh-r2-w.l .sh-r2-b{display:flex;flex-direction:column;align-items:center;gap:5px;padding:6px 6px 7px;border-style:dashed}
+  .sh-r2-w.l svg{width:18px;height:18px;fill:none;stroke:#bfeee3;stroke-width:1.3}
+  .sh-r2-w.ai .sh-r2-b{border-color:#7ff0c0;color:#c8ffe6}
+  .sh-r2-tab{position:absolute;right:-1px;bottom:-1px;display:grid;grid-template-columns:auto auto;border:1px solid rgba(220,245,240,0.6);background:#0f2b33;font-size:11px;font-family:var(--mono);color:rgba(220,245,240,0.8)}
+  .sh-r2-tab span{padding:4px 9px;border-left:1px solid rgba(220,245,240,0.35);border-top:1px solid rgba(220,245,240,0.35)}
+  .sh-r2-tab span:nth-child(odd){border-left:0}
+  .sh-r2-tab span:nth-child(-n+2){border-top:0}
+  .sh-r2-tab b{grid-column:1 / -1;padding:5px 9px;border-bottom:1px solid rgba(220,245,240,0.35);font-family:inherit;font-weight:600;color:#ffffff}
+  .sh-r2-tab svg{display:block;width:74px;height:20px;fill:none;stroke:#bfeee3;stroke-width:1.4;stroke-linecap:round}
+  /* 3 · wdrożenia etapami: planer kwartałów ze znakami narzędzi */
+  .sh-r3{inset:24px 5%;display:flex;flex-direction:column;border-radius:14px;background:#ffffff;box-shadow:0 30px 60px -34px rgba(15,26,20,0.4),0 0 0 1px rgba(15,26,20,0.05);overflow:hidden}
+  .sh-r3-kw{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));border-bottom:1px solid var(--linia)}
+  .sh-r3-kw span{padding:10px 12px;border-left:1px solid var(--linia2);font-size:12px;font-weight:650;color:var(--t3)}
+  .sh-r3-kw span:first-child{border-left:0}
+  .sh-r3-f{flex:1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+  .sh-r3-c{display:flex;flex-direction:column;padding:14px 14px 14px;border-left:1px solid var(--linia2)}
+  .sh-r3-c:first-child{border-left:0}
+  .sh-r3-pas{display:flex;justify-content:space-between;align-items:center;padding:6px 10px;border-radius:7px;background:#e6f6ee;font-size:12.5px;font-weight:700;color:var(--ziel-c)}
+  .sh-r3-pas small{font-size:11.5px;font-weight:600;color:var(--t3)}
+  .sh-r3-c ul{margin:14px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:11px}
+  .sh-r3-c li{display:grid;grid-template-columns:40px minmax(0,1fr);gap:10px;align-items:center}
+  .sh-r3-ik{display:grid;place-items:center;width:40px;height:40px;border-radius:11px;background:#ffffff;box-shadow:0 0 0 1px rgba(15,26,20,0.1),0 6px 12px -8px rgba(15,26,20,0.4)}
+  .sh-r3-ik img{width:22px;height:22px;object-fit:contain}
+  .sh-r3-ik.wl{background:#0e2b1d;box-shadow:0 6px 12px -8px rgba(15,26,20,0.5)}
+  .sh-r3-ik svg{width:21px;height:21px;fill:none;stroke:#7ff0c0;stroke-width:1.6;stroke-linejoin:round;stroke-linecap:round}
+  .sh-r3-c li b{display:block;font-size:13px;font-weight:650;line-height:1.2}
+  .sh-r3-c li small{display:block;font-size:11.5px;color:var(--t3)}
+  .sh-r3-off{margin-top:auto;min-height:calc(3em + 13px);padding-top:12px;border-top:1px dashed var(--linia);font-size:11.5px;line-height:1.5;color:var(--t3)}
+  .sh-r3-off s{color:var(--t2);text-decoration-color:var(--d-wl);text-decoration-thickness:1.5px}
+  .sh-r3-off em{font-style:normal;font-weight:700;color:var(--d-wl)}
+  /* 4 · ludzie i nowe role: identyfikatory na smyczach */
+  .sh-r4{inset:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;padding:0 4%;align-items:start}
+  .sh-r4-id{position:relative;display:flex;flex-direction:column;align-items:center;padding-top:var(--t,40px);transform:rotate(var(--r,0deg));transform-origin:50% 0}
+  .sh-r4-id::before{content:"";position:absolute;left:50%;top:-20px;height:calc(var(--t,40px) + 30px);width:12px;margin-left:-6px;background:linear-gradient(90deg,#0a7a52,#0c8f60 50%,#0a7a52)}
+  .sh-r4-k{position:relative;width:100%;padding:24px 14px 14px;border-radius:12px;background:#ffffff;box-shadow:0 26px 40px -24px rgba(15,26,20,0.5),0 0 0 1px rgba(15,26,20,0.06);text-align:center}
+  .sh-r4-k::before{content:"";position:absolute;left:50%;top:8px;width:30px;height:7px;margin-left:-15px;border-radius:4px;background:#e4e7e4;box-shadow:inset 0 1px 2px rgba(0,0,0,0.2)}
+  .sh-r4-k img{display:block;width:62px;height:62px;margin:6px auto 0;border-radius:12px;object-fit:cover}
+  .sh-r4-k > b{display:block;margin-top:10px;font-size:15px;font-weight:750}
+  .sh-r4-k > small{display:block;font-size:11.5px;color:var(--t3)}
+  .sh-r4-k dl{margin:12px 0 0;text-align:left}
+  .sh-r4-k dl div{padding:7px 0 0;border-top:1px solid var(--linia2)}
+  .sh-r4-k dl div + div{margin-top:6px}
+  .sh-r4-k dt{font-size:10.5px;font-weight:700;color:var(--t3)}
+  .sh-r4-k dd{margin:1px 0 0;font-size:12.5px;line-height:1.3;color:var(--t2)}
+  .sh-r4-k dd s{text-decoration-color:rgba(15,26,20,0.4)}
+  .sh-r4-k dl div.po dt{color:var(--ziel-c)}
+  .sh-r4-k dl div.po dd{font-weight:650;color:var(--t1)}
+  .sh-r4-k em{display:inline-block;margin-top:10px;font-style:normal;font-size:11px;font-weight:700;color:var(--ziel-c)}
+  /* 5 · przegląd zarządu: slajd na ekranie sali */
+  /* 5 · wiedza firmy: segregatory na półce, jeden wysunięty z kartą źródła */
+  .sh-r5-sc{background:linear-gradient(180deg,#efe9df,#e6ddcf) !important}
+  .sh-r5-pol{left:6%;right:40%;bottom:56px;top:44px;display:flex;align-items:flex-end;gap:5px}
+  .sh-r5-dl{left:0;right:0;bottom:30px;height:26px;background:linear-gradient(180deg,#b9936a,#9a7650);box-shadow:0 10px 20px -8px rgba(60,40,20,0.5)}
+  .sh-r5-s{position:relative;flex:1;height:calc(84% + var(--i) * 0px);display:flex;flex-direction:column;align-items:center;padding:14px 0 10px;border-radius:4px 4px 2px 2px;background:linear-gradient(90deg,rgba(255,255,255,0.12),rgba(255,255,255,0) 30%,rgba(0,0,0,0.12)),var(--k);color:#ffffff;box-shadow:inset 0 0 0 1px rgba(0,0,0,0.15),2px 0 4px rgba(0,0,0,0.15)}
+  .sh-r5-s:nth-child(odd){height:92%}
+  .sh-r5-s b,.sh-r5-s small{writing-mode:vertical-rl;transform:rotate(180deg);padding:8px 0;background:#fbfaf6;color:#1f2321;white-space:nowrap}
+  .sh-r5-s b{flex:1;max-height:62%;padding:10px 4px;border-radius:3px;font-size:14px;font-weight:700;letter-spacing:-0.01em;text-align:center}
+  .sh-r5-s small{display:none}
+  .sh-r5-s .ot{width:18px;height:18px;margin-top:auto;border-radius:50%;background:rgba(0,0,0,0.35);box-shadow:inset 0 1px 2px rgba(0,0,0,0.5)}
+  .sh-r5-s img{width:26px;height:26px;margin-top:10px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 2px rgba(255,255,255,0.85)}
+  .sh-r5-s.wy{transform:translateY(-34px) rotate(-6deg);transform-origin:50% 100%;box-shadow:inset 0 0 0 1px rgba(0,0,0,0.15),0 14px 24px -10px rgba(0,0,0,0.45)}
+  .sh-r5-dk{right:6%;top:40px;width:38%;padding:18px 18px 16px;border-radius:4px;background:#ffffff;transform:rotate(1.8deg);box-shadow:0 30px 50px -26px rgba(60,40,20,0.55),0 0 0 1px rgba(0,0,0,0.05)}
+  .sh-r5-dk p{margin:0}
+  .sh-r5-dk-g{display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding-bottom:10px;border-bottom:2px solid #2f5d8a}
+  .sh-r5-dk-g b{font-size:16px;font-weight:750;letter-spacing:-0.02em}
+  .sh-r5-dk-g span{font-size:11.5px;color:var(--t3)}
+  .sh-r5-dk ol{margin:10px 0 0;padding:0 0 0 18px;font-size:13.5px;line-height:1.45;color:var(--t1)}
+  .sh-r5-dk li{padding:3px 0}
+  .sh-r5-wl{display:flex;align-items:center;gap:9px;margin-top:12px !important;padding-top:10px;border-top:1px solid var(--linia2)}
+  .sh-r5-wl img{width:30px;height:30px;border-radius:50%;object-fit:cover}
+  .sh-r5-wl b{display:block;font-size:13px;font-weight:650}
+  .sh-r5-wl small{display:block;font-size:11.5px;color:var(--t3)}
+  .sh-r5-ap{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:10px !important;padding:7px 9px;border-radius:8px;background:#F7F6F3;font-family:"GeistApp",system-ui,sans-serif;font-size:12px;color:rgba(20,20,20,.62)}
+  .sh-r5-ap > img{width:13px;height:10px}
+  .sh-r5-ap .agf{margin-left:4px}
+  @media (max-width:700px){
+    .sh-r1{left:4%;right:4%;padding:18px 14px}
+    .sh-r1.tyl{display:none}
+    .sh-r1-k{display:none}
+    .sh-r1-w{grid-template-columns:minmax(0,1fr) auto;gap:2px 10px}
+    .sh-r1-w > span{display:none}
+    .sh-r1-w p{grid-column:1 / -1;font-size:12px}
+    .sh-r2{padding:10px}
+    .sh-r2-ar{--rg:10px;padding:12px 10px 10px}
+    .sh-r2-w{grid-template-columns:1fr;gap:4px}
+    .sh-r2-w > em{font-size:10px}
+    .sh-r2-w > div{flex-wrap:nowrap;gap:4px}
+    .sh-r2-w:not(.l):not(.d):not(.ai) > div{flex-wrap:wrap}
+    .sh-r2-w:not(.l):not(.d):not(.ai) .sh-r2-b{flex:1 1 calc(33% - 4px)}
+    .sh-r2-b{padding:5px 3px;font-size:9.5px;line-height:1.2;border-radius:2px}
+    .sh-r2-b::after,.sh-r2-b > i,.sh-r2-w.l svg{display:none}
+    .sh-r2-w.l .sh-r2-b{padding:5px 3px}
+    .sh-r2-tab{display:none}
+    .sh-r3{inset:14px 3%}
+    .sh-r3-kw{display:none}
+    .sh-r3-f{grid-template-columns:1fr}
+    .sh-r3-c{display:grid;grid-template-columns:72px minmax(0,1fr);gap:8px 10px;align-items:center;border-left:0;border-top:1px solid var(--linia2);padding:12px}
+    .sh-r3-c:first-child{border-top:0}
+    .sh-r3-pas{flex-direction:column;align-items:flex-start;gap:1px;padding:6px 8px}
+    .sh-r3-c ul{flex-direction:row;flex-wrap:wrap;gap:6px;margin:0}
+    .sh-r3-c li{display:block}
+    .sh-r3-c li .tx{display:none}
+    .sh-r3-ik{width:34px;height:34px}
+    .sh-r3-off{grid-column:1 / -1;min-height:0;margin:0;padding-top:6px}
+    .sh-r4{grid-template-columns:1fr;gap:8px;padding:14px 4%;align-content:center}
+    .sh-r4-id{padding-top:0;transform:none}
+    .sh-r4-id::before{display:none}
+    .sh-r4-k{display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:2px 10px;align-items:center;padding:9px 12px;text-align:left}
+    .sh-r4-k::before{display:none}
+    .sh-r4-k img{grid-row:1 / 3;width:40px;height:40px;margin:0;border-radius:10px}
+    .sh-r4-k > b{margin:0;font-size:14px}
+    .sh-r4-k > small{display:none}
+    .sh-r4-k dl{grid-column:2;margin:0}
+    .sh-r4-k dl div:first-child{display:none}
+    .sh-r4-k dl div{padding:0;border:0}
+    .sh-r4-k dl div + div{margin-top:0}
+    .sh-r4-k dt{display:none}
+    .sh-r4-k em{grid-column:3;grid-row:1 / 3;margin:0}
+    .sh-r5-pol{left:4%;right:4%;top:20px;bottom:56px}
+    .sh-r5-s b{font-size:11.5px}
+    .sh-r5-s img{width:20px;height:20px}
+    .sh-r5-dk{right:4%;left:30%;width:auto;top:auto;bottom:70px;padding:12px 12px 10px}
+    .sh-r5-dk ol{font-size:12px}
+    .sh-r5-ap{display:none}
+  }
+
+  /* =====================================================================
+     8 · EKSPERTYZA PO NASZEJ STRONIE, DECYZJE PO WASZEJ: wzór #zespol
+     z /dlaczego-my-v11 (.dm7-lu, .dm7-lk, .dm7-lu-st) 1:1 z przedrostkiem
+     sh-: pięć portretów schodkowo, czerń-biel z zielonym tonem, kolor po
+     najechaniu; pod spodem jedna wstęga z sygnetem
+     ===================================================================== */
+  /* zwarta wersja (Szymon: „strasznie wysoka, 4 wiersze nagłówka, wysokie
+     zdjęcia”): nagłówek mniejszym stopniem na szerokość dwóch wierszy,
+     portrety niższe, schodek i odstępy mniejsze */
+  @media (min-width:901px){ #zespol .v8-gl{grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);align-items:end} }
+  #zespol .u2-h2{font-size:clamp(34px,4.2vw,64px);line-height:1}
+  #zespol .v8-gl .v3-sub{font-size:clamp(15px,1.15vw,17px)}
+  .sh-lu{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:clamp(10px,1.2vw,18px);align-items:start;margin-top:clamp(32px,3.4vw,52px)}
+  .sh-lk{position:relative;overflow:hidden;margin:0;aspect-ratio:1 / 1.25;border-radius:20px;background:#12261b;box-shadow:0 30px 60px -40px rgba(15,26,20,0.6)}
+  .sh-lk:nth-child(even){margin-top:clamp(18px,2vw,30px)}
+  .sh-lk img{display:block;width:100%;height:100%;object-fit:cover;filter:grayscale(1) contrast(1.12) brightness(0.9);transition:filter .5s}
+  .sh-lk:hover img{filter:grayscale(0.15) contrast(1.04) brightness(0.98)}
+  /* rozmyte osoby na krańcach: rząd na całą szerokość okna, siedem kolumn,
+     skrajne karty wysunięte za krawędź, rozmyte i wygaszone ku zewnątrz */
+  .sh-lk.duch{display:none}
+  /* ODSTĘPY MIĘDZY SEKCJAMI (26.10.2026, pomiar w 1440): sekcje .v3-sek
+     mają po ok. 158 px u góry i u dołu. Przy zmianie tła to dobrze dzieli
+     bloki, ale na ciągłym papierze (od „Ekspertyzy” do „Dla kogo”) dwa
+     odstępy sumowały się do 306–341 px pustki. Następna sekcja na tym
+     samym tle zaczyna się więc bliżej (razem ok. 200 px, jak na stronie
+     głównej), a za stosem kart przed zielonym pasem odstęp jest mniejszy
+     (było 368 px). */
+  html body .v3-sek.v3-papier + .v3-sek.v3-papier{padding-top:clamp(24px,3vw,44px)}
+  html body #program{padding-bottom:clamp(56px,6vw,88px)}
+  html body #czym-jest{padding-bottom:clamp(56px,6vw,88px)}
+  html body .sh-pr .u4p-st{padding-bottom:0}
+  @media (min-width:1100px){
+    #zespol{overflow-x:clip}
+    .sh-lu{--u:calc((100vw - 32px - 6 * 14px) / 6.3);grid-template-columns:calc(var(--u) * 0.65) repeat(5,var(--u)) calc(var(--u) * 0.65);justify-content:center;gap:14px;width:100vw;margin-left:calc(50% - 50vw)}
+    .sh-lk.duch{display:block;aspect-ratio:auto;height:calc(var(--u) * 1.25);margin-top:clamp(18px,2vw,30px);pointer-events:none;box-shadow:none}
+    .sh-lk.duch.l{-webkit-mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,0.85) 75%);mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,0.85) 75%)}
+    .sh-lk.duch.p{-webkit-mask-image:linear-gradient(270deg,transparent 0%,rgba(0,0,0,0.85) 75%);mask-image:linear-gradient(270deg,transparent 0%,rgba(0,0,0,0.85) 75%)}
+    .sh-lk.duch img{filter:grayscale(1) contrast(1.1) blur(3.5px) brightness(0.58);transform:scale(1.32);object-position:50% 38%}
+    .sh-lk.duch::after{opacity:0.55}
+    .sh-lk.duch.l img{object-position:62% 38%}
+    .sh-lk.duch.p img{object-position:38% 38%}
+    .sh-lk:not(.duch):nth-child(odd){margin-top:clamp(18px,2vw,30px)}
+    .sh-lk:not(.duch):nth-child(even){margin-top:0}
+  }
+  /* tło każdego zdjęcia przechodzi u góry w ciemną zieleń studia, więc jasne
+     i ciemne tła portretów wyglądają jak z jednej sesji */
+  .sh-lk::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+    background:linear-gradient(180deg,rgba(7,20,13,0.78) 0%,rgba(7,20,13,0.28) 22%,rgba(7,20,13,0) 40%),radial-gradient(120% 60% at 50% 0%,rgba(0,205,119,0.16),rgba(0,205,119,0) 60%);
+    mix-blend-mode:normal;transition:opacity .5s}
+  .sh-lk::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:#0f2a1d;mix-blend-mode:color;opacity:0.35;transition:opacity .5s}
+  .sh-lk:hover::after{opacity:0}
+  .sh-lk figcaption{z-index:2}
+  .sh-lk figcaption{position:absolute;left:0;right:0;bottom:0;padding:clamp(60px,6vw,90px) clamp(14px,1.4vw,20px) clamp(14px,1.4vw,18px);background:linear-gradient(180deg,rgba(7,20,13,0),rgba(7,20,13,0.62) 34%,rgba(7,20,13,0.95) 76%)}
+  .sh-lk b{display:block;font-size:clamp(15px,1.3vw,18px);font-weight:700;letter-spacing:-0.02em;line-height:1.2;color:#ffffff;text-wrap:pretty}
+  .sh-lk small{display:block;min-height:0;margin-top:4px;font-size:12.5px;line-height:1.3;color:rgba(255,255,255,0.62);text-wrap:pretty}
+  .sh-lu-st{display:flex;align-items:center;gap:12px;margin-top:clamp(22px,2.4vw,34px);padding:16px 20px;border-radius:18px;background:var(--ink);color:#ffffff;font-size:15px;line-height:1.45}
+  .sh-lu-st svg{flex:none;width:22px;height:22px;fill:var(--ziel)}
+  .sh-lu-st b{font-weight:650;color:var(--ziel)}
+  @media (max-width:1000px){
+    .sh-lu{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .sh-lk:nth-child(even){margin-top:0}
+    .sh-lk:nth-child(3n+2){margin-top:24px}
+  }
+  @media (max-width:600px){
+    .sh-lu{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+    .sh-lk{aspect-ratio:1 / 1.3;border-radius:16px}
+    .sh-lk:nth-child(3n+2){margin-top:0}
+    .sh-lk:nth-child(even){margin-top:20px}
+    .sh-lk:last-child{grid-column:1 / -1;aspect-ratio:2 / 1.1}
+    .sh-lk small{min-height:0}
+    .sh-lu-st{align-items:flex-start;font-size:14px}
+  }
+
+  /* =====================================================================
+     9 · CO MOŻEMY DLA WAS ZBUDOWAĆ: zakładki z oknami i zrzutami (.sh-bu-)
+     ===================================================================== */
+  #zbudowac{background:linear-gradient(to bottom,var(--papier) 0,var(--papier) 50%,#ffffff 50%,#ffffff 100%)}
+  .sh-bu .u2a-in{padding-top:clamp(40px,4vw,64px)}
+  .sh-bu .u2-h2{font-size:clamp(38px,4.6vw,72px)}
+  .sh-bu .u3a-zak{margin-top:clamp(20px,2.4vw,32px)}
+  .sh-bu .u2a-sc{max-width:1180px;margin:clamp(16px,1.8vw,24px) auto 0}
+  .sh-bu .u2a-sc .u3a-tor{transform:none}
+  .sh-bu .u2a-sc::before{left:10%;right:10%}
+  .sh-bu .u3a-dol{max-width:1180px;margin:clamp(16px,1.8vw,22px) auto 0;align-items:center}
+  .sh-bu .u3a-dol p{max-width:860px}
+  .sh-bu .u3a-dol p b{display:inline;margin:0 8px 0 0;font-size:17px}
+  .sh-bu-kon{max-width:1180px;margin-left:auto !important;margin-right:auto !important}
+  .sh-bu-ok.sys{aspect-ratio:1180 / 660;overflow:hidden;border-radius:12px;box-shadow:0 0 0 1px rgba(255,255,255,0.12),0 70px 120px -50px rgba(0,0,0,0.9)}
+  .sh-ig-lg{margin:4px 1.6em 0;padding:0.8em 1em;border-radius:0.8em;background:#fafafa;box-shadow:inset 0 0 0 1px rgba(9,9,11,0.06)}
+  .sh-ig-lg .h{margin:0 0 0.3em;font-size:0.9em;font-weight:600;color:#52525b}
+  .sh-ig-lg .r{display:grid;grid-template-columns:3.6em minmax(0,1.1fr) minmax(0,2fr) auto;gap:1em;align-items:center;margin:0;padding:0.45em 0;border-top:1px solid rgba(9,9,11,0.06);font-size:0.92em;color:#52525b}
+  .sh-ig-lg .r time{font-family:var(--mono);font-size:0.92em;color:#71717a}
+  .sh-ig-lg .r b{font-weight:600;color:#18181b}
+  .sh-ig-lg .r i{font-style:normal;font-size:0.9em;font-weight:600;color:#047857}
+  .sh-bu-ok{position:relative;aspect-ratio:1180 / 660}
+  .sh-bu-ok > img{position:absolute;display:block;border-radius:12px;box-shadow:0 0 0 1px rgba(255,255,255,0.12),0 70px 120px -50px rgba(0,0,0,0.9)}
+  .sh-bu-ok > img.a{left:0;top:0;width:80%;height:auto}
+
+  .sh-ad{position:absolute;inset:0;display:flex;flex-direction:column;padding:clamp(20px,3vw,44px);border-radius:12px;background:#fbfaf6;color:var(--t1);box-shadow:0 0 0 1px rgba(255,255,255,0.12),0 70px 120px -50px rgba(0,0,0,0.9)}
+  .sh-ad-g{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px 20px;padding-bottom:16px;border-bottom:1.5px solid var(--t1)}
+  .sh-ad-g b{font-size:clamp(18px,1.7vw,24px);font-weight:750;letter-spacing:-0.025em}
+  .sh-ad-g span{font-size:14px;color:var(--t3)}
+  .sh-ad-os{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:clamp(8px,1.2vw,18px);margin-top:clamp(18px,2.4vw,34px)}
+  .sh-ad-os span{display:flex;flex-direction:column;align-items:center;gap:8px;font-size:14px}
+  .sh-ad-os img{width:100%;max-width:136px;aspect-ratio:4 / 5;height:auto;border-radius:12px;object-fit:cover;box-shadow:0 14px 24px -16px rgba(15,26,20,0.5)}
+  .sh-ad-os b{font-weight:600}
+  .sh-ad-kr{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:auto 0 0;padding:0;list-style:none}
+  .sh-ad-kr li{padding:16px 16px 14px;border-radius:12px;background:#ffffff;box-shadow:0 0 0 1px var(--linia2)}
+  .sh-ad-kr em{display:block;font-style:normal;font-size:13px;font-weight:700;color:var(--ziel-c)}
+  .sh-ad-kr b{display:block;margin-top:6px;font-size:16px;font-weight:650;letter-spacing:-0.015em;line-height:1.25}
+  .sh-ad-kr i{display:inline-block;margin-top:10px;font-style:normal;font-size:12.5px;color:var(--t3)}
+  .sh-ad-kr i.ok{color:var(--ziel-c);font-weight:650}
+  @media (max-width:700px){
+    .sh-ad{padding:14px}
+    .sh-ad-g span{display:none}
+    .sh-ad-os{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:10px}
+    .sh-ad-os span{font-size:11px;gap:4px}
+    .sh-ad-os span:nth-child(n+5){display:none}
+    .sh-ad-kr{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+    .sh-ad-kr li{padding:8px}
+    .sh-ad-kr b{font-size:12.5px}
+    .sh-ad-kr i{display:none}
+  }
+  .sh-bu-ok > img.b{right:0;bottom:0;width:44%;height:auto;box-shadow:0 0 0 1px rgba(255,255,255,0.18),0 40px 80px -30px rgba(0,0,0,0.85)}
+  .sh-bu .u3a-dol p a{display:inline-block;margin-top:8px;font-weight:650;color:var(--ziel);border-bottom:1px solid rgba(0,205,119,0.4)}
+  .sh-bu-kon{display:flex;align-items:center;gap:12px;margin-top:clamp(32px,4vw,52px);padding-top:18px;border-top:1px solid rgba(255,255,255,0.1);font-size:15px;line-height:1.5;color:rgba(255,255,255,0.7);text-align:left}
+  .sh-bu-kon svg{flex:none;width:18px;height:18px;fill:var(--ziel)}
+  .sh-bu-kon b{color:#ffffff}
+  /* integracje: rejestr połączeń w oknie */
+  .sh-ig{position:absolute;inset:0;display:flex;flex-direction:column;overflow:hidden;border-radius:12px;background:#ffffff;color:#18181b;box-shadow:0 0 0 1px rgba(255,255,255,0.12),0 70px 120px -50px rgba(0,0,0,0.9);font-family:"Inter",system-ui,sans-serif;font-size:clamp(9px,1.02vw,14.5px)}
+  .sh-ig-ch{display:flex;align-items:center;gap:7px;padding:0.8em 1.2em;background:#f4f4f2;border-bottom:1px solid rgba(9,9,11,0.08);font-size:0.86em;color:#71717a}
+  .sh-ig-ch i{width:0.85em;height:0.85em;border-radius:50%;background:#ff5f57}
+  .sh-ig-ch i:nth-child(2){background:#febc2e}
+  .sh-ig-ch i:nth-child(3){background:#28c840}
+  .sh-ig-ch span{margin-left:auto;margin-right:auto;padding:0.25em 1.4em;border-radius:6px;background:#ffffff}
+  .sh-ig-h{display:flex;justify-content:space-between;align-items:flex-end;gap:1em;padding:1.2em 1.6em 0.9em}
+  .sh-ig-h b{display:block;font-size:1.5em;font-weight:650;letter-spacing:-0.02em}
+  .sh-ig-h small{display:block;margin-top:0.2em;font-size:0.92em;color:#71717a}
+  .sh-ig-h .tb{display:flex;gap:0.3em;padding:0.25em;border-radius:0.7em;background:#f4f4f5;font-size:0.9em;color:#52525b}
+  .sh-ig-h .tb span{padding:0.3em 0.8em;border-radius:0.5em}
+  .sh-ig-h .tb .on{background:#ffffff;color:#18181b;font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,0.08)}
+  .sh-ig-h .tb em{font-style:normal;color:#047857;font-weight:650}
+  .sh-ig-t{flex:1;padding:0 1.6em}
+  .sh-ig-r{display:grid;grid-template-columns:minmax(0,2.3fr) minmax(0,1.5fr) 4.2em 4.6em 5em;gap:1.2em;align-items:center;padding:0.7em 0;border-top:1px solid rgba(9,9,11,0.07)}
+  .sh-ig-r.n{padding:0.4em 0;border-top:0;font-size:0.84em;color:#a1a1aa}
+  .sh-ig-r .nz{display:flex;align-items:center;gap:0.45em;min-width:0}
+  .sh-ig-r .zn{display:grid;place-items:center;flex:none;width:1.9em;height:1.9em;border-radius:0.5em;background:#ffffff;box-shadow:0 0 0 1px rgba(9,9,11,0.1)}
+  .sh-ig-r .zn img{width:1.15em;height:1.15em;object-fit:contain}
+  .sh-ig-r .zn b{font-size:0.62em;font-weight:800;color:#3f3f46}
+  .sh-ig-r .nz > i{font-style:normal;color:#a1a1aa}
+  .sh-ig-r .nz p{min-width:0;margin:0 0 0 0.5em}
+  .sh-ig-r .nz p b{display:block;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .sh-ig-r .nz p small{display:block;font-size:0.86em;color:#71717a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .sh-ig-r .pr{display:flex;align-items:flex-end;gap:2px;height:1.8em}
+  .sh-ig-r .pr i{flex:1;border-radius:1px;background:#10b981;opacity:0.75}
+  .sh-ig-r time{font-variant-numeric:tabular-nums;color:#52525b}
+  .sh-ig-r .wl img{display:block;width:1.8em;height:1.8em;border-radius:50%;object-fit:cover}
+  .sh-ig-r .st{display:flex;align-items:center;gap:0.45em;font-weight:600;color:#047857}
+  .sh-ig-r .st::before{content:"";width:0.55em;height:0.55em;border-radius:50%;background:#10b981;box-shadow:0 0 0 0.25em rgba(16,185,129,0.18)}
+  @media (max-width:700px){
+    .sh-bu-ok > img.a{width:100%}
+    .sh-bu-ok > img.b{display:none}
+    .sh-ig-r{grid-template-columns:minmax(0,1fr) auto}
+    .sh-ig-r .pr,.sh-ig-r time,.sh-ig-r .wl,.sh-ig-r.n,.sh-ig-h .tb{display:none}
+  }
+
+  /* =====================================================================
+     Zakładka „Szyte na miarę”: płótno 1180 × 700 (jednostka --c), etapy
+     data-st 0–5: szkic z warsztatu → moduły → połączenia → agenci → działa
+     ===================================================================== */
+  .sz{position:relative;width:100%;height:100%;container-type:inline-size;overflow:hidden;border-radius:12px;
+    background:radial-gradient(rgba(15,26,20,0.1) 1px,transparent 1.3px) 0 0/22px 22px,#F7F6F1;color:var(--t1);box-shadow:0 0 0 1px rgba(255,255,255,0.12),0 70px 120px -50px rgba(0,0,0,0.9)}
+  .sz-in{--c:calc(100cqw / 1180);position:absolute;inset:0}
+  .sz-in > *{position:absolute}
+  .sz-kr{left:calc(40 * var(--c));top:calc(28 * var(--c));display:flex;gap:calc(8 * var(--c));margin:0;padding:0;list-style:none}
+  .sz-kr li{display:flex;align-items:center;gap:calc(7 * var(--c));padding:calc(6 * var(--c)) calc(12 * var(--c)) calc(6 * var(--c)) calc(8 * var(--c));border-radius:999px;background:#ffffff;box-shadow:0 0 0 1px rgba(15,26,20,0.08);font-size:calc(13.5 * var(--c));font-weight:600;color:var(--t3);transition:background .3s,color .3s}
+  .sz-kr li i{display:grid;place-items:center;width:calc(20 * var(--c));height:calc(20 * var(--c));border-radius:50%;background:var(--papier);font-style:normal;font-size:calc(11 * var(--c));font-weight:700}
+  .sz-kartka{left:calc(440 * var(--c));top:calc(110 * var(--c));width:calc(200 * var(--c));padding:calc(12 * var(--c)) calc(14 * var(--c));background:#fdeb8f;transform:rotate(3deg);box-shadow:0 calc(12 * var(--c)) calc(20 * var(--c)) calc(-12 * var(--c)) rgba(0,0,0,0.4);font-family:'Caveat',cursive;font-size:calc(21 * var(--c));line-height:1.05;color:#3b3412;opacity:0;transition:opacity .4s}
+  .sz-l{left:0;top:0;width:100%;height:100%;overflow:visible}
+  .sz-l path{fill:none;vector-effect:non-scaling-stroke;stroke-linecap:round}
+  .sz-l .sk path{stroke:#4a4f4c;stroke-width:1.6;stroke-dasharray:6 6;opacity:0;transition:opacity .5s}
+  .sz-l .po path{stroke:#0a7a52;stroke-width:1.6;stroke-dasharray:4 6;opacity:0;transition:opacity .5s}
+  .sz[data-st="3"] .sz-l .po path,.sz[data-st="4"] .sz-l .po path,.sz[data-st="5"] .sz-l .po path{animation:sz-plyn 1.2s linear infinite}
+  @keyframes sz-plyn{to{stroke-dashoffset:-20}}
+  .sz-sk{top:calc(250 * var(--c));width:calc(172 * var(--c));height:calc(150 * var(--c));display:grid;place-items:center;border:calc(2 * var(--c)) dashed #4a4f4c;border-radius:calc(18 * var(--c));font-family:'Caveat',cursive;font-size:calc(25 * var(--c));line-height:1;text-align:center;color:#2f3431;opacity:0;transform:rotate(-1.5deg);transition:opacity .45s}
+  .sz-sk:nth-of-type(even){transform:rotate(1.2deg)}
+  .sz-m{top:calc(250 * var(--c));width:calc(172 * var(--c));height:calc(150 * var(--c));display:flex;flex-direction:column;padding:calc(14 * var(--c));border-radius:calc(14 * var(--c));background:#ffffff;
+    box-shadow:0 0 0 1px rgba(15,26,20,0.08),0 calc(18 * var(--c)) calc(30 * var(--c)) calc(-18 * var(--c)) rgba(15,26,20,0.45);font-family:"Inter",system-ui,sans-serif;opacity:0;transform:translateY(calc(-30 * var(--c))) scale(.9);transition:opacity .4s,transform .5s cubic-bezier(.3,1.4,.5,1)}
+  .sz-m .ic{display:grid;place-items:center;width:calc(32 * var(--c));height:calc(32 * var(--c));border-radius:calc(9 * var(--c));background:#EEF3FC;color:#1F4FA8}
+  .sz-m .ic svg{width:calc(18 * var(--c));height:calc(18 * var(--c));fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .sz-m b{margin-top:auto;font-size:calc(15 * var(--c));font-weight:650;letter-spacing:-0.01em}
+  .sz-m small{margin-top:calc(3 * var(--c));font-size:calc(12 * var(--c));line-height:1.3;color:#667085}
+  .sz-m .ag{position:absolute;right:calc(-10 * var(--c));top:calc(-12 * var(--c));display:flex;align-items:center;gap:calc(5 * var(--c));padding:calc(3 * var(--c)) calc(8 * var(--c)) calc(3 * var(--c)) calc(3 * var(--c));border-radius:999px;background:#ffffff;box-shadow:0 0 0 1px rgba(15,26,20,0.08),0 calc(6 * var(--c)) calc(14 * var(--c)) calc(-6 * var(--c)) rgba(15,26,20,0.4);font-size:calc(11 * var(--c));font-weight:600;color:#12B76A;opacity:0;transform:scale(.4);transition:opacity .3s,transform .45s cubic-bezier(.3,1.7,.5,1)}
+  .sz-m .ag .agf{width:calc(24 * var(--c));height:calc(24 * var(--c));border-radius:28%}
+  .sz-m .ag i{width:calc(7 * var(--c));height:calc(7 * var(--c));border-radius:50%;background:#12B76A}
+  .sz-n{width:calc(150 * var(--c));display:flex;align-items:center;gap:calc(9 * var(--c));padding:calc(9 * var(--c)) calc(12 * var(--c));border-radius:calc(12 * var(--c));background:#ffffff;box-shadow:0 0 0 1px rgba(15,26,20,0.08),0 calc(10 * var(--c)) calc(20 * var(--c)) calc(-12 * var(--c)) rgba(15,26,20,0.4);font-family:"Inter",system-ui,sans-serif;font-size:calc(13 * var(--c));font-weight:600;opacity:0;transform:scale(.8);transition:opacity .35s,transform .45s cubic-bezier(.3,1.5,.5,1)}
+  .sz-n img{width:calc(22 * var(--c));height:calc(22 * var(--c));object-fit:contain}
+  .sz-n em{display:grid;place-items:center;width:calc(26 * var(--c));height:calc(22 * var(--c));border-radius:calc(5 * var(--c));background:#344054;font-style:normal;font-size:calc(9.5 * var(--c));font-weight:800;color:#ffffff}
+  .sz-ok{left:calc(40 * var(--c));right:calc(40 * var(--c));bottom:calc(34 * var(--c));display:flex;align-items:center;gap:calc(12 * var(--c));padding:calc(14 * var(--c)) calc(18 * var(--c));border-radius:calc(14 * var(--c));background:#0e2b1d;color:#ffffff;font-size:calc(15 * var(--c));opacity:0;transform:translateY(calc(16 * var(--c)));transition:opacity .4s,transform .5s cubic-bezier(.2,.8,.2,1)}
+  .sz-ok i{display:grid;place-items:center;flex:none;width:calc(28 * var(--c));height:calc(28 * var(--c));border-radius:50%;background:var(--ziel)}
+  .sz-ok i svg{width:calc(15 * var(--c));height:calc(15 * var(--c));fill:none;stroke:#0e2b1d;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+  .sz-ok b{font-weight:700;color:var(--ziel)}
+  .sz-tok{top:calc(318 * var(--c));left:calc(52 * var(--c));width:calc(14 * var(--c));height:calc(14 * var(--c));border-radius:50%;background:var(--ziel);box-shadow:0 0 0 calc(5 * var(--c)) rgba(0,205,119,0.25);opacity:0}
+  .sz[data-st="5"] .sz-tok{animation:sz-tok 2.6s cubic-bezier(.5,0,.4,1) .3s both}
+  @keyframes sz-tok{0%{opacity:1;left:calc(52 * var(--c))}90%{opacity:1;left:calc(1120 * var(--c))}100%{opacity:0;left:calc(1120 * var(--c))}}
+  .sz[data-st="1"] .sz-sk,.sz[data-st="2"] .sz-sk,.sz[data-st="3"] .sz-sk,.sz[data-st="4"] .sz-sk,.sz[data-st="5"] .sz-sk{opacity:1}
+  .sz[data-st="1"] .sz-kartka,.sz[data-st="2"] .sz-kartka,.sz[data-st="3"] .sz-kartka,.sz[data-st="4"] .sz-kartka,.sz[data-st="5"] .sz-kartka{opacity:1}
+  .sz[data-st="1"] .sz-l .sk path,.sz[data-st="2"] .sz-l .sk path,.sz[data-st="3"] .sz-l .sk path,.sz[data-st="4"] .sz-l .sk path,.sz[data-st="5"] .sz-l .sk path{opacity:1}
+  .sz[data-st="2"] .sz-sk,.sz[data-st="3"] .sz-sk,.sz[data-st="4"] .sz-sk,.sz[data-st="5"] .sz-sk{opacity:0.22}
+  .sz[data-st="2"] .sz-l .sk path,.sz[data-st="3"] .sz-l .sk path,.sz[data-st="4"] .sz-l .sk path,.sz[data-st="5"] .sz-l .sk path{opacity:0.22}
+  .sz[data-st="2"] .sz-m,.sz[data-st="3"] .sz-m,.sz[data-st="4"] .sz-m,.sz[data-st="5"] .sz-m{opacity:1;transform:none}
+  .sz[data-st="3"] .sz-n,.sz[data-st="4"] .sz-n,.sz[data-st="5"] .sz-n{opacity:1;transform:none}
+  .sz[data-st="3"] .sz-l .po path,.sz[data-st="4"] .sz-l .po path,.sz[data-st="5"] .sz-l .po path{opacity:1}
+  .sz[data-st="4"] .sz-m .ag,.sz[data-st="5"] .sz-m .ag{opacity:1;transform:none}
+  .sz[data-st="5"] .sz-ok{opacity:1;transform:none}
+  .sz[data-st="1"] .sz-kr li:nth-child(1){background:#0e2b1d;color:#ffffff}
+  .sz[data-st="1"] .sz-kr li:nth-child(1) i{background:var(--ziel);color:#0e2b1d}
+  .sz[data-st="2"] .sz-kr li:nth-child(2){background:#0e2b1d;color:#ffffff}
+  .sz[data-st="2"] .sz-kr li:nth-child(2) i{background:var(--ziel);color:#0e2b1d}
+  .sz[data-st="2"] .sz-kr li:nth-child(-n+1){color:var(--ziel-c)}
+  .sz[data-st="3"] .sz-kr li:nth-child(3){background:#0e2b1d;color:#ffffff}
+  .sz[data-st="3"] .sz-kr li:nth-child(3) i{background:var(--ziel);color:#0e2b1d}
+  .sz[data-st="3"] .sz-kr li:nth-child(-n+2){color:var(--ziel-c)}
+  .sz[data-st="4"] .sz-kr li:nth-child(4){background:#0e2b1d;color:#ffffff}
+  .sz[data-st="4"] .sz-kr li:nth-child(4) i{background:var(--ziel);color:#0e2b1d}
+  .sz[data-st="4"] .sz-kr li:nth-child(-n+3){color:var(--ziel-c)}
+  .sz[data-st="5"] .sz-kr li:nth-child(5){background:#0e2b1d;color:#ffffff}
+  .sz[data-st="5"] .sz-kr li:nth-child(5) i{background:var(--ziel);color:#0e2b1d}
+  .sz[data-st="5"] .sz-kr li:nth-child(-n+4){color:var(--ziel-c)}
+  .sz-m:nth-of-type(2){transition-delay:.08s}
+  .sz.bez *{transition:none !important;animation:none !important}
+  @media (prefers-reduced-motion:reduce){ .sz *{transition:none !important;animation:none !important} }
+  @container (max-width:640px){
+    .sz-in{--c:calc(100cqw / 390)}
+    .sz-kr{left:calc(14 * var(--c));right:calc(14 * var(--c));top:calc(14 * var(--c));flex-wrap:wrap;gap:calc(5 * var(--c))}
+    .sz-kr li{font-size:calc(11.5 * var(--c));padding:calc(4 * var(--c)) calc(9 * var(--c)) calc(4 * var(--c)) calc(5 * var(--c))}
+    .sz-kartka,.sz-l,.sz-sk,.sz-n,.sz-tok{display:none}
+    .sz-m{left:calc(14 * var(--c)) !important;width:calc(300 * var(--c));height:auto;flex-direction:row;align-items:center;gap:calc(10 * var(--c));padding:calc(9 * var(--c)) calc(12 * var(--c));top:calc(110 * var(--c) + var(--n) * 62 * var(--c))}
+    .sz-m b{margin:0;font-size:calc(14 * var(--c))}
+    .sz-m small{display:none}
+    .sz-m .ag{right:calc(-40 * var(--c));top:50%;margin-top:calc(-15 * var(--c))}
+    .sz-m .ag span{display:none}
+    .sz-ok{left:calc(14 * var(--c));right:calc(14 * var(--c));bottom:calc(14 * var(--c));font-size:calc(12.5 * var(--c))}
+  }
+  @media (max-width:700px){
+    /* okno systemu jak dotąd: stara reguła :has(.sz) łapała też wiersze
+       dokumentów systemu (.rw.sz), więc na telefonie miało 360 × 520 */
+    .sh-bu-ok.sys{aspect-ratio:360 / 520}
+    .sh-bu-ok.sz-w{aspect-ratio:360 / 520}
+    .sh-bu-ok.ad-w,.sh-bu-ok.ig-w{aspect-ratio:360 / 460}
+    .sh-ig-lg .r{grid-template-columns:3.4em minmax(0,1fr)}
+    .sh-ig-lg .r span,.sh-ig-lg .r i{display:none}
+    .sh-bu .u3a-dol p b{display:block;margin:0 0 4px}
+  }
+  /* Kompetencje: klocki-puzzle wokół Let’s automate */
+  .sh-pz{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr) minmax(0,1fr);grid-template-rows:auto auto;gap:14px;margin-top:clamp(40px,5vw,64px)}
+  .sh-pz-c{grid-column:2;grid-row:1 / 3;display:flex;flex-direction:column;justify-content:center;padding:clamp(28px,3vw,48px);border-radius:26px;background:#0e2b1d;color:#ffffff}
+  .sh-pz-c .lg{display:flex;align-items:center;gap:12px}
+  .sh-pz-c .lg img{width:34px;height:34px}
+  .sh-pz-c .lg b{font-size:22px;font-weight:750;letter-spacing:-0.03em}
+  .sh-pz-c .e{margin:22px 0 0;font-size:clamp(26px,2.4vw,36px);font-weight:700;letter-spacing:-0.04em;line-height:1.05;color:var(--ziel)}
+  .sh-pz-c .d{margin:14px 0 0;font-size:16px;line-height:1.55;color:rgba(255,255,255,0.75)}
+  .sh-pz-k{position:relative;display:flex;flex-direction:column;padding:26px 26px 24px;border-radius:22px;background:var(--papier);color:var(--t1);transition:background .2s}
+  .sh-pz-k:hover{background:#ece9e0}
+  .sh-pz-k.l{grid-column:1}
+  .sh-pz-k.p{grid-column:3}
+  .sh-pz-k.r1{grid-row:1}
+  .sh-pz-k.r2{grid-row:2}
+  .sh-pz-k img{display:block;width:auto;height:22px;align-self:flex-start}
+  .sh-pz-k b{margin-top:18px;font-size:clamp(19px,1.6vw,22px);font-weight:700;letter-spacing:-0.025em;line-height:1.15}
+  .sh-pz-k p{margin:8px 0 0;font-size:15px;line-height:1.5;color:var(--t2)}
+  .sh-pz-k i{position:absolute;top:50%;width:30px;height:30px;margin-top:-15px;border-radius:50%;background:inherit}
+  .sh-pz-k.l i{right:-21px}
+  .sh-pz-k.p i{left:-21px}
+  .sh-pz-k.l::after,.sh-pz-k.p::after{content:"";position:absolute;top:50%;width:10px;height:30px;margin-top:-15px;background:inherit}
+  .sh-pz-k.l::after{right:-8px}
+  .sh-pz-k.p::after{left:-8px}
+  @media (max-width:1000px){
+    .sh-pz{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .sh-pz-c{grid-column:1 / -1;grid-row:1}
+    .sh-pz-k.l,.sh-pz-k.p{grid-column:auto;grid-row:auto}
+    .sh-pz-k i,.sh-pz-k::after{display:none}
+  }
+  @media (max-width:600px){ .sh-pz{grid-template-columns:1fr} }
+
+  /* =====================================================================
+     11 · JAK PRZEBIEGA PROGRAM: schody bez cen; 12 · KOSZTY: dwa dokumenty
+     ===================================================================== */
+  .sh-sch{padding-bottom:0}
+  .sh-sch .u4s-op{padding-top:20px}
+  .sh-ko{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(24px,4vw,64px);align-items:start;margin-top:clamp(44px,5vw,72px);padding:clamp(28px,4vw,56px);border-radius:32px;
+    background:radial-gradient(700px 420px at 90% 0%,rgba(0,205,119,0.14),rgba(0,205,119,0) 70%),linear-gradient(180deg,#e7f2e9,#f1f7ef)}
+  .sh-ko figure{margin:0}
+  .sh-ko figcaption{margin-top:16px;font-size:14px;line-height:1.45;color:var(--t2)}
+  .sh-ko figcaption b{display:block;font-size:17px;font-weight:700;letter-spacing:-0.015em;color:var(--t1)}
+  .sh-of-k{padding:26px 28px 22px;border-radius:6px;background:#ffffff;transform:rotate(-1deg);box-shadow:0 0 0 1px rgba(15,26,20,0.06),0 40px 70px -40px rgba(15,26,20,0.5)}
+  .sh-of-k header{display:flex;justify-content:space-between;align-items:center;gap:10px;padding-bottom:12px;border-bottom:1px solid var(--linia)}
+  .sh-of-k .lg{display:flex;align-items:center;gap:8px}
+  .sh-of-k .lg svg{width:20px;height:20px;fill:var(--ziel-c)}
+  .sh-of-k .lg b{font-size:15px;font-weight:750;letter-spacing:-0.02em}
+  .sh-of-k header > span:last-child{font-size:12px;color:var(--t3)}
+  .sh-of-k .nr{margin:18px 0 0;font-size:12.5px;font-weight:650;color:var(--ziel-c)}
+  .sh-of-k h3{margin:4px 0 0;font-size:26px;font-weight:700;letter-spacing:-0.035em;line-height:1.1}
+  .sh-of-k dl{margin:16px 0 0}
+  .sh-of-k dl > div{display:grid;grid-template-columns:5.5em minmax(0,1fr);gap:12px;padding:10px 0;border-top:1px solid var(--linia2)}
+  .sh-of-k dt{font-size:13px;font-weight:700;color:var(--t3)}
+  .sh-of-k dd{margin:0;font-size:14.5px;line-height:1.45}
+  .sh-of-k .c dd{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px}
+  .sh-of-k .c dd b{font-weight:700}
+  .sh-ko .bl{display:inline-block;padding:1px 6px;border-radius:4px;background:rgba(15,26,20,0.05);font-weight:700;color:var(--t1);filter:blur(4.5px);user-select:none}
+  .sh-of-k footer{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-top:10px;padding-top:14px;border-top:1px solid var(--linia);font-size:13px;line-height:1.4;color:var(--t2)}
+  .sh-of-k .pd{flex:none;display:flex;flex-direction:column;align-items:flex-start;gap:4px;font-size:11.5px;color:var(--t3)}
+  .sh-of-k .pd i{width:120px;height:26px;border-bottom:1px solid var(--t2)}
+  .sh-pe-k{padding:22px 24px 18px;border-radius:14px;background:#ffffff;box-shadow:0 0 0 1px rgba(15,26,20,0.06),0 40px 70px -40px rgba(15,26,20,0.45)}
+  .sh-pe-k header{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding-bottom:12px;border-bottom:1.5px solid var(--t1)}
+  .sh-pe-k header b{font-size:18px;font-weight:750;letter-spacing:-0.02em}
+  .sh-pe-k header span{font-size:12.5px;color:var(--t3)}
+  .sh-pe-k table{width:100%;border-collapse:collapse;font-size:14px}
+  .sh-pe-k th{padding:10px 8px 8px 0;font-size:12px;font-weight:650;color:var(--t3);text-align:left}
+  .sh-pe-k td{padding:12px 8px 12px 0;border-top:1px solid var(--linia2);line-height:1.4;color:var(--t2);vertical-align:top}
+  .sh-pe-k td b{font-weight:700;color:var(--t1);white-space:nowrap}
+  .sh-pe-k td:nth-child(3){white-space:nowrap}
+  .sh-pe-k th:last-child,.sh-pe-k td:last-child{text-align:right;white-space:nowrap}
+  .sh-pe-k .li{display:flex;justify-content:space-between;flex-wrap:wrap;gap:4px 16px;margin:6px 0 0;padding:12px 14px;border-radius:10px;background:var(--papier);font-size:13.5px}
+  .sh-pe-k .li b{font-weight:650}
+  .sh-pe-k .li span{color:var(--t2)}
+  #koszty .cta2{margin-top:clamp(40px,5vw,64px)}
+  @media (max-width:1000px){ .sh-ko{grid-template-columns:1fr} }
+  @media (max-width:600px){
+    .sh-ko{padding:18px 14px;border-radius:22px}
+    .sh-of-k{padding:20px 16px 16px;transform:none}
+    .sh-of-k dl > div{grid-template-columns:1fr;gap:2px}
+    .sh-of-k footer{flex-direction:column;align-items:flex-start}
+    .sh-pe-k{padding:16px 12px 12px}
+    .sh-pe-k th:nth-child(3),.sh-pe-k td:nth-child(3){display:none}
+    .sh-pe-k table,.sh-pe-k tbody{display:block}
+    .sh-pe-k thead{display:none}
+    .sh-pe-k tr{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;padding:10px 0;border-top:1px solid var(--linia2)}
+    .sh-pe-k td{padding:0;border:0;font-size:13px}
+    .sh-pe-k td:nth-child(2){grid-column:1 / -1;grid-row:2}
+  }
+
+  /* dla kogo i kontakt na papierze; nagłówek kontaktu mniejszym stopniem */
+  .u6-kon .kt-lewa .v3-h2{font-size:clamp(32px,3.6vw,54px);line-height:1.04}
+  .sh-dk .u2dk-gl .u2-h2{max-width:1200px}
+  /* Ciągłe tło (papier) od „Ile czasu…” do „Dla kogo”, bez przeskoków
+     papier/biel; elementy, które same miały tło papieru, dostają biel. */
+  #dowody .u4w-k{background:#ffffff}
+  #koszty .cta2{background:#ffffff}
+</style>
+
+<div class="v3 sh">
+<Styl />
+<Anim />
+
+<Fragment set:html={zestawTwarzy()} />
+<HeroB />
+<Loga />
+
+{/* ============ 3 · SYSTEMY ZBIERANE LATAMI ============
+    Zamiast „Brzmi znajomo?”: spis z natury na podkładce, osiem pozycji
+    z rokiem i notatką ołówkiem. Obok zdanie-teza większym stopniem. */}
+<section id="systemy" class="v3-sek">
+<div class="sh-s-g">
+<div>
+<h2 class="u2-h2">Systemy zbierane <span>latami</span></h2>
+<p class="sh-s-teza">Każdy powstał z dobrego powodu. Razem sprawiają, że <em>AI nie ma się do czego podłączyć</em>: dane są w kilku miejscach, a zasady w głowach kilku osób.</p>
+</div>
+<figure class="sh-s-pod" role="img" aria-label={SPIS_ARIA}>
+<span class="sh-s-kl" aria-hidden="true"></span>
+<div class="sh-s-k" aria-hidden="true">
+<header><b>Spis z natury</b><span>systemy i narzędzia · producent armatury</span></header>
+<div class="sh-s-kol"><span>lp.</span><span>pozycja</span><span>od</span><span>uwagi</span></div>
+<ol>{SPIS.map((s, i) => <li><em>{String(i + 1).padStart(2, '0')}</em><b>{s.t}</b><span>{s.r}</span><i>{s.o}</i></li>)}</ol>
+<footer><span>stan na dziś, przed mapą</span><i>spisał: Michał</i></footer>
+</div>
+</figure>
+</div>
+</section>
+
+{/* ============ 4 · CZYM JEST LET’S SHIFT? ============
+    Odpowiedź zwykłym zdaniem po lewej. Po prawej „Program w skrócie” jako
+    jednostronicowy dokument programu: nagłówek z logo, oś etapów, rubryki,
+    podpis prowadzącego. Cztery decyzje stoją tylko w rejestrze niżej. */}
+<section id="czym-jest" class="v3-sek v3-papier">
+<div class="sh-cz-g">
+<div>
+<h2 class="u2-h2">Czym jest <span>Let’s Shift?</span></h2>
+<p class="sh-cz-odp">Let’s Shift to program dla firm, które działają od lat i mają sprawdzony sposób pracy. Przenosimy je na systemy z czasów AI. Zaczynamy od spisu wszystkich narzędzi i decyzji przy każdym z nich, a potem zmieniamy firmę etapami, dział po dziale. Firma zna plan każdego tygodnia i wie, kto za co odpowiada, a prowadzący po naszej stronie mówi, co trzeba przygotować.</p>
+</div>
+<figure class="sh-cz-dok">
+<span class="sh-cz-tyl" aria-hidden="true"></span>
+<div class="sh-cz-k">
+<header><span class="lg"><svg viewBox="0 0 40 41" aria-hidden="true" set:html={SYGNET}></svg><b>Let’s Shift</b></span><span>Let’s automate · strona 1 z 1</span></header>
+<h3>Program w skrócie</h3>
+<ol class="sh-cz-os">{OS_ETAPOW.map((e) => <li><b>{e.t}</b>{e.k && <small>{e.k}</small>}</li>)}</ol>
+<dl>{SKROT.map((x) => <div><dt>{x.t}</dt><dd>{x.d}</dd></div>)}</dl>
+<footer><span class="pd"><i>Jakub Markiewicz</i><small>prowadzący programu</small></span><span class="dt">Warszawa, po pierwszej rozmowie</span></footer>
+</div>
+</figure>
+</div>
+</section>
+
+{/* ============ 5 · JEDNA SPRAWA, DZIŚ I PO ZMIANIE ============
+    Sekcja-podpis. Przełącznik trzech przykładów nad opowieścią
+    przyklejoną do przewijania: po lewej pasek kroków i dwa panele, „Dziś”
+    (wycinek prawdziwego narzędzia: Outlook, Excel, stary ERP, zdjęcie
+    kartki, Teams, telefon) i „Po zmianie” (wycinek systemu firmy
+    z tym, co zostało zrobione), pod każdym jedno zdanie; po prawej kroki.
+    Bez JS: pierwszy przykład, krok 1. */}
+<section id="sprawa" class="u2-pl u4z u6z sh-z">
+<div class="u2-pl-in u4z-in v3-ziarno">
+<div class="u4z-gl">
+<h2 class="u2-h2 jasny">Jedna sprawa, <span>dziś i po zmianie</span></h2>
+<p class="v3-sub jasny">Trzy firmy różnego rodzaju: produkcyjna i dwie usługowe. Przy każdym kroku widać, kto robi to dziś i co robi system po zmianie.</p>
+</div>
+<div class="sh-sx-zak" role="tablist" aria-label="Firmy">
+{SPRAWY.map((s, i) => <button type="button" role="tab" aria-selected={i === 0 ? 'true' : 'false'} aria-controls={`sh-sx-${s.k}`} data-sh-sx-zak={i}>{s.t}</button>)}
+</div>
+{SPRAWY.map((s, si) => (
+<div class="sh-sx" id={`sh-sx-${s.k}`} role="tabpanel" hidden={si !== 0} data-sh-sx={si}>
+{si === 0 ? <SprawaTresc s={s} odlozone /> : <template data-sh-sx-t><SprawaTresc s={s} /></template>}
+</div>
+))}
+</div>
+</section>
+
+{/* ============ 6 · CO ROBIMY W PROGRAMIE ============
+    Stos przyklejanych kart, każda scena w innym języku obrazu: wydruk
+    rejestru z pieczątkami, rysunek techniczny architektury, planer
+    kwartałów ze znakami narzędzi, identyfikatory „było → jest”, slajd
+    z przeglądu zarządu na ekranie sali. */}
+<section id="program" class="v3-sek v3-papier sh-pr">
+<h2 class="u2-h2">Co robimy <span>w programie</span></h2>
+<div class="u4p-st" data-u4p>
+
+<article class="u4p-k" style="--i:0">
+<div class="u4p-meta"><span class="sh-pr-e">{CZESCI[0].e}</span><h3>{CZESCI[0].t}</h3><p>{CZESCI[0].d}</p><small>{CZESCI[0].n}</small></div>
+<div class="u4p-sc" aria-hidden="true">
+<template data-sh-pr-t><ProgramScena n={0} /></template>
+</div>
+</article>
+
+<article class="u4p-k" style="--i:1">
+<div class="u4p-meta"><span class="sh-pr-e">{CZESCI[1].e}</span><h3>{CZESCI[1].t}</h3><p>{CZESCI[1].d}</p><small>{CZESCI[1].n}</small></div>
+<div class="u4p-sc sh-r2-sc" aria-hidden="true">
+<template data-sh-pr-t><ProgramScena n={1} /></template>
+</div>
+</article>
+
+<article class="u4p-k" style="--i:2">
+<div class="u4p-meta"><span class="sh-pr-e">{CZESCI[2].e}</span><h3>{CZESCI[2].t}</h3><p>{CZESCI[2].d}</p><small>{CZESCI[2].n}</small></div>
+<div class="u4p-sc" aria-hidden="true">
+<template data-sh-pr-t><ProgramScena n={2} /></template>
+</div>
+</article>
+
+<article class="u4p-k" style="--i:3">
+<div class="u4p-meta"><span class="sh-pr-e">{CZESCI[3].e}</span><h3>{CZESCI[3].t}</h3><p>{CZESCI[3].d}</p><small>{CZESCI[3].n}</small></div>
+<div class="u4p-sc" aria-hidden="true">
+<template data-sh-pr-t><ProgramScena n={3} /></template>
+</div>
+</article>
+
+<article class="u4p-k" style="--i:4">
+<div class="u4p-meta"><span class="sh-pr-e">{CZESCI[4].e}</span><h3>{CZESCI[4].t}</h3><p>{CZESCI[4].d}</p><small>{CZESCI[4].n}</small></div>
+<div class="u4p-sc sh-r5-sc" aria-hidden="true">
+<template data-sh-pr-t><ProgramScena n={4} /></template>
+</div>
+</article>
+
+</div>
+</section>
+
+{/* ============ 6a · ZIELONY PAS (po „Co robimy w programie”) ============ */}
+<Pas tekst={`Jeśli wystarczy Wam jedna zmiana, powiemy to na pierwszej rozmowie`} foto="/piotr-wojciuk.jpg" fotoW={1002} fotoH={1100} alt="Piotr Wojciuk, New Business Lead w Let's automate" imie="Piotr Wojciuk" rola="New Business Lead" />
+
+{/* ============ 7 · CO MOŻEMY DLA WAS ZBUDOWAĆ ============
+    Ciemna plansza z zakładkami: własny system (okno w wyglądzie .zs6),
+    Appto, Oferty AI, Wingman AI (zrzuty z /produkty) i integracje (rejestr
+    połączeń). Pod spodem jedno zdanie o kontach. Tło: papier z góry chowa
+    się pod planszą, pod nią biel. */}
+<section id="zbudowac" class="u2-pl u2a sh-bu">
+<div class="u2-pl-in u2a-in v3-ziarno">
+<h2 class="u2-h2 jasny">Co możemy <span>dla Was zbudować</span></h2>
+<div class="u3a-zak" role="tablist" aria-label="Co budujemy">
+{BUDUJEMY.map((p, i) => (<button type="button" role="tab" aria-selected={i === 0 ? 'true' : 'false'} aria-controls={`sh-bu-${i}`} data-u3a-zak={i}><em>{String(i + 1).padStart(2, '0')}</em>{p.t}</button>))}
+</div>
+<div class="u3a-dol">
+{BUDUJEMY.map((p, i) => (<p data-u3a-p={i} hidden={i !== 0}><b>{p.t}</b>{p.d} <a href={p.h}>{p.l} →</a></p>))}
+<div class="u3a-str">
+<button type="button" data-u3a-krok="-1" aria-label="Poprzednia zakładka" disabled><svg viewBox="0 0 16 16" set:html={HI['arrow-right']} style="transform:scaleX(-1)"></svg></button>
+<button type="button" data-u3a-krok="1" aria-label="Następna zakładka"><svg viewBox="0 0 16 16" set:html={HI['arrow-right']}></svg></button>
+</div>
+</div>
+<div class="u2a-sc" data-u2a>
+<div class="u3a-tor" data-u3a-tor>
+
+<div class="u3a-sl" id="sh-bu-0" role="tabpanel">
+<div class="sh-bu-ok sys" role="img" aria-label={SYS_ARIA} data-sh-sys></div>
+</div>
+
+<div class="u3a-sl" id="sh-bu-1" role="tabpanel">
+<div class="sh-bu-ok">
+<img class="a" src="/produkty/slajdy/ap-1-inbox.webp" alt="Appto, widok Inbox AI: zadania zlecone asystentom, w toku i do przejrzenia, obok wynik zadania." width="1400" height="876" loading="lazy" decoding="async">
+<img class="b" src="/produkty/slajdy/ap-3-asystent.webp" alt="" width="1400" height="876" loading="lazy" decoding="async">
+</div>
+</div>
+
+<div class="u3a-sl" id="sh-bu-2" role="tabpanel">
+<div class="sh-bu-ok ig-w"><template data-sh-bu-t><BudujemyZakladka n={2} /></template></div>
+</div>
+
+<div class="u3a-sl" id="sh-bu-3" role="tabpanel">
+<div class="sh-bu-ok ad-w"><template data-sh-bu-t><BudujemyZakladka n={3} /></template></div>
+</div>
+
+<div class="u3a-sl" id="sh-bu-4" role="tabpanel">
+<div class="sh-bu-ok sz-w"><template data-sh-bu-t><BudujemyZakladka n={4} /></template></div>
+</div>
+
+</div>
+</div>
+<p class="sh-bu-kon"><svg viewBox="0 0 16 16" set:html={HI['shield-check']}></svg><span><b>Wszystko stoi na Waszych kontach.</b> Konta projektu, od repozytorium po klucze do modeli AI, zakładamy na Waszą firmę, a po współpracy nie potrzebujecie od nas żadnej licencji.</span></p>
+</div>
+</section>
+
+{/* ============ 7a · KOMPETENCJE (WiseGroup) ============
+    Klocki, które się uzupełniają: w środku Let’s automate (technologia,
+    systemy, AI), wokół firmy z WiseGroup, każda z jednym zdaniem, kiedy
+    w transformacji potrzebna jest jej kompetencja. */}
+<section id="grupa" class="v3-sek sh-kp2">
+<div class="v8-gl">
+<h2 class="u2-h2">Kompetencje do całej <span>transformacji</span></h2>
+<p class="v3-sub">Należymy do WiseGroup. Kiedy zmiana wychodzi poza systemy, do programu dochodzą firmy z grupy.</p>
+</div>
+<div class="sh-pz">
+<div class="sh-pz-c">
+<span class="lg"><img decoding="async" loading="lazy" src="/uploads/wisegroup/letsautomate-sygnet.svg" alt="" width="34" height="34"><b>Let’s automate</b></span>
+<p class="e">Technologia, systemy i AI</p>
+<p class="d">Prowadzimy program: mapa systemów, nowe systemy, integracje, agenci AI i szkolenia zespołu.</p>
+</div>
+{KOMP.map((k) => (
+  <a class={`sh-pz-k ${k.s} r${k.r}`} href={k.url} target="_blank" rel="noopener">
+    <img decoding="async" src={k.logo} alt={k.n} width={k.w} height={k.h} loading="lazy">
+    <b>{k.e}</b>
+    <p>{k.d}</p>
+    <i aria-hidden="true"></i>
+  </a>
+))}
+</div>
+</section>
+
+{/* ============ 8 · EKSPERTYZA PO NASZEJ STRONIE, DECYZJE PO WASZEJ ============
+    Wzór #zespol z /dlaczego-my-v11: tytuł po lewej, akapit o podziale
+    pracy po prawej (godziny DO POTWIERDZENIA), pięć portretów schodkowo,
+    wstęga z sygnetem ze zdaniem o kontroli. */}
+<section id="zespol" class="v3-sek v3-papier">
+<div class="v8-gl">
+<h2 class="u2-h2">Ekspertyza po naszej stronie, <span>decyzje po Waszej</span></h2>
+<p class="v3-sub">Przegląd systemów, rozmowy z&nbsp;działami, analizę, projekt zmian, wdrożenie, szkolenia i&nbsp;dokumentację robi nasz zespół, bez podwykonawców. Po Waszej stronie zostaje kilka rozmów na początku, a&nbsp;potem decyzje i&nbsp;odbiory etapów: sponsor w&nbsp;zarządzie poświęca na program ok.&nbsp;1&nbsp;h w&nbsp;tygodniu, właściciel etapu ok.&nbsp;3&nbsp;h.</p>
+</div>
+<div class="sh-lu">
+<figure class="sh-lk duch l" aria-hidden="true"><img src={ZESPOL_DUCHY[0]} alt="" width="278" height="280" loading="lazy" decoding="async"></figure>
+{ZESPOL.map((o) => (
+  <figure class="sh-lk">
+    <img src={o.f} alt={o.n} width={o.w} height={o.h} loading="lazy" decoding="async" style={`object-position:${o.poz}`}>
+    <figcaption><b>{o.n}</b><small>{o.r}</small></figcaption>
+  </figure>
+))}
+<figure class="sh-lk duch p" aria-hidden="true"><img src={ZESPOL_DUCHY[1]} alt="" width="278" height="280" loading="lazy" decoding="async"></figure>
+</div>
+<p class="sh-lu-st"><svg viewBox="0 0 40 41" aria-hidden="true" set:html={SYGNET}></svg><span>Przed każdym etapem zarząd akceptuje zakres i&nbsp;cenę, co tydzień przekazujemy status, a&nbsp;wszystko stoi na kontach firmy. <b>Nowe narzędzia wchodzą do pracy po Waszym odbiorze.</b></span></p>
+</section>
+
+{/* ============ 10 · WYNIKI I OPINIE ============
+    Prawdziwe wyniki i opinie ze strony głównej (jak w lets-up-v6). */}
+<section id="dowody" class="v3-sek v3-papier">
+<div class="v8-gl">
+<h2 class="u2-h2">Wyniki <span>z&nbsp;naszych wdrożeń</span></h2>
+<p class="v3-sub">Każde z tych wdrożeń zmieniło jeden proces. W Let’s Shift takie zmiany układają się w etapy według jednej mapy firmy.</p>
+</div>
+<div class="u4w-g" data-anim data-gra>
+{WYNIKI.map((x) => (
+  <article class="u4w-k">
+    <span class="dz">{x.dz}</span>
+    <h3>{x.p}</h3>
+    <p class="l">{x.l}<small>{x.j}</small></p>
+    <p class="ld">{x.ld}</p>
+    <dl><div><dt>Przed</dt><dd>{x.przed}</dd></div><div class="po"><dt>Po</dt><dd>{x.po}</dd></div></dl>
+    <a href={x.h}>{x.u}<span aria-hidden="true">→</span></a>
+  </article>
+))}
+</div>
+<div id="opinie" class="op9" data-op9 role="region" aria-roledescription="karuzela" aria-label="Opinie klientów">
+<div class="op9-sl">
+{OPINIE.map((o, i) => (
+  <figure class={i === 0 ? 'v3-cyt op9-k on' : 'v3-cyt op9-k'} aria-hidden={i === 0 ? 'false' : 'true'} data-op9-k>
+    <blockquote><span>„</span>{o.cytat}</blockquote>
+    <figcaption>
+      {o.logo && <img decoding="async" src={o.logo} alt={o.alt} width={o.lw} height={o.lh} loading="lazy" style={(o.h ?? 0) > 40 ? '' : `height:${o.h}px;margin:0`}>}
+      {o.logo && <i aria-hidden="true"></i>}
+      <span><b>{o.kto}</b><span>{o.rola}</span></span>
+    </figcaption>
+  </figure>
+))}
+</div>
+<div class="dw-str op9-str">
+<span class="op9-lk" data-op9-lk aria-hidden="true">1 z {OPINIE.length}</span>
+<button type="button" data-op9-wstecz aria-label="Poprzednia opinia"><svg class="hi" viewBox="0 0 16 16" set:html={HI['arrow-right']} style="transform:scaleX(-1)"></svg></button>
+<button type="button" data-op9-dalej aria-label="Następna opinia"><svg class="hi" viewBox="0 0 16 16" set:html={HI['arrow-right']}></svg></button>
+</div>
+</div>
+</section>
+
+{/* ============ 11 · JAK PRZEBIEGA PROGRAM ============
+    Schody z Let’s Up bez wiersza cen: co dzieje się na każdym stopniu. */}
+<section id="przebieg" class="v3-sek v3-papier">
+<div class="v8-gl">
+<h2 class="u2-h2">Jak przebiega <span>program</span></h2>
+<p class="v3-sub">Od rozmowy do firmy, która sama rozwija swoje narzędzia. Na każdym stopniu firma wie, co dzieje się w danym tygodniu i kto za to odpowiada, a o kolejnym etapie decyduje po poprzednim.</p>
+</div>
+<figure class="u4s sh-sch" data-anim data-gra role="img" aria-label={DROGA_ARIA}>
+<div class="u4s-g" aria-hidden="true">
+{DROGA.map((e, i) => (
+  <div class="u4s-e">
+    <div class="u4s-st" style={`grid-column:${i + 1};--h:${e.h};--i:${i}`}><em>{String(i + 1).padStart(2, '0')}</em><b>{e.t}</b></div>
+    <div class="u4s-op" style={`grid-column:${i + 1}`}><p>{e.d}</p>{e.x && <small>{e.x}</small>}</div>
+  </div>
+))}
+<div class="u5s-kl"><span>Jeden prowadzący po stronie Let’s automate, od mapy do ostatniego etapu</span></div>
+</div>
+</figure>
+</section>
+
+{/* ============ 12 · ILE KOSZTUJE LET’S SHIFT? ============
+    Dwa dokumenty zamiast deklaracji: oferta na mapę (jedna strona) i
+    fragment planu etapów z zamazanymi kwotami. Bez kwot. Pod spodem pasek
+    z twarzami. */}
+<section id="koszty" class="v3-sek v3-papier">
+<div class="v8-gl">
+<h2 class="u2-h2">Ile kosztuje <span>Let’s Shift?</span></h2>
+<p class="v3-sub">Cenę kolejnego etapu znacie, zanim go zamówicie. Dostajecie ją w dwóch dokumentach: w ofercie na mapę i w planie etapów.</p>
+</div>
+<div class="sh-ko">
+<figure class="sh-of" role="img" aria-label="Oferta na mapę systemów: zakres, sześć tygodni, rezultat i stała cena podana w ofercie po pierwszej rozmowie. Po mapie można zakończyć, a plan zostaje u klienta.">
+<div class="sh-of-k" aria-hidden="true">
+<header><span class="lg"><svg viewBox="0 0 40 41" set:html={SYGNET}></svg><b>Let’s automate</b></span><span>Oferta · strona 1 z 1</span></header>
+<p class="nr">Oferta po pierwszej rozmowie</p>
+<h3>Mapa systemów firmy</h3>
+<dl>
+<div><dt>Zakres</dt><dd>Wszystkie systemy, arkusze i miejsca, w których dane przenoszą ludzie. Przy każdym decyzja: zostaje, łączymy, wymieniamy albo wyłączamy.</dd></div>
+<div><dt>Czas</dt><dd>6 tygodni</dd></div>
+<div><dt>Rezultat</dt><dd>Spis systemów z decyzjami, plan firmy po zmianie i plan etapów z ceną każdego.</dd></div>
+<div class="c"><dt>Cena</dt><dd><span><b>Stała</b>, podana w tej ofercie</span><span class="bl">00 000 zł netto</span></dd></div>
+</dl>
+<footer><span>Po mapie możecie zakończyć, a plan zostaje u Was.</span><span class="pd"><i></i>akceptacja</span></footer>
+</div>
+<figcaption><b>Oferta na mapę</b>dostajecie po pierwszej rozmowie</figcaption>
+</figure>
+<figure class="sh-pe" role="img" aria-label="Fragment planu etapów z ceną każdego etapu, kwoty zamazane: etap 1 oferty i zamówienia w kwartałach 1–2, etap 2 magazyn i hala w kwartałach 3–4, etap 3 zarząd i obsługa w kwartałach 5–6, utrzymanie i rozwój miesięcznie. Licencje i zużycie AI osobno, w planie kosztów.">
+<div class="sh-pe-k" aria-hidden="true">
+<header><b>Plan etapów</b><span>z mapy · fragment</span></header>
+<table><thead><tr><th>Etap</th><th>Zakres</th><th>Kiedy</th><th>Cena</th></tr></thead>
+<tbody>{PLAN_ET.map((r) => <tr><td><b>{r.t}</b></td><td>{r.z}</td><td>{r.k}</td><td><span class="bl">{r.c}</span></td></tr>)}</tbody></table>
+<p class="li"><b>Licencje nowych systemów i zużycie AI</b><span>osobno, w planie kosztów</span></p>
+</div>
+<figcaption><b>Plan etapów z ceną każdego</b>dostajecie po mapie, zanim zamówicie pierwszy etap</figcaption>
+</figure>
+</div>
+<CtaPasek tytul="Na pierwszej rozmowie sprawdzamy, czy Waszej firmie potrzebny jest program, czy wystarczy jedna zmiana." />
+</section>
+
+{/* ============ 13 · DLA KOGO ============ */}
+<section id="dla-kogo" class="v3-sek v3-papier sh-dk">
+<div class="u2dk-gl">
+<h2 class="u2-h2">Dla firm, które <span>mają już swój sposób działania</span></h2>
+<p class="v3-sub">Małe, średnie i duże firmy, które działają od lat i mają sprawdzony sposób pracy, a ich systemy zbierały się latami.</p>
+</div>
+<div class="u2dk-g">
+<div class="u2dk-t"><h3>Program ma sens, gdy</h3><ul>{TAK.map((x) => (<li><i><svg viewBox="0 0 16 16" set:html={HI['check']}></svg></i><div><b>{x.t}</b><span>{x.d}</span></div></li>))}</ul></div>
+<div class="u2dk-t nie"><h3>Program nie ma sensu, gdy</h3><ul>{NIE.map((x) => (<li><i><svg viewBox="0 0 16 16" set:html={HI['x-mark']}></svg></i><div><b>{x.t}</b><span set:html={x.d}></span></div></li>))}</ul></div>
+</div>
+</section>
+
+{/* ============ 13 · KONTAKT nad FAQ ============ */}
+<div class="u6-kon">
+<Kontakt tytul="Zacznijmy od mapy Waszych systemów" lead="Napiszcie, ile osób liczy firma i jakie systemy dziś ją prowadzą. Odpowiemy w jeden dzień roboczy z propozycją terminu rozmowy." zrodlo="Let’s Shift" pytanie="Jakie systemy dziś prowadzą firmę i co chcecie zmienić?" podpowiedz="Np. 320 osób, ERP z 2009 r., oferty w arkuszach, raport dla zarządu klejony ręcznie…" />
+</div>
+
+</div>
+
+<GcFaq
+  heading="Pytania, które padają przed decyzją"
+  ctaLabel="Zadajcie nam swoje →"
+  items={faq}
+/>
+
+<LuSkrypty />
+
+<script>
+  var shRedukcja = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var shMa = 'IntersectionObserver' in window;
+  function shLista(root: ParentNode, sel: string){ return Array.prototype.slice.call(root.querySelectorAll(sel)) as HTMLElement[]; }
+  // Treść odłożona w <template> trafia na swoje miejsce (raz).
+  function shWstaw(t: Element | null){
+    if(!t) return;
+    t.replaceWith(document.importNode((t as HTMLTemplateElement).content, true));
+  }
+
+  // ---- SZYTE NA MIARĘ: etapy płótna 0 → 5, kiedy zakładka jest w kadrze ----
+  // Rusza za każdym razem, gdy slajd staje się widoczny (także po kliknięciu
+  // zakładki). Bez JS i przy ograniczonym ruchu: stan końcowy z HTML.
+  // Płótno stoi w <template> zakładki 5, więc start po jego wstawieniu.
+  function shSzyte(){
+    var sz = document.querySelector('[data-sz]') as HTMLElement | null;
+    if(!sz || shRedukcja || !shMa) return;
+    var t: number[] = [];
+    function czysc(){ t.forEach(function(x){ clearTimeout(x); }); t = []; }
+    function graj(){
+      czysc();
+      sz!.classList.add('bez'); sz!.dataset.st = '0'; void sz!.offsetWidth; sz!.classList.remove('bez');
+      [1, 2, 3, 4, 5].forEach(function(n, i){ t.push(window.setTimeout(function(){ sz!.dataset.st = String(n); }, 600 + i * 1500)); });
+    }
+    new IntersectionObserver(function(e){
+      if(e[0].isIntersecting) graj(); else czysc();
+    }, { threshold: 0.6 }).observe(sz);
+  }
+
+  // ---- CO MOŻEMY DLA WAS ZBUDOWAĆ: zakładki odłożone do pierwszego wyboru ----
+  // Zakładka 1 (system Armatura) to kopia okna z hero, wstawiana, zanim
+  // sekcja wejdzie w kadr. Zakładki 3–5 czekają w <template> do pierwszego
+  // ruchu w pokazie: klik w zakładkę albo strzałkę, klawiatura, dotyk,
+  // gest w bok, przewinięcie toru. Nasłuch w fazie przechwytywania, więc
+  // treść jest na miejscu, zanim LuSkrypty przesunie tor.
+  (function(){
+    var sek = document.getElementById('zbudowac');
+    if(!sek) return;
+    var cel = sek.querySelector('[data-sh-sys]') as HTMLElement | null;
+    var jest0 = false, jestReszta = false;
+    function system(){
+      if(jest0 || !cel) return;
+      jest0 = true;
+      var wz = document.querySelector('.shb-sys > .sa');
+      if(wz) cel.appendChild(wz.cloneNode(true));
+    }
+    function wszystko(){
+      system();
+      if(jestReszta) return;
+      jestReszta = true;
+      shLista(sek!, 'template[data-sh-bu-t]').forEach(shWstaw);
+      shSzyte();
+    }
+    if(!shMa){ wszystko(); return; }
+    var io = new IntersectionObserver(function(e){
+      if(e[0].isIntersecting){ io.disconnect(); system(); }
+    }, { rootMargin: '100% 0px 100% 0px' });
+    io.observe(sek);
+    ['click', 'pointerdown', 'touchstart', 'keydown', 'focusin'].forEach(function(t){
+      sek!.addEventListener(t, wszystko, { capture: true, passive: true });
+    });
+    sek.addEventListener('wheel', function(e){ if(Math.abs((e as WheelEvent).deltaX) > Math.abs((e as WheelEvent).deltaY)) wszystko(); }, { capture: true, passive: true });
+    var tor = sek.querySelector('[data-u3a-tor]');
+    if(tor) tor.addEventListener('scroll', wszystko, { passive: true });
+  })();
+
+  // ---- CO ROBIMY: sceny kart czekają w <template> i trafiają na miejsce,
+  // zanim sekcja wejdzie w kadr (karty mają stałą wysokość, więc nic się
+  // nie przesuwa).
+  (function(){
+    var sek = document.getElementById('program');
+    if(!sek) return;
+    function wstaw(){ shLista(sek!, 'template[data-sh-pr-t]').forEach(shWstaw); }
+    if(!shMa){ wstaw(); return; }
+    var io = new IntersectionObserver(function(e){
+      if(e[0].isIntersecting){ io.disconnect(); wstaw(); }
+    }, { rootMargin: '100% 0px 100% 0px' });
+    io.observe(sek);
+  })();
+
+  // ---- CO ROBIMY: poprzednia karta cofa się, kiedy nachodzi następna ----
+  // (jak LuSkrypty, ale już od 620 px wysokości okna)
+  (function(){
+    var st = document.querySelector('.sh-pr [data-u4p]') as HTMLElement | null;
+    if(!st || shRedukcja) return;
+    var k = Array.prototype.slice.call(st.querySelectorAll('.u4p-k')) as HTMLElement[];
+    var mq = window.matchMedia('(min-width:1000px) and (min-height:620px)');
+    var czeka = false;
+    function licz(){
+      czeka = false;
+      for(var i = 0; i < k.length; i++){
+        if(!mq.matches || i === k.length - 1){ k[i].style.removeProperty('--ss'); k[i].style.removeProperty('--oo'); continue; }
+        var a = k[i].getBoundingClientRect(), b = k[i + 1].getBoundingClientRect();
+        var pr = Math.max(0, Math.min(1, (a.bottom - b.top) / a.height));
+        k[i].style.setProperty('--ss', String(1 - pr * 0.05));
+        k[i].style.setProperty('--oo', String(pr * 0.5));
+      }
+    }
+    function pros(){ if(!czeka){ czeka = true; requestAnimationFrame(licz); } }
+    window.addEventListener('scroll', pros, { passive: true });
+    window.addEventListener('resize', pros);
+    pros();
+  })();
+
+  // ---- JEDNA SPRAWA: przełącznik firm i krok w środku ekranu ----
+  // Każda firma ma własny rysunek i kroki. Firmy 2 i 3 czekają w <template>
+  // do pierwszego kliknięcia zakładki; panele kroków 2–6 pierwszej firmy
+  // trafiają na miejsce, zanim sekcja wejdzie w kadr. Obserwator kroków
+  // działa tylko na wstawionych firmach (ukryte nie przecinają środka).
+  // Na telefonie panele „Dziś / Po zmianie” stoją przy swoim kroku, pod
+  // jego tekstem; na szerokim ekranie wracają do rysunku.
+  (function(){
+    var sek = document.querySelector('.sh-z') as HTMLElement | null;
+    if(!sek) return;
+    var sx = shLista(sek, '[data-sh-sx]');
+    if(!sx.length) return;
+    var zak = shLista(sek, '[data-sh-sx-zak]');
+    var mq = window.matchMedia('(max-width:900px)');
+    var gotowe: HTMLElement[] = [];
+    var io = shMa ? new IntersectionObserver(function(e){
+      e.forEach(function(x){
+        if(!x.isIntersecting) return;
+        var k = x.target as HTMLElement, p = k.closest('[data-sh-sx]') as HTMLElement;
+        (p.querySelector('[data-shz]') as HTMLElement).dataset.krok = k.dataset.shzK || '0';
+        shLista(p, '[data-shz-k]').forEach(function(y){ y.classList.toggle('on', y === k); });
+      });
+    }, { rootMargin: '-45% 0px -45% 0px' }) : null;
+    function ustaw(){
+      sek!.classList.toggle('sh-z-mob', mq.matches);
+      gotowe.forEach(function(p){
+        var st = p.querySelector('.sh-z-st') as HTMLElement | null;
+        if(!st) return;
+        var kroki = shLista(p, '[data-shz-k]');
+        var panele = shLista(p, '.sh-z-s').sort(function(a, b){ return nr(a) - nr(b); });
+        panele.forEach(function(el){
+          var krok = kroki[nr(el)];
+          if(!krok) return;
+          var tekst = krok.firstElementChild as HTMLElement;
+          if(mq.matches){
+            krok.after(el);
+            var cta = tekst.querySelector('.u6-mc');
+            if(cta) el.after(cta);
+          } else {
+            var c2 = el.nextElementSibling;
+            st!.appendChild(el);
+            if(c2 && c2.classList.contains('u6-mc')) tekst.appendChild(c2);
+          }
+        });
+      });
+    }
+    function nr(el: Element){ var m = /sh-z-s(\d+)/.exec(el.className); return m ? Number(m[1]) : 0; }
+    function wypelnij(p: HTMLElement){
+      shWstaw(p.querySelector(':scope > template[data-sh-sx-t]'));
+      shWstaw(p.querySelector('template[data-shz-t]'));
+      if(gotowe.indexOf(p) < 0){
+        gotowe.push(p);
+        if(io) shLista(p, '[data-shz-k]').forEach(function(k){ io!.observe(k); });
+      }
+      ustaw();
+    }
+    zak.forEach(function(b, i){
+      b.addEventListener('click', function(){
+        wypelnij(sx[i]);
+        sx.forEach(function(p, j){ p.hidden = j !== i; });
+        zak.forEach(function(z, j){ z.setAttribute('aria-selected', j === i ? 'true' : 'false'); });
+        var w = sx[i].querySelector('[data-shz]') as HTMLElement;
+        w.dataset.krok = '0';
+        shLista(sx[i], '[data-shz-k]').forEach(function(k, j){ k.classList.toggle('on', j === 0); });
+        var g = zak[0].parentElement!.getBoundingClientRect();
+        if(g.top < 0) window.scrollTo({ top: window.scrollY + g.top - 110, behavior: 'instant' as ScrollBehavior });
+      });
+    });
+    // Pierwsza firma: kroki i panel 1 od startu, panele 2–6 przed kadrem.
+    gotowe.push(sx[0]);
+    if(io) shLista(sx[0], '[data-shz-k]').forEach(function(k){ io!.observe(k); });
+    ustaw();
+    mq.addEventListener('change', ustaw);
+    if(!shMa){ wypelnij(sx[0]); return; }
+    var blisko = new IntersectionObserver(function(e){
+      if(e[0].isIntersecting){ blisko.disconnect(); wypelnij(sx[0]); }
+    }, { rootMargin: '100% 0px 100% 0px' });
+    blisko.observe(sek);
+  })();
+</script>
+</LaBase>

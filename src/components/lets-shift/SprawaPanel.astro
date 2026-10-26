@@ -1,0 +1,51 @@
+---
+// JEDNA SPRAWA · jeden panel kroku: „Dziś” (wycinek narzędzia, którego
+// firma używa dziś) i „Po zmianie” (wycinek systemu firmy). Wydzielone
+// z lets-shift.astro 26.10.2026, żeby panele mogły stać w <template>
+// (SprawaTresc.astro) i trafiać do strony dopiero przy wyborze firmy.
+import { twarz, jestAgent } from './twarze';
+interface Props { s: any; k: any; i: number }
+const { s, k, i } = Astro.props;
+const d = k.dz, p = k.po;
+const M = (f: string) => `/lets-shift/awatar-${f}.webp`;
+const IKZ_OK = '<svg class="shb-ik" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>';
+---
+<div class={`sh-z-s sh-z-s${i}`}>
+    <div class="sh-z-p dz">
+      <em>Dziś</em>
+      {d.k === 'mail' && (<div class="sh-zw w"><div class="shb-ol-g"><img decoding="async" loading="lazy" src="/appto/brands/outlook.svg" alt="" width="18" height="18"><b>Outlook</b><span class="sz">{d.box}</span></div>
+        {d.m.map((m: any) => (<div class={`shb-ol-m${m.sel ? ' sel' : ''}${m.nw ? ' nw' : ''}`}>{m.f ? <img decoding="async" loading="lazy" src={M(m.f)} alt="" width="96" height="96"> : <i>{m.from.slice(0, 1)}</i>}<div><p class="k"><b>{m.from}</b>{m.n && <em>{m.n}</em>}<time>{m.cz}</time></p><p class="t">{m.fl && <span class="wz">!</span>}{m.subj}</p><p class="p">{m.prev}</p>{m.zal && <span class="sh-zw-za">{m.zal}</span>}</div>{m.fl && <span class="fl"><svg viewBox="0 0 16 16"><path d="M3 14V2.5M3 3h8.5l-2 3 2 3H3"/></svg></span>}</div>))}</div>)}
+      {d.k === 'xl' && (<div class="sh-zw w shb-xl"><div class="shb-xl-g"><span class="lg">X</span><b>{d.plik}</b></div>
+        {d.lock && <div class="shb-xl-lk"><img decoding="async" loading="lazy" src={M(d.lock[0])} alt="" width="96" height="96"><span><b>Tylko do odczytu.</b> Plik edytuje: {d.lock[1]}</span></div>}
+        <div class="shb-xl-fx"><i>fx</i>=WYSZUKAJ.PIONOWO(B{d.w[d.hi][0]};Arkusz1!A:F;5;0)</div>
+        <table><thead><tr>{d.kol.map((c: string) => <th>{c}</th>)}</tr></thead><tbody>{d.w.map((r: string[], ri: number) => <tr class={`${ri === d.hi ? 'on' : ''}${d.nag && ri === 0 ? ' ng' : ''}`}>{r.map((c, j) => j === 0 ? <th>{c}</th> : <td class={`${j >= 2 ? 'n' : ''}${c.startsWith('#') || c.startsWith('?') || c.endsWith('?') ? ' bl' : ''}`}>{c}</td>)}</tr>)}</tbody></table></div>)}
+      {d.k === 'erp' && (<div class="sh-zw erp"><div class="shb-erp"><p class="shb-erp-g">{d.tyt}<span><i>_</i><i>□</i><i>×</i></span></p>
+        <div class="shb-erp-f">{d.pola.map(([l, v]: string[]) => <label>{l}<span>{v}</span></label>)}</div>
+        <p class="shb-erp-s"><span>{d.st}</span><span>F9 zapisz</span></p></div>
+        <div class="shb-blad"><p class="shb-erp-g">ERP 2009<span><i>×</i></span></p><div class="shb-blad-in"><span class="x">×</span><p><b>{d.bl}</b><small>Kod błędu: 0x80040E2F</small></p></div><p class="shb-blad-ok"><b>OK</b></p></div></div>)}
+      {d.k === 'foto' && (<div class="sh-zw shb-zd"><div class="shb-zd-g"><span>{d.plik}</span><i>— Zdjęcia</i></div><div class="shb-zd-in"><div class="shb-kar"><span class="tasma"></span><span class="kubek"></span>
+        <p class="g"><b>{d.tyt}</b><span>{d.sub}</span></p>{d.w.map(([l, v]: string[]) => <p class="r"><em>{l}</em><i class={v ? '' : 'pusto'}>{v}</i></p>)}<i class="dop">{d.brak}</i></div></div></div>)}
+      {d.k === 'teams' && (<div class="sh-zw w"><div class="shb-tm-g"><img decoding="async" loading="lazy" src="/appto/brands/teams.svg" alt="" width="16" height="16"><b>{d.kan}</b><span>Czat</span></div>
+        {d.m.map(([f, n, cz, t]: string[]) => <div class="shb-tm-m"><img decoding="async" loading="lazy" src={M(f)} alt="" width="96" height="96"><p><b>{n}</b><time>{cz}</time><span>{t}</span></p></div>)}</div>)}
+      {d.k === 'tel' && (<div class="sh-zw tel"><p class="zg">{d.cz}<small>czwartek, 24 października</small></p>
+        {d.n.map(([ik, cz, kto, t]: string[]) => <div class={`nt ${ik}`}><span class="ap"><svg viewBox="0 0 24 24" set:html={ik === 'tel' ? '<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/>' : ik === 'box' ? '<path d="M3 8l9-5 9 5v8l-9 5-9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/>' : '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>'}></svg></span><p><b>{kto}</b><time>{cz}</time><span>{t}</span></p></div>)}</div>)}
+      <p class="sh-z-cap"><img decoding="async" src={M(k.dc[0])} alt="" width="96" height="96" loading="lazy"><span><b>{k.dc[1]}</b> {k.dc[2]} · <i>{k.dc[3]}</i></span></p>
+    </div>
+    <div class="sh-z-p po" style={`--br:${s.mk[1]};--brt:${s.mk[2]}`}>
+      <em>Po zmianie</em>
+      {p.k === 'rek' && (<div class="sh-zw sys"><p class="zs-g"><span class="mk"><i></i></span><b>{s.mk[0]}</b><i>/</i>{p.sys}<i>/</i><b>{p.id}</b><span class="st">{p.st}</span></p>
+        <dl class="zs-p">{p.pola.map(([l, v]: string[]) => <div><dt>{l}</dt><dd>{v}</dd></div>)}</dl>
+        <p class="zs-s"><Fragment set:html={twarz(p.a, 22)} /><span>{p.stopka}</span><time>{p.cz}</time><span class="ok" set:html={IKZ_OK}></span></p></div>)}
+      {p.k === 'inbox' && (<div class="sh-zw sys"><p class="zs-g"><span class="mk"><i></i></span><b>{s.mk[0]}</b><i>/</i>Aktywność</p>
+        {p.r.map(([a, t, sub, cz]: string[]) => <div class="zs-w"><Fragment set:html={twarz(a, 28)} /><p><b>{t}</b><small>{sub}</small></p><time>{cz}</time><span class="ok" set:html={IKZ_OK}></span></div>)}
+        <ol class="zs-a">{p.hist.map(([a, kto, co, cz]: string[]) => <li>{jestAgent(a) ? <Fragment set:html={twarz(a, 22)} /> : <img decoding="async" loading="lazy" src={M(a)} alt="" width="96" height="96">}<p><b>{kto}</b> {co}</p><time>{cz}</time></li>)}</ol></div>)}
+      {p.k === 'out' && (<div class="sh-zw w out"><div class="shb-ol-g"><img decoding="async" loading="lazy" src="/appto/brands/outlook.svg" alt="" width="18" height="18"><b>Outlook</b><span class="sz">Elementy wysłane</span></div>
+        <div class="ou"><p class="ou-t">{p.tem}</p><p class="ou-o"><span class="sa">{p.od.slice(0, 1)}</span><span><b>{p.od}</b><small>Do: {p.do}</small></span><time>{p.cz}</time></p><p class="ou-b">{p.tr}</p><p class="ou-z">{p.zal.map((z: string) => <span><svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>{z}</span>)}</p>
+        <p class="ou-a"><Fragment set:html={twarz(p.a, 18)} />Wysłane przez: {p.ag}<span class="ok" set:html={IKZ_OK}></span></p></div></div>)}
+      {p.k === 'dec' && (<div class="sh-zw sys"><p class="zs-g"><span class="mk"><i></i></span><b>{s.mk[0]}</b><i>/</i>Do decyzji</p>
+        <div class="zs-d"><p class="dc-g"><Fragment set:html={twarz(p.a, 20)} /><span><b>{p.ag}</b> przygotował</span></p>
+        <p class="dc-q">{p.q}</p><p class="dc-b"><b>{p.tak}</b><span>{p.nie}</span></p></div>
+        <p class="zs-s"><img decoding="async" loading="lazy" src={M(p.f)} alt="" width="96" height="96"><span><b>{p.o}:</b> {p.wyn}</span><span class="ok" set:html={IKZ_OK}></span></p></div>)}
+      <p class="sh-z-cap po">{p.k === 'dec' ? <img decoding="async" src={M(p.f)} alt="" width="96" height="96" loading="lazy"> : <span class="tw" set:html={twarz(p.a ?? p.r[0][0], 26)}></span>}<span>{k.pc}</span></p>
+    </div>
+  </div>

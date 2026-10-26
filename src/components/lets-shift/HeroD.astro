@@ -1,0 +1,204 @@
+---
+// HERO D (25.10.2026) — „Mapa w prostej wersji”. Pomysł wariantu A, ale
+// czytelny: osiem kafli dużym stopniem, bez twarzy na mapie, dwa stany
+// z wyraźnym podpisem nad mapą. Dziś: kafle porozrzucane, splątane linie
+// i znaczniki „ręcznie” w miejscach przepisywania. Po programie: trzy
+// warstwy (AI w pracy, systemy procesów, jedna baza), nowe nazwy, CRM
+// wyłączony. Pętla tylko w kadrze; bez JS i przy ograniczonym ruchu stan
+// „po programie”. Poniżej 760 px ten sam rysunek w układzie 360 × 520.
+type Dec = 'zo' | 'la' | 'wy' | 'wl';
+const DEC: Record<Dec, string> = { zo: 'zostaje', la: 'łączymy', wy: 'wymieniamy', wl: 'wyłączamy' };
+// a = dziś [x, y], b = po programie [x, y] w jednostkach płótna 1200 × 470;
+// na wąskim ekranie na = dziś, nb = po programie w płótnie 360 × 520.
+const KAFLE: { id: string; d: Dec; n: string; s: string; n1: string; s1: string; a: number[]; b: number[]; na: number[]; nb: number[] }[] = [
+  { id: 'pza', d: 'la', n: 'Poczta zamówień', s: 'dwie skrzynki', n1: 'Zamówienia z maila', s1: 'AI czyta i zakłada sprawę', a: [40, 34], b: [250, 34], na: [12, 40], nb: [12, 62] },
+  { id: 'ofe', d: 'wy', n: '37 arkuszy ofert', s: 'cennik zna Ewa', n1: 'System ofert i zamówień', s1: 'z asystentem ofert', a: [470, 18], b: [250, 186], na: [188, 30], nb: [12, 226] },
+  { id: 'erp', d: 'la', n: 'ERP z 2009 r.', s: 'bez połączeń', n1: 'ERP, połączony', s1: 'księga firmy', a: [880, 60], b: [250, 338], na: [24, 150], nb: [12, 412] },
+  { id: 'rap', d: 'wy', n: 'Raport zarządu', s: 'z czterech arkuszy', n1: 'Raport z jednej bazy', s1: 'codziennie rano', a: [140, 196], b: [580, 34], na: [196, 160], nb: [188, 62] },
+  { id: 'acc', d: 'wy', n: 'Access w magazynie', s: 'autor odszedł', n1: 'Moduł magazynu', s1: 'stany na bieżąco', a: [560, 214], b: [580, 186], na: [12, 270], nb: [188, 226] },
+  { id: 'kar', d: 'wy', n: 'Karty produkcji', s: 'na papierze', n1: 'Aplikacja na hali', s1: 'status z każdego etapu', a: [930, 236], b: [910, 186], na: [188, 288], nb: [100, 308] },
+  { id: 'ksi', d: 'zo', n: 'Księgowość', s: 'biuro rachunkowe', n1: 'Księgowość', s1: 'połączona z ERP', a: [330, 366], b: [580, 338], na: [24, 400], nb: [188, 412] },
+  { id: 'crm', d: 'wl', n: 'CRM z 2019 r.', s: 'dane z jednego kwartału', n1: 'CRM z 2019 r.', s1: 'dane przeniesione', a: [760, 380], b: [910, 338], na: [196, 410], nb: [100, 480] },
+];
+const KF = Object.fromEntries(KAFLE.map((k) => [k.id, k]));
+const W = 230, H = 70, NW_ = 160, NH_ = 62;
+const sr = (k: typeof KAFLE[number], m = false) => m ? [k.na[0] + NW_ / 2, k.na[1] + NH_ / 2] : [k.a[0] + W / 2, k.a[1] + H / 2];
+const krzywa = (p: number[], q: number[], z: number) => {
+  const dx = q[0] - p[0], dy = q[1] - p[1], d = Math.hypot(dx, dy) || 1, px = -dy / d, py = dx / d, a = Math.min(80, d * 0.25) * z;
+  return `M${p[0].toFixed(1)} ${p[1].toFixed(1)} C${(p[0] + dx * 0.33 + px * a).toFixed(1)} ${(p[1] + dy * 0.33 + py * a).toFixed(1)} ${(p[0] + dx * 0.67 - px * a).toFixed(1)} ${(p[1] + dy * 0.67 - py * a).toFixed(1)} ${q[0].toFixed(1)} ${q[1].toFixed(1)}`;
+};
+// ręczne przejścia (przerywane, ze znacznikiem „ręcznie”) i kilka zwykłych
+const RECZ: [string, string, number][] = [['pza', 'ofe', 1], ['ofe', 'erp', -1], ['kar', 'acc', 1], ['rap', 'erp', -1]];
+const INNE: [string, string, number][] = [['erp', 'ksi', 1], ['crm', 'ofe', -1], ['acc', 'ksi', 1]];
+const D_RECZ = RECZ.map(([a, b, z]) => krzywa(sr(KF[a]), sr(KF[b]), z));
+const D_INNE = INNE.map(([a, b, z]) => krzywa(sr(KF[a]), sr(KF[b]), z));
+const N_RECZ = RECZ.map(([a, b, z]) => krzywa(sr(KF[a], true), sr(KF[b], true), z));
+const N_INNE = INNE.map(([a, b, z]) => krzywa(sr(KF[a], true), sr(KF[b], true), z));
+const srodek = (a: string, b: string, m = false) => { const p = sr(KF[a], m), q = sr(KF[b], m); return [(p[0] + q[0]) / 2, (p[1] + q[1]) / 2]; };
+const ZNACZ = RECZ.map(([a, b]) => ({ p: srodek(a, b), n: srodek(a, b, true) }));
+const PASY = [
+  { t: 'AI w pracy', y: 20, h: 100 },
+  { t: 'systemy procesów', y: 172, h: 100 },
+  { t: 'jedna baza', y: 324, h: 100 },
+];
+const NPASY = [
+  { t: 'AI w pracy', y: 30, h: 110 },
+  { t: 'systemy procesów', y: 194, h: 182 },
+  { t: 'jedna baza', y: 384, h: 160 },
+];
+const SZYNY = 'M365 124 V176 M695 124 V176 M365 276 V328 M695 276 V328 M1025 276 V300 H695';
+const N_SZYNY = 'M92 124 V226 M268 124 V226 M92 288 V412 M268 288 V412 M180 370 V392 M92 392 H268';
+const ARIA = 'Mapa systemów producenta armatury w dwóch stanach. Dziś: osiem narzędzi połączonych splątanymi liniami, w czterech miejscach dane przepisuje się ręcznie: z poczty zamówień do arkuszy ofert, z arkuszy do ERP z 2009 roku, z kart produkcji do Accessa w magazynie i z ERP do raportu zarządu. Po programie: trzy warstwy. AI w pracy: zamówienia z maila i raport z jednej bazy. Systemy procesów: system ofert i zamówień, moduł magazynu, aplikacja na hali. Jedna baza: ERP połączony, księgowość połączona. CRM z 2019 roku wyłączony, dane przeniesione.';
+---
+<section class="shd">
+<div class="shd-pl v3-ziarno">
+<div class="shd-gl">
+<div>
+<p class="shd-marka"><b>Let’s Shift</b><span>Program transformacji dla małych, średnich i dużych firm</span></p>
+<h1 class="shd-h1">Przenosimy firmę do czasów AI <span>razem z tym, co w niej działa</span></h1>
+</div>
+<div class="shd-pr">
+<p class="shd-lead">Przechodzimy przez wszystkie narzędzia firmy i przy każdym decydujemy, czy zostaje, łączymy je, wymieniamy czy wyłączamy. Zmiany wdrażamy etapami, dział po dziale.</p>
+<div class="v3-akcje"><a href="#kontakt" class="v3-btn">Umów rozmowę <span aria-hidden="true">→</span></a></div>
+<p class="u6-tw"><img src="/piotr-wojciuk.jpg" alt="" width="1002" height="1100" decoding="async"><span>Pierwszą rozmowę prowadzi <b>Piotr Wojciuk</b>. Bezpłatnie i bez zobowiązań.</span></p>
+</div>
+</div>
+<figure class="shd-m" data-shd data-s="1" role="img" aria-label={ARIA}>
+<div class="shd-ok" aria-hidden="true">
+<div class="shd-pod">
+<p class="s0"><b>Dziś</b>8 narzędzi, dane przepisywane ręcznie</p>
+<p class="s1"><b>Po programie</b>jedna baza, systemy procesów, AI w pracy</p>
+<span class="shd-pas"><i></i></span>
+</div>
+<div class="shd-cv">
+{PASY.map((p) => <div class="shd-w pel" style={`--y:${p.y};--h:${p.h}`}><span>{p.t}</span></div>)}
+{NPASY.map((p) => <div class="shd-w nar" style={`--y:${p.y};--h:${p.h}`}><span>{p.t}</span></div>)}
+<svg class="shd-l pel" viewBox="0 0 1200 470" preserveAspectRatio="none">
+<g class="d0">{D_INNE.map((d) => <path d={d} />)}{D_RECZ.map((d) => <path class="r" d={d} />)}</g>
+<g class="d1"><path d={SZYNY} /></g>
+</svg>
+<svg class="shd-l nar" viewBox="0 0 360 548" preserveAspectRatio="none">
+<g class="d0">{N_INNE.map((d) => <path d={d} />)}{N_RECZ.map((d) => <path class="r" d={d} />)}</g>
+<g class="d1"><path d={N_SZYNY} /></g>
+</svg>
+{ZNACZ.map((z) => <span class="shd-rc" style={`--x:${z.p[0].toFixed(1)};--y:${z.p[1].toFixed(1)};--nx:${z.n[0].toFixed(1)};--ny:${z.n[1].toFixed(1)}`}>ręcznie</span>)}
+{KAFLE.map((k, i) => (
+  <div class={`shd-k shd-d${k.d}`} style={`--x0:${k.a[0]};--y0:${k.a[1]};--x1:${k.b[0]};--y1:${k.b[1]};--nx0:${k.na[0]};--ny0:${k.na[1]};--nx1:${k.nb[0]};--ny1:${k.nb[1]};--i:${i}`}>
+    <span class="fa"><b>{k.n}</b><small>{k.s}</small></span>
+    <span class="fb"><b>{k.n1}</b><small>{k.s1}</small></span>
+    <em>{DEC[k.d]}</em>
+  </div>
+))}
+</div>
+</div>
+</figure>
+</div>
+</section>
+
+<style is:global>
+  .shd{--zwis:clamp(100px,10vw,170px);--d-zo:#5d6862;--d-la:#127f93;--d-wy:#0a7a52;--d-wl:#a8650f;padding:0 var(--ram) var(--zwis);overflow-x:clip}
+  .shd-dzo{--d:var(--d-zo)} .shd-dla{--d:var(--d-la)} .shd-dwy{--d:var(--d-wy)} .shd-dwl{--d:var(--d-wl)}
+  .shd-pl{position:relative;display:flow-root;padding:clamp(36px,4.4vw,72px) var(--pin) 0;border-radius:clamp(20px,2.2vw,32px);color:#ffffff;
+    background:radial-gradient(1100px 640px at 70% 100%,rgba(0,205,119,0.22),rgba(0,205,119,0) 70%),var(--ink)}
+  .shd-pl.v3-ziarno::after{border-radius:inherit}
+  .shd-pl > *{position:relative;z-index:1}
+  .shd-gl{display:grid;grid-template-columns:minmax(0,7.2fr) minmax(0,4.8fr);gap:28px clamp(32px,5vw,96px);align-items:end}
+  .shd-marka{display:flex;align-items:center;flex-wrap:wrap;gap:6px 14px;margin:0 0 clamp(22px,2.6vw,36px);font-size:15px;line-height:1.3;color:rgba(255,255,255,0.68)}
+  .shd-marka b{font-size:18px;font-weight:800;letter-spacing:-0.025em;color:#ffffff}
+  .shd-marka span{padding-left:14px;border-left:1.5px solid rgba(255,255,255,0.24)}
+  .shd-h1{margin:0;font-size:clamp(40px,5.4vw,88px);line-height:0.95;letter-spacing:-0.055em;font-weight:700;text-wrap:balance}
+  .shd-h1 span{color:var(--ziel)}
+  .shd-lead{margin:0;font-size:clamp(16px,1.25vw,19px);line-height:1.6;color:rgba(255,255,255,0.74);text-wrap:pretty}
+  .shd-pr .v3-akcje{margin-top:24px}
+  .shd .u6-tw{color:rgba(255,255,255,0.62)}
+  .shd .u6-tw b{color:#ffffff}
+  .shd .u6-tw img{box-shadow:0 0 0 2px var(--ink),0 0 0 3.5px rgba(0,205,119,0.6)}
+  .shd-m{margin:clamp(36px,4.4vw,64px) 0 calc(var(--zwis) * -1);color:var(--t1)}
+  .shd-ok{border-radius:20px;overflow:hidden;background:radial-gradient(rgba(15,26,20,0.1) 1px,transparent 1.3px) 0 0/22px 22px,#f6f5ef;
+    box-shadow:0 0 0 1px rgba(255,255,255,0.16),0 60px 90px -60px rgba(7,20,13,0.7),0 26px 50px -30px rgba(7,20,13,0.45)}
+  .shd-pod{position:relative;display:grid;padding:22px 30px 18px;border-bottom:1px solid var(--linia2);background:rgba(255,255,255,0.75)}
+  .shd-pod p{grid-area:1 / 1;display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 14px;margin:0;font-size:clamp(20px,2vw,30px);font-weight:650;letter-spacing:-0.03em;line-height:1.15;color:var(--t1);transition:opacity .45s ease,transform .45s ease}
+  .shd-pod p b{font-weight:800}
+  .shd-pod .s0 b{color:#9c5f14}
+  .shd-pod .s1 b{color:var(--ziel-c)}
+  .shd-m[data-s="0"] .shd-pod .s1,.shd-m[data-s="1"] .shd-pod .s0{opacity:0;transform:translateY(6px)}
+  .shd-pas{position:absolute;left:0;right:0;bottom:-1px;height:3px;background:rgba(15,26,20,0.06)}
+  .shd-pas i{display:block;height:100%;width:0;background:var(--ziel-c)}
+  .shd-m.gra[data-s="0"] .shd-pas i{width:100%;transition:width 4s linear}
+  .shd-m.gra[data-s="1"] .shd-pas i{width:100%;background:var(--ziel);transition:width 5.5s linear}
+  .shd-m.bez *{transition:none !important}
+  .shd-cv{position:relative;margin:26px 30px 28px;aspect-ratio:1200 / 470;container-type:inline-size;--u:calc(100cqw / 1200)}
+  .shd-w{position:absolute;left:0;right:0;top:calc(var(--y) * var(--u));height:calc(var(--h) * var(--u));border-radius:calc(14 * var(--u));background:rgba(15,26,20,0.04);opacity:0;transition:opacity .5s ease}
+  .shd-w span{position:absolute;left:calc(18 * var(--u));top:50%;transform:translateY(-50%);width:calc(180 * var(--u));font-size:calc(17 * var(--u));font-weight:700;line-height:1.2;color:var(--t2)}
+  .shd-w.nar,.shd-l.nar{display:none}
+  .shd-l{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+  .shd-l path{fill:none;vector-effect:non-scaling-stroke;stroke-linecap:round}
+  .shd-l .d0 path{stroke:rgba(15,26,20,0.3);stroke-width:1.4}
+  .shd-l .d0 path.r{stroke:#9c5f14;stroke-width:2;stroke-dasharray:3 7}
+  .shd-l .d1 path{stroke:rgba(15,26,20,0.45);stroke-width:2}
+  .shd-l g{transition:opacity .45s ease}
+  .shd-l .d1{opacity:0}
+  .shd-rc{position:absolute;z-index:3;left:calc(var(--x) * var(--u));top:calc(var(--y) * var(--u));transform:translate(-50%,-50%);padding:calc(3 * var(--u)) calc(10 * var(--u)) calc(4 * var(--u));border-radius:999px;background:#fff1dc;box-shadow:inset 0 0 0 1.5px rgba(156,95,20,0.5);font-size:calc(14 * var(--u));font-weight:700;color:#9c5f14;white-space:nowrap;transition:opacity .35s ease}
+  .shd-k{position:absolute;z-index:2;left:calc(var(--x0) * var(--u));top:calc(var(--y0) * var(--u));width:calc(230 * var(--u));min-height:calc(70 * var(--u));display:grid;align-content:center;padding:calc(10 * var(--u)) calc(14 * var(--u)) calc(10 * var(--u)) calc(20 * var(--u));border-radius:calc(12 * var(--u));background:#ffffff;
+    box-shadow:0 0 0 1px rgba(15,26,20,0.12),0 calc(10 * var(--u)) calc(20 * var(--u)) calc(-12 * var(--u)) rgba(15,26,20,0.35);
+    transition:left 1.1s cubic-bezier(.55,0,.2,1) calc(var(--i) * 60ms),top 1.1s cubic-bezier(.55,0,.2,1) calc(var(--i) * 60ms),opacity .4s ease,background .4s ease}
+  .shd-k::before{content:"";position:absolute;left:calc(7 * var(--u));top:calc(12 * var(--u));bottom:calc(12 * var(--u));width:calc(4 * var(--u));border-radius:4px;background:rgba(15,26,20,0.14);transition:background .4s ease}
+  .shd-k > span{grid-area:1 / 1;min-width:0;transition:opacity .3s ease}
+  .shd-k .fb{opacity:0}
+  .shd-k b{display:block;font-size:calc(19 * var(--u));font-weight:700;letter-spacing:-0.02em;line-height:1.15}
+  .shd-k small{display:block;margin-top:calc(3 * var(--u));font-size:calc(14 * var(--u));line-height:1.25;color:var(--t3)}
+  .shd-k em{position:absolute;right:calc(-8 * var(--u));top:calc(-13 * var(--u));padding:calc(1 * var(--u)) calc(8 * var(--u)) calc(2 * var(--u));border:calc(1.5 * var(--u)) solid var(--d);border-radius:calc(6 * var(--u));background:#ffffff;font-style:normal;font-size:calc(13 * var(--u));font-weight:700;color:var(--d);transform:rotate(-4deg);opacity:0;transition:opacity .3s ease}
+  .shd-m[data-s="1"] .shd-k{left:calc(var(--x1) * var(--u));top:calc(var(--y1) * var(--u))}
+  .shd-m[data-s="1"] .shd-k::before{background:var(--d);transition-delay:1s}
+  .shd-m[data-s="1"] .shd-k .fa{opacity:0;transition-delay:.9s}
+  .shd-m[data-s="1"] .shd-k .fb{opacity:1;transition-delay:1.1s}
+  .shd-m[data-s="1"] .shd-k em{opacity:1;transition-delay:calc(1.2s + var(--i) * 80ms)}
+  .shd-m[data-s="1"] .shd-k .fb small{color:var(--d)}
+  .shd-m[data-s="1"] .shd-dwl{background:#f3efe6;opacity:0.8;transition-delay:1s}
+  .shd-m[data-s="1"] .shd-dwl .fb b{text-decoration:line-through;text-decoration-color:var(--d-wl);text-decoration-thickness:2px;color:var(--t2)}
+  .shd-m[data-s="1"] .shd-w{opacity:1;transition-delay:.6s}
+  .shd-m[data-s="1"] .shd-l .d0,.shd-m[data-s="1"] .shd-rc{opacity:0}
+  .shd-m[data-s="1"] .shd-l .d1{opacity:1;transition-delay:1.2s}
+  @media (max-width:1000px){ .shd-gl{grid-template-columns:1fr} }
+  @media (max-width:760px){
+    .shd-marka span{padding-left:0;border-left:0;width:100%}
+    .shd-pod{padding:16px 16px 14px}
+    .shd-pod p{font-size:18px;display:block}
+    .shd-pod p b{display:block;font-size:13px;letter-spacing:0;font-weight:750}
+    .shd-cv{margin:20px 12px 20px;aspect-ratio:360 / 548;--u:calc(100cqw / 360)}
+    .shd-w.pel,.shd-l.pel{display:none}
+    .shd-w.nar,.shd-l.nar{display:block}
+    .shd-w span{left:calc(12 * var(--u));top:calc(6 * var(--u));transform:none;width:auto;font-size:calc(12 * var(--u))}
+    .shd-rc{display:none}
+    .shd-k{left:calc(var(--nx0) * var(--u));top:calc(var(--ny0) * var(--u));width:calc(160 * var(--u));min-height:calc(62 * var(--u));padding:calc(8 * var(--u)) calc(9 * var(--u)) calc(8 * var(--u)) calc(16 * var(--u))}
+    .shd-m[data-s="1"] .shd-k{left:calc(var(--nx1) * var(--u));top:calc(var(--ny1) * var(--u))}
+    .shd-k b{font-size:calc(14.5 * var(--u))}
+    .shd-k small{font-size:calc(11.5 * var(--u))}
+    .shd-k em{font-size:calc(11 * var(--u))}
+  }
+</style>
+
+<script>
+  // Dwa stany w pętli, tylko gdy mapa jest w kadrze: dziś 4 s, po
+  // programie 5,5 s. Bez JS i przy ograniczonym ruchu zostaje „po programie”.
+  (function(){
+    var m = document.querySelector('[data-shd]') as HTMLElement | null;
+    if(!m) return;
+    if(window.matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) return;
+    var t = 0, widac = false;
+    function petla(){
+      clearTimeout(t);
+      if(!widac) return;
+      var s = m!.dataset.s === '0' ? '1' : '0';
+      m!.dataset.s = s;
+      m!.classList.remove('gra'); void m!.offsetWidth; m!.classList.add('gra');
+      t = window.setTimeout(petla, s === '0' ? 4000 : 5500);
+    }
+    m.classList.add('bez'); m.dataset.s = '0'; void m.offsetWidth; m.classList.remove('bez');
+    new IntersectionObserver(function(w){
+      widac = w[0].isIntersecting;
+      clearTimeout(t);
+      if(widac){ m!.classList.add('gra'); t = window.setTimeout(petla, m!.dataset.s === '0' ? 4000 : 5500); }
+    }, { threshold: 0.3 }).observe(m);
+  })();
+</script>

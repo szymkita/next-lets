@@ -1,0 +1,118 @@
+---
+// HERO C (25.10.2026) — „Rejestr wymian”. Jasna plansza, duża typografia:
+// sześć wierszy „stare → decyzja → nowe” z mapy producenta armatury.
+// Wiersze ożywają po kolei: stare skreśla ołówek (tylko przy „wymieniamy”
+// i „wyłączamy”), wchodzi pieczątka decyzji, wsuwa się nowe. Bez JS i przy
+// ograniczonym ruchu: stan końcowy. Kolory decyzji jak na /lets-shift.
+type Dec = 'zo' | 'la' | 'wy' | 'wl';
+const DEC: Record<Dec, string> = { zo: 'zostaje', la: 'łączymy', wy: 'wymieniamy', wl: 'wyłączamy' };
+const WIERSZE: { a: string; d: Dec; b: string; s?: string }[] = [
+  { a: '37 arkuszy ofert', d: 'wy', b: 'System ofert i zamówień' },
+  { a: 'ERP z 2009 r.', d: 'la', b: 'ERP jako księga, połączony' },
+  { a: 'Karty produkcji na papierze', d: 'wy', b: 'Aplikacja na hali' },
+  { a: 'Raport z czterech arkuszy', d: 'wy', b: 'Raport z jednej bazy, codziennie' },
+  { a: 'CRM z 2019 r.', d: 'wl', b: 'Dane przeniesione' },
+  { a: 'Księgowość', d: 'zo', b: 'Połączona' },
+];
+const ARIA = `Rejestr wymian producenta armatury, sześć z dwudziestu czterech elementów mapy: ${WIERSZE.map((w) => `${w.a}: ${DEC[w.d]}, po programie ${w.b.toLowerCase()}`).join('; ')}.`;
+---
+<section class="shc">
+<div class="shc-pl">
+<div class="shc-gl">
+<div>
+<p class="shc-marka"><b>Let’s Shift</b><span>Program transformacji dla małych, średnich i dużych firm</span></p>
+<h1 class="shc-h1">Przenosimy firmę do czasów AI <span>razem z tym, co w niej działa</span></h1>
+</div>
+<div class="shc-pr">
+<p class="shc-lead">Przy każdym narzędziu firmy decydujemy, czy zostaje, łączymy je, wymieniamy czy wyłączamy. Potem wdrażamy zmiany etapami, dział po dziale.</p>
+<div class="v3-akcje"><a href="#kontakt" class="v3-btn">Umów rozmowę <span aria-hidden="true">→</span></a></div>
+<p class="u6-tw"><img src="/piotr-wojciuk.jpg" alt="" width="1002" height="1100" decoding="async"><span>Pierwszą rozmowę prowadzi <b>Piotr Wojciuk</b>. Bezpłatnie i bez zobowiązań.</span></p>
+</div>
+</div>
+<figure class="shc-rej" data-shc role="img" aria-label={ARIA}>
+<div class="shc-k" aria-hidden="true">
+<header><b>Rejestr decyzji</b><span>producent armatury · 6 z 24 elementów mapy</span></header>
+<div class="shc-w n"><span>dziś</span><span>decyzja</span><span>po programie</span></div>
+{WIERSZE.map((w, i) => (
+  <div class={`shc-w shc-d${w.d}`} style={`--i:${i}`}>
+    <p class="a"><span>{w.a}{(w.d === 'wy' || w.d === 'wl') && <i class="ol"></i>}</span></p>
+    <p class="d"><em>{DEC[w.d]}</em></p>
+    <p class="b"><span>{w.b}</span></p>
+  </div>
+))}
+<footer><span><i class="shc-dzo"></i>zostaje 7</span><span><i class="shc-dla"></i>łączymy 6</span><span><i class="shc-dwy"></i>wymieniamy 7</span><span><i class="shc-dwl"></i>wyłączamy 4</span><b>razem 24 elementy</b></footer>
+</div>
+</figure>
+</div>
+</section>
+
+<style is:global>
+  .shc{--zwis:clamp(80px,8vw,140px);--d-zo:#5d6862;--d-la:#127f93;--d-wy:#0a7a52;--d-wl:#a8650f;padding:0 var(--ram) var(--zwis);overflow-x:clip}
+  .shc-dzo{--d:var(--d-zo)} .shc-dla{--d:var(--d-la)} .shc-dwy{--d:var(--d-wy)} .shc-dwl{--d:var(--d-wl)}
+  .shc-pl{position:relative;display:flow-root;padding:clamp(36px,4.4vw,72px) var(--pin) 0;border-radius:clamp(20px,2.2vw,32px);
+    background:radial-gradient(760px 640px at 84% 30%,rgba(0,205,119,0.15),rgba(0,205,119,0) 66%),var(--papier)}
+  .shc-gl{display:grid;grid-template-columns:minmax(0,7.2fr) minmax(0,4.8fr);gap:28px clamp(32px,5vw,96px);align-items:end}
+  .shc-marka{display:flex;align-items:center;flex-wrap:wrap;gap:6px 14px;margin:0 0 clamp(22px,2.6vw,36px);font-size:15px;line-height:1.3;color:var(--t2)}
+  .shc-marka b{font-size:18px;font-weight:800;letter-spacing:-0.025em;color:var(--t1)}
+  .shc-marka span{padding-left:14px;border-left:1.5px solid rgba(15,26,20,0.2)}
+  .shc-h1{margin:0;font-size:clamp(40px,5.4vw,88px);line-height:0.95;letter-spacing:-0.055em;font-weight:700;color:var(--t1);text-wrap:balance}
+  .shc-h1 span{color:var(--ziel-c)}
+  .shc-lead{margin:0;font-size:clamp(16px,1.25vw,19px);line-height:1.6;color:var(--t2);text-wrap:pretty}
+  .shc-pr .v3-akcje{margin-top:24px}
+  .shc-rej{margin:clamp(36px,4.4vw,64px) 0 calc(var(--zwis) * -1)}
+  .shc-k{padding:clamp(20px,2.4vw,34px) clamp(20px,3vw,44px) clamp(16px,2vw,26px);border-radius:20px;background:#ffffff;
+    box-shadow:0 0 0 1px rgba(15,26,20,0.06),0 60px 90px -60px rgba(15,26,20,0.45),0 26px 50px -30px rgba(15,26,20,0.25)}
+  .shc-k header{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:4px 16px;padding-bottom:14px;border-bottom:2px solid var(--t1)}
+  .shc-k header b{font-size:18px;font-weight:750;letter-spacing:-0.02em}
+  .shc-k header span{font-size:13.5px;color:var(--t3)}
+  .shc-w{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,2.1fr) minmax(0,5.4fr);gap:clamp(12px,2vw,32px);align-items:center;padding:clamp(10px,1.1vw,16px) 0;border-bottom:1px solid var(--linia2)}
+  .shc-w p{margin:0;min-width:0}
+  .shc-w.n{padding:12px 0 8px;font-size:12.5px;font-weight:650;color:var(--t3)}
+  .shc-w .a span{position:relative;display:inline-block;font-size:clamp(19px,2.05vw,31px);font-weight:600;letter-spacing:-0.03em;line-height:1.1;color:var(--t2);white-space:nowrap}
+  .shc-w .a .ol{position:absolute;left:-3%;right:-3%;top:54%;height:2.5px;border-radius:2px;background:#36423c;transform:rotate(-1.2deg);transform-origin:0 50%}
+  .shc-w .d em{display:inline-block;padding:3px 12px 4px;border:2px solid var(--d);border-radius:7px;background:color-mix(in srgb,var(--d) 7%,#ffffff);font-style:normal;font-size:clamp(14px,1.25vw,18px);font-weight:700;color:var(--d);transform:rotate(-3deg)}
+  .shc-w .b span{display:inline-block;font-size:clamp(19px,2.05vw,31px);font-weight:700;letter-spacing:-0.035em;line-height:1.1;color:var(--t1)}
+  .shc-dwy .b span,.shc-dla .b span{color:var(--ziel-c)}
+  .shc-dwl .b span{color:var(--t3);font-weight:600}
+  .shc-k footer{display:flex;flex-wrap:wrap;align-items:center;gap:8px 22px;padding-top:16px;font-size:13.5px;color:var(--t2)}
+  .shc-k footer span{display:flex;align-items:center;gap:7px}
+  .shc-k footer i{width:10px;height:10px;border-radius:3px;background:var(--d)}
+  .shc-k footer b{margin-left:auto;font-weight:650;color:var(--t1)}
+  /* animacja: ołówek, pieczątka, nowe */
+  .shc-k.gra .a .ol{transform:rotate(-1.2deg) scaleX(0)}
+  .shc-k.gra .d em{opacity:0;transform:rotate(-3deg) scale(1.6)}
+  .shc-k.gra .b span{opacity:0;transform:translateX(28px)}
+  .shc-k.gra.on .a .ol{transform:rotate(-1.2deg) scaleX(1);transition:transform .45s cubic-bezier(.5,0,.3,1) calc(var(--i) * .7s + .2s)}
+  .shc-k.gra.on .d em{opacity:1;transform:rotate(-3deg) scale(1);transition:opacity .2s ease calc(var(--i) * .7s + .55s),transform .4s cubic-bezier(.3,1.5,.5,1) calc(var(--i) * .7s + .55s)}
+  .shc-k.gra.on .b span{opacity:1;transform:none;transition:opacity .4s ease calc(var(--i) * .7s + .8s),transform .55s cubic-bezier(.2,.8,.2,1) calc(var(--i) * .7s + .8s)}
+  .shc-k.gra.on .shc-dwl .a span,.shc-k.gra.on .shc-dwy .a span{color:var(--t3);transition:color .4s ease calc(var(--i) * .7s + .5s)}
+  .shc-k:not(.gra) .shc-dwl .a span,.shc-k:not(.gra) .shc-dwy .a span{color:var(--t3)}
+  @media (max-width:1000px){ .shc-gl{grid-template-columns:1fr} }
+  @media (max-width:700px){
+    .shc-marka span{padding-left:0;border-left:0;width:100%}
+    .shc-w{grid-template-columns:auto minmax(0,1fr);gap:6px 10px;padding:12px 0}
+    .shc-w.n{display:none}
+    .shc-w .a{grid-column:1 / -1}
+    .shc-w .d{grid-column:1;grid-row:2}
+    .shc-w .b{grid-column:2;grid-row:2}
+    .shc-w .a span{font-size:16px}
+    .shc-w .b span{font-size:17px;line-height:1.2}
+    .shc-w .d em{font-size:13px;padding:2px 8px 3px}
+    .shc-k footer b{margin-left:0;width:100%}
+  }
+</style>
+
+<script>
+  // Wiersze ożywają po kolei, kiedy rejestr wejdzie w kadr.
+  (function(){
+    var f = document.querySelector('[data-shc]') as HTMLElement | null;
+    if(!f) return;
+    var k = f.querySelector('.shc-k') as HTMLElement;
+    if(window.matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) return;
+    k.classList.add('gra');
+    var io = new IntersectionObserver(function(w){
+      if(w[0].isIntersecting){ io.disconnect(); requestAnimationFrame(function(){ k.classList.add('on'); }); }
+    }, { threshold: 0.3 });
+    io.observe(k);
+  })();
+</script>
