@@ -76,6 +76,41 @@ i kolumna **PRODUKTY** w stopce.
 > **8 900 zł netto jednorazowo za wdrożenie**, zmiany i dopasowanie
 > rozliczane godzinowo, jeśli potrzebne (stawki godzinowej strona nie podaje).
 > Reszta tego dokumentu opisuje hub z 09.09.2026.
+>
+> **25.10.2026 — czwarty produkt: Earshot AI** (prośba Szymona: produkt do
+> kontroli jakości rozmów handlowych i obsługi klienta, „wymyśl dla niego
+> nazwę”). Pierwsza propozycja, Odsłuch AI, z jasnym panelem i tabelą,
+> odpadła („zmień nazwę, najlepiej jakoś anglojęzyczną… design wygląda
+> strasznie standardowo”). Earshot to ang. „zasięg słuchu”; nazwa do
+> akceptacji. Fakty od Szymona: aplikacja połączona z centralką telefoniczną,
+> nagrania można też wgrać, ocenia rozmowy według standardów firmy na
+> podstawie całej transkrypcji i ocenia przebieg rozmowy.
+>
+> Sekcja `#earshot` po Ofertach AI (papier, kolumny odwrócone jak u Wingmana),
+> przez co „Kiedy gotowy produkt nie wystarczy” przeszła na biel, a kontakt
+> leży na granicy bieli i papieru. W hero karta z rozmową w ciemnym pasie po
+> lewej (na telefonie tylko nazwa w rzędzie pod sceną), w panelu demo klucz
+> `earshot` (`/produkty?demo=earshot`).
+>
+> Wygląd aplikacji (czwarta wersja). Odpadły: jasny panel z tabelą
+> („strasznie standardowo”), ciemne okno z poświatą, Geist i kursywą
+> Instrument Serif („font zwebcodowany… zupełnie inny design niż na stronie…
+> bez typowych standardów AI-owych”) i natywny program na Maca ze ścieżkami
+> jak w programie do nagrań („przesadziłeś… to jednak aplikacja webowa…
+> to nie jest program dźwiękowy”). Obecna: aplikacja webowa w oknie
+> przeglądarki, krój systemowy (jak GitHub czy Notion), monochrom z czarnym
+> przyciskiem głównym, kolor tylko w ocenach, bez gradientów i kafli
+> w kaflach. Rozmowa na osi to prosty pasek z etapami i dwoma znacznikami,
+> bez fali. Pięć ekranów jednej rozmowy (Anna Kowal z Termaro i Hurtownia
+> Bielik, 5 z 7): ocena (lista kryteriów, rozwinięte niespełnione, obok
+> fragment transkrypcji), transkrypcja z uwagami pod zdaniami jak komentarze
+> w przeglądzie kodu, standard z dokumentem źródłowym i przykładem, lista
+> rozmów, okno wgrywania nagrań.
+> Makieta: `src/robocze/produkty/earshot-makieta.astro`, zrzuty
+> `node scripts/earshot-slajdy.mjs` przy działającym `npm run dev`.
+> Do potwierdzenia: nazwa, cena i model sprzedaży, obsługiwane centralki,
+> miejsce nagrań; etapy, kluczowy moment, uwagi przy zdaniach, kryteria
+> wskazane w dokumencie i „odtwórz od” pochodzą z makiety.
 
 ---
 

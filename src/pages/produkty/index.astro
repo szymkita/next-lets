@@ -34,6 +34,22 @@
 // Linki do produktu z innych miejsc: /produkty#appto, #wingman, #oferty.
 // Link zewnętrzny tylko appto.ai; film o Appto jest pierwszym slajdem Appto.
 //
+// EARSHOT AI (25.10.2026, prośba Szymona: „dodaj kolejny produkt… dotyczy
+// kontroli jakości rozmów handlowych i obsługi klienta”): czwarta sekcja, po
+// Ofertach AI, na papierze z odwróconymi kolumnami jak Wingman. „Kiedy gotowy
+// produkt nie wystarczy” przeszła przez to na biel, a kontakt pod nią stoi na
+// granicy bieli i papieru. Pierwsza nazwa, Odsłuch AI, odpadła („zmień nazwę,
+// najlepiej jakoś anglojęzyczną”); Earshot to ang. „zasięg słuchu”.
+// Opublikowany 26.10.2026 (Szymon: „Earshot też niech leci razem
+// z produktami”). Fakty od Szymona: aplikacja połączona z centralką
+// telefoniczną, nagrania można też wgrać, ocenia rozmowy według standardów
+// firmy na podstawie całej transkrypcji i ocenia przebieg rozmowy. Ekrany to
+// makieta proponowanego wyglądu (src/robocze/produkty/earshot-makieta.astro,
+// zrzuty: scripts/earshot-slajdy.mjs), nie zrzut działającej aplikacji.
+// Wygląd aplikacji celowo nie bierze nic ze strony (Szymon: „zupełnie inny
+// design niż na stronie… nie może być zwebcodowany”), a to wciąż aplikacja
+// webowa bez wizualizacji dźwięku; historia wersji w nagłówku makiety.
+//
 // SKĄD FAKTY: Appto — src/robocze/produkty/appto-new.astro (źródła w jego
 // nagłówku); Wingman — src/pages/produkty/wingman.astro (gowingman.app i film
 // youtu.be/2QVSDz-aANY); Oferty AI — src/robocze/produkty/oferty.astro
@@ -52,7 +68,11 @@
 //     Wingmana), nie zrzut obecnej wersji;
 //   · zdanie, że przy zapytaniu o system szyty na miarę zdarza się polecić
 //     samo Appto (było na starym hubie, bez liczb);
-//   · Piotr Wojciuk w kontakcie.
+//   · Piotr Wojciuk w kontakcie;
+//   · Earshot AI: cena i model sprzedaży, z jakimi centralkami się
+//     łączy, gdzie są nagrania; mapa rozmowy z etapami, kluczowy moment
+//     zestawiony ze standardem, uwagi przy zdaniach, kryteria wskazane we
+//     fragmentach dokumentu i „odtwórz od” to propozycja z makiety.
 import LaBase from '../../layouts/LaBase.astro';
 import GcFaq from '../../components/GcFaq.astro';
 import Styl from '../../components/usluga/Styl.astro';
@@ -67,13 +87,16 @@ import PokazPanel from '../../components/produkty/PokazPanel.astro';
 const kanon = new URL('/produkty', Astro.site).href;
 const YT_ID = 'uSPPN1-unaI';
 
-const title = "Produkty — Appto, Wingman AI i Oferty AI | Let's automate";
-const description = 'Gotowe aplikacje AI od Let’s automate: Appto, standard pracy z AI w całej firmie, Wingman AI z transkrypcją i podpowiedziami w trakcie rozmowy handlowej oraz Oferty AI, w których oferta powstaje z rozmowy, a klient akceptuje ją jednym przyciskiem.';
+const title = "Produkty — Appto, Wingman AI, Oferty AI i Earshot AI | Let's automate";
+const description = 'Gotowe aplikacje AI od Let’s automate: Appto, standard pracy z AI w całej firmie, Wingman AI z transkrypcją i podpowiedziami w trakcie rozmowy handlowej Oferty AI, w których oferta powstaje z rozmowy, oraz Earshot AI, który ocenia rozmowy sprzedaży i obsługi klienta według standardu firmy.';
 
 // Znaki: Appto — pełne logo public/appto/appto-logo-full.svg (to samo co na
 // appto.ai, czarne na jasnym tle), w spisie w hero sam sygnet na biało, jak
 // w marce na ciemnym tle; Wingman z /produkty/wingman (ZNAK).
 const ZNAK_WINGMAN = '<path d="M75 148H298C316 148 326 158 330 176L357 300H152C140 300 130 292 124 282L118 262H240V242H116C108 242 102 236 99 228L95 205H218V186H96C88 186 82 180 80 172Z"/><path d="M362 192H380C393 192 402 200 405 214L437 362H232C216 362 203 354 196 342L188 326H391Z"/>';
+
+// Znak Earshot AI: dwie wypowiedzi, jedna po drugiej (klipy z ekranu sesji).
+const ZNAK_EARSHOT = '<rect x="1" y="3.5" width="9" height="4" rx="2"/><rect x="6" y="8.5" width="9" height="4" rx="2" opacity=".5"/>';
 
 // Wiersze mówią, co Appto robi dla zespołu (fakty z appto.ai: src/data/home.ts
 // w ~/appto-landing-page — „zastosowania”, „hub”, „stack” i rutyny).
@@ -99,6 +122,15 @@ const OFERTY = [
   ['Cena', '<b>8 900 zł netto</b> jednorazowo za wdrożenie; zmiany i dopasowanie do Waszej firmy rozliczamy godzinowo, jeśli będą potrzebne'],
 ];
 
+// Earshot AI: fakty od Szymona (25.10.2026) — centralka, wgrywanie nagrań,
+// ocena według standardów firmy z całej transkrypcji, przebieg rozmowy.
+const EARSHOT = [
+  ['Rozmowy', 'z centralki trafiają do aplikacji same po rozłączeniu, a nagrania spoza niej, np. ze spotkań u klienta, wgrywacie z dysku'],
+  ['Standard', 'kryteria z Waszych zasad sprzedaży i obsługi, osobno dla każdego rodzaju rozmowy, od pierwszego telefonu do klienta po reklamację'],
+  ['Ocena', 'każde kryterium z fragmentem rozmowy, który je potwierdza albo podważa, i przebieg rozmowy etap po etapie'],
+  ['Dla kierownika', 'wiadomo, którą rozmowę omówić z handlowcem albo konsultantem, a nagranie otwiera się w miejscu, którego dotyczy uwaga'],
+];
+
 // Slajdy: po sześć ekranów każdej aplikacji, okna w tych samych proporcjach
 // (src/components/produkty/Slajdy.astro, public/produkty/slajdy).
 //   · Appto — makiety ze strony głównej appto.ai (repo ~/appto-landing-page,
@@ -108,7 +140,9 @@ const OFERTY = [
 //   · Oferty AI — oferta, czat, akceptacja i koncepcja z makiet
 //     /produkty/oferty; panel i mapa czytania to prawdziwy interfejs
 //     aplikacji ~/oferty-aisales uruchomionej lokalnie na przykładowych
-//     danych (kopia w scratchpadzie, bez bazy produkcyjnej).
+//     danych (kopia w scratchpadzie, bez bazy produkcyjnej);
+//   · Earshot AI — makieta src/robocze/produkty/earshot-makieta.astro,
+//     zrzuty scripts/earshot-slajdy.mjs (pięć ekranów jednej rozmowy).
 const SLAJDY_APPTO = [
   { yt: YT_ID, t: 'Film.', d: 'Jak zespół pracuje w Appto na wspólnej wiedzy firmy, w dwie minuty.', play: 'Poznaj appto w 2 minuty' },
   { s: 'ap-1-inbox', t: 'Inbox AI.', d: 'Zadania zlecone asystentom w jednym miejscu: co jest w toku, a co czeka na przejrzenie. Wynik otwiera się obok.', alt: 'Appto, ekran Inbox AI: pole „Deleguj zadanie”, lista zadań w toku i do przejrzenia, obok podsumowanie spotkania zarządu w czterech punktach.' },
@@ -122,6 +156,13 @@ const SLAJDY_WINGMAN = [
   { s: 'wm-4-przed', t: 'Przed rozmową.', d: 'Asystent i klient z Pipedrive’a w jednym widoku. Plan rozmowy i informacje o kliencie Wingman generuje sam.', alt: 'Okno kontekstu rozmowy: wybrany asystent, klient z Pipedrive’a, plan rozmowy i informacje o kliencie.' },
   { s: 'wm-5-po', t: 'Po rozmowie.', d: 'Podsumowania powstają co pięć minut, a notatka jednym przyciskiem trafia do karty deala.', alt: 'Podsumowanie rozmowy w Wingmanie obok karty deala w Pipedrivie z dodaną notatką z rozmowy.' },
   { s: 'wm-6-modele', t: 'Modele.', d: 'Każde zadanie ma swój model: szybki do odpowiedzi w trakcie rozmowy, mocniejszy do planu i sprawdzania faktów.', alt: 'Ustawienia modeli w Wingmanie: model dla odpowiedzi, follow-upu, fact-checku i pytań oraz przełączniki dłuższego myślenia.' },
+];
+const SLAJDY_EARSHOT = [
+  { s: 'es-1-rozmowa', t: 'Ocena rozmowy.', d: 'Kryteria standardu z wynikiem i momentem rozmowy, którego dotyczą. Przy niespełnionym widać, co padło w rozmowie i co mówi standard.', alt: 'Earshot AI, ocena rozmowy Anny Kowal z Hurtownią Bielik: 5 z 7 kryteriów, pasek rozmowy z etapami i dwoma znacznikami, lista kryteriów z rozwiniętym niespełnionym „Następny krok z terminem” obok fragmentu transkrypcji.' },
+  { s: 'es-2-transkrypcja', t: 'Transkrypcja z uwagami.', d: 'Każda uwaga stoi przy zdaniu, którego dotyczy, i bierze pod uwagę całą rozmowę, także to, co padło kilka minut wcześniej.', alt: 'Transkrypcja rozmowy w Earshot AI z zaznaczonymi wypowiedziami i uwagami pod nimi: osoba decyzyjna częściowo, odpowiedź na obiekcję cenową spełniona, następny krok z terminem niespełniony; obok lista kryteriów.' },
+  { s: 'es-3-standard', t: 'Standard firmy.', d: 'Kryteria opisane na podstawie Waszego standardu sprzedaży i obsługi, osobno dla każdego rodzaju rozmowy, z przykładem z dobrej rozmowy.', alt: 'Standard „Pierwsza rozmowa handlowa” w Earshot AI: zakres, dokument źródłowy, siedem kryteriów i przykład z dobrej rozmowy przy ostatnim.' },
+  { s: 'es-4-rozmowy', t: 'Rozmowy z centralki.', d: 'Po rozłączeniu rozmowa sama trafia na listę i dostaje ocenę. Obok wyniku widać, co omówić z handlowcem albo konsultantem.', alt: 'Lista rozmów w Earshot AI: godzina, kto rozmawiał, z kim, według jakiego standardu, wynik i uwaga do omówienia.' },
+  { s: 'es-5-wgraj', t: 'Nagrania spoza centralki.', d: 'Spotkania u klienta i rozmowy z telefonu wgrywacie z dysku i wybieracie standard, według którego mają zostać ocenione.', alt: 'Okno „Wgraj nagrania” w Earshot AI: trzy pliki z wybranym standardem, jeden oceniony, jeden w transkrypcji, jeden w kolejce.' },
 ];
 const SLAJDY_OFERTY = [
   { s: 'of-1-oferta', t: 'Oferta u klienta.', d: 'Strona w barwach Waszej firmy, z terminem ważności w nagłówku i paskiem decyzji na dole.', alt: 'Oferta firmy grzewczej dla Nordisu w przeglądarce: nagłówek „Ciepło w hali Nordisu od 1 listopada, w budżecie zarządu”, trzy najważniejsze punkty i pasek z przyciskami Akceptuję ofertę, Chcę porozmawiać i Zapytaj AI o ofertę.' },
@@ -142,9 +183,9 @@ const USLUGI = [
 ];
 
 const faq = [
-  { q: 'Czy te produkty są Wasze?', a: 'Tak. Appto, Wingmana i Oferty AI piszemy i rozwijamy w Let’s automate. Zgłoszenia i uwagi trafiają do zespołu, który zna ich kod.' },
+  { q: 'Czy te produkty są Wasze?', a: 'Tak. Appto, Wingmana, Oferty AI i Earshot AI piszemy i rozwijamy w Let’s automate. Zgłoszenia i uwagi trafiają do zespołu, który zna ich kod.' },
   { q: 'Gdzie są nasze dane?', a: 'To zależy od produktu. Appto trzyma dane na serwerach w Unii Europejskiej, w osobnej przestrzeni firmy, a modele nie uczą się na Waszych danych. Wingman działa na Waszych kluczach API, zapisy rozmów zostają na Waszym komputerze, a my znamy tylko e-mail, klucz licencji i identyfikator komputera.' },
-  { q: 'Da się zacząć bez wdrożenia?', a: 'Przy Appto i Wingmanie tak. Konto w Appto zakładacie sami na appto.ai, bez karty. Licencje Wingmana zamawiacie u nas, a aplikację instalujecie na komputerze z własnymi kluczami API. Oferty AI zaczynają się od demo na przykładowej ofercie.' },
+  { q: 'Da się zacząć bez wdrożenia?', a: 'Przy Appto i Wingmanie tak. Konto w Appto zakładacie sami na appto.ai, bez karty. Licencje Wingmana zamawiacie u nas, a aplikację instalujecie na komputerze z własnymi kluczami API. Oferty AI zaczynają się od demo na przykładowej ofercie, a Earshot AI od demo na Waszym standardzie rozmów.' },
   { q: 'Potrzebujemy czegoś, czego produkt nie ma. Co wtedy?', a: 'W Appto brakujące integracje dopinamy pod Wasz proces. Kiedy potrzeba wykracza poza produkt, budujemy osobne narzędzie, tak jak w systemach dopasowanych do firmy.' },
 ];
 
@@ -162,6 +203,7 @@ const dane = {
           { '@type': 'ListItem', position: 1, item: { '@type': 'SoftwareApplication', name: 'Appto', url: new URL('/produkty#appto', Astro.site).href, applicationCategory: 'BusinessApplication', operatingSystem: 'Web' } },
           { '@type': 'ListItem', position: 2, item: { '@type': 'SoftwareApplication', name: 'Wingman AI', url: new URL('/produkty#wingman', Astro.site).href, applicationCategory: 'BusinessApplication', operatingSystem: 'macOS, Windows' } },
           { '@type': 'ListItem', position: 3, item: { '@type': 'SoftwareApplication', name: 'Oferty AI', url: new URL('/produkty#oferty', Astro.site).href, applicationCategory: 'BusinessApplication', operatingSystem: 'Web' } },
+          { '@type': 'ListItem', position: 4, item: { '@type': 'SoftwareApplication', name: 'Earshot AI', url: new URL('/produkty#earshot', Astro.site).href, applicationCategory: 'BusinessApplication', operatingSystem: 'Web' } },
         ],
       },
     },
@@ -235,7 +277,11 @@ const dane = {
   .hk-wm{left:15%;top:54%;width:43%;z-index:2}
   .hk-wm img{filter:drop-shadow(0 22px 26px rgba(7,20,13,0.28)) drop-shadow(0 4px 8px rgba(7,20,13,0.18))}
   .hk-tel{right:3%;top:9%;width:250px;z-index:3}
-  .hk-el:hover,.hk:has([data-cel="appto"]:hover) .hk-appto,.hk:has([data-cel="wm"]:hover) .hk-wm,.hk:has([data-cel="tel"]:hover) .hk-tel{transform:translateY(-6px)}
+  /* Earshot AI: karta oceny w ciemnym pasie po lewej, nachodzi na okno Appto */
+  .hk-od{left:0;top:15%;width:21%;z-index:2}
+  .hk-od img{border-radius:10px;filter:drop-shadow(0 22px 28px rgba(7,20,13,0.34)) drop-shadow(0 4px 8px rgba(7,20,13,0.18))}
+  .hk-od .hk-et{left:14px;width:calc(17 / 21 * 100% - 28px);white-space:normal;text-wrap:balance}
+  .hk-el:hover,.hk:has([data-cel="appto"]:hover) .hk-appto,.hk:has([data-cel="wm"]:hover) .hk-wm,.hk:has([data-cel="tel"]:hover) .hk-tel,.hk:has([data-cel="od"]:hover) .hk-od{transform:translateY(-6px)}
   /* Podpis przy elemencie: sam tekst na planszy, od niego cienka linia
      w dół do krawędzi elementu, zakończona punktem. Podpis Wingmana stoi
      w ciemnym pasie po lewej od okna Appto, więc jest węższy. */
@@ -276,6 +322,7 @@ const dane = {
     .hk-scena{margin-top:30px}
     .hk-wm .hk-et span{display:none}
     .hk-tel-doc{zoom:0.466}
+    .hk-od .hk-et span{display:none}
     .hk-tel-ramka{border-radius:32px;padding:8px}
     .hk-tel-ekran{border-radius:25px}
   }
@@ -292,6 +339,7 @@ const dane = {
     .hk-appto{left:0;width:100%}
     .hk-wm{top:52%;width:78%}
     .hk-tel{right:0;top:20%;width:118px}
+    .hk-od{display:none}
     .hk-tel-doc{zoom:0.262}
     .hk-tel-ramka{border-radius:20px;padding:5px}
     .hk-tel-ekran{border-radius:16px}
@@ -317,6 +365,9 @@ const dane = {
   .gr-lista a:hover b{color:var(--ziel-c)}
   .gr-lista a:hover i{transform:translateX(4px)}
   @media (max-width:980px){ .gr{grid-template-columns:minmax(0,1fr)} }
+  /* „Kiedy gotowy produkt nie wystarczy” stoi na bieli (papier ma Earshot AI
+     nad nią), więc kontakt leży na granicy bieli i papieru FAQ. */
+  #kontakt.v4-kt{background:linear-gradient(180deg,#ffffff 0 50%,var(--papier) 50%)}
 </style>
 
 <div class="v3">
@@ -326,7 +377,7 @@ const dane = {
 <!-- ============ 1 · HERO ============
      Trzy aplikacje przy pracy: okno Appto, pasek Wingmana, telefon klienta
      z ofertą. Każdy element prowadzi do swojej sekcji. -->
-<Hero lead="Z Appto cała firma pracuje z AI według jednego standardu i na własnej wiedzy. Wingman AI podpowiada handlowcowi w trakcie rozmowy z klientem, a w Ofertach AI z tej rozmowy powstaje oferta, którą klient akceptuje jednym przyciskiem." cta={{ href: '#kontakt', t: 'Umów demo' }} link={{ href: '#appto', t: 'Zobacz aplikacje ↓' }}>
+<Hero lead="Z Appto cała firma pracuje z AI według jednego standardu i na własnej wiedzy. Wingman AI podpowiada handlowcowi w trakcie rozmowy z klientem, a w Ofertach AI z tej rozmowy powstaje oferta, którą klient akceptuje jednym przyciskiem. Earshot AI sprawdza rozmowy sprzedaży i obsługi z zasadami, które ustaliliście." cta={{ href: '#kontakt', t: 'Umów demo' }} link={{ href: '#appto', t: 'Zobacz aplikacje ↓' }}>
 <Fragment slot="h1">Gotowe aplikacje AI <span>do pracy z klientem i w całej firmie</span></Fragment>
 <div class="hk hero-wid">
 <div class="hk-scena">
@@ -337,6 +388,10 @@ const dane = {
 <a class="hk-el hk-wm" href="#wingman">
 <span class="hk-et"><b>Wingman AI</b><span>transkrypcja i podpowiedzi na żywo</span></span>
 <img src="/produkty/hero/wingman-pasek.webp" width="1200" height="355" alt="Pasek Wingmana AI nad rozmową, pod nim karta z odpowiedzią na pytanie klienta o koszt serwisu.">
+</a>
+<a class="hk-el hk-od" href="#earshot">
+<span class="hk-et"><b>Earshot AI</b><span>ocena rozmów według standardu</span></span>
+<img src="/produkty/hero/earshot-karta.webp" width="600" height="436" alt="Earshot AI: ocena rozmowy Anny Kowal z Hurtownią Bielik, 5 z 7 kryteriów, niespełnione kryterium „Następny krok z terminem”.">
 </a>
 <a class="hk-el hk-tel" href="#oferty">
 <span class="hk-et"><b>Oferty AI</b><span>oferta, którą klient akceptuje</span></span>
@@ -352,6 +407,7 @@ const dane = {
 <a href="#appto" data-cel="appto"><svg class="appto" viewBox="0 0 103.24 79.25" fill="currentColor" aria-hidden="true"><path d="M54.537,65.167L54.537,79.253L0,65.167L0,0L54.537,14.134L54.537,0L87.005,14.148L87.005,0L103.239,14.148L103.239,79.253L87.005,65.167L87.005,79.253L54.537,65.167Z"/></svg><span><b>Appto</b>standard pracy z AI w całej firmie</span></a>
 <a href="#wingman" data-cel="wm"><svg viewBox="40 40 432 432" fill="currentColor" aria-hidden="true" set:html={ZNAK_WINGMAN}></svg><span><b>Wingman AI</b>transkrypcja i podpowiedzi w trakcie rozmowy</span></a>
 <a href="#oferty" data-cel="tel"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" set:html={HI['document-text']}></svg><span><b>Oferty AI</b>oferta z rozmowy, którą klient akceptuje</span></a>
+<a href="#earshot" data-cel="od"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" set:html={ZNAK_EARSHOT}></svg><span><b>Earshot AI</b>ocena rozmów według standardu firmy</span></a>
 </nav>
 </div>
 </Hero>
@@ -408,9 +464,26 @@ const dane = {
 </div>
 </section>
 
-<!-- ============ 5 · KIEDY GOTOWY PRODUKT NIE WYSTARCZY ============
+<!-- ============ 5 · EARSHOT AI ============ -->
+<section id="earshot" class="v3-sek v3-papier">
+<div class="pr odwr">
+<div class="pr-t">
+<div class="pr-lok"><span class="pr-zn" aria-hidden="true"><svg class="ik" viewBox="0 0 16 16" fill="currentColor" set:html={ZNAK_EARSHOT}></svg></span><div><h2 class="pr-n">Earshot AI</h2><p class="pr-k">Kontrola jakości rozmów sprzedaży i obsługi klienta</p></div></div>
+<p class="pr-def">Earshot AI łączy się z Waszą centralką telefoniczną i ocenia rozmowy handlowców i konsultantów według standardu firmy. Czyta całą transkrypcję, więc widzi przebieg rozmowy od powitania po ustalenie kolejnego kroku, a każdą ocenę opiera na konkretnym fragmencie.</p>
+<dl class="pr-sp">{EARSHOT.map(([k, v]) => (<div><dt>{k}</dt><dd>{v}</dd></div>))}</dl>
+<div class="pr-ak">
+<a href="#kontakt" class="v3-btn ciemny" data-pokaz="earshot">Umów demo Earshot AI <span aria-hidden="true">→</span></a>
+</div>
+</div>
+<div class="pr-w rv">
+<Slajdy slajdy={SLAJDY_EARSHOT} nazwa="Ekrany Earshot AI" />
+</div>
+</div>
+</section>
+
+<!-- ============ 6 · KIEDY GOTOWY PRODUKT NIE WYSTARCZY ============
      Jedyne miejsce, gdzie odsyłamy dalej: do trzech usług „Budujemy za Was”. -->
-<section id="granica" class="v3-sek v3-papier">
+<section id="granica" class="v3-sek">
 <div class="gr">
 <div class="gr-t">
 <h2 class="v3-h2">Kiedy gotowy produkt nie wystarczy</h2>
@@ -427,7 +500,7 @@ const dane = {
 </div>
 </section>
 
-<!-- ============ 6 · KONTAKT ============ -->
+<!-- ============ 7 · KONTAKT ============ -->
 <Kontakt tytul="Nie wiecie, od której zacząć?" lead="Napiszcie, czym zajmuje się zespół i co chcecie usprawnić. Podpowiemy, która aplikacja pasuje, i umówimy demo. Odpowiemy w jeden dzień roboczy." zrodlo="Produkty" pytanie="Czym zajmuje się zespół?" podpowiedz="Np. sprzedaż B2B, pięciu handlowców, oferty w Wordzie…" osoba={{ foto: '/piotr-wojciuk.jpg', w: 1002, h: 1100, imie: 'Piotr Wojciuk', rola: 'New Business Lead' }} />
 </div>
 

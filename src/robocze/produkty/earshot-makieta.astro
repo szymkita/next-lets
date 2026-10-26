@@ -1,0 +1,689 @@
+---
+// EARSHOT AI — makieta aplikacji do slajdów na hubie /produkty.
+// Strona robocza, tylko w `npm run dev` pod /produkty/earshot-makieta.
+// Zrzuty: scripts/earshot-slajdy.mjs (okna #ek-<nazwa> → public/produkty/slajdy/es-*,
+// karta #ek-karta → public/produkty/hero/earshot-karta.webp).
+//
+// HISTORIA (25.10.2026):
+//   v1 „Odsłuch AI” — jasny panel z tabelą („strasznie standardowo”);
+//   v2 — ciemne okno z zieloną poświatą, Geist i kursywa Instrument Serif
+//        („font zwebcodowany… zupełnie inny design niż na stronie… bez
+//        typowych standardów AI-owych”);
+//   v3 — natywny program na Maca ze ścieżkami jak w programie do nagrań
+//        („trochę przesadziłeś… to jednak jest aplikacja webowa… nie
+//        odwzorowuj tak dokładnie dźwięku, to nie jest program dźwiękowy”).
+//
+// v4 (ta): aplikacja webowa w oknie przeglądarki. Nic ze strony Let’s
+// automate (ani zieleni, ani kroju, ani pigułek) i nic z estetyki „AI”
+// (gradienty, poświaty, modne kroje, kursywa w cytatach, kafle w kaflach).
+// Krój systemowy jak w GitHubie czy Notion, monochrom z czarnym przyciskiem
+// głównym, kolor tylko w ocenach. Rozmowa na osi to prosty pasek z etapami
+// i kilkoma znacznikami, bez fali. Treść robi robotę: kryteria, transkrypcja,
+// uwagi przy zdaniach jak komentarze w przeglądzie kodu.
+//
+// FAKTY od Szymona: centralka telefoniczna, wgrywanie nagrań, ocena według
+// standardów firmy na podstawie całej transkrypcji, ocena przebiegu rozmowy.
+// Z makiety (do potwierdzenia): etapy, znaczniki na osi, punkt standardu
+// i przykład przy ocenie, uwagi przy zdaniach, źródło standardu w PDF,
+// odtwarzanie od miejsca uwagi.
+//
+// Jedna sprawa przez wszystkie ekrany: pierwsza rozmowa Anny Kowal (Termaro,
+// jak w makietach Wingmana i Ofert AI) z Jerzym Bielikiem z Hurtowni Bielik,
+// wt 21.10, 10:42, 14 min 32 s, wynik 5 z 7. Wspólnik pada w 8:02 i nie
+// wraca, termin kolejnej rozmowy nie pada w 12:44.
+const AV = (n: string) => `/makieta/awatar-${n}.webp`;
+
+// Znak Earshot: dwie wypowiedzi, jedna po drugiej.
+const ZNAK = '<rect x="1" y="3.5" width="9" height="4" rx="2"/><rect x="6" y="8.5" width="9" height="4" rx="2" opacity=".5"/>';
+
+// Ikony 16 × 16, kreska 1,4 px, jeden styl.
+const S = 'fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"';
+const IK: Record<string, string> = {
+  play: '<path d="M5 3.2v9.6c0 .5.5.8.9.5l7.3-4.8a.6.6 0 0 0 0-1L5.9 2.7c-.4-.3-.9 0-.9.5Z" fill="currentColor"/>',
+  ok: '<path d="M4.4 8.3 6.8 10.6 11.6 5.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>',
+  pol: '<path d="M5 8h6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>',
+  nie: '<path d="M5.5 5.5l5 5M10.5 5.5l-5 5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>',
+  szukaj: `<circle cx="7" cy="7" r="4.3" ${S}/><path d="m10.3 10.3 3.2 3.2" ${S}/>`,
+  wgraj: `<path d="M8 10.2V2.8M5.3 5.3 8 2.8l2.7 2.5" ${S}/><path d="M2.8 9.6v2.5c0 .8.6 1.4 1.4 1.4h7.6c.8 0 1.4-.6 1.4-1.4V9.6" ${S}/>`,
+  dol: `<path d="m4.5 6.2 3.5 3.6 3.5-3.6" ${S}/>`,
+  prawo: `<path d="m6.2 4.5 3.6 3.5-3.6 3.5" ${S}/>`,
+  telefon: `<path d="M5.4 2.6 6.6 5c.2.4.1.9-.2 1.2l-.8.7a7.6 7.6 0 0 0 3.5 3.5l.7-.8c.3-.3.8-.4 1.2-.2l2.4 1.2c.4.2.6.6.5 1l-.3 1.1c-.2.6-.7 1-1.3 1A10.7 10.7 0 0 1 1.6 3.8c0-.6.4-1.1 1-1.3l1.1-.3c.4-.1.8.1 1 .4Z" ${S}/>`,
+  dokument: `<path d="M4.3 2h4.6l2.9 2.9v8.2c0 .5-.4.9-.9.9H4.3a.9.9 0 0 1-.9-.9V2.9c0-.5.4-.9.9-.9Z" ${S}/><path d="M8.7 2.1v3h3M5.8 8.5h4.4M5.8 11h3" ${S}/>`,
+  osoba: '<circle cx="8" cy="5.7" r="2.5" fill="currentColor"/><path d="M3.2 13.3c.5-2.5 2.5-3.9 4.8-3.9s4.3 1.4 4.8 3.9c.1.4-.2.7-.6.7H3.8c-.4 0-.7-.3-.6-.7Z" fill="currentColor"/>',
+  plik: `<path d="M4.3 2h4.6l2.9 2.9v8.2c0 .5-.4.9-.9.9H4.3a.9.9 0 0 1-.9-.9V2.9c0-.5.4-.9.9-.9Z" ${S}/><path d="M6.2 11.4V8.6m1.8 2.8V7.4m1.8 4V9.2" ${S}/>`,
+  udostepnij: `<path d="M8 2.6v7.2M5.4 5 8 2.6 10.6 5" ${S}/><path d="M5.3 7.2h-.8c-.7 0-1.2.5-1.2 1.2v4.2c0 .7.5 1.2 1.2 1.2h7c.7 0 1.2-.5 1.2-1.2V8.4c0-.7-.5-1.2-1.2-1.2h-.8" ${S}/>`,
+  menu: `<path d="M2.8 4.5h10.4M2.8 8h10.4M2.8 11.5h10.4" ${S}/>`,
+  plus: `<path d="M8 3.2v9.6M3.2 8h9.6" ${S}/>`,
+  filtr: `<path d="M2.8 4.2h10.4M4.8 8h6.4M6.8 11.8h2.4" ${S}/>`,
+  x: `<path d="m4.5 4.5 7 7m0-7-7 7" ${S}/>`,
+  komentarz: `<path d="M3 4.2c0-.7.6-1.2 1.2-1.2h7.6c.7 0 1.2.5 1.2 1.2v5.3c0 .7-.5 1.2-1.2 1.2H7l-2.8 2.3v-2.3c-.7 0-1.2-.5-1.2-1.2V4.2Z" ${S}/>`,
+};
+const ik = (n: string, k = '') => `<svg class="ik ${k}" viewBox="0 0 16 16" aria-hidden="true">${IK[n]}</svg>`;
+
+const DL = 872;
+const pr = (s: number) => `${(s / DL) * 100}%`;
+const ETAPY = [
+  { t: 'Powitanie', od: 0 },
+  { t: 'Potrzeby', od: 70 },
+  { t: 'Propozycja', od: 330 },
+  { t: 'Obiekcja: cena', od: 520 },
+  { t: 'Zamknięcie', od: 710 },
+];
+const ZNACZNIKI = [
+  { s: 482, w: 'pol' },
+  { s: 764, w: 'nie' },
+];
+
+const KRYTERIA = [
+  { w: 'ok', t: 'Przedstawienie i cel rozmowy', cz: '0:04', d: 'Imię, firma i powód telefonu na początku rozmowy.' },
+  { w: 'ok', t: 'Pytania o potrzeby i koszty', cz: '1:12', d: 'Metraż, ogrzewanie i rachunki, zanim padnie propozycja.' },
+  { w: 'ok', t: 'Propozycja dopasowana do potrzeb', cz: '5:41', d: 'Propozycja wynika z tego, co powiedział klient.' },
+  { w: 'pol', t: 'Osoba decyzyjna', cz: '8:02', d: 'Wiadomo, kto poza rozmówcą decyduje i kiedy.', u: 'Klient wspomina wspólnika, nikt nie pyta, kiedy wejdzie do rozmowy.' },
+  { w: 'ok', t: 'Odpowiedź na obiekcję cenową', cz: '9:20', d: 'Pytanie, z czym klient porównuje, i liczby klienta.' },
+  { w: 'ok', t: 'Podsumowanie ustaleń', cz: '12:05', d: 'Najważniejsze liczby jeszcze raz przed końcem.' },
+  { w: 'nie', t: 'Następny krok z terminem', cz: '12:44', d: 'Rozmowa kończy się terminem kolejnego kontaktu, na który klient się zgodził. Samo „wyślę ofertę” nie wystarcza.' },
+];
+const WERDYKT: Record<string, string> = { ok: 'Spełnione', pol: 'Częściowo', nie: 'Niespełnione' };
+
+const FRAGMENT = [
+  { cz: '12:05', kto: 'a', t: 'Czyli hala 2 400 metrów, kompletacja jako osobna strefa i budżet do 180 tysięcy.' },
+  { cz: '12:40', kto: 'k', t: 'Dobra, to proszę coś przesłać, popatrzymy.' },
+  { cz: '12:44', kto: 'a', t: 'Wyślę ofertę jeszcze w tym tygodniu.', z: 'nie' },
+  { cz: '12:49', kto: 'k', t: 'To czekam. Do usłyszenia.' },
+];
+const ROZMOWA = [
+  { cz: '8:02', kto: 'k', t: ['Muszę to jeszcze ', 'przegadać ze wspólnikiem', ', on u nas pilnuje inwestycji.'], z: 'pol',
+    u: { t: 'Osoba decyzyjna', d: 'Klient sam wskazuje wspólnika. Anna wraca do hali i nie pyta, kiedy wspólnik wejdzie do rozmowy.' } },
+  { cz: '8:09', kto: 'a', t: ['Jasne. A strefa kompletacji pracuje u Was na trzy zmiany?'] },
+  { przerwa: '1 min 3 s' },
+  { cz: '9:12', kto: 'k', t: ['Konkurencja dała nam 195 tysięcy z montażem. Wy wychodzicie drożej.'] },
+  { cz: '9:20', kto: 'a', t: ['', 'Policzmy to na Waszych rachunkach.', ' Przy 14 tysiącach w styczniu ogrzewanie strefami oddaje tę różnicę w pierwszym sezonie.'], z: 'ok',
+    u: { t: 'Odpowiedź na obiekcję cenową', d: 'Anna wraca do kwoty, którą klient podał w 3:18, zamiast schodzić z ceny.' } },
+  { przerwa: '3 min 20 s' },
+  { cz: '12:40', kto: 'k', t: ['Dobra, to proszę coś przesłać, popatrzymy.'] },
+  { cz: '12:44', kto: 'a', t: ['', 'Wyślę ofertę jeszcze w tym tygodniu.', ''], z: 'nie',
+    u: { t: 'Następny krok z terminem', d: 'Bez terminu kolejnej rozmowy. Wspólnik, o którym klient mówił w 8:02, do końca nie wraca.' } },
+];
+const OSOBA: Record<string, string> = { a: 'Anna Kowal', k: 'Jerzy Bielik' };
+
+const STANDARDY = [
+  { t: 'Pierwsza rozmowa handlowa', d: 'Sprzedaż · 7 kryteriów', on: true },
+  { t: 'Omówienie oferty', d: 'Sprzedaż · 6 kryteriów' },
+  { t: 'Zgłoszenie serwisowe', d: 'Obsługa klienta · 6 kryteriów' },
+  { t: 'Reklamacja', d: 'Obsługa klienta · 6 kryteriów' },
+];
+
+type Wiersz = { g: string; f: string; n: string; k: string; s: string; w?: number; z?: number; u?: string; uw?: string; kier: string; on?: boolean };
+const DZIS: Wiersz[] = [
+  { g: '11:06', f: 'marta', n: 'Marta Zielińska', k: 'Chłodnia Polar', s: 'Zgłoszenie serwisowe', kier: 'przychodząca' },
+  { g: '10:42', f: 'anna', n: 'Anna Kowal', k: 'Hurtownia Bielik', s: 'Pierwsza rozmowa handlowa', w: 5, z: 7, u: 'Bez terminu kolejnej rozmowy', uw: 'nie', kier: 'wychodząca', on: true },
+  { g: '10:15', f: 'kasia', n: 'Kasia Nowak', k: 'Logipark Stryków', s: 'Reklamacja', w: 6, z: 6, kier: 'przychodząca' },
+  { g: '9:58', f: 'michal', n: 'Michał Wrona', k: 'Agrobud', s: 'Omówienie oferty', w: 4, z: 6, u: 'Rabat, zanim klient podał budżet', uw: 'nie', kier: 'wychodząca' },
+  { g: '9:31', f: 'jakub', n: 'Jakub Pawlak', k: 'Termoplast', s: 'Zgłoszenie serwisowe', w: 5, z: 6, u: 'Numer zgłoszenia niepotwierdzony', uw: 'pol', kier: 'przychodząca' },
+];
+const WCZORAJ: Wiersz[] = [
+  { g: '16:47', f: 'bartek', n: 'Bartek Lis', k: 'Tartak Modrzew', s: 'Pierwsza rozmowa handlowa', w: 7, z: 7, kier: 'wychodząca' },
+  { g: '16:20', f: 'tomasz', n: 'Tomasz Duda', k: 'Magazyny Sowa', s: 'Reklamacja', w: 3, z: 6, u: 'Termin naprawy bez zgody serwisu', uw: 'nie', kier: 'nagranie' },
+  { g: '15:02', f: 'anna', n: 'Anna Kowal', k: 'Nordis', s: 'Omówienie oferty', w: 6, z: 6, kier: 'nagranie' },
+  { g: '14:37', f: 'kasia', n: 'Kasia Nowak', k: 'Chłodnia Polar', s: 'Zgłoszenie serwisowe', w: 6, z: 6, kier: 'przychodząca' },
+  { g: '13:58', f: 'michal', n: 'Michał Wrona', k: 'Termoplast', s: 'Pierwsza rozmowa handlowa', w: 6, z: 7, u: 'Nie wiadomo, kto decyduje', uw: 'pol', kier: 'wychodząca' },
+];
+
+const PLIKI = [
+  { p: 'Magazyny_Sowa_reklamacja.m4a', cz: '6:48', s: 'Reklamacja', f: 'tomasz', n: 'Tomasz Duda', st: 'gotowe' },
+  { p: 'Nordis_omowienie_oferty.mp4', cz: '32:14', s: 'Omówienie oferty', f: 'anna', n: 'Anna Kowal', st: 'trans', pr: 64 },
+  { p: 'Agrobud_spotkanie_w_hali.mp3', cz: '41:05', s: 'Omówienie oferty', f: 'michal', n: 'Michał Wrona', st: 'kolejka' },
+];
+---
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Earshot AI — makieta</title>
+<style is:global>
+  :root{
+    --font:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',sans-serif;
+    --t1:#18181b; --t2:#63636b; --t3:#9a9aa2;
+    --b1:rgba(24,24,27,0.1); --b2:rgba(24,24,27,0.06);
+    --pod:#fafafa; --hov:#f4f4f5;
+    --ok:#1a7f37; --pol:#b76e00; --nie:#cf222e;
+    --ok-t:#e6f4ea; --pol-t:#fdf3df; --nie-t:#fde8e8;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:#c9cbc8;font-family:var(--font);color:var(--t1);-webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}
+  body{display:flex;flex-direction:column;align-items:flex-start;gap:60px;padding:60px}
+  .rzad{display:flex;align-items:flex-start;gap:60px}
+  p,h1,h2,h3,ol,ul{margin:0}
+  ol,ul{padding:0;list-style:none}
+  .ik{display:block;width:16px;height:16px;flex:none}
+  .av{display:block;flex:none;width:20px;height:20px;border-radius:50%;object-fit:cover;object-position:50% 20%}
+  .kl{display:grid;place-items:center;flex:none;width:20px;height:20px;border-radius:50%;background:#e4e4e7;color:#a1a1aa}
+  .kl .ik{width:65%;height:65%}
+
+  .zw{display:grid;place-items:center;flex:none;width:16px;height:16px;border-radius:50%;color:#fff}
+  .zw .ik{width:11px;height:11px}
+  .zw.ok{background:var(--ok)} .zw.pol{background:var(--pol)} .zw.nie{background:var(--nie)}
+  .c-ok{color:var(--ok)} .c-pol{color:var(--pol)} .c-nie{color:var(--nie)}
+
+  /* ---------- okno przeglądarki ---------- */
+  .om{position:relative;display:flex;flex-direction:column;overflow:hidden;border-radius:12px;background:#fff;box-shadow:0 0 0 0.5px rgba(0,0,0,0.3)}
+  .om.pc{width:1100px;height:688px}
+  .om.tel{width:346px;height:519px}
+  .pr{position:relative;flex:none;display:flex;align-items:center;height:40px;padding:0 14px;background:#ececeb;border-bottom:1px solid rgba(0,0,0,0.09)}
+  .pr-sw{display:flex;gap:7px}
+  .pr-sw i{display:block;width:11px;height:11px;border-radius:50%;background:#ff5f57}
+  .pr-sw i:nth-child(2){background:#febc2e}
+  .pr-sw i:nth-child(3){background:#28c840}
+  .pr-ad{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;gap:7px;width:340px;height:26px;border-radius:7px;background:#f7f7f6;font-size:12px;color:var(--t2);white-space:nowrap}
+  .pr-ad i{width:12px;height:12px;border-radius:3px;background:#18181b;display:grid;place-items:center}
+  .pr-ad i svg{width:8px;height:8px;fill:#fff}
+  .tel .pr-ad{width:190px}
+
+  /* ---------- nagłówek aplikacji ---------- */
+  .ah{flex:none;display:flex;align-items:center;gap:8px;height:48px;padding:0 20px;border-bottom:1px solid var(--b1)}
+  .ah-zn{display:grid;place-items:center;width:22px;height:22px;border-radius:6px;background:#18181b}
+  .ah-zn svg{width:13px;height:13px;fill:#fff}
+  .ah-n{font-size:14px;font-weight:600;letter-spacing:-0.01em}
+  .ah-sep{width:1px;height:16px;margin:0 6px;background:var(--b1)}
+  .ah-ws{display:flex;align-items:center;gap:4px;font-size:13px;color:var(--t2)}
+  .ah-ws .ik{width:13px;height:13px}
+  .ah-nav{display:flex;align-self:stretch;gap:20px;margin-left:24px}
+  .ah-nav span{display:flex;align-items:center;font-size:13px;color:var(--t2);box-shadow:inset 0 -2px 0 transparent}
+  .ah-nav span.on{color:var(--t1);font-weight:500;box-shadow:inset 0 -2px 0 var(--t1)}
+  .ah-pr{display:flex;align-items:center;gap:12px;margin-left:auto}
+  .szuk{display:flex;align-items:center;gap:7px;width:200px;height:28px;padding:0 8px;border-radius:6px;box-shadow:inset 0 0 0 1px var(--b1);font-size:12.5px;color:var(--t3)}
+  .szuk .ik{width:13px;height:13px;color:var(--t2)}
+  .szuk kbd{margin-left:auto;font:inherit;font-size:11px;color:var(--t3)}
+  .ah-pr .av{width:26px;height:26px}
+  .tel .ah{height:44px;padding:0 14px}
+  .tel .ah-nav,.tel .ah-sep,.tel .ah-ws,.tel .szuk{display:none}
+  .tel .ah-pr .ik{width:18px;height:18px;color:var(--t2)}
+
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:30px;padding:0 12px;border-radius:6px;font-size:13px;font-weight:500;white-space:nowrap}
+  .btn .ik{width:13px;height:13px}
+  .btn.d{background:#fff;box-shadow:inset 0 0 0 1px var(--b1),0 1px 1px rgba(0,0,0,0.04)}
+  .btn.g{background:#18181b;color:#fff}
+  .btn.g .ik{width:12px;height:12px}
+
+  .ap{position:relative;flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+
+  /* ---------- nagłówek rozmowy ---------- */
+  .rh{flex:none;padding:16px 28px 0}
+  .okr{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--t3)}
+  .okr .ik{width:12px;height:12px}
+  .rh-g{display:flex;align-items:flex-start;gap:16px;margin-top:6px}
+  .rh-g h1{font-size:21px;font-weight:600;letter-spacing:-0.02em;line-height:1.2}
+  .rh-m{display:flex;align-items:center;flex-wrap:wrap;gap:6px 14px;margin-top:7px;font-size:13px;color:var(--t2)}
+  .rh-m span{display:flex;align-items:center;gap:6px}
+  .rh-m b{font-weight:500;color:var(--t1)}
+  .rh-m .ik{width:13px;height:13px}
+  .rh-pr{display:flex;align-items:center;gap:8px;margin-left:auto}
+  .wyn{display:flex;flex-direction:column;align-items:flex-end;margin-right:12px}
+  .wyn b{font-size:13px;font-weight:600}
+  .wyn b span{font-weight:400;color:var(--t2)}
+  .pas7{display:flex;gap:2px;margin-top:5px}
+  .pas7 i{width:12px;height:4px;border-radius:1px}
+  .pas7 i.ok{background:var(--ok)} .pas7 i.pol{background:var(--pol)} .pas7 i.nie{background:var(--nie)}
+  .zak{display:flex;gap:20px;margin-top:14px;border-bottom:1px solid var(--b1)}
+  .zak span{padding-bottom:10px;font-size:13px;color:var(--t2);box-shadow:inset 0 -2px 0 transparent}
+  .zak span.on{color:var(--t1);font-weight:500;box-shadow:inset 0 -2px 0 var(--t1)}
+
+  /* ---------- oś rozmowy: prosty pasek ---------- */
+  .os{flex:none;display:flex;align-items:center;gap:14px;padding:12px 28px;border-bottom:1px solid var(--b1)}
+  .os-pl{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:#18181b;color:#fff}
+  .os-pl .ik{width:12px;height:12px;margin-left:1px}
+  .os-cz{font-size:12px;color:var(--t2);white-space:nowrap}
+  .os-cz b{font-weight:500;color:var(--t1)}
+  .os-t{position:relative;flex:1;height:30px}
+  .os-l{position:absolute;left:0;right:0;top:8px;height:4px;border-radius:2px;background:#e4e4e7}
+  .os-l i{position:absolute;left:0;top:0;bottom:0;border-radius:2px;background:#18181b}
+  .os-e{position:absolute;top:18px;padding-left:6px;font-size:11px;color:var(--t3);white-space:nowrap;border-left:1px solid var(--b1);line-height:12px}
+  .os-z{position:absolute;top:4px;width:12px;height:12px;margin-left:-6px;border-radius:50%;box-shadow:0 0 0 2px #fff}
+  .os-z.pol{background:var(--pol)} .os-z.nie{background:var(--nie)}
+
+  /* ---------- 1 · ocena ---------- */
+  .oc{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 400px}
+  .oc-l{min-height:0;padding:16px 28px 0;overflow:hidden}
+  .oc-l h2,.oc-p h2{display:flex;align-items:baseline;gap:8px;font-size:13px;font-weight:600}
+  .oc-l h2 span,.oc-p h2 span{font-weight:400;color:var(--t2)}
+  .kr{margin-top:8px}
+  .kr li{border-top:1px solid var(--b2)}
+  .kr-w{display:flex;align-items:center;gap:10px;height:33px;font-size:13px}
+  .kr-w > span:nth-child(2){flex:1}
+  .kr-w em{font-style:normal;font-size:12px;color:var(--t3)}
+  .kr-u{margin:-6px 0 8px 26px;font-size:12px;color:var(--t2)}
+  .kr li.otw{margin:4px -12px 0;padding:0 12px 14px;border:0;border-radius:8px;box-shadow:inset 0 0 0 1px var(--b1)}
+  .kr li.otw .kr-w{font-weight:500}
+  .kr li.otw .kr-w em{color:var(--nie);font-weight:500}
+  .kr-det{display:grid;grid-template-columns:96px minmax(0,1fr);gap:9px 14px;margin:2px 0 0 26px;font-size:12.5px;line-height:1.5}
+  .kr-det dt{color:var(--t3)}
+  .kr-det dd{margin:0;color:var(--t1)}
+  .kr-det q{quotes:"„" "”"}
+  .kr-det .os2{display:flex;align-items:center;gap:6px;margin-top:3px;font-size:11.5px;color:var(--t3)}
+  .kr-det .os2 .av{width:16px;height:16px}
+  .oc-p{min-height:0;padding:16px 22px 0;border-left:1px solid var(--b1);background:var(--pod);overflow:hidden}
+  .oc-p h2 em{margin-left:auto;font-style:normal;font-weight:400;font-size:12px;color:var(--t2);text-decoration:underline;text-decoration-color:var(--b1);text-underline-offset:3px}
+  .fr{margin-top:10px}
+  .fr li{display:grid;grid-template-columns:38px minmax(0,1fr);gap:0 10px;padding:8px 0}
+  .fr li > span{padding-top:1px;font-size:11.5px;color:var(--t3)}
+  .fr b{display:block;font-size:12px;font-weight:600;color:var(--t2)}
+  .fr p{margin-top:2px;font-size:13.5px;line-height:1.45}
+  .fr li.nie{margin:2px -10px;padding:8px 10px;border-radius:6px;background:#fff;box-shadow:inset 0 0 0 1px var(--b1)}
+  .fr li.nie > span{color:var(--nie);font-weight:500}
+  .fr li.nie p{text-decoration:underline;text-decoration-color:var(--nie);text-decoration-thickness:1.5px;text-underline-offset:3px}
+  .fr-ak{display:flex;gap:8px;margin-top:12px;padding-left:48px}
+
+  /* ---------- 2 · transkrypcja z uwagami ---------- */
+  .tr{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 270px;overflow:hidden}
+  .tr-l{min-height:0;padding:10px 28px 0;overflow:hidden}
+  .tw{display:grid;grid-template-columns:44px minmax(0,1fr);gap:0 12px;padding:7px 0}
+  .tw > span{padding-top:2px;font-size:11.5px;color:var(--t3)}
+  .tw-k{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:600;color:var(--t2)}
+  .tw-k .av,.tw-k .kl{width:18px;height:18px}
+  .tw p{margin-top:3px;font-size:14px;line-height:1.55}
+  .tw mark{color:inherit;padding:1px 2px;margin:0 -2px;border-radius:3px}
+  .tw mark.ok{background:var(--ok-t)} .tw mark.pol{background:var(--pol-t)} .tw mark.nie{background:var(--nie-t)}
+  .ko{grid-column:2;margin-top:8px;border-radius:7px;box-shadow:inset 0 0 0 1px var(--b1);overflow:hidden}
+  .ko-g{display:flex;align-items:center;gap:8px;height:28px;padding:0 10px;background:var(--pod);border-bottom:1px solid var(--b2);font-size:12px}
+  .ko-g .zn{display:grid;place-items:center;width:16px;height:16px;border-radius:4px;background:#18181b}
+  .ko-g .zn svg{width:10px;height:10px;fill:#fff}
+  .ko-g b{font-weight:600}
+  .ko-g em{margin-left:auto;font-style:normal;font-weight:500}
+  .ko p{padding:7px 10px 8px;font-size:12.5px;line-height:1.5;color:#3f3f46}
+  .tp{display:flex;align-items:center;gap:10px;padding:4px 0 4px 56px;font-size:11.5px;color:var(--t3)}
+  .tp::after{content:"";flex:1;border-top:1px dashed var(--b1)}
+  .tr-p{min-height:0;padding:14px 20px 0;border-left:1px solid var(--b1);background:var(--pod)}
+  .tr-p h2{font-size:12px;font-weight:600;color:var(--t2)}
+  .tr-p ol{margin-top:8px}
+  .tr-p li{display:flex;align-items:center;gap:8px;height:30px;font-size:12.5px;border-top:1px solid var(--b2)}
+  .tr-p li span:nth-child(2){flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .tr-p li em{font-style:normal;font-size:11.5px;color:var(--t3)}
+  .tr-p li.on{margin:0 -8px;padding:0 8px;border-radius:5px;border-color:transparent;background:#fff;box-shadow:inset 0 0 0 1px var(--b1)}
+  .tr-p li.on + li{border-color:transparent}
+
+  /* ---------- 3 · standard ---------- */
+  .st{flex:1;min-height:0;display:grid;grid-template-columns:240px minmax(0,1fr)}
+  .st-l{padding:16px 12px;border-right:1px solid var(--b1);background:var(--pod)}
+  .st-l h2{display:flex;align-items:center;justify-content:space-between;padding:0 8px;font-size:12px;font-weight:600;color:var(--t2)}
+  .st-l h2 .ik{width:14px;height:14px}
+  .st-l ul{margin-top:8px}
+  .st-l li{padding:8px;border-radius:6px}
+  .st-l li b{display:block;font-size:13px;font-weight:500}
+  .st-l li span{display:block;margin-top:1px;font-size:12px;color:var(--t3)}
+  .st-l li.on{background:#fff;box-shadow:inset 0 0 0 1px var(--b1)}
+  .st-p{min-height:0;padding:18px 32px 0;overflow:hidden}
+  .st-g{display:flex;align-items:flex-start;gap:16px}
+  .st-g h1{font-size:21px;font-weight:600;letter-spacing:-0.02em}
+  .st-g .btn{margin-left:auto}
+  .st-o{display:grid;grid-template-columns:110px minmax(0,1fr);gap:6px 12px;margin-top:12px;font-size:13px}
+  .st-o dt{color:var(--t3)}
+  .st-o dd{display:flex;align-items:center;gap:6px;margin:0}
+  .st-o dd .ik{width:14px;height:14px;color:var(--t2)}
+  .st-o dd u{text-decoration-color:var(--b1);text-underline-offset:3px}
+  .st-k{margin-top:16px;border-top:1px solid var(--b1)}
+  .st-k li{display:grid;grid-template-columns:28px minmax(0,1fr);padding:9px 0;border-bottom:1px solid var(--b2)}
+  .st-k li > span{padding-top:1px;font-size:12px;color:var(--t3)}
+  .st-k b{font-size:13px;font-weight:500}
+  .st-k p{margin-top:1px;font-size:12.5px;color:var(--t2)}
+  .st-k li.otw{margin:6px -14px;padding:12px 14px;border:0;border-radius:8px;box-shadow:inset 0 0 0 1px var(--b1)}
+  .st-pr{margin-top:10px;padding-top:10px;border-top:1px solid var(--b2)}
+  .st-pr small{display:block;font-size:12px;color:var(--t3)}
+  .st-pr q{display:block;margin-top:4px;font-size:13px;line-height:1.5;quotes:"„" "”"}
+  .st-pr em{display:flex;align-items:center;gap:6px;margin-top:6px;font-style:normal;font-size:12px;color:var(--t3)}
+  .st-pr em .av{width:16px;height:16px}
+
+  /* ---------- 4 · lista ---------- */
+  .ls{flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+  .ls-g{flex:none;display:flex;align-items:center;gap:10px;padding:18px 28px 0}
+  .ls-g h1{font-size:21px;font-weight:600;letter-spacing:-0.02em;margin-right:8px}
+  .seg{display:flex;padding:2px;border-radius:7px;background:var(--hov)}
+  .seg span{padding:4px 10px;border-radius:5px;font-size:12.5px;color:var(--t2)}
+  .seg span.on{background:#fff;color:var(--t1);font-weight:500;box-shadow:0 0 0 1px var(--b1),0 1px 1px rgba(0,0,0,0.04)}
+  .ls-g .btn.f{height:28px;padding:0 10px;color:var(--t2);font-weight:400}
+  .ls-g .btn.f .ik{width:12px;height:12px}
+  .ls-g .btn.g{margin-left:auto}
+  .ls-c{flex:none;display:flex;align-items:center;gap:7px;padding:10px 28px 12px;font-size:12px;color:var(--t2)}
+  .ls-c i{width:6px;height:6px;border-radius:50%;background:var(--ok)}
+  .tab{flex:1;min-height:0;border-top:1px solid var(--b1)}
+  .tab-h,.tab-w{display:grid;grid-template-columns:56px 176px 150px 196px 104px minmax(0,1fr);align-items:center;gap:0 14px;padding:0 28px}
+  .tab-h{height:32px;font-size:12px;color:var(--t3);border-bottom:1px solid var(--b1)}
+  .tab-d{display:flex;align-items:center;height:28px;padding:0 28px;font-size:12px;font-weight:500;color:var(--t2);background:var(--pod);border-bottom:1px solid var(--b2)}
+  .tab-w{height:42px;border-bottom:1px solid var(--b2);font-size:13px}
+  .tab-w .cz{color:var(--t2)}
+  .tab-w .kt{display:flex;align-items:center;gap:8px;font-weight:500;white-space:nowrap}
+  .tab-w .kt .av{width:22px;height:22px}
+  .tab-w .klt{display:flex;flex-direction:column;white-space:nowrap;line-height:1.3}
+  .tab-w .klt small{display:flex;align-items:center;gap:4px;font-size:11.5px;color:var(--t3)}
+  .tab-w .stn{color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .tab-w .wy{display:flex;align-items:center;gap:8px;white-space:nowrap}
+  .tab-w .wy b{font-weight:500}
+  .tab-w .pas7 i{width:7px}
+  .tab-w .pas7{margin:0}
+  .pas7 i.x{background:#e4e4e7}
+  .tab-w .uw{display:flex;align-items:center;gap:7px;color:var(--t1);white-space:nowrap;overflow:hidden}
+  .tab-w .uw i{flex:none;width:6px;height:6px;border-radius:50%}
+  .tab-w .uw.pol i{background:var(--pol)} .tab-w .uw.nie i{background:var(--nie)}
+  .tab-w .trw{display:flex;align-items:center;gap:8px;color:var(--t2)}
+  .tab-w .trw i{position:relative;width:46px;height:4px;border-radius:2px;background:#e4e4e7;overflow:hidden}
+  .tab-w .trw i::after{content:"";position:absolute;inset:0 40% 0 0;border-radius:2px;background:#18181b}
+  .tab-w.on{background:var(--hov);box-shadow:inset 2px 0 0 #18181b}
+
+  /* ---------- 5 · okno wgrywania ---------- */
+  .mo-t{position:absolute;inset:0;background:rgba(24,24,27,0.32)}
+  .mo{position:absolute;left:50%;top:44px;width:600px;margin-left:-300px;border-radius:10px;background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,0.08),0 24px 48px -12px rgba(0,0,0,0.3)}
+  .mo-g{display:flex;align-items:flex-start;gap:12px;padding:18px 20px 0}
+  .mo-g h2{font-size:15px;font-weight:600}
+  .mo-g p{margin-top:4px;font-size:12.5px;line-height:1.5;color:var(--t2)}
+  .mo-g > .ik{margin-left:auto;width:16px;height:16px;color:var(--t3)}
+  .mo-up{display:flex;align-items:center;gap:12px;margin:16px 20px 0;padding:14px;border-radius:8px;border:1px dashed rgba(24,24,27,0.22)}
+  .mo-up > .ik{width:20px;height:20px;color:var(--t2)}
+  .mo-up b{display:block;font-size:13px;font-weight:500}
+  .mo-up small{display:block;margin-top:1px;font-size:12px;color:var(--t3)}
+  .mo-up .btn{margin-left:auto}
+  .mo-l{margin:14px 20px 0;border-top:1px solid var(--b1)}
+  .mo-w{display:grid;grid-template-columns:minmax(0,1fr) 150px 130px;gap:14px;align-items:center;height:52px;border-bottom:1px solid var(--b2)}
+  .mo-p{display:flex;align-items:center;gap:10px;min-width:0}
+  .mo-p > .ik{width:18px;height:18px;color:var(--t3)}
+  .mo-p div{min-width:0}
+  .mo-p b{display:block;font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mo-p small{display:flex;align-items:center;gap:5px;margin-top:2px;font-size:12px;color:var(--t3)}
+  .mo-p small .av{width:14px;height:14px}
+  .sel{display:flex;align-items:center;justify-content:space-between;height:28px;padding:0 8px 0 10px;border-radius:6px;box-shadow:inset 0 0 0 1px var(--b1);font-size:12.5px;white-space:nowrap}
+  .sel .ik{width:12px;height:12px;color:var(--t3)}
+  .mo-s{font-size:12px;color:var(--t2);text-align:right}
+  .mo-s.ok{display:flex;align-items:center;justify-content:flex-end;gap:6px;color:var(--t1)}
+  .mo-s .post{display:block;height:4px;margin-top:6px;border-radius:2px;background:#e4e4e7;overflow:hidden}
+  .mo-s .post i{display:block;height:100%;background:#18181b}
+  .mo-d{display:flex;justify-content:flex-end;gap:8px;padding:16px 20px}
+
+  /* ---------- telefon ---------- */
+  .tel .rh{padding:14px 16px 0}
+  .tel .rh-g{flex-direction:column;gap:8px;margin-top:0}
+  .tel .rh-g h1{font-size:18px}
+  .tel .rh-m{gap:4px 10px;margin-top:4px;font-size:12px}
+  .tel .rh-pr{margin:0}
+  .tel .wyn{align-items:flex-start;margin:0}
+  .tel .os{padding:10px 16px;gap:10px}
+  .tel .os-cz{display:none}
+  .tel .os-e{font-size:10px;padding-left:4px}
+  .tel .os-e.w{display:none}
+  .tel .oc{grid-template-columns:minmax(0,1fr)}
+  .tel .oc-l{padding:12px 16px 0}
+  .tel .oc-p{display:none}
+  .tel .oc-l h2 span,.tel .kr-det{display:none}
+  .tel .kr li.otw{padding-bottom:0}
+  .tel .kr-w{height:30px;font-size:12.5px}
+  .tel .kr-det{grid-template-columns:minmax(0,1fr);gap:2px;margin-left:26px;font-size:12px}
+  .tel .kr-det dt{margin-top:6px}
+  .tel .tr{grid-template-columns:minmax(0,1fr)}
+  .tel .tr-l{padding:12px 16px 0}
+  .tel .tr-p{display:none}
+  .tel .tw{grid-template-columns:minmax(0,1fr);padding:6px 0}
+  .tel .tw > span{display:none}
+  .tel .ko{grid-column:1}
+  .tel .tw p{font-size:13.5px}
+  .tel .tp{padding-left:0}
+  .tel .st{grid-template-columns:minmax(0,1fr)}
+  .tel .st-l{display:none}
+  .tel .st-p{padding:14px 16px 0}
+  .tel .st-g h1{font-size:18px}
+  .tel .st-g .btn{display:none}
+  .tel .st-o{grid-template-columns:minmax(0,1fr);gap:2px;font-size:12px}
+  .tel .st-o dt{display:none}
+  .tel .st-k li:not(.otw) p{display:none}
+  .tel .st-k li{padding:7px 0}
+  .tel .st-k li.otw{margin:6px -8px;padding:10px 8px}
+  .tel .ls-g{padding:14px 16px 0}
+  .tel .ls-g h1{font-size:18px}
+  .tel .ls-g .seg,.tel .ls-g .btn.f{display:none}
+  .tel .ls-g .btn.g{height:28px;padding:0 10px;font-size:12px}
+  .tel .ls-c{padding:8px 16px 10px;font-size:11.5px}
+  .tel .tab-d{padding:0 16px}
+  .tel .tab-w{grid-template-columns:minmax(0,1fr) auto;gap:0 10px;height:48px;padding:0 16px}
+  .tel .tab-w .kt .av{width:26px;height:26px}
+  .tel .tab-w .kt small{display:block;font-size:11.5px;font-weight:400;color:var(--t3)}
+  .tel .mo{left:0;right:0;top:auto;bottom:0;width:auto;margin:0;border-radius:12px 12px 0 0}
+  .tel .mo-g{padding:16px 16px 0}
+  .tel .mo-up{margin:12px 16px 0;padding:10px}
+  .tel .mo-up .btn{display:none}
+  .tel .mo-l{margin:10px 16px 0}
+  .tel .mo-w{grid-template-columns:minmax(0,1fr) 70px;height:50px}
+  .tel .sel{display:none}
+  .tel .mo-d{padding:12px 16px 14px}
+  .tel .mo-d .btn{flex:1;height:34px}
+
+  /* ---------- karta do hero ---------- */
+  .ka{width:300px;padding:14px 16px 6px;border-radius:10px;background:#fff;box-shadow:0 0 0 0.5px rgba(0,0,0,0.25)}
+  .ka-g{display:flex;align-items:center;gap:9px}
+  .ka-g .av{width:28px;height:28px}
+  .ka-g b{display:block;font-size:13px;font-weight:600}
+  .ka-g small{display:block;margin-top:1px;font-size:11.5px;color:var(--t2)}
+  .ka-g .wyn{margin:0 0 0 auto}
+  .ka .kr{margin-top:10px}
+  .ka .kr-w{height:30px;font-size:12.5px}
+  .ka .kr-u{margin:-5px 0 9px 26px;font-size:12px;color:var(--t2)}
+</style>
+</head>
+<body>
+
+{(['pc', 'tel'] as const).map((v) => (
+<div class="rzad">
+
+<!-- ============ 1 · OCENA ROZMOWY ============ -->
+<div class={`om ${v}`} id={`ek-rozmowa${v === 'tel' ? '-tel' : ''}`}>
+<div class="pr"><span class="pr-sw"><i></i><i></i><i></i></span><span class="pr-ad"><i><svg viewBox="0 0 16 16" set:html={ZNAK}></svg></i>Hurtownia Bielik · Earshot</span></div>
+<div class="ah"><span class="ah-zn"><svg viewBox="0 0 16 16" set:html={ZNAK}></svg></span><span class="ah-n">Earshot</span><span class="ah-sep"></span><span class="ah-ws">Termaro<Fragment set:html={ik('dol')} /></span><nav class="ah-nav"><span class="on">Rozmowy</span><span>Standardy</span></nav><span class="ah-pr"><span class="szuk"><Fragment set:html={ik('szukaj')} />Szukaj w rozmowach<kbd>⌘K</kbd></span>{v === 'pc' ? <img class="av" src={AV('pawel')} alt=""> : <Fragment set:html={ik('menu')} />}</span></div>
+<div class="ap">
+<div class="rh">
+{v === 'pc' && <p class="okr">Rozmowy<Fragment set:html={ik('prawo')} />Wtorek, 21 października</p>}
+<div class="rh-g">
+<div>
+<h1>Hurtownia Bielik</h1>
+<p class="rh-m"><span><img class="av" src={AV('anna')} alt=""><b>Anna Kowal</b></span><span><Fragment set:html={ik('telefon')} />{v === 'pc' ? 'Wychodząca, z centralki' : 'Z centralki'}</span><span>10:42</span>{v === 'pc' && <span>14 min 32 s</span>}</p>
+</div>
+<div class="rh-pr">
+<div class="wyn"><b>5 <span>z 7 kryteriów</span></b><span class="pas7">{KRYTERIA.map((k) => <i class={k.w}></i>)}</span></div>
+{v === 'pc' && <><span class="btn d"><Fragment set:html={ik('udostepnij')} />Udostępnij</span></>}
+</div>
+</div>
+{v === 'pc' && <div class="zak"><span class="on">Ocena</span><span>Transkrypcja</span><span>Notatki</span></div>}
+</div>
+<div class="os">
+<span class="os-pl" set:html={ik('play')}></span>
+<span class="os-cz"><b>12:44</b> / 14:32</span>
+<div class="os-t">
+<span class="os-l"><i style={`width:${pr(764)}`}></i></span>
+{ETAPY.map((e, i) => <span class={`os-e${i === 0 || i === 3 ? ' w' : ''}`} style={`left:${pr(e.od)}`}>{e.t}</span>)}
+{ZNACZNIKI.map((z) => <span class={`os-z ${z.w}`} style={`left:${pr(z.s)}`}></span>)}
+</div>
+</div>
+<div class="oc">
+<div class="oc-l">
+<h2>Ocena według standardu<span>Pierwsza rozmowa handlowa</span></h2>
+<ol class="kr">
+{KRYTERIA.map((k) => (
+  <li class={k.w === 'nie' ? 'otw' : ''}>
+    <div class="kr-w"><span class={`zw ${k.w}`} set:html={ik(k.w)}></span><span>{k.t}</span><em>{k.w === 'nie' ? WERDYKT.nie : k.cz}</em></div>
+    {k.u && v === 'pc' && <p class="kr-u">{k.u}</p>}
+    {k.w === 'nie' && (
+      <dl class="kr-det">
+        <dt>W rozmowie</dt><dd>12:44 Anna: <q>Wyślę ofertę jeszcze w tym tygodniu.</q> Termin kolejnej rozmowy nie pada.</dd>
+        <dt>Standard</dt><dd>Rozmowa kończy się terminem kolejnego kontaktu, na który klient się zgodził.{v === 'pc' && <span class="os2"><img class="av" src={AV('bartek')} alt="" />Tak to brzmi u Bartka Lisa: „W czwartek o 10:00 przejdziemy ofertę razem ze wspólnikiem”</span>}</dd>
+      </dl>
+    )}
+  </li>
+))}
+</ol>
+</div>
+<div class="oc-p">
+<h2>Transkrypcja<em>Pokaż całość</em></h2>
+<ol class="fr">{FRAGMENT.map((f) => <li class={f.z || ''}><span>{f.cz}</span><div><b>{OSOBA[f.kto]}</b><p>{f.t}</p></div></li>)}</ol>
+<div class="fr-ak"><span class="btn d"><Fragment set:html={ik('play')} />Odtwórz od 12:40</span></div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- ============ 2 · TRANSKRYPCJA Z UWAGAMI ============ -->
+<div class={`om ${v}`} id={`ek-transkrypcja${v === 'tel' ? '-tel' : ''}`}>
+<div class="pr"><span class="pr-sw"><i></i><i></i><i></i></span><span class="pr-ad"><i><svg viewBox="0 0 16 16" set:html={ZNAK}></svg></i>Hurtownia Bielik · Earshot</span></div>
+<div class="ah"><span class="ah-zn"><svg viewBox="0 0 16 16" set:html={ZNAK}></svg></span><span class="ah-n">Earshot</span><span class="ah-sep"></span><span class="ah-ws">Termaro<Fragment set:html={ik('dol')} /></span><nav class="ah-nav"><span class="on">Rozmowy</span><span>Standardy</span></nav><span class="ah-pr"><span class="szuk"><Fragment set:html={ik('szukaj')} />Szukaj w rozmowach<kbd>⌘K</kbd></span>{v === 'pc' ? <img class="av" src={AV('pawel')} alt=""> : <Fragment set:html={ik('menu')} />}</span></div>
+<div class="ap">
+{v === 'pc' && (
+<div class="rh">
+
+<div class="rh-g">
+<div>
+<h1>Hurtownia Bielik</h1>
+<p class="rh-m"><span><img class="av" src={AV('anna')} alt=""><b>Anna Kowal</b></span><span><Fragment set:html={ik('telefon')} />Wychodząca, z centralki</span><span>10:42</span><span>14 min 32 s</span></p>
+</div>
+<div class="rh-pr"><div class="wyn"><b>5 <span>z 7 kryteriów</span></b><span class="pas7">{KRYTERIA.map((k) => <i class={k.w}></i>)}</span></div><span class="btn d"><Fragment set:html={ik('udostepnij')} />Udostępnij</span></div>
+</div>
+<div class="zak"><span>Ocena</span><span class="on">Transkrypcja</span><span>Notatki</span></div>
+</div>
+)}
+<div class="tr">
+<div class="tr-l">
+{(v === 'pc' ? [ROZMOWA[0], { przerwa: '1 min 18 s' }, ROZMOWA[4], { przerwa: '3 min 24 s' }, ROZMOWA[7]] : [ROZMOWA[0], { przerwa: '4 min 38 s' }, ROZMOWA[6], ROZMOWA[7]]).map((r: any) => r.przerwa ? (
+  <p class="tp">{r.przerwa} rozmowy</p>
+) : (
+  <div class="tw">
+    <span>{r.cz}</span>
+    <div>
+      <p class="tw-k">{r.kto === 'a' ? <img class="av" src={AV('anna')} alt=""> : <span class="kl" set:html={ik('osoba')}></span>}{OSOBA[r.kto]}{v === 'tel' && <span style="font-weight:400;color:var(--t3)">· {r.cz}</span>}</p>
+      <p>{r.t.length === 3 ? <>{r.t[0]}<mark class={r.z}>{r.t[1]}</mark>{r.t[2]}</> : r.t[0]}</p>
+    </div>
+    {r.u && (
+      <div class="ko">
+        <p class="ko-g"><span class="zn"><svg viewBox="0 0 16 16" set:html={ZNAK}></svg></span><b>{r.u.t}</b><em class={`c-${r.z}`}>{WERDYKT[r.z]}</em></p>
+        <p>{r.u.d}</p>
+      </div>
+    )}
+  </div>
+))}
+</div>
+<div class="tr-p">
+<h2>Kryteria w tej rozmowie</h2>
+<ol>{KRYTERIA.map((k) => <li class={k.w === 'pol' ? 'on' : ''}><span class={`zw ${k.w}`} set:html={ik(k.w)}></span><span>{k.t}</span><em>{k.cz}</em></li>)}</ol>
+</div>
+</div>
+</div>
+</div>
+
+<!-- ============ 3 · STANDARD ============ -->
+<div class={`om ${v}`} id={`ek-standard${v === 'tel' ? '-tel' : ''}`}>
+<div class="pr"><span class="pr-sw"><i></i><i></i><i></i></span><span class="pr-ad"><i><svg viewBox="0 0 16 16" set:html={ZNAK}></svg></i>Standardy · Earshot</span></div>
+<div class="ah"><span class="ah-zn"><svg viewBox="0 0 16 16" set:html={ZNAK}></svg></span><span class="ah-n">Earshot</span><span class="ah-sep"></span><span class="ah-ws">Termaro<Fragment set:html={ik('dol')} /></span><nav class="ah-nav"><span>Rozmowy</span><span class="on">Standardy</span></nav><span class="ah-pr"><span class="szuk"><Fragment set:html={ik('szukaj')} />Szukaj w rozmowach<kbd>⌘K</kbd></span>{v === 'pc' ? <img class="av" src={AV('pawel')} alt=""> : <Fragment set:html={ik('menu')} />}</span></div>
+<div class="ap">
+<div class="st">
+<div class="st-l">
+<h2>Standardy rozmów<Fragment set:html={ik('plus')} /></h2>
+<ul>{STANDARDY.map((s) => <li class={s.on ? 'on' : ''}><b>{s.t}</b><span>{s.d}</span></li>)}</ul>
+</div>
+<div class="st-p">
+<div class="st-g"><h1>Pierwsza rozmowa handlowa</h1><span class="btn d">Edytuj</span></div>
+<dl class="st-o">
+<dt>Dotyczy</dt><dd>Sprzedaż, rozmowy wychodzące, pierwszy kontakt z firmą</dd>
+<dt>Na podstawie</dt><dd><Fragment set:html={ik('dokument')} /><u>Standard sprzedaży Termaro.pdf</u>, rozdział 3</dd>
+</dl>
+<ol class="st-k">
+{KRYTERIA.map((k, i) => (
+  <li class={k.w === 'nie' ? 'otw' : ''}>
+    <span>{i + 1}</span>
+    <div>
+      <b>{k.t}</b>
+      <p>{k.d}</p>
+      {k.w === 'nie' && (
+        <div class="st-pr">
+          <small>Przykład z dobrej rozmowy</small>
+          <q>Ofertę prześlę do środy, a w czwartek o 10:00 przejdziemy ją razem z Panem i wspólnikiem. Pasuje?</q>
+          <em><img class="av" src={AV('bartek')} alt="">Bartek Lis, rozmowa z Tartakiem Modrzew, 20 października</em>
+        </div>
+      )}
+    </div>
+  </li>
+))}
+</ol>
+</div>
+</div>
+</div>
+</div>
+
+<!-- ============ 4 · ROZMOWY i 5 · WGRYWANIE ============ -->
+{['rozmowy', 'wgraj'].map((tryb) => (
+<div class={`om ${v}`} id={`ek-${tryb}${v === 'tel' ? '-tel' : ''}`}>
+<div class="pr"><span class="pr-sw"><i></i><i></i><i></i></span><span class="pr-ad"><i><svg viewBox="0 0 16 16" set:html={ZNAK}></svg></i>Rozmowy · Earshot</span></div>
+<div class="ah"><span class="ah-zn"><svg viewBox="0 0 16 16" set:html={ZNAK}></svg></span><span class="ah-n">Earshot</span><span class="ah-sep"></span><span class="ah-ws">Termaro<Fragment set:html={ik('dol')} /></span><nav class="ah-nav"><span class="on">Rozmowy</span><span>Standardy</span></nav><span class="ah-pr"><span class="szuk"><Fragment set:html={ik('szukaj')} />Szukaj w rozmowach<kbd>⌘K</kbd></span>{v === 'pc' ? <img class="av" src={AV('pawel')} alt=""> : <Fragment set:html={ik('menu')} />}</span></div>
+<div class="ap">
+<div class="ls">
+<div class="ls-g"><h1>Rozmowy</h1><span class="seg"><span class="on">Wszystkie</span><span>Sprzedaż</span><span>Obsługa klienta</span></span><span class="btn d f"><Fragment set:html={ik('filtr')} />Osoba</span><span class="btn d f"><Fragment set:html={ik('filtr')} />Standard</span><span class="btn g"><Fragment set:html={ik('wgraj')} />Wgraj nagrania</span></div>
+<p class="ls-c"><i></i>Centralka połączona. Rozmowy trafiają tu same po rozłączeniu.</p>
+<div class="tab">
+{v === 'pc' && <div class="tab-h"><span>Godzina</span><span>Kto</span><span>Z kim</span><span>Standard</span><span>Wynik</span><span>Do omówienia</span></div>}
+{[['Dziś', DZIS], ['Wczoraj', WCZORAJ]].map(([d, lista]) => (
+  <>
+  <p class="tab-d">{d === 'Dziś' && v === 'pc' ? 'Dziś, wtorek 21 października' : d}</p>
+  {(lista as Wiersz[]).slice(0, v === 'pc' ? 9 : 3).map((r) => v === 'pc' ? (
+    <div class={`tab-w${r.on && tryb === 'rozmowy' ? ' on' : ''}`}>
+      <span class="cz">{r.g}</span>
+      <span class="kt"><img class="av" src={AV(r.f)} alt="">{r.n}</span>
+      <span class="klt">{r.k}<small>{r.kier}</small></span>
+      <span class="stn">{r.s}</span>
+      {r.w ? <span class="wy"><b>{r.w} z {r.z}</b><span class="pas7">{Array.from({ length: r.z! }, (_, i) => <i class={i < r.w! ? 'ok' : 'x'}></i>)}</span></span> : <span class="trw"><i></i>Ocenianie</span>}
+      <span class={`uw ${r.uw || ''}`}>{r.u && <><i></i>{r.u}</>}</span>
+    </div>
+  ) : (
+    <div class={`tab-w${r.on && tryb === 'rozmowy' ? ' on' : ''}`}>
+      <span class="kt"><img class="av" src={AV(r.f)} alt=""><span>{r.n}<small>{r.g} · {r.k}</small></span></span>
+      {r.w ? <span class="wy"><b>{r.w} z {r.z}</b></span> : <span class="trw"><i></i></span>}
+    </div>
+  ))}
+  </>
+))}
+</div>
+</div>
+{tryb === 'wgraj' && (
+  <>
+  <div class="mo-t"></div>
+  <div class="mo">
+    <div class="mo-g"><div><h2>Wgraj nagrania</h2><p>{v === 'pc' ? 'Rozmowy spoza centralki, na przykład spotkania u klienta albo nagrania z telefonu. Każde nagranie zostanie ocenione według wybranego standardu.' : 'Każde nagranie zostanie ocenione według wybranego standardu.'}</p></div><Fragment set:html={ik('x')} /></div>
+    <div class="mo-up"><Fragment set:html={ik('wgraj')} /><div><b>{v === 'pc' ? 'Przeciągnij pliki tutaj' : 'Wybierz nagrania'}</b><small>Nagrania audio i wideo</small></div><span class="btn d">Wybierz pliki</span></div>
+    <div class="mo-l">
+    {PLIKI.map((p) => (
+      <div class="mo-w">
+        <div class="mo-p"><Fragment set:html={ik('plik')} /><div><b>{p.p}</b><small><img class="av" src={AV(p.f)} alt="">{p.n} · {p.cz}</small></div></div>
+        <span class="sel">{p.s}<Fragment set:html={ik('dol')} /></span>
+        {p.st === 'gotowe' ? <span class="mo-s ok"><span class="zw ok" set:html={ik('ok')}></span>{v === 'pc' ? 'Ocenione, 3 z 6' : '3 z 6'}</span>
+          : p.st === 'trans' ? <span class="mo-s">{v === 'pc' ? `Transkrypcja ${p.pr}%` : `${p.pr}%`}<span class="post"><i style={`width:${p.pr}%`}></i></span></span>
+          : <span class="mo-s">W kolejce</span>}
+      </div>
+    ))}
+    </div>
+    <div class="mo-d"><span class="btn d">Anuluj</span><span class="btn g">Oceń nagrania</span></div>
+  </div>
+  </>
+)}
+</div>
+</div>
+))}
+
+</div>
+))}
+
+<!-- ============ KARTA DO HERO ============ -->
+<div class="ka" id="ek-karta">
+<div class="ka-g"><img class="av" src={AV('anna')} alt=""><div><b>Hurtownia Bielik</b><small>Anna Kowal</small></div><div class="wyn"><b>5 <span>z 7</span></b><span class="pas7">{KRYTERIA.map((k) => <i class={k.w} style="width:8px"></i>)}</span></div></div>
+<ol class="kr">
+{[KRYTERIA[1], KRYTERIA[4], KRYTERIA[3], KRYTERIA[6]].map((k) => (
+  <li>
+    <div class="kr-w"><span class={`zw ${k.w}`} set:html={ik(k.w)}></span><span>{k.t}</span><em>{k.cz}</em></div>
+    {k.w === 'nie' && <p class="kr-u">„Wyślę ofertę jeszcze w tym tygodniu.” Bez terminu.</p>}
+  </li>
+))}
+</ol>
+</div>
+
+</body>
+</html>
