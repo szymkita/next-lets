@@ -1,5 +1,98 @@
 # O nas (`/dlaczego-my`) — koncepcja strony
 
+> **26.10.2026 — v11 jest główną wersją** (Szymon: „niech v11 stanie się
+> główna wersja”). `src/pages/dlaczego-my.astro` to dawna
+> `src/robocze/dlaczego-my-v11.astro`; poprzednia główna (pięć powodów,
+> od 16.10.2026) leży w `src/robocze/dlaczego-my-old2.astro` (lokalnie
+> `/dlaczego-my-old2`), iteracje v6–v10 w `src/robocze`. Strona korzysta ze
+> wspólnych `src/components/lu/LuStyl.astro` i `LuSkrypty.astro` oraz
+> z nowych plików `public/uploads/convex-znak.svg` i `openai-znak.png` —
+> przy commicie muszą wejść razem z nią. Historia rund niżej.
+
+> **26.10.2026 — v6 w stylu Let’s Up / Let’s Shift** (prośba Szymona:
+> „bazując na designach Let’s Up i Let’s Shift oraz na tym, jak zostały
+> opracowane, przygotuj nową wersję pod stronę Dlaczego my”):
+> `src/robocze/dlaczego-my-v6.astro`, lokalnie `/dlaczego-my-v6`. Oś pięciu
+> powodów i fakty zostają z obecnej strony; z Let’s Up / Shift system
+> (`src/components/lu/`) i sposób pracy: własne hero, jeden przykład przez
+> całą stronę (Stalprofil, obieg faktur), karty w różnych obrazach,
+> opowieść przyklejona do przewijania, rytm wezwań z twarzą.
+> Hero: notatnik zarządu „Pytania do wykonawcy” — pięć pytań, które klient
+> zadaje firmie od AI, i odpowiedzi dopisane ołówkiem, na notatniku
+> wizytówka Piotra; każdy wiersz prowadzi do swojego powodu. Dalej:
+> 01 wyniki z czterech wdrożeń (karty z Let’s Up) i odznaka OpenAI;
+> 02 stos kart „od spisania procesu do utrzymania” (kartka w kratkę
+> z obserwacji, karta projektu, przegląd zmian z sześcioma bramkami
+> WiseStacka, list po miesiącu) i cytat NARS; 03 sekcja-podpis na ciemnej
+> planszy: „Droga projektu” etap po etapie (za Wami / cena znana / cenę
+> poznacie po …), na końcu cena, która nie rośnie, i Piotr; 04 konta
+> w trakcie i po współpracy na zielonym panelu; zielony pas; 05 trzy
+> rozmowy (pytanie klienta → odpowiedź Piotra → czym się skończyła);
+> kontakt nad FAQ. Do potwierdzenia: lista w nagłówku pliku (przykład
+> Stalprofil, zdjęcia z /team bez nazwisk w rolach, wizytówka).
+>
+> **26.10.2026, runda 2** (uwagi Szymona: „brakuje ludzi”, grafiki
+> w „Jeden zespół…” jak AI slop, „nie mów, że spisał analityk na kartce”,
+> ścięte rogi odznaki OpenAI, niezrozumiałe „3 z 5”, „Zawsze wiecie…”
+> z artefaktem, konta jako boczna rzecz, „więcej wyróżników: własny
+> produkt AI, analitycy biznesowi”): bez numeracji nad nagłówkami;
+> w hero rząd twarzy studia; „Jeden zespół” to cały skład
+> z `src/data/zespol.js` z nazwiskami i tytułami, ułożony wzdłuż drogi
+> projektu (analiza biznesowa, prowadzenie, budowa, utrzymanie) pod szyną
+> „Let’s automate”, niżej zarząd i rozwój biznesu; „Zawsze wiecie…” to
+> papierowy „Plan projektu” z ptaszkami ołówkiem, pieczątkami i karteczką
+> „+2 tygodnie, cena bez zmian”, a przy krokach osoby z zespołu; nowa
+> sekcja „Co jeszcze nas wyróżnia” (Appto z prawdziwym ekranem, analitycy
+> biznesowi, WiseStack, konta, OpenAI Select Partner, WiseGroup); hero
+> pyta w czwartym wierszu o własny produkt AI.
+>
+> **26.10.2026, runda 3 → `src/robocze/dlaczego-my-v7.astro`** (od tej
+> rundy każda runda to nowy plik; pierwsza wersja v6 została nadpisana
+> drugą). Uwagi Szymona: zdjęcie Piotra w hero „nie przypięte sensownie”;
+> „nie chcę pokazywać wszystkich osób, studio się zmniejsza… więcej
+> pojedynczych zdjęć, tak jak Piotr”; więcej przykładów wdrożeń ze
+> strzałkami; plan projektu i bento dopracować; zielony pas nie pasował
+> nad kontaktem. W v7: odbitka zdjęcia Piotra przypięta spinaczem do
+> notatnika; cztery duże portrety z obecnej strony (Kita, Bilski,
+> Markiewicz, Wojciuk) z paskiem etapów projektu, Szymon Negacz przy
+> WiseGroup, pojedyncza osoba przy krokach opowieści; rząd ośmiu wyników
+> ze strzałkami (cztery ze strony głównej i cztery z bloku „Zobacz, co
+> zyskały firmy” starej strony — do potwierdzenia); za planem projektu
+> przybywają oferty etapów; bento z prawdziwymi znakami usług przy
+> kontach, opisem procesu przy analitykach i sześcioma bramkami
+> WiseStacka; bez zielonego pasa.
+>
+> **26.10.2026, runda 4 → `src/robocze/dlaczego-my-v8.astro`.** Uwagi
+> Szymona do v7: pytajnik w H1; zdjęcie Piotra mniejsze, „stopka
+> kontaktowa ręcznie”; zamiast „Pierwszą rozmowę prowadzi Piotr…” —
+> „na pierwszą rozmowę od razu angażujemy specjalistów”; w „Jeden
+> zespół…” bez podpisów rolami, zdjęcia ujednolicone jak na obecnej
+> stronie, w innym układzie; opinie ze strzałkami, więcej; w „Zawsze
+> wiecie…” osoby przy krokach (Szymon Kita przy „Cena etapu nie rośnie”)
+> zepsuły sekcję — wrócić do v6 i lekko poprawić. W v8: mała odbitka
+> zdjęcia Piotra, na dole notatnika kontakt ołówkiem; pięć czarno-białych
+> portretów (Kita, Bilski, Wojciuk, Negacz, Markiewicz) schodkowo, tylko
+> imię i stanowisko; karuzela czterech prawdziwych opinii (op9); plan
+> projektu jak w v6, bez osób przy krokach, podpis znakiem studia,
+> wyróżniony bieżący etap.
+>
+> **Runda 5 → `-v9`:** tylko nasze zdjęcia (bez stockowych `/makieta`):
+> klienci w „trzech rozmowach” bez twarzy, portrety obrobione jednakowo
+> (czerń-biel, zielony ton, przyciemnione tło). **Runda 6 → `-v10`:**
+> bento dopracowane — ekran Appto zaraz pod tekstem i ucięty krawędzią
+> kafla, opis procesu nachodzi na dół kafla analityków, konta w szerokim
+> kaflu z prawdziwymi znakami (Convex i OpenAI wycięte z naszych plików:
+> `uploads/convex-znak.svg`, `uploads/openai-znak.png`), OpenAI
+> i WiseGroup jako dwa niskie kafle; w grupie doradczej samo logo
+> WiseGroup, bez zdjęcia Szymona Negacza.
+> **Runda 7 → `-v11`:** w hero wizytówka Piotra przypięta spinaczem
+> (bardzo małe zdjęcie, telefon i e-mail jako linki), bez kontaktu
+> dopisanego na notatniku; pod przyciskiem „Na pierwszą rozmowę od razu
+> angażujemy specjalistów” ze zdjęciem Jakuba Markiewicza; WiseStack jako
+> lista kontroli jednej zmiany (pięć bramek zaliczanych po kolei, „Zgoda
+> człowieka” czeka z przyciskiem „Zatwierdź”), bez linku do /wisestack;
+> u analityków dopisek ołówkiem przy wyjątku; większa odznaka OpenAI.
+
 Strona: `src/pages/dlaczego-my.astro`. **Od 16.10.2026 stoi tam dawna v2
 (pięć powodów, opis niżej).** v5 opisana dalej jest w
 `src/robocze/dlaczego-my-old.astro`, v3 w `src/robocze/dlaczego-my-v3.astro`.

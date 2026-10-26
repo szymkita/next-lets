@@ -1,0 +1,724 @@
+---
+// DLACZEGO MY v7 — /dlaczego-my-v7 (26.10.2026, robocza, noindex, tylko npm run dev)
+// Trzecia runda tej strony. Poprzednia: src/robocze/dlaczego-my-v6.astro
+// (od tej rundy każda runda uwag to nowy plik; pierwsza wersja v6 została
+// nadpisana drugą i nie ma jej w repozytorium).
+//
+// UWAGI SZYMONA DO v6 I ODPOWIEDZI
+//   · hero: wizytówka Piotra „nie jest przypięta sensownie, leży w górze”
+//     → zdjęcie Piotra jak odbitka przypięta spinaczem do górnej krawędzi
+//     notatnika (jeden obiekt z notatnikiem), ptaszki stoją przy
+//     odpowiedziach, bez rzędu wielu twarzy;
+//   · „nie chcę pokazywać wszystkich osób… studio się zmniejsza… więcej
+//     ludzi, ale pojedynczych zdjęć, tak jak Piotr” → bez rejestru
+//     src/data/zespol.js; cztery duże portrety z obecnej /dlaczego-my
+//     (Szymon Kita, Marcel Bilski, Jakub Markiewicz, Piotr Wojciuk), Szymon
+//     Negacz przy WiseGroup, pojedyncza osoba przy krokach opowieści;
+//   · „Za nami ponad 200 wdrożeń: więcej przykładów, strzałki lewo-prawo”
+//     → przesuwany rząd wyników ze strzałkami i licznikiem;
+//   · plan projektu „spoko, dopracować” → za planem przybywają dokumenty
+//     kolejnych etapów (oferty, wycena modułu), w nagłówku planu dane
+//     projektu, podpis Szymona Kity;
+//   · bento „dopracować, ładniej” → konta z prawdziwymi znakami (GitHub,
+//     Vercel, Convex, OpenAI), analitycy jako fragment opisu procesu (bez
+//     twarzy osób, których może już nie być), WiseStack jako sześć bramek
+//     po kolei, WiseGroup z portretem Szymona Negacza;
+//   · zielony pas „Sprawdźcie nas na jednym procesie” nie pasował, bo
+//     zaraz niżej jest kontakt → bez pasa.
+//
+// DO POTWIERDZENIA
+//   · zdania o tym, co robią w projekcie Marcel Bilski, Jakub Markiewicz
+//     i Szymon Kita, oraz paski etapów przy portretach (kto na którym
+//     etapie) — poglądowe;
+//   · przykład Stalprofil (obieg faktur, Paweł Nowicki ze zdjęcia /makieta,
+//     daty odbiorów, „+2 tygodnie, cena bez zmian”) — poglądowy;
+//   · wyniki w rzędzie: źródła przy danych WYNIKI;
+//   · zdanie przy OpenAI Select Partner; Szymon Negacz przy WiseGroup.
+import LaBase from '../layouts/LaBase.astro';
+import GcFaq from '../components/GcFaq.astro';
+import Styl from '../components/usluga/Styl.astro';
+import Anim from '../components/usluga/Anim.astro';
+import Loga from '../components/usluga/Loga.astro';
+import Cytat from '../components/usluga/Cytat.astro';
+import Kontakt from '../components/usluga/Kontakt.astro';
+import LuStyl from '../components/lu/LuStyl.astro';
+import LuSkrypty from '../components/lu/LuSkrypty.astro';
+import { HI, SYGNET } from '../components/usluga/ikony';
+
+const kanon = new URL('/dlaczego-my', Astro.site).href;
+const NB = ' ';
+
+const title = "Dlaczego my — pięć powodów | Let's automate";
+const description = 'Dlaczego firmy wybierają Let’s automate: ponad 200 wdrożeń, jeden zespół bez podwykonawców, cena każdego etapu znana przed jego startem, kod i klucze na Waszych kontach i uczciwa odpowiedź na pierwszej rozmowie.';
+
+// Znaki stawiane ołówkiem.
+const PTASZEK = '<path d="M3 13.5c2.2 1.4 4 3.6 5.2 6.4C11 12.6 15.4 6.6 22 2.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>';
+const PODPIS = '<path d="M4 26c8-14 14-20 17-18 4 3-9 18-5 19 5 1 12-16 17-15 4 1-3 12 1 12 5 0 9-9 14-9 4 0 2 7 6 7 6 0 14-8 22-9 7-1 12 2 20 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>';
+const STRZALKA = '<path d="M4 20c10-1 22-4 34-12M30 4l8 4-5 8" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>';
+const SPINACZ = '<path d="M9 60V16a6.5 6.5 0 0 1 13 0v46a10 10 0 0 1-20 0V20" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/>';
+// Znaki usług przy kontach (GitHub i Vercel jako ścieżki, Convex i OpenAI z plików).
+const GITHUB = '<path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3"/>';
+const VERCEL = '<path d="M24 22.5H0L12 1.5z"/>';
+
+// ---- LUDZIE: pojedyncze portrety z obecnej /dlaczego-my ----------------------
+// e = etapy, na których osoba pracuje w projekcie: rozmowa, diagnoza,
+// projekt, budowa, utrzymanie (1 = jest). Poglądowe.
+const ETAPY_OS = ['rozmowa', 'diagnoza', 'projekt', 'budowa', 'utrzymanie'];
+const LUDZIE = [
+  { n: 'Piotr Wojciuk', r: 'New Business Lead', f: '/piotr-wojciuk.jpg', poz: '50% 18%', d: 'Prowadzi pierwszą rozmowę i zostaje z Wami do startu projektu.', e: [1, 1, 0, 0, 0] },
+  { n: 'Jakub Markiewicz', r: 'AI Consultant & Developer', f: '/jakub-markiewicz.jpg', poz: '50% 30%', d: 'Dobiera modele i buduje to, co w projekcie robi AI.', e: [0, 1, 1, 1, 1] },
+  { n: 'Marcel Bilski', r: 'Tech Lead', f: '/marcel-bilski.jpg', poz: '50% 16%', d: 'Prowadzi budowę i przegląda każdą zmianę przed wdrożeniem.', e: [0, 0, 1, 1, 1] },
+  { n: 'Szymon Kita', r: 'CEO Let’s automate', f: '/szymon-kita.jpg', poz: '50% 20%', d: 'Odpowiada za studio i za warunki, na które się umawiamy.', e: [1, 1, 1, 1, 1] },
+];
+const OS = Object.fromEntries(LUDZIE.map((o) => [o.n.split(' ')[0] + (o.n.includes('Kita') ? 'K' : ''), o]));
+
+// ---- PIĘĆ POWODÓW: pytanie klienta w notatniku --------------------------------
+const POWODY = [
+  { id: 'doswiadczenie', q: 'Czy robili już coś podobnego?', a: 'ponad 200 wdrożeń, 140+ firm' },
+  { id: 'zespol', q: 'Kto naprawdę zrobi projekt?', a: 'ich zespół, bez podwykonawców' },
+  { id: 'cena', q: 'Ile zapłacimy i co potem?', a: 'stała cena etapu, znana z góry' },
+  { id: 'wyrozniki', q: 'Czy znają AI od środka?', a: 'budują własny produkt AI, Appto' },
+  { id: 'granica', q: 'Czy nie sprzedadzą nam za dużo?', a: 'delegacje? wystarczy moduł kadrowy' },
+];
+
+// ---- 01 · WYNIKI: przesuwany rząd ze strzałkami --------------------------------
+// Cztery pierwsze: strona główna (#dowody) i Let’s Up. Kolejne: źródła
+// w komentarzach przy pozycjach.
+const WYNIKI = [
+  { dz: 'Finanse', p: 'Obieg faktur kosztowych', l: '99,7', j: '%', ld: 'skuteczności księgowania',
+    przed: 'Trzy osoby przepisują faktury z maili.', po: 'Faktury księgują się same, zespół bierze wyjątki.',
+    u: 'Automatyzacja procesów z AI', h: '/rozwiazania-ai' },
+  { dz: 'Sprzedaż', p: 'Przygotowanie oferty', l: '−80', j: '%', ld: 'czasu przygotowania oferty',
+    przed: 'Oferta sklejana z CRM, cenników i maili przez pół dnia.', po: 'Szkic z danych CRM w kilka minut.',
+    u: 'Systemy dopasowane do firmy', h: '/systemy-procesowe' },
+  { dz: 'Operacje', p: 'Raport tygodniowy', l: '65', j: ' h', ld: 'odzyskanych co miesiąc',
+    przed: 'Raport klejony z czterech arkuszy.', po: 'Dane spływają same, raport czeka w poniedziałek o 7:00.',
+    u: 'Integracje systemów', h: '/automatyzacje-integracje' },
+  { dz: 'Obsługa klienta', p: 'Pytania o zamówienia', l: '−90', j: '%', ld: 'zapytań obsługiwanych ręcznie',
+    przed: 'Te same odpowiedzi kilkanaście razy dziennie.', po: 'Agent AI odpowiada w kilka minut, z danymi zamówienia.',
+    u: 'Automatyzacja procesów z AI', h: '/rozwiazania-ai' },
+  // Kolejne cztery: blok „Zobacz, co zyskały firmy, które z nami współpracują”
+  // ze starej strony (src/content/stare-strony/aplikacje-wewnetrzne-i-systemy-
+  // automatyzujace.json, sekcje[5].bloki[3]); „Efekt?” bez opisu „przed”,
+  // więc karta mówi, co zbudowaliśmy. DO POTWIERDZENIA, że to wdrożenia klientów.
+  { dz: 'Doradztwo', p: 'Projekty i rozliczenia', l: '+22', j: '%', ld: 'dokładniej śledzona rentowność',
+    co: 'Projekty, czas pracy i faktury z przepracowanych godzin w jednej platformie, połączonej z księgowością.',
+    u: 'Systemy dopasowane do firmy', h: '/systemy-procesowe' },
+  { dz: 'Edukacja', p: 'Dokumenty pracownicze', l: '−80', j: '%', ld: 'czasu obsługi dokumentów HR',
+    co: 'Onboarding, wnioski urlopowe i delegacje w jednym obiegu, zsynchronizowane z kadrami i płacami.',
+    u: 'Systemy dopasowane do firmy', h: '/systemy-procesowe' },
+  { dz: 'Nieruchomości', p: 'Portfel nieruchomości', l: '−2/3', j: '', ld: 'czasu obsługi nieruchomości',
+    co: 'Najem, zgłoszenia serwisowe, media, czynsze i raporty zarządcze na jednej platformie.',
+    u: 'Systemy dopasowane do firmy', h: '/systemy-procesowe' },
+  { dz: 'Usługi', p: 'Zgłoszenia szkód', l: '−40', j: '%', ld: 'czasu obsługi szkody',
+    co: 'Portal, w którym klient zgłasza szkodę ze zdjęciem dokumentów i śledzi status likwidacji.',
+    u: 'Systemy dla klientów', h: '/systemy-dla-klientow' },
+];
+
+// ---- 03 · PLAN PROJEKTU (artefakt w opowieści) -------------------------------
+// Krok k (0–4) z LuSkrypty. Etap i: odebrany (i < k), bieżący (i = k)
+// z pieczątką. Za planem przybywają dokumenty etapów (DOK, od kroku k).
+const PLAN = [
+  { t: 'Diagnoza', m: 'nazwany problem, pomysł na rozwiązanie i plan', c: 'bezpłatnie', d: '28.10', p: 'w toku' },
+  { t: 'Projektowanie', m: 'proces rozpisany na kroki i zakres systemu', c: 'stała kwota, w ofercie po diagnozie', d: '2.12', p: 'zamówione' },
+  { t: 'Wykonanie', m: 'działający system na produkcji u Was', c: 'stała kwota, w ofercie po projektowaniu', d: '10.03', p: 'zamówione' },
+  { t: 'Kolejny moduł', m: 'obieg delegacji w tym samym systemie', c: 'stała kwota, w ofercie po wykonaniu', d: '', p: 'wycena gotowa' },
+];
+const DOK = [
+  { k: 1, t: 'Oferta', s: 'Projektowanie obiegu faktur', d: '28.10' },
+  { k: 2, t: 'Oferta', s: 'Wykonanie obiegu faktur', d: '2.12' },
+  { k: 3, t: 'Wycena', s: 'Moduł: obieg delegacji', d: '10.03' },
+];
+const KROKI = [
+  { t: 'Diagnoza jest bezpłatna', d: 'Rozmawiamy z Waszym zespołem, nazywamy problem i proponujemy rozwiązanie. Wychodzicie z planem i stałą ceną projektowania.', o: OS.Jakub },
+  { t: 'Projektowanie w kwocie podanej po diagnozie', d: 'Rozpisujemy proces na kroki i ustalamy zakres systemu. Kiedy projekt jest gotowy, znacie stałą cenę wykonania.', o: OS.Marcel },
+  { t: 'Wykonanie w kwocie podanej po projektowaniu', d: 'Budujemy system i uruchamiamy go u Was na produkcji. Po odbiorze dostajecie wycenę kolejnego modułu.', o: null },
+  { t: 'Kolejny moduł, zanim go zamówicie', d: 'Następny proces albo dział w tym samym systemie. Cenę znacie przed decyzją i to Wy decydujecie, czy i kiedy go zamówić.', o: null },
+  { t: 'Cena etapu nie rośnie', d: 'Kwota jest stała, nawet gdy praca potrwa dłużej, niż zakładaliśmy. Ryzyko czasu zostaje po naszej stronie.', o: OS.SzymonK },
+];
+
+// ---- WYRÓŻNIKI ----------------------------------------------------------------
+const BRAMKI = ['Typy i kontrakty danych', 'Testy na granicach procesu', 'Skan zależności i sekretów', 'Przegląd produktu', 'Przegląd inżynierski', 'Zgoda człowieka'];
+const KONTA = [
+  { svg: GITHUB, t: 'GitHub', z: 'stalprofil/obieg-faktur' },
+  { svg: VERCEL, t: 'Vercel', z: 'obieg-faktur.stalprofil.pl' },
+  { img: '/uploads/convex-logo.svg', t: 'Convex', z: 'baza: obieg-faktur' },
+  { img: '/appto/brands/chatgpt.png', t: 'OpenAI', z: 'klucz projektu' },
+];
+const OPIS = [
+  { t: 'Faktura wpada na jedną z trzech skrzynek', kto: 'poczta' },
+  { t: 'Dane trafiają do ERP-a', kto: 'Ewa, księgowość' },
+  { t: 'Akceptacja kierownika działu', kto: 'kierownik' },
+  { t: 'Faktury walutowe idą poza obiegiem', kto: 'wyjątek', w: true },
+];
+
+// ---- 05 · TRZY ROZMOWY (z obecnej strony; przykłady poglądowe) --------------
+const ROZMOWY = [
+  { f: '/makieta/awatar-pawel.webp', kto: 'Paweł', fir: 'dyrektor finansowy, Stalprofil',
+    q: 'Faktury z trzech skrzynek przepisujemy do ERP-a ręcznie. Da się to zautomatyzować?',
+    o: 'Da się. Pierwszym etapem jest projekt obiegu. Jego stałą cenę podam po diagnozie, zanim cokolwiek zamówicie.',
+    ik: HI['check'], w: 'Pierwszy krok z ceną' },
+  { f: '/makieta/awatar-ewa.webp', kto: 'Ewa', fir: 'kadry i płace',
+    q: 'Potrzebujemy własnego systemu do rozliczania delegacji.',
+    o: 'Moduł w systemie kadrowym, który już macie, obejmuje cały ten proces. Wystarczy go włączyć i ustawić, a budowa własnego by się nie zwróciła.',
+    ik: HI['arrow-uturn-left'], w: 'Wskazanie, gdzie zrobicie to taniej' },
+  { f: '/makieta/awatar-michal.webp', kto: 'Michał', fir: 'dyrektor operacyjny',
+    q: 'Chcemy zautomatyzować obieg zamówień, ale za kwartał wymieniamy ERP.',
+    o: 'Wróćmy do tego po wdrożeniu nowego ERP-a. Obieg zamówień będzie wtedy wyglądał inaczej i dopiero wtedy warto go mierzyć.',
+    ik: HI['clock'], w: 'Informacja, kiedy wrócić' },
+];
+
+const faq = [
+  { q: 'Kto realnie siada do naszego projektu?',
+    a: 'Skład zależy od tego, co budujemy. Zawsze jest w nim osoba, która odpowiada za wynik i budżet, oraz analityk, który spisuje proces przy biurkach Waszych ludzi. Kod piszą nasi developerzy, bez podwykonawców i bez zespołów wynajętych na czas zlecenia.' },
+  { q: 'Jak to jest rozliczane?',
+    a: 'Każdy etap, od projektowania po kolejne moduły, ma stałą cenę, którą znacie przed jego zamówieniem. Prowadzenie zespołu jest abonamentem miesięcznym z okresem wypowiedzenia. Prowizji od dostawców narzędzi nie bierzemy.' },
+  { q: 'Skąd wiadomo, że kod pisany przez AI jest bezpieczny?',
+    a: 'Decyduje o tym, przez co zmiana musi przejść, zanim zobaczą ją ludzie: typy i kontrakty danych, testy na granicach procesu, skan zależności i sekretów, przegląd produktu, przegląd inżynierski i zgoda człowieka. Wszystkie sześć bramek opisaliśmy na <a href="/wisestack" style="font-weight:700;color:#0a7a52">stronie WiseStacku</a>.' },
+  { q: 'Co z poufnością naszych danych?',
+    a: 'Umowę o poufności podpisujemy przed startem projektu. Dane, na których pracujemy, zostają na Waszych kontach, a dostęp do nich dostajemy imiennie i tylko na czas współpracy.' },
+];
+
+const dane = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    { '@type': 'AboutPage', '@id': `${kanon}#strona`, url: kanon, name: 'Dlaczego Let’s automate', inLanguage: 'pl-PL', about: { '@id': new URL('/#organizacja', Astro.site).href } },
+    { '@type': 'BreadcrumbList', '@id': `${kanon}#okruszki`, itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Strona główna', item: new URL('/', Astro.site).href },
+      { '@type': 'ListItem', position: 2, name: 'Dlaczego my', item: kanon },
+    ] },
+    { '@type': 'FAQPage', '@id': `${kanon}#faq`, mainEntity: faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a.replace(/<[^>]+>/g, '') } })) },
+  ],
+};
+
+const HERO_ARIA = 'Notatnik zarządu „Pytania do wykonawcy”: ' + POWODY.map((p, i) => `${i + 1}. ${p.q} — ${p.a}`).join('; ') + '. Do notatnika przypięte zdjęcie Piotra Wojciuka, który prowadzi pierwszą rozmowę.';
+const PLAN_ARIA = 'Plan projektu Stalprofil w czterech etapach: diagnoza (bezpłatnie), projektowanie, wykonanie i kolejny moduł, każdy w stałej kwocie podanej po poprzednim etapie. Przy kolejnych krokach etapy dostają ptaszki z datą odbioru, za planem przybywają oferty kolejnych etapów, a przy wykonaniu dopisek: plus dwa tygodnie, cena bez zmian.';
+---
+<LaBase topbar={false} title={title} description={description} ctaLabel="Umów rozmowę" nav="dlaczego-my" noindex>
+<script type="application/ld+json" is:inline set:html={JSON.stringify(dane)} slot="head"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&display=swap" slot="head">
+
+<LuStyl />
+<style is:global slot="head">
+  .dm7{--olowek:'Caveat',cursive;--grafit:#3b4741;--tusz:#25358a}
+  .dm7 .v8-gl .v3-sub a{font-weight:650;color:var(--ziel-c);border-bottom:1px solid rgba(10,122,82,0.35)}
+
+  /* =====================================================================
+     HERO · notatnik zarządu i odbitka zdjęcia Piotra przypięta spinaczem
+     Zdjęcie jest częścią notatnika (ten sam obrót), spinacz trzyma je
+     na górnej krawędzi notatnika.
+     ===================================================================== */
+  .dm7-h .u3h-h1{font-size:clamp(44px,5.6vw,92px)}
+  .dm7-hs{position:relative;align-self:stretch;display:flex;flex-direction:column;justify-content:flex-end;min-height:560px}
+  .dm7-bl{position:relative;z-index:1;margin:170px 0 -26px auto;width:min(100%,570px);padding:0 0 30px;border-radius:10px 10px 0 0;background:#fffefb;
+    box-shadow:0 0 0 1px rgba(15,26,20,0.06),0 50px 80px -40px rgba(15,26,20,0.5),0 12px 24px -16px rgba(15,26,20,0.25);transform:rotate(-1.4deg);transform-origin:50% 100%}
+  .dm7-bl::before{content:"";display:block;height:30px;border-radius:10px 10px 0 0;background:linear-gradient(180deg,#2c3631,#1b2420);box-shadow:inset 0 -2px 0 rgba(0,0,0,0.25)}
+  .dm7-bl-in{position:relative;padding:20px 30px 0 58px;background:linear-gradient(90deg,transparent 42px,rgba(214,90,70,0.35) 42px 43.5px,transparent 43.5px),repeating-linear-gradient(180deg,transparent 0 33px,rgba(70,110,170,0.16) 33px 34px);background-position:0 0,0 6px}
+  .dm7-bl-in::before{content:"";position:absolute;left:0;right:0;top:0;height:10px;background:linear-gradient(180deg,rgba(15,26,20,0.08),rgba(15,26,20,0))}
+  .dm7-bl-g{margin:0;padding-bottom:6px;font-size:19px;font-weight:750;letter-spacing:-0.025em;color:var(--t1)}
+  .dm7-bl ol{margin:6px 0 0;padding:0;list-style:none}
+  .dm7-bl li a{position:relative;display:grid;grid-template-columns:22px minmax(0,1fr);gap:0 10px;padding:9px 0 8px;color:var(--t1)}
+  .dm7-bl li a::after{content:"";position:absolute;left:-14px;right:-14px;top:2px;bottom:0;border-radius:8px;background:rgba(0,205,119,0.08);opacity:0;transition:opacity .2s}
+  .dm7-bl li a:hover::after{opacity:1}
+  .dm7-bl li a:focus-visible{outline:2px solid var(--ziel);outline-offset:2px;border-radius:6px}
+  .dm7-bl .n{padding-top:2px;font-size:13px;font-weight:700;color:var(--t3)}
+  .dm7-bl .q{display:block;font-size:16.5px;font-weight:650;letter-spacing:-0.015em;line-height:1.25}
+  .dm7-bl .a{display:flex;align-items:flex-end;gap:6px;margin-top:2px;font-family:var(--olowek);font-size:24px;font-weight:600;line-height:1.05;color:var(--tusz);transform:rotate(-1deg);transform-origin:0 50%;transition:opacity .5s,transform .5s}
+  .dm7-bl .a svg{flex:none;width:24px;height:22px;margin-bottom:1px;color:var(--ziel-c)}
+  .dm7-bl .a svg path{stroke-dasharray:32;stroke-dashoffset:0;transition:stroke-dashoffset .45s ease}
+  .dm7-bl-st{display:flex;align-items:center;gap:8px;margin:10px 0 0 32px;font-family:var(--olowek);font-size:22px;line-height:1.1;color:var(--grafit)}
+  .dm7-bl-st svg{width:34px;height:20px;transform:scaleY(-1) rotate(8deg)}
+  .dm7-bl-st b{font-weight:600;color:var(--tusz)}
+  .dm7-bl.js:not(.on) .a{opacity:0;transform:rotate(-1deg) translateX(-6px)}
+  .dm7-bl.js:not(.on) .a svg path{stroke-dashoffset:32}
+  .dm7-bl.on li:nth-child(1) .a{transition-delay:.1s}.dm7-bl.on li:nth-child(1) .a svg path{transition-delay:.5s}
+  .dm7-bl.on li:nth-child(2) .a{transition-delay:.8s}.dm7-bl.on li:nth-child(2) .a svg path{transition-delay:1.2s}
+  .dm7-bl.on li:nth-child(3) .a{transition-delay:1.5s}.dm7-bl.on li:nth-child(3) .a svg path{transition-delay:1.9s}
+  .dm7-bl.on li:nth-child(4) .a{transition-delay:2.2s}.dm7-bl.on li:nth-child(4) .a svg path{transition-delay:2.6s}
+  .dm7-bl.on li:nth-child(5) .a{transition-delay:2.9s}.dm7-bl.on li:nth-child(5) .a svg path{transition-delay:3.3s}
+  /* odbitka zdjęcia Piotra przypięta do notatnika */
+  .dm7-fo{position:absolute;z-index:3;right:34px;top:-150px;width:178px;margin:0;padding:10px 10px 0;background:#ffffff;
+    box-shadow:0 0 0 1px rgba(15,26,20,0.06),0 26px 40px -22px rgba(15,26,20,0.55),0 4px 10px -6px rgba(15,26,20,0.3);transform:rotate(5deg);transform-origin:30% 90%}
+  .dm7-fo img{display:block;width:100%;height:auto;aspect-ratio:1 / 1.05;object-fit:cover;object-position:50% 16%}
+  .dm7-fo figcaption{padding:6px 2px 9px;font-family:var(--olowek);font-size:21px;font-weight:600;line-height:1.05;color:var(--grafit)}
+  .dm7-fo figcaption small{display:block;font-family:var(--font, inherit);font-size:11px;font-weight:600;letter-spacing:0;color:var(--t3)}
+  .dm7-sp{position:absolute;z-index:4;right:166px;top:-34px;width:24px;height:74px;color:#97a09b;filter:drop-shadow(0 2px 1.5px rgba(15,26,20,0.3));transform:rotate(-4deg)}
+  @media (max-width:1100px){ .dm7-fo{right:14px;width:156px;top:-136px} .dm7-sp{right:132px} }
+  @media (max-width:900px){
+    .dm7-hs{min-height:0;padding-top:150px;display:block}
+    .dm7-bl{margin:0 auto -30px;width:100%}
+    .dm7-fo{right:18px;top:-138px;width:150px}
+    .dm7-sp{right:130px}
+  }
+  @media (max-width:560px){
+    .dm7-bl-in{padding:16px 16px 0 40px;background:linear-gradient(90deg,transparent 28px,rgba(214,90,70,0.35) 28px 29.5px,transparent 29.5px),repeating-linear-gradient(180deg,transparent 0 33px,rgba(70,110,170,0.16) 33px 34px);background-position:0 0,0 4px}
+    .dm7-bl li a{grid-template-columns:16px minmax(0,1fr);gap:0 8px}
+    .dm7-bl .q{font-size:15px}
+    .dm7-bl .a{font-size:21px}
+    .dm7-bl .a svg{width:20px;height:18px}
+    .dm7-bl-g{font-size:16.5px}
+    .dm7-bl-st{margin-left:24px;font-size:19px}
+    .dm7-hs{padding-top:130px}
+    .dm7-fo{width:128px;top:-120px;right:12px}
+    .dm7-fo figcaption{font-size:17px}
+    .dm7-sp{right:104px;top:-30px;height:60px}
+  }
+  @media (prefers-reduced-motion:reduce){ .dm7-bl .a,.dm7-bl .a svg path{transition:none} }
+
+  /* =====================================================================
+     01 · WYNIKI: przesuwany rząd kart (.u4w-k) ze strzałkami (data-u5s)
+     ===================================================================== */
+  #doswiadczenie{padding-left:0;padding-right:0}
+  #doswiadczenie > :not(.dm7-wt){margin-left:var(--pad);margin-right:var(--pad)}
+  .dm7-wt{display:flex;gap:16px;margin-top:clamp(48px,5vw,72px);padding:4px var(--pad) 10px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;scroll-padding:0 var(--pad);scrollbar-width:none}
+  .dm7-wt::-webkit-scrollbar{display:none}
+  .dm7-wt:focus-visible{outline:2px solid var(--ziel);outline-offset:-2px}
+  .dm7-wt .u4w-k{flex:0 0 clamp(280px,23vw,330px);grid-row:auto;grid-template-rows:auto auto auto auto 1fr auto;scroll-snap-align:start}
+  .dm7-wt .u4w-k dl{align-self:start}
+  .dm7-wt-d{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:22px}
+
+  /* =====================================================================
+     02 · LUDZIE: cztery pojedyncze portrety, schodkowo, z kartą nachodzącą
+     na dolną krawędź zdjęcia. Pasek pięciu etapów pokazuje, gdzie dana
+     osoba pracuje w projekcie; ta sama oś na wszystkich kartach.
+     ===================================================================== */
+  .dm7-lu{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(14px,1.6vw,24px);align-items:start;margin-top:clamp(48px,5vw,80px)}
+  .dm7-lk{position:relative;margin:0}
+  .dm7-lk:nth-child(even){margin-top:clamp(36px,4vw,64px)}
+  .dm7-lk > img{display:block;width:100%;height:auto;aspect-ratio:3 / 4;border-radius:22px;object-fit:cover;box-shadow:0 30px 60px -40px rgba(15,26,20,0.6)}
+  .dm7-lk figcaption{position:relative;margin:-64px 12px 0;padding:16px 18px 16px;border-radius:18px;background:#ffffff;box-shadow:0 0 0 1px rgba(15,26,20,0.05),0 24px 40px -26px rgba(15,26,20,0.45)}
+  .dm7-lk b{display:block;font-size:clamp(17px,1.4vw,20px);font-weight:700;letter-spacing:-0.025em;line-height:1.15}
+  .dm7-lk small{display:block;margin-top:2px;font-size:12.5px;font-weight:600;color:var(--ziel-c)}
+  .dm7-lk p{margin:10px 0 0;font-size:14px;line-height:1.5;color:var(--t2);text-wrap:pretty}
+  .dm7-et{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:3px;margin-top:14px}
+  .dm7-et i{height:6px;border-radius:3px;background:#e7e9e5}
+  .dm7-et i.on{background:var(--ziel)}
+  .dm7-et-l{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:3px;margin-top:5px;font-size:10px;font-weight:600;color:var(--t3);text-align:center}
+  .dm7-lu-st{display:flex;align-items:center;gap:12px;margin-top:clamp(34px,3.6vw,52px);padding:16px 20px;border-radius:18px;background:var(--ink);color:#ffffff;font-size:15px;line-height:1.45}
+  .dm7-lu-st svg{flex:none;width:22px;height:22px;fill:var(--ziel)}
+  .dm7-lu-st b{font-weight:650;color:var(--ziel)}
+  @media (max-width:1000px){
+    .dm7-lu{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .dm7-lk:nth-child(even){margin-top:40px}
+  }
+  @media (max-width:560px){
+    .dm7-lu{gap:12px}
+    .dm7-lk figcaption{margin:-44px 6px 0;padding:12px 12px 12px;border-radius:14px}
+    .dm7-lk p{font-size:12.5px}
+    .dm7-lk > img{border-radius:16px}
+    .dm7-et-l{display:none}
+    .dm7-lu-st{align-items:flex-start;font-size:14px}
+  }
+  .dm7-cyt{padding-top:clamp(56px,6vw,96px) !important}
+
+  /* =====================================================================
+     03 · PLAN PROJEKTU: papier na ciemnej planszy, za nim przybywają
+     dokumenty kolejnych etapów (oferty, wycena modułu)
+     ===================================================================== */
+  .dm7-st{position:relative}
+  .dm7-dk{position:absolute;z-index:0;right:-74px;width:240px;padding:14px 16px 16px;border-radius:5px;background:#f4f2e9;color:var(--t1);box-shadow:0 20px 40px -20px rgba(0,0,0,0.7);opacity:0;transform:translateX(-40px) rotate(3deg);transition:opacity .5s,transform .6s cubic-bezier(.2,.8,.2,1)}
+  .dm7-dk:nth-of-type(1){top:56px}
+  .dm7-dk:nth-of-type(2){top:150px}
+  .dm7-dk:nth-of-type(3){top:244px}
+  .dm7-dk{text-align:right}
+  .dm7-dk b{display:block;font-size:13px;font-weight:750;color:var(--t1)}
+  .dm7-dk span{display:block;margin-top:2px;font-family:var(--olowek);font-size:20px;font-weight:600;line-height:1;color:var(--tusz)}
+  .dm7-dk i{display:block;margin-top:4px;font-style:normal;font-size:10.5px;color:var(--t3)}
+  .dm7-st[data-krok="1"] .dm7-dk:nth-of-type(-n+1),
+  .dm7-st[data-krok="2"] .dm7-dk:nth-of-type(-n+2),
+  .dm7-st[data-krok="3"] .dm7-dk:nth-of-type(-n+3),
+  .dm7-st[data-krok="4"] .dm7-dk:nth-of-type(-n+3){opacity:1;transform:rotate(3deg)}
+  .dm7-pl{position:relative;z-index:1;padding:26px 30px 24px;border-radius:6px;background:#fbfaf5;color:var(--t1);box-shadow:0 50px 90px -40px rgba(0,0,0,0.85),0 0 0 1px rgba(0,0,0,0.2);transform:rotate(-0.8deg)}
+  .dm7-pl::before{content:"";position:absolute;left:50%;top:-12px;width:110px;height:26px;margin-left:-55px;background:rgba(232,226,200,0.82);box-shadow:0 2px 4px rgba(0,0,0,0.15);transform:rotate(-2deg)}
+  .dm7-pl header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding-bottom:12px;border-bottom:1.5px solid var(--t1)}
+  .dm7-pl header .lg{display:flex;align-items:center;gap:9px;font-size:21px;font-weight:750;letter-spacing:-0.03em}
+  .dm7-pl header .lg svg{width:20px;height:20px;fill:var(--ziel)}
+  .dm7-pl dl{display:grid;grid-template-columns:auto auto;gap:2px 12px;margin:0;font-size:11.5px;line-height:1.35}
+  .dm7-pl dt{color:var(--t3);text-align:right}
+  .dm7-pl dd{margin:0;font-weight:600}
+  .dm7-pl-ow{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr) 112px;gap:0 14px;padding:10px 0 6px;font-size:11.5px;font-weight:650;color:var(--t3);border-bottom:1px solid var(--linia2)}
+  .dm7-pl ol{margin:0;padding:0;list-style:none}
+  .dm7-pl li{position:relative;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr) 112px;gap:0 14px;align-items:center;min-height:clamp(68px,6vw,80px);padding:8px 0;border-bottom:1px solid var(--linia2)}
+  .dm7-pl li > div b{display:block;font-size:clamp(17px,1.45vw,20px);font-weight:700;letter-spacing:-0.025em;line-height:1.15}
+  .dm7-pl li > div span{display:block;margin-top:3px;font-size:12.5px;line-height:1.4;color:var(--t2)}
+  .dm7-pl li > p{margin:0;font-size:13px;line-height:1.4}
+  .dm7-pl-s{position:relative;display:grid;justify-items:center;align-items:center;min-height:44px}
+  .dm7-pl-s > *{grid-area:1 / 1;opacity:0;transition:opacity .35s,transform .35s}
+  .dm7-pl-s .ok{display:flex;align-items:center;gap:4px;font-family:var(--olowek);font-size:23px;font-weight:600;color:var(--tusz);transform:rotate(-3deg)}
+  .dm7-pl-s .ok svg{width:24px;height:22px;color:var(--ziel-c)}
+  .dm7-pl-s .pc{padding:5px 9px;border:2px solid #c0392b;border-radius:6px;font-size:12px;font-weight:800;letter-spacing:0.02em;color:#c0392b;white-space:nowrap;transform:rotate(-8deg) scale(1.3);mix-blend-mode:multiply}
+  .dm7-pl-s .pc.z{border-color:#0a7a52;color:#0a7a52}
+  .dm7-st[data-krok="1"] li:nth-child(-n+1) .ok,
+  .dm7-st[data-krok="2"] li:nth-child(-n+2) .ok,
+  .dm7-st[data-krok="3"] li:nth-child(-n+3) .ok,
+  .dm7-st[data-krok="4"] li:nth-child(-n+3) .ok{opacity:1}
+  .dm7-st[data-krok="0"] li:nth-child(1) .pc,
+  .dm7-st[data-krok="1"] li:nth-child(2) .pc,
+  .dm7-st[data-krok="2"] li:nth-child(3) .pc,
+  .dm7-st[data-krok="3"] li:nth-child(4) .pc,
+  .dm7-st[data-krok="4"] li:nth-child(4) .pc{opacity:1;transform:rotate(-8deg) scale(1)}
+  .dm7-st[data-krok="0"] li:nth-child(1),.dm7-st[data-krok="1"] li:nth-child(2),.dm7-st[data-krok="2"] li:nth-child(3),.dm7-st[data-krok="3"] li:nth-child(4),.dm7-st[data-krok="4"] li:nth-child(4){background:linear-gradient(90deg,rgba(0,205,119,0.09),rgba(0,205,119,0) 70%)}
+  .dm7-pl li{transition:background .4s}
+  .dm7-dop{position:absolute;z-index:2;right:-22px;top:calc(clamp(68px,6vw,80px) * 2 + 140px);padding:8px 12px;border-radius:4px;background:#fff6a8;box-shadow:0 14px 24px -12px rgba(0,0,0,0.5);font-family:var(--olowek);font-size:23px;font-weight:600;line-height:1.05;color:#3b4741;opacity:0;transform:translateY(8px) rotate(4deg);transition:opacity .4s,transform .4s}
+  .dm7-st[data-krok="4"] .dm7-dop{opacity:1;transform:rotate(4deg)}
+  .dm7-pl footer{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:16px}
+  .dm7-pl footer > div{display:flex;align-items:flex-end;gap:10px}
+  .dm7-pl footer img{flex:none;width:36px;height:36px;border-radius:50%;object-fit:cover;object-position:50% 20%}
+  .dm7-pl footer span{flex:1;font-size:11.5px;color:var(--t3);border-top:1px solid var(--t2);padding-top:4px}
+  .dm7-pl footer svg{display:block;width:100px;height:30px;margin-bottom:2px;color:var(--tusz)}
+  .dm7-pl footer i{display:block;height:30px;font-family:var(--olowek);font-style:normal;font-size:26px;font-weight:600;line-height:30px;color:var(--tusz)}
+  .dm7-czas{display:none}
+  /* jedna osoba przy kroku opowieści */
+  .dm7-ko{display:flex;align-items:center;gap:14px;margin-top:20px;padding:10px 18px 10px 10px;border-radius:999px;background:rgba(255,255,255,0.05);box-shadow:inset 0 0 0 1px rgba(255,255,255,0.1);width:fit-content}
+  .dm7-ko img{flex:none;width:52px;height:52px;max-width:none;border-radius:50%;object-fit:cover}
+  .dm7-ko span{font-size:13px;line-height:1.35;color:rgba(255,255,255,0.6)}
+  .dm7-ko b{display:block;font-size:15px;font-weight:650;color:#ffffff}
+  @media (max-width:1180px){ .dm7-dk{right:-30px;width:200px} }
+  @media (max-width:900px){
+    .dm7-dk{display:none}
+    .dm7-pl{padding:14px 14px 12px;transform:none}
+    .dm7-pl::before,.dm7-pl dl{display:none}
+    .dm7-pl header .lg{font-size:16px}
+    .dm7-pl header{padding-bottom:8px}
+    .dm7-pl-ow{display:none}
+    .dm7-pl li{grid-template-columns:minmax(0,1fr) 92px;min-height:46px;padding:4px 0}
+    .dm7-pl li > p,.dm7-pl li > div span{display:none}
+    .dm7-pl li > div b{font-size:15px}
+    .dm7-pl-s .ok{font-size:19px}
+    .dm7-pl-s .ok svg{width:18px;height:16px}
+    .dm7-pl-s .pc{font-size:10.5px;padding:3px 6px}
+    .dm7-pl footer{display:none}
+    .dm7-dop{right:8px;top:auto;bottom:-14px;font-size:18px}
+    .dm7-ko img{width:42px;height:42px}
+  }
+  @media (prefers-reduced-motion:reduce){ .dm7-pl-s > *,.dm7-dop,.dm7-dk{transition:none} }
+
+  /* =====================================================================
+     WYRÓŻNIKI: kafle różnej wielkości, każdy w innym obrazie
+     ===================================================================== */
+  .dm7-wy{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:16px;margin-top:clamp(48px,5vw,80px)}
+  .dm7-wk{position:relative;overflow:hidden;display:flex;flex-direction:column;padding:clamp(24px,2.6vw,36px);border-radius:30px;background:#ffffff;box-shadow:0 0 0 1px rgba(15,26,20,0.06)}
+  .dm7-wk > small,.dm7-wk .k{font-size:13px;font-weight:650;color:var(--ziel-c)}
+  .dm7-wk h3{margin:10px 0 0;font-size:clamp(22px,2vw,30px);font-weight:700;letter-spacing:-0.035em;line-height:1.08;text-wrap:balance}
+  .dm7-wk > p{margin:12px 0 0;max-width:470px;font-size:15px;line-height:1.55;color:var(--t2);text-wrap:pretty}
+  .dm7-wk a.lk{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-size:14.5px;font-weight:650;color:var(--ziel-c)}
+  /* Appto: ciemny kafel z prawdziwym ekranem */
+  .dm7-wk.ap{grid-column:span 7;grid-row:span 2;min-height:640px;background:radial-gradient(640px 380px at 92% 100%,rgba(0,205,119,0.24),rgba(0,205,119,0) 70%),var(--ink);color:#ffffff;box-shadow:none}
+  .dm7-wk.ap > small{color:var(--ziel)}
+  .dm7-wk.ap > p{color:rgba(255,255,255,0.7)}
+  .dm7-wk.ap a.lk{color:var(--ziel)}
+  .dm7-wk.ap .ek{position:absolute;left:clamp(24px,2.6vw,36px);right:-110px;bottom:-70px}
+  .dm7-wk.ap .ek img{display:block;width:100%;height:auto;filter:drop-shadow(0 30px 50px rgba(0,0,0,0.55))}
+  /* analitycy: fragment opisu procesu */
+  .dm7-wk.an{grid-column:span 5;background:var(--papier);box-shadow:none}
+  .dm7-op{margin-top:20px;border-radius:16px;background:#ffffff;box-shadow:0 0 0 1px rgba(15,26,20,0.05),0 20px 40px -30px rgba(15,26,20,0.45);overflow:hidden}
+  .dm7-op header{display:flex;justify-content:space-between;gap:10px;padding:11px 16px;border-bottom:1px solid var(--linia2);font-size:12px;color:var(--t3)}
+  .dm7-op header b{font-size:13px;font-weight:700;color:var(--t1)}
+  .dm7-op ol{margin:0;padding:6px 0;list-style:none;counter-reset:k}
+  .dm7-op li{display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:8px;align-items:center;padding:7px 16px;font-size:13px;line-height:1.35;counter-increment:k}
+  .dm7-op li::before{content:counter(k);display:grid;place-items:center;width:20px;height:20px;border-radius:6px;background:var(--papier);font-size:11px;font-weight:700;color:var(--t2)}
+  .dm7-op li em{font-style:normal;font-size:11.5px;color:var(--t3);white-space:nowrap}
+  .dm7-op li.w{background:#fdf3df}
+  .dm7-op li.w::before{background:#f0a33a;color:#ffffff}
+  .dm7-op li.w em{color:#8a5a00;font-weight:650}
+  /* WiseStack: sześć bramek po kolei */
+  .dm7-wk.ws{grid-column:span 5}
+  .dm7-br{position:relative;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 10px;margin:22px 0 0;padding:0;list-style:none;counter-reset:b}
+  .dm7-br li{position:relative;display:flex;flex-direction:column;gap:8px;padding:12px 12px 12px;border-radius:14px;background:#f6f8f5;font-size:12.5px;font-weight:600;line-height:1.3;counter-increment:b}
+  .dm7-br li::before{content:counter(b);display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--ziel);font-size:11px;font-weight:750;color:var(--ink)}
+  .dm7-br li:last-child{background:var(--ink);color:#ffffff}
+  .dm7-br li:last-child::before{background:#ffffff}
+  /* konta: prawdziwe znaki usług, właściciel przy każdym */
+  .dm7-wk.kn{grid-column:span 5;background:linear-gradient(180deg,#eef5ef,#e3eee4);box-shadow:none}
+  .dm7-kt{margin:20px 0 0;padding:0;list-style:none;border-radius:16px;background:#ffffff;box-shadow:0 20px 40px -30px rgba(15,26,20,0.45);overflow:hidden}
+  .dm7-kt li{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:12px;align-items:center;padding:11px 14px;border-top:1px solid var(--linia2)}
+  .dm7-kt li:first-child{border-top:0}
+  .dm7-kt .zn{display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:#f4f5f3}
+  .dm7-kt .zn svg{width:18px;height:18px;fill:#111}
+  .dm7-kt .zn img{width:20px;height:20px;object-fit:contain}
+  .dm7-kt b{display:block;font-size:13.5px;font-weight:650}
+  .dm7-kt small{display:block;font-family:var(--mono);font-size:11px;color:var(--t3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .dm7-kt em{display:flex;align-items:center;gap:7px;padding:5px 10px 5px 5px;border-radius:999px;background:#eaf6ef;font-style:normal;font-size:12px;font-weight:650;color:var(--ziel-c);white-space:nowrap}
+  .dm7-kt em i{display:grid;place-items:center;width:18px;height:18px;border-radius:50%;background:var(--ziel)}
+  .dm7-kt em svg{width:11px;height:11px;fill:var(--ink)}
+  /* OpenAI */
+  .dm7-wk.oa{grid-column:span 3;justify-content:space-between;gap:20px}
+  .dm7-wk.oa img{display:block;width:100%;max-width:190px;height:auto}
+  .dm7-wk.oa h3,.dm7-wk.wg h3{font-size:clamp(19px,1.6vw,23px)}
+  /* WiseGroup z portretem Szymona Negacza */
+  .dm7-wk.wg{grid-column:span 4;padding:0;background:var(--papier);box-shadow:none}
+  .dm7-wk.wg .t{padding:clamp(24px,2.6vw,36px) clamp(24px,2.6vw,36px) 0}
+  .dm7-wk.wg .t img{display:block;width:160px;height:auto;margin-top:18px}
+  .dm7-wk.wg figure{position:relative;margin:auto 0 0;padding:20px clamp(24px,2.6vw,36px) 0;display:flex;align-items:flex-end;gap:14px}
+  .dm7-wk.wg figure img{display:block;width:120px;height:140px;border-radius:16px 16px 0 0;object-fit:cover;object-position:50% 18%}
+  .dm7-wk.wg figcaption{padding-bottom:18px;font-size:12.5px;line-height:1.35;color:var(--t2)}
+  .dm7-wk.wg figcaption b{display:block;font-size:14.5px;font-weight:700;color:var(--t1)}
+  @media (max-width:1100px){
+    .dm7-wk.ap{grid-column:1 / -1;grid-row:auto;min-height:580px}
+    .dm7-wk.an,.dm7-wk.ws,.dm7-wk.kn{grid-column:span 6}
+    .dm7-wk.oa{grid-column:span 6}
+    .dm7-wk.wg{grid-column:span 6}
+  }
+  @media (max-width:700px){
+    .dm7-wy{gap:12px}
+    .dm7-wk.an,.dm7-wk.ws,.dm7-wk.kn,.dm7-wk.oa,.dm7-wk.wg{grid-column:1 / -1}
+    .dm7-wk.ap{min-height:460px}
+    .dm7-wk.ap .ek{right:-140px;bottom:-30px}
+    .dm7-br{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .dm7-wk.oa img{max-width:150px}
+  }
+
+  /* =====================================================================
+     05 · TRZY ROZMOWY: pytanie klienta → odpowiedź Piotra → wynik rozmowy
+     ===================================================================== */
+  .dm7-rz{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(14px,1.4vw,20px);margin-top:clamp(48px,5vw,80px)}
+  .dm7-rz-k{display:flex;flex-direction:column;padding:clamp(20px,2vw,28px);border-radius:26px;background:#ffffff;box-shadow:0 0 0 1px rgba(15,26,20,0.05),0 34px 70px -52px rgba(15,26,20,0.45)}
+  .dm7-dy{display:flex;align-items:flex-end;gap:10px}
+  .dm7-dy img{flex:none;width:38px;height:38px;border-radius:50%;object-fit:cover}
+  .dm7-dy div{padding:12px 15px;border-radius:18px 18px 18px 6px;background:var(--papier);font-size:15px;line-height:1.5;color:var(--t1);text-wrap:pretty}
+  .dm7-dy div small{display:block;margin-bottom:4px;font-size:12px;font-weight:650;color:var(--t3)}
+  .dm7-dy.my{flex-direction:row-reverse;margin-top:14px;padding-left:22px}
+  .dm7-dy.my div{border-radius:18px 18px 6px 18px;background:var(--ink);color:#ffffff}
+  .dm7-dy.my div small{color:var(--ziel)}
+  .dm7-dy.my img{box-shadow:0 0 0 2px #fff,0 0 0 3.5px rgba(0,205,119,0.55)}
+  .dm7-rz-w{display:flex;align-items:center;gap:12px;margin-top:auto;padding-top:22px}
+  .dm7-rz-w > i{flex:none;display:grid;place-items:center;width:38px;height:38px;border-radius:50%;background:var(--ziel);color:var(--ink)}
+  .dm7-rz-w > i svg{width:17px;height:17px;fill:currentColor}
+  .dm7-rz-w b{display:block;font-size:17px;font-weight:700;letter-spacing:-0.02em;line-height:1.2}
+  .dm7-rz-w span{display:block;font-size:12.5px;font-weight:600;color:var(--t3)}
+  .dm7-rz-k + .dm7-rz-k .dm7-rz-w > i{background:var(--ink);color:var(--ziel)}
+  @media (max-width:1000px){ .dm7-rz{grid-template-columns:minmax(0,1fr)} .dm7-rz-w{margin-top:0} }
+</style>
+
+<div class="v3 dm7">
+<Styl />
+<Anim />
+
+<!-- ============ HERO: notatnik zarządu ze zdjęciem Piotra ============ -->
+<section class="u3h dm7-h">
+<div class="u3h-in">
+<div class="u3h-tekst">
+<h1 class="u3h-h1">Dlaczego firmy wybierają <span>Let’s automate</span></h1>
+<p class="u3h-lead">Let’s automate to studio transformacji AI, część WiseGroup. Projektujemy i budujemy systemy oparte na AI dla średnich i dużych firm i prowadzimy zespoły, które budują same.</p>
+<div class="v3-akcje u3h-akcje"><a href="#kontakt" class="v3-btn">Umów rozmowę <span aria-hidden="true">→</span></a><a href="#doswiadczenie" class="u3h-lnk">Pięć powodów ↓</a></div>
+<p class="u6-tw"><img src="/piotr-wojciuk.jpg" alt="" width="1002" height="1100" decoding="async"><span>Pierwszą rozmowę prowadzi <b>Piotr Wojciuk</b>. Bezpłatnie i bez zobowiązań.</span></p>
+</div>
+<div class="dm7-hs">
+<nav class="dm7-bl" data-dm7-bl aria-label={HERO_ARIA}>
+<figure class="dm7-fo" aria-hidden="true"><img src="/piotr-wojciuk.jpg" alt="" width="1002" height="1100" decoding="async"><figcaption>Piotr, pierwsza rozmowa<small>New Business Lead</small></figcaption></figure>
+<svg class="dm7-sp" viewBox="0 0 24 74" aria-hidden="true" set:html={SPINACZ}></svg>
+<div class="dm7-bl-in">
+<p class="dm7-bl-g">Pytania do wykonawcy</p>
+<ol>
+{POWODY.map((p, i) => (
+  <li><a href={`#${p.id}`}><span class="n">{i + 1}.</span><span><span class="q">{p.q}</span><span class="a"><svg viewBox="0 0 24 24" aria-hidden="true" set:html={PTASZEK}></svg>{p.a}</span></span></a></li>
+))}
+</ol>
+<p class="dm7-bl-st"><svg viewBox="0 0 42 24" aria-hidden="true" set:html={STRZALKA}></svg>rozmowa z Piotrem, <b>wtorek 10:00</b></p>
+</div>
+</nav>
+</div>
+</div>
+</section>
+<Loga />
+
+<!-- ============ 01 · DOŚWIADCZENIE: rząd wyników ze strzałkami ============ -->
+<section id="doswiadczenie" class="v3-sek">
+<div class="v8-gl">
+<h2 class="u2-h2">Za nami ponad <span>200 wdrożeń</span></h2>
+<p class="v3-sub">Automatyzację i AI wdrażaliśmy w ponad stu czterdziestu firmach, najczęściej w produkcji, dystrybucji i usługach. Wnioski z tych projektów spisaliśmy w <a href="/wisestack">WiseStacku</a>. Wasz problem był już u kogoś rozwiązany, razem z tym, co przy nim nie zadziałało.</p>
+</div>
+<div class="dm7-wt" data-u5s tabindex="0" role="region" aria-label="Wyniki wdrożeń, przewijane w poziomie">
+{WYNIKI.map((x) => (
+  <article class="u4w-k">
+    <span class="dz">{x.dz}</span>
+    <h3>{x.p}</h3>
+    <p class="l">{x.l}<small>{x.j}</small></p>
+    <p class="ld">{x.ld}</p>
+    {x.co ? <dl><div class="po"><dt>System</dt><dd>{x.co}</dd></div></dl> : <dl><div><dt>Przed</dt><dd>{x.przed}</dd></div><div class="po"><dt>Po</dt><dd>{x.po}</dd></div></dl>}
+    <a href={x.h}>{x.u}<span aria-hidden="true">→</span></a>
+  </article>
+))}
+</div>
+<div class="dm7-wt-d">
+<span class="u5s-lk" data-u5s-lk aria-hidden="true">1–4 z {WYNIKI.length}</span>
+<div class="dw-str">
+<button type="button" data-u5s-k="-1" aria-label="Poprzednie wyniki" disabled><svg class="hi" viewBox="0 0 16 16" set:html={HI['arrow-right']} style="transform:scaleX(-1)"></svg></button>
+<button type="button" data-u5s-k="1" aria-label="Następne wyniki"><svg class="hi" viewBox="0 0 16 16" set:html={HI['arrow-right']}></svg></button>
+</div>
+</div>
+</section>
+
+<!-- ============ 02 · ZESPÓŁ: pojedyncze portrety ============ -->
+<section id="zespol" class="v3-sek v3-papier">
+<div class="v8-gl">
+<h2 class="u2-h2">Jeden zespół <span>odpowiada za całość</span></h2>
+<p class="v3-sub">Nie podnajmujemy zespołów na czas zlecenia. Od pierwszej rozmowy do utrzymania systemu pracują przy projekcie ludzie z naszego studia, więc za wynik odpowiada jedna firma.</p>
+</div>
+<div class="dm7-lu">
+{LUDZIE.map((o) => (
+  <figure class="dm7-lk">
+    <img src={o.f} alt={o.n} width="900" height="1200" loading="lazy" decoding="async" style={`object-position:${o.poz}`}>
+    <figcaption>
+      <b>{o.n}</b><small>{o.r}</small>
+      <p>{o.d}</p>
+      <span class="dm7-et" aria-label={`Etapy projektu: ${ETAPY_OS.filter((_, i) => o.e[i]).join(', ')}`}>{o.e.map((x) => <i class={x ? 'on' : ''}></i>)}</span>
+      <span class="dm7-et-l" aria-hidden="true">{ETAPY_OS.map((e) => <span>{e.slice(0, 4)}</span>)}</span>
+    </figcaption>
+  </figure>
+))}
+</div>
+<p class="dm7-lu-st"><svg viewBox="0 0 40 41" aria-hidden="true" set:html={SYGNET}></svg><span>Analitycy, project managerowie, developerzy, QA i projektanci pracują w jednym studiu. <b>Bez podwykonawców na żadnym etapie.</b></span></p>
+</section>
+
+<section class="v3-sek dm7-cyt">
+<Cytat cytat="Let’s automate wziął pełną odpowiedzialność za projekt i dowiózł go do końca. To dlatego powierzyliśmy im kolejny, znacznie większy." logo="/uploads/klienci/nars.svg" logoAlt="NARS Polska" imie="Jakub Ciołkowski" rola="Członek Zarządu, NARS Polska" />
+</section>
+
+<!-- ============ 03 · PLAN PROJEKTU (sekcja-podpis) ============ -->
+<section id="cena" class="u2-pl u4z u6z">
+<div class="u2-pl-in u4z-in v3-ziarno">
+<div class="u4z-gl">
+<h2 class="u2-h2 jasny">Zawsze wiecie, <span>co czeka Was dalej</span></h2>
+<p class="v3-sub jasny">Projekt idzie dużymi etapami. Całą drogę widzicie od pierwszej rozmowy, a cenę każdego etapu znacie w stałej kwocie, zanim go zamówicie. Tak wygląda plan projektu, który dostaje zarząd Stalprofilu.</p>
+</div>
+<div class="u4z-g">
+<div class="u4z-wiz" data-u4z data-krok="0" role="img" aria-label={PLAN_ARIA}>
+<div class="dm7-st" data-krok="0" data-dm7-st aria-hidden="true">
+{DOK.map((d) => (<div class="dm7-dk"><b>{d.t}</b><span>{d.d}</span><i>stała kwota</i></div>))}
+<div class="dm7-pl">
+<header><span class="lg"><svg viewBox="0 0 40 41" set:html={SYGNET}></svg>Plan projektu</span><dl><dt>dla</dt><dd>Stalprofil sp. z o.o.</dd><dt>proces</dt><dd>obieg faktur kosztowych</dd><dt>wersja</dt><dd>21.10.2026</dd></dl></header>
+<div class="dm7-pl-ow"><span>Etap i co dostajecie</span><span>Cena</span><span style="text-align:center">Stan</span></div>
+<ol>
+{PLAN.map((e) => (
+  <li>
+    <div><b>{e.t}</b><span>{e.m}</span></div>
+    <p>{e.c}</p>
+    <span class="dm7-pl-s"><span class="ok"><svg viewBox="0 0 24 24" set:html={PTASZEK}></svg>{e.d}</span><span class={`pc${e.p === 'w toku' ? '' : ' z'}`}>{e.p}</span></span>
+  </li>
+))}
+</ol>
+<footer>
+<div><img src={OS.SzymonK.f} alt="" width="870" height="1210"><span><svg viewBox="0 0 120 34" set:html={PODPIS}></svg>Szymon Kita, Let’s automate</span></div>
+<div><img src="/makieta/awatar-pawel.webp" alt="" width="96" height="96"><span><i>P. Nowicki</i>Paweł Nowicki, Stalprofil</span></div>
+</footer>
+</div>
+<p class="dm7-dop">+2 tygodnie,<br>cena bez zmian</p>
+<span class="dm7-czas" data-u4z-czas data-c0="" data-c1="" data-c2=""></span>
+</div>
+</div>
+<div class="u4z-kroki">
+{KROKI.map((k, i) => (
+  <div class={`u4z-k${i === 0 ? ' on' : ''}`} data-u4z-k={i}><div><em>{String(i + 1).padStart(2, '0')}</em><h3>{k.t}</h3><p>{k.d}</p>
+  {k.o && <p class="dm7-ko"><img src={k.o.f} alt="" width="900" height="1200" loading="lazy" style={`object-position:${k.o.poz}`}><span><b>{k.o.n}</b>{k.o.r}</span></p>}
+  {i === KROKI.length - 1 && (<a href="#kontakt" class="u6-mc"><img src="/piotr-wojciuk.jpg" alt="" width="1002" height="1100" loading="lazy" decoding="async"><span><b>Zacznijmy od bezpłatnej diagnozy</b><span class="nw">Umów rozmowę z Piotrem <span aria-hidden="true">→</span></span></span></a>)}
+  </div></div>
+))}
+</div>
+</div>
+</div>
+</section>
+
+<!-- ============ WYRÓŻNIKI ============ -->
+<section id="wyrozniki" class="v3-sek">
+<div class="v8-gl">
+<h2 class="u2-h2">Co jeszcze <span>nas wyróżnia</span></h2>
+<p class="v3-sub">Kilka rzeczy, których nie ma w każdej firmie od AI.</p>
+</div>
+<div class="dm7-wy">
+<article class="dm7-wk ap">
+<small>Własny produkt AI</small>
+<h3>Rozwijamy Appto, platformę agentów AI dla całej firmy</h3>
+<p>Doświadczenie z budowy własnego produktu AI wnosimy do każdego projektu.</p>
+<a class="lk" href="/produkty#appto">Poznajcie Appto <span aria-hidden="true">→</span></a>
+<div class="ek" aria-hidden="true"><img src="/produkty/slajdy/ap-1-inbox.webp" alt="" width="1400" height="876" loading="lazy" decoding="async"></div>
+</article>
+<article class="dm7-wk an">
+<small>Analitycy biznesowi</small>
+<h3>Proces poznajemy przy Waszych biurkach</h3>
+<p>Analitycy rozpisują proces z ludźmi, którzy go robią, razem z wyjątkami. Kod powstaje na tym opisie.</p>
+<div class="dm7-op" aria-hidden="true">
+<header><b>Opis procesu · obieg faktur</b><span>wersja 2</span></header>
+<ol>{OPIS.map((o) => (<li class={o.w ? 'w' : ''}><span>{o.t}</span><em>{o.kto}</em></li>))}</ol>
+</div>
+</article>
+<article class="dm7-wk ws">
+<small>Autorska metoda</small>
+<h3>Budujemy według WiseStacka</h3>
+<p>Każda zmiana przechodzi przez sześć bramek, zanim zobaczą ją Wasi ludzie.</p>
+<ol class="dm7-br">{BRAMKI.map((b) => (<li>{b}</li>))}</ol>
+<a class="lk" href="/wisestack">Jak działa WiseStack <span aria-hidden="true">→</span></a>
+</article>
+<article class="dm7-wk kn">
+<small>Wasze konta</small>
+<h3>Kod i klucze stoją na Waszych kontach</h3>
+<ul class="dm7-kt">{KONTA.map((k) => (<li><span class="zn" aria-hidden="true">{k.svg ? <svg viewBox="0 0 24 24" set:html={k.svg}></svg> : <img src={k.img} alt="" width="20" height="20" loading="lazy">}</span><span><b>{k.t}</b><small>{k.z}</small></span><em><i><svg viewBox="0 0 16 16" set:html={HI['check']}></svg></i>Stalprofil</em></li>))}</ul>
+<p>Po zakończeniu współpracy odbieracie nam dostępy i nie potrzebujecie od nas żadnej licencji.</p>
+</article>
+<article class="dm7-wk oa">
+<div><small>Partner OpenAI</small><h3>Jesteśmy w programie OpenAI Select Partner</h3></div>
+<img src="/uploads/openai-select-partner.png" alt="OpenAI Select Partner" width="1125" height="531" loading="lazy" decoding="async">
+</article>
+<article class="dm7-wk wg">
+<div class="t"><small class="k">Zaplecze</small><h3>Stoi za nami grupa doradcza</h3><img src="/uploads/wisegroup_logo_v2.webp" alt="WiseGroup" width="442" height="52" loading="lazy" decoding="async"></div>
+<figure><img src="/szymon-negacz-spot.jpg" alt="" width="1100" height="888" loading="lazy" decoding="async"><figcaption><b>Szymon Negacz</b>Współwłaściciel</figcaption></figure>
+</article>
+</div>
+</section>
+
+<!-- ============ 05 · GRANICA: trzy rozmowy ============ -->
+<section id="granica" class="v3-sek v3-papier">
+<div class="v8-gl">
+<h2 class="u2-h2">Mówimy, kiedy <span>to nie dla nas</span></h2>
+<p class="v3-sub">Pierwsza rozmowa jest bezpłatna i bez zobowiązań i kończy się jedną z trzech odpowiedzi. Przy dwóch z nich nic nie sprzedajemy.</p>
+</div>
+<div class="dm7-rz" data-anim data-gra>
+{ROZMOWY.map((r) => (
+  <article class="dm7-rz-k rv">
+    <div class="dm7-dy"><img src={r.f} alt="" width="96" height="96" loading="lazy"><div><small>{r.kto}, {r.fir}</small>{r.q}</div></div>
+    <div class="dm7-dy my"><img src="/piotr-wojciuk.jpg" alt="" width="1002" height="1100" loading="lazy"><div><small>Piotr Wojciuk</small>{r.o}</div></div>
+    <div class="dm7-rz-w"><i aria-hidden="true"><svg viewBox="0 0 16 16" set:html={r.ik}></svg></i><div><span>Rozmowa kończy się</span><b>{r.w}</b></div></div>
+  </article>
+))}
+</div>
+</section>
+
+<!-- ============ KONTAKT nad FAQ ============ -->
+<div class="u6-kon">
+<Kontakt tytul={`Opowiedzcie, co dziś uwiera${NB}najbardziej`} lead="Napiszcie w dwóch zdaniach, co się u Was dzieje. Odpowiemy w jeden dzień roboczy z propozycją terminu rozmowy." zrodlo="Dlaczego my" pytanie="Co się u Was dzieje?" podpowiedz="Np. mamy cztery systemy, dane przepisujemy ręcznie i nikt nie wie, ile to kosztuje…" />
+</div>
+
+</div>
+
+<GcFaq heading="Pytania, które padają przed decyzją" ctaLabel="Zadajcie nam swoje →" items={faq} />
+
+<LuSkrypty />
+
+<script>
+  var redukcja = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var ma = 'IntersectionObserver' in window;
+
+  // ---- Hero: odpowiedzi w notatniku dopisywane po kolei ----
+  // Bez JS i przy ograniczonym ruchu odpowiedzi stoją od razu.
+  (function(){
+    var bl = document.querySelector('[data-dm7-bl]') as HTMLElement | null;
+    if(!bl || redukcja || !ma) return;
+    bl.classList.add('js');
+    var io = new IntersectionObserver(function(w){
+      if(!w[0].isIntersecting) return;
+      io.disconnect();
+      setTimeout(function(){ bl!.classList.add('on'); }, 350);
+    }, { threshold: 0.35 });
+    io.observe(bl);
+  })();
+
+  // ---- Plan projektu idzie za krokiem opowieści ----
+  // LuSkrypty ustawia data-krok na [data-u4z]; plan i dokumenty biorą go stamtąd.
+  (function(){
+    var wiz = document.querySelector('[data-u4z]') as HTMLElement | null;
+    var st = document.querySelector('[data-dm7-st]') as HTMLElement | null;
+    if(!wiz || !st) return;
+    new MutationObserver(function(){ st!.dataset.krok = wiz!.dataset.krok || '0'; }).observe(wiz, { attributes: true, attributeFilter: ['data-krok'] });
+  })();
+</script>
+</LaBase>
