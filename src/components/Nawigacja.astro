@@ -438,6 +438,10 @@ const POZOSTALE = [
   /* ---- megamenu ---- */
   .mega-wrap{position:absolute;top:calc(100% - 20px);left:50%;transform:translateX(-50%) translateY(6px);width:min(1040px,calc(100vw - 40px));padding-top:34px;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .18s ease,transform .18s ease}
   .nav-item:hover .mega-wrap,.nav-item:focus-within .mega-wrap{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0);pointer-events:auto}
+  /* Megamenu wisi pod przyklejonym nagłówkiem, więc przewijanie strony go
+     nie przesuwa. Na niskim ekranie (tablet poziomo, małe okno) dół panelu
+     z programami był nieosiągalny — panel przewija się wtedy sam. */
+  .mega-wrap .mega-panel{max-height:calc(100vh - 130px);max-height:calc(100dvh - 130px);overflow-y:auto;overscroll-behavior:contain}
   .mega-eyebrow{font-weight:700;font-size:11px;letter-spacing:0.07em;text-transform:uppercase;color:#808b83;padding:0 11px;margin-bottom:6px}
   .mega-item{display:block;padding:9px 11px;border-radius:11px;transition:background .15s}
   .mega-item:hover{background:#f4f8f2}
@@ -574,17 +578,24 @@ const POZOSTALE = [
   .nb-kreski{display:flex;flex-direction:column;justify-content:center;gap:4px;width:18px}
   .nb-kreski span{display:block;height:2px;border-radius:2px;background:currentColor}
 
-  .nav-panel{position:fixed;inset:0;z-index:90;display:none;flex-direction:column;background:#ffffff;
-    overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
-    opacity:0;transform:translateY(-6px);transition:opacity .2s ease,transform .2s ease}
+  /* Panel to nieruchoma rama (pasek z logo i zamknięciem na górze), a
+     przewija się tylko lista pod nim (.np-tresc). Do 27.10.2026 przewijał
+     się cały panel z przyklejonym paskiem i na telefonie (zgłoszenie
+     Szymona) menu otwarte na hero nie dawało się przewinąć. Przewijany
+     element wewnątrz ramy o stałej wysokości (flex: 1 + min-height: 0)
+     Safari obsługuje pewniej niż przewijany sam element fixed. Wysokość
+     w dvh, żeby dół listy nie chował się pod paskiem przeglądarki. */
+  .nav-panel{position:fixed;top:0;left:0;right:0;height:100vh;height:100dvh;z-index:90;display:none;flex-direction:column;background:#ffffff;
+    overflow:hidden;opacity:0;transform:translateY(-6px);transition:opacity .2s ease,transform .2s ease}
   .nav-panel.widoczny{display:flex}
   .nav-panel.otwarty{opacity:1;transform:none}
-  .np-pasek{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:16px;
+  .np-pasek{flex:none;display:flex;align-items:center;justify-content:space-between;gap:16px;
     padding:14px 16px;background:#ffffff;border-bottom:1px solid #eef1ec}
   .np-zamknij{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;padding:0;
     border:1px solid #e0e7dd;border-radius:12px;background:#ffffff;color:#16211a;cursor:pointer}
   .np-zamknij:focus-visible{outline:2px solid var(--la-accent,#00CD77);outline-offset:3px}
-  .np-tresc{padding:8px 16px 40px}
+  .np-tresc{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;
+    padding:8px 16px calc(40px + env(safe-area-inset-bottom))}
   .np-grupa{display:block;padding:20px 0;border-bottom:1px solid #eef1ec}
   .np-glowa{display:block;font-size:23px;font-weight:800;line-height:1.1;letter-spacing:-0.03em;color:#16211a}
   .np-poz{display:block;margin-top:4px;padding:11px 12px 11px 0;border-radius:11px}
@@ -617,6 +628,7 @@ const POZOSTALE = [
      górę), więc blokujemy przez position:fixed i wracamy na to samo
      miejsce przy zamknięciu. */
   body.nav-otwarte{position:fixed;left:0;right:0;width:100%;overflow:hidden}
+  html.nav-otwarte{overflow:hidden}
 
   @media (max-width:900px){
     .mega-wrap{display:none !important}
@@ -663,6 +675,7 @@ const POZOSTALE = [
       var panel = document.getElementById('navPanel');
       if(!burger || !panel) return;
       var zamkniecie = document.getElementById('navClose');
+      var lista = panel.querySelector('.np-tresc');
       var wrocDo = null;
       var pozycja = 0;
 
@@ -674,6 +687,8 @@ const POZOSTALE = [
         burger.setAttribute('aria-expanded', 'true');
         document.body.style.top = (-pozycja) + 'px';
         document.body.classList.add('nav-otwarte');
+        document.documentElement.classList.add('nav-otwarte');
+        lista.scrollTop = 0;
         // setTimeout, nie requestAnimationFrame: w karcie w tle rAF bywa
         // wstrzymany i panel zostawał przezroczysty, ale klikalny.
         window.setTimeout(function(){ panel.classList.add('otwarty'); }, 20);
@@ -684,8 +699,14 @@ const POZOSTALE = [
         panel.setAttribute('aria-hidden', 'true');
         burger.setAttribute('aria-expanded', 'false');
         document.body.classList.remove('nav-otwarte');
+        document.documentElement.classList.remove('nav-otwarte');
         document.body.style.top = '';
+        // Strony mają html{scroll-behavior:smooth}, więc zwykłe scrollTo
+        // przewijało widocznie od góry strony do miejsca sprzed otwarcia.
+        var html = document.documentElement, plynnie = html.style.scrollBehavior;
+        html.style.scrollBehavior = 'auto';
         window.scrollTo(0, pozycja);
+        html.style.scrollBehavior = plynnie;
         // Klasę `widoczny` zdejmujemy po animacji — inaczej panel znikałby
         // skokowo, zanim zdąży się wygasić.
         window.setTimeout(function(){

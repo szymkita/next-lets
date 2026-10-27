@@ -931,7 +931,10 @@ const dane = {
       timery.push(window.setTimeout(function(){ skan.classList.remove('on'); f!.classList.add('kon'); znow.disabled = false; }, T + 150));
     }
     znow.addEventListener('click', graj);
-    var io = new IntersectionObserver(function(w){ if(w[0].isIntersecting){ io.disconnect(); graj(); } }, { threshold: 0.4 });
+    // Start, gdy góra rysunku minie 3/4 wysokości ekranu. Wcześniej próg
+    // był ułamkiem rysunku, a na telefonie rysunek ma ponad ekran wysokości
+    // i ruszał dopiero przy górnej krawędzi (27.10.2026).
+    var io = new IntersectionObserver(function(w){ if(w[0].isIntersecting){ io.disconnect(); graj(); } }, { rootMargin: '0px 0px -25% 0px' });
     io.observe(f);
   })();
 </script>

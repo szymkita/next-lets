@@ -4,6 +4,12 @@
 // razu po załadowaniu — jego CSS chowa stan startowy tylko wtedy, gdy
 // animacja naprawdę się odbędzie. Przy prefers-reduced-motion i bez
 // IntersectionObservera wszystko dostaje .on od razu (stan końcowy).
+//
+// KIEDY „W KADRZE”: 30% elementu na ekranie albo element zajmuje już 20%
+// wysokości ekranu — co nastąpi pierwsze. Sam próg 30% elementu zawodził
+// na telefonie: wyniki, schody i kafle „Dlaczego” mają tam po 1000–2000 px,
+// więc ruszały, kiedy ich góra była już przy górze ekranu, a wcześniej
+// przez cały ekran widać było puste miejsce (27.10.2026, Let’s Shift).
 ---
 <script>
   var redukcja = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -16,12 +22,17 @@
       return;
     }
     els.forEach(function(el){ if(el.hasAttribute('data-gra')) el.classList.add('gra'); });
-    var io = new IntersectionObserver(function(wpisy){
+    function wlacz(wpisy: IntersectionObserverEntry[]){
       wpisy.forEach(function(w){
-        if(w.isIntersecting){ w.target.classList.add('on'); io.unobserve(w.target); }
+        if(!w.isIntersecting) return;
+        w.target.classList.add('on');
+        czesc.unobserve(w.target);
+        ekran.unobserve(w.target);
       });
-    }, { threshold: 0.3 });
-    els.forEach(function(el){ io.observe(el); });
+    }
+    var czesc = new IntersectionObserver(wlacz, { threshold: 0.3 });
+    var ekran = new IntersectionObserver(wlacz, { rootMargin: '0px 0px -20% 0px' });
+    els.forEach(function(el){ czesc.observe(el); ekran.observe(el); });
   })();
 
 </script>

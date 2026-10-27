@@ -1647,9 +1647,12 @@ dane['@graph'].push({
         await czekaj(200);
       }
     }
+    // Start, gdy góra rysunku minie 3/4 wysokości ekranu. Wcześniej próg
+    // był ułamkiem rysunku, a na telefonie rysunek ma ponad ekran wysokości
+    // i ruszał dopiero przy górnej krawędzi (27.10.2026).
     var io = new IntersectionObserver(function(w){
       if(w[0].isIntersecting){ io.disconnect(); graj(); }
-    }, { threshold: 0.4 });
+    }, { rootMargin: '0px 0px -25% 0px' });
     io.observe(fig);
   })();
 
@@ -1703,9 +1706,12 @@ dane['@graph'].push({
       await jedz(BR, TYG);
       fig.classList.add('kon');
     }
+    // Start, gdy góra rysunku minie 3/4 wysokości ekranu. Wcześniej próg
+    // był ułamkiem rysunku, a na telefonie rysunek ma ponad ekran wysokości
+    // i ruszał dopiero przy górnej krawędzi (27.10.2026).
     var io = new IntersectionObserver(function(w){
       if(w[0].isIntersecting){ io.disconnect(); graj(); }
-    }, { threshold: 0.35 });
+    }, { rootMargin: '0px 0px -25% 0px' });
     io.observe(fig);
   })();
 

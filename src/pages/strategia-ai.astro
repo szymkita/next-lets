@@ -909,6 +909,9 @@ dane['@graph'].push({
     .sd-zak button[aria-selected="true"]{transform:none}
     .sd-zak button b{font-size:13px}
     .sd-zak button span{display:none}
+    .sd-zak.dalej-p{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 40px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 40px),transparent)}
+    .sd-zak.dalej-l{-webkit-mask-image:linear-gradient(90deg,transparent,#000 40px);mask-image:linear-gradient(90deg,transparent,#000 40px)}
+    .sd-zak.dalej-l.dalej-p{-webkit-mask-image:linear-gradient(90deg,transparent,#000 40px,#000 calc(100% - 40px),transparent);mask-image:linear-gradient(90deg,transparent,#000 40px,#000 calc(100% - 40px),transparent)}
     .sd-k{transform:none;filter:none}
     .sd-k:not(.akt){display:none}
     .sd-stos::before,.sd-stos::after{content:"";grid-area:1 / 1;border-radius:2px;background:#d9d8d0;box-shadow:0 30px 60px -30px rgba(0,0,0,0.8)}
@@ -1616,9 +1619,12 @@ dane['@graph'].push({
         await czekaj(160);
       }
     }
+    // Start, gdy góra rysunku minie 3/4 wysokości ekranu. Wcześniej próg
+    // był ułamkiem rysunku, a na telefonie rysunek ma ponad ekran wysokości
+    // i ruszał dopiero przy górnej krawędzi (27.10.2026).
     var io = new IntersectionObserver(function(w){
       if(w[0].isIntersecting){ io.disconnect(); setTimeout(graj, 300); }
-    }, { threshold: 0.35 });
+    }, { rootMargin: '0px 0px -25% 0px' });
     io.observe(sl);
   })();
 
@@ -1647,6 +1653,27 @@ dane['@graph'].push({
       });
       zak.forEach(function(b, j){ var na = j === kolej[0]; b.setAttribute('aria-selected', na ? 'true' : 'false'); b.tabIndex = na ? 0 : -1; });
       podpisy.forEach(function(p, j){ p.hidden = j !== kolej[0]; });
+      naWidoku();
+    }
+    // Na telefonie pięć przekładek nie mieści się w szerokości i rząd się
+    // przewija: wybrana przekładka staje na środku rzędu, a brzeg, za którym
+    // są kolejne, przygasa (wcześniej „Plan kwartału” był po prostu ucięty).
+    var rama = sd.querySelector('.sd-zak');
+    var pierwszy = true;
+    function naWidoku(){
+      if(!rama || rama.scrollWidth <= rama.clientWidth) return;
+      var b = zak[kolej[0]];
+      rama.scrollTo({ left: b.offsetLeft - (rama.clientWidth - b.offsetWidth) / 2, behavior: pierwszy || redukcja ? 'auto' : 'smooth' });
+      pierwszy = false;
+    }
+    function krawedzie(){
+      if(!rama) return;
+      rama.classList.toggle('dalej-l', rama.scrollLeft > 2);
+      rama.classList.toggle('dalej-p', rama.scrollLeft + rama.clientWidth < rama.scrollWidth - 2);
+    }
+    if(rama){
+      rama.addEventListener('scroll', krawedzie, { passive: true });
+      window.addEventListener('resize', krawedzie);
     }
     function zakresl(s){
       if(!ruch) return;
@@ -1681,10 +1708,12 @@ dane['@graph'].push({
       });
     });
     ustaw();
+    krawedzie();
     if(ruch){
+      // jak wyżej: na telefonie stos ma ok. dwóch ekranów wysokości
       var io = new IntersectionObserver(function(w){
         if(w[0].isIntersecting){ io.disconnect(); zakresl(strony[kolej[0]]); }
-      }, { threshold: 0.35 });
+      }, { rootMargin: '0px 0px -25% 0px' });
       io.observe(sd);
     }
   })();

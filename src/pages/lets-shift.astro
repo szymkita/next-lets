@@ -701,10 +701,19 @@ const description = 'Let’s Shift przenosi firmę z wypracowanym sposobem dzia�
     .sh-z-mob .u4z-kroki > .u6-mc{margin-top:26px}
     /* przy kroku (bez przyklejonego rysunku) wycinki nie muszą być przycięte */
     .sh-z-mob .u4z-kroki > .sh-z-s .sh-zw{max-height:none}
-    /* pięć zakładek w jednym przewijanym rzędzie zamiast owalu w kilku wierszach */
-    .sh-bu .u3a-zak{display:flex;flex-wrap:nowrap;justify-content:flex-start;max-width:100%;overflow-x:auto;scrollbar-width:none;border-radius:999px}
-    .sh-bu .u3a-zak::-webkit-scrollbar{display:none}
-    .sh-bu .u3a-zak button{flex:none;white-space:nowrap}
+    /* Zakładki w kilku rzędach na zaokrąglonym prostokącie (nie w owalu).
+       Do 27.10.2026 stały w jednym przewijanym rzędzie: krawędź owalu
+       ucinała nazwy w pół słowa („04 Kompete”), a po przesunięciu okna
+       palcem wybrana zakładka bywała poza kadrem. */
+    .sh-bu .u3a-zak,.sh-sx-zak{display:flex;flex-wrap:wrap;justify-content:center;max-width:100%;overflow:visible;border-radius:22px}
+    .sh-bu .u3a-zak button,.sh-sx-zak button{flex:0 1 auto;white-space:normal}
+  }
+  /* Telefon: dwie kolumny, nieparzysta ostatnia zakładka na cały rząd */
+  @media (max-width:560px){
+    .sh-bu .u3a-zak,.sh-sx-zak{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));border-radius:20px}
+    .sh-bu .u3a-zak button,.sh-sx-zak button{display:block;padding:9px 10px;font-size:13px;line-height:1.25;text-align:center;text-wrap:balance}
+    .sh-bu .u3a-zak button em{margin-right:6px}
+    .sh-bu .u3a-zak button:last-child:nth-child(odd),.sh-sx-zak button:last-child:nth-child(odd){grid-column:1 / -1}
   }
 
   /* =====================================================================
@@ -970,6 +979,13 @@ const description = 'Let’s Shift przenosi firmę z wypracowanym sposobem dzia�
   .sh-bu .u2a-sc .u3a-tor{transform:none}
   .sh-bu .u2a-sc::before{left:10%;right:10%}
   .sh-bu .u3a-dol{max-width:1180px;margin:clamp(16px,1.8vw,22px) auto 0;align-items:center}
+  /* Opisy zakładek leżą w jednej komórce siatki, a ukryte są tylko
+     niewidoczne — rząd ma wysokość najdłuższego opisu. Wcześniej każda
+     zmiana zakładki przesuwała okno w górę albo w dół o wiersz tekstu. */
+  .sh-bu .u3a-dol{display:grid;grid-template-columns:minmax(0,1fr) auto}
+  .sh-bu .u3a-dol > p{grid-area:1 / 1;align-self:start}
+  .sh-bu .u3a-dol > p[hidden]{display:block !important;visibility:hidden}
+  .sh-bu .u3a-dol > .u3a-str{grid-area:1 / 2}
   .sh-bu .u3a-dol p{max-width:860px}
   .sh-bu .u3a-dol p b{display:inline;margin:0 8px 0 0;font-size:17px}
   .sh-bu-kon{max-width:1180px;margin-left:auto !important;margin-right:auto !important}
@@ -1139,6 +1155,18 @@ const description = 'Let’s Shift przenosi firmę z wypracowanym sposobem dzia�
     .sh-ig-lg .r{grid-template-columns:3.4em minmax(0,1fr)}
     .sh-ig-lg .r span,.sh-ig-lg .r i{display:none}
     .sh-bu .u3a-dol p b{display:block;margin:0 0 4px}
+    /* Okno zaraz pod zakładkami, opis pod oknem: dotknięta zakładka
+       zmienia to, co widać na ekranie. Wcześniej między zakładkami a oknem
+       stał opis ze strzałkami i okno zaczynało się pod krawędzią ekranu.
+       Strzałki znikają — zakładki są widoczne wszystkie naraz, a okno
+       przesuwa się też palcem. */
+    .sh-bu .u2a-in{display:grid;grid-template-columns:minmax(0,1fr)}
+    .sh-bu .u2a-in > .u2-h2{order:0}
+    .sh-bu .u3a-zak{order:1}
+    .sh-bu .u2a-sc{order:2;width:100%;margin-left:0;margin-right:0}
+    .sh-bu .u3a-dol{order:3;width:100%;margin:2px 0 0;grid-template-columns:minmax(0,1fr)}
+    .sh-bu .u3a-dol > .u3a-str{display:none}
+    .sh-bu-kon{order:4}
   }
   /* Kompetencje: klocki-puzzle wokół Let’s automate */
   .sh-pz{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr) minmax(0,1fr);grid-template-rows:auto auto;gap:14px;margin-top:clamp(40px,5vw,64px)}
@@ -1595,6 +1623,26 @@ const description = 'Let’s Shift przenosi firmę z wypracowanym sposobem dzia�
     if(!t) return;
     t.replaceWith(document.importNode((t as HTMLTemplateElement).content, true));
   }
+  // Safari nie ma kotwiczenia przewijania (overflow-anchor), więc treść
+  // wstawiona nad kadrem spychała w dół to, co ktoś właśnie czytał — na
+  // telefonie „Jedna sprawa” rośnie po wstawieniu o ok. 2200 px. Kiedy
+  // sekcja zaczyna się nad kadrem (powrót z dołu strony, pozycja odtworzona
+  // po odświeżeniu), pierwszy widoczny element zostaje w miejscu.
+  function shBezSkoku(sek: HTMLElement, wstaw: () => void){
+    if(CSS.supports('overflow-anchor', 'auto') || sek.getBoundingClientRect().top >= 0){ wstaw(); return; }
+    var kandydaci = shLista(sek, '[data-shz-k]');
+    if(sek.nextElementSibling) kandydaci.push(sek.nextElementSibling as HTMLElement);
+    var kotwica = kandydaci.filter(function(el){ return el.getBoundingClientRect().bottom > 0; })[0];
+    if(!kotwica){ wstaw(); return; }
+    var przed = kotwica.getBoundingClientRect().top;
+    wstaw();
+    var o = kotwica.getBoundingClientRect().top - przed;
+    if(!o) return;
+    var html = document.documentElement, plynnie = html.style.scrollBehavior;
+    html.style.scrollBehavior = 'auto';
+    window.scrollBy(0, o);
+    html.style.scrollBehavior = plynnie;
+  }
 
   // ---- SZYTE NA MIARĘ: etapy płótna 0 → 5, kiedy zakładka jest w kadrze ----
   // Rusza za każdym razem, gdy slajd staje się widoczny (także po kliknięciu
@@ -1765,7 +1813,7 @@ const description = 'Let’s Shift przenosi firmę z wypracowanym sposobem dzia�
     mq.addEventListener('change', ustaw);
     if(!shMa){ wypelnij(sx[0]); return; }
     var blisko = new IntersectionObserver(function(e){
-      if(e[0].isIntersecting){ blisko.disconnect(); wypelnij(sx[0]); }
+      if(e[0].isIntersecting){ blisko.disconnect(); shBezSkoku(sek!, function(){ wypelnij(sx[0]); }); }
     }, { rootMargin: '100% 0px 100% 0px' });
     blisko.observe(sek);
   })();
