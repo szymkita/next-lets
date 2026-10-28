@@ -1,4 +1,12 @@
 ---
+// LET’S SHIFT — runda treści opublikowana 28.10.2026 (poprzednia wersja
+// w src/robocze/lets-shift-v1.astro). Narracja ma być prosta, bez słów, którymi nikt w biznesie nie mówi.
+// „Mapa” jako etap → „analiza” (dokumenty: spis systemów z decyzjami, plan
+// firmy po zmianie, plan etapów); „sponsor w zarządzie” → członek zarządu,
+// „właściciel etapu” → lider etapu; „dane przenoszą ludzie” → ludzie
+// ręcznie przepisują dane; bez „systemów z czasów AI” i „jednego
+// ograniczenia”. Zmienione też HeroB i ProgramScena.
+//
 // LET’S SHIFT — /lets-shift (opublikowana 26.10.2026; komponenty w
 // src/components/lets-shift, warianty hero na /lets-shift-hero w src/robocze)
 // 26.10.2026 Szymon: strona produkcyjna, liczby prawdziwe, bez oznaczeń
@@ -145,13 +153,13 @@ const SPIS_ARIA = `Spis z natury systemów i narzędzi producenta armatury, osie
 // decyzje w jednym pasie z przykładem z mapy.
 const SKROT = [
   { t: 'Dla kogo', d: 'Małe, średnie i duże firmy, które działają od lat, mają sprawdzony sposób pracy i systemy zbierane latami.' },
-  { t: 'Co zmieniamy', d: 'Wszystkie systemy, arkusze i miejsca, w których dane przenoszą ludzie. Przy każdym decydujemy, czy zostaje, łączymy je, wymieniamy czy wyłączamy.' },
-  { t: 'Kto prowadzi', d: 'Jeden prowadzący po naszej stronie, który co tydzień mówi, co trzeba przygotować po stronie firmy. Po Waszej stronie sponsor w zarządzie i właściciel każdego etapu.' },
-  { t: 'Co zostaje u Was', d: 'Spis systemów z decyzjami, plan firmy po zmianie, nowe systemy z dokumentacją i konta na Waszej firmie.' },
-  { t: 'Jak płacicie', d: 'Stała cena mapy znana przed startem. Cenę każdego etapu znacie, zanim go zamówicie.' },
+  { t: 'Co zmieniamy', d: 'Wszystkie systemy, arkusze i miejsca, w których ludzie ręcznie przepisują dane. Przy każdym decydujemy, czy zostaje, czy go łączymy z innymi, wymieniamy albo wyłączamy.' },
+  { t: 'Kto prowadzi', d: 'Jeden prowadzący po naszej stronie, który co tydzień mówi, co trzeba przygotować po stronie firmy. Po Waszej stronie członek zarządu, który zatwierdza plan, i lider każdego etapu.' },
+  { t: 'Co zostaje u Was', d: 'Spis systemów z decyzjami, plan firmy po zmianie, nowe systemy z dokumentacją i konta założone na Waszą firmę.' },
+  { t: 'Jak płacicie', d: 'Stała cena analizy, znana przed startem. Cenę każdego etapu znacie, zanim go zamówicie.' },
 ];
 const OS_ETAPOW = [
-  { t: 'Mapa', k: '6 tygodni' },
+  { t: 'Analiza', k: '6 tygodni' },
   { t: 'Etap 1', k: 'dział po dziale' },
   { t: 'Etap 2', k: '' },
   { t: 'Etap 3', k: '' },
@@ -282,11 +290,11 @@ const SPRAWY: { k: string; mk: string[]; t: string; z: string; kroki: Krok[] }[]
 // Nagłówek karty = efekt dla firmy, etykieta = co robimy, opis = jak do
 // tego dochodzimy (Szymon: „mamy się skupiać na efektach”).
 const CZESCI = [
-  { e: 'Spis systemów i decyzje', t: 'Wiecie, co zmienić najpierw i dlaczego', d: 'Spisujemy każdy system, arkusz i miejsce, w którym dane przenoszą ludzie. Przy każdym zapisujemy decyzję i jej powód, a kolejność zmian wynika z tego, co najbardziej spowalnia firmę.', n: 'Spis prowadzimy przez cały program.' },
-  { e: 'Plan firmy po zmianie', t: 'Dane w jednym miejscu, systemy połączone ze sobą', d: 'Rysujemy firmę po zmianie: jedną bazę danych, systemy działów, które z niej korzystają, i miejsca, w których pracuje AI.', n: 'Każdy etap dokłada do niej swoją część.' },
+  { e: 'Spis systemów i decyzje', t: 'Wiecie, co zmienić najpierw i dlaczego', d: 'Spisujemy każdy system, arkusz i miejsce, w którym ludzie ręcznie przepisują dane. Przy każdym zapisujemy decyzję i jej powód, a kolejność zmian wynika z tego, co najbardziej spowalnia firmę.', n: 'Spis prowadzimy przez cały program.' },
+  { e: 'Plan firmy po zmianie', t: 'Dane w jednym miejscu, systemy połączone ze sobą', d: 'Rysujemy firmę po zmianie: jedną bazę danych, systemy działów, które z niej korzystają, i miejsca, w których pracuje AI.', n: 'Kolejne etapy budują ten plan kawałek po kawałku.' },
   { e: 'Wdrożenia etapami', t: 'Nowe systemy wchodzą, a firma pracuje dalej', d: 'Wdrażamy dział po dziale. Przez kilka tygodni nowy system pracuje obok starego, a stary wyłączamy, kiedy zespół pracuje już w nowym.', n: 'Cenę etapu znacie przed jego startem.' },
-  { e: `Ludzie i${NB}nowe role`, t: 'Ludzie przestają przepisywać, zajmują się klientami i wyjątkami', d: 'Osoby, które dziś przenoszą dane, dostają nowe zadania. Szkolimy je na zadaniach ich działu.', n: 'Każdy etap ma właściciela po Waszej stronie.' },
-  { e: 'Wiedza firmy', t: 'AI korzysta z Waszych zasad, cenników i procedur', d: 'Spisujemy zasady, cenniki i procedury w jednym miejscu, a każde źródło dostaje właściciela, który dba o jego aktualność.', n: 'Agenci w Appto korzystają z tej samej wiedzy co zespół.' },
+  { e: `Ludzie i${NB}nowe role`, t: 'Ludzie przestają przepisywać, zajmują się klientami i wyjątkami', d: 'Osoby, które dziś przepisują dane, dostają nowe zadania. Szkolimy je na zadaniach ich działu.', n: 'Każdy etap ma lidera po Waszej stronie.' },
+  { e: 'Wiedza firmy', t: 'AI korzysta z Waszych zasad, cenników i procedur', d: 'Spisujemy zasady, cenniki i procedury w jednym miejscu, a za każde źródło odpowiada jedna osoba, która pilnuje, żeby było aktualne.', n: 'Agenci AI korzystają z tej samej wiedzy co zespół.' },
 ];
 
 // ---- EKSPERTYZA PO NASZEJ STRONIE, DECYZJE PO WASZEJ (sekcja 8) ---------------
@@ -318,7 +326,7 @@ const ZESPOL_DUCHY = ['/team/kamil-gorski.png', '/team/adam-szarzanowicz.png'];
 const BUDUJEMY = [
   { t: 'Własny system firmy', d: 'System dopasowany do firmy, budowany pod proces, na którym zarabiacie, z agentami AI w środku. Prowadzi sprawę przez wszystkie działy.', h: '/systemy-procesowe', l: 'Systemy dopasowane do firmy' },
   { t: 'Appto i agenci AI', d: 'Narzędzie AI dla wszystkich działów: asystenci, którzy znają dokumenty i procedury firmy. Wdrażamy też Copilota, Gemini albo ChatGPT, bez prowizji od dostawców.', h: '/wdrozenie-ai', l: 'Narzędzia AI dla całej firmy' },
-  { t: 'Integracje', d: 'Łączymy CRM, ERP, magazyn, sklep i pocztę tak, żeby nikt nie przepisywał danych. Każde połączenie ma właściciela i alarm.', h: '/automatyzacje-integracje', l: 'Integracje systemów' },
+  { t: 'Integracje', d: 'Łączymy CRM, ERP, magazyn, sklep i pocztę tak, żeby nikt nie przepisywał danych. Każde połączenie ma osobę odpowiedzialną i alarm, gdy przestanie działać.', h: '/automatyzacje-integracje', l: 'Integracje systemów' },
   { t: 'Kompetencje zespołu', d: 'Warsztat na Waszych procesach i danych, gotowe rutyny dla każdej roli i powrót do zespołu po kilku tygodniach. W dwunastym tygodniu sprawdzamy, kto pracuje nowym sposobem.', h: '/szkolenia-ai', l: 'Szkolenia z AI' },
   { t: 'Szyte na miarę', d: 'Każde rozwiązanie projektujemy od zera pod Waszą firmę: od szkicu procesu z warsztatu z zespołem do działającego systemu z połączeniami i agentami.', h: '/systemy-procesowe', l: 'Jak projektujemy systemy' },
 ];
@@ -362,12 +370,12 @@ const OPINIE = [
 // ---- JAK PRZEBIEGA PROGRAM (sekcja 11): schody bez cen ------------------------
 const DROGA = [
   { t: 'Rozmowa', d: 'Poznajemy firmę i sprawdzamy, czy potrzebny jest program, czy wystarczy jedna zmiana.', h: 34 },
-  { t: `Mapa ·${NB}6${NB}tygodni`, d: 'Spisujemy systemy, przy każdym podejmujemy decyzję i rysujemy plan firmy po zmianie. Powstaje plan etapów z ceną każdego.', x: 'Po mapie możecie zakończyć, a plan zostaje u Was.', h: 50 },
-  { t: 'Etap 1', d: 'Proces, na którym firma zarabia: nowy system, połączenia, agenci AI i szkolenie działu. Stare narzędzia wyłączamy po pracy równoległej.', h: 66 },
-  { t: `Etapy 2 i${NB}3`, d: 'Kolejne obszary firmy według planu z mapy. O każdym decyduje zarząd na przeglądzie poprzedniego.', h: 82 },
+  { t: `Analiza ·${NB}6${NB}tygodni`, d: 'Spisujemy systemy, przy każdym decydujemy, co z nim robimy, i rysujemy plan firmy po zmianie. Powstaje plan etapów z ceną każdego.', x: 'Po analizie możecie zakończyć, a plan zostaje u Was.', h: 50 },
+  { t: 'Etap 1', d: 'Zaczynamy od procesu, na którym firma zarabia: nowy system, połączenia, agenci AI i szkolenie działu. Stare narzędzia wyłączamy, kiedy zespół pracuje już w nowych.', h: 66 },
+  { t: `Etapy 2 i${NB}3`, d: 'Kolejne obszary firmy według planu z analizy. O każdym zarząd decyduje po podsumowaniu poprzedniego.', h: 82 },
   { t: `Utrzymanie i${NB}rozwój`, d: 'Opiekujemy się systemami i agentami, a firma wprowadza kolejne zmiany według tych samych zasad.', h: 100 },
 ];
-const DROGA_ARIA = 'Przebieg programu jako pięć stopni w górę: rozmowa, mapa przez sześć tygodni, etap 1, etapy 2 i 3, utrzymanie i rozwój. Po mapie można zakończyć, a plan zostaje u klienta.';
+const DROGA_ARIA = 'Przebieg programu jako pięć stopni w górę: rozmowa, analiza przez sześć tygodni, etap 1, etapy 2 i 3, utrzymanie i rozwój. Po analizie można zakończyć, a plan zostaje u klienta.';
 // ---- ILE KOSZTUJE (sekcja 12): oferta na mapę i fragment planu etapów ------
 // Kwoty zamazane i zastąpione zerami, żeby z kodu strony nie dało się ich
 // odczytać.
@@ -380,40 +388,40 @@ const PLAN_ET = [
 
 // ---- DLA KOGO -----------------------------------------------------------------
 const TAK = [
-  { t: 'Firma ma wypracowany sposób działania i chce go zachować', d: 'Program przenosi to, co działa, na systemy z czasów AI.' },
-  { t: 'Systemów jest kilkanaście i część przestała nadążać', d: 'Arkusze, stare programy i miejsca, w których dane przenoszą ludzie.' },
-  { t: 'Jest sponsor w zarządzie', d: 'Osoba, która zatwierdza plan i decyduje o kolejnych etapach.' },
+  { t: 'Firma ma wypracowany sposób działania i chce go zachować', d: 'To, co działa, przenosimy do nowych systemów.' },
+  { t: 'Systemów jest kilkanaście i część przestała nadążać', d: 'Arkusze, stare programy i miejsca, w których ludzie ręcznie przepisują dane.' },
+  { t: 'Ktoś w zarządzie weźmie program na siebie', d: 'Zatwierdzi plan i będzie decydować o kolejnych etapach.' },
   { t: 'Firma może prowadzić zmianę przez kilka kwartałów', d: 'Etapy idą jeden po drugim, dział po dziale.' },
 ];
 const NIE = [
   { t: 'Wystarczy Wam jedna zmiana', d: 'Np. połączenie dwóch systemów albo jeden proces w nowym systemie. Szybciej będzie zamówić usługę: <a href="/automatyzacje-integracje">integracje systemów</a> albo <a href="/systemy-procesowe">systemy dopasowane do firmy</a>.' },
   { t: 'Najpierw musicie wybrać kolejność inicjatyw', d: 'Od tego jest <a href="/strategia-ai">strategia AI</a>: trzy tygodnie, dokument i decyzja zarządu.' },
-  { t: 'Firma jest w trakcie zmiany modelu biznesowego', d: 'Mapa zrobiona dziś niewiele powie o firmie za pół roku.' },
-  { t: 'Jesteście mikro- lub małą firmą, której przybywa pracy', d: 'Dla takich firm jest <a href="/lets-up">Let’s Up</a>, program wokół jednego ograniczenia.' },
+  { t: 'Firma jest w trakcie zmiany modelu biznesowego', d: 'Analiza zrobiona dziś niewiele powie o firmie za pół roku.' },
+  { t: 'Jesteście mikro- lub małą firmą, której przybywa pracy', d: 'Dla takich firm jest <a href="/lets-up">Let’s Up</a>: więcej zleceń tym samym zespołem.' },
 ];
 
 // ---- FAQ ------------------------------------------------------------------------
 const faq = [
   { q: 'Nie mamy działu IT ani doświadczenia z AI. Czy to dla nas?',
-    a: 'Tak. Program prowadzi jeden prowadzący po naszej stronie, a nasz zespół robi analizę, projekt, wdrożenia i dokumentację. Po stronie firmy potrzebny jest sponsor w zarządzie i właściciel każdego etapu, który zna swój dział. Osoby z działu szkolimy na ich własnych zadaniach, a prowadzący co tydzień mówi, co trzeba przygotować po stronie firmy.' },
+    a: 'Tak. Po naszej stronie program prowadzi jedna osoba, a nasz zespół robi analizę, projekt, wdrożenia i dokumentację. Po stronie firmy potrzebny jest członek zarządu, który zatwierdza plan, i lider każdego etapu, który zna swój dział. Osoby z działu szkolimy na ich własnych zadaniach, a prowadzący co tydzień mówi, co trzeba przygotować.' },
   { q: 'Czy musimy wymienić ERP?',
-    a: 'Nie ma takiego założenia. O każdym systemie decydujemy na mapie i zapisujemy powód tej decyzji. U producenta armatury z tej strony ERP z 2009 r. zostaje jako księga firmy, a łączymy go z nowymi systemami. Każdą wymianę zatwierdza zarząd razem z planem etapów.' },
+    a: 'Nie zakładamy tego z góry. O każdym systemie decydujemy w analizie i zapisujemy powód. U producenta armatury z tej strony ERP z 2009 r. zostaje jako księga firmy i łączymy go z nowymi systemami. Każdą wymianę zatwierdza zarząd razem z planem etapów.' },
   { q: 'Ile trwa program?',
-    a: 'Mapa trwa sześć tygodni. Liczba i długość etapów wynikają z mapy: u producenta armatury z tej strony to trzy etapy po dwa kwartały. Plan etapów z kosztami dostajecie po mapie, zanim zdecydujecie o pierwszym etapie.' },
+    a: 'Analiza trwa sześć tygodni. Liczba i długość etapów wynikają z analizy: u producenta armatury z tej strony to trzy etapy po dwa kwartały. Plan etapów z kosztami dostajecie po analizie, zanim zdecydujecie o pierwszym etapie.' },
   { q: 'Czy firma zatrzyma się na czas zmian?',
     a: 'Nie. Każdy etap obejmuje jeden obszar firmy, a nowy system przez kilka tygodni pracuje obok starego. Stary wyłączamy, kiedy zespół pracuje już w nowym.' },
-  { q: 'Czy możemy zakończyć po mapie albo po pierwszym etapie?',
-    a: 'Tak. Po mapie zostaje u Was spis systemów z decyzjami, plan firmy po zmianie i plan etapów z kosztami. O każdym kolejnym etapie decyduje zarząd na przeglądzie po poprzednim.' },
+  { q: 'Czy możemy zakończyć po analizie albo po pierwszym etapie?',
+    a: 'Tak. Po analizie zostaje u Was spis systemów z decyzjami, plan firmy po zmianie i plan etapów z kosztami. O każdym kolejnym etapie zarząd decyduje po podsumowaniu poprzedniego.' },
   { q: 'Kto jest właścicielem kodu i danych?',
     a: 'Wy. Konta projektu, od repozytorium po klucze do modeli AI, zakładamy na Waszą firmę, a my dostajemy do nich dostęp imiennie. Kiedy współpraca się kończy, odbieracie nam te dostępy i nie potrzebujecie od nas żadnej licencji.' },
   { q: 'Co z ludźmi, których praca się zmieni?',
-    a: 'Osoby, które dziś przenoszą dane między systemami, najlepiej znają wyjątki i zasady firmy, więc w nowym układzie zajmują się właśnie nimi. Nowe role opisujemy w planie każdego etapu, a szkolenia prowadzimy na zadaniach działu.' },
+    a: 'Osoby, które dziś przepisują dane między systemami, najlepiej znają wyjątki i zasady firmy, więc w nowym układzie zajmują się właśnie nimi. Nowe role opisujemy w planie każdego etapu, a szkolenia prowadzimy na zadaniach działu.' },
   { q: 'Czym Let’s Shift różni się od strategii AI i od Let’s Up?',
-    a: 'Strategia AI to trzy tygodnie, po których zarząd wie, od czego zacząć i ile to zwróci. Let’s Up to program dla mikro- i małych firm, którym przybywa pracy, prowadzony wokół jednego ograniczenia. Let’s Shift przechodzi przez wszystkie systemy firmy w kolejnych etapach.' },
+    a: 'Strategia AI to trzy tygodnie, po których zarząd wie, od czego zacząć i ile to zwróci. Let’s Up to program dla mikro- i małych firm, którym przybywa pracy: zaczyna od tego, co najbardziej je hamuje. Let’s Shift przechodzi przez wszystkie systemy firmy w kolejnych etapach.' },
   { q: 'Czy musimy korzystać z Appto?',
     a: 'Nie. Appto to nasz produkt i jedna z możliwości dla asystentów AI w firmie. Projektujemy też własne systemy i wdrażamy AI w narzędziach, które już macie.' },
   { q: 'Jak liczycie koszt?',
-    a: 'Mapa ma stałą cenę znaną przed startem. Każdy kolejny etap ma stałą cenę, którą podajemy po mapie, zanim go zamówicie. Utrzymanie i rozwój po programie rozliczamy miesięcznie. Licencje i utrzymanie nowych systemów są osobno, w planie kosztów, razem z kosztami systemów, które wyłączamy.' },
+    a: 'Analiza ma stałą cenę znaną przed startem. Każdy kolejny etap ma stałą cenę, którą podajemy po analizie, zanim go zamówicie. Utrzymanie i rozwój po programie rozliczamy miesięcznie. Licencje i opłaty za nowe systemy są osobno, w planie kosztów, obok kosztów systemów, które wyłączamy.' },
 ];
 
 const dane = {
@@ -424,9 +432,9 @@ const dane = {
       '@id': `${kanon}#usluga`,
       name: 'Let’s Shift',
       alternateName: ['Program Let’s Shift', 'Program transformacji dla małych, średnich i dużych firm'],
-      serviceType: 'Program transformacji firmy na systemy z czasów AI, prowadzony etapami',
+      serviceType: 'Program transformacji firmy na nowe systemy z agentami AI, prowadzony etapami',
       url: kanon,
-      description: 'Program dla firm z wypracowanym sposobem działania: mapa wszystkich systemów z decyzją przy każdym (zostaje, łączymy, wymieniamy, wyłączamy), plan firmy po zmianie, wdrożenia etapami dział po dziale z pracą równoległą, nowe role zespołu i przegląd zarządu co kwartał.',
+      description: 'Program dla firm z wypracowanym sposobem działania: analiza wszystkich systemów z decyzją przy każdym (zostaje, łączymy, wymieniamy, wyłączamy), plan firmy po zmianie, wdrożenia etapami dział po dziale z pracą równoległą, nowe role zespołu i przegląd zarządu co kwartał.',
       provider: { '@id': new URL('/#organizacja', Astro.site).href },
       areaServed: { '@type': 'Country', name: 'Polska' },
       audience: { '@type': 'BusinessAudience', name: 'Małe, średnie i duże firmy' },
@@ -448,7 +456,7 @@ const dane = {
 };
 
 const title = "Let’s Shift — program transformacji dla małych, średnich i dużych firm | Let's automate";
-const description = 'Let’s Shift przenosi firmę z wypracowanym sposobem działania na systemy z czasów AI. Przy każdym systemie decydujemy, czy zostaje, łączymy go, wymieniamy czy wyłączamy, a zmiany wdrażamy etapami, dział po dziale.';
+const description = 'Let’s Shift przenosi firmę z wypracowanym sposobem działania na nowe systemy z agentami AI. Przy każdym systemie decydujemy, czy zostaje, łączymy go, wymieniamy czy wyłączamy, a zmiany wdrażamy etapami, dział po dziale.';
 ---
 <LaBase topbar={false} title={title} description={description} ctaLabel="Umów rozmowę" nav="uslugi">
 <script type="application/ld+json" is:inline set:html={JSON.stringify(dane)} slot="head"></script>
@@ -1288,7 +1296,7 @@ const description = 'Let’s Shift przenosi firmę z wypracowanym sposobem dzia�
 <header><b>Spis z natury</b><span>systemy i narzędzia · producent armatury</span></header>
 <div class="sh-s-kol"><span>lp.</span><span>pozycja</span><span>od</span><span>uwagi</span></div>
 <ol>{SPIS.map((s, i) => <li><em>{String(i + 1).padStart(2, '0')}</em><b>{s.t}</b><span>{s.r}</span><i>{s.o}</i></li>)}</ol>
-<footer><span>stan na dziś, przed mapą</span><i>spisał: Michał</i></footer>
+<footer><span>stan na dziś, przed analizą</span><i>spisał: Michał</i></footer>
 </div>
 </figure>
 </div>
@@ -1302,7 +1310,7 @@ const description = 'Let’s Shift przenosi firmę z wypracowanym sposobem dzia�
 <div class="sh-cz-g">
 <div>
 <h2 class="u2-h2">Czym jest <span>Let’s Shift?</span></h2>
-<p class="sh-cz-odp">Let’s Shift to program dla firm, które działają od lat i mają sprawdzony sposób pracy. Przenosimy je na systemy z czasów AI. Zaczynamy od spisu wszystkich narzędzi i decyzji przy każdym z nich, a potem zmieniamy firmę etapami, dział po dziale. Firma zna plan każdego tygodnia i wie, kto za co odpowiada, a prowadzący po naszej stronie mówi, co trzeba przygotować.</p>
+<p class="sh-cz-odp">Let’s Shift to program dla firm, które działają od lat i mają sprawdzony sposób pracy. Pomagamy im przejść na systemy, z którymi może pracować AI. Najpierw spisujemy wszystkie narzędzia firmy i przy każdym decydujemy, co z nim robimy. Potem zmieniamy firmę etapami, dział po dziale, a prowadzący po naszej stronie co tydzień mówi, co trzeba przygotować.</p>
 </div>
 <figure class="sh-cz-dok">
 <span class="sh-cz-tyl" aria-hidden="true"></span>
@@ -1454,7 +1462,7 @@ const description = 'Let’s Shift przenosi firmę z wypracowanym sposobem dzia�
 <div class="sh-pz-c">
 <span class="lg"><img decoding="async" loading="lazy" src="/uploads/wisegroup/letsautomate-sygnet.svg" alt="" width="34" height="34"><b>Let’s automate</b></span>
 <p class="e">Technologia, systemy i AI</p>
-<p class="d">Prowadzimy program: mapa systemów, nowe systemy, integracje, agenci AI i szkolenia zespołu.</p>
+<p class="d">Prowadzimy program: analiza systemów, nowe systemy, integracje, agenci AI i szkolenia zespołu.</p>
 </div>
 {KOMP.map((k) => (
   <a class={`sh-pz-k ${k.s} r${k.r}`} href={k.url} target="_blank" rel="noopener">
@@ -1474,7 +1482,7 @@ const description = 'Let’s Shift przenosi firmę z wypracowanym sposobem dzia�
 <section id="zespol" class="v3-sek v3-papier">
 <div class="v8-gl">
 <h2 class="u2-h2">Ekspertyza po naszej stronie, <span>decyzje po Waszej</span></h2>
-<p class="v3-sub">Przegląd systemów, rozmowy z&nbsp;działami, analizę, projekt zmian, wdrożenie, szkolenia i&nbsp;dokumentację robi nasz zespół, bez podwykonawców. Po Waszej stronie zostaje kilka rozmów na początku, a&nbsp;potem decyzje i&nbsp;odbiory etapów: sponsor w&nbsp;zarządzie poświęca na program ok.&nbsp;1&nbsp;h w&nbsp;tygodniu, właściciel etapu ok.&nbsp;3&nbsp;h.</p>
+<p class="v3-sub">Przegląd systemów, rozmowy z&nbsp;działami, analizę, projekt zmian, wdrożenie, szkolenia i&nbsp;dokumentację robi nasz zespół, bez podwykonawców. Po Waszej stronie zostaje kilka rozmów na początku, a&nbsp;potem decyzje i&nbsp;odbiory etapów: członek zarządu poświęca na program ok.&nbsp;1&nbsp;h w&nbsp;tygodniu, lider etapu ok.&nbsp;3&nbsp;h.</p>
 </div>
 <div class="sh-lu">
 <figure class="sh-lk duch l" aria-hidden="true"><img src={ZESPOL_DUCHY[0]} alt="" width="278" height="280" loading="lazy" decoding="async"></figure>
@@ -1494,7 +1502,7 @@ const description = 'Let’s Shift przenosi firmę z wypracowanym sposobem dzia�
 <section id="dowody" class="v3-sek v3-papier">
 <div class="v8-gl">
 <h2 class="u2-h2">Wyniki <span>z&nbsp;naszych wdrożeń</span></h2>
-<p class="v3-sub">Każde z tych wdrożeń zmieniło jeden proces. W Let’s Shift takie zmiany układają się w etapy według jednej mapy firmy.</p>
+<p class="v3-sub">Każde z tych wdrożeń zmieniło jeden proces. W Let’s Shift takie zmiany składają się na kolejne etapy jednego planu.</p>
 </div>
 <div class="u4w-g" data-anim data-gra>
 {WYNIKI.map((x) => (
@@ -1534,7 +1542,7 @@ const description = 'Let’s Shift przenosi firmę z wypracowanym sposobem dzia�
 <section id="przebieg" class="v3-sek v3-papier">
 <div class="v8-gl">
 <h2 class="u2-h2">Jak przebiega <span>program</span></h2>
-<p class="v3-sub">Od rozmowy do firmy, która sama rozwija swoje narzędzia. Na każdym stopniu firma wie, co dzieje się w danym tygodniu i kto za to odpowiada, a o kolejnym etapie decyduje po poprzednim.</p>
+<p class="v3-sub">Na każdym etapie wiecie, co dzieje się w danym tygodniu i kto za to odpowiada. O kolejnym etapie decydujecie, kiedy skończy się poprzedni.</p>
 </div>
 <figure class="u4s sh-sch" data-anim data-gra role="img" aria-label={DROGA_ARIA}>
 <div class="u4s-g" aria-hidden="true">
@@ -1544,7 +1552,7 @@ const description = 'Let’s Shift przenosi firmę z wypracowanym sposobem dzia�
     <div class="u4s-op" style={`grid-column:${i + 1}`}><p>{e.d}</p>{e.x && <small>{e.x}</small>}</div>
   </div>
 ))}
-<div class="u5s-kl"><span>Jeden prowadzący po stronie Let’s automate, od mapy do ostatniego etapu</span></div>
+<div class="u5s-kl"><span>Jeden prowadzący po stronie Let’s automate, od analizy do ostatniego etapu</span></div>
 </div>
 </figure>
 </section>
@@ -1556,32 +1564,32 @@ const description = 'Let’s Shift przenosi firmę z wypracowanym sposobem dzia�
 <section id="koszty" class="v3-sek v3-papier">
 <div class="v8-gl">
 <h2 class="u2-h2">Ile kosztuje <span>Let’s Shift?</span></h2>
-<p class="v3-sub">Cenę kolejnego etapu znacie, zanim go zamówicie. Dostajecie ją w dwóch dokumentach: w ofercie na mapę i w planie etapów.</p>
+<p class="v3-sub">Cenę kolejnego etapu znacie, zanim go zamówicie. Cenę analizy podajemy w ofercie po pierwszej rozmowie, a ceny etapów w planie, który powstaje w analizie.</p>
 </div>
 <div class="sh-ko">
-<figure class="sh-of" role="img" aria-label="Oferta na mapę systemów: zakres, sześć tygodni, rezultat i stała cena podana w ofercie po pierwszej rozmowie. Po mapie można zakończyć, a plan zostaje u klienta.">
+<figure class="sh-of" role="img" aria-label="Oferta na analizę systemów: zakres, sześć tygodni, rezultat i stała cena podana w ofercie po pierwszej rozmowie. Po analizie można zakończyć, a plan zostaje u klienta.">
 <div class="sh-of-k" aria-hidden="true">
 <header><span class="lg"><svg viewBox="0 0 40 41" set:html={SYGNET}></svg><b>Let’s automate</b></span><span>Oferta · strona 1 z 1</span></header>
 <p class="nr">Oferta po pierwszej rozmowie</p>
-<h3>Mapa systemów firmy</h3>
+<h3>Analiza systemów firmy</h3>
 <dl>
-<div><dt>Zakres</dt><dd>Wszystkie systemy, arkusze i miejsca, w których dane przenoszą ludzie. Przy każdym decyzja: zostaje, łączymy, wymieniamy albo wyłączamy.</dd></div>
+<div><dt>Zakres</dt><dd>Wszystkie systemy, arkusze i miejsca, w których ludzie ręcznie przepisują dane. Przy każdym decyzja: zostaje, łączymy, wymieniamy albo wyłączamy.</dd></div>
 <div><dt>Czas</dt><dd>6 tygodni</dd></div>
 <div><dt>Rezultat</dt><dd>Spis systemów z decyzjami, plan firmy po zmianie i plan etapów z ceną każdego.</dd></div>
 <div class="c"><dt>Cena</dt><dd><span><b>Stała</b>, podana w tej ofercie</span><span class="bl">00 000 zł netto</span></dd></div>
 </dl>
-<footer><span>Po mapie możecie zakończyć, a plan zostaje u Was.</span><span class="pd"><i></i>akceptacja</span></footer>
+<footer><span>Po analizie możecie zakończyć, a plan zostaje u Was.</span><span class="pd"><i></i>akceptacja</span></footer>
 </div>
-<figcaption><b>Oferta na mapę</b>dostajecie po pierwszej rozmowie</figcaption>
+<figcaption><b>Oferta na analizę</b>dostajecie po pierwszej rozmowie</figcaption>
 </figure>
 <figure class="sh-pe" role="img" aria-label="Fragment planu etapów z ceną każdego etapu, kwoty zamazane: etap 1 oferty i zamówienia w kwartałach 1–2, etap 2 magazyn i hala w kwartałach 3–4, etap 3 zarząd i obsługa w kwartałach 5–6, utrzymanie i rozwój miesięcznie. Licencje i zużycie AI osobno, w planie kosztów.">
 <div class="sh-pe-k" aria-hidden="true">
-<header><b>Plan etapów</b><span>z mapy · fragment</span></header>
+<header><b>Plan etapów</b><span>z analizy · fragment</span></header>
 <table><thead><tr><th>Etap</th><th>Zakres</th><th>Kiedy</th><th>Cena</th></tr></thead>
 <tbody>{PLAN_ET.map((r) => <tr><td><b>{r.t}</b></td><td>{r.z}</td><td>{r.k}</td><td><span class="bl">{r.c}</span></td></tr>)}</tbody></table>
 <p class="li"><b>Licencje nowych systemów i zużycie AI</b><span>osobno, w planie kosztów</span></p>
 </div>
-<figcaption><b>Plan etapów z ceną każdego</b>dostajecie po mapie, zanim zamówicie pierwszy etap</figcaption>
+<figcaption><b>Plan etapów z ceną każdego</b>dostajecie po analizie, zanim zamówicie pierwszy etap</figcaption>
 </figure>
 </div>
 <CtaPasek tytul="Na pierwszej rozmowie sprawdzamy, czy Waszej firmie potrzebny jest program, czy wystarczy jedna zmiana." />
@@ -1601,7 +1609,7 @@ const description = 'Let’s Shift przenosi firmę z wypracowanym sposobem dzia�
 
 {/* ============ 13 · KONTAKT nad FAQ ============ */}
 <div class="u6-kon">
-<Kontakt tytul="Zacznijmy od mapy Waszych systemów" lead="Napiszcie, ile osób liczy firma i jakie systemy dziś ją prowadzą. Odpowiemy w jeden dzień roboczy z propozycją terminu rozmowy." zrodlo="Let’s Shift" pytanie="Jakie systemy dziś prowadzą firmę i co chcecie zmienić?" podpowiedz="Np. 320 osób, ERP z 2009 r., oferty w arkuszach, raport dla zarządu klejony ręcznie…" />
+<Kontakt tytul="Zacznijmy od rozmowy o Waszych systemach" lead="Napiszcie, ile osób liczy firma i na jakich systemach dziś pracuje. Odpowiemy w jeden dzień roboczy z propozycją terminu rozmowy." zrodlo="Let’s Shift" pytanie="Na jakich systemach dziś pracujecie i co chcecie zmienić?" podpowiedz="Np. 320 osób, ERP z 2009 r., oferty w arkuszach, raport dla zarządu klejony ręcznie…" />
 </div>
 
 </div>

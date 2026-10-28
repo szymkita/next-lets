@@ -1,4 +1,11 @@
 ---
+// LET’S UP — runda treści opublikowana 28.10.2026 (wcześniej /lets-up-v7;
+// poprzednia wersja w src/robocze/lets-up-v6.astro). Szymon: „bardzo często
+// mówi się tam o jakimś pomiarze… nikt tak normalnie w biznesie nie mówi”. Bez „pomiaru” i „ograniczenia” (teoria ograniczeń):
+// analiza, liczymy czas pracy, to, co najbardziej hamuje firmę. Etap
+// „Rozmowa o dopasowaniu” → „Pierwsza rozmowa”, „Pięć stopni w górę” →
+// „Jak przebiega program” (jak na /lets-shift). Układ i liczby bez zmian.
+//
 // LET’S UP — /lets-up (opublikowana 26.10.2026; wcześniej /lets-up-v6,
 // wersje v1–v5 w src/robocze). Szymon 26.10.2026: strona produkcyjna,
 // liczby prawdziwe, bez oznaczeń przykład/demo.
@@ -67,7 +74,7 @@ const dane = {
       alternateName: ['Program Let’s Up', 'Program dla mikro- i małych firm'],
       serviceType: 'Program usprawnienia operacji mikro- i małych firm z wykorzystaniem automatyzacji i AI',
       url: kanon,
-      description: 'Program dla mikro- i małych firm, który zwiększa liczbę klientów i zleceń, jakie firma może obsłużyć, bez proporcjonalnego zwiększania zespołu: pomiar obecnej pracy, projekt nowego sposobu pracy, system i AI tam, gdzie przejmują powtarzalną pracę, przygotowanie zespołu i pomiar efektu.',
+      description: 'Program dla mikro- i małych firm, który zwiększa liczbę klientów i zleceń, jakie firma może obsłużyć, bez proporcjonalnego zwiększania zespołu: analiza obecnej pracy, projekt nowego sposobu pracy, system i AI tam, gdzie przejmują powtarzalną pracę, szkolenie zespołu i sprawdzenie wyników.',
       provider: { '@id': new URL('/#organizacja', Astro.site).href },
       areaServed: { '@type': 'Country', name: 'Polska' },
       audience: { '@type': 'BusinessAudience', name: 'Mikro- i małe firmy' },
@@ -178,9 +185,9 @@ const ZNAJOME = [
 
 // ---- DEFINICJA (słowa zapalane przy przewijaniu) ----------------------------
 const DEF = [
-  { t: 'Let’s Up to program Let’s automate dla mikro-\u00a0i małych firm, który zwiększa liczbę klientów i zleceń, jakie firma może obsłużyć,' },
-  { t: 'bez proporcjonalnego zwiększania zespołu.', ak: true },
-  { t: 'Zaczynamy od pomiaru pracy, a sposób pracy, narzędzia, automatyzacje, AI albo aplikacje zmieniamy tam, gdzie pomiar to uzasadnia.' },
+  { t: 'Let’s Up to program Let’s automate dla mikro-\u00a0i małych firm, którym przybywa pracy. Pomagamy obsłużyć więcej klientów i zleceń' },
+  { t: 'tym samym zespołem.', ak: true },
+  { t: 'Najpierw sprawdzamy, na co idzie czas zespołu. Potem zmieniamy to, co się opłaca: sposób pracy, narzędzia, automatyzacje, AI albo aplikacje.' },
 ].flatMap((c) => c.t.split(' ').map((w) => ({ w, ak: !!c.ak })));
 
 // ---- OPOWIEŚĆ: gdzie znika czas zlecenia ------------------------------------
@@ -190,12 +197,12 @@ const CZEKA_SR = Math.round(AKC.reduce((a, r) => a + r, 0) / AKC.length);   // 1
 // 0–4: pomiar → część narzędzi znika → część AI znika → kolejka
 // do właściciela → rachunek.
 const KROKI = [
-  { t: 'Mierzymy, na co idzie czas zespołu',
-    d: `Przez dwa tygodnie liczymy pracę przy prawdziwych zleceniach, od zapytania klienta do rozliczenia. W tej firmie spedycyjnej jedno zlecenie zajmuje ${hm(MIN_DZIS)}, rozłożone na osiem czynności i kilka osób.` },
+  { t: 'Sprawdzamy, na co idzie czas zespołu',
+    d: `Przez dwa tygodnie liczymy czas pracy przy prawdziwych zleceniach, od zapytania klienta do rozliczenia. W tej firmie spedycyjnej jedno zlecenie zajmuje ${hm(MIN_DZIS)}, rozłożone na osiem czynności i kilka osób.` },
   { t: 'Łączymy narzędzia, żeby nikt nie przepisywał danych',
     d: `Zapytanie z maila trafia do systemu samo, dokumenty powstają z danych zlecenia, faktura przewoźnika trafia do właściwego zlecenia, a klient dostaje status bez telefonu do spedytora. Z każdego zlecenia znika ${hm(MIN_SYS)}.` },
   { t: 'AI przygotowuje szkice, zespół je sprawdza',
-    d: `Wycena z cennika i historii klienta, propozycja przewoźnika z listy sprawdzonych, odpowiedź o status i zgodność faktury ze zleceniem. Spedytor zaczyna od gotowego szkicu, a zostaje mu ${hm(MIN_PO)} pracy, głównie negocjacje i reakcja na wyjątki w trasie.` },
+    d: `AI liczy wycenę z cennika i historii klienta, proponuje przewoźnika z listy sprawdzonych, odpowiada klientom o status i sprawdza, czy faktura zgadza się ze zleceniem. Spedytor zaczyna od gotowego szkicu i zostaje mu ${hm(MIN_PO)} pracy, głównie negocjacje i problemy w trasie.` },
   { t: 'Spisujemy zasady, które zna tylko właściciel',
     d: `Dziś każda stawka czeka na jego akceptację, średnio ${hm(CZEKA_SR)}. Zapisujemy próg marży i listę sprawdzonych przewoźników, więc do właściciela trafiają tylko wyjątki, każdy z powodem.` },
   { t: `Ten sam zespół obsłuży ponad ${Math.floor(CAP_PO / 10) * 10} zleceń miesięcznie`,
@@ -256,11 +263,11 @@ const TYGODNIE = [
 ];
 const T_MAX = 420;
 const CZESCI = [
-  { t: 'Analiza operacji', d: 'Wiadomo, co ogranicza wzrost i gdzie zmiana ma uzasadnienie.', n: 'Po analizie możecie zakończyć współpracę, a plan zostaje u Was.' },
+  { t: 'Analiza', d: 'Wiecie, co najbardziej hamuje firmę i które zmiany się opłacą.', n: 'Po analizie możecie zakończyć współpracę, a plan zostaje u Was.' },
   { t: 'Nowy sposób pracy', d: 'Kto co robi na każdym kroku i co się dzieje z wyjątkami.', n: 'Spisany, zanim ruszą narzędzia.' },
   { t: `Narzędzia i${NB}AI`, d: 'System i AI tam, gdzie przejmują powtarzalną pracę, na narzędziach, które firma już ma.', n: 'Własna aplikacja tylko wtedy, gdy się opłaca.' },
   { t: 'Zespół', d: 'Ludzie wiedzą, jak pracować po zmianie i kiedy sprawdzać wynik.', n: 'Szkolimy na zleceniach z bieżącego tygodnia.' },
-  { t: `Pomiar i${NB}rozwój`, d: 'Widać, co się poprawiło i czy warto wdrażać kolejne usprawnienia.', n: 'Cenę kolejnego etapu znacie przed decyzją.' },
+  { t: `Wyniki i${NB}kolejne zmiany`, d: 'Widać, co się poprawiło i co warto zmienić dalej.', n: 'Cenę kolejnego etapu znacie przed decyzją.' },
 ];
 
 // ---- SYSTEM Z AI: trzy różne okna w przesuwanym pokazie ---------------------
@@ -373,13 +380,13 @@ const WYNIKI = [
 // c = cena etapu, w jednym wierszu tuż pod stopniami (Szymon do v5:
 // opisy i ceny skakały góra-dół).
 const ETAPY = [
-  { t: 'Rozmowa o dopasowaniu', d: 'Sytuacja firmy i gotowość do zmiany. Mówimy wprost, czy analiza ma sens.', c: 'Bezpłatnie', h: 34 },
-  { t: 'Analiza', d: 'Pomiar pracy, ograniczenie, warianty zmian z kalkulacją i zakres pierwszego wdrożenia.', x: 'Możecie na niej zakończyć, a plan zostaje u Was.', c: 'Stała cena przed startem', h: 50 },
-  { t: `Plan i${NB}warunki`, d: 'Rezultat, zakres, odpowiedzialności obu stron i zasady odbioru na piśmie.', c: 'Cena wdrożenia na piśmie', h: 66 },
-  { t: `Wdrożenie i${NB}zmiana pracy`, d: 'Rozwiązanie, szkolenie zespołu na prawdziwych sprawach i wsparcie w pierwszych tygodniach.', c: 'Stała cena w ratach', h: 82 },
-  { t: `Pomiar i${NB}kolejne usprawnienia`, d: 'Wynik na tych samych miarach co w analizie i decyzja o kolejnym ograniczeniu.', x: 'Kolejne ograniczenie wraca do wdrożenia.', c: 'Cena przed decyzją', h: 100 },
+  { t: 'Pierwsza rozmowa', d: 'Poznajemy firmę i mówimy wprost, czy analiza ma sens.', c: 'Bezpłatnie', h: 34 },
+  { t: 'Analiza', d: 'Liczymy czas pracy przy Waszych zleceniach, pokazujemy, co najbardziej hamuje firmę, i proponujemy warianty zmian z kalkulacją.', x: 'Możecie na niej zakończyć, a plan zostaje u Was.', c: 'Stała cena przed startem', h: 50 },
+  { t: `Plan i${NB}warunki`, d: 'Na piśmie: co ma się zmienić, zakres prac, kto za co odpowiada i jak odbieramy wdrożenie.', c: 'Cena wdrożenia na piśmie', h: 66 },
+  { t: `Wdrożenie i${NB}zmiana pracy`, d: 'Wdrażamy rozwiązanie, szkolimy zespół na prawdziwych zleceniach i jesteśmy pod ręką w pierwszych tygodniach.', c: 'Stała cena w ratach', h: 82 },
+  { t: `Wyniki i${NB}kolejne zmiany`, d: 'Porównujemy czas pracy z liczbami z analizy, a Wy decydujecie, co zmieniamy dalej.', x: 'Następną zmianę wdrażamy tak samo.', c: 'Cena przed decyzją', h: 100 },
 ];
-const LT_ARIA = 'Droga programu jako pięć stopni w górę. Pierwszy: bezpłatna rozmowa o dopasowaniu. Drugi: analiza ze stałą ceną znaną przed startem; po niej można zakończyć współpracę, a plan zostaje u klienta. Trzeci: plan i warunki, ze stałą ceną wdrożenia i harmonogramem płatności. Czwarty: wdrożenie i zmiana pracy według planu. Piąty: pomiar i decyzja o kolejnym ograniczeniu, które wraca do etapu wdrożenia z nową ceną przed decyzją. Od analizy do pomiaru program prowadzi jedna osoba po stronie Let’s automate.';
+const LT_ARIA = 'Droga programu jako pięć stopni w górę. Pierwszy: bezpłatna pierwsza rozmowa. Drugi: analiza ze stałą ceną znaną przed startem; po niej można zakończyć współpracę, a plan zostaje u klienta. Trzeci: plan i warunki, ze stałą ceną wdrożenia i harmonogramem płatności. Czwarty: wdrożenie i zmiana pracy według planu. Piąty: wyniki i decyzja o kolejnej zmianie, którą wdrażamy tak samo, z ceną znaną przed decyzją. Od analizy do wyników program prowadzi jedna osoba po stronie Let’s automate.';
 
 // ---- KOSZTY: wykres „nożyce” z przykładu (indeks względem stycznia) ---------
 const VB_W = 1000, VB_H = 400, V_MIN = 0.97, V_MAX = 1.56;
@@ -417,12 +424,12 @@ const TAK = [
   { t: 'Duża część pracy się powtarza', d: 'Wyceny, zamówienia, zlecenia, dokumenty, odpowiedzi dla klientów.' },
   { t: 'Myślicie o zatrudnieniu albo zespół przestaje nadążać', d: 'Nadgodziny, sprawy odkładane na jutro, klienci dopytujący o status.' },
   { t: 'Właściciel ma czas uczestniczyć w zmianie', d: 'Zasady pracy zmienia osoba, która je dziś ustala.' },
-  { t: 'Możecie udostępnić dane', d: 'Skrzynki, arkusze i historię spraw z kilku tygodni, na których robimy pomiar.' },
+  { t: 'Możecie udostępnić dane', d: 'Skrzynki, arkusze i historię spraw z kilku tygodni, na których liczymy czas pracy.' },
 ];
 const NIE = [
   { t: 'Brakuje klientów i zleceń', d: 'Program pomaga obsłużyć popyt, który już jest. Pozyskaniem klientów zajmują się AdWise i SellWise z naszej grupy: <a href="#grupa">zobaczcie niżej</a>.' },
-  { t: 'Model biznesowy jeszcze się zmienia', d: 'Pomiar zrobiony dziś niewiele powie o pracy za pół roku.' },
-  { t: 'Dane z poczty i systemów są niedostępne', d: 'Bez nich pomiar opiera się na szacunkach, a efektu nie da się sprawdzić.' },
+  { t: 'Model biznesowy jeszcze się zmienia', d: 'To, co policzymy dziś, niewiele powie o pracy za pół roku.' },
+  { t: 'Dane z poczty i systemów są niedostępne', d: 'Bez nich zostają szacunki, a efektu nie da się sprawdzić.' },
   { t: 'Wiecie już, czego potrzebujecie', d: 'Np. połączenia CRM z systemem magazynowym. Szybciej będzie zamówić samą usługę: <a href="/automatyzacje-integracje">integracje systemów</a>.' },
 ];
 
@@ -450,7 +457,7 @@ const GRUPA = [
   { n: 'SellWise', logo: '/uploads/wisegroup/wg-sellwise.svg', w: 152, h: 22, url: 'https://www.sellwise.pl', u: 'sellwise.pl',
     e: 'Więcej podpisanych zleceń', d: 'Doradztwo sprzedażowe: proces sprzedaży i praca zespołu handlowego.' },
   { n: 'Let’s Up', my: true,
-    e: 'Więcej zleceń, ten sam zespół', d: 'Pomiar, nowy sposób pracy, system i AI. Program z tej strony.' },
+    e: 'Więcej zleceń, ten sam zespół', d: 'Analiza, nowy sposób pracy, system i AI. Program z tej strony.' },
   { n: 'HireWise', logo: '/uploads/wisegroup/wg-hirewise.svg', w: 159, h: 20, url: 'https://hirewise.pl', u: 'hirewise.pl',
     e: 'Ludzie do nowych ról', d: 'Rekrutacja i zespoły: gdy firma rośnie dalej, nowe osoby do ról, które zostają po zmianach.' },
 ];
@@ -458,13 +465,13 @@ const GRUPA = [
 // ---- FAQ --------------------------------------------------------------------
 const faq = [
   { q: 'Czy musimy wiedzieć, co chcemy zautomatyzować?',
-    a: 'Nie. Wystarczy opisać, co dziś ogranicza obsługę większej liczby klientów albo zleceń. Co zmienić i jakim narzędziem, pokazuje dopiero analiza.' },
+    a: 'Nie. Wystarczy opisać, co dziś nie pozwala Wam przyjąć więcej klientów albo zleceń. Co zmienić i jakim narzędziem, pokazuje dopiero analiza.' },
   { q: 'Ile kosztuje Let’s Up?',
-    a: 'Każdy etap ma stałą cenę, którą znacie, zanim go zamówicie. Rozmowa o dopasowaniu jest bezpłatna, analizę wyceniamy z góry, a cenę i harmonogram płatności wdrożenia podajemy po analizie, razem z kalkulacją. Kalkulacja stawia koszt zmian obok kosztu obsługi tych samych zleceń obecnym sposobem.' },
+    a: 'Każdy etap ma stałą cenę, którą znacie, zanim go zamówicie. Pierwsza rozmowa jest bezpłatna, analizę wyceniamy z góry, a cenę i harmonogram płatności wdrożenia podajemy po analizie, razem z kalkulacją. W kalkulacji koszt zmian stoi obok kosztu obsługi tych samych zleceń dzisiejszym sposobem pracy.' },
   { q: 'Dla jakich firm jest Let’s Up?',
     a: 'Dla mikro- i małych firm, którym przybywa klientów i zleceń, a obecny sposób pracy przestaje za tym nadążać. Najlepiej sprawdza się tam, gdzie duża część pracy się powtarza, a właściciel ma czas uczestniczyć w zmianie.' },
   { q: 'Co dokładnie przejmuje AI?',
-    a: 'Powtarzalną część pracy, którą pokaże pomiar: szkice wycen i dokumentów, dobór z listy sprawdzonych dostawców, odpowiedzi o status, przepisywanie danych między narzędziami. Decyzje, negocjacje i wyjątki zostają przy ludziach, a AI przygotowuje dla nich materiał.' },
+    a: 'Powtarzalną część pracy, którą wskaże analiza: szkice wycen i dokumentów, dobór z listy sprawdzonych dostawców, odpowiedzi o status, przepisywanie danych między narzędziami. Decyzje, negocjacje i wyjątki zostają przy ludziach, a AI przygotowuje dla nich materiał.' },
   { q: 'Czy potrzebujemy własnej aplikacji?',
     a: 'Nie zawsze. Rozwiązanie wynika z analizy: czasem wystarczy zmiana obiegu sprawy i zasad akceptacji, czasem połączenie narzędzi, które już macie, a czasem system albo AI. W analizie dostajecie warianty z kalkulacją, także bez nowego oprogramowania.' },
   { q: 'Czy musimy korzystać z Appto?',
@@ -474,11 +481,11 @@ const faq = [
   { q: 'Czy pomożecie też zdobyć więcej klientów?',
     a: 'Sam program przygotowuje firmę do obsługi większej liczby zleceń. Pozyskaniem klientów zajmują się firmy z WiseGroup, do której należymy: AdWise w marketingu B2B i SellWise w doradztwie sprzedażowym. Jeśli to Wam potrzebne, umówimy wspólną rozmowę.' },
   { q: 'Co musimy zrobić po swojej stronie?',
-    a: 'Udostępnić wiedzę o tym, jak dziś pracujecie, i dane potrzebne do pomiaru, wskazać osoby do współpracy i podejmować decyzje o zmianach. Najwięcej zależy od właściciela albo osoby, która ustala zasady pracy.' },
+    a: 'Opowiedzieć, jak dziś pracujecie, udostępnić dane potrzebne do analizy, wskazać osoby do współpracy i podejmować decyzje o zmianach. Najwięcej zależy od właściciela albo osoby, która ustala zasady pracy.' },
   { q: 'Co obejmuje analiza i czy możemy na niej skończyć?',
-    a: 'Analiza to pomiar obecnej pracy, wskazanie, co ogranicza obsługę większej liczby zleceń, warianty zmian z kalkulacją i zakres pierwszego wdrożenia. Ma stałą cenę znaną przed startem. Po analizie możecie zakończyć współpracę, a plan zostaje u Was.' },
+    a: 'W analizie liczymy czas obecnej pracy przy Waszych zleceniach, pokazujemy, co najbardziej hamuje obsługę większej liczby zleceń, i przygotowujemy warianty zmian z kalkulacją oraz zakres pierwszego wdrożenia. Ma stałą cenę znaną przed startem. Po analizie możecie zakończyć współpracę, a plan zostaje u Was.' },
   { q: 'Ile trwa program?',
-    a: 'Zaczynamy od jednego ograniczenia, a harmonogram jego wdrożenia jest częścią planu po analizie. Po pomiarze decydujecie, czy bierzemy kolejne.' },
+    a: 'Zaczynamy od jednej zmiany: tej, która najbardziej hamuje firmę. Jej harmonogram dostajecie w planie po analizie. Kiedy widać wyniki, decydujecie, czy bierzemy kolejną.' },
 ];
 ---
 
@@ -1660,7 +1667,7 @@ const faq = [
 <div class="u3h-tekst">
 <p class="u3h-marka"><b>Let’s Up</b><span>Program dla <i class="nw">mikro- i</i>&nbsp;małych firm</span></p>
 <h1 class="u3h-h1">Firma rośnie <span>szybciej niż zespół</span></h1>
-<p class="u3h-lead">Let’s Up to program, w którym razem z Wami przebudowujemy sposób pracy firmy. Zaczynamy od pomiaru, na co idzie czas zespołu, a potem wdrażamy system i AI, które przejmują powtarzalną pracę. Firma obsługuje więcej klientów i zleceń bez zatrudniania w tym samym tempie.</p>
+<p class="u3h-lead">Let’s Up to program, w którym razem z Wami zmieniamy sposób pracy firmy. Najpierw sprawdzamy, na co idzie czas zespołu, a potem wdrażamy system i AI, które przejmują powtarzalną pracę. Firma obsłuży więcej klientów i zleceń, nie zatrudniając w tym samym tempie.</p>
 <div class="v3-akcje u3h-akcje"><a href="#kontakt" class="v3-btn">Umów rozmowę <span aria-hidden="true">→</span></a><a href="#zlecenie" class="u3h-lnk">Zobacz, gdzie znika czas →</a></div>
 <p class="u6-tw"><img src="/piotr-wojciuk.jpg" alt="" width="1002" height="1100" decoding="async"><span>Pierwszą rozmowę prowadzi <b>Piotr Wojciuk</b>. Bezpłatnie i bez zobowiązań.</span></p>
 </div>
@@ -1703,7 +1710,7 @@ const faq = [
 <section id="sytuacje" class="v3-sek">
 <div class="v8-gl">
 <h2 class="u2-h2">Brzmi znajomo?</h2>
-<p class="v3-sub">Sytuacje, od których najczęściej zaczynamy. Każdą właściciel firmy, której przybywa zleceń, zna z własnego telefonu.</p>
+<p class="v3-sub">Od takich sytuacji najczęściej zaczynamy. Właściciel firmy, której przybywa zleceń, zna je z własnego telefonu.</p>
 </div>
 <div class="u5s-tor u3s-g" data-anim data-gra data-u5s tabindex="0" role="region" aria-label="Sytuacje, przewijane w poziomie">
 {ZNAJOME.map((z) => (
@@ -1741,7 +1748,7 @@ const faq = [
 <div class="u2-pl-in u4z-in v3-ziarno">
 <div class="u4z-gl">
 <h2 class="u2-h2 jasny">Gdzie znika czas <span>jednego zlecenia</span></h2>
-<p class="v3-sub jasny">Zanim cokolwiek wdrożymy, mierzymy pracę. Tak wygląda to w firmie spedycyjnej. W firmie serwisowej albo produkcyjnej czynności nazywają się inaczej, a liczymy je tak samo.</p>
+<p class="v3-sub jasny">Zanim cokolwiek wdrożymy, liczymy, ile czasu zajmuje każdy krok zlecenia. Tak wygląda to w firmie spedycyjnej. W firmie serwisowej czy produkcyjnej kroki nazywają się inaczej, ale liczymy je tak samo.</p>
 </div>
 <div class="u4z-g">
 <div class="u4z-wiz" data-u4z data-krok="0" role="img" aria-label={LZ_ARIA} style={`--tot:${MIN_DZIS};--tot1:${MIN_1};--tot2:${MIN_PO}`}>
@@ -1781,8 +1788,8 @@ const faq = [
      4 ściąga i karteczki zespołu, 5 wykres z przeglądu miesiąca. -->
 <section id="program" class="v3-sek v3-papier">
 <div class="v8-gl">
-<h2 class="u2-h2">Pięć części programu, <span>jedna droga</span></h2>
-<p class="v3-sub">Tak wyglądają w tej samej firmie spedycyjnej. Zakres dla Waszej firmy powstaje po analizie i nie zawsze obejmuje wszystkie części.</p>
+<h2 class="u2-h2">Z czego składa się <span>program</span></h2>
+<p class="v3-sub">Pięć części na przykładzie tej samej firmy spedycyjnej. Zakres dla Waszej firmy ustalamy po analizie i nie zawsze obejmuje wszystkie części.</p>
 </div>
 <div class="u4p-st" data-u4p>
 
@@ -1791,10 +1798,10 @@ const faq = [
 <div class="u4p-sc" aria-hidden="true">
 <div class="u4p-kartka tyl"></div>
 <div class="u4p-kartka">
-<header><b>Analiza operacji</b><span>{FIRMA}, {OSOB} osób</span></header>
-<div class="ogr"><small>Ograniczenie przy {CEL} zleceniach miesięcznie</small><strong>+{NOWI_DZIS}</strong><span>{odm(NOWI_DZIS, 'osoba', 'osoby', 'osób')} obecnym sposobem pracy,<br>{hm(MIN_DZIS)} pracy na zlecenie</span></div>
+<header><b>Analiza</b><span>{FIRMA}, {OSOB} osób</span></header>
+<div class="ogr"><small>Przy {CEL} zleceniach miesięcznie</small><strong>+{NOWI_DZIS}</strong><span>{odm(NOWI_DZIS, 'osoba', 'osoby', 'osób')} obecnym sposobem pracy,<br>{hm(MIN_DZIS)} pracy na zlecenie</span></div>
 <ol>{WARIANTY.map((w) => (<li class={w.wyb ? 'wyb' : ''}><b>{w.k}</b><span>{w.t}{w.wyb && <small>pierwsze wdrożenie</small>}</span><em class={w.os ? '' : 'tx'}>{w.os ? `+${w.os}` : 'bez nowych osób'}</em></li>))}</ol>
-<footer>Pomiar: 96 zleceń, 6–17 października · kalkulacja w załączniku 2</footer>
+<footer>Policzone na 96 zleceniach, 6–17 października · kalkulacja w załączniku 2</footer>
 </div>
 </div>
 </article>
@@ -1863,7 +1870,7 @@ const faq = [
   <div class={`u6w-s${t.p ? ' p' : ''}`}><i style={`height:${f1((t.v / T_MAX) * 100)}%`}>{(i === 0 || i === TYGODNIE.length - 1) && <em>{hm(t.v)}</em>}</i><small>{t.t}</small></div>
 </>))}
 </div>
-<footer><b>Kolejne ograniczenie:</b> rozliczenia z przewoźnikami, wciąż 68 min na zlecenie. Cena etapu w ofercie z 4 marca.</footer>
+<footer><b>Następne do zmiany:</b> rozliczenia z przewoźnikami, wciąż 68 min na zlecenie. Cena etapu w ofercie z 4 marca.</footer>
 </div>
 </div>
 </article>
@@ -2104,8 +2111,8 @@ const faq = [
      nim opisy; klamra od analizy do pomiaru: jeden prowadzący. -->
 <section id="przebieg" class="v3-sek v3-papier">
 <div class="v8-gl">
-<h2 class="u2-h2">Pięć stopni <span>w&nbsp;górę</span></h2>
-<p class="v3-sub">Zaczynamy od jednego ograniczenia. Cenę każdego dużego etapu znacie, zanim go zamówicie, a po analizie możecie skończyć z planem w ręku.</p>
+<h2 class="u2-h2">Jak przebiega <span>program</span></h2>
+<p class="v3-sub">Zaczynamy od tego, co najbardziej hamuje firmę. Cenę każdego dużego etapu znacie, zanim go zamówicie, a po analizie możecie skończyć z planem w ręku.</p>
 </div>
 <figure class="u4s u6s" data-anim data-gra role="img" aria-label={LT_ARIA}>
 <div class="u4s-g" aria-hidden="true">
@@ -2116,7 +2123,7 @@ const faq = [
     <div class="u4s-op" style={`grid-column:${i + 1}`}><p>{e.d}</p>{e.x && <small>{e.x}</small>}</div>
   </div>
 ))}
-<div class="u5s-kl"><span>Jeden prowadzący po stronie Let’s automate, od analizy do pomiaru</span></div>
+<div class="u5s-kl"><span>Jeden prowadzący po stronie Let’s automate, od analizy do wyników</span></div>
 </div>
 </figure>
 </section>
@@ -2128,15 +2135,15 @@ const faq = [
 <section id="koszty" class="v3-sek">
 <div class="v8-gl">
 <h2 class="u2-h2">Ile to <span>kosztuje?</span></h2>
-<p class="v3-sub">Każdy etap ma stałą cenę, którą znacie, zanim go zamówicie. Po analizie dostajecie kalkulację: koszt zmian stoi w niej obok kosztu obsługi rosnącej liczby zleceń obecnym sposobem.</p>
+<p class="v3-sub">Każdy etap ma stałą cenę, którą znacie, zanim go zamówicie. Po analizie dostajecie kalkulację z dwoma kosztami obok siebie: koszt zmian i koszt obsługi większej liczby zleceń dzisiejszym sposobem pracy.</p>
 </div>
 <div class="u4k-pan">
 <div class="u4k-par u6r">
 <header><b>Let’s Up</b><span>co obejmuje cena</span></header>
-<div class="u6r-e"><p><b>Analiza</b><span>stała cena przed startem</span></p><ul><li>pomiar pracy na Waszych sprawach</li><li>warianty zmian z kalkulacją i zakres wdrożenia</li></ul></div>
+<div class="u6r-e"><p><b>Analiza</b><span>stała cena przed startem</span></p><ul><li>liczenie czasu pracy na Waszych zleceniach</li><li>warianty zmian z kalkulacją i zakres wdrożenia</li></ul></div>
 <div class="u6r-e"><p><b>Wdrożenie</b><span>stała cena, płatność w ratach</span></p><ul><li>nowy obieg i zasady akceptacji</li><li>system, połączenia narzędzi i AI</li><li>szkolenie zespołu na bieżących zleceniach</li><li>wsparcie w pierwszych tygodniach</li></ul></div>
 <div class="u6r-o"><b>Poza ceną etapu</b><span>licencje narzędzi i zużycie AI, rozpisane w kalkulacji</span></div>
-<footer>Rozmowa o dopasowaniu: <b>bezpłatnie</b></footer>
+<footer>Pierwsza rozmowa: <b>bezpłatnie</b></footer>
 </div>
 <figure class="u3k-wyk" role="img" aria-label={WYK_ARIA} data-anim data-gra>
 <div class="u3k-pole" aria-hidden="true">
@@ -2159,7 +2166,7 @@ const faq = [
 </div>
 </figure>
 </div>
-<CtaPasek tytul="Na pierwszej rozmowie sprawdzamy, co ogranicza Waszą firmę i czy analiza ma sens." />
+<CtaPasek tytul="Na pierwszej rozmowie sprawdzamy, co hamuje Waszą firmę i czy analiza ma sens." />
 </section>
 
 <!-- ============ 12 · DLA KOGO ============ -->
@@ -2199,7 +2206,7 @@ const faq = [
      Nad FAQ, krótszy nagłówek (w v5 „Sprawdźmy, czy Let’s Up pasuje do
      Waszej firmy” łamał się na pięć wierszy). -->
 <div class="u6-kon">
-<Kontakt tytul={`Sprawdźmy, czy Let’s Up jest dla${NB}Was`} lead="Napiszcie, ile osób liczy zespół i co dziś blokuje obsługę większej liczby zleceń. Odpowiemy w jeden dzień roboczy z propozycją terminu rozmowy." zrodlo="Let’s Up" pytanie="Co dziś ogranicza obsługę większej liczby klientów lub zleceń?" podpowiedz="Np. 12 osób, zapytań przybywa, wyceny robi tylko właściciel, myślimy o zatrudnieniu dwóch osób…" />
+<Kontakt tytul={`Sprawdźmy, czy Let’s Up jest dla${NB}Was`} lead="Napiszcie, ile osób liczy zespół i co dziś nie pozwala Wam przyjąć więcej zleceń. Odpowiemy w jeden dzień roboczy z propozycją terminu rozmowy." zrodlo="Let’s Up" pytanie="Co dziś nie pozwala Wam przyjąć więcej klientów lub zleceń?" podpowiedz="Np. 12 osób, zapytań przybywa, wyceny robi tylko właściciel, myślimy o zatrudnieniu dwóch osób…" />
 </div>
 
 </div>
