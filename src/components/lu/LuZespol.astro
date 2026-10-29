@@ -1,0 +1,112 @@
+---
+// ZESPÓŁ „EKSPERTYZA PO NASZEJ STRONIE” — wspólna sekcja z /lets-shift
+// (26.10.2026), do podstron usługowych w nowym wzorcu. Wzór: #zespol na
+// /dlaczego-my-v11 (portrety schodkowo, czerń-biel z zielonym tonem, kolor
+// po najechaniu) + rozmyte osoby na krańcach rzędu od 1100 px („jakby tam
+// były dodatkowe osoby”) + jedna wstęga z sygnetem (zdanie o kontroli,
+// pogrubione sedno). Tekst nagłówka, akapit i wstęgę podaje strona;
+// portrety są wspólne. Szymon: wyważyć narrację — praca po naszej stronie,
+// decyzje i odbiory po stronie firmy, bez wrażenia „bez kontroli”.
+import { SYGNET } from '../usluga/ikony';
+interface Props {
+  tytul: string;            // pierwsza część nagłówka
+  akcent: string;           // druga część (zielona)
+  akapit: string;           // HTML dozwolony
+  wstega: string;           // HTML dozwolony, <b> = sedno na zielono
+  papier?: boolean;         // tło papieru (domyślnie tak)
+  id?: string;
+}
+const { tytul, akcent, akapit, wstega, papier = true, id = 'zespol' } = Astro.props;
+const ZESPOL = [
+  { n: 'Szymon Kita', r: 'CEO Let’s automate', f: '/lets-shift/zespol-szymon-kita.jpg', w: 640, h: 1012, poz: '47% 50%' },
+  { n: 'Marcel Bilski', r: 'Tech Lead', f: '/lets-shift/zespol-marcel-bilski.jpg', w: 640, h: 1347, poz: '50% 50%' },
+  { n: 'Piotr Wojciuk', r: 'New Business Lead', f: '/lets-shift/zespol-piotr-wojciuk.jpg', w: 640, h: 703, poz: '46% 50%' },
+  { n: 'Szymon Negacz', r: 'Współwłaściciel', f: '/lets-shift/zespol-szymon-negacz.jpg', w: 640, h: 517, poz: '53% 50%' },
+  { n: 'Jakub Markiewicz', r: 'AI Consultant & Developer', f: '/jakub-markiewicz.jpg', w: 512, h: 500, poz: '50% 50%' },
+];
+const DUCHY = ['/team/kamil-gorski.png', '/team/adam-szarzanowicz.png'];
+---
+<section id={id} class={`v3-sek lz${papier ? ' v3-papier' : ''}`}>
+<div class="v8-gl">
+<h2 class="u2-h2">{tytul} <span>{akcent}</span></h2>
+<p class="v3-sub" set:html={akapit}></p>
+</div>
+<div class="lz-lu">
+<figure class="lz-lk duch l" aria-hidden="true"><img src={DUCHY[0]} alt="" width="278" height="280" loading="lazy" decoding="async"></figure>
+{ZESPOL.map((o) => (
+  <figure class="lz-lk">
+    <img src={o.f} alt={o.n} width={o.w} height={o.h} loading="lazy" decoding="async" style={`object-position:${o.poz}`}>
+    <figcaption><b>{o.n}</b><small>{o.r}</small></figcaption>
+  </figure>
+))}
+<figure class="lz-lk duch p" aria-hidden="true"><img src={DUCHY[1]} alt="" width="278" height="280" loading="lazy" decoding="async"></figure>
+</div>
+<p class="lz-st"><svg viewBox="0 0 40 41" aria-hidden="true" set:html={SYGNET}></svg><span set:html={wstega}></span></p>
+</section>
+<style is:global>
+  /* =====================================================================
+     8 · EKSPERTYZA PO NASZEJ STRONIE, DECYZJE PO WASZEJ: wzór .lz
+     z /dlaczego-my-v11 (.dm7-lu, .dm7-lk, .dm7-lu-st): pięć portretów schodkowo, czerń-biel z zielonym tonem, kolor po
+     najechaniu; pod spodem jedna wstęga z sygnetem
+     ===================================================================== */
+  /* zwarta wersja (Szymon: „strasznie wysoka, 4 wiersze nagłówka, wysokie
+     zdjęcia”): nagłówek mniejszym stopniem na szerokość dwóch wierszy,
+     portrety niższe, schodek i odstępy mniejsze; od 1200 px szersza kolumna
+     nagłówka i stopień 3,9vw, żeby w 1280 nie łamał się w trzy wiersze
+     (QA 1280–1920, 26.10) */
+  @media (min-width:901px){ .lz .v8-gl{grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);align-items:end} }
+  @media (min-width:1200px){ .lz .v8-gl{grid-template-columns:minmax(0,1.6fr) minmax(0,1fr)} }
+  .lz .u2-h2{font-size:clamp(32px,3.9vw,64px);line-height:1}
+  .lz .v8-gl .v3-sub{font-size:clamp(15px,1.15vw,17px)}
+  .lz-lu{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:clamp(10px,1.2vw,18px);align-items:start;margin-top:clamp(32px,3.4vw,52px)}
+  .lz-lk{position:relative;overflow:hidden;margin:0;aspect-ratio:1 / 1.25;border-radius:20px;background:#12261b;box-shadow:0 30px 60px -40px rgba(15,26,20,0.6)}
+  /* pierwszym i ostatnim dzieckiem rzędu są rozmyte postaci (ukryte poniżej
+     1100 px), więc portret n to dziecko n+1: odd = portrety 2 i 4 */
+  .lz-lk:nth-child(odd){margin-top:clamp(18px,2vw,30px)}
+  .lz-lk img{display:block;width:100%;height:100%;object-fit:cover;filter:grayscale(1) contrast(1.12) brightness(0.9);transition:filter .5s}
+  .lz-lk:hover img{filter:grayscale(0.15) contrast(1.04) brightness(0.98)}
+  /* rozmyte osoby na krańcach: rząd na całą szerokość okna, siedem kolumn,
+     skrajne karty wysunięte za krawędź, rozmyte i wygaszone ku zewnątrz */
+  .lz-lk.duch{display:none}
+  @media (min-width:1100px){
+    .lz{overflow-x:clip}
+    .lz-lu{--u:calc((100vw - 32px - 6 * 14px) / 6.3);grid-template-columns:calc(var(--u) * 0.65) repeat(5,var(--u)) calc(var(--u) * 0.65);justify-content:center;gap:14px;width:100vw;margin-left:calc(50% - 50vw)}
+    .lz-lk.duch{display:block;aspect-ratio:auto;height:calc(var(--u) * 1.25);margin-top:clamp(18px,2vw,30px);pointer-events:none;box-shadow:none}
+    .lz-lk.duch.l{-webkit-mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,0.85) 75%);mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,0.85) 75%)}
+    .lz-lk.duch.p{-webkit-mask-image:linear-gradient(270deg,transparent 0%,rgba(0,0,0,0.85) 75%);mask-image:linear-gradient(270deg,transparent 0%,rgba(0,0,0,0.85) 75%)}
+    .lz-lk.duch img{filter:grayscale(1) contrast(1.1) blur(3.5px) brightness(0.58);transform:scale(1.32);object-position:50% 38%}
+    .lz-lk.duch::after{opacity:0.55}
+    .lz-lk.duch.l img{object-position:62% 38%}
+    .lz-lk.duch.p img{object-position:38% 38%}
+    .lz-lk:not(.duch):nth-child(odd){margin-top:clamp(18px,2vw,30px)}
+    .lz-lk:not(.duch):nth-child(even){margin-top:0}
+  }
+  /* tło każdego zdjęcia przechodzi u góry w ciemną zieleń studia, więc jasne
+     i ciemne tła portretów wyglądają jak z jednej sesji */
+  .lz-lk::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+    background:linear-gradient(180deg,rgba(7,20,13,0.78) 0%,rgba(7,20,13,0.28) 22%,rgba(7,20,13,0) 40%),radial-gradient(120% 60% at 50% 0%,rgba(0,205,119,0.16),rgba(0,205,119,0) 60%);
+    mix-blend-mode:normal;transition:opacity .5s}
+  .lz-lk::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:#0f2a1d;mix-blend-mode:color;opacity:0.35;transition:opacity .5s}
+  .lz-lk:hover::after{opacity:0}
+  .lz-lk figcaption{z-index:2}
+  .lz-lk figcaption{position:absolute;left:0;right:0;bottom:0;padding:clamp(60px,6vw,90px) clamp(14px,1.4vw,20px) clamp(14px,1.4vw,18px);background:linear-gradient(180deg,rgba(7,20,13,0),rgba(7,20,13,0.62) 34%,rgba(7,20,13,0.95) 76%)}
+  .lz-lk b{display:block;font-size:clamp(15px,1.3vw,18px);font-weight:700;letter-spacing:-0.02em;line-height:1.2;color:#ffffff;text-wrap:pretty}
+  .lz-lk small{display:block;min-height:0;margin-top:4px;font-size:12.5px;line-height:1.3;color:rgba(255,255,255,0.62);text-wrap:pretty}
+  .lz-st{display:flex;align-items:center;gap:12px;margin-top:clamp(22px,2.4vw,34px);padding:16px 20px;border-radius:18px;background:var(--ink);color:#ffffff;font-size:15px;line-height:1.45}
+  .lz-st svg{flex:none;width:22px;height:22px;fill:var(--ziel)}
+  .lz-st b{font-weight:650;color:var(--ziel)}
+  @media (max-width:1000px){
+    .lz-lu{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .lz-lk:nth-child(odd){margin-top:0}
+    .lz-lk:nth-child(3n){margin-top:24px}
+  }
+  @media (max-width:600px){
+    .lz-lu{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+    .lz-lk{aspect-ratio:1 / 1.3;border-radius:16px}
+    .lz-lk:nth-child(3n){margin-top:0}
+    .lz-lk:nth-child(odd){margin-top:20px}
+    .lz-lk:nth-last-child(2){grid-column:1 / -1;aspect-ratio:2 / 1.1;margin-top:0}
+    .lz-lk small{min-height:0}
+    .lz-st{align-items:flex-start;font-size:14px}
+  }
+</style>

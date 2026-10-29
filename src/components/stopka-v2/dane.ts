@@ -43,11 +43,18 @@ export const DROGI = [
     // Bez pozycji „Guided coding” (hub /guided-coding): od 21.10.2026 huby
     // usług nie mają linków, dopóki ich nie dopracujemy (Nawigacja.astro).
     poz: [
-      { t: 'Audyt aplikacji', h: '/guided-coding/audyt-aplikacji' },
+      { t: 'Analiza aplikacji', h: '/guided-coding/audyt-aplikacji' },
       { t: 'Bieżące wsparcie', h: '/guided-coding/biezace-wsparcie' },
       { t: 'Warsztaty dla zespołu', h: '/guided-coding/transfer-know-how' },
     ],
   },
+];
+
+// Programy jak w megamenu (29.10.2026, Szymon: „dodaj do stopki Let’s Up
+// i Shift”). W StopkaG stoją w ostatniej kolumnie, nad „Firmą”.
+export const PROGRAMY = [
+  { t: 'Let’s Up', h: '/lets-up' },
+  { t: 'Let’s Shift', h: '/lets-shift' },
 ];
 
 export const PRODUKTY = [
