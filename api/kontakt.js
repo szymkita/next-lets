@@ -34,9 +34,6 @@ export default async function handler(req, res) {
   }
   if (!dane || typeof dane !== 'object') return res.status(400).json({ blad: 'brak-danych' });
 
-  // Pułapka na boty: pole ukryte w formularzu, człowiek go nie wypełni.
-  if (CZYSC(dane.firma_www, 200)) return res.status(200).json({ ok: true });
-
   const email = CZYSC(dane.email, 160);
   const telefon = CZYSC(dane.telefon, 40);
   const wiadomosc = CZYSC(dane.wiadomosc, 4000);
@@ -47,10 +44,30 @@ export default async function handler(req, res) {
   // na starym serwisie) — puste, gdy nikt nie polecił.
   const referrer = CZYSC(dane.referrer, 120);
 
+  const kiedy = new Date().toISOString();
+
+  // Pułapka na boty: pole ukryte w formularzu, człowiek go nie wypełni.
+  // Do 29.10.2026 nazywało się firma_www i autouzupełnianie przeglądarki mogło
+  // je wypełnić za człowieka (zgłoszenie z 29.10 12:57 przepadło bez śladu).
+  // Dlatego odrzucone zgłoszenie nie ginie: trafia do Blob pod odrzucone/
+  // i do logu. Podgląd: `npm run zgloszenia -- odrzucone`.
+  const pulapka = CZYSC(dane.firma_www, 200);
+  if (pulapka) {
+    console.warn('[kontakt] odrzucone przez pułapkę:', JSON.stringify({ email, telefon, zrodlo, pulapka, wiadomosc: wiadomosc.slice(0, 300) }));
+    if (process.env.BLOB_READ_WRITE_TOKEN || process.env.BLOB_STORE_ID) {
+      const plik = `odrzucone/${kiedy.slice(0, 7)}/${kiedy.replace(/[:.]/g, '-')}.json`;
+      await put(plik, JSON.stringify({ email, telefon, wiadomosc, zrodlo, referrer, kiedy, pulapka }, null, 2), {
+        access: 'private',
+        addRandomSuffix: true,
+        contentType: 'application/json',
+      }).catch((e) => console.error('[kontakt] zapis odrzuconego nie wyszedł:', e));
+    }
+    return res.status(200).json({ ok: true });
+  }
+
   if (!MAIL_OK.test(email)) return res.status(422).json({ blad: 'email' });
   if (telefon && telefon.replace(/\D/g, '').length < 9) return res.status(422).json({ blad: 'telefon' });
 
-  const kiedy = new Date().toISOString();
   const tresc = [
     `E-mail: ${email}`,
     telefon ? `Telefon: ${telefon}` : 'Telefon: —',
