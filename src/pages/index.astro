@@ -1,4 +1,32 @@
 ---
+// STRONA GŁÓWNA — /. Od 29.10.2026 to dawna /index-v11 (Szymon: „podmień,
+// wyślij na produkcję”). Poprzednia: src/robocze/index-old2.astro.
+// Zmiana względem niej: blok „Programy” w sekcji usług (opis niżej).
+//
+// Runda v11 (29.10.2026):
+// Szymon o v10: „jest ok, ale popraw to wizualnie, ładniejsze grafiki”.
+// Układ bloku „Programy” bez zmian; obiekty na ciemnych scenach jak w hero
+// programów: Let’s Up — telefon z powiadomieniami asystenta (bez twarzy,
+// ikony zamiast awatarów) i kartka z czasem zlecenia; Let’s Shift — stare
+// narzędzia (arkusz z #N/D!, ERP 2009 z błędem zapisu, karteczka), przed
+// nimi okno systemu firmy z agentami przy zamówieniu Hydro-Tech. Sceny
+// skalują się z kartą (jednostka --u z cqw), ruszają raz przy wejściu.
+//
+// Wcześniej, v10 — /index-v10 (29.10.2026, robocza, noindex,
+// do porównania z /). Kopia obecnej strony głównej z jedną zmianą: w sekcji
+// usług (#oferta), pod trzema drogami, blok „Programy” z Let’s Up i Let’s
+// Shift (Szymon 29.10.2026: „dodaj na stronie głównej, jakoś ładnie, Let’s
+// Up i Let’s Shift. Możesz przy usługach?”). Blok stoi w tej samej siatce co
+// drogi (nazwa po lewej, treść po prawej), ale ma dwie karty z obiektem
+// z historii programu zamiast wierszy z cytatem:
+//   · Let’s Up — czas jednego zlecenia w firmie spedycyjnej, dziś
+//     i z programem (6 h 24 min → 2 h 34 min, liczby ze strony /lets-up);
+//   · Let’s Shift — „spis z natury” producenta armatury z decyzją przy
+//     każdym systemie (pozycje ze strony /lets-shift).
+// Bez twarzy i bez liczników; paski i decyzje wchodzą raz, gdy blok
+// pojawia się w kadrze. Nic nie podmieniamy bez „podmień”.
+//
+// Poprzednio:
 // STRONA GŁÓWNA — /
 // Od 16.10.2026 to wersja z /index-v9 (Szymon: „ustal to jako stronę główną").
 // Poprzednia strona główna: /index-old (noindex). Warianty pośrednie
@@ -172,6 +200,14 @@ const DROGI = [
     { q: 'Każda kolejna zmiana w aplikacji psuje coś, co już działało', u: 'Bieżące wsparcie', d: 'Abonament na doradztwo i pomoc, gdy zespół utknie', h: '/guided-coding/biezace-wsparcie' },
     { q: 'Chcemy, żeby nasi ludzie budowali z AI sami i robili to porządnie', u: 'Warsztaty dla zespołu', d: 'Cykl sesji, po których zespół pracuje z AI tak jak my', h: '/guided-coding/transfer-know-how' },
   ] },
+];
+
+// Programy (v11): oś aktywności zamówienia Hydro-Tech z hero /lets-shift.
+const SH_AKT = [
+  { k: 'Agent przyjęć', c: 'zamówienie z maila', g: '9:12' },
+  { k: 'Agent ofert', c: 'oferta z cennika 2026', g: '9:13' },
+  { k: 'Agent ERP', c: 'zapis w ERP', g: '9:48' },
+  { k: 'Agent planowania', c: 'plan na linii 2', g: '9:49' },
 ];
 
 // „Czym się różnimy”. Fakty za /dlaczego-my, /wisestack i Szymonem
@@ -456,6 +492,102 @@ const witryna = {
   .of-w:hover q{transform:translateX(8px)}
   .of-w:hover > i{background:var(--la-accent,#00CD77);color:#0b1a11;transform:translateX(3px)}
   .of-w:focus-visible{outline:2px solid var(--la-accent,#00CD77);outline-offset:2px}
+  /* ---- Programy (v11) ---- */
+  .pr .of-gl span{color:#0a7a52}
+  .pr-k{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(14px,1.6vw,22px)}
+  .pr-c{display:flex;flex-direction:column;border-radius:22px;background:#f4f8f2;color:#16211a;overflow:hidden;transition:background .25s}
+  .pr-sc{position:relative;aspect-ratio:440 / 286;container-type:inline-size;overflow:hidden;background:radial-gradient(70% 80% at 72% 100%,rgba(0,205,119,0.30),transparent 70%),radial-gradient(60% 70% at 0% 0%,rgba(255,255,255,0.06),transparent 70%),#0e2b1d}
+  .pr-st{position:absolute;inset:0;--u:calc(100cqw / 440);font-size:calc(10 * var(--u));line-height:1.3}
+  .pr-st > *{position:absolute;margin:0;transition:transform .9s cubic-bezier(.2,.7,.2,1),opacity .6s}
+  .pr-st p{margin:0}
+
+  /* Let’s Up: kartka z czasem zlecenia i telefon */
+  .up-czas{left:calc(18 * var(--u));top:calc(70 * var(--u));width:calc(196 * var(--u));padding:calc(16 * var(--u)) calc(16 * var(--u)) calc(18 * var(--u));border-radius:calc(8 * var(--u));background:#ffffff;box-shadow:0 30px 50px -24px rgba(0,0,0,0.6);transform:rotate(-3deg)}
+  .up-h{font-size:calc(10 * var(--u));color:#808b83}
+  .up-h b{display:block;font-size:calc(13 * var(--u));font-weight:750;color:#16211a}
+  .up-r{display:grid;grid-template-columns:auto 1fr;align-items:baseline;gap:calc(4 * var(--u)) calc(10 * var(--u));margin-top:calc(12 * var(--u));font-size:calc(10.5 * var(--u));color:#637066}
+  .up-r b{justify-self:end;font-size:calc(12 * var(--u));font-weight:750;color:#16211a;font-variant-numeric:tabular-nums}
+  .up-r i{grid-column:1 / -1;display:block;height:calc(10 * var(--u));border-radius:calc(3 * var(--u));background:#eef1ec;overflow:hidden}
+  .up-r s{display:block;height:100%;width:100%;border-radius:calc(3 * var(--u));background:#16211a;transform-origin:left;transition:transform 1s cubic-bezier(.2,.7,.2,1) .2s}
+  .up-r.po b{color:#0a7a52}
+  .up-r.po s{width:40%;background:var(--la-accent,#00CD77);transition-delay:.55s}
+  .up-tel{left:calc(226 * var(--u));top:calc(24 * var(--u));width:calc(196 * var(--u));height:calc(330 * var(--u));padding:calc(7 * var(--u));border-radius:calc(34 * var(--u));background:#0a0f0c;box-shadow:0 0 0 calc(1.5 * var(--u)) rgba(255,255,255,0.14),0 40px 70px -20px rgba(0,0,0,0.75)}
+  .up-ekr{height:100%;padding:calc(18 * var(--u)) calc(9 * var(--u)) 0;border-radius:calc(27 * var(--u));background:radial-gradient(120% 70% at 50% 0%,#2f5a44,transparent 70%),linear-gradient(180deg,#1b3a2b,#0f2219);color:#ffffff;overflow:hidden}
+  .up-zeg{text-align:center;font-size:calc(40 * var(--u));line-height:1;font-weight:300;letter-spacing:-0.02em}
+  .up-zeg small{display:block;margin-bottom:calc(4 * var(--u));font-size:calc(9.5 * var(--u));font-weight:500;letter-spacing:0;color:rgba(255,255,255,0.75)}
+  .up-pw{position:relative;display:grid;grid-template-columns:calc(22 * var(--u)) 1fr;gap:calc(8 * var(--u));margin-top:calc(14 * var(--u));padding:calc(9 * var(--u));border-radius:calc(14 * var(--u));background:rgba(255,255,255,0.88);color:#16211a;font-size:calc(9.5 * var(--u));line-height:1.3;box-shadow:0 10px 24px -14px rgba(0,0,0,0.6);transition:transform .7s cubic-bezier(.2,.7,.2,1),opacity .5s}
+  .up-pw2{margin-top:calc(7 * var(--u))}
+  .up-pw b{display:flex;justify-content:space-between;font-weight:750;font-size:calc(9.5 * var(--u))}
+  .up-pw em{font-style:normal;font-weight:500;color:#808b83}
+  .up-pw small{display:block;margin-top:calc(2 * var(--u));color:#637066;font-size:calc(8.5 * var(--u))}
+  .up-ik{display:grid;place-items:center;width:calc(22 * var(--u));height:calc(22 * var(--u));border-radius:calc(6 * var(--u));background:#0e2b1d;color:var(--la-accent,#00CD77);font-weight:800;font-size:calc(11 * var(--u))}
+  .up-pw2 .up-ik{background:var(--la-accent,#00CD77);color:#0b1a11}
+  .up-pp{grid-column:1 / -1;display:grid;grid-template-columns:1fr 1fr;gap:calc(6 * var(--u))}
+  .up-pp i{display:block;padding:calc(5 * var(--u)) 0;border-radius:calc(8 * var(--u));background:#eef1ec;text-align:center;font-style:normal;font-weight:700;font-size:calc(9 * var(--u))}
+  .up-pp i.t{background:#16211a;color:#ffffff}
+
+  /* Let’s Shift: stare narzędzia i okno systemu */
+  .sh-xl{left:calc(14 * var(--u));top:calc(30 * var(--u));width:calc(214 * var(--u));border-radius:calc(5 * var(--u));background:#ffffff;overflow:hidden;box-shadow:0 24px 40px -22px rgba(0,0,0,0.7);transform:rotate(-4deg)}
+  .sh-xl-t{padding:calc(5 * var(--u)) calc(8 * var(--u));background:#217346;color:#ffffff;font-size:calc(8.5 * var(--u));white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .sh-xl-g{display:grid;grid-template-columns:1.3fr 1fr 1fr;font-size:calc(8.5 * var(--u));color:#334039}
+  .sh-xl-g span{padding:calc(4 * var(--u)) calc(6 * var(--u));border-right:1px solid #e3e7e1;border-bottom:1px solid #e3e7e1;white-space:nowrap;overflow:hidden}
+  .sh-xl-g span.e{color:#c2410c;font-weight:700;background:#fff4ec}
+  .sh-xl-s{padding:calc(4 * var(--u)) calc(8 * var(--u));background:#fff8db;color:#7a5b00;font-size:calc(8 * var(--u))}
+  .sh-erp{left:calc(30 * var(--u));top:calc(168 * var(--u));width:calc(190 * var(--u));border:1px solid #9aa3ad;background:#d9dde2;box-shadow:0 24px 40px -22px rgba(0,0,0,0.7);transform:rotate(3deg);font-family:Tahoma,Verdana,sans-serif}
+  .sh-erp-t{padding:calc(4 * var(--u)) calc(7 * var(--u));background:linear-gradient(90deg,#0b2a6b,#3a6bc4);color:#ffffff;font-size:calc(8.5 * var(--u));font-weight:700}
+  .sh-erp-b{display:flex;align-items:flex-end;justify-content:space-between;gap:calc(8 * var(--u));padding:calc(10 * var(--u)) calc(9 * var(--u));font-size:calc(9 * var(--u));color:#1c232b}
+  .sh-erp-b small{display:block;margin-top:calc(2 * var(--u));color:#5b6470;font-size:calc(8 * var(--u))}
+  .sh-erp-b i{font-style:normal;padding:calc(3 * var(--u)) calc(12 * var(--u));border:1px solid #6b7480;background:#eceff2;font-size:calc(8.5 * var(--u))}
+  .sh-kk{left:calc(150 * var(--u));top:calc(118 * var(--u));width:calc(84 * var(--u));padding:calc(9 * var(--u)) calc(8 * var(--u)) calc(11 * var(--u));background:#fdeb8f;color:#3b3200;font-family:'Courier Prime','Courier New',monospace;font-weight:700;font-size:calc(10 * var(--u));line-height:1.25;box-shadow:0 14px 24px -14px rgba(0,0,0,0.6);transform:rotate(6deg)}
+  .sh-sys{left:calc(206 * var(--u));top:calc(40 * var(--u));width:calc(220 * var(--u));border-radius:calc(10 * var(--u));background:#ffffff;overflow:hidden;box-shadow:0 0 0 1px rgba(255,255,255,0.1),0 40px 70px -24px rgba(0,0,0,0.8)}
+  .sh-sys-t{display:flex;align-items:center;gap:calc(4 * var(--u));padding:calc(7 * var(--u)) calc(9 * var(--u));background:#f1f4ef;border-bottom:1px solid #e3e8e0;font-size:calc(8.5 * var(--u));color:#637066}
+  .sh-sys-t i{width:calc(6 * var(--u));height:calc(6 * var(--u));border-radius:50%;background:#d5dbd2}
+  .sh-sys-t span{margin-left:calc(6 * var(--u))}
+  .sh-sys-b{padding:calc(11 * var(--u)) calc(12 * var(--u)) calc(14 * var(--u))}
+  .sh-sys-h{font-size:calc(8.5 * var(--u));color:#808b83}
+  .sh-sys-h b{display:block;font-size:calc(12.5 * var(--u));font-weight:800;color:#16211a}
+  .sh-sys ol{margin:calc(9 * var(--u)) 0 0;padding:0;list-style:none}
+  .sh-sys li{position:relative;display:flex;justify-content:space-between;gap:calc(8 * var(--u));padding:calc(4 * var(--u)) 0 calc(4 * var(--u)) calc(13 * var(--u));font-size:calc(9 * var(--u));color:#4c5850;transition:opacity .4s,transform .4s;transition-delay:calc(.5s + var(--i) * .18s)}
+  .sh-sys li::before{content:"";position:absolute;left:0;top:calc(7.5 * var(--u));width:calc(6 * var(--u));height:calc(6 * var(--u));border-radius:50%;background:var(--la-accent,#00CD77)}
+  .sh-sys li b{font-weight:700;color:#16211a;margin-right:calc(4 * var(--u))}
+  .sh-sys li em{font-style:normal;color:#9aa49d;font-variant-numeric:tabular-nums}
+  .sh-sys-d{margin-top:calc(8 * var(--u)) !important;padding:calc(7 * var(--u)) calc(9 * var(--u));border-radius:calc(7 * var(--u));background:#e9f8ef;font-size:calc(9 * var(--u));color:#2c3a30;transition:opacity .5s 1.35s,transform .5s 1.35s}
+  .sh-sys-d b{display:block;color:#0a7a52;font-size:calc(9 * var(--u))}
+
+  /* tekst karty */
+  .pr-t{display:flex;flex-direction:column;flex:1;padding:clamp(20px,2.2vw,28px) clamp(20px,2.2vw,28px) clamp(22px,2.4vw,30px)}
+  .pr-n{margin:0;font-size:13.5px;line-height:1.4;color:#637066}
+  .pr-n b{display:block;margin-bottom:2px;font-size:15.5px;font-weight:800;color:#16211a;letter-spacing:-0.01em}
+  .pr-t h4{margin:12px 0 0;font-size:clamp(22px,2vw,28px);line-height:1.1;font-weight:800;letter-spacing:-0.03em;text-wrap:balance}
+  .pr-d{margin:10px 0 0;font-size:15px;line-height:1.55;color:#4c5850;text-wrap:pretty}
+  .pr-l{display:inline-flex;align-items:center;gap:10px;margin-top:auto;padding-top:20px;font-size:15px;font-weight:700;color:#16211a}
+  .pr-l i{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:#16211a;color:#ffffff;transition:background .2s,color .2s,transform .25s}
+  .pr-l svg{width:14px;height:14px;fill:currentColor}
+  .pr-c:hover{background:#ecf3e9}
+  .pr-c:hover .up-tel{transform:translateY(calc(-8 * var(--u)))}
+  .pr-c:hover .sh-sys{transform:translateY(calc(-6 * var(--u)))}
+  .pr-c:hover .pr-l i{background:var(--la-accent,#00CD77);color:#0b1a11;transform:translateX(3px)}
+  .pr-c:focus-visible{outline:2px solid var(--la-accent,#00CD77);outline-offset:3px}
+  /* wejście (klasy dodaje skrypt): telefon i okno systemu wjeżdżają od dołu,
+     paski rosną, powiadomienia i kroki agentów pojawiają się po kolei */
+  .pr-k.pr-js .up-tel,.pr-k.pr-js .sh-sys{transform:translateY(calc(70 * var(--u)))}
+  .pr-k.pr-js .up-pw{opacity:0;transform:translateY(calc(8 * var(--u)))}
+  .pr-k.pr-js .up-r s{transform:scaleX(0)}
+  .pr-k.pr-js .sh-xl{transform:translate(calc(30 * var(--u)),calc(10 * var(--u))) rotate(-1deg)}
+  .pr-k.pr-js .sh-erp{transform:translate(calc(40 * var(--u)),calc(-10 * var(--u))) rotate(1deg)}
+  .pr-k.pr-js .sh-sys li,.pr-k.pr-js .sh-sys-d{opacity:0;transform:translateY(calc(5 * var(--u)))}
+  .pr-k.pr-w .up-tel,.pr-k.pr-w .sh-sys{transform:none}
+  .pr-k.pr-w .up-pw{opacity:1;transform:none}
+  .pr-k.pr-w .up-pw1{transition-delay:.6s}
+  .pr-k.pr-w .up-pw2{transition-delay:.85s}
+  .pr-k.pr-w .up-r s{transform:scaleX(1)}
+  .pr-k.pr-w .sh-xl{transform:rotate(-4deg)}
+  .pr-k.pr-w .sh-erp{transform:rotate(3deg)}
+  .pr-k.pr-w .sh-sys li,.pr-k.pr-w .sh-sys-d{opacity:1;transform:none}
+  .pr-k.pr-w .pr-c:hover .up-tel{transform:translateY(calc(-8 * var(--u)))}
+  .pr-k.pr-w .pr-c:hover .sh-sys{transform:translateY(calc(-6 * var(--u)))}
+  @media (prefers-reduced-motion:reduce){ .pr-st *,.pr-st > *,.pr-l i{transition:none !important} }
+  @media (max-width:1180px){ .of-gr.pr{grid-template-columns:minmax(0,1fr)} .pr .of-gl{position:static} .pr .of-gl p{max-width:520px} }
   .of-pom{display:flex;align-items:center;gap:14px;margin-top:clamp(28px,3vw,40px);margin-left:calc((100% - clamp(24px,4vw,64px)) * 0.3 + clamp(24px,4vw,64px))}
   .of-pom > span{display:block;width:44px;height:44px;border-radius:50%;overflow:hidden;flex-shrink:0;background:#eef1ec}
   .of-pom img{width:100%;height:100%;object-fit:cover;display:block}
@@ -470,6 +602,7 @@ const witryna = {
     .of-w q{grid-column:1 / -1}
     .of-w:hover q{transform:none}
     .of-pom{margin-left:0}
+    .pr-k{grid-template-columns:minmax(0,1fr)}
   }
 
   /* ---------- Teza i podpis (z /index-v2) ---------- */
@@ -961,6 +1094,72 @@ const witryna = {
     </ul>
   </div>
 ))}
+<!-- PROGRAMY (v11): Let’s Up i Let’s Shift łączą usługi z trzech dróg,
+     więc stoją pod nimi, w tej samej siatce. Sceny jak w hero programów. -->
+<div class="of-gr pr" id="oferta-programy">
+  <div class="of-gl">
+    <span>Programy</span>
+    <h3>Cała zmiana w&nbsp;jednym programie</h3>
+    <p>Gdy zmienia się sposób pracy całej firmy, łączymy usługi z&nbsp;trzech dróg w&nbsp;jeden plan z&nbsp;jednym prowadzącym po naszej stronie.</p>
+  </div>
+  <div class="pr-k" data-pr>
+    <a class="pr-c" href="/lets-up">
+      <div class="pr-sc" aria-hidden="true"><div class="pr-st">
+        <div class="up-czas">
+          <p class="up-h"><b>Jedno zlecenie</b><span>od zapytania do rozliczenia</span></p>
+          <div class="up-r"><span>Dziś</span><b>6 h 24 min</b><i><s></s></i></div>
+          <div class="up-r po"><span>Z Let’s Up</span><b>2 h 34 min</b><i><s></s></i></div>
+        </div>
+        <div class="up-tel"><div class="up-ekr">
+          <p class="up-zeg"><small>wtorek, 14 października</small>11:40</p>
+          <div class="up-pw up-pw1"><span class="up-ik">A</span><p><b>Asystent firmy<em>11:40</em></b>21 spraw obsłużonych bez Ciebie<small>wyceny, statusy, CMR do faktur</small></p></div>
+          <div class="up-pw up-pw2"><span class="up-ik">?</span><p><b>Do Twojej decyzji<em>11:33</em></b>Rotterdam: marża 8%, próg 12%. Bierzemy?</p><span class="up-pp"><i>Odrzuć</i><i class="t">Bierzemy</i></span></div>
+        </div></div>
+      </div></div>
+      <div class="pr-t">
+        <p class="pr-n"><b>Let’s Up</b><span>program dla mikro- i&nbsp;małych firm</span></p>
+        <h4>Firma rośnie szybciej niż zespół</h4>
+        <p class="pr-d">Sprawdzamy, na co idzie czas zespołu, i&nbsp;wdrażamy system i&nbsp;AI tam, gdzie przejmą powtarzalną pracę.</p>
+        <span class="pr-l">Poznaj Let’s Up <i><svg viewBox="0 0 16 16" set:html={HI['arrow-right']}></svg></i></span>
+      </div>
+    </a>
+    <a class="pr-c" href="/lets-shift">
+      <div class="pr-sc" aria-hidden="true"><div class="pr-st">
+        <div class="sh-xl">
+          <p class="sh-xl-t">oferty_2026_v14_FINAL_poprawione(2).xlsx</p>
+          <div class="sh-xl-g">
+            <span>Hydro-Tech</span><span>DN50</span><span class="e">#N/D!</span>
+            <span>Domtex</span><span>podtynk.</span><span>45 885,00</span>
+            <span>Termo-Serwis</span><span>PEX 16</span><span class="e">#ADR!</span>
+            <span>Instal-Bud</span><span>K-20</span><span>23 404,80</span>
+          </div>
+          <p class="sh-xl-s">Tylko do odczytu. Plik edytuje: Ewa</p>
+        </div>
+        <div class="sh-erp">
+          <p class="sh-erp-t">ERP 2009 · Zamówienia sprzedaży</p>
+          <div class="sh-erp-b"><p>Nie można zapisać rekordu.<small>Kod błędu: 0x80040E2F</small></p><i>OK</i></div>
+        </div>
+        <p class="sh-kk">Cennik → zapytać Ewę!</p>
+        <div class="sh-sys">
+          <p class="sh-sys-t"><i></i><i></i><i></i><span>system.armatura.pl</span></p>
+          <div class="sh-sys-b">
+            <p class="sh-sys-h"><b>ZS-2026-0412</b><span>Hydro-Tech · zawory DN50, 400 szt.</span></p>
+            <ol>
+              {SH_AKT.map((r, i) => <li style={`--i:${i}`}><span><b>{r.k}</b>{r.c}</span><em>{r.g}</em></li>)}
+            </ol>
+            <p class="sh-sys-d"><b>Do decyzji · Kasia</b>Dostawa 28.10 zamiast 30.10? Linia 2 ma wolne okno.</p>
+          </div>
+        </div>
+      </div></div>
+      <div class="pr-t">
+        <p class="pr-n"><b>Let’s Shift</b><span>program dla małych, średnich i&nbsp;dużych firm</span></p>
+        <h4>Firma przechodzi do czasów AI</h4>
+        <p class="pr-d">Stare systemy i&nbsp;arkusze łączymy albo zastępujemy nowymi, w&nbsp;których pracują agenci AI. Etapami, dział po dziale.</p>
+        <span class="pr-l">Poznaj Let’s Shift <i><svg viewBox="0 0 16 16" set:html={HI['arrow-right']}></svg></i></span>
+      </div>
+    </a>
+  </div>
+</div>
 <!-- Z poprzedniej wersji sekcji: pomoc w wyborze drogi. -->
 <div class="of-pom">
 <span><img src="/uploads/portret-oferta.jpg" alt="Konsultant Let's automate" width="96" height="96" loading="lazy" decoding="async"></span>
@@ -1132,6 +1331,16 @@ const witryna = {
 
 </div>
 
+<script>
+  // Programy: sceny ruszają raz, kiedy blok jest w kadrze.
+  (function(){
+    var k = document.querySelector('[data-pr]');
+    if (!k || !('IntersectionObserver' in window) || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    k.classList.add('pr-js');
+    var o = new IntersectionObserver(function(e){ if (e[0].isIntersecting) { k.classList.add('pr-w'); o.disconnect(); } }, { threshold: 0.35 });
+    o.observe(k);
+  })();
+</script>
 <script>
   // ---- Hero: makieta pulpitu skalowana do szerokości kontenera ----
   (function(){
