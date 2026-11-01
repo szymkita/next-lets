@@ -6,7 +6,9 @@
 // CO JEST PRZENIESIONE (identyfikatory 1:1 ze starego letsautomate.pl)
 //   Google Tag Manager  GTM-MPKLK2BG
 //   Google Analytics 4  G-V31X5NVG6H (stary serwis ładował go obok GTM,
-//                       więc zostaje tak samo, żeby dane szły ciągiem)
+//                       więc zostaje tak samo, żeby dane szły ciągiem;
+//                       w kontenerze GTM go nie ma). Kontener ma osobno
+//                       GA4 G-9NKSDL8RBP.
 //   Hotjar              2886465            → kategoria „statystyki”
 //   Meta Pixel          419937373267135    → „marketing”
 //   LinkedIn Insight    4245625            → „marketing”
@@ -55,12 +57,37 @@
     document.head.appendChild(s);
   }
 
-  // Google: GA4 bezpośrednio i kontener GTM — oba szanują Consent Mode.
-  wstaw('https://www.googletagmanager.com/gtag/js?id=G-V31X5NVG6H');
-  gtag('js', new Date());
-  gtag('config', 'G-V31X5NVG6H');
-  window.dataLayer.push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
-  wstaw('https://www.googletagmanager.com/gtm.js?id=GTM-MPKLK2BG');
+  // Google: GA4 G-V31X5NVG6H bezpośrednio (nie ma go w kontenerze GTM —
+  // sprawdzone 1.11.2026: bez tego wywołania nie idą do niego żadne dane)
+  // i kontener GTM, w którym jest GA4 G-9NKSDL8RBP. Oba szanują Consent Mode.
+  //
+  // Start dopiero po załadowaniu strony albo przy pierwszym ruchu
+  // użytkownika (co pierwsze). Skrypty Google to ok. 670 KB i na telefonie
+  // zabierały łącze zdjęciu z hero: w PageSpeed LCP 9,5 s zamiast ok. 4 s.
+  // Zgoda (consent default) i dataLayer działają od razu, więc zdarzenia
+  // wypchnięte wcześniej GTM odczyta po starcie.
+  var wystartowane = false;
+  var czekaNaStart = [];
+  function poStarcie(fn){ wystartowane ? fn() : czekaNaStart.push(fn); }
+  function startuj(){
+    if (wystartowane) return;
+    wystartowane = true;
+    ['pointerdown', 'keydown', 'scroll', 'touchstart'].forEach(function(t){ removeEventListener(t, startuj, true); });
+    wstaw('https://www.googletagmanager.com/gtag/js?id=G-V31X5NVG6H');
+    gtag('js', new Date());
+    gtag('config', 'G-V31X5NVG6H');
+    window.dataLayer.push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
+    wstaw('https://www.googletagmanager.com/gtm.js?id=GTM-MPKLK2BG');
+    czekaNaStart.forEach(function(fn){ fn(); });
+    czekaNaStart = [];
+  }
+  ['pointerdown', 'keydown', 'scroll', 'touchstart'].forEach(function(t){ addEventListener(t, startuj, { capture: true, passive: true }); });
+  function poZaladowaniu(){
+    if ('requestIdleCallback' in window) requestIdleCallback(startuj, { timeout: 2500 });
+    else setTimeout(startuj, 1200);
+  }
+  if (document.readyState === 'complete') poZaladowaniu();
+  else addEventListener('load', poZaladowaniu);
 
   try {
     var ref = new URLSearchParams(location.search).get('ref');
@@ -128,7 +155,9 @@
     }
   };
 
-  if (zapis) uruchom(zapis);
+  // Zgoda zapisana przy poprzedniej wizycie: Hotjar, Pixel i reszta też
+  // czekają na start Google, żeby nie konkurowały z pierwszym ekranem.
+  if (zapis) poStarcie(function(){ uruchom(zapis); });
 })();
 </script>
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MPKLK2BG" height="0" width="0" style="display:none;visibility:hidden" title="Google Tag Manager"></iframe></noscript>

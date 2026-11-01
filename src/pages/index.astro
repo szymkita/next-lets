@@ -233,6 +233,7 @@ const ROZNICE = [
 import Stopka from '../components/Stopka.astro';
 import MetaStrony from '../components/MetaStrony.astro';
 import Zgody from '../components/Zgody.astro';
+import Fonty from '../components/Fonty.astro';
 
 // Opis i dane strukturalne strony głównej (MetaStrony). Tytuł zostaje bez
 // zmian; opis streszcza hero.
@@ -257,9 +258,7 @@ const witryna = {
 <title>{tytul}</title>
 <MetaStrony title={tytul} description={opis} dane={[witryna]} />
 <link rel="icon" href="/uploads/logo-2.svg">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
-<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Schibsted+Grotesk:wght@400..900&display=swap" rel="stylesheet">
+<Fonty />
 <style>
   :root{--la-accent:#00CD77}
   *{box-sizing:border-box}
@@ -713,8 +712,13 @@ const witryna = {
 <div style="position:absolute;inset:0">
 {/* Tło hero to największy element pierwszego ekranu: AVIF (ok. 200 KB)
      i WebP zamiast JPEG-a 427 KB. Szerokość zostaje 2200 px — na telefonie
-     zdjęcie jest kadrowane po wysokości, mniejszy plik by się rozmył. */}
+     zdjęcie jest kadrowane po wysokości, mniejszy plik by się rozmył.
+     Telefon w pionie (węższy niż 2:3) i tak widzi tylko środkowy pas,
+     więc dostaje środek zdjęcia 1100×1467 w tej samej rozdzielczości
+     i jakości: 125 KB zamiast 202 KB, obraz bez zmian (1.11.2026). */}
 <picture>
+<source media="(max-aspect-ratio: 2/3)" srcset="/uploads/zdjecia/pexels-2559941-pion-1100.avif" type="image/avif" width="1100" height="1467">
+<source media="(max-aspect-ratio: 2/3)" srcset="/uploads/zdjecia/pexels-2559941-pion-1100.webp" type="image/webp" width="1100" height="1467">
 <source srcset="/uploads/zdjecia/pexels-2559941-2200.avif" type="image/avif">
 <source srcset="/uploads/zdjecia/pexels-2559941-2200.webp" type="image/webp">
 <img src="/uploads/zdjecia/pexels-2559941-2200.jpg" alt="" width="2200" height="1467" fetchpriority="high" decoding="async" style="position:absolute;left:-18%;top:-12%;width:136%;height:136%;object-fit:cover;transform:rotate(-3deg)">
@@ -740,6 +744,37 @@ const witryna = {
 
 <div class="mockup-frame" aria-hidden="true" style="position:relative;width:100%;margin:clamp(40px,6vw,64px) auto 0">
 <div class="mockup-scale" style="position:relative;width:1180px;height:400px;margin:0 auto;transform-origin:top center">
+{/* Makieta pulpitu skalowana do szerokości kontenera.
+    v7: środek zestawu zawsze na środku kolumny. Wcześniej margin:auto
+    przy pudełku szerszym niż kolumna zerował się, a skala od środka
+    przesuwała makietę w prawo — na telefonie wypadała poza ekran.
+    Poniżej 700 px pulpit przechodzi w wąskie okno 640 px (klasa .waski,
+    opis przy stylach na górze) zamiast całego pulpitu w skali 0,3.
+    1.11.2026: skrypt inline tutaj, a nie w <script> na dole strony. Tamten
+    rusza dopiero po wczytaniu całego HTML, a do tego czasu ramka ma 400 px
+    — na telefonie hero najpierw wyświetlało się o ~80 px za wysokie,
+    potem się kurczyło (CLS 0,16 w PageSpeed). Tu wymiary są ustawione,
+    zanim przeglądarka cokolwiek pokaże. */}
+<script is:inline>
+(function(){
+  var frame = document.currentScript.closest('.mockup-frame');
+  var scale = document.currentScript.parentNode;
+  function fit(){
+    var w = frame.clientWidth;
+    var waski = w < 700;
+    var bw = waski ? 640 : 1180;
+    var s = Math.min(1, w / bw);
+    scale.classList.toggle('waski', waski);
+    scale.style.transformOrigin = 'top left';
+    scale.style.margin = '0';
+    scale.style.transform = 'translateX(' + (w / 2 - bw / 2 * s) + 'px) scale(' + s + ')';
+    frame.style.height = (400 * s) + 'px';
+  }
+  fit();
+  window.addEventListener('resize', fit);
+  window.addEventListener('load', fit);
+})();
+</script>
 <div style="position:absolute;left:50%;top:-30px;transform:translateX(-50%);width:1000px;height:300px;background:radial-gradient(closest-side,rgba(0,205,119,0.3),rgba(0,205,119,0) 72%);filter:blur(46px);pointer-events:none"></div>
 
 <div class="mk-chip" style="position:absolute;left:-30px;top:96px;z-index:3;--rot:-2deg;animation:la-float 7s ease-in-out infinite">
@@ -957,7 +992,7 @@ const witryna = {
 <p style="margin:0;font-size:clamp(16px,2.2vw,18.5px);line-height:1.55;color:#4c5850;text-wrap:pretty"><strong style="font-weight:700;color:#16211a">Przeszliśmy tę drogę z ponad 140 firmami.</strong> Na pierwszej rozmowie wskazujemy, od którego kroku zacząć.</p>
 <div style="display:flex;align-items:center;gap:12px;margin-top:14px">
 <span style="font-size:15px;line-height:1.5;color:#4c5850">Za nami stoi grupa doradcza</span>
-<img src="/uploads/wisegroup_logo_v2.webp" alt="WiseGroup" style="height:16px;width:auto;display:block;flex-shrink:0;opacity:0.85">
+<img src="/uploads/wisegroup_logo_v2.webp" alt="WiseGroup" width="442" height="52" style="height:16px;width:auto;display:block;flex-shrink:0;opacity:0.85">
 </div>
 </div>
 <div class="droga-cta-btns" style="display:flex;flex-direction:column;align-items:flex-end;gap:13px;flex-shrink:0">
@@ -1342,32 +1377,8 @@ const witryna = {
   })();
 </script>
 <script>
-  // ---- Hero: makieta pulpitu skalowana do szerokości kontenera ----
-  (function(){
-    var frame = document.querySelector('.mockup-frame');
-    var scale = document.querySelector('.mockup-scale');
-    if(!frame || !scale) return;
-    // v7: środek zestawu zawsze na środku kolumny. Wcześniej margin:auto
-    // przy pudełku szerszym niż kolumna zerował się, a skala od środka
-    // przesuwała makietę w prawo — na telefonie wypadała poza ekran.
-    // Poniżej 700 px pulpit przechodzi w wąskie okno 640 px (klasa .waski,
-    // opis przy stylach na górze) zamiast całego pulpitu w skali 0,3.
-    function fit(){
-      var w = frame.clientWidth;
-      var waski = w < 700;
-      var bw = waski ? 640 : 1180;
-      var s = Math.min(1, w / bw);
-      scale.classList.toggle('waski', waski);
-      scale.style.transformOrigin = 'top left';
-      scale.style.margin = '0';
-      scale.style.transform = 'translateX(' + (w / 2 - bw / 2 * s) + 'px) scale(' + s + ')';
-      frame.style.height = (400 * s) + 'px';
-    }
-    fit();
-    window.addEventListener('resize', fit);
-    window.addEventListener('load', fit);
-  })();
-
+  // Hero: skalowanie makiety pulpitu jest skryptem inline zaraz za
+  // otwarciem .mockup-scale (S1 · HERO), nie tutaj — patrz opis przy nim.
 
   // ---- Opinie (v8): cztery cytaty w jednym miejscu ----
   // Przenikanie co 8 s, gdy cytat jest na ekranie; pauza pod kursorem i przy
