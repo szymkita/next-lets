@@ -31,7 +31,9 @@ import { POKAZ } from '../data/menu.js';
 
 // topbar={false} chowa pasek Wise Group (docelowo zostaje tylko na
 // stronie głównej; podstrony wyłączają go pojedynczo).
-const { ctaHref = '/darmowa-konsultacja', topbar = true } = Astro.props;
+// pas3 (opcjonalnie): podmiana pozycji trzeciego pasa na stronie roboczej,
+// żeby obejrzeć wariant menu bez zmiany produkcji (docs/guided-coding-plan.md).
+const { ctaHref = '/darmowa-konsultacja', topbar = true, pas3 = null } = Astro.props;
 
 // Triaż po sytuacji klienta: trzy pasy, w każdym trzy usługi.
 // 25.10.2026 (Szymon: megamenu „mniej miejsca, sensowniejsze, lepsze opisy
@@ -69,15 +71,22 @@ const USLUGI = [
     // typ zespołu (z działem IT / bez) klient wybiera na stronie.
     // 29.10.2026, przy podmianie stron v6: „Audyt” → „Analiza aplikacji”
     // (adres bez zmian), opisy za nowymi stronami: opieka, doradztwo, nasza metoda.
-    pas: 'Budujecie sami z AI',
-    sub: 'Gdy Wasz zespół tworzy własne aplikacje',
+    // 1.11.2026 (Szymon): „Budujecie sami z AI” → „Budujecie własne aplikacje
+    // z AI” — mówi, o jaką sytuację chodzi, i nie zlewa się z „Budujemy za Was”.
+    // Podpis (też 1.11): nagłówek opisuje już sytuację, więc podpis mówi o naszej
+    // roli — „prowadzimy” to guided coding; obejmuje też firmy, które dopiero zaczynają.
+    pas: 'Budujecie własne aplikacje z AI',
+    sub: 'Prowadzimy Was od pomysłu po rozwój',
     poz: [
+      // 1.11.2026: „Bieżące wsparcie” → „Guided coding” (/guided-coding),
+      // na pierwszym miejscu — usługa docelowa (docs/guided-coding-plan.md §3).
+      { t: 'Guided coding', d: 'Abonament: doradztwo i opieka przy rozwoju aplikacji', h: '/guided-coding' },
       { t: 'Analiza aplikacji', d: 'Bezpieczeństwo aplikacji i plan jej rozwoju', h: '/guided-coding/audyt-aplikacji' },
-      { t: 'Bieżące wsparcie', d: 'Abonament: doradztwo i pomoc na co dzień', h: '/guided-coding/biezace-wsparcie' },
       { t: 'Warsztaty dla zespołu', d: 'Sesje, po których zespół pracuje z AI jak my', h: '/guided-coding/transfer-know-how' },
     ],
   },
 ];
+if (pas3) USLUGI[2] = { ...USLUGI[2], ...pas3 };
 
 // PROGRAMY — Let’s Up (mikro- i małe firmy, którym przybywa pracy) i Let’s
 // Shift (małe, średnie i duże firmy z wypracowanym sposobem działania).

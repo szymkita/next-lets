@@ -8,7 +8,7 @@ obraz: "/uploads/blog/ranking-narzedzi-do-automatyzacji-jakie-platformy-no-code-
 obrazAlt: "Ranking narzędzi do automatyzacji – jakie platformy no-code wybrać w 2024 roku?"
 powiazane:
   - { t: "Systemy dla kluczowych procesów", h: "/systemy-procesowe" }
-  - { t: "Guided Coding", h: "/guided-coding" }
+  - { t: "Guided coding", h: "/guided-coding" }
 ---
 
 **Chcesz wdrożyć w swojej firmie pierwszą automatyzację, ale nie wiesz, od czego zacząć?**

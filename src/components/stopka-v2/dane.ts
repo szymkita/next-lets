@@ -38,13 +38,13 @@ export const DROGI = [
     ],
   },
   {
-    pas: 'Budujecie sami z AI',
-    sub: 'Gdy Wasz zespół tworzy własne aplikacje',
+    pas: 'Budujecie własne aplikacje z AI',
+    sub: 'Prowadzimy Was od pomysłu po rozwój',
     // Bez pozycji „Guided coding” (hub /guided-coding): od 21.10.2026 huby
     // usług nie mają linków, dopóki ich nie dopracujemy (Nawigacja.astro).
     poz: [
+      { t: 'Guided coding', h: '/guided-coding' },
       { t: 'Analiza aplikacji', h: '/guided-coding/audyt-aplikacji' },
-      { t: 'Bieżące wsparcie', h: '/guided-coding/biezace-wsparcie' },
       { t: 'Warsztaty dla zespołu', h: '/guided-coding/transfer-know-how' },
     ],
   },

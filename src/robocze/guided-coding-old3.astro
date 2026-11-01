@@ -1,0 +1,550 @@
+---
+// BUDUJECIE SAMI Z AI — hub trzeciej drogi, /guided-coding. Od 29.10.2026
+// na produkcji (Szymon: „podmień”; dawna robocza /guided-coding-v5).
+// Poprzednia produkcyjna: src/robocze/guided-coding-old2.astro; wersje
+// v2–v4 w src/robocze (opis układu w v4). Nazwa pasa w megamenu dalej nie
+// jest linkiem, jak w pozostałych dwóch pasach (docs/huby-koncepcja.md §9).
+//
+// RUNDA v5 (29.10.2026)
+// Szymon o v4: „Czemu w analizie aplikacji jest Excel? Dlaczego to tam jest
+// Excel, a nie jakiś gotowy system? Przecież to nie ma sensu.” i „Usuń też
+// tego typu rzeczy, jak podgląd zmiany Adama. Przecież to jest totalny AI
+// slop.” Do podstron: „powinno być bardzo szybko wiedzieć, po co, co ja z tego
+// będę miał”; wsparcie: „że jesteśmy, prowadzimy was… doradzamy biznesowo
+// i technicznie”; warsztaty: „100% kodu pisze u nas AI… wykorzystujecie być
+// może tylko kilka procent tego, co jest możliwe”.
+//   · h1 i lead mówią, po co ta droga: aplikacja zespołu ma rosnąć razem
+//     z firmą i za rok dalej działać, bez zależności od jednej osoby;
+//   · hero: logi z zakreślonymi NIP-ami zostają jako jedyny ekran
+//     techniczny; Slack — zamiast polecenia do wklejenia rada Marcela przy
+//     decyzji o Wrocławiu (jeden panel z oddziałami czy kopia), decyzja Anny;
+//     terminal Claude Code → zaproszenie na sesję warsztatów (Adam przy
+//     klawiaturze, Anna obok);
+//   · analiza: Excel → sam panel zamówień z uwagami analizy na ekranie
+//     (dane klientów w logach przy eksporcie, eksport stanie przy ~40 000,
+//     panel zna tylko Poznań) i pierwsza strona raportu („można rozwijać
+//     dalej, nie trzeba przepisywać”);
+//   · wsparcie: podgląd zmiany na GitHubie → plan panelu na kwartał po
+//     comiesięcznej rozmowie: przy każdej pozycji rada Marcela (techniczna
+//     i biznesowa, także „nie budować, kupić gotowe”) i decyzja Anny;
+//   · warsztaty: plik CLAUDE.md → jedno zadanie (rabat dla stałych klientów)
+//     przed programem i po nim: kto, kiedy, ile dni; pod tym, jak pracujemy
+//     u siebie (100% kodu pisze AI);
+//   · akapity usług przepisane: po co i co firma z tego ma; ceny tylko
+//     w tabelach faktów (jak /produkty).
+//
+// DO POTWIERDZENIA:
+//   · ceny i czasy analizy (stała CENY): techniczna około 2 tygodni, od 12 000 zł
+//     netto; techniczna i biznesowa około miesiąca, 12 000–20 000 zł netto —
+//     zakresy na siebie zachodzą (może „do 12 000”);
+//   · h1 „Pomagamy, żeby aplikacja Waszego zespołu rosła razem z firmą” i lead;
+//   · „u nas 100% kodu pisze AI” (Szymon, 29.10.2026) w akapicie warsztatów
+//     i pod obiektem warsztatów;
+//   · 9 dni → 2 dni w obiekcie warsztatów: ta sama liczba co „aplikacja do
+//     zamówień” w sześciu zespołach na podstronie warsztatów (twardy wynik);
+//   · rady w planie wsparcia (np. aplikacja kurierska gotowa zamiast własnej)
+//     są poglądowe, jak cała historia hurtowni;
+//   · wsparcie: „około 4 godzin Waszego czasu w miesiącu”, wypowiedzenie
+//     miesięczne (z podstrony wsparcia).
+import LaBase from '../layouts/LaBase.astro';
+import Styl from '../components/usluga/Styl.astro';
+import Anim from '../components/usluga/Anim.astro';
+import Hero from '../components/usluga/Hero.astro';
+import Kontakt from '../components/usluga/Kontakt.astro';
+import { HI } from '../components/usluga/ikony';
+
+const kanon = new URL('/guided-coding', Astro.site).href;
+const title = "Budujecie sami z AI — analiza aplikacji, bieżące wsparcie i warsztaty dla zespołu | Let's automate";
+const description = 'Dla firm, w których zespół sam zbudował aplikację z AI w Claude Code albo w Codexie: analiza aplikacji, bieżące wsparcie z doradztwem technicznym i biznesowym oraz warsztaty, po których zespół pracuje z AI tak jak my.';
+
+// Ceny i czasy w jednym miejscu (Szymon, 29.10.2026). Zob. DO POTWIERDZENIA.
+const CENY = {
+  techCzas: 'około 2 tygodni',
+  techCena: 'od 12 000 zł netto',
+  pelnaCzas: 'około miesiąca',
+  pelnaCena: '12 000–20 000 zł netto',
+  wsparcie: 'od 2900 zł miesięcznie',
+};
+
+const ANALIZA = [
+  ['Dla kogo', 'firma, w której dział pracuje na aplikacji zbudowanej w Claude Code albo w Codexie, zanim aplikacja urośnie'],
+  ['Czas', `analiza techniczna ${CENY.techCzas}, techniczna i biznesowa ${CENY.pelnaCzas}`],
+  ['Cena', `<b>${CENY.techCena}</b> za techniczną, <b>${CENY.pelnaCena}</b> za techniczną i biznesową; stała kwota w ofercie po pierwszej rozmowie`],
+  ['Co zostaje u Was', 'raport z rekomendacjami: co poprawić najpierw, co może poczekać i kto to zrobi; większość poprawek zespół robi sam, z instrukcją'],
+];
+const WSPARCIE = [
+  ['Dla kogo', 'firma, w której jedna albo dwie osoby rozwijają aplikację i chcą mieć kogo zapytać, zanim podejmą większą decyzję'],
+  ['Czas', 'abonament miesięczny, po Waszej stronie około 4 godzin w miesiącu; wypowiedzenie z miesięcznym terminem'],
+  ['Cena', `<b>${CENY.wsparcie}</b> w zespole bez działu IT; dla działu IT stawka w ofercie po pierwszej rozmowie`],
+  ['Co zostaje u Was', 'plan rozwoju aplikacji i zasady, których AI pilnuje przy każdej zmianie, także po wypowiedzeniu'],
+];
+const WARSZTATY = [
+  ['Dla kogo', 'zespół, w którym aplikację rozwija kilka osób, albo dział IT, który od kilku miesięcy pracuje z AI'],
+  ['Czas', 'sesje po dwie godziny co tydzień na Waszych sprawach; liczbę sesji ustalamy po analizie technicznej'],
+  ['Cena', 'stała kwota za cały program w ofercie po analizie technicznej, którą wyceniamy osobno'],
+  ['Co zostaje u Was', 'sposób pracy spisany w zasadach, które AI czyta przy każdej zmianie, i ludzie, którzy prowadzą zmianę od opisu do wdrożenia bez nas'],
+];
+
+const ARR = HI['arrow-right'];
+const OSOBA = HI['user'];
+
+
+// Analiza: lista zamówień w panelu (październik, oddział Poznań)
+const ZAM = [
+  ['ZAM-3398', 'Instal-Bud sp. z o.o.', 'Tomasz K.', '4 180,50', '6%', 'W realizacji'],
+  ['ZAM-3397', 'Termo-Serwis s.c.', 'Karolina M.', '12 640,00', '8%', 'Wysłane'],
+  ['ZAM-3396', 'Hydro-Tech', 'Tomasz K.', '2 980,00', '5%', 'Wysłane'],
+  ['ZAM-3395', 'Aqua-Dom', 'Paweł R.', '7 815,20', '6%', 'Zafakturowane'],
+  ['ZAM-3394', 'Wod-Kan Leszno', 'Karolina M.', '940,00', '—', 'Zafakturowane'],
+];
+
+// Wsparcie: plan panelu na kwartał po comiesięcznej rozmowie
+const PLAN = [
+  ['Wrocław w panelu', 'Jeden panel z wyborem oddziału. Osobna kopia dla Wrocławia to dwa cenniki i każda poprawka robiona dwa razy.', 'Tak, start 17.11, po inwentaryzacji'],
+  ['Ceny i rabaty z Subiekta', 'Zrobić przed Wrocławiem. Inaczej różnice w rabatach, które dziś wyrównujecie ręcznie, przyjdą z dwóch oddziałów.', 'Tak, robi Adam w listopadzie'],
+  ['Aplikacja dla kierowców', 'Nie budować. Firma kurierska ma gotową, wystarczy, że panel będzie pobierał od niej statusy.', 'Najpierw rozmowa z magazynem'],
+  ['Logowanie przez Google', 'Może poczekać, dziś niczego nie blokuje.', 'Styczeń'],
+];
+
+// Warsztaty: jedno zadanie przed programem i po nim
+const PRZED = [
+  ['pon', 'Tomasz zgłasza na kanale, że klient pyta o rabat dla stałych klientów'],
+  ['wt–pt', 'zadanie czeka, bo Anna ma urlop, a tylko ona zmienia panel'],
+  ['pon', 'Anna prosi AI o zmianę, działa dopiero trzecie podejście'],
+  ['wt', 'zmiana idzie do klientów tego samego dnia, nikt jej nie sprawdza'],
+  ['czw', 'klient pisze, że na fakturze nie ma rabatu'],
+];
+const PO = [
+  ['pon 9:40', 'Adam opisuje zadanie według wzoru, który zespół spisał na warsztatach'],
+  ['pon 11:05', 'AI robi zmianę według zasad zespołu i dopisuje test'],
+  ['wt 13:50', 'Michał sprawdza zmianę na kopii danych'],
+  ['śr 14:20', 'rabat działa u klientów, także na fakturze'],
+];
+
+const dane = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'CollectionPage', '@id': `${kanon}#strona`, url: kanon, name: 'Budujecie sami z AI',
+      description,
+      mainEntity: { '@type': 'ItemList', itemListElement: [
+        ['Analiza aplikacji', '/guided-coding/audyt-aplikacji'], ['Bieżące wsparcie', '/guided-coding/biezace-wsparcie'],
+        ['Warsztaty dla zespołu', '/guided-coding/transfer-know-how'],
+      ].map(([n, u], i) => ({ '@type': 'ListItem', position: i + 1, item: { '@type': 'Service', name: n, url: new URL(u, Astro.site).href, provider: { '@type': 'Organization', name: "Let's automate" } } })) },
+    },
+    { '@type': 'BreadcrumbList', itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Strona główna', item: new URL('/', Astro.site).href },
+      { '@type': 'ListItem', position: 2, name: 'Budujecie sami z AI', item: kanon },
+    ] },
+  ],
+};
+---
+<LaBase topbar={false} title={title} description={description} ctaLabel="Umów rozmowę" nav="uslugi">
+<script type="application/ld+json" is:inline set:html={JSON.stringify(dane)} slot="head"></script>
+
+<style is:global slot="head">
+  /* Style tej strony. Wspólny wygląd: src/components/usluga/Styl.astro.
+     Układ usług jak na /produkty (.pr…), obiekty z przedrostkiem gk- (hero)
+     i go- (sekcje). */
+  .gh{--app:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;--olowek:'Caveat',cursive;--dlug:#cf3a2a}
+
+  /* ---- usługa: tekst i obiekt w dwóch kolumnach (jak /produkty) ---- */
+  #analiza{padding-top:clamp(40px,5vw,80px)}
+  .pr{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(36px,5vw,96px);align-items:center}
+  .pr.odwr{grid-template-columns:minmax(0,7fr) minmax(0,5fr)}
+  .pr.odwr .pr-w{order:-1}
+  .pr-lok{display:flex;align-items:center;gap:16px}
+  .pr-zn{display:grid;place-items:center;flex-shrink:0;width:56px;height:56px;border-radius:16px;background:var(--ink);color:var(--ziel)}
+  .pr-zn svg{display:block;width:26px;height:26px}
+  .pr-n{margin:0;font-size:clamp(34px,3.6vw,52px);font-weight:700;letter-spacing:-0.045em;line-height:1;color:var(--t1)}
+  .pr-k{margin:8px 0 0;font-size:15px;font-weight:650;color:var(--ziel-c)}
+  .pr-def{margin:clamp(22px,2.4vw,30px) 0 0;font-size:clamp(17px,1.4vw,20px);line-height:1.55;letter-spacing:-0.01em;color:var(--t1);text-wrap:pretty}
+  .pr-sp{margin:clamp(22px,2.4vw,30px) 0 0;border-top:1px solid var(--linia)}
+  .pr-sp div{display:grid;grid-template-columns:128px minmax(0,1fr);gap:14px;padding:12px 0;border-bottom:1px solid var(--linia2)}
+  .pr-sp dt{font-size:13.5px;font-weight:650;line-height:1.5;color:var(--t3)}
+  .pr-sp dd{margin:0;font-size:15px;line-height:1.5;color:var(--t1);text-wrap:pretty}
+  .pr-sp dd b{font-weight:700}
+  .pr-ak{display:flex;flex-wrap:wrap;align-items:center;gap:14px 26px;margin-top:clamp(26px,2.8vw,36px)}
+  #kontakt.v4-kt{background:#ffffff}
+  .pr-pod{margin:16px 0 0;font-size:14.5px;line-height:1.5;color:var(--t2);text-wrap:pretty}
+  .pr-pod b{color:var(--t1);font-weight:650}
+  @media (max-width:980px){
+    .pr,.pr.odwr{grid-template-columns:minmax(0,1fr)}
+    .pr.odwr .pr-w{order:0}
+  }
+  @media (max-width:480px){ .pr-sp div{grid-template-columns:minmax(0,1fr);gap:2px} }
+
+  /* skalowanie obiektów do kolumny: wzór w stałej szerokości, zoom ze skryptu */
+  .sk-ram{width:100%}
+  [data-skala]{transform-origin:0 0}
+
+  /* =====================================================================
+     HERO · trzy obiekty ze świata klienta, każdy prowadzi do usługi
+     Scena 640 × 560 (wzór), podpisy na kreskach jak na /produkty.
+     ===================================================================== */
+  .gh .v4-hero-in.obok > .hero-wid{align-self:center}
+  .gk{width:640px;height:560px;position:relative;font-family:var(--app)}
+  .gk-el{position:absolute;display:block;color:inherit;transition:transform .35s cubic-bezier(.2,.8,.2,1)}
+  .gk-el:hover{transform:translateY(-5px)}
+  .gk-el:focus-visible{outline:none}
+  .gk-log{left:0;top:46px;width:452px;z-index:1}
+  .gk-sl{right:0;top:262px;width:318px;z-index:2}
+  .gk-kl{left:0;top:398px;width:336px;z-index:3}
+  .gk-et{position:absolute;left:20px;bottom:calc(100% + 14px);display:block;padding-left:13px;font-family:'Schibsted Grotesk',system-ui,sans-serif;font-size:13px;line-height:1.35;color:rgba(255,255,255,0.58);white-space:nowrap;text-align:left}
+  .gk-et b{display:block;font-size:15px;font-weight:700;letter-spacing:-0.015em;color:#ffffff}
+  .gk-et::before{content:"";position:absolute;left:0;top:5px;bottom:-14px;width:1px;background:linear-gradient(180deg,rgba(255,255,255,0.2),rgba(255,255,255,0.55))}
+  .gk-et::after{content:"";position:absolute;left:-3px;bottom:-17px;width:7px;height:7px;border-radius:50%;background:#ffffff;box-shadow:0 0 0 3px rgba(255,255,255,0.14)}
+  .gk-el:hover .gk-et::before,.gk-el:focus-visible .gk-et::before{background:var(--ziel)}
+  .gk-el:hover .gk-et::after,.gk-el:focus-visible .gk-et::after{background:var(--ziel);box-shadow:0 0 0 3px rgba(0,205,119,0.25)}
+  .gk-el:focus-visible .gk-et b{text-decoration:underline;text-underline-offset:4px}
+  .gk-sl .gk-et{left:auto;right:20px;padding:0 13px 0 0;text-align:right}
+  .gk-sl .gk-et::before{left:auto;right:0}
+  .gk-sl .gk-et::after{left:auto;right:-3px}
+  .gk-okno{display:block;border-radius:10px;overflow:hidden;background:#ffffff;box-shadow:0 0 0 1px rgba(0,0,0,0.06),0 30px 50px -22px rgba(0,0,0,0.6),0 8px 18px -10px rgba(0,0,0,0.35)}
+
+  /* logi funkcji */
+  .gk-log .gk-pas{display:flex;align-items:center;gap:8px;height:32px;padding:0 12px;border-bottom:1px solid #eceeed;font-size:11px;color:#6b7470}
+  .gk-log .gk-pas b{color:#16201b;font-weight:600}
+  .gk-log .gk-pas i{font-style:normal;color:#b6bcb9}
+  .gk-log .gk-pas .zyw{margin-left:auto;display:flex;align-items:center;gap:5px;color:#4b5550}
+  .gk-log .gk-pas .zyw::before{content:"";width:6px;height:6px;border-radius:50%;background:#1aa564}
+  .gk-filtr{display:flex;white-space:nowrap;align-items:center;gap:8px;padding:7px 12px;border-bottom:1px solid #eceeed;font-size:10.5px;color:#6b7470}
+  .gk-filtr span{display:flex;align-items:center;gap:6px;flex:1;height:22px;padding:0 8px;border-radius:5px;box-shadow:inset 0 0 0 1px #e1e4e2;color:#16201b;font-family:var(--mono)}
+  .gk-filtr svg{width:11px;height:11px;color:#8a928e}
+  .gk-wiersze{display:block;padding:5px 0 2px;font-family:var(--mono);font-size:10px;line-height:1.55;color:#38413c}
+  .gk-w{display:grid;grid-template-columns:52px 30px minmax(0,1fr);gap:8px;padding:3px 12px}
+  .gk-w .cz{color:#8a928e}
+  .gk-w .sc{color:#5b6560}
+  .gk-w.przyg{opacity:.5}
+  .gk-w.zaz{background:#fff6f4}
+  .gk-w .js > span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .gk-w .js > span:has(.gk-zak){overflow:visible}
+  .gk-zak{position:relative;white-space:nowrap}
+  .gk-zak svg{position:absolute;left:-7px;top:-5px;width:calc(100% + 14px);height:calc(100% + 10px);overflow:visible;pointer-events:none}
+  .gk-not{display:block;padding:0 18px 10px;font-family:var(--olowek);font-size:17px;line-height:1.05;color:var(--dlug);transform:rotate(-1.5deg);transform-origin:100% 50%;text-align:right}
+  .gk-not b{display:inline-grid;place-items:center;width:18px;height:18px;margin-right:4px;border:1.5px solid var(--dlug);border-radius:50%;font-family:'Schibsted Grotesk',sans-serif;font-size:10.5px;font-weight:700;vertical-align:2px}
+
+  /* Slack */
+  .gk-sl .gk-pas{display:flex;align-items:center;gap:6px;height:34px;padding:0 13px;border-bottom:1px solid #eceeed;font-size:12px;font-weight:700;color:#1d1c1d}
+  .gk-sl .gk-pas span{font-weight:400;color:#7b7a7c;margin-left:4px;font-size:11px}
+  .sl-m{display:grid;grid-template-columns:28px minmax(0,1fr);gap:9px;padding:9px 13px 4px}
+  .sl-a{width:28px;height:28px;border-radius:6px;overflow:hidden;background:#e9ecea;color:#8b938f;display:grid;place-items:center}
+  .sl-a img{display:block;width:100%;height:100%;object-fit:cover}
+  .sl-a svg{width:15px;height:15px}
+  .sl-k{font-size:11.5px;line-height:1.45;color:#1d1c1d}
+  .sl-k .hd{display:flex;align-items:baseline;gap:6px;margin-bottom:1px}
+  .sl-k .hd b{font-weight:700}
+  .sl-k .hd span{font-size:10px;color:#7b7a7c}
+  .sl-k .hd em{font-style:normal;font-size:9.5px;color:#4b5550;padding:0 4px;border-radius:3px;box-shadow:inset 0 0 0 1px #d9dcda}
+  .sl-k p{margin:0}
+  .sl-kod{display:block;margin:5px 0 3px;padding:6px 8px;border-radius:5px;background:#f6f6f6;box-shadow:inset 0 0 0 1px #e6e6e6;font-family:var(--mono);font-size:9.6px;line-height:1.5;color:#2e3532}
+  .sl-wat{display:flex;align-items:center;gap:6px;margin:4px 0 10px 50px;font-size:10.5px;font-weight:600;color:#1264a3}
+  .sl-k p + p{margin-top:4px}
+
+  /* zaproszenie na sesję warsztatów */
+  .kl{display:grid;grid-template-columns:4px minmax(0,1fr)}
+  .kl::before{content:"";background:#0a8a55}
+  .kl-in{padding:11px 14px 12px}
+  .kl-d{display:block;font-size:10.5px;color:#6b7470}
+  .kl-d b{color:#0a8a55;font-weight:600}
+  .kl-t{display:block;margin-top:3px;font-size:13px;font-weight:700;letter-spacing:-0.01em;line-height:1.3;color:#16201b}
+  .kl-r{display:grid;grid-template-columns:96px minmax(0,1fr);gap:8px;margin-top:6px;font-size:10.8px;line-height:1.4;color:#38413c}
+  .kl-r:first-of-type{margin-top:9px;padding-top:8px;border-top:1px solid #eceeed}
+  .kl-r span:first-child{color:#8a928e}
+  .kl-r b{font-weight:600;color:#16201b}
+  .kl-not{display:block;padding:0 14px 9px;font-family:var(--olowek);font-size:16px;line-height:1;color:var(--dlug);text-align:right;transform:rotate(-1.5deg)}
+
+  @media (max-width:1060px) and (min-width:761px){ .gh .hero-wid .sk-ram{display:flex;justify-content:center} }
+  /* legenda na telefonie */
+  .gk-leg{display:none}
+  .gk-leg a{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;color:#ffffff}
+  .gk-leg a::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--ziel)}
+  @media (max-width:760px){
+    .gk-et{display:none}
+    .gk-leg{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:20px}
+  }
+  @media (prefers-reduced-motion:reduce){ .gk-el{transition:none} }
+
+  /* =====================================================================
+     OBIEKTY USŁUG (wzór 680 px, skalowany do kolumny)
+     ===================================================================== */
+  .go{position:relative;font-family:var(--app);color:#1b2420}
+  .go-okno{border-radius:10px;overflow:hidden;background:#ffffff;box-shadow:0 0 0 1px rgba(15,26,20,0.08),0 40px 70px -40px rgba(7,20,13,0.45),0 10px 24px -14px rgba(7,20,13,0.2)}
+  .go-pod{margin:18px 0 0;font-family:'Schibsted Grotesk',system-ui,sans-serif;font-size:14.5px;line-height:1.5;color:var(--t2)}
+  .go-pod b{color:var(--t1);font-weight:650}
+
+  /* --- analiza: panel zamówień z uwagami analizy + pierwsza strona raportu --- */
+  .go-an{width:680px;padding-bottom:132px}
+  .ap{width:620px}
+  .ap-pr{display:flex;align-items:center;gap:6px;height:30px;padding:0 12px;background:#f3f4f3;border-bottom:1px solid #e6e8e7}
+  .ap-pr i{width:9px;height:9px;border-radius:50%;background:#d9dcda}
+  .ap-pr span{flex:1;max-width:330px;margin:0 auto;height:19px;border-radius:5px;background:#ffffff;box-shadow:inset 0 0 0 1px #e3e5e4;font-size:10px;line-height:19px;text-align:center;color:#6b7470}
+  .ap-mod{display:flex;align-items:center;gap:20px;height:40px;padding:0 18px;border-bottom:1px solid #eceeed;font-size:11.5px;color:#5b6560}
+  .ap-mod b{display:flex;align-items:center;gap:7px;margin-right:8px;font-size:12.5px;font-weight:700;color:#16201b}
+  .ap-mod b i{display:block;width:16px;height:16px;border-radius:4px;background:#1d3d8f}
+  .ap-mod span.on{color:#16201b;font-weight:600;box-shadow:inset 0 -2px 0 #1d3d8f;padding:12px 0}
+  .ap-mod em{margin-left:auto;font-style:normal;font-size:11px;color:#6b7470}
+  .ap-gl{display:flex;align-items:flex-end;justify-content:space-between;padding:36px 18px 10px}
+  .ap-gl h4{margin:0;font-size:17px;font-weight:700;letter-spacing:-0.02em;color:#16201b}
+  .ap-gl p{margin:3px 0 0;font-size:11px;color:#6b7470}
+  .ap-ak{display:flex;gap:8px;align-items:center}
+  .ap-sel{display:flex;align-items:center;gap:6px;height:28px;padding:0 10px;border-radius:6px;box-shadow:inset 0 0 0 1px #d9dcda;font-size:11px;color:#16201b}
+  .ap-sel span{color:#8a928e}
+  .ap-btn{display:flex;align-items:center;height:28px;padding:0 12px;border-radius:6px;font-size:11px;font-weight:600;box-shadow:inset 0 0 0 1px #d9dcda;color:#16201b}
+  .ap-btn.gl{background:#1d3d8f;box-shadow:none;color:#ffffff}
+  .ap table{width:100%;border-collapse:collapse;font-size:11px}
+  .ap th{padding:7px 10px;border-bottom:1px solid #e6e8e7;text-align:left;font-size:10px;font-weight:600;color:#7a837e}
+  .ap td{padding:8px 10px;border-bottom:1px solid #f0f1f0;color:#1f2924;white-space:nowrap}
+  .ap th:first-child,.ap td:first-child{padding-left:18px}
+  .ap td.l,.ap th.l{text-align:right;font-variant-numeric:tabular-nums}
+  .ap td.st{color:#5b6560}
+  .ap td.st::before{content:"";display:inline-block;width:6px;height:6px;margin-right:6px;border-radius:50%;background:#9aa39e;vertical-align:1px}
+  .ap td.st.r::before{background:#d29a1e}
+  .ap td.st.w::before{background:#2b7de0}
+  .ap-st{display:flex;justify-content:space-between;padding:9px 18px 12px;font-size:10.5px;color:#7a837e}
+  .ap-st b{color:#38413c;font-weight:600}
+  /* uwagi analizy: czerwony długopis na ekranie */
+  .uw{position:absolute;font-family:var(--olowek);font-size:17px;line-height:1.02;color:var(--dlug);pointer-events:none}
+  .uw b{display:inline-grid;place-items:center;width:18px;height:18px;margin-right:4px;border:1.5px solid var(--dlug);border-radius:50%;font-family:'Schibsted Grotesk',sans-serif;font-size:10.5px;font-weight:700;vertical-align:2px}
+  .uw svg{position:absolute;overflow:visible}
+  .uw-ob{position:absolute;pointer-events:none}
+  .uw-ob svg{width:100%;height:100%;overflow:visible}
+  .uw1{width:200px;transform:rotate(-2deg)}
+  .uw2{transform:rotate(-1.5deg)}
+  .uw3{transform:rotate(1.5deg)}
+  .go-rap{position:absolute;right:0;bottom:0;width:372px;padding:16px 18px 15px;border-radius:6px;background:#ffffff;box-shadow:0 0 0 1px rgba(15,26,20,0.09),0 36px 60px -26px rgba(7,20,13,0.5),0 8px 18px -10px rgba(7,20,13,0.2);font-family:'Schibsted Grotesk',system-ui,sans-serif;transform:rotate(1.2deg)}
+  .go-rap small{display:flex;justify-content:space-between;font-size:10px;color:#7a837e}
+  .go-rap .wk{margin-top:12px;font-size:10.5px;font-weight:700;color:#0a8a55}
+  .go-rap h4{margin:3px 0 0;font-size:16px;font-weight:700;letter-spacing:-0.02em;line-height:1.22;color:#16201b}
+  .go-rap p{margin:8px 0 0;font-size:11.5px;line-height:1.55;color:#38413c}
+  .go-rap .pd{display:flex;align-items:center;gap:8px;margin-top:11px;padding-top:9px;border-top:1px solid #eceeed;font-size:10.5px;color:#7a837e}
+  .go-rap .pd img{width:20px;height:20px;border-radius:50%;object-fit:cover}
+  .go-rap .pd b{color:#38413c;font-weight:600}
+
+  /* --- wsparcie: plan panelu na kwartał --- */
+  .go-ws{width:680px}
+  .pl-gl{padding:18px 22px 14px;border-bottom:1px solid #e6e8e7}
+  .pl-gl small{display:block;font-size:10.5px;color:#7a837e}
+  .pl-gl h4{margin:4px 0 0;font-size:18px;font-weight:700;letter-spacing:-0.02em;color:#16201b}
+  .pl-gl p{display:flex;align-items:center;gap:8px;margin:8px 0 0;font-size:11px;color:#5b6560}
+  .pl-gl p img{width:20px;height:20px;border-radius:50%;object-fit:cover}
+  .pl-gl p span.os{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:#e9ecea;color:#8b938f}
+  .pl-gl p span.os svg{width:11px;height:11px}
+  .pl-gl p b{color:#16201b;font-weight:600}
+  .pl-kol,.pl-w{display:grid;grid-template-columns:150px minmax(0,1fr) 168px;gap:18px;padding:0 22px}
+  .pl-kol{padding-top:10px;padding-bottom:8px;font-size:10px;font-weight:600;color:#8a928e;border-bottom:1px solid #eceeed}
+  .pl-w{padding-top:12px;padding-bottom:12px;font-size:11.5px;line-height:1.5;color:#38413c;border-bottom:1px solid #f0f1f0}
+  .pl-w > b{font-weight:700;color:#16201b}
+  .pl-w .rd{position:relative;padding-left:12px}
+  .pl-w .rd::before{content:"";position:absolute;left:0;top:3px;bottom:3px;width:2px;border-radius:2px;background:#cfd6d2}
+  .pl-w .dc{font-family:var(--olowek);font-size:17px;line-height:1.05;color:#1d3d8f}
+  .pl-st{display:flex;justify-content:space-between;padding:11px 22px 14px;font-size:10.5px;color:#7a837e}
+  .pl-st b{color:#38413c;font-weight:600}
+
+  /* --- warsztaty: jedno zadanie przed programem i po nim --- */
+  .go-wz{width:680px}
+  .zd-gl{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;padding:16px 20px 13px;border-bottom:1px solid #e6e8e7}
+  .zd-gl small{display:block;font-size:10.5px;color:#7a837e}
+  .zd-gl h4{margin:3px 0 0;font-size:17px;font-weight:700;letter-spacing:-0.02em;color:#16201b}
+  .zd-gl span{font-size:10.5px;color:#7a837e;white-space:nowrap}
+  .zd{display:grid;grid-template-columns:1fr 1fr}
+  .zd-k{padding:14px 20px 16px}
+  .zd-k + .zd-k{border-left:1px solid #eceeed;background:#fbfcfb}
+  .zd-k h5{margin:0 0 10px;font-size:11px;font-weight:700;color:#7a837e}
+  .zd-k.po h5{color:#0a8a55}
+  .zd-r{display:grid;grid-template-columns:64px minmax(0,1fr);gap:8px;padding:6px 0;font-size:11.3px;line-height:1.45;color:#38413c}
+  .zd-r + .zd-r{border-top:1px dashed #e4e7e5}
+  .zd-r span:first-child{font-size:10.5px;color:#8a928e;font-variant-numeric:tabular-nums}
+  .zd-k.przed .zd-r:nth-child(3) span:last-child,.zd-k.przed .zd-r:nth-child(6) span:last-child{color:#a2341f}
+  .zd-sum{display:flex;align-items:baseline;gap:10px;margin-top:12px;padding-top:11px;border-top:1px solid #e6e8e7;font-size:11px;color:#5b6560}
+  .zd-sum b{font-size:20px;font-weight:700;letter-spacing:-0.03em;color:#16201b}
+  .zd-k.po .zd-sum b{color:#0a8a55}
+  .wz-my{display:grid;grid-template-columns:auto minmax(0,1fr);gap:16px;align-items:center;margin-top:14px;padding:15px 20px;border-radius:10px;background:#0f1a14;color:#d6ddd9;font-family:'Schibsted Grotesk',system-ui,sans-serif;box-shadow:0 24px 40px -30px rgba(7,20,13,0.6)}
+  .wz-my b.wz-pr{font-size:30px;font-weight:700;letter-spacing:-0.04em;color:var(--ziel);line-height:1}
+  .wz-my p{margin:0;font-size:12.5px;line-height:1.5}
+  .wz-my p strong{color:#ffffff;font-weight:650}
+  /* Tekst hero od tej samej krawędzi co logo i sekcje niżej (jak /produkty):
+     odstęp między kolumnami przechodzi z column-gap na margines rysunku. */
+  @media (min-width:1061px){
+    .gh .v4-hero-in.obok{column-gap:0}
+    .gh .v4-hero-in.obok > .hero-wid{margin-left:clamp(28px,4vw,72px)}
+  }
+</style>
+
+<div class="v3 gh">
+<Styl />
+<Anim />
+
+<!-- ============ 1 · HERO ============ -->
+<Hero wariant="obok" lead="Dla firm, w których ktoś z zespołu zbudował aplikację w Claude Code albo w Codexie, a dziś pracuje na niej cały dział. Chodzi o to, żeby za rok i za dwa dalej dało się ją rozwijać bez zaczynania od nowa i bez czekania na jedną osobę. Zaczynamy od analizy aplikacji. Potem jesteśmy przy Was w bieżącym wsparciu albo uczymy zespół pracować z AI tak jak my." cta={{ href: '#kontakt', t: 'Umów rozmowę' }} link={{ href: '#analiza', t: 'Zobacz usługi ↓' }}>
+<Fragment slot="h1">Pomagamy, żeby aplikacja Waszego zespołu <span>rosła razem z firmą</span></Fragment>
+<div class="hero-wid">
+<div class="sk-ram"><div class="gk" data-skala="640">
+
+<a class="gk-el gk-log" href="#analiza">
+<span class="gk-et"><b>Analiza aplikacji</b>co poprawić najpierw</span>
+<span class="gk-okno" role="img" aria-label="Logi funkcji eksportu w panelu zamówień: przy każdym eksporcie do logów trafia cała lista zamówień z NIP-ami i telefonami klientów. Zakreślone czerwonym długopisem z dopiskiem: dane klientów w logach, nikt ich nie czyści.">
+<span class="gk-pas" aria-hidden="true"><b>panel-zamowien</b><i>/</i>Production<i>/</i>Logi<span class="zyw">na żywo</span></span>
+<span class="gk-filtr" aria-hidden="true"><span><svg viewBox="0 0 16 16" fill="currentColor" set:html={HI['magnifying-glass']}></svg>eksport</span>ostatnie 24 h</span>
+<span class="gk-wiersze" aria-hidden="true">
+<span class="gk-w"><span class="cz">07:00:03</span><span class="sc">POST</span><span>/api/eksport · 200 · 2,4 s</span></span>
+<span class="gk-w zaz"><span class="cz">07:00:03</span><span class="sc">log</span><span class="js"><span>eksport [&#123;"nr":"ZAM-3398","klient":"Instal-Bud sp. z o.o.",</span><span><span class="gk-zak">"nip":"7781423865","tel":"601 224 318"<svg viewBox="0 0 100 30" preserveAspectRatio="none"><path d="M4 16 C 3 4, 40 1, 72 3 S 99 9, 97 17 S 70 29, 40 28 S 1 26, 6 12" fill="none" stroke="#cf3a2a" stroke-width="1.6" vector-effect="non-scaling-stroke" stroke-linecap="round"/></svg></span>,"netto":4180.50&#125;,</span><span>&#123;"nr":"ZAM-3399","klient":"Termo-Serwis s.c.","nip":"97211873…</span></span></span>
+<span class="gk-w"><span class="cz">07:00:04</span><span class="sc">log</span><span>wysłano 412 zamówień → ksiegowosc@biuro-ewa.pl</span></span>
+</span>
+<span class="gk-not" aria-hidden="true"><b>1</b>NIP-y i telefony w logach, nikt ich nie czyści</span>
+</span>
+</a>
+
+<a class="gk-el gk-sl" href="#wsparcie">
+<span class="gk-et"><b>Bieżące wsparcie</b>rada przy decyzjach</span>
+<span class="gk-okno" role="img" aria-label="Kanał #panel-zamowien na Slacku. Anna Kowalczyk pyta, czy dla oddziału we Wrocławiu zrobić kopię panelu, czy dołożyć oddział do obecnego. Marcel Bilski z Let’s automate radzi jeden panel z wyborem oddziału, bo kopia to dwa cenniki i każda poprawka robiona dwa razy, i proponuje zacząć od cen z Subiekta. Anna odpisuje: bierzemy jeden panel, start po inwentaryzacji, 17 listopada.">
+<span class="gk-pas" aria-hidden="true"># panel-zamowien<span>Anna, Adam, Marcel</span></span>
+<span aria-hidden="true">
+<span class="sl-m"><span class="sl-a"><svg viewBox="0 0 16 16" fill="currentColor" set:html={OSOBA}></svg></span><span class="sl-k"><span class="hd"><b>Anna Kowalczyk</b><span>10:05</span></span><p>Wrocław chce pracować w panelu od listopada. Robimy im kopię czy dokładamy oddział do naszego?</p></span></span>
+<span class="sl-m"><span class="sl-a"><img src="/guided-coding/marcel-bilski-96.jpg" width="96" height="96" alt=""></span><span class="sl-k"><span class="hd"><b>Marcel Bilski</b><em>Let’s automate</em><span>11:20</span></span><p>Dokładamy oddział. Kopia to dwa cenniki i każda poprawka robiona dwa razy.</p><p>Najpierw ceny z Subiekta, potem Wrocław. Rozpiszę to na czwartek.</p></span></span>
+<span class="sl-m"><span class="sl-a"><svg viewBox="0 0 16 16" fill="currentColor" set:html={OSOBA}></svg></span><span class="sl-k"><span class="hd"><b>Anna Kowalczyk</b><span>11:34</span></span><p>Bierzemy jeden panel. Start po inwentaryzacji, 17.11.</p></span></span>
+</span>
+</span>
+</a>
+
+<a class="gk-el gk-kl" href="#warsztaty">
+<span class="gk-et"><b>Warsztaty dla zespołu</b>pracujecie z AI tak jak my</span>
+<span class="gk-okno" role="img" aria-label="Zaproszenie w kalendarzu: warsztaty, sesja 4 z 7, czwartek 6 listopada, 10:00–12:00. Sprawa z tego tygodnia: rabat dla stałych klientów. Przy klawiaturze Adam Wiśniewski, obok Anna Kowalczyk i Michał z magazynu, prowadzi Marcel Bilski. Dopisek: tym razem bez Anny przy klawiaturze.">
+<span class="kl" aria-hidden="true"><span class="kl-in">
+<span class="kl-d"><b>czw 6 listopada</b> · 10:00–12:00 · sala na piętrze</span>
+<span class="kl-t">Warsztaty, sesja 4 z 7: rabat dla stałych klientów</span>
+<span class="kl-r"><span>Przy klawiaturze</span><span><b>Adam Wiśniewski</b></span></span>
+<span class="kl-r"><span>Obok</span><span>Anna Kowalczyk, Michał z magazynu</span></span>
+<span class="kl-r"><span>Prowadzi</span><span>Marcel Bilski, Let’s automate</span></span>
+</span></span>
+<span class="kl-not" aria-hidden="true">Anna tylko patrzy!</span>
+</span>
+</a>
+
+</div></div>
+<nav class="gk-leg" aria-label="Usługi na tej stronie"><a href="#analiza">Analiza aplikacji</a><a href="#wsparcie">Bieżące wsparcie</a><a href="#warsztaty">Warsztaty dla zespołu</a></nav>
+</div>
+</Hero>
+
+<!-- ============ 2 · ANALIZA APLIKACJI ============ -->
+<section id="analiza" class="v3-sek">
+<div class="pr">
+<div class="pr-t">
+<div class="pr-lok"><span class="pr-zn" aria-hidden="true"><svg viewBox="0 0 16 16" fill="currentColor" set:html={HI['magnifying-glass']}></svg></span><div><h2 class="pr-n">Analiza aplikacji</h2><p class="pr-k">Żeby za rok nie zaczynać od nowa</p></div></div>
+<p class="pr-def">Aplikacja zbudowana w kilka tygodni działa, ale nikt z zewnątrz nie sprawdził, co jest pod spodem. Sprawdzamy, czy dane klientów i pieniądze są w niej bezpieczne i czy wytrzyma drugi oddział i więcej zamówień. Raport mówi, co poprawić najpierw, a co może poczekać. W szerszej wersji konsultant ocenia też, czy da się ją zrobić prościej i lepiej połączyć z resztą firmy.</p>
+<dl class="pr-sp">{ANALIZA.map(([k, v]) => (<div><dt>{k}</dt><dd set:html={v} /></div>))}</dl>
+<div class="pr-ak">
+<a href="/guided-coding/audyt-aplikacji" class="v3-btn ciemny">Zobacz analizę aplikacji <span aria-hidden="true">→</span></a>
+</div>
+</div>
+<div class="pr-w rv">
+<div class="sk-ram"><div class="go go-an" data-skala="680" role="img" aria-label="Panel zamówień hurtowni, lista zamówień z października dla oddziału Poznań, 3 412 zamówień. Na ekranie uwagi analizy czerwonym długopisem: przy przycisku eksportu — każdy eksport wrzuca NIP-y i telefony klientów do logów; przy wyborze oddziału — panel zna tylko Poznań, a Wrocław ma dojść w przyszłym kwartale; przy liczbie zamówień — przy około 40 000 eksport stanie. Obok pierwsza strona raportu: panel można rozwijać dalej i nie trzeba go przepisywać; trzy rzeczy poprawić w tym tygodniu, dwie przed Wrocławiem; większość zrobi Adam z instrukcją.">
+<div class="go-okno ap" aria-hidden="true">
+<div class="ap-pr"><i></i><i></i><i></i><span>panel.hurtownia-instal.pl/zamowienia</span></div>
+<div class="ap-mod"><b><i></i>Panel zamówień</b><span class="on">Zamówienia</span><span>Klienci</span><span>Handlowcy</span></div>
+<div class="ap-gl">
+<div><h4>Zamówienia</h4><p>październik 2026</p></div>
+<div class="ap-ak"><span class="ap-sel"><span>Oddział</span>Poznań ▾</span><span class="ap-btn">Eksport dla biura</span><span class="ap-btn gl">+ Nowe zamówienie</span></div>
+</div>
+<table>
+<thead><tr><th>Nr</th><th>Klient</th><th>Handlowiec</th><th class="l">Netto, zł</th><th class="l">Rabat</th><th>Status</th></tr></thead>
+<tbody>
+{ZAM.map(([n, k, h, z, r, s]) => (<tr><td>{n}</td><td>{k}</td><td>{h}</td><td class="l">{z}</td><td class="l">{r}</td><td class:list={['st', s === 'W realizacji' && 'r', s === 'Wysłane' && 'w']}>{s}</td></tr>))}
+</tbody>
+</table>
+<div class="ap-st"><span><b>3 412 zamówień</b> w październiku · 14 handlowców</span><span>strona 1 z 171</span></div>
+</div>
+<div class="uw-ob" style="left:342px;top:110px;width:108px;height:40px"><svg viewBox="0 0 108 40" preserveAspectRatio="none"><path d="M6 21 C 4 6, 50 2, 88 5 S 106 14, 102 25 S 70 38, 40 36 S 2 32, 9 14" fill="none" stroke="#cf3a2a" stroke-width="1.6" vector-effect="non-scaling-stroke" stroke-linecap="round"/></svg></div>
+<span class="uw uw1" aria-hidden="true" style="left:352px;top:80px;width:260px"><b>1</b>NIP-y i telefony lecą do logów</span>
+<div class="uw-ob" style="left:222px;top:110px;width:122px;height:40px"><svg viewBox="0 0 122 40" preserveAspectRatio="none"><path d="M5 21 C 3 7, 50 2, 98 4 S 120 14, 116 25 S 80 38, 46 36 S 2 31, 8 13" fill="none" stroke="#cf3a2a" stroke-width="1.6" vector-effect="non-scaling-stroke" stroke-linecap="round"/></svg></div>
+<span class="uw uw3" aria-hidden="true" style="left:150px;top:80px;width:200px"><b>2</b>tylko Poznań. A Wrocław?</span>
+<span class="uw uw2" aria-hidden="true" style="left:22px;top:384px;width:280px"><b>3</b>przy ~40 000 zamówień eksport stanie</span>
+<div class="go-rap" aria-hidden="true">
+<small><span>Raport z analizy · Panel zamówień</span><span>str. 1</span></small>
+<div class="wk">W skrócie</div>
+<h4>Panel można rozwijać dalej. Nie trzeba go przepisywać</h4>
+<p>Trzy rzeczy poprawcie w tym tygodniu, dwie przed uruchomieniem Wrocławia. Większość zrobi Adam według instrukcji z raportu.</p>
+<div class="pd"><img src="/guided-coding/marcel-bilski-96.jpg" width="96" height="96" alt=""><span><b>Marcel Bilski</b> · prowadził analizę</span></div>
+</div>
+</div></div>
+<p class="go-pod"><b>Panel zamówień po analizie.</b> Uwagi na ekranie, który zna cały dział, i pierwsza strona raportu: czy rozwijać dalej i od czego zacząć.</p>
+</div>
+</div>
+</section>
+
+<!-- ============ 3 · BIEŻĄCE WSPARCIE ============ -->
+<section id="wsparcie" class="v3-sek v3-papier">
+<div class="pr odwr">
+<div class="pr-t">
+<div class="pr-lok"><span class="pr-zn" aria-hidden="true"><svg viewBox="0 0 16 16" fill="currentColor" set:html={HI['shield-check']}></svg></span><div><h2 class="pr-n">Bieżące wsparcie</h2><p class="pr-k">Jesteśmy przy Was, kiedy aplikacja rośnie</p></div></div>
+<p class="pr-def">Miesięczna opieka nad aplikacją, którą rozwija Wasz zespół. Co miesiąc siadamy z Wami do planu: co budować dalej, co połączyć z Subiektem, a co lepiej kupić gotowe. Doradzamy technicznie i biznesowo, a decyzje zostają u Was. Większe zmiany sprawdzamy, zanim trafią do ludzi, a kiedy ktoś utknie, pomagamy tego samego dnia. Zaczynamy od analizy technicznej.</p>
+<dl class="pr-sp">{WSPARCIE.map(([k, v]) => (<div><dt>{k}</dt><dd set:html={v} /></div>))}</dl>
+<div class="pr-ak">
+<a href="/guided-coding/biezace-wsparcie" class="v3-btn ciemny">Zobacz bieżące wsparcie <span aria-hidden="true">→</span></a>
+</div>
+</div>
+<div class="pr-w rv">
+<div class="sk-ram"><div class="go go-ws" data-skala="680" role="img" aria-label={`Plan panelu zamówień na IV kwartał, ustalony 28 października przez Annę Kowalczyk i Marcela Bilskiego. ${PLAN.map(([c, r, d]) => `${c}. Rada: ${r} Decyzja: ${d}.`).join(' ')} Kolejna rozmowa 25 listopada.`}>
+<div class="go-okno" aria-hidden="true">
+<div class="pl-gl">
+<small>Plan panelu zamówień · po comiesięcznej rozmowie</small>
+<h4>IV kwartał 2026</h4>
+<p><span class="os"><svg viewBox="0 0 16 16" fill="currentColor" set:html={OSOBA}></svg></span><b>Anna Kowalczyk</b> i <img src="/guided-coding/marcel-bilski-96.jpg" width="96" height="96" alt=""><b>Marcel Bilski</b> · wtorek 28.10</p>
+</div>
+<div class="pl-kol"><span>Co</span><span>Rada Marcela</span><span>Decyzja Anny</span></div>
+{PLAN.map(([c, r, d]) => (<div class="pl-w"><b>{c}</b><span class="rd">{r}</span><span class="dc">{d}</span></div>))}
+<div class="pl-st"><span>Kolejna rozmowa <b>wtorek 25.11</b></span><span>do tego czasu kanał #panel-zamowien</span></div>
+</div>
+</div></div>
+<p class="go-pod"><b>Plan na kwartał po comiesięcznej rozmowie.</b> Przy każdej pozycji rada techniczna i biznesowa, decyzja zostaje przy Annie.</p>
+</div>
+</div>
+</section>
+
+<!-- ============ 4 · WARSZTATY DLA ZESPOŁU ============ -->
+<section id="warsztaty" class="v3-sek">
+<div class="pr">
+<div class="pr-t">
+<div class="pr-lok"><span class="pr-zn" aria-hidden="true"><svg viewBox="0 0 16 16" fill="currentColor" set:html={HI['users']}></svg></span><div><h2 class="pr-n">Warsztaty dla zespołu</h2><p class="pr-k">Zespół pracuje z AI tak jak my</p></div></div>
+<p class="pr-def">U nas cały kod pisze AI. Programiści opisują zadania, sprawdzają wynik i decydują, co trafia do ludzi, według metody i narzędzi, które sami zbudowaliśmy. Większość zespołów korzysta z małej części tego, co AI potrafi: prosi o pojedyncze poprawki i czeka na autora aplikacji. Na warsztatach uczymy Wasz zespół naszego sposobu pracy, na Waszej aplikacji i sprawach z bieżącego tygodnia.</p>
+<dl class="pr-sp">{WARSZTATY.map(([k, v]) => (<div><dt>{k}</dt><dd set:html={v} /></div>))}</dl>
+<div class="pr-ak">
+<a href="/guided-coding/transfer-know-how" class="v3-btn ciemny">Zobacz warsztaty dla zespołu <span aria-hidden="true">→</span></a>
+</div>
+</div>
+<div class="pr-w rv">
+<div class="sk-ram"><div class="go go-wz" data-skala="680" role="img" aria-label={`Jedno zadanie, rabat dla stałych klientów, przed programem i po nim. Przed: ${PRZED.map(([k, c]) => `${k} — ${c}`).join('; ')}; razem 9 dni, potrzebna była Anna. Po: ${PO.map(([k, c]) => `${k} — ${c}`).join('; ')}; razem 2 dni, może to zrobić każda z czterech osób. Pod spodem: w Let’s automate 100% kodu pisze AI, programiści opisują zadania, sprawdzają wynik i decydują, co trafia do ludzi.`}>
+<div class="go-okno" aria-hidden="true">
+<div class="zd-gl"><div><small>Jedno zadanie w panelu zamówień · zgłosił Tomasz, handlowiec</small><h4>Rabat 3% dla stałych klientów</h4></div><span>przed programem i miesiąc po nim</span></div>
+<div class="zd">
+<div class="zd-k przed"><h5>Przed programem</h5>{PRZED.map(([k, c]) => (<div class="zd-r"><span>{k}</span><span>{c}</span></div>))}<div class="zd-sum"><b>9 dni</b>potrzebna była Anna</div></div>
+<div class="zd-k po"><h5>Po programie</h5>{PO.map(([k, c]) => (<div class="zd-r"><span>{k}</span><span>{c}</span></div>))}<div class="zd-sum"><b>2 dni</b>może to zrobić każda z czterech osób</div></div>
+</div>
+</div>
+<div class="wz-my" aria-hidden="true"><b class="wz-pr">100%</b><p><strong>Tak pracujemy u siebie.</strong> W Let’s automate cały kod pisze AI. Programiści opisują zadania, sprawdzają wynik i decydują, co trafia do ludzi. Tego uczymy Wasz zespół.</p></div>
+</div></div>
+<p class="go-pod"><b>To samo zadanie przed programem i miesiąc po nim.</b> Kto jest potrzebny i ile dni mija od zgłoszenia do klienta.</p>
+</div>
+</div>
+</section>
+
+<!-- ============ 5 · KONTAKT ============ -->
+<Kontakt tytul="Nie wiecie, co wybrać?" lead="Napiszcie w dwóch zdaniach, co zbudowaliście i kto to u Was rozwija. Na pierwszej rozmowie podpowiemy, od czego zacząć. Odpowiemy w jeden dzień roboczy." zrodlo="Budujecie sami z AI" pytanie="Co macie dzisiaj?" podpowiedz="Np. panel zamówień zbudowany w Claude Code, rozwijają go dwie osoby z operacji…" />
+</div>
+
+<script is:inline>
+(function () {
+  var el = document.querySelectorAll('[data-skala]');
+  function skaluj() {
+    el.forEach(function (e) {
+      var w = +e.getAttribute('data-skala');
+      var p = e.parentElement.clientWidth;
+      e.style.zoom = p && p < w ? (p / w).toFixed(4) : '';
+    });
+  }
+  skaluj();
+  window.addEventListener('resize', skaluj);
+})();
+</script>
+
+</LaBase>
