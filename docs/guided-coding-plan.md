@@ -61,14 +61,15 @@ Coding”.
 ```
 Budujecie własne aplikacje z AI
 Prowadzimy Was od pomysłu po rozwój
-  Guided coding           Abonament: doradztwo i opieka przy rozwoju aplikacji
   Analiza aplikacji       Bezpieczeństwo aplikacji i plan jej rozwoju
+  Guided coding           Doradztwo i opieka przy rozwoju aplikacji
   Warsztaty dla zespołu   Sesje, po których zespół pracuje z AI jak my
 ```
 
-- **Guided coding pierwszy.** Podpis pasa mówi „prowadzimy” i pierwsza
-  pozycja to właśnie prowadzenie; to też usługa docelowa (MRR). Analiza
-  jako druga czyta się jak wejście, nie jak główny produkt.
+- **Analiza pierwsza, guided coding drugi** (Szymon, 1.11, po publikacji
+  z guided codingiem na pierwszym miejscu): kolejność idzie za drogą
+  klienta — od analizy się zaczyna. Opis bez słowa „abonament” (Szymon:
+  „po co ono?”); to, że to abonament, mówi strona.
 - **Opis pozycji** mówi, czym usługa jest (pamięć: opisy usług), i nie
   powtarza „prowadzimy” z podpisu pasa. Warianty do porównania w odpowiedzi
   z 1.11; rekomendacja jak wyżej. **DO DECYZJI.**
