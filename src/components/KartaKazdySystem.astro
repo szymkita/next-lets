@@ -1,0 +1,54 @@
+---
+// KARTA „KAŻDY SYSTEM” — odsyła z innych stron do landingu /kazdy-system
+// (film + bezpłatna diagnoza). Stoi na /automatyzacje-integracje (pod
+// „Połączenia, które robimy najczęściej”) i na /lets-shift (pod „Systemy
+// zbierane latami”). Cała karta jest jednym linkiem.
+interface Props {
+  tytul?: string;
+  opis?: string;
+  zrodlo?: string;   // skąd kliknięto, trafia do adresu jako ?z=
+}
+const {
+  tytul = 'Wasz system nie ma integracji? Podłączymy go do AI',
+  opis = 'Stary ERP, program branżowy albo portal dostawcy, lokalnie w biurze albo w chmurze. Zobaczcie na filmie, jak producent okien podłączył program z 2011 roku do ChatGPT i Appto.',
+  zrodlo = '',
+} = Astro.props;
+const href = '/kazdy-system' + (zrodlo ? `?z=${zrodlo}` : '');
+---
+<a class="kks" href={href}>
+  <span class="kks-tx">
+    <span class="kks-et"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 1.8v12.4a.8.8 0 0 0 1.2.7l10.3-6.2a.8.8 0 0 0 0-1.4L4.2 1.1A.8.8 0 0 0 3 1.8z"/></svg>Film, 2:24</span>
+    <span class="kks-t">{tytul}</span>
+    <span class="kks-o">{opis}</span>
+    <span class="kks-cta">Zobaczcie, jak to działa <svg viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M2 8a.75.75 0 0 1 .75-.75h8.69L8.22 4.03a.75.75 0 0 1 1.06-1.06l4.5 4.5a.75.75 0 0 1 0 1.06l-4.5 4.5a.75.75 0 0 1-1.06-1.06l3.22-3.22H2.75A.75.75 0 0 1 2 8Z" clip-rule="evenodd"/></svg></span>
+  </span>
+  <span class="kks-im">
+    <img src="/kazdy-system/plakat.jpg" alt="" width="1600" height="900" loading="lazy" decoding="async">
+    <span class="kks-play" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3 1.8v12.4a.8.8 0 0 0 1.2.7l10.3-6.2a.8.8 0 0 0 0-1.4L4.2 1.1A.8.8 0 0 0 3 1.8z"/></svg></span>
+  </span>
+</a>
+
+<style>
+  .kks{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);align-items:stretch;margin-top:clamp(36px,4vw,56px);border-radius:22px;overflow:hidden;background:#07140d;color:#ffffff;text-decoration:none;
+    box-shadow:0 0 0 1px rgba(0,205,119,0.18),0 40px 80px -50px rgba(7,20,13,0.7);transition:box-shadow .2s}
+  .kks:hover{box-shadow:0 0 0 1px rgba(0,205,119,0.45),0 40px 80px -46px rgba(7,20,13,0.8)}
+  .kks-tx{display:flex;flex-direction:column;align-items:flex-start;padding:clamp(26px,3.2vw,48px)}
+  .kks-et{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:650;color:#00CD77}
+  .kks-et svg{width:11px;height:11px;fill:currentColor}
+  .kks-t{display:block;margin-top:14px;font-size:clamp(24px,2.3vw,34px);line-height:1.08;letter-spacing:-0.035em;font-weight:700;text-wrap:balance}
+  .kks-o{display:block;margin-top:14px;max-width:460px;font-size:clamp(15px,1.2vw,16.5px);line-height:1.6;color:rgba(255,255,255,0.7);text-wrap:pretty}
+  .kks-cta{display:inline-flex;align-items:center;gap:9px;margin-top:auto;padding-top:24px;font-size:15.5px;font-weight:700;color:#00CD77}
+  .kks-cta svg{width:15px;height:15px;fill:currentColor;transition:transform .18s}
+  .kks:hover .kks-cta svg{transform:translateX(4px)}
+  .kks-im{position:relative;display:block;min-height:260px;background:#0b1510}
+  .kks-im img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.92;transition:opacity .2s,transform .4s}
+  .kks:hover .kks-im img{opacity:1;transform:scale(1.02)}
+  .kks-play{position:absolute;left:50%;top:50%;display:grid;place-items:center;width:68px;height:68px;margin:-34px 0 0 -34px;border-radius:50%;background:#00CD77;box-shadow:0 0 0 10px rgba(0,205,119,0.2),0 18px 40px -12px rgba(0,0,0,0.7)}
+  .kks-play svg{width:22px;height:22px;margin-left:4px;fill:#07140d}
+  .kks:focus-visible{outline:3px solid #00CD77;outline-offset:4px}
+  @media (max-width:860px){
+    .kks{grid-template-columns:1fr}
+    .kks-im{order:-1;min-height:0;aspect-ratio:16/9}
+  }
+  @media (prefers-reduced-motion:reduce){ .kks-im img,.kks-cta svg{transition:none} .kks:hover .kks-im img{transform:none} }
+</style>

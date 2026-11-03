@@ -1,0 +1,665 @@
+---
+// KAŻDY SYSTEM — /kazdy-system
+// Landing pod film „Każdy system” (LinkedIn Szymona, 3.11.2026). Strona
+// konwersji jak /darmowa-konsultacja: formularz w hero z portretem Szymona,
+// formularz na końcu nad FAQ (moduł Kontakt). Pierwszy krok nazywa się tu
+// „bezpłatna diagnoza”, bo tak mówi film (głos i plansza końcowa).
+//
+// Kolejność idzie za łukiem filmu: hero z formularzem → AI nie ma dostępu
+// do systemów firmy → ludzie przepisują → film → sześć scenariuszy w dwóch
+// grupach (systemy rozmawiają z AI i ze sobą; AI robi pracę w systemach)
+// → diagnoza i plan → formularz → FAQ.
+//
+// Grafiki: public/kazdy-system/g/, generowane z kitu systemów filmu
+// (~/filmy/lets-kazdy-system/strona/build.py render). Film z napisami
+// w wersji na stronę: public/kazdy-system/film-kazdy-system.mp4 (1080p, 31 MB),
+// źródło ~/filmy/lets-kazdy-system/film/renders/kazdy-system-1080p-napisy.mp4.
+// Przykład jest fikcyjny (Okna Brzozowski, OknoPlan, pan Nowak).
+//
+// Strony nie ma w menu ani w mapie strony. Wchodzi się z posta na LinkedIn
+// i z kart na /automatyzacje-integracje i /lets-shift (KartaKazdySystem).
+// UTM-y z adresu i ?z= (karta, z której kliknięto) dopisują się do źródła
+// zgłoszenia skryptem na końcu strony. Podgląd po wysłaniu: /kazdy-system?sukces=1
+//
+// DO POTWIERDZENIA
+//   1. Z którymi systemami połączenie jest sprawdzone (Sztab, d-erp).
+//   2. FAQ „Co z bezpieczeństwem danych?”: zakres dostępu AI w systemie
+//      ustalany z klientem przed startem.
+//   3. „Bezpłatna diagnoza” tutaj, „Bezpłatna konsultacja” na reszcie
+//      serwisu (Sztab, d-pierwszy-krok).
+import LaBase from '../layouts/LaBase.astro';
+import GcFaq from '../components/GcFaq.astro';
+import Styl from '../components/usluga/Styl.astro';
+import Anim from '../components/usluga/Anim.astro';
+import Loga from '../components/usluga/Loga.astro';
+import Kontakt from '../components/usluga/Kontakt.astro';
+import { HI, SYGNET } from '../components/usluga/ikony';
+
+const title = "Podłączymy do AI każdy system — Let's automate";
+const description = 'Stary ERP, program branżowy albo portal dostawcy, lokalnie w biurze albo w chmurze. Podłączamy go do sztucznej inteligencji i łączymy z resztą firmy, bez wymiany systemu. Bezpłatna diagnoza kończy się planem działania z ceną pierwszego etapu.';
+const ZRODLO = 'Bezpłatna diagnoza · Każdy system';
+const dwa = (n: number) => String(n).padStart(2, '0');
+const K = '/kazdy-system';
+
+// Scenariusze z grafikami z kitu systemów filmu (ta sama fikcyjna firma:
+// Okna Brzozowski). Pierwsza karta w grupie szeroka.
+const ROZMAWIAJA = [
+  { f: 'czat', alt: 'Claude odpowiada na pytanie o zamówienie danymi z programu produkcyjnego OknoPlan',
+    t: 'Handlowiec pyta czat o zamówienie',
+    dzis: 'Dzwoni na halę, żeby sprawdzić termin i wymiary, i czeka, aż ktoś zajrzy do programu produkcyjnego.',
+    po: 'Pyta ChatGPT albo Claude. Odpowiedź przychodzi prosto z programu produkcyjnego, z terminem i wymiarami każdej pozycji.' },
+  { f: 'oferta', alt: 'Oferta złożona z danych z programu cenowego, ERP i programu produkcyjnego',
+    t: 'Oferta z trzech programów naraz',
+    dzis: 'Handlowiec przepisuje ceny z cennika, sprawdza stany w ERP i kopiuje rysunek z programu produkcyjnego.',
+    po: 'AI składa ofertę z danych w tych programach, razem z rysunkiem i terminem. Handlowiec ją czyta i wysyła.' },
+  { f: 'dostawa', alt: 'Odpowiedź dla klienta z numerem przesyłki, przygotowana z danych magazynu i panelu kuriera',
+    t: 'Klient pyta, kiedy dojadą okna',
+    dzis: 'Biuro sprawdza magazyn, potem panel kuriera i dopiero wtedy odpisuje.',
+    po: 'Odpowiedź z numerem przesyłki czeka gotowa w skrzynce. Wystarczy ją wysłać.' },
+];
+const PRACUJA = [
+  { f: 'faktura', alt: 'Faktura z maila wpisana do programu księgowego w Accessie i czekająca na zatwierdzenie',
+    t: 'Faktura z maila sama w programie księgowym',
+    dzis: 'Ktoś otwiera PDF, przepisuje pozycje do programu księgowego w Accessie i porównuje je z zamówieniem.',
+    po: 'Appto wpisuje fakturę, sprawdza ją z zamówieniem i zostawia księgowej do zatwierdzenia.' },
+  { f: 'braki', alt: 'Braki w terminalu magazynu i gotowy koszyk w portalu hurtowni czekający na zatwierdzenie',
+    t: 'Braki w magazynie zamawiają się same',
+    dzis: 'Magazynier przegląda stany w terminalu, a zakupowiec klika pozycje w portalu hurtowni.',
+    po: 'Kiedy kończy się towar na zlecenia z przyszłego tygodnia, koszyk w portalu jest gotowy. Zakupowiec tylko zatwierdza.' },
+  { f: 'cennik', alt: 'Nowy cennik dostawcy wpisany do programu cenowego i wiadomość dla handlowców o ofertach do przeliczenia',
+    t: 'Nowy cennik dostawcy bez przepisywania',
+    dzis: 'Ktoś przenosi zmiany z Excela do programu z cennikiem, a handlowcy dowiadują się o nich po fakcie.',
+    po: 'Ceny w programie zmieniają się same, a handlowcy od razu wiedzą, które wysłane oferty przeliczyć.' },
+];
+const GRUPY = [
+  { id: 'rozmawiaja', t: 'Systemy rozmawiają z AI i ze sobą', d: 'Dane ze starego programu trafiają do czatu i do dokumentów, które dziś ktoś składa ręcznie.', k: ROZMAWIAJA },
+  { id: 'pracuja', t: 'AI robi pracę w systemach', d: 'Wpisuje dane i przygotowuje zamówienia w programach, w których dziś klikają ludzie. Decyzja zostaje przy człowieku.', k: PRACUJA },
+];
+
+// Przebieg od formularza do planu. Ostatni krok to wynik, po który klient przychodzi.
+const KROKI = [
+  { t: 'Formularz', d: 'Kontakt i nazwa systemu, który chcecie podłączyć. Wystarczy jedno zdanie.', kiedy: 'minuta' },
+  { t: 'Dzwoni Piotr', d: 'Pyta o system i o pracę, która dziś się wokół niego kręci. Kiedy nie umiemy pomóc, mówi to od razu.', kiedy: 'w 1 dzień roboczy',
+    os: { f: '/piotr-avatar.jpg', n: 'Piotr Wojciuk', r: 'New Business Lead' } },
+  { t: 'Diagnoza', d: 'Przechodzimy przez Wasze systemy: gdzie leżą dane, kto je przepisuje i dokąd. Bez dostępu do systemów, wystarczy rozmowa.', kiedy: 'w terminie, który Wam pasuje' },
+  { t: 'Plan działania z ceną', d: 'Który system podłączamy pierwszy, jaka praca z niego znika i ile kosztuje pierwszy etap. Kwota stała.', kiedy: 'po diagnozie', mocny: true },
+];
+
+const faq = [
+  {
+    q: 'Czy musimy wymienić albo zaktualizować system?',
+    a: 'Zwykle nie. Zaczynamy od wersji, którą macie, także jeśli ma kilkanaście lat. Jeśli na diagnozie wyjdzie, że któryś program taniej jest wymienić, powiemy to wprost.',
+  },
+  {
+    q: 'Producent mówi, że integracji nie ma. Czy to ma sens?',
+    a: 'Tak. Od takich systemów zaczynamy najczęściej, bo wokół nich najwięcej pracy idzie na przepisywanie. Na diagnozie sprawdzamy Wasz konkretny program i mówimy, czy i jak go podłączymy.',
+  },
+  {
+    q: 'Nasz program działa tylko na komputerach w biurze. Czy to przeszkoda?',
+    a: 'Nie. Podłączamy systemy działające lokalnie, na serwerze albo na pojedynczym komputerze w biurze, i systemy w chmurze. Sposób ustalamy po diagnozie, razem z osobą, która u Was odpowiada za IT.',
+  },
+  {
+    q: 'Czy musimy korzystać z Appto?',
+    a: 'Nie. System podłączamy do Appto albo do modeli, z których już korzystacie, np. ChatGPT albo Claude. Appto przydaje się, kiedy z AI ma korzystać cała firma, a ludzie nie mają uczyć się pisania promptów.',
+  },
+  {
+    q: 'Co z bezpieczeństwem danych?',
+    a: 'Pracujemy zgodnie z RODO, a NDA podpisujemy także przed samą diagnozą, jeśli tego potrzebujecie. Do diagnozy nie potrzebujemy dostępu do żadnego systemu. Przed startem ustalamy z Wami, co AI może w systemie odczytać i co może w nim zrobić.',
+  },
+  {
+    q: 'Ile to kosztuje?',
+    a: 'Diagnoza jest bezpłatna. W planie działania wyceniamy pierwszy etap kwotą stałą, znaną przed startem. Każdy kolejny etap też ma cenę, zanim go zaczniemy.',
+  },
+  {
+    q: 'Czy diagnoza zobowiązuje do współpracy?',
+    a: 'Nie. Plan zostaje u Was. Możecie go zrealizować z własnym zespołem albo z inną firmą.',
+  },
+];
+
+const kanon = new URL(K, Astro.site).href;
+const dane = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Service',
+      '@id': `${kanon}#usluga`,
+      name: 'Podłączenie systemów firmy do sztucznej inteligencji',
+      serviceType: 'Integracja systemów firmowych z AI',
+      url: kanon,
+      description: 'Let’s automate podłącza do sztucznej inteligencji systemy firmy działające lokalnie i w chmurze: ERP, programy branżowe, portale dostawców, także te bez integracji. Pierwszy krok to bezpłatna diagnoza zakończona planem działania z ceną pierwszego etapu.',
+      provider: { '@id': new URL('/#organizacja', Astro.site).href },
+      areaServed: { '@type': 'Country', name: 'Polska' },
+    },
+    {
+      '@type': 'VideoObject',
+      '@id': `${kanon}#film`,
+      name: 'Każdy system — Let’s automate',
+      description: 'Jak producent okien podłączył do AI program produkcyjny, którego przez piętnaście lat nie dało się podłączyć do niczego.',
+      thumbnailUrl: new URL(`${K}/plakat.jpg`, Astro.site).href,
+      contentUrl: new URL(`${K}/film-kazdy-system.mp4`, Astro.site).href,
+      uploadDate: '2026-11-03',
+      duration: 'PT2M25S',
+      inLanguage: 'pl',
+    },
+    {
+      '@type': 'FAQPage',
+      '@id': `${kanon}#faq`,
+      mainEntity: faq.map((f) => ({
+        '@type': 'Question',
+        name: f.q,
+        acceptedAnswer: { '@type': 'Answer', text: f.a },
+      })),
+    },
+  ],
+};
+---
+<LaBase topbar={false} title={title} description={description} ogImage="/og/kazdy-system.jpg" ctaHref="#formularz" ctaLabel="Umów diagnozę" nav={null}>
+<script type="application/ld+json" is:inline set:html={JSON.stringify(dane)} slot="head"></script>
+<style is:global slot="head">
+  /* =====================================================================
+     HERO · plansza modułu Kontakt jak na /darmowa-konsultacja
+     ===================================================================== */
+  .zg{padding:0 var(--ram);scroll-margin-top:84px}
+  .zg .kt-in{--kp:clamp(40px,4.4vw,64px);grid-template-columns:minmax(0,4.8fr) minmax(0,5.4fr) minmax(0,2.1fr)}
+  @media (max-width:1180px){ .zg .kt-in{grid-template-columns:minmax(0,1fr) minmax(0,1.3fr) minmax(0,0.5fr)} }
+  .zg .hi{display:block;flex-shrink:0;fill:currentColor}
+  .zg .kt-os img{object-position:50% 14%}
+  .zg .kt-os figcaption{left:18px;right:14px}
+  .zg .kt-os figcaption span{font-size:12.5px}
+  .zg-h1{margin:0;font-size:clamp(34px,3.3vw,50px);line-height:1.02;letter-spacing:-0.045em;font-weight:700;color:#ffffff;text-wrap:balance}
+  .zg-h1 span{color:var(--ziel)}
+  .zg .kt-lewa .v3-sub{max-width:450px}
+  .zg-film{display:inline-flex;align-items:center;gap:12px;margin-top:clamp(22px,2.2vw,30px);padding:6px 16px 6px 6px;border-radius:999px;background:rgba(255,255,255,0.07);box-shadow:inset 0 0 0 1px rgba(255,255,255,0.14);font-size:14.5px;font-weight:650;color:#ffffff;transition:background .18s}
+  .zg-film:hover{background:rgba(255,255,255,0.13)}
+  .zg-film i{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--ziel)}
+  .zg-film i svg{display:block;width:12px;height:12px;margin-left:2px;fill:var(--ink)}
+  .zg-film small{font-size:13px;font-weight:500;color:rgba(255,255,255,0.6)}
+  .zg .kt-karta h2{margin:0 0 22px;font-size:clamp(22px,1.9vw,26px);font-weight:700;letter-spacing:-0.025em;line-height:1.15;color:#ffffff}
+  .zg-kroki{margin:18px 0 0;padding:0;list-style:none;counter-reset:k}
+  .zg-kroki li{display:grid;grid-template-columns:28px minmax(0,1fr);gap:10px;align-items:baseline;padding:10px 0;border-top:1px solid rgba(255,255,255,0.14);font-size:14.5px;line-height:1.5;color:rgba(255,255,255,0.72)}
+  .zg-kroki li::before{counter-increment:k;content:"0" counter(k);font-size:12.5px;font-weight:650;color:var(--ziel)}
+  .zg-kroki b{color:#ffffff}
+  @media (max-width:1000px){ .zg .kt-karta h2{font-size:22px} }
+
+  .v3 > .v3-sek{padding-top:clamp(72px,8.5vw,128px);padding-bottom:clamp(72px,8.5vw,128px)}
+  .v3-h2.sr{font-size:clamp(32px,3.8vw,56px)}
+
+  /* =====================================================================
+     PROBLEM · dwa kadry z filmu, tekst obok, układ na zmianę
+     ===================================================================== */
+  .pr{display:grid;gap:clamp(64px,8vw,120px)}
+  .pr-w{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6.4fr);gap:clamp(32px,5vw,88px);align-items:center}
+  .pr-w.odw{grid-template-columns:minmax(0,6.4fr) minmax(0,5fr)}
+  .pr-w.odw .pr-t{order:2}
+  .pr-t .v3-sub{margin-top:22px}
+  .pr-t .v3-sub + .v3-sub{margin-top:14px}
+  .pr-t b{color:var(--t1);font-weight:650}
+  .pr-cyt{display:block;margin-top:24px;padding-left:16px;border-left:3px solid var(--burs);font-size:clamp(17px,1.4vw,19px);line-height:1.45;letter-spacing:-0.012em;color:var(--t1);text-wrap:pretty}
+  .pr-cyt s{text-decoration:none;font-family:var(--mono);font-size:.92em;padding:1px 6px;border-radius:5px;background:rgba(240,163,58,0.18);color:var(--burs-c)}
+  .kadr{position:relative;margin:0;border-radius:16px;overflow:hidden;background:#ECEEE8;box-shadow:0 0 0 1px rgba(15,26,20,0.08),0 40px 80px -48px rgba(8,26,17,0.55)}
+  .kadr img{display:block;width:100%;height:auto;aspect-ratio:16/10;object-fit:cover}
+  .kadr figcaption{position:absolute;left:12px;bottom:12px;padding:5px 10px;border-radius:999px;background:rgba(7,20,13,0.78);font-size:12px;font-weight:600;color:rgba(255,255,255,0.86);backdrop-filter:blur(6px)}
+  @media (max-width:900px){
+    .pr-w,.pr-w.odw{grid-template-columns:1fr}
+    .pr-w.odw .pr-t{order:0}
+  }
+
+  /* =====================================================================
+     FILM · ciemna scena, odtwarzacz na całą szerokość treści
+     ===================================================================== */
+  #film{scroll-margin-top:24px}
+  .fm-gl{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:20px 48px}
+  .fm-gl .v3-sub{max-width:520px}
+  .fm-ok{position:relative;margin-top:clamp(36px,4vw,56px);border-radius:18px;overflow:hidden;background:#000;box-shadow:0 0 0 1px rgba(255,255,255,0.1),0 60px 120px -60px rgba(0,205,119,0.35)}
+  .fm-ok video{display:block;width:100%;height:auto;aspect-ratio:16/9;background:#000}
+  .fm-dol{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:14px 32px;margin-top:22px;font-size:14.5px;color:rgba(255,255,255,0.62)}
+  .fm-dol a{display:inline-flex;align-items:center;gap:8px;font-weight:700;color:var(--ziel)}
+  .fm-dol a svg{display:block;width:14px;height:14px;fill:currentColor;transition:transform .18s}
+  .fm-dol a:hover svg{transform:translateX(3px)}
+
+  /* =====================================================================
+     SCENARIUSZE · grafiki z kitu filmu, pary Dziś / Po; pierwsza karta w grupie szeroka
+     ===================================================================== */
+  .zm{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(16px,2vw,28px);margin-top:clamp(20px,2vw,28px)}
+  .zg2{margin-top:clamp(52px,6vw,88px)}
+  .zg2-gl{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 24px;padding-bottom:16px;border-bottom:1px solid var(--linia)}
+  .zg2-gl h3{margin:0;font-size:clamp(22px,2vw,28px);font-weight:700;letter-spacing:-0.03em}
+  .zg2-gl p{margin:0;max-width:560px;font-size:15.5px;line-height:1.55;color:var(--t2)}
+  .zm-dob{margin:clamp(40px,4vw,56px) 0 0;max-width:760px;font-size:16.5px;line-height:1.6;color:var(--t2)}
+  .zm-dob b{color:var(--t1);font-weight:650}
+  .zm-k{display:flex;flex-direction:column;border-radius:20px;overflow:hidden;background:#ffffff;box-shadow:0 0 0 1px rgba(15,26,20,0.07),0 30px 60px -50px rgba(8,26,17,0.5)}
+  .zm-k img{display:block;width:100%;height:auto;aspect-ratio:16/10;object-fit:cover;background:#ECEEE8;border-bottom:1px solid var(--linia2)}
+  .zm-tx{display:flex;flex-direction:column;padding:clamp(22px,2.4vw,32px)}
+  .zm-k h3{margin:0;font-size:clamp(20px,1.8vw,24px);font-weight:700;letter-spacing:-0.025em;line-height:1.15}
+  .zm-pp{display:grid;gap:14px;margin:18px 0 0}
+  .zm-pp dt{display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:700;color:var(--burs-c)}
+  .zm-pp dt::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--burs)}
+  .zm-pp .po dt{color:var(--ziel-c)}
+  .zm-pp .po dt::before{background:var(--ziel)}
+  .zm-pp dd{margin:4px 0 0;font-size:15px;line-height:1.55;color:var(--t2);text-wrap:pretty}
+  .zm-pp .po dd{color:var(--t1)}
+  .zm-k.szer{grid-column:1 / -1;flex-direction:row}
+  .zm-k.szer img{width:62%;flex-shrink:0;border-bottom:0;border-right:1px solid var(--linia2)}
+  .zm-k.szer .zm-tx{justify-content:center;padding:clamp(28px,3.2vw,48px)}
+  .zm-k.szer h3{font-size:clamp(24px,2.3vw,32px)}
+  .zm-k.szer .zm-pp dd{font-size:16px}
+  .zm.gra .zm-k{opacity:0;transform:translateY(14px)}
+  .zm.gra.on .zm-k{opacity:1;transform:none;transition:opacity .55s ease calc(var(--i) * .1s),transform .55s cubic-bezier(.2,.7,.2,1) calc(var(--i) * .1s)}
+  @media (max-width:980px){
+    .zm{grid-template-columns:1fr}
+    .zm-k.szer{flex-direction:column}
+    .zm-k.szer img{width:100%;border-right:0;border-bottom:1px solid var(--linia2)}
+  }
+
+  /* =====================================================================
+     DIAGNOZA · kroki w pionie, obok kartka planu
+     ===================================================================== */
+  .dg{display:grid;grid-template-columns:minmax(0,6fr) minmax(0,5fr);gap:clamp(36px,6vw,104px);align-items:start;margin-top:clamp(44px,5vw,72px)}
+  .dg-k{margin:0;padding:0;list-style:none}
+  .dg-k li{position:relative;display:grid;grid-template-columns:40px minmax(0,1fr);gap:20px;padding-bottom:34px}
+  .dg-k li:last-child{padding-bottom:0}
+  .dg-k li::before{content:"";position:absolute;left:19.5px;top:46px;bottom:6px;width:1px;background:repeating-linear-gradient(180deg,rgba(255,255,255,0.3) 0 5px,transparent 5px 11px)}
+  .dg-k li:last-child::before{display:none}
+  .dg-n{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,0.08);box-shadow:inset 0 0 0 1px rgba(255,255,255,0.18);font-size:14px;font-weight:700;color:#ffffff}
+  .dg-k li.mocny .dg-n{background:var(--ziel);box-shadow:none;color:var(--ink)}
+  .dg-k h3{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;margin:7px 0 0;font-size:clamp(19px,1.7vw,23px);font-weight:700;letter-spacing:-0.025em;line-height:1.15;color:#ffffff}
+  .dg-czas{display:inline-flex;align-items:center;gap:6px;padding:4px 11px 4px 9px;border-radius:999px;background:rgba(255,255,255,0.08);font-size:12.5px;font-weight:600;letter-spacing:0;color:rgba(255,255,255,0.72)}
+  .dg-czas svg{display:block;width:13px;height:13px;fill:var(--ziel)}
+  .dg-k li.mocny .dg-czas{background:var(--ziel);color:var(--ink)}
+  .dg-k li.mocny .dg-czas svg{fill:var(--ink)}
+  .dg-os{display:flex;align-items:center;gap:10px;margin-top:12px;font-size:13.5px;line-height:1.3;color:rgba(255,255,255,0.6)}
+  .dg-os img{flex-shrink:0;width:32px;height:32px;border-radius:50%;object-fit:cover;object-position:50% 14%}
+  .dg-os b{display:block;font-weight:650;color:#ffffff}
+  .dg-k p{margin:10px 0 0;max-width:520px;font-size:15.5px;line-height:1.6;color:rgba(255,255,255,0.68);text-wrap:pretty}
+  /* kartka planu */
+  .dg-plan{position:sticky;top:110px}
+  .dg-kar{padding:20px 22px 18px;border-radius:4px;background:#fffdf8;color:#141a16;font-size:13px;line-height:1.4;box-shadow:0 40px 70px -36px rgba(0,0,0,0.85);transform:rotate(-1.2deg)}
+  .dg-kar-gl{display:flex;justify-content:space-between;gap:8px;padding-bottom:8px;border-bottom:1px solid rgba(15,26,20,0.12);font-size:11.5px;color:#7a827c}
+  .dg-kar-gl span{display:inline-flex;align-items:center;gap:6px;font-weight:650;color:#141a16}
+  .dg-kar-gl svg{display:block;width:11px;height:11px;fill:var(--ziel)}
+  .dg-kar b.t{display:block;margin-top:12px;font-size:20px;font-weight:700;letter-spacing:-0.025em}
+  .dg-kar small{display:block;margin-top:2px;font-size:11.5px;color:#7a827c}
+  .dg-kar ol{margin:12px 0 0;padding:0;list-style:none}
+  .dg-kar li{display:grid;grid-template-columns:26px minmax(0,1fr);align-items:baseline;padding:8px 0 8px 9px;border-top:1px solid rgba(15,26,20,0.08);font-weight:600}
+  .dg-kar li span{display:block;margin-top:2px;font-size:11.5px;font-weight:400;color:#7a827c}
+  .dg-kar li.e1{box-shadow:inset 2px 0 0 var(--ziel)}
+  .dg-kar li em{font-style:normal;font-family:var(--mono);font-size:11px;color:var(--ziel-c)}
+  .dg-kar-cena{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-top:10px;padding-top:12px;border-top:1.5px solid #141a16;font-size:12px;color:#7a827c}
+  .dg-kar-cena b{font-size:15px;font-weight:700;color:#141a16;background:linear-gradient(transparent 58%, rgba(0,205,119,0.45) 58%)}
+  .dg-plan p{margin:24px 0 0;font-size:14px;line-height:1.55;color:rgba(255,255,255,0.6)}
+  @media (max-width:980px){
+    .dg{grid-template-columns:1fr}
+    .dg-plan{position:static;max-width:420px}
+  }
+
+  #kontakt{padding-bottom:clamp(56px,7vw,96px)}
+</style>
+
+<div class="v3">
+<Styl />
+<Anim />
+
+<!-- ============ 1 · HERO Z FORMULARZEM ============ -->
+<section id="formularz" class="zg kt-ciemny">
+<div class="kt-in v3-ziarno">
+<div class="kt-lewa">
+<h1 class="zg-h1">Podłączymy do AI system, którego <span>nie dało się podłączyć do niczego</span></h1>
+<p class="v3-sub jasny">Stary ERP, program branżowy albo portal dostawcy. Lokalnie, na serwerze w biurze, albo w chmurze. Podłączamy go do sztucznej inteligencji i do reszty firmy, bez wymiany systemu i bez miesięcy czekania na integrację.</p>
+<a class="zg-film" href="#film"><i aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3 1.8v12.4a.8.8 0 0 0 1.2.7l10.3-6.2a.8.8 0 0 0 0-1.4L4.2 1.1A.8.8 0 0 0 3 1.8z"/></svg></i>Zobaczcie film <small>2:24, z napisami</small></a>
+</div>
+
+<div class="kt-karta" data-anim>
+<form class="kt-f" data-zg-form data-zrodlo={`${ZRODLO} · ${Astro.url.pathname} · hero`} novalidate>
+<h2>Umówcie bezpłatną diagnozę</h2>
+<div class="kt-2">
+<div class="kt-pole">
+<label class="kt-lab" for="zg-email">E-mail <span class="req">*</span></label>
+<div class="kt-ramka"><svg class="hi" viewBox="0 0 16 16" aria-hidden="true" set:html={HI['envelope']}></svg><input class="kt-inp" id="zg-email" name="email" type="email" inputmode="email" autocomplete="email" placeholder="jan@firma.pl" aria-describedby="zg-err-email"></div>
+<div class="kt-err" id="zg-err-email"></div>
+</div>
+<div class="kt-pole">
+<label class="kt-lab" for="zg-tel">Telefon <span class="req">*</span></label>
+<div class="kt-ramka kt-tel">
+<span class="kt-kier"><select name="kierunkowy" aria-label="Numer kierunkowy"><option value="+48">+48</option><option value="+49">+49</option><option value="+44">+44</option><option value="+380">+380</option><option value="+420">+420</option><option value="+1">+1</option></select><svg class="hi" viewBox="0 0 16 16" aria-hidden="true" set:html={HI['chevron-down']}></svg></span>
+<i aria-hidden="true"></i>
+<input class="kt-inp" id="zg-tel" name="telefon" type="tel" inputmode="tel" autocomplete="tel-national" placeholder="571 000 000" aria-describedby="zg-err-tel">
+</div>
+<div class="kt-err" id="zg-err-tel"></div>
+</div>
+</div>
+<div class="kt-blok kt-pole">
+<label class="kt-lab" for="zg-msg">Jaki system chcecie podłączyć? <span class="req">*</span></label>
+<div class="kt-ramka kt-ta"><textarea class="kt-inp" id="zg-msg" name="wiadomosc" rows="3" placeholder="Np. program produkcyjny z 2011 roku na serwerze w biurze. Handlowcy dzwonią na halę, żeby sprawdzić termin zamówienia…" aria-describedby="zg-err-msg"></textarea></div>
+<div class="kt-err" id="zg-err-msg"></div>
+</div>
+<label class="kt-zgoda" data-zg-zgoda-row>
+<input type="checkbox" name="zgoda" data-zg-zgoda>
+<span class="kt-cb"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="#ffffff" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg></span>
+<span>Wyrażam zgodę na kontakt i przetwarzanie moich danych w celu obsługi zapytania. <a href="/polityka-prywatnosci">Polityka prywatności</a>.</span>
+</label>
+<div class="kt-hp" aria-hidden="true"><label for="zg-kk">Nie wypełniaj tego pola</label><input id="zg-kk" name="kontrola" type="text" tabindex="-1" autocomplete="off" data-1p-ignore data-lpignore="true" data-form-type="other"></div>
+<button type="submit" class="kt-btn" data-zg-submit>
+<span class="kt-btn-t" data-zg-label>Umów bezpłatną diagnozę</span>
+<span class="kt-btn-k" aria-hidden="true">
+<svg class="s1" viewBox="0 0 16 16" set:html={HI['arrow-right']}></svg>
+<svg class="s2" viewBox="0 0 16 16" set:html={HI['arrow-right']}></svg>
+<svg class="kr" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="30 100"/></svg>
+<svg class="pt" viewBox="0 0 16 16" set:html={HI['check']}></svg>
+</span>
+</button>
+<p class="kt-po">Bez zobowiązań. Odzywamy się w jeden dzień roboczy.</p>
+<div class="kt-awaria" data-zg-awaria hidden>
+<strong data-zg-awaria-t>Zgłoszenie nie doszło.</strong>
+<span data-zg-awaria-d>Wpisane dane zostały w formularzu — spróbujcie jeszcze raz za chwilę.</span>
+Możecie też napisać na <a href="mailto:hello@letsautomate.pl" data-zg-mailto>hello@letsautomate.pl</a> albo zadzwonić: <a href="tel:+48571399932">+48 571 399 932</a>.
+</div>
+</form>
+
+<div class="kt-ok" data-zg-ok role="status" tabindex="-1" hidden>
+<span class="kt-ok-ik"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#0a7a52" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5" pathLength="1"/></svg></span>
+<h3>Mamy Wasze zgłoszenie</h3>
+<p>Odezwiemy się na adres <b data-zg-echo>podany w formularzu</b> albo na podany numer. Jeśli to literówka, napiszcie na <a href="mailto:hello@letsautomate.pl" style="font-weight:700;color:#0a7a52">hello@letsautomate.pl</a>.</p>
+<ol class="zg-kroki">
+<li><span>Piotr dzwoni <b>w jeden dzień roboczy</b> i pyta o Wasz system.</span></li>
+<li><span>Umawiamy <b>diagnozę</b> w terminie, który Wam pasuje.</span></li>
+<li><span>Po diagnozie dostajecie <b>plan działania z ceną</b> pierwszego etapu.</span></li>
+</ol>
+</div>
+</div>
+
+<figure class="kt-os">
+<img src="/szymon-kita.jpg" alt="Szymon Kita, CEO Let’s automate" width="870" height="1210" fetchpriority="high" decoding="async">
+<figcaption><b>Szymon Kita</b><span>CEO Let’s automate</span></figcaption>
+</figure>
+</div>
+</section>
+<Loga />
+
+<!-- ============ 2 · PROBLEM ============ -->
+<section id="problem" class="v3-sek v3-papier">
+<div class="pr">
+<div class="pr-w" data-anim>
+<div class="pr-t">
+<h2 class="v3-h2 sr">ChatGPT nie sprawdzi stanu Waszego magazynu</h2>
+<p class="v3-sub">Napisze umowę i w minutę przeanalizuje rynek. Zapytany o termin zamówienia odpowiada, że nie ma dostępu do programu produkcyjnego.</p>
+<p class="v3-sub">Bo najważniejsze dane firmy najczęściej leżą lokalnie. W ERP, którego ekranów nikt nie odważy się ruszyć, w programie branżowym, który zna jedna osoba, w portalu hurtowni, do którego loguje się zakupowiec. <b>Każdy ma własne ekrany i własne hasła, a żaden nie jest połączony z resztą firmy.</b></p>
+</div>
+<figure class="kadr"><img src={`${K}/g/brak.jpg`} alt="ChatGPT odpowiada, że nie ma dostępu do systemu magazynowego ani do portalu hurtowni; w tle ERP, terminal magazynu i portal hurtowni" width="1600" height="1000" loading="lazy" decoding="async"></figure>
+</div>
+
+<div class="pr-w odw" data-anim>
+<div class="pr-t">
+<h2 class="v3-h2 sr">Więc ludzie przepisują</h2>
+<p class="v3-sub">Z programu do maila, z maila do Excela, z Excela z powrotem. Codziennie. Integracja to miesiące rozmów i wycena z wieloma zerami. Często kończy się odpowiedzią, że się nie da.</p>
+<span class="pr-cyt">A jedna literówka w wymiarze to okno, które nie pasuje: <s>1453</s> zamiast <s>1435</s>.</span>
+</div>
+<figure class="kadr"><img src={`${K}/g/przepisywanie.jpg`} alt="Wymiar okna przepisany z programu produkcyjnego do maila i do Excela, z literówką 1453 zamiast 1435" width="1600" height="1000" loading="lazy" decoding="async"></figure>
+</div>
+</div>
+</section>
+
+<!-- ============ 3 · FILM ============ -->
+<section id="film" class="v3-sek v3-scena v3-ziarno">
+<div class="fm-gl">
+<h2 class="v3-h2 jasny sr">Jedno zamówienie, od programu z 2011 roku do skrzynki klienta</h2>
+<p class="v3-sub jasny">Producent okien podłącza program produkcyjny do ChatGPT i Appto. Handlowiec dostaje odpowiedź z wymiarami, a klient zestawienie, zanim zdąży zadzwonić.</p>
+</div>
+<div class="fm-ok">
+<video controls playsinline preload="metadata" poster={`${K}/plakat.jpg`} width="1920" height="1080" data-film>
+<source src={`${K}/film-kazdy-system.mp4`} type="video/mp4">
+</video>
+</div>
+<div class="fm-dol">
+<span>Film ma wgrane napisy. Firma i zamówienie są przykładowe.</span>
+<a href="#formularz">Chcecie tak u siebie? Umówcie diagnozę <svg viewBox="0 0 16 16" aria-hidden="true" set:html={HI['arrow-right']}></svg></a>
+</div>
+</section>
+
+<!-- ============ 4 · SCENARIUSZE ============ -->
+<section id="zmiany" class="v3-sek">
+<div class="v8-gl">
+<h2 class="v3-h2 sr">Systemy zostają na miejscu i zaczynają mówić</h2>
+<p class="v3-sub">Sześć sytuacji z firmy z filmu. Nikt niczego nie przepisuje, a ludzie wracają do pracy, której żaden system za nich nie zrobi.</p>
+</div>
+{GRUPY.map((g) => (
+  <div class="zg2" id={g.id}>
+    <div class="zg2-gl"><h3>{g.t}</h3><p>{g.d}</p></div>
+    <div class="zm" data-anim data-gra>
+    {g.k.map((z, i) => (
+      <article class={i === 0 ? 'zm-k szer' : 'zm-k'} style={`--i:${i}`}>
+        <img src={`${K}/g/${z.f}.jpg`} alt={z.alt} width="1600" height="1000" loading="lazy" decoding="async">
+        <div class="zm-tx">
+          <h3>{z.t}</h3>
+          <dl class="zm-pp">
+            <div><dt>Dziś</dt><dd>{z.dzis}</dd></div>
+            <div class="po"><dt>Po podłączeniu</dt><dd>{z.po}</dd></div>
+          </dl>
+        </div>
+      </article>
+    ))}
+    </div>
+  </div>
+))}
+<p class="zm-dob"><b>Na tych samych danych dobudowujemy też to, czego Wasze systemy nigdy nie miały.</b> Na przykład planowanie produkcji, w którym AI układa zlecenia na liniach, a kierownik zatwierdza plan.</p>
+</section>
+
+<!-- ============ 5 · DIAGNOZA ============ -->
+<section id="diagnoza" class="v3-sek v3-scena v3-ziarno">
+<div class="v8-gl">
+<h2 class="v3-h2 jasny sr">Bezpłatna diagnoza kończy się planem i ceną</h2>
+<p class="v3-sub jasny">Przeglądamy Wasze systemy i wskazujemy, od czego zacząć. Plan zostaje u Was, także jeśli nie zaczniemy współpracy.</p>
+</div>
+<div class="dg">
+<ol class="dg-k">
+{KROKI.map((k, i) => (
+  <li class={k.mocny ? 'mocny' : ''}>
+    <span class="dg-n">{dwa(i + 1)}</span>
+    <div>
+      <h3>{k.t}<span class="dg-czas"><svg viewBox="0 0 16 16" aria-hidden="true" set:html={HI['clock']}></svg>{k.kiedy}</span></h3>
+      {k.os && <span class="dg-os"><img src={k.os.f} alt="" width="32" height="32" loading="lazy" decoding="async"><span><b>{k.os.n}</b>{k.os.r}</span></span>}
+      <p>{k.d}</p>
+    </div>
+  </li>
+))}
+</ol>
+<div class="dg-plan" aria-hidden="true">
+<div class="dg-kar">
+<div class="dg-kar-gl"><span><svg viewBox="0 0 40 41" set:html={SYGNET}></svg>Let’s automate</span>po diagnozie</div>
+<b class="t">Plan działania</b>
+<small>Okna Brzozowski · OknoPlan, KOMPAS ERP, CENNIK+, Księga FK, Profil24</small>
+<ol>
+<li class="e1"><em>01</em><div>Zamówienia z OknoPlanu w czacie handlowców<span>termin i wymiary bez telefonu na halę</span></div></li>
+<li class="e1"><em>02</em><div>Oferty z cennika, stanów i rysunków<span>handlowiec czyta i wysyła</span></div></li>
+<li><em>03</em><div>Faktury zakupowe z maila w Księdze FK<span>księgowa tylko zatwierdza</span></div></li>
+<li><em>04</em><div>Koszyk w Profil24 z braków na magazynie</div></li>
+</ol>
+<div class="dg-kar-cena"><span>Etap 1 · kroki 01–02</span><b>cena stała przed startem</b></div>
+</div>
+<p>Przykład planu dla firmy z filmu. Wasz powstaje z Waszych systemów.</p>
+</div>
+</div>
+</section>
+
+<!-- ============ 6 · FORMULARZ ============ -->
+<Kontakt
+  tytul="Który system podłączymy pierwszy?"
+  lead="Zostawcie kontakt i nazwę systemu. Piotr oddzwoni w jeden dzień roboczy i umówi bezpłatną diagnozę."
+  zrodlo={ZRODLO}
+  pytanie="Jaki system chcecie podłączyć?"
+  podpowiedz="Np. stary ERP na serwerze w biurze, z którego co tydzień przepisujemy stany do Excela…"
+  osoba={{ foto: '/piotr-wojciuk.jpg', w: 1002, h: 1100, imie: 'Piotr Wojciuk', rola: 'New Business Lead, oddzwania po zgłoszeniu' }}
+  po="Bezpłatnie i bez zobowiązań. Odzywamy się w jeden dzień roboczy."
+/>
+
+<!-- ============ 7 · FAQ ============ -->
+<GcFaq heading="Zanim wyślecie formularz" ctaLabel="Zadajcie nam swoje →" items={faq} />
+</div>
+
+{/* SKĄD PRZYSZEDŁ KLIENT: UTM-y z linku (post na LinkedIn) i ?z= (karta na
+     innej stronie) dopisują się do data-zrodlo obu formularzy, zanim ruszą
+     ich skrypty (te są modułami). Zapis w sessionStorage, żeby przetrwały
+     przeładowanie. Komentarz stoi tutaj, bo treść skryptu inline idzie do HTML-a. */}
+<script is:inline>
+  (function(){
+    var K = ['utm_source','utm_medium','utm_campaign','utm_content'], u = {}, z = '';
+    try {
+      var p = new URLSearchParams(location.search);
+      K.forEach(function(k){ var v = (p.get(k) || '').replace(/[^\w.-]/g, '').slice(0, 40); if(v) u[k] = v; });
+      z = (p.get('z') || '').toLowerCase().replace(/[^a-z0-9-]/g, '').slice(0, 40);
+      if(Object.keys(u).length) sessionStorage.setItem('ks-utm', JSON.stringify(u));
+      else u = JSON.parse(sessionStorage.getItem('ks-utm') || '{}') || {};
+    } catch(e){}
+    var d = '';
+    var w = K.map(function(k){ return u[k]; }).filter(Boolean);
+    if(w.length) d += ' · utm ' + w.join('/');
+    if(z) d += ' · karta ' + z;
+    if(!d) return;
+    document.querySelectorAll('[data-zrodlo]').forEach(function(f){ f.dataset.zrodlo += d; });
+  })();
+</script>
+
+<script>
+  var redukcja = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function pomiar(dane){
+    try {
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push(dane);
+      document.dispatchEvent(new CustomEvent('la:pomiar', { detail: dane }));
+    } catch(e){}
+  }
+
+  // ---- Formularz w hero ----
+  // Kopia formularza z /darmowa-konsultacja: ta sama umowa z /api/kontakt
+  // (e-mail, telefon i opis wymagane, pułapka na boty, 503 = formularz
+  // wyłączony) i te same zdarzenia pomiaru. UTM-y z linku w poście są
+  // w data-zrodlo (skrypt inline wyżej).
+  // DO ZDARZEŃ NIE WCHODZI TREŚĆ FORMULARZA ANI DANE KONTAKTOWE.
+  (function(){
+    var form = document.querySelector('[data-zg-form]');
+    if(!form) return;
+    var ENDPOINT = '/api/kontakt', MAIL = 'hello@letsautomate.pl';
+    var karta = form.parentNode, okBox = karta.querySelector('[data-zg-ok]');
+    var btn = form.querySelector('[data-zg-submit]'), etykieta = form.querySelector('[data-zg-label]');
+    var zgoda = form.querySelector('[data-zg-zgoda]'), wierszZgody = form.querySelector('[data-zg-zgoda-row]');
+    var awaria = form.querySelector('[data-zg-awaria]');
+    var zrodlo = form.dataset.zrodlo || '';
+    var wysylam = false, zaczety = false;
+    function zdarzenie(nazwa, powod){
+      var dane = { event: nazwa, usluga: zrodlo, strona: location.pathname };
+      if(powod) dane.powod = powod;
+      pomiar(dane);
+    }
+    var REGULY = [
+      { pole: 'email', msg: 'Adres e-mail wygląda na niepełny.', ok: function(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v); } },
+      { pole: 'telefon', msg: 'Numer telefonu ma za mało cyfr.', ok: function(v){ return v.replace(/\D/g, '').length >= 9; } },
+      { pole: 'wiadomosc', msg: 'To pole jest wymagane.', ok: function(v){ return v.length > 0; } }
+    ];
+    function pole(el){ return el && el.closest ? el.closest('.kt-pole') : null; }
+    function blad(el, msg){ var f = pole(el); if(!f) return; f.classList.add('err'); el.setAttribute('aria-invalid', 'true'); f.querySelector('.kt-err').textContent = msg; }
+    function dobrze(el){ var f = pole(el); if(!f) return; f.classList.remove('err'); el.removeAttribute('aria-invalid'); }
+    function sprawdz(){
+      var pierwszy = null;
+      REGULY.forEach(function(r){
+        var el = form.elements[r.pole], v = (el.value || '').trim();
+        if(v && r.ok(v)) dobrze(el);
+        else { blad(el, v ? r.msg : 'To pole jest wymagane.'); if(!pierwszy) pierwszy = el; }
+      });
+      wierszZgody.classList.toggle('err', !zgoda.checked);
+      if(!zgoda.checked && !pierwszy) pierwszy = zgoda;
+      return pierwszy;
+    }
+    form.addEventListener('input', function(e){
+      if(pole(e.target)) dobrze(e.target);
+      if(!zaczety){ zaczety = true; zdarzenie('formularz_start'); }
+    });
+    zgoda.addEventListener('change', function(){ wierszZgody.classList.toggle('err', !zgoda.checked); });
+    function telefon(){ return (form.elements.kierunkowy.value + ' ' + (form.elements.telefon.value || '').trim()).trim(); }
+    function opis(){ return (form.elements.wiadomosc.value || '').trim(); }
+    function pokazOk(bezPomiaru){
+      var echo = okBox.querySelector('[data-zg-echo]'), mail = (form.elements.email.value || '').trim();
+      if(echo && mail) echo.textContent = mail;
+      if(!bezPomiaru) zdarzenie('formularz_sukces');
+      form.hidden = true;
+      okBox.hidden = false;
+      okBox.scrollIntoView({ block: 'nearest' });
+      okBox.focus({ preventScroll: true });
+    }
+    var AWARIE = {
+      'brak-konfiguracji': ['Formularz jest chwilowo wyłączony.', 'Zgłoszenie nie zostało wysłane, a ponowna próba nic nie zmieni.'],
+      'domyslna': ['Zgłoszenie nie doszło.', 'Wpisane dane zostały w formularzu — spróbujcie jeszcze raz za chwilę.']
+    };
+    function pokazAwarie(kod){
+      zdarzenie('formularz_blad', kod || 'domyslna');
+      var tr = AWARIE[kod] || AWARIE.domyslna;
+      awaria.querySelector('[data-zg-awaria-t]').textContent = tr[0];
+      awaria.querySelector('[data-zg-awaria-d]').textContent = tr[1];
+      awaria.querySelector('[data-zg-mailto]').href = 'mailto:' + MAIL
+        + '?subject=' + encodeURIComponent('Bezpłatna diagnoza — zgłoszenie')
+        + '&body=' + encodeURIComponent('E-mail: ' + (form.elements.email.value || '').trim() + '\nTelefon: ' + telefon() + '\n\nSystem: ' + opis());
+      awaria.hidden = false;
+      awaria.scrollIntoView({ block: 'nearest' });
+    }
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      if(wysylam) return;
+      var zly = sprawdz();
+      if(zly){ zly.focus(); return; }
+      wysylam = true;
+      btn.disabled = true;
+      btn.classList.add('wysyla');
+      var napis = etykieta.textContent;
+      etykieta.textContent = 'Wysyłam…';
+      awaria.hidden = true;
+      fetch(ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({
+          email: (form.elements.email.value || '').trim(),
+          telefon: telefon(),
+          wiadomosc: opis(),
+          firma_www: form.elements.kontrola.value || '',
+          zrodlo: form.dataset.zrodlo || zrodlo
+        })
+      })
+        .then(function(r){
+          if(r.ok){
+            btn.classList.remove('wysyla');
+            btn.classList.add('wyslane');
+            etykieta.textContent = 'Wysłane';
+            return redukcja ? pokazOk() : setTimeout(pokazOk, 850);
+          }
+          return r.json().catch(function(){ return {}; }).then(function(j){ throw new Error(j.blad || 'domyslna'); });
+        })
+        .catch(function(err){
+          wysylam = false;
+          btn.disabled = false;
+          btn.classList.remove('wysyla');
+          etykieta.textContent = napis;
+          pokazAwarie(err && err.message);
+        });
+    });
+    document.querySelectorAll('a[href="#formularz"]').forEach(function(a){
+      a.addEventListener('click', function(){
+        zdarzenie('cta_klik');
+        setTimeout(function(){ if(!form.hidden) form.elements.email.focus({ preventScroll: true }); }, 450);
+      });
+    });
+    if(location.search.indexOf('sukces=1') > -1){
+      form.elements.email.value = 'jan@firma.pl';
+      pokazOk(true);
+    }
+  })();
+
+  // ---- Film: start, połowa i koniec do pomiaru ----
+  (function(){
+    var v = document.querySelector('[data-film]');
+    if(!v) return;
+    var byly = {};
+    function raz(nazwa){ if(byly[nazwa]) return; byly[nazwa] = true; pomiar({ event: nazwa, film: 'kazdy-system', strona: location.pathname }); }
+    v.addEventListener('play', function(){ raz('film_start'); });
+    v.addEventListener('timeupdate', function(){ if(v.duration && v.currentTime / v.duration > 0.5) raz('film_polowa'); });
+    v.addEventListener('ended', function(){ raz('film_koniec'); });
+  })();
+</script>
+</LaBase>
