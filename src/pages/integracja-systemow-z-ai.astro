@@ -1,5 +1,6 @@
 ---
-// KAŻDY SYSTEM — /kazdy-system
+// INTEGRACJA SYSTEMÓW Z AI — /integracja-systemow-z-ai (do 3.11.2026 /kazdy-system,
+// stary adres przekierowuje tutaj: vercel.json)
 // Landing pod film „Każdy system” (LinkedIn Szymona, 3.11.2026). Strona
 // konwersji jak /darmowa-konsultacja: formularz w hero z portretem Szymona,
 // formularz na końcu nad FAQ (moduł Kontakt). Pierwszy krok nazywa się tu
@@ -16,10 +17,10 @@
 // źródło ~/filmy/lets-kazdy-system/film/renders/kazdy-system-1080p-napisy.mp4.
 // Przykład jest fikcyjny (Okna Brzozowski, OknoPlan, pan Nowak).
 //
-// Strony nie ma w menu ani w mapie strony. Wchodzi się z posta na LinkedIn
+// Strony nie ma w menu, jest w mapie strony. Wchodzi się z posta na LinkedIn
 // i z kart na /automatyzacje-integracje i /lets-shift (KartaKazdySystem).
 // UTM-y z adresu i ?z= (karta, z której kliknięto) dopisują się do źródła
-// zgłoszenia skryptem na końcu strony. Podgląd po wysłaniu: /kazdy-system?sukces=1
+// zgłoszenia skryptem na końcu strony. Podgląd po wysłaniu: /integracja-systemow-z-ai?sukces=1
 //
 // DO POTWIERDZENIA
 //   1. Z którymi systemami połączenie jest sprawdzone (Sztab, d-erp).
@@ -35,11 +36,12 @@ import Loga from '../components/usluga/Loga.astro';
 import Kontakt from '../components/usluga/Kontakt.astro';
 import { HI, SYGNET } from '../components/usluga/ikony';
 
-const title = "Podłączymy do AI każdy system — Let's automate";
-const description = 'Stary ERP, program branżowy albo portal dostawcy, lokalnie w biurze albo w chmurze. Podłączamy go do sztucznej inteligencji i łączymy z resztą firmy, bez wymiany systemu. Bezpłatna diagnoza kończy się planem działania z ceną pierwszego etapu.';
+const title = "Integracja systemów z AI: podłączymy każdy system — Let's automate";
+const description = 'Integracja systemów z AI w Let’s automate. Stary ERP, program branżowy albo portal dostawcy, lokalnie w biurze albo w chmurze. Podłączamy go do sztucznej inteligencji i łączymy z resztą firmy, bez wymiany systemu. Bezpłatna diagnoza kończy się planem działania z ceną pierwszego etapu.';
 const ZRODLO = 'Bezpłatna diagnoza · Każdy system';
 const dwa = (n: number) => String(n).padStart(2, '0');
-const K = '/kazdy-system';
+const K = '/kazdy-system';             // katalog plików w public/ (film, grafiki)
+const ADRES = '/integracja-systemow-z-ai';
 
 // Scenariusze z grafikami z kitu systemów filmu (ta sama fikcyjna firma:
 // Okna Brzozowski). Pierwsza karta w grupie szeroka.
@@ -116,14 +118,14 @@ const faq = [
   },
 ];
 
-const kanon = new URL(K, Astro.site).href;
+const kanon = new URL(ADRES, Astro.site).href;
 const dane = {
   '@context': 'https://schema.org',
   '@graph': [
     {
       '@type': 'Service',
       '@id': `${kanon}#usluga`,
-      name: 'Podłączenie systemów firmy do sztucznej inteligencji',
+      name: 'Integracja systemów z AI',
       serviceType: 'Integracja systemów firmowych z AI',
       url: kanon,
       description: 'Let’s automate podłącza do sztucznej inteligencji systemy firmy działające lokalnie i w chmurze: ERP, programy branżowe, portale dostawców, także te bez integracji. Pierwszy krok to bezpłatna diagnoza zakończona planem działania z ceną pierwszego etapu.',
@@ -168,6 +170,7 @@ const dane = {
   .zg .kt-os figcaption span{font-size:12.5px}
   .zg-h1{margin:0;font-size:clamp(34px,3.3vw,50px);line-height:1.02;letter-spacing:-0.045em;font-weight:700;color:#ffffff;text-wrap:balance}
   .zg-h1 span{color:var(--ziel)}
+  .zg-h1 small{display:block;margin-bottom:18px;font-size:15px;line-height:1.3;letter-spacing:-0.005em;font-weight:650;color:var(--ziel)}
   .zg .kt-lewa .v3-sub{max-width:450px}
   .zg-film{display:inline-flex;align-items:center;gap:12px;margin-top:clamp(22px,2.2vw,30px);padding:6px 16px 6px 6px;border-radius:999px;background:rgba(255,255,255,0.07);box-shadow:inset 0 0 0 1px rgba(255,255,255,0.14);font-size:14.5px;font-weight:650;color:#ffffff;transition:background .18s}
   .zg-film:hover{background:rgba(255,255,255,0.13)}
@@ -292,7 +295,9 @@ const dane = {
     .dg-plan{position:static;max-width:420px}
   }
 
-  #kontakt{padding-bottom:clamp(56px,7vw,96px)}
+  /* Formularz stoi między ciemną diagnozą a FAQ: jasne tło FAQ wchodzi
+     nad planszę, żeby dwie ciemne płaszczyzny się nie sklejały. */
+  #kontakt{padding-top:clamp(64px,8vw,120px);padding-bottom:clamp(56px,7vw,96px);background:#f4f8f2}
 </style>
 
 <div class="v3">
@@ -303,7 +308,7 @@ const dane = {
 <section id="formularz" class="zg kt-ciemny">
 <div class="kt-in v3-ziarno">
 <div class="kt-lewa">
-<h1 class="zg-h1">Podłączymy do AI system, którego <span>nie dało się podłączyć do niczego</span></h1>
+<h1 class="zg-h1"><small>Integracja systemów z AI</small>Podłączymy do AI system, którego <span>nie dało się podłączyć do niczego</span></h1>
 <p class="v3-sub jasny">Stary ERP, program branżowy albo portal dostawcy. Lokalnie, na serwerze w biurze, albo w chmurze. Podłączamy go do sztucznej inteligencji i do reszty firmy, bez wymiany systemu i bez miesięcy czekania na integrację.</p>
 <a class="zg-film" href="#film"><i aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3 1.8v12.4a.8.8 0 0 0 1.2.7l10.3-6.2a.8.8 0 0 0 0-1.4L4.2 1.1A.8.8 0 0 0 3 1.8z"/></svg></i>Zobaczcie film <small>2:24, z napisami</small></a>
 </div>
@@ -482,7 +487,7 @@ Możecie też napisać na <a href="mailto:hello@letsautomate.pl" data-zg-mailto>
 
 <!-- ============ 6 · FORMULARZ ============ -->
 <Kontakt
-  tytul="Który system podłączymy pierwszy?"
+  tytul="Zacznijmy od jednego systemu"
   lead="Zostawcie kontakt i nazwę systemu. Piotr oddzwoni w jeden dzień roboczy i umówi bezpłatną diagnozę."
   zrodlo={ZRODLO}
   pytanie="Jaki system chcecie podłączyć?"

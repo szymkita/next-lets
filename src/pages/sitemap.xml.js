@@ -17,6 +17,7 @@ const STRONY = [
   { u: '/systemy-procesowe', p: '0.9' },
   { u: '/systemy-dla-klientow', p: '0.9' },
   { u: '/automatyzacje-integracje', p: '0.9' },
+  { u: '/integracja-systemow-z-ai', p: '0.8' },
   { u: '/lets-up', p: '0.9' },
   { u: '/lets-shift', p: '0.9' },
   { u: '/produkty', p: '0.9' },
