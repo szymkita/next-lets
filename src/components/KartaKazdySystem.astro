@@ -1,9 +1,10 @@
 ---
 // KARTA „KAŻDY SYSTEM” — film „Każdy system” na innych stronach
 // (/automatyzacje-integracje pod „Połączenia, które robimy najczęściej”,
-// /lets-shift pod „Systemy zbierane latami”). Klik w kartę otwiera film
-// w oknie na tej samej stronie (dialog). Pod filmem link do landingu
-// /integracja-systemow-z-ai, gdzie jest formularz bezpłatnej diagnozy.
+// /lets-shift pod „Systemy zbierane latami”). Dwie akcje: „Obejrzyjcie film”
+// (i klik w plakat) otwiera film w oknie na tej samej stronie (dialog),
+// a drugi link otwiera landing /integracja-systemow-z-ai w nowej karcie.
+// Pod filmem w oknie przycisk do diagnozy, też w nowej karcie.
 // Adres filmu: src/data/film-kazdy-system.js (Mux albo plik mp4).
 import Film from './Film.astro';
 import { FILM_KAZDY_SYSTEM as F } from '../data/film-kazdy-system.js';
@@ -18,21 +19,25 @@ const {
   zrodlo = '',
 } = Astro.props;
 const href = '/integracja-systemow-z-ai' + (zrodlo ? `?z=${zrodlo}` : '');
-const ARROW = '<path fill-rule="evenodd" d="M2 8a.75.75 0 0 1 .75-.75h8.69L8.22 4.03a.75.75 0 0 1 1.06-1.06l4.5 4.5a.75.75 0 0 1 0 1.06l-4.5 4.5a.75.75 0 0 1-1.06-1.06l3.22-3.22H2.75A.75.75 0 0 1 2 8Z" clip-rule="evenodd"/>';
+const EXT = '<path d="M6.22 8.72a.75.75 0 0 0 1.06 1.06l5.22-5.22v1.69a.75.75 0 0 0 1.5 0v-3.5a.75.75 0 0 0-.75-.75h-3.5a.75.75 0 0 0 0 1.5h1.69L6.22 8.72Z"/><path d="M3.5 6.75c0-.69.56-1.25 1.25-1.25H7A.75.75 0 0 0 7 4H4.75A2.75 2.75 0 0 0 2 6.75v4.5A2.75 2.75 0 0 0 4.75 14h4.5A2.75 2.75 0 0 0 12 11.25V9a.75.75 0 0 0-1.5 0v2.25c0 .69-.56 1.25-1.25 1.25h-4.5c-.69 0-1.25-.56-1.25-1.25v-4.5Z"/>';
 const PLAY = '<path d="M3 1.8v12.4a.8.8 0 0 0 1.2.7l10.3-6.2a.8.8 0 0 0 0-1.4L4.2 1.1A.8.8 0 0 0 3 1.8z"/>';
 ---
-<button type="button" class="kks" aria-haspopup="dialog" data-kks-otworz>
-  <span class="kks-tx">
+<div class="kks-w">
+<div class="kks">
+  <div class="kks-tx">
     <span class="kks-et"><svg viewBox="0 0 16 16" aria-hidden="true" set:html={PLAY}></svg>Film, {F.czas}</span>
     <span class="kks-t">{tytul}</span>
     <span class="kks-o">{opis}</span>
-    <span class="kks-cta">Obejrzyjcie film <svg viewBox="0 0 16 16" aria-hidden="true" set:html={ARROW}></svg></span>
-  </span>
-  <span class="kks-im">
+    <span class="kks-akcje">
+      <button type="button" class="kks-btn" aria-haspopup="dialog" data-kks-otworz><svg viewBox="0 0 16 16" aria-hidden="true" set:html={PLAY}></svg>Obejrzyjcie film</button>
+      <a class="kks-lnk" href={href} target="_blank" rel="noopener">Integracja systemów z AI <svg viewBox="0 0 16 16" aria-hidden="true" set:html={EXT}></svg><span class="kks-sr">(otwiera się w nowej karcie)</span></a>
+    </span>
+  </div>
+  <button type="button" class="kks-im" aria-haspopup="dialog" aria-label="Obejrzyjcie film" data-kks-otworz>
     <img src={F.plakat} alt="" width="1600" height="900" loading="lazy" decoding="async">
     <span class="kks-play" aria-hidden="true"><svg viewBox="0 0 16 16" set:html={PLAY}></svg></span>
-  </span>
-</button>
+  </button>
+</div>
 
 <dialog class="kks-dlg" aria-label="Film: integracja systemów z AI" data-kks-dlg>
   <div class="kks-dlg-in">
@@ -40,16 +45,18 @@ const PLAY = '<path d="M3 1.8v12.4a.8.8 0 0 0 1.2.7l10.3-6.2a.8.8 0 0 0 0-1.4L4.
     <div class="kks-film"><Film mux={F.mux} mp4={F.mp4} plakat={F.plakat} tytul={F.tytul} preload="none" /></div>
     <div class="kks-dol">
       <span>Chcecie podłączyć Wasz system? Pierwszy krok to bezpłatna diagnoza.</span>
-      <a href={href}>Umówcie diagnozę <svg viewBox="0 0 16 16" aria-hidden="true" set:html={ARROW}></svg></a>
+      <a href={href + '#formularz'} target="_blank" rel="noopener">Umówcie diagnozę <svg viewBox="0 0 16 16" aria-hidden="true" set:html={EXT}></svg></a>
     </div>
   </div>
 </dialog>
+</div>
 
 <script>
-  document.querySelectorAll('[data-kks-otworz]').forEach(function(btn){
-    var dlg = btn.nextElementSibling;
-    if(!dlg || !dlg.matches('[data-kks-dlg]')) return;
-    var film = dlg.querySelector('[data-film]');
+  document.querySelectorAll('.kks-w').forEach(function(w){
+    var dlg = w.querySelector('[data-kks-dlg]');
+    var otwieracze = w.querySelectorAll('[data-kks-otworz]');
+    if(!dlg || !otwieracze.length) return;
+    var film = dlg.querySelector('[data-film]'), ostatni = otwieracze[0];
     function pomiar(nazwa){
       try {
         var dane = { event: nazwa, film: 'kazdy-system', strona: location.pathname };
@@ -57,16 +64,20 @@ const PLAY = '<path d="M3 1.8v12.4a.8.8 0 0 0 1.2.7l10.3-6.2a.8.8 0 0 0 0-1.4L4.
         document.dispatchEvent(new CustomEvent('la:pomiar', { detail: dane }));
       } catch(e){}
     }
-    btn.addEventListener('click', function(){
-      if(typeof dlg.showModal === 'function') dlg.showModal(); else dlg.setAttribute('open', '');
-      pomiar('film_okno');
-      try { var p = film && film.play && film.play(); if(p && p.catch) p.catch(function(){}); } catch(e){}
+    otwieracze.forEach(function(btn){
+      btn.addEventListener('click', function(){
+        ostatni = btn;
+        if(typeof dlg.showModal === 'function') dlg.showModal(); else dlg.setAttribute('open', '');
+        pomiar('film_okno');
+        try { var p = film && film.play && film.play(); if(p && p.catch) p.catch(function(){}); } catch(e){}
+      });
     });
     function zamknij(){ if(dlg.open) dlg.close(); }
     dlg.querySelector('[data-kks-zamknij]').addEventListener('click', zamknij);
     // klik w ciemne tło poza filmem zamyka okno
     dlg.addEventListener('click', function(e){ if(e.target === dlg) zamknij(); });
-    dlg.addEventListener('close', function(){ try { film && film.pause && film.pause(); } catch(e){} btn.focus(); });
+    dlg.addEventListener('close', function(){ try { film && film.pause && film.pause(); } catch(e){} ostatni.focus(); });
+    w.querySelector('.kks-lnk').addEventListener('click', function(){ pomiar('karta_strona'); });
     if(film){
       film.addEventListener('play', function(){ pomiar('film_start'); }, { once: true });
       film.addEventListener('ended', function(){ pomiar('film_koniec'); }, { once: true });
@@ -75,24 +86,28 @@ const PLAY = '<path d="M3 1.8v12.4a.8.8 0 0 0 1.2.7l10.3-6.2a.8.8 0 0 0 0-1.4L4.
 </script>
 
 <style>
-  .kks{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);align-items:stretch;width:100%;margin-top:clamp(36px,4vw,56px);padding:0;border:0;border-radius:22px;overflow:hidden;background:#07140d;color:#ffffff;text-align:left;font:inherit;cursor:pointer;
-    box-shadow:0 0 0 1px rgba(0,205,119,0.18),0 40px 80px -50px rgba(7,20,13,0.7);transition:box-shadow .2s}
-  .kks:hover{box-shadow:0 0 0 1px rgba(0,205,119,0.45),0 40px 80px -46px rgba(7,20,13,0.8)}
+  .kks{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);align-items:stretch;margin-top:clamp(36px,4vw,56px);border-radius:22px;overflow:hidden;background:#07140d;color:#ffffff;
+    box-shadow:0 0 0 1px rgba(0,205,119,0.18),0 40px 80px -50px rgba(7,20,13,0.7)}
   .kks-tx{display:flex;flex-direction:column;align-items:flex-start;padding:clamp(26px,3.2vw,48px)}
   .kks-et{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:650;color:#00CD77}
   .kks-et svg{width:11px;height:11px;fill:currentColor}
   .kks-t{display:block;margin-top:14px;font-size:clamp(24px,2.3vw,34px);line-height:1.08;letter-spacing:-0.035em;font-weight:700;text-wrap:balance}
   .kks-o{display:block;margin-top:14px;max-width:460px;font-size:clamp(15px,1.2vw,16.5px);line-height:1.6;color:rgba(255,255,255,0.7);text-wrap:pretty}
-  .kks-cta{display:inline-flex;align-items:center;gap:9px;margin-top:auto;padding-top:24px;font-size:15.5px;font-weight:700;color:#00CD77}
-  .kks-cta svg{width:15px;height:15px;fill:currentColor;transition:transform .18s}
-  .kks:hover .kks-cta svg{transform:translateX(4px)}
-  .kks-im{position:relative;display:block;min-height:260px;background:#0b1510}
+  .kks-akcje{display:flex;flex-wrap:wrap;align-items:center;gap:12px 22px;margin-top:auto;padding-top:26px}
+  .kks-btn{display:inline-flex;align-items:center;gap:10px;padding:12px 20px 12px 16px;border:0;border-radius:999px;background:#00CD77;color:#07140d;font:inherit;font-size:15px;font-weight:700;cursor:pointer;transition:background .18s}
+  .kks-btn:hover{background:#2ce08f}
+  .kks-btn svg{width:12px;height:12px;fill:currentColor}
+  .kks-lnk{display:inline-flex;align-items:center;gap:8px;font-size:15px;font-weight:650;color:#ffffff;text-decoration:none;border-bottom:1px solid rgba(255,255,255,0.3);padding-bottom:2px;transition:border-color .18s,color .18s}
+  .kks-lnk:hover{color:#00CD77;border-color:#00CD77}
+  .kks-lnk svg{width:14px;height:14px;fill:currentColor}
+  .kks-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  .kks-im{position:relative;display:block;min-height:260px;padding:0;border:0;background:#0b1510;cursor:pointer}
   .kks-im img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.92;transition:opacity .2s,transform .4s}
-  .kks:hover .kks-im img{opacity:1;transform:scale(1.02)}
+  .kks-im:hover img{opacity:1;transform:scale(1.02)}
   .kks-play{position:absolute;left:50%;top:50%;display:grid;place-items:center;width:68px;height:68px;margin:-34px 0 0 -34px;border-radius:50%;background:#00CD77;box-shadow:0 0 0 10px rgba(0,205,119,0.2),0 18px 40px -12px rgba(0,0,0,0.7);transition:transform .2s}
-  .kks:hover .kks-play{transform:scale(1.06)}
+  .kks-im:hover .kks-play{transform:scale(1.06)}
   .kks-play svg{width:22px;height:22px;margin-left:4px;fill:#07140d}
-  .kks:focus-visible{outline:3px solid #00CD77;outline-offset:4px}
+  .kks-btn:focus-visible,.kks-lnk:focus-visible,.kks-im:focus-visible{outline:3px solid #00CD77;outline-offset:4px}
 
   .kks-dlg{width:min(1180px,calc(100vw - 32px));max-width:none;max-height:calc(100vh - 32px);padding:0;border:0;border-radius:18px;background:#07140d;color:#ffffff;overflow:visible;box-shadow:0 60px 140px -40px rgba(0,0,0,0.9)}
   .kks-dlg::backdrop{background:rgba(4,10,7,0.82);backdrop-filter:blur(4px)}
@@ -111,5 +126,5 @@ const PLAY = '<path d="M3 1.8v12.4a.8.8 0 0 0 1.2.7l10.3-6.2a.8.8 0 0 0 0-1.4L4.
     .kks-im{order:-1;min-height:0;aspect-ratio:16/9}
     .kks-x{right:6px;top:6px}
   }
-  @media (prefers-reduced-motion:reduce){ .kks-im img,.kks-cta svg,.kks-play{transition:none} .kks:hover .kks-im img,.kks:hover .kks-play{transform:none} }
+  @media (prefers-reduced-motion:reduce){ .kks-im img,.kks-play,.kks-btn,.kks-lnk{transition:none} .kks-im:hover img,.kks-im:hover .kks-play{transform:none} }
 </style>
