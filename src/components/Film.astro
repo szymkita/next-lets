@@ -1,0 +1,27 @@
+---
+// FILM — odtwarzacz jednego nagrania. Z `mux` (playback ID) gra Mux Player
+// (adaptacyjny strumień z Mux, skrypt z jsDelivr w wersji przypiętej),
+// bez niego zwykłe <video> z plikiem z public/. Atrybut `data-film` zostaje
+// na elemencie odtwarzacza, bo strony liczą na nim start, połowę i koniec.
+interface Props {
+  mux?: string;
+  mp4?: string;
+  plakat: string;
+  tytul: string;
+  preload?: 'none' | 'metadata' | 'auto';
+}
+const { mux = '', mp4 = '', plakat, tytul, preload = 'metadata' } = Astro.props;
+---
+{mux ? (
+  <>
+    <script is:inline type="module" src="https://cdn.jsdelivr.net/npm/@mux/mux-player@3.14.0/dist/mux-player.mjs"></script>
+    <mux-player class="film" playback-id={mux} poster={plakat} metadata-video-title={tytul} accent-color="#00CD77" preload={preload} playsinline data-film></mux-player>
+  </>
+) : (
+  <video class="film" controls playsinline preload={preload} poster={plakat} width="1920" height="1080" data-film>
+    <source src={mp4} type="video/mp4">
+  </video>
+)}
+<style>
+  .film{display:block;width:100%;height:auto;aspect-ratio:16/9;background:#000;--media-object-fit:contain}
+</style>

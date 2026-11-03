@@ -34,6 +34,8 @@ import Styl from '../components/usluga/Styl.astro';
 import Anim from '../components/usluga/Anim.astro';
 import Loga from '../components/usluga/Loga.astro';
 import Kontakt from '../components/usluga/Kontakt.astro';
+import Film from '../components/Film.astro';
+import { FILM_KAZDY_SYSTEM as F } from '../data/film-kazdy-system.js';
 import { HI, SYGNET } from '../components/usluga/ikony';
 
 const title = "Integracja systemów z AI: podłączymy każdy system — Let's automate";
@@ -138,7 +140,7 @@ const dane = {
       name: 'Każdy system — Let’s automate',
       description: 'Jak podłączyć do AI program branżowy, którego nie da się zintegrować. Przykład: program produkcyjny w firmie produkującej okna.',
       thumbnailUrl: new URL(`${K}/plakat.jpg`, Astro.site).href,
-      contentUrl: new URL(`${K}/film-kazdy-system.mp4`, Astro.site).href,
+      contentUrl: F.mux ? `https://stream.mux.com/${F.mux}.m3u8` : new URL(F.mp4, Astro.site).href,
       uploadDate: '2026-11-03',
       duration: 'PT2M25S',
       inLanguage: 'pl',
@@ -214,7 +216,6 @@ const dane = {
   .fm-gl{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:20px 48px}
   .fm-gl .v3-sub{max-width:520px}
   .fm-ok{position:relative;margin-top:clamp(36px,4vw,56px);border-radius:18px;overflow:hidden;background:#000;box-shadow:0 0 0 1px rgba(255,255,255,0.1),0 60px 120px -60px rgba(0,205,119,0.35)}
-  .fm-ok video{display:block;width:100%;height:auto;aspect-ratio:16/9;background:#000}
   .fm-dol{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:14px 32px;margin-top:22px;font-size:14.5px;color:rgba(255,255,255,0.62)}
   .fm-dol a{display:inline-flex;align-items:center;gap:8px;font-weight:700;color:var(--ziel)}
   .fm-dol a svg{display:block;width:14px;height:14px;fill:currentColor;transition:transform .18s}
@@ -410,9 +411,7 @@ Możecie też napisać na <a href="mailto:hello@letsautomate.pl" data-zg-mailto>
 <p class="v3-sub jasny">Przykład z filmu: program produkcyjny, którego nie dało się zintegrować, odpowiada w ChatGPT i w Appto. Handlowiec dostaje wymiary, a klient zestawienie, zanim zdąży zadzwonić.</p>
 </div>
 <div class="fm-ok">
-<video controls playsinline preload="metadata" poster={`${K}/plakat.jpg`} width="1920" height="1080" data-film>
-<source src={`${K}/film-kazdy-system.mp4`} type="video/mp4">
-</video>
+<Film mux={F.mux} mp4={F.mp4} plakat={F.plakat} tytul={F.tytul} />
 </div>
 <div class="fm-dol">
 <span>Film ma wgrane napisy. Firma i zamówienie są przykładowe.</span>
