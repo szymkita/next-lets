@@ -95,11 +95,11 @@ function raport(pref, me) {
 function faktury(pref, me) {
   const rows = [
     [`${pref}-r1`, 1, 'Filtry-Serwis sp. z o.o.', 'Faktura FV/11/2026/0418', 'W załączniku faktura za filtry F7, 84 szt.', '8:41', 1, [1]],
-    [`${pref}-r2`, 1, 'Orlen Paliwa', 'Faktura za paliwo – październik', 'Faktura zbiorcza za karty flotowe.', '8:20', 1, [1]],
+    [`${pref}-r2`, 1, 'Petrona Paliwa', 'Faktura za paliwo – październik', 'Faktura zbiorcza za karty flotowe.', '8:20', 1, [1]],
     [`${pref}-r3`, 1, 'Chłodtech Hurt', 'FV 2026/11/7731', 'Sprężarka Danfoss, 1 szt. Termin płatności 14 dni.', '7:55', 1, [1]],
     [`${pref}-r4`, 0, 'Biuro rachunkowe', 'Zestawienie kosztów – listopad', 'Prosimy o komplet faktur do 5 grudnia.', 'wczoraj', 0, []],
-    [`${pref}-r5`, 0, 'Netia', 'Faktura e-faktura 11/2026', 'Usługi telekomunikacyjne za listopad.', 'wczoraj', 1, [1]],
-    [`${pref}-r6`, 0, 'Leasing Plus', 'Rata leasingowa – auto serwisowe', 'Harmonogram spłat w załączniku.', '17 lis', 1, [1]],
+    [`${pref}-r5`, 0, 'Telvio', 'Faktura e-faktura 11/2026', 'Usługi telekomunikacyjne za listopad.', 'wczoraj', 1, [1]],
+    [`${pref}-r6`, 0, 'Korvel Leasing', 'Rata leasingowa – auto serwisowe', 'Harmonogram spłat w załączniku.', '17 lis', 1, [1]],
     [`${pref}-r7`, 0, 'Joanna Krawiec', 'Re: Oferta serwisowa 2027', 'Dziękuję, wracam z decyzją w piątek.', '17 lis', 0, [0]],
   ];
   let h = K.GMAIL(K.GNAV(`${pref}-nav`, 'in', G, cfg(me)), K.GLIST(`${pref}-v`, rows, G, cfg(me)), G, cfg(me));
