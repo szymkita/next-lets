@@ -50,9 +50,12 @@ const USLUGI = [
     // ma od razu wiedzieć, co dostaje. AI wbudowane w proces stoi w pasie 2.
     pas: 'Wdrażamy AI',
     sub: 'Gdy firma zaczyna pracować z AI',
-    // 18.11.2026 (Szymon: „to chyba tak zróbmy”): całe wdrożenie jako pierwsza,
-    // lekko wyróżniona pozycja pasa (zielona kreska z boku), pod nią części.
-    glowna: { t: 'Wdrożenie AI pod klucz', d: 'Całe wdrożenie za Was: od analizy po zespół, który już pracuje', h: '/wdrozenie-ai-pod-klucz' },
+    // 18.11.2026 (Szymon: „to chyba tak zróbmy”): całe wdrożenie jako pierwsza
+    // pozycja pasa, pod nią części. Wyróżnienie w języku kafli programów
+    // (v2 po uwadze „design wyróżnienia jest bardzo słaby”): ciemnozielony kafel
+    // z miniaturą planu wdrożenia (zielona linia, 6 kropek zapala się po
+    // najechaniu) i okrągłą strzałką.
+    glowna: { t: 'Wdrożenie AI pod klucz', d: 'Całe wdrożenie za Was, od analizy po zespół, który już pracuje', h: '/wdrozenie-ai-pod-klucz' },
     poz: [
       { t: 'Strategia AI', d: 'Plan wdrożeń AI z rachunkiem dla zarządu', h: '/strategia-ai' },
       { t: 'Narzędzia AI dla całej firmy', d: 'Platforma AI, np. Appto, na danych firmy', h: '/wdrozenie-ai' },
@@ -197,8 +200,7 @@ const POZOSTALE = [
 <div class="usl-top"><span class="usl-head">{u.pas}</span><span class="usl-sub">{u.sub}</span></div>
 <span class="usl-rule" aria-hidden="true"></span>
 <div class="usl-list">
-{u.glowna && <a href={u.glowna.h} class="mega-item usl-glowna"><span class="mega-t">{u.glowna.t}</span><span class="mega-d">{u.glowna.d}</span></a>}
-{u.glowna && <span class="usl-albo">albo jedna część:</span>}
+{u.glowna && <a href={u.glowna.h} class="usl-kafel"><span class="uk-ob" aria-hidden="true"><i class="uk-l"></i>{[0,1,2,3,4,5].map((i) => <span class="uk-w" style={`--i:${i}`}><b></b><s style={`--w:${[78,60,86,54,70,64][i]}%`}></s></span>)}</span><span class="uk-tx"><span class="uk-t">{u.glowna.t}</span><span class="uk-d">{u.glowna.d}</span></span><span class="pg-go uk-go" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5"/></svg><svg viewBox="0 0 16 16"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5"/></svg></span></a>}
 {u.poz.map((p) => <a href={p.h} class="mega-item"><span class="mega-t">{p.t}</span><span class="mega-d">{p.d}</span></a>)}
 </div>
 </div>
@@ -355,8 +357,7 @@ const POZOSTALE = [
 {USLUGI.map((u) => (
 <section class="np-grupa np-usl">
 <p class="np-pas">{u.pas}</p>
-{u.glowna && <a href={u.glowna.h} class="np-poz np-glowna"><span class="np-t">{u.glowna.t}</span><span class="np-d">{u.glowna.d}</span></a>}
-{u.glowna && <span class="np-albo">albo jedna część:</span>}
+{u.glowna && <a href={u.glowna.h} class="usl-kafel np"><span class="uk-ob" aria-hidden="true"><i class="uk-l"></i>{[0,1,2,3,4,5].map((i) => <span class="uk-w" style={`--i:${i}`}><b></b><s style={`--w:${[78,60,86,54,70,64][i]}%`}></s></span>)}</span><span class="uk-tx"><span class="uk-t">{u.glowna.t}</span><span class="uk-d">{u.glowna.d}</span></span><span class="pg-go uk-go" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5"/></svg><svg viewBox="0 0 16 16"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5"/></svg></span></a>}
 {u.poz.map((p) => <a href={p.h} class="np-poz"><span class="np-t">{p.t}</span></a>)}
 </section>
 ))}
@@ -512,11 +513,28 @@ const POZOSTALE = [
   .usl-list .mega-item:hover{background:#eef5ec}
   .usl-list .mega-t{font-size:14px;font-weight:650}
   .usl-list .mega-d{font-size:12px;color:#8a948d;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  /* całe wdrożenie: zielona kreska z boku, opis w dwóch liniach; pod spodem podpis „albo jedna część” */
-  .usl-list .usl-glowna{margin:0 0 2px -9px;padding:7px 9px 8px 13px;border-radius:0 10px 10px 0;box-shadow:inset 3px 0 0 #00CD77}
-  .usl-list .usl-glowna .mega-d{white-space:normal;line-height:1.4}
-  .usl-albo{display:flex;align-items:center;gap:8px;margin:8px 0 3px;font-size:11.5px;font-weight:600;color:#96a098}
-  .usl-albo::after{content:"";flex:1;height:1px;background:#e7ece4}
+  /* całe wdrożenie: kafel w języku kafli programów, w ciemnej zieleni Let's.
+     Pod nim części pasa, oddzielone samym odstępem. */
+  .usl-kafel,.usl-kafel *{box-sizing:border-box}
+  .usl-kafel{position:relative;display:grid;grid-template-columns:64px minmax(0,1fr);align-items:center;gap:12px;margin:0 0 12px -9px;padding:10px 12px 10px 10px;border-radius:14px;background:#0e2b1d;color:#ffffff;transition:background .2s,box-shadow .2s}
+  .usl-kafel:hover{background:#0a2317;box-shadow:0 0 0 1.5px rgba(0,205,119,0.75)}
+  .usl-kafel:focus-visible{outline:2px solid var(--la-accent,#00CD77);outline-offset:3px}
+  .uk-ob{position:relative;display:flex;flex-direction:column;justify-content:space-between;width:64px;height:72px;padding:8px 8px 8px 9px;border-radius:10px;background:#07140d;box-shadow:inset 0 0 0 1px rgba(255,255,255,0.07)}
+  .uk-l{position:absolute;left:12.5px;top:12px;bottom:12px;width:2px;border-radius:1px;background:linear-gradient(#00CD77,#00CD77) 0 0/100% 0% no-repeat,#24382d;transition:background-size .7s cubic-bezier(.4,0,.2,1)}
+  .uk-w{position:relative;display:flex;align-items:center;gap:6px;height:8px}
+  .uk-w b{flex-shrink:0;width:8px;height:8px;border-radius:50%;border:1.5px solid #3a4a3f;background:#07140d;transition:background .25s ease calc(var(--i) * .09s),border-color .25s ease calc(var(--i) * .09s)}
+  .uk-w s{display:block;height:3px;width:var(--w);border-radius:2px;background:rgba(255,255,255,0.18);text-decoration:none}
+  .uk-w:nth-child(2) b,.uk-w:nth-child(3) b{background:#00CD77;border-color:#00CD77}
+  .usl-kafel:hover .uk-l,.usl-kafel:focus-visible .uk-l{background-size:100% 100%,auto}
+  .usl-kafel:hover .uk-w b,.usl-kafel:focus-visible .uk-w b{background:#00CD77;border-color:#00CD77}
+  .uk-tx{display:flex;flex-direction:column;min-width:0;padding-right:30px}
+  .uk-t{font-size:15px;font-weight:800;letter-spacing:-0.02em;line-height:1.15;color:#ffffff}
+  .uk-d{margin-top:4px;font-size:12px;line-height:1.35;color:rgba(255,255,255,0.66)}
+  .usl-kafel .uk-go{right:10px;bottom:10px;background:#ffffff;color:#07140d}
+  .usl-kafel:hover .uk-go,.usl-kafel:focus-visible .uk-go{background:var(--la-accent,#00CD77);color:#07140d}
+  .usl-kafel:hover .uk-go svg,.usl-kafel:focus-visible .uk-go svg{transform:translateX(22px)}
+  .usl-kafel:hover .uk-go svg + svg,.usl-kafel:focus-visible .uk-go svg + svg{transform:none;transition-delay:.06s}
+  @media (prefers-reduced-motion:reduce){ .uk-l,.uk-w b{transition:none} }
   @media (prefers-reduced-motion:reduce){ .usl-rule{transition:none} }
 
   /* ---- megamenu usług: programy pod pasami ----
@@ -633,9 +651,9 @@ const POZOSTALE = [
   .np-pas{margin:0 0 2px;font-size:13px;font-weight:700;line-height:1.3;color:#0a7a52}
   .np-usl .np-poz,.np-usl .np-poz:first-of-type{margin:0;padding:8px 0}
   .np-usl .np-t{font-size:16px;font-weight:600;line-height:1.3}
-  .np-usl .np-poz.np-glowna,.np-usl .np-poz.np-glowna:first-of-type{margin:6px 0 2px;padding:8px 0 9px 14px;border-radius:0;box-shadow:inset 3px 0 0 #00CD77}
-  .np-albo{display:flex;align-items:center;gap:8px;margin:8px 0 2px;font-size:12px;font-weight:600;color:#8a948d}
-  .np-albo::after{content:"";flex:1;height:1px;background:#e7ece4}
+  .usl-kafel.np{margin:10px 0 6px;grid-template-columns:64px minmax(0,1fr)}
+  .usl-kafel.np .uk-t{font-size:16px}
+  .usl-kafel.np .uk-d{font-size:13px}
   /* Programy w panelu mobilnym: te same karty co w megamenu, bez zdania
      o tym, czym program jest. */
   .np-pg{display:grid;gap:8px;padding:14px 0 8px}
