@@ -57,7 +57,8 @@ import KitStyl from '../components/pod-klucz/KitStyl.astro';
 import AppKit from '../components/pod-klucz/AppKit.astro';
 import PulpitMontaz from '../components/pod-klucz/PulpitMontaz.astro';
 import ListaKrokow from '../components/pod-klucz/ListaKrokow.astro';
-import CzatScena from '../components/pod-klucz/CzatScena.astro';
+import OknoPrzyklad from '../components/pod-klucz/OknoPrzyklad.astro';
+import Przegladarka from '../components/pod-klucz/Przegladarka.astro';
 import { HI } from '../components/usluga/ikony';
 
 const ADRES = '/wdrozenie-ai-pod-klucz';
@@ -81,13 +82,13 @@ const PLAN = [
   { t: 'Analizujemy, jak pracujecie', p: 'diagnoza: gdzie ucieka czas, co przejmie AI',
     d: 'Przechodzimy przez Wasze procesy, dokumenty i systemy. Sprawdzamy, gdzie ucieka czas, i wskazujemy, co oddać AI na początek.' },
   { t: 'Zbieramy kontekst firmy', p: 'cenniki, umowy, procedury',
-    d: 'Porządkujemy dokumenty, z których korzysta AI, żeby odpowiadało według Waszych zasad.' },
+    d: 'Sami zbieramy i tworzymy kontekst dla agentów: porządkujemy dokumenty, żeby AI odpowiadało według Waszych zasad.' },
   { t: 'Ustawiamy agentów AI i automatyzacje', p: 'oferty, obsługa klienta, umowy',
     d: 'Piszemy instrukcje i skille. Gdy gotowe narzędzie nie wystarcza, budujemy aplikację dopasowaną do firmy.' },
   { t: 'Podłączamy Wasze systemy', p: 'poczta, CRM, ERP, także bez API',
     d: 'AI sięga do danych tam, gdzie leżą, także w starszych programach bez gotowej integracji. Ustalamy, do czego ma dostęp.' },
   { t: 'Testujemy na Waszych sprawach', p: 'zanim zespół zacznie pracę',
-    d: 'Sprawdzamy odpowiedzi na prawdziwych przykładach z firmy i poprawiamy, aż się zgadzają.' },
+    d: 'Sprawdzamy odpowiedzi na prawdziwych sprawach z firmy i poprawiamy je, zanim oddamy rozwiązanie. Zespół nie traci godzin na poprawianie wyników AI.' },
   { t: 'Zespół wchodzi na gotowe', p: 'na naszej platformie appto albo w Waszych narzędziach',
     d: 'Uczymy zespół pracy z gotowymi agentami na jego własnych sprawach.' },
 ];
@@ -101,51 +102,92 @@ const LICZBY = [
 ];
 // Wynik „Przygotowanie oferty” stoi pod sceną appto (ta sama praca), reszta w dowodach.
 const OFERTA = { l: '−80%', ld: 'czasu przygotowania oferty', po: 'Szkic oferty powstaje z danych CRM w kilka minut, handlowiec go dopina.' };
-// CO JESZCZE MOŻE PRZEJĄĆ AI (v3, Szymon: inspirować tym, co w ogóle da się
-// zrobić, na innych przykładach niż oferta; „pożenić” z wynikami klientów).
-// Każdy przykład to krótka scena w appto (CzatScena). Przy przykładach, które
-// mamy u klientów na stronie głównej, stoi wynik klienta, słowo w słowo
-// z index.astro (karty efektów). Pozostałe pokazują możliwość, bez liczb.
-// Sceny są przykładowe (świat Wolsenty z filmu; nazwy do potwierdzenia).
+// CO JESZCZE MOŻE PRZEJĄĆ AI (v3: inspirować tym, co da się zrobić, na innych
+// przykładach niż oferta, „pożenić” z wynikami klientów; v4, Szymon: „toporne…
+// zobacz, jak mamy to zrobione na appto.ai”, studio/marki/lets-automate.md,
+// „Appto na stronach Let's”). Układ i zachowanie z sekcji „AI na każdą
+// potrzebę” na appto.ai (ApptoAI/landing-page, AnyNeed.astro, wariant kart
+// przeglądarki): przykłady to karty okna przeglądarki, w oknie pełny ekran
+// appto; wątek stoi zrobiony, po chwili przychodzi krótka poprawka, która
+// powstaje na oczach. Wyniki klientów tylko przy przykładach ze strony
+// głównej (index.astro, karty efektów), słowo w słowo. Sceny przykładowe,
+// świat Wolsenty z filmu (nazwy do potwierdzenia).
+const RAPORT = `<div class="lh">WOLSENTA<small>Raport tygodniowy · tydzień 47</small></div>
+<h4>Serwis i sprzedaż</h4><p class="pd">Dane z ERP i HubSpota, stan na poniedziałek 7:00</p>
+<table><thead><tr><th>Pozycja</th><th class="n">Tydzień 47</th><th class="n nowe">Tydzień 46</th></tr></thead><tbody>
+<tr><td>Przeglądy wykonane</td><td class="n">38 z 40</td><td class="n nowe">35 z 40</td></tr>
+<tr><td>Zgłoszenia awarii</td><td class="n">12, zamknięte 11</td><td class="n nowe">9, zamknięte 9</td></tr>
+<tr><td>Oferty wysłane</td><td class="n">9</td><td class="n nowe">7</td></tr>
+<tr><td>Oferty przyjęte</td><td class="n">4</td><td class="n nowe">3</td></tr>
+<tr><td>Średni czas reakcji na awarię</td><td class="n">6 h</td><td class="n nowe">7 h</td></tr>
+</tbody></table>`;
 const MOZLIWE = [
-  { t: 'Odpowiedź na reklamację z historią klienta', d: 'AI czyta zgłoszenie, sprawdza historię klienta i umowę, a szkic odpowiedzi czeka w poczcie.',
-    s: { pol: 'Odpowiedz na reklamację Strelano z biurowca C', glowa: 'Appto sprawdza',
+  { karta: 'Odpowiedź na reklamację', tytul: 'Reklamacja Strelano',
+    d: 'AI czyta zgłoszenie, sprawdza historię klienta i procedurę, a odpowiedź czeka na Twoją zgodę.',
+    przed: { u: 'Odpowiedz Strelano na reklamację z biurowca C. Trzymaj się naszej procedury.', glowa: 'Appto wykonało 2 kroki',
       kroki: [
-        { ik: 'gm', t: 'Appto używa Gmail', sub: 'Reklamacja · biurowiec C · jednostka 14', pills: ['Nie chłodzi', 'Drugie zgłoszenie'] },
-        { ik: 'hub', t: 'Appto używa HubSpot', sub: 'Historia klienta i umowa · Strelano', pills: ['3 zgłoszenia w 2026', 'Wizyta do 48 h'] },
+        { ik: 'gm', t: 'Appto użyło Gmail', sub: 'Reklamacja · biurowiec C · jednostka 14', pills: [] },
+        { ik: 'ks', t: 'Appto przeszukało kontekst', sub: 'Procedura reklamacji.pdf', pills: [] },
       ],
-      odp: 'Szkic odpowiedzi czeka w Gmailu: przepraszamy za drugie zgłoszenie i proponujemy wizytę w czwartek rano, w ramach umowy.' } },
-  { t: 'Odpowiedzi na pytania o zamówienia', d: 'Agent odpowiada klientowi z danymi zamówienia z ERP, zanim ktoś zdąży otworzyć maila.',
+      r: '<p>Według procedury najpierw wizyta serwisu, bo to pierwsza usterka tej jednostki.</p><blockquote>Dzień dobry, przepraszamy za kłopot z jednostką 14. Serwisant przyjedzie w czwartek o 8:00, w ramach umowy serwisowej.</blockquote><p>Wysłać z Twojej skrzynki, z kopią do serwisu?</p>' },
+    poprawka: { u: 'Tak, wyślij.', glowa: 'Appto wykonało 1 krok',
+      kroki: [{ ik: 'gm', t: 'Appto użyło Gmail', sub: 'wysłano email', pills: [] }],
+      r: 'Wysłane do Joanny Krawiec ze Strelano, z kopią do serwisu.' } },
+  { karta: 'Pytania o zamówienia', tytul: 'Pytania klientów',
+    d: 'Agent odpowiada klientom z danymi zamówień z ERP. Do człowieka trafia tylko to, co wymaga decyzji.',
     w: { l: '−90%', ld: 'zapytań obsługiwanych ręcznie' },
-    s: { glowa: 'Agent obsługi klienta',
+    przed: { u: 'Odpowiedz na dzisiejsze pytania klientów o zamówienia.', glowa: 'Appto wykonało 2 kroki',
       kroki: [
-        { ik: 'gm', t: 'Appto czyta Gmail', sub: 'Pytanie klienta · kiedy dostawa filtrów?', pills: ['Zamówienie ZM/2026/3381'] },
-        { ik: 'db', t: 'Appto sprawdza ERP', sub: 'Zamówienie ZM/2026/3381', pills: ['Wysłane 18 listopada', 'Kurier, dostawa jutro'] },
+        { ik: 'gm', t: 'Appto użyło Gmail', sub: 'pobrano 6 wiadomości', pills: [] },
+        { ik: 'db', t: 'Appto sprawdziło ERP', sub: '6 zamówień', pills: [] },
       ],
-      odp: 'Odpisałem klientowi: filtry wyjechały wczoraj i dotrą jutro, numer przesyłki jest w mailu.' } },
-  { t: 'Raport tygodniowy z ERP i CRM', d: 'Dane z kilku systemów spływają same, a raport czeka na zarząd w poniedziałek rano.',
+      r: 'Odpisałem na pięć pytań: terminy dostaw i numery przesyłek z ERP. Jedno czeka na Ciebie: klient z zamówieniem ZM/2026/3381 prosi o zmianę adresu dostawy.' },
+    poprawka: { u: 'Zmień adres i odpisz, że dostawa będzie w piątek.', glowa: 'Appto wykonało 2 kroki',
+      kroki: [
+        { ik: 'db', t: 'Appto zmieniło zamówienie w ERP', sub: 'ZM/2026/3381 · nowy adres', pills: [] },
+        { ik: 'gm', t: 'Appto użyło Gmail', sub: 'wysłano email', pills: [] },
+      ],
+      r: 'Adres zmieniony, klient dostał potwierdzenie z dostawą w piątek.' } },
+  { karta: 'Raport tygodniowy', tytul: 'Raport tygodniowy',
+    d: 'Dane z ERP i CRM spływają same, a raport czeka na zarząd w poniedziałek rano.',
     w: { l: '65 h', ld: 'odzyskanych co miesiąc' },
-    s: { glowa: 'Rutyna: raport tygodniowy',
+    plik: { tytul: 'Raport tygodniowy — tydzień 47', strona: RAPORT },
+    przed: { u: 'Przygotuj raport tygodniowy dla zarządu z ERP i HubSpota.', glowa: 'Appto wykonało 3 kroki',
       kroki: [
-        { ik: 'db', t: 'Appto czyta ERP', sub: 'Zlecenia serwisowe · tydzień 47', pills: ['Przeglądy', 'Awarie', 'Faktury'] },
-        { ik: 'hub', t: 'Appto czyta HubSpot', sub: 'Oferty · tydzień 47', pills: ['Wysłane', 'Przyjęte'] },
+        { ik: 'db', t: 'Appto sprawdziło ERP', sub: 'zlecenia serwisowe · tydzień 47', pills: [] },
+        { ik: 'hub', t: 'Appto użyło HubSpot', sub: 'oferty · tydzień 47', pills: [] },
+        { ik: 'dok', t: 'Appto napisało dokument', sub: 'Raport tygodniowy — tydzień 47', pills: [] },
       ],
-      dok: { t: 'Raport tygodniowy — tydzień 47', sub: 'Dokument · wysłany zarządowi w poniedziałek o 7:00' } } },
-  { t: 'Faktury kosztowe z maili', d: 'Faktury od dostawców księgują się same, a zespół zajmuje się tylko wyjątkami.',
+      r: 'Raport jest gotowy i czeka w poniedziałek o 7:00 w skrzynce zarządu.' },
+    poprawka: { u: 'Dodaj porównanie z poprzednim tygodniem.', glowa: 'Appto wykonało 2 kroki',
+      kroki: [
+        { ik: 'db', t: 'Appto sprawdziło ERP', sub: 'tydzień 46', pills: [] },
+        { ik: 'dok', t: 'Appto zmieniło dokument', sub: 'dodano kolumnę', pills: [] },
+      ],
+      r: 'Dodałem kolumnę z tygodniem 46. Przeglądów jest więcej o trzy, a czas reakcji na awarię spadł o godzinę.' } },
+  { karta: 'Faktury kosztowe', tytul: 'Faktury kosztowe',
+    d: 'Faktury z maili księgują się same, a zespół zajmuje się tylko wyjątkami.',
     w: { l: '99,7%', ld: 'skuteczności księgowania' },
-    s: { glowa: 'Agent księgowy',
+    przed: { u: 'Zaksięguj wczorajsze faktury kosztowe z poczty.', glowa: 'Appto wykonało 2 kroki',
       kroki: [
-        { ik: 'gm', t: 'Appto czyta Gmail', sub: 'Faktury od dostawców · 14 nowych', pills: ['PDF', 'Skany'] },
-        { ik: 'fk', t: 'Appto księguje w programie FK', sub: 'Faktury kosztowe · listopad', pills: ['13 zaksięgowanych', '1 do wyjaśnienia'] },
+        { ik: 'gm', t: 'Appto użyło Gmail', sub: 'pobrano 14 faktur', pills: [] },
+        { ik: 'fk', t: 'Appto zaksięgowało w programie FK', sub: '13 faktur', pills: [] },
       ],
-      odp: 'Jedna faktura czeka na Ciebie: dostawca filtrów nie podał numeru zamówienia.' } },
-  { t: 'Porządek w CRM po spotkaniu', d: 'Z notatek ze spotkania AI uzupełnia transakcję w CRM i dodaje zadania zespołowi.',
-    s: { pol: 'Uzupełnij CRM po spotkaniu z nowym klientem', glowa: 'Appto sprawdza',
+      r: 'Zaksięgowałem 13 faktur. Jedna czeka: dostawca filtrów nie podał numeru zamówienia.' },
+    poprawka: { u: 'To zamówienie ZK/2026/112, zaksięguj ją.', glowa: 'Appto wykonało 1 krok',
+      kroki: [{ ik: 'fk', t: 'Appto zaksięgowało w programie FK', sub: '1 faktura · ZK/2026/112', pills: [] }],
+      r: 'Zaksięgowane. Wszystkie 14 wczorajszych faktur są w programie FK.' } },
+  { karta: 'CRM po spotkaniu', tytul: 'Spotkanie z nowym klientem',
+    d: 'Z notatek ze spotkania AI uzupełnia transakcję w CRM i rozdziela zadania.',
+    przed: { u: 'Uzupełnij HubSpot po wczorajszym spotkaniu z nowym klientem.', glowa: 'Appto wykonało 2 kroki',
       kroki: [
-        { ik: 'mic', t: 'Appto używa Fireflies', sub: 'Spotkanie · 20 listopada · notatki', pills: ['Budżet na 2027', 'Decyzja w grudniu'] },
-        { ik: 'hub', t: 'Appto aktualizuje HubSpot', sub: 'Transakcja · serwis 2027', pills: ['Etap: negocjacje', 'Zadanie: oferta'] },
+        { ik: 'mic', t: 'Appto użyło Fireflies', sub: 'spotkanie · 20 listopada · notatki', pills: [] },
+        { ik: 'hub', t: 'Appto użyło HubSpot', sub: 'zaktualizowano transakcję', pills: [] },
       ],
-      odp: 'Uzupełniłem transakcję i dodałem Marcie zadanie: oferta do 25 listopada.' } },
+      r: 'Transakcja uzupełniona: dwa biurowce, budżet na 2027, decyzja w grudniu. Marta ma zadanie: oferta do 25 listopada.' },
+    poprawka: { u: 'Gdyby nie odpisali, przypomnij mi 1 grudnia.', glowa: 'Appto wykonało 1 krok',
+      kroki: [{ ik: 'hub', t: 'Appto użyło HubSpot', sub: 'utworzono zadanie · 1 grudnia', pills: [] }],
+      r: 'Gotowe. 1 grudnia dostaniesz przypomnienie, jeśli klient się nie odezwie.' } },
 ];
 const LOGA = [
   ['sports-med.svg', 'Sports-Med', 308], ['nars.svg', 'NARS', 235], ['sevium.svg', 'Sevium', 206],
@@ -194,6 +236,10 @@ const faq = [
   {
     q: 'Kto u nas musi się tym zajmować?',
     a: 'Potrzebujemy osoby, która zna Wasze procesy i znajdzie czas na rozmowy z nami, oraz dostępu do dokumentów i systemów, które podłączamy. Resztę robimy my.',
+  },
+  {
+    q: 'Czy nie uzależnimy się od Was?',
+    a: 'Nie. Na koniec wdrożenia przekazujemy zespołowi know-how: jak rozwijać agentów i instrukcje, jak dodawać nowe sprawy i co robić, gdy coś się zmieni. Firma może dalej radzić sobie sama.',
   },
   {
     q: 'Co z danymi firmy?',
@@ -311,6 +357,9 @@ const dane = {
   .pk-os h3{margin:0;font-size:clamp(22px,2.2vw,32px);line-height:1.08;letter-spacing:-0.035em;font-weight:800;color:#ffffff}
   .pk-os li:last-child h3{color:var(--ziel)}
   .pk-os .p{display:block;margin-top:6px;letter-spacing:-0.005em;line-height:1.35;font-size:clamp(15.5px,1.3vw,18px);font-weight:500;color:#A3ABA5}
+  .pk-os-po{margin:clamp(30px,3vw,42px) 0 0 64px;max-width:520px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.14);font-size:16px;line-height:1.6;color:rgba(255,255,255,0.7)}
+  .pk-os-po b{color:#ffffff;font-weight:700}
+  @media (max-width:560px){ .pk-os-po{margin-left:0} }
   .pk-os p{margin:12px 0 0;max-width:520px;font-size:15.5px;line-height:1.6;color:rgba(255,255,255,0.62);text-wrap:pretty}
   @media (max-width:980px){ .pk-plan{grid-template-columns:minmax(0,1fr)} .pk-plan-l{position:static} }
   /* na telefonie przycisk daje pasek na dole ekranu, w planie byłby drugi raz */
@@ -319,15 +368,13 @@ const dane = {
   /* =====================================================================
      ZESPÓŁ NA GOTOWE: prawdziwy appto, rozmowa od polecenia do oferty
      ===================================================================== */
-  .pk-ok{margin-top:clamp(40px,4.4vw,64px);border-radius:14px;overflow:hidden;background:#FAF9F7;box-shadow:0 0 0 1px rgba(15,26,20,0.12),0 60px 120px -60px rgba(8,26,17,0.55);transition:background .6s ease,box-shadow .6s ease}
-  .pk-ok-bar{transition:opacity .6s ease .2s}
-  .pk-ok.sam{background:transparent;box-shadow:0 0 0 1px transparent,0 60px 120px -60px transparent}
-  .pk-ok.sam .pk-ok-bar{opacity:0;transition-delay:0s}
-  .pk-ok-bar{display:flex;align-items:center;gap:14px;height:40px;padding:0 14px;background:#ECEAE6;border-bottom:1px solid rgba(20,20,20,0.08)}
-  .pk-ok-bar .pm-tl{display:flex;gap:8px}.pk-ok-bar .pm-tl i{width:12px;height:12px;border-radius:50%;display:block}
-  .pk-ok-bar .adr{flex:1;max-width:420px;margin:0 auto;padding:5px 14px;border-radius:8px;background:rgba(255,255,255,0.75);font-family:"InterApp",system-ui,sans-serif;font-size:13px;color:#55555c;text-align:center}
+  /* scena oferty: ekran appto w oknie przeglądarki na tle, jak pokazy produktu na appto.ai */
+  .pk-ok{max-width:1180px;margin-left:auto;margin-right:auto;position:relative;isolation:isolate;overflow:hidden;margin-top:clamp(36px,4vw,56px);padding:clamp(14px,2.8vw,40px);border-radius:clamp(20px,2vw,28px);background:#C9C3D6}
   .pk-ok .ak.czat{display:none}
-  .pk-ok .ak.czat .w-top{padding-left:120px}
+  .pk-ok .ak.czat .w-top{padding-left:96px}
+  .pk-ok .ak.czat .w-rail{display:none}
+  .pk-ok .ak.czat [data-w="w-chat"]{width:600px}
+  .ak.krotki .w-rail{top:140px}
   @media (max-width:760px){ .pk-ok .ak.caly{display:none} .pk-ok .ak.czat{display:block} }
   .pk-ok-wy{display:flex;align-items:center;gap:clamp(18px,2.4vw,32px);margin-top:clamp(28px,3vw,40px);padding:clamp(18px,2vw,24px) 0;border-top:1px solid var(--linia);border-bottom:1px solid var(--linia)}
   .pk-ok-wy b{flex-shrink:0;font-size:clamp(44px,5vw,72px);line-height:0.9;letter-spacing:-0.05em;font-weight:800;color:var(--t1)}
@@ -347,26 +394,17 @@ const dane = {
   .pk-li div + div{padding-left:clamp(16px,2vw,28px);border-left:1px solid var(--linia)}
   .pk-li b{display:block;font-size:clamp(44px,6vw,92px);line-height:0.95;letter-spacing:-0.05em;font-weight:800;color:var(--t1)}
   .pk-li span{display:block;margin-top:8px;font-size:clamp(15px,1.3vw,18px);color:var(--t2)}
-  .pk-mz{display:grid;grid-template-columns:minmax(0,4.6fr) minmax(0,7fr);gap:clamp(28px,4vw,64px);align-items:start;margin-top:clamp(40px,4.4vw,64px)}
-  .pk-mz-l{margin:0;padding:0;list-style:none;border-top:1px solid var(--linia)}
-  .pk-mz-l li{border-bottom:1px solid var(--linia)}
-  .pk-mz-l button{appearance:none;display:block;width:100%;padding:18px 4px 18px 18px;border:0;background:none;font:inherit;text-align:left;cursor:pointer;color:var(--t1);box-shadow:inset 3px 0 0 transparent;transition:box-shadow .3s ease,background .3s ease}
-  .pk-mz-l button:hover .t{color:var(--ziel-c)}
-  .pk-mz-l button.on{box-shadow:inset 3px 0 0 var(--ziel)}
-  .pk-mz-l .t{display:block;font-size:clamp(17px,1.5vw,20px);font-weight:750;letter-spacing:-0.02em;line-height:1.25;transition:color .15s}
-  .pk-mz-l .d{display:none;margin-top:6px;font-size:15px;line-height:1.55;color:var(--t2);text-wrap:pretty}
-  .pk-mz-l .w{display:block;margin-top:6px;font-size:14px;color:var(--t2)}
-  .pk-mz-l .w b{font-weight:800;color:var(--t1)}
-  .pk-mz-l .w i{font-style:normal;color:var(--t3)}
-  .pk-mz-l button.on .d{display:block}
-  .pk-mz-ok{position:sticky;top:32px;border-radius:14px;overflow:hidden;background:#FAF9F7;box-shadow:0 0 0 1px rgba(15,26,20,0.12),0 50px 100px -60px rgba(8,26,17,0.5)}
-  .pk-mz-sc{position:relative}
-  .pk-mz-s{display:none}
-  .pk-mz-s.on{display:block}
-  @media (max-width:900px){
-    .pk-mz{grid-template-columns:minmax(0,1fr)}
-    .pk-mz-ok{position:static;order:-1}
-  }
+  /* przykłady jak „AI na każdą potrzebę” na appto.ai: okno przeglądarki na tle */
+  .pk-mz2{margin-top:clamp(32px,3.4vw,48px)}
+  .pk-mz2-st{max-width:1180px;margin:0 auto;position:relative;isolation:isolate;overflow:hidden;padding:clamp(14px,2.8vw,40px) clamp(10px,2.8vw,40px) clamp(14px,2.2vw,32px);border-radius:clamp(20px,2vw,28px);background:#C9C3D6}
+  .pk-mz2-bg{position:absolute;inset:0;z-index:-1;width:100%;height:100%;object-fit:cover}
+  .pk-mz2-s{display:none}
+  .pk-mz2-s.on{display:block}
+  .pk-mz2-pod{position:relative;min-height:3.2em;max-width:820px;margin:18px auto 0;text-align:center}
+  .pk-mz2-pod p{display:none;margin:0;font-size:15px;line-height:1.55;color:var(--t2);text-wrap:pretty}
+  .pk-mz2-pod p.on{display:block}
+  .pk-mz2-pod b{color:var(--t1);font-weight:700}
+  .pk-mz2-pod .w{color:var(--t2)}
   @media (max-width:560px){
     .pk-li b{font-size:38px}
     .pk-li span{font-size:14px}
@@ -485,8 +523,8 @@ const dane = {
 <div class="pk-pr">
 <div>
 <h2 class="v3-h2 pk-h2s">Wdrożenie AI na własną rękę to długa lista kroków</h2>
-<p class="v3-sub">Licencję kupuje się w jeden dzień. Potem ktoś musi zebrać cenniki i umowy, napisać instrukcje, podłączyć pocztę i CRM, przetestować odpowiedzi i nauczyć zespół.</p>
-<p class="v3-sub"><b>Zwykle robi to ktoś, kto ma też swoją pracę.</b> Takie wdrożenie rzadko upada od razu. Osuwa się po cichu: kolejne kroki stają, a nowych przybywa.</p>
+<p class="v3-sub">Wdrożenia AI najczęściej stoją z dwóch powodów. W firmie brakuje czasu, żeby się tym zająć, i brakuje know-how, żeby zrobić to dobrze i przekonać zespół.</p>
+<p class="v3-sub"><b>Know-how da się uzupełnić, ale bez czasu nic to nie da.</b> Wdrożenie ciągnie się wtedy miesiącami bez wyraźnego postępu. Lista pokazuje, na co idzie ten czas.</p>
 </div>
 <div class="pk-is"><ListaKrokow /></div>
 </div>
@@ -515,6 +553,7 @@ const dane = {
   </li>
 ))}
 </ol>
+<p class="pk-os-po"><b>Na koniec przekazujemy know-how.</b> Uczymy zespół, jak rozwijać agentów i instrukcje, żeby firma radziła sobie sama.</p>
 </div>
 </div>
 </section>
@@ -529,10 +568,12 @@ const dane = {
 <h2 class="v3-h2">Zespół wchodzi na gotowe</h2>
 <p class="v3-sub">Marta z firmy serwisującej klimatyzację pisze jedno polecenie. AI zbiera dane z CRM-u, notatek ze spotkania i cennika serwisu, a oferta powstaje na jej oczach.</p>
 </div>
-<div class="pk-ok sam" role="img" aria-label="Na początku sam kompozytor appto. Marta z firmy serwisującej klimatyzację klika i pisze polecenie „Przygotuj ofertę dla Strelano z szablonu Oferta serwisowa”. Kompozytor rozwija się w pełne okno appto. Appto pobiera transakcję z HubSpota, notatki ze spotkania z Fireflies i cennik serwisu z Kontekstu, otwiera ofertę i wypełnia jej pola: roczny serwis 42 jednostek klimatyzacji w trzech biurowcach za 46 740 zł netto.">
-<div class="pk-ok-bar" aria-hidden="true"><span class="pm-tl"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></span><span class="adr">app.appto.ai</span></div>
-<AppKit klasa="caly" demo />
-<AppKit klasa="czat" kadr={680} od={92} demo />
+<div class="pk-ok" role="img" aria-label="Okno appto w przeglądarce, na początku pusty czat. Marta z firmy serwisującej klimatyzację klika kompozytor i pisze polecenie „Przygotuj ofertę dla Strelano z szablonu Oferta serwisowa”. Appto pobiera transakcję z HubSpota, notatki ze spotkania z Fireflies i cennik serwisu z Kontekstu, otwiera ofertę i wypełnia jej pola: roczny serwis 42 jednostek klimatyzacji w trzech biurowcach za 46 740 zł netto.">
+<img class="pk-mz2-bg" src="/pod-klucz/tapeta.webp" alt="" width="1920" height="1080" loading="lazy" decoding="async">
+<Przegladarka karty={[{ t: 'Oferta dla Strelano — appto' }]}>
+<AppKit klasa="caly krotki" wys={740} demo />
+<AppKit klasa="czat krotki" wys={1000} kadr={620} od={66} demo />
+</Przegladarka>
 </div>
 <div class="pk-ok-wy">
 <b>{OFERTA.l}</b>
@@ -552,27 +593,23 @@ const dane = {
 <section id="mozliwosci" class="v3-sek">
 <div class="v8-gl">
 <h2 class="v3-h2">Co jeszcze może przejąć AI</h2>
-<p class="v3-sub">Oferta to jeden przykład. Tak wygląda inna praca, którą AI przejmuje w firmach usługowych. Przy części przykładów podajemy wynik u naszego klienta.</p>
+<p class="v3-sub">Oferta to jeden przykład. Wybierzcie zadanie i zobaczcie, jak AI je kończy. Przy części przykładów podajemy wynik u naszego klienta.</p>
 </div>
-<div class="pk-mz" data-mz>
-<ol class="pk-mz-l" role="tablist" aria-label="Przykłady pracy, którą przejmuje AI">
+<div class="pk-mz2" data-mz>
+<div class="pk-mz2-st">
+<img class="pk-mz2-bg" src="/pod-klucz/tapeta.webp" alt="" width="1920" height="1080" loading="lazy" decoding="async">
+<Przegladarka karty={MOZLIWE.map((m) => ({ t: m.karta, ikona: 'wise' as const }))} klikalne>
 {MOZLIWE.map((m, i) => (
-  <li><button type="button" role="tab" class={i === 0 ? 'on' : ''} aria-selected={i === 0 ? 'true' : 'false'} data-mz-b={i}>
-    <span class="t">{m.t}</span>
-    <span class="d">{m.d}</span>
-    {m.w && <span class="w"><b>{m.w.l}</b> {m.w.ld} <i>u naszego klienta</i></span>}
-  </button></li>
-))}
-</ol>
-<div class="pk-mz-ok">
-<div class="pk-ok-bar" aria-hidden="true"><span class="pm-tl"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></span><span class="adr">app.appto.ai</span></div>
-<div class="pk-mz-sc">
-{MOZLIWE.map((m, i) => (
-  <div class={i === 0 ? 'pk-mz-s on' : 'pk-mz-s'} data-mz-s={i} role="tabpanel" aria-label={`${m.t}. ${m.d}`}>
-    <CzatScena {...m.s} />
+  <div class={i === 0 ? 'pk-mz2-s on' : 'pk-mz2-s'} data-mz-s={i} role="tabpanel" aria-label={`${m.karta}. ${m.d}`}>
+    <OknoPrzyklad tytul={m.tytul} przed={m.przed} poprawka={m.poprawka} plik={m.plik} />
   </div>
 ))}
+</Przegladarka>
 </div>
+<div class="pk-mz2-pod">
+{MOZLIWE.map((m, i) => (
+  <p class={i === 0 ? 'on' : ''} data-mz-p={i}><b>{m.karta}.</b> {m.d}{m.w && <span class="w"> Wynik u naszego klienta: <b>{m.w.l}</b> {m.w.ld}.</span>}</p>
+))}
 </div>
 </div>
 <div class="pk-li">
@@ -621,7 +658,7 @@ const dane = {
 <!-- ============ 7 · FORMULARZ ============ -->
 <Kontakt
   tytul={CTA}
-  lead="Pierwszy krok to bezpłatna diagnoza. Napiszcie, co AI ma przejąć najpierw, a Piotr oddzwoni w jeden dzień roboczy i umówi termin."
+  lead="Przerwijmy pętlę braku czasu. Zaczynamy od bezpłatnej diagnozy: napiszcie, co AI ma przejąć najpierw, a Piotr oddzwoni w jeden dzień roboczy i umówi termin."
   zrodlo={ZRODLO}
   pytanie="Co AI ma przejąć najpierw?"
   podpowiedz="Np. oferty: handlowcy składają je z CRM-u i cennika. 15 osób, pracujemy w Microsoft 365…"
@@ -822,17 +859,16 @@ const dane = {
   })();
 
   // ---- APPTO: praca od stanu „przed” (studio/ZASADY.md) ----
-  // v3: na początku sam kompozytor (bez okna appto). Wchodzi kursor Marty,
-  // klika, pisze polecenie i wysyła; kompozytor rozwija się w pełne okno,
-  // potem kroki z HubSpota, notatek i Kontekstu, dokument wjeżdża z prawej
+  // v4: od początku pełny ekran appto w oknie przeglądarki, pusty czat (v3 miał
+  // sam kompozytor, Szymon: „toporne”). Wchodzi kursor Marty, klika, pisze
+  // polecenie i wysyła; potem kroki z HubSpota, notatek i Kontekstu, dokument wjeżdża z prawej
   // i jego pola wypełniają się po kolei, na końcu „Gotowe” z kartą dokumentu.
-  // Pętla, póki scena jest w kadrze; po wyjściu z kadru wraca do kompozytora.
+  // Pętla, póki scena jest w kadrze; po wyjściu z kadru wraca do pustego czatu.
   // Przy ograniczonym ruchu stan końcowy.
   (function(){
     var kity = Array.prototype.slice.call(document.querySelectorAll('[data-ak-demo]')) as HTMLElement[];
     if(!kity.length) return;
-    function rama(ak: HTMLElement, sam: boolean){ var r = ak.closest('.pk-ok'); if(r && ak.offsetParent) r.classList.toggle('sam', sam); }
-    if(redukcja || !('IntersectionObserver' in window)){ kity.forEach(function(ak){ ak.classList.remove('gra', 'sam'); var r = ak.closest('.pk-ok'); if(r) r.classList.remove('sam'); }); return; }
+    if(redukcja || !('IntersectionObserver' in window)){ kity.forEach(function(ak){ ak.classList.remove('gra'); }); return; }
     kity.forEach(function(ak){
       var pole = ak.querySelector('[data-w="w-composer-text"]') as HTMLElement;
       var msg = ak.querySelector('[data-w="w-msg1"]') as HTMLElement;
@@ -842,9 +878,10 @@ const dane = {
       var wzmianka = msg.querySelector('.w-mention') as HTMLElement;
       var tekst = (msg.firstChild && msg.firstChild.textContent) || '';
       var pusto = pole.innerHTML, tytulKoniec = tytul.textContent || '';
-      // cel kursora: pole tekstowe kompozytora w stanie „sam” (px logiczne kitu)
+      // cel kursora: pole tekstowe kompozytora na dole pustego czatu (px logiczne kitu)
       var czat = ak.classList.contains('czat');
-      var cel = czat ? [190, 530] : [720, 530], skad = czat ? [640, 980] : [1480, 980];
+      var wys = parseFloat(getComputedStyle(ak).getPropertyValue('--kh')) || 1080;
+      var cel = czat ? [190, wys - 125] : [720, wys - 125], skad = czat ? [600, wys - 330] : [1500, wys - 330];
       var timery: number[] = [], widac = false;
       function czysc(){ timery.forEach(function(t){ clearTimeout(t); }); timery = []; }
       function po(ms: number, fn: () => void){ timery.push(window.setTimeout(fn, ms)); }
@@ -861,8 +898,7 @@ const dane = {
       function kursor(x: number, y: number, bez?: boolean){ kur.classList.toggle('bez', !!bez); kur.style.setProperty('--kx', x + 'px'); kur.style.setProperty('--ky', y + 'px'); }
       function przed(){
         czysc();
-        ak.classList.add('gra', 'sam');
-        rama(ak, true);
+        ak.classList.add('gra');
         ak.classList.remove('wyslij');
         faza(0);
         pola.forEach(function(f){ f.classList.add('pusty'); });
@@ -887,7 +923,7 @@ const dane = {
         t += 700;
         po(t, function(){ ak.classList.add('wyslij'); kur.classList.add('klik'); kursor(cel[0] + (czat ? 420 : 560), cel[1]); });
         po(t + 150, function(){ kur.classList.remove('klik'); });
-        po(t + 300, function(){ ak.classList.remove('wyslij'); pole.innerHTML = pusto; ak.classList.remove('sam'); rama(ak, false); kur.classList.remove('on'); });
+        po(t + 300, function(){ ak.classList.remove('wyslij'); pole.innerHTML = pusto; kur.classList.remove('on'); });
         po(t + 1000, function(){ tytul.textContent = tytulKoniec; faza(1); });
         po(t + 1800, function(){ faza(2); });
         po(t + 2500, function(){ faza(3); });
@@ -909,43 +945,60 @@ const dane = {
     });
   })();
 
-  // ---- CO JESZCZE MOŻE PRZEJĄĆ AI: jedna scena, przykłady po kolei ----
-  // Wybrany przykład gra od pustego okna: polecenie, kroki, wynik. Potem
-  // chwila na przeczytanie i następny przykład. Kliknięcie wybiera przykład
-  // i zatrzymuje przełączanie. Poza kadrem stoi. Przy ograniczonym ruchu
-  // każdy przykład stoi w stanie końcowym.
+  // ---- CO JESZCZE MOŻE PRZEJĄĆ AI: karty przeglądarki jak na appto.ai ----
+  // Wybrana karta: wątek stoi zrobiony, po chwili poprawka pisana w kompozytorze,
+  // wysłana, kroki, odpowiedź i zmiana w pliku. Potem następna karta; pasek
+  // na karcie pokazuje, ile zostało. Kliknięcie wybiera kartę i zatrzymuje
+  // przełączanie. Poza kadrem stoi. Przy ograniczonym ruchu stan po poprawce.
   (function(){
     var mz = document.querySelector('[data-mz]') as HTMLElement | null;
     if(!mz) return;
-    var przyciski = Array.prototype.slice.call(mz.querySelectorAll('[data-mz-b]')) as HTMLElement[];
+    var karty = Array.prototype.slice.call(mz.querySelectorAll('[data-karta]')) as HTMLElement[];
     var sceny = Array.prototype.slice.call(mz.querySelectorAll('[data-mz-s]')) as HTMLElement[];
-    var cz = sceny.map(function(s){ return s.querySelector('[data-cz]') as HTMLElement; });
+    var podpisy = Array.prototype.slice.call(mz.querySelectorAll('[data-mz-p]')) as HTMLElement[];
+    var okna = sceny.map(function(s){ return s.querySelector('[data-op]') as HTMLElement; });
     var biez = 0, timery: number[] = [], widac = false, sam = true;
     function czysc(){ timery.forEach(function(t){ clearTimeout(t); }); timery = []; }
     function po(ms: number, fn: () => void){ timery.push(window.setTimeout(fn, ms)); }
+    function koniec(o: HTMLElement){ var n = +(o.dataset.fazy || 3); for(var k = 1; k <= n; k++) o.classList.add('f' + k); o.classList.add('zmiana'); }
+    function zeruj(o: HTMLElement){ for(var k = 1; k <= 8; k++) o.classList.remove('f' + k); o.classList.remove('zmiana', 'wyslij'); var pole = o.querySelector('[data-op-pole]') as HTMLElement; pole.innerHTML = '<span class="w-composer-ph">Pokieruj agentem…</span>'; }
     function pokaz(i: number){
       biez = i;
-      przyciski.forEach(function(b, j){ b.classList.toggle('on', i === j); b.setAttribute('aria-selected', i === j ? 'true' : 'false'); });
+      karty.forEach(function(b, j){ b.classList.toggle('is-on', i === j); b.classList.remove('gra'); b.setAttribute('aria-selected', i === j ? 'true' : 'false'); });
       sceny.forEach(function(s, j){ s.classList.toggle('on', i === j); });
-      // skala sceny liczy się dopiero, kiedy jest widoczna
+      podpisy.forEach(function(p, j){ p.classList.toggle('on', i === j); });
       window.dispatchEvent(new Event('resize'));
     }
     function graj(i: number){
       czysc();
       pokaz(i);
-      var c = cz[i], n = +(c.dataset.fazy || 1);
-      if(redukcja){ c.classList.add('gotowe'); return; }
-      for(var k = 1; k <= 7; k++) c.classList.remove('f' + k);
-      for(var f = 1; f <= n; f++){ (function(f){ po(400 + f * 850, function(){ c.classList.add('f' + f); }); })(f); }
-      if(sam) po(400 + n * 850 + 4200, function(){ if(widac) graj((biez + 1) % sceny.length); });
+      var o = okna[i];
+      if(redukcja){ koniec(o); return; }
+      zeruj(o);
+      var pole = o.querySelector('[data-op-pole]') as HTMLElement, tekst = o.dataset.pol || '', n = +(o.dataset.fazy || 3);
+      var t = 1400;
+      po(t - 150, function(){ pole.innerHTML = '<span class="ak-kursor"></span>'; });
+      for(var c = 1; c <= tekst.length; c++){
+        (function(c){ po(t + c * 40, function(){ pole.textContent = tekst.slice(0, c); var k = document.createElement('span'); k.className = 'ak-kursor'; pole.appendChild(k); }); })(c);
+      }
+      t += tekst.length * 40 + 500;
+      po(t, function(){ o.classList.add('wyslij'); });
+      po(t + 250, function(){ o.classList.remove('wyslij'); pole.innerHTML = '<span class="w-composer-ph">Pokieruj agentem…</span>'; });
+      for(var f = 1; f <= n; f++){ (function(f){ po(t + 250 + f * 750, function(){ o.classList.add('f' + f); }); })(f); }
+      t += 250 + n * 750 + 400;
+      po(t, function(){ o.classList.add('zmiana'); });
+      var calosc = t + 4200;
+      var karta = karty[i];
+      karta.style.setProperty('--czas', calosc + 'ms');
+      if(sam){ requestAnimationFrame(function(){ requestAnimationFrame(function(){ karta.classList.add('gra'); }); }); po(calosc, function(){ if(widac) graj((biez + 1) % sceny.length); }); }
     }
-    przyciski.forEach(function(b, i){
+    karty.forEach(function(b, i){
       b.addEventListener('click', function(){ sam = false; graj(i); });
       b.addEventListener('keydown', function(e){
-        if(e.key === 'ArrowDown' || e.key === 'ArrowUp'){ e.preventDefault(); var j = (i + (e.key === 'ArrowDown' ? 1 : -1) + przyciski.length) % przyciski.length; sam = false; graj(j); przyciski[j].focus(); }
+        if(e.key === 'ArrowRight' || e.key === 'ArrowLeft'){ e.preventDefault(); var j = (i + (e.key === 'ArrowRight' ? 1 : -1) + karty.length) % karty.length; sam = false; graj(j); karty[j].focus(); }
       });
     });
-    if(!('IntersectionObserver' in window)){ cz.forEach(function(c){ c.classList.add('gotowe'); }); return; }
+    if(!('IntersectionObserver' in window)){ okna.forEach(koniec); return; }
     new IntersectionObserver(function(w){
       var teraz = w[0].isIntersecting;
       if(teraz && !widac){ widac = true; graj(biez); }

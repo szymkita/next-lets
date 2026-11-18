@@ -88,7 +88,7 @@ const zespolHtml = ZESPOL.map((o, i) => {
     : `<div class="w-msg-wise pz-f3">${o.odp}</div>`;
   const wzm = o.wzm ? ` <span class="w-mention">${PLIK}${o.wzm}</span>` : '';
   return `<div class="pz-w" data-pz="${i}" style="left:${ZX[i]}px;top:${ZY}px;width:${ZW}px;height:${ZH}px">
-<div class="pm-tbar"><span class="pm-tl"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></span><span class="pm-tt">appto</span><span class="pz-av" style="background:${o.kol};color:${o.tx}">${o.in}</span></div>
+<div class="rw-tabs pz-tabs"><span class="rw-dots"><i></i><i></i><i></i></span><span class="rw-tab is-on"><img class="rw-fav rw-fav--appto" src="/pod-klucz/kit/appto-sygnet.svg" alt=""><span>appto</span><i>×</i></span><span class="pz-av" style="background:${o.kol};color:${o.tx}">${o.in}</span></div>
 <div class="w-app pz-app" style="transform:scale(${ZS.toFixed(4)})"><div class="pz-chat">
 <div class="w-msg-user pz-f1" data-pz-msg>${o.pol}${wzm}</div>
 <div class="w-steps"><div class="w-steps-head pz-f2"><img class="w-wise" src="/pod-klucz/kit/wise-avatar.svg" alt=""><span>${o.dok ? 'Appto wypełnia szablon' : 'Appto sprawdza'}</span></div>${kroki}</div>
@@ -97,7 +97,7 @@ ${wynik}
 </div></div></div>`;
 }).join('');
 // Kursory: cel kliknięcia = pole tekstowe kompozytora danego okna (współrzędne sceny).
-const celKursora = (i: number) => d2s(ZX[i] + 150 * ZS, ZY + 30 + (ZH - 30) - 100 * ZS);
+const celKursora = (i: number) => d2s(ZX[i] + 150 * ZS, ZY + ZH - 100 * ZS);
 const KURSORY = ZESPOL.map((o, i) => {
   const [cx, cy] = celKursora(i);
   const start = [[150, 880], [560, 890], [940, 880]][i];
@@ -240,9 +240,12 @@ const KURSORY = ZESPOL.map((o, i) => {
   .pz-w{position:absolute;background:#FAF9F7;border-radius:10px;overflow:hidden;box-shadow:0 0 0 .5px rgba(0,0,0,.2),0 20px 50px -10px rgba(0,0,0,.4);opacity:0;transform:translateY(16px) scale(.97);transition:opacity .5s ease calc(var(--d,0) * 1ms),transform .7s cubic-bezier(.2,.8,.2,1) calc(var(--d,0) * 1ms)}
   .pz-w:nth-child(2){--d:150}.pz-w:nth-child(3){--d:300}
   .pm.zespol .pz-w,.pm.stat .pz-w{opacity:1;transform:none}
-  .pz-w .pm-tbar{height:28px;background:#ECEAE6}
-  .pz-av{position:relative;z-index:2;margin-left:auto;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-size:8px;font-weight:700}
-  .pz-app{position:absolute !important;left:0;top:28px !important;width:700px !important;height:883px !important;transform-origin:0 0;border-radius:0 !important;box-shadow:none !important}
+  /* pasek okna jak w scenach appto niżej (Przegladarka.astro, wzór z appto.ai) */
+  .pz-tabs{height:34px !important;padding:0 8px 0 10px !important}
+  .pz-tabs .rw-tab{height:28px;margin-top:6px;flex:0 1 170px;font-size:12px}
+  .pz-tabs .pz-av{align-self:center}
+  .pz-av{position:relative;z-index:2;margin-left:auto;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-size:8px;font-weight:700}
+  .pz-app{position:absolute !important;left:0;top:34px !important;width:700px !important;height:872px !important;transform-origin:0 0;border-radius:0 !important;box-shadow:none !important}
   .pz-chat{position:absolute;inset:0;padding:34px}
   .pz-f1,.pz-f2,.pz-f3{opacity:0;transform:translateY(12px);transition:opacity .45s ease,transform .5s cubic-bezier(.2,.7,.2,1)}
   .pz-w.f1 .pz-f1,.pz-w.f2 .pz-f2,.pz-w.f3 .pz-f3,.pm.stat .pz-f1,.pm.stat .pz-f2,.pm.stat .pz-f3{opacity:1;transform:none}

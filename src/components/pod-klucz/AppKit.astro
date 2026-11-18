@@ -22,7 +22,7 @@ interface Props {
 const { szer = 1920, wys = 1080, kadr = szer, od = 0, skala, klasa = '', demo = false } = Astro.props;
 const styl = `--kw:${szer}px;--kh:${wys}px;--kk:${kadr};--ko:${od};aspect-ratio:${kadr} / ${wys};` + (skala ? `--s:${skala};` : '');
 ---
-<div class={`ak ${klasa}${demo ? ' gra sam' : ''}`} style={styl} data-ak-skaluj={skala ? undefined : ''} data-ak-demo={demo ? '' : undefined} aria-hidden="true">
+<div class={`ak ${klasa}${demo ? ' gra' : ''}`} style={styl} data-ak-skaluj={skala ? undefined : ''} data-ak-demo={demo ? '' : undefined} aria-hidden="true">
 <div class="ak-in"><Fragment set:html={KIT_MARKUP} />
 {demo && (
   <div class="ak-kur" data-ak-kur>
@@ -32,17 +32,16 @@ const styl = `--kw:${szer}px;--kh:${wys}px;--kk:${kadr};--ko:${od};aspect-ratio:
 )}
 </div>
 </div>
-{demo && <noscript><style is:inline>.ak.gra [data-w]{opacity:1 !important;transform:none !important}.ak.gra .w-check{transform:none !important}.ak.sam .w-rail,.ak.sam .w-top{opacity:1 !important}.ak.sam .w-app{background:#FAF9F7 !important}.pk-ok.sam{background:#FAF9F7 !important}.pk-ok.sam .pk-ok-bar{opacity:1 !important}.ak-kur{display:none}</style></noscript>}
+{demo && <noscript><style is:inline>.ak.gra [data-w]{opacity:1 !important;transform:none !important}.ak.gra .w-check{transform:none !important}.ak-kur{display:none}</style></noscript>}
 
 <style is:global>
   .ak{position:relative;overflow:hidden;width:100%;--s:0.4}
   .ak-in{position:absolute;left:0;top:0;width:var(--kw);height:var(--kh);transform:scale(var(--s)) translateX(calc(var(--ko,0) * -1px));transform-origin:0 0}
   .ak .w-app{width:var(--kw);height:var(--kh);border-radius:0;box-shadow:none}
   /* ---- demo: praca od stanu „przed” (studio/ZASADY.md) ----
-     Kit z `demo` startuje już w HTML jako sam kompozytor (klasy .gra .sam):
-     bez okna, paska bocznego, rozmowy i dokumentu, żeby gotowa oferta nie
-     mignęła przy przewijaniu. Kursor Marty klika i pisze polecenie, po
-     wysłaniu kompozytor rozwija się w pełne okno appto (v3, 18.11). Fazy f1…f7 nadaje skrypt strony: polecenie, kroki,
+     Kit z `demo` startuje już w HTML jako pusty czat w pełnym oknie appto
+     (klasa .gra), bez rozmowy i bez dokumentu, żeby gotowa oferta nie
+     mignęła przy przewijaniu. Kursor Marty klika i pisze polecenie (v4). Fazy f1…f7 nadaje skrypt strony: polecenie, kroki,
      dokument wjeżdża z prawej i jego pola wypełniają się po kolei, na końcu
      odpowiedź „Gotowe” z kartą dokumentu.
      Bez skryptu (noscript) i przy ograniczonym ruchu stoi stan końcowy. */
@@ -61,15 +60,11 @@ const styl = `--kw:${szer}px;--kh:${wys}px;--kk:${kadr};--ko:${od};aspect-ratio:
   .ak.caly.gra:not(.f6) [data-w="w-chat"]{transform:translateX(534px)}
   .ak [data-w="w-pane"]{transition:opacity .5s ease .25s,transform .9s cubic-bezier(.2,.8,.2,1) .1s}
   .ak.gra:not(.f6) [data-w="w-pane"]{opacity:0;transform:translateX(120px)}
-  /* sam kompozytor: okno appto jeszcze się nie rozwinęło */
-  .ak .w-app{transition:background .6s ease}
-  .ak .w-rail,.ak .w-top{transition:opacity .6s ease .25s}
-  .ak [data-w="w-composer"]{transition:transform .9s cubic-bezier(.65,0,.35,1),box-shadow .6s ease}
-  .ak.sam .w-app{background:transparent}
-  .ak.sam .w-rail,.ak.sam .w-top{opacity:0;transition-delay:0s}
-  .ak.sam [data-w="w-composer"]{transform:translateY(-430px) scale(1.12);box-shadow:0 30px 70px -30px rgba(8,26,17,.45),0 0 0 1px rgba(20,20,20,.06)}
-  /* na telefonie kadr czatu jest wąski: bez powiększenia, żeby kompozytor nie dotykał krawędzi */
-  .ak.czat.sam [data-w="w-composer"]{transform:translateY(-430px)}
+  /* niski kadr (scena oferty na stronie): po odpowiedzi wątek przewija się
+     w górę jak w czacie, żeby karta dokumentu nie weszła pod kompozytor */
+  .ak.krotki [data-w="w-chat"]{overflow:hidden;-webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 40px);mask-image:linear-gradient(to bottom,transparent 0,#000 40px)}
+  .ak.krotki [data-w="w-msg1"]{transition:opacity .45s ease,transform .5s cubic-bezier(.2,.7,.2,1),margin-top .7s cubic-bezier(.3,.6,.3,1)}
+  .ak.krotki.f7 [data-w="w-msg1"]{margin-top:-260px}
   /* kursor osoby z zespołu (jak w Figmie), w px logicznych kitu */
   .ak-kur{position:absolute;left:0;top:0;z-index:30;display:flex;align-items:flex-start;gap:2px;opacity:0;transform:translate(var(--kx,1500px),var(--ky,1000px));transition:transform 1.2s cubic-bezier(.45,0,.2,1),opacity .4s ease;pointer-events:none}
   .ak-kur.bez{transition:opacity .4s ease}
