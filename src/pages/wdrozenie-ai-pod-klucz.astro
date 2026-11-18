@@ -1083,17 +1083,7 @@ const dane = {
     [hero, kontakt, faq].forEach(function(s){ if(s) io.observe(s); });
   })();
 
-  // ---- Meta: zdarzenie „Lead” po wysłanym formularzu ----
-  // Moduł Kontakt wysyła `la:pomiar` z `formularz_sukces`. Piksel ładuje
-  // Zgody.astro dopiero po zgodzie na marketing; bez zgody nic nie idzie.
-  // Ten sam sukces trafia do GTM (dataLayer `formularz_wyslany`) — jeśli
-  // kontener GTM ma już tag „Lead”, ten fragment trzeba wyłączyć, żeby nie
-  // liczyć zgłoszeń podwójnie.
-  document.addEventListener('la:pomiar', function(e){
-    var d = (e as CustomEvent).detail || {};
-    if(d.event !== 'formularz_sukces') return;
-    var w = window as any;
-    try { if(typeof w.fbq === 'function') w.fbq('track', 'Lead', { content_name: 'Wdrożenie AI pod klucz' }); } catch(err){}
-  });
+  // Meta „Lead” po wysłanym formularzu wysyła teraz Zgody.astro dla
+  // wszystkich formularzy na stronie (przeglądarka + Conversions API).
 </script>
 </LaBase>

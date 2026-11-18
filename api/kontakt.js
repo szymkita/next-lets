@@ -17,6 +17,58 @@
 // wszystkie padły, funkcja zwraca 503/502, a formularz pokazuje telefon
 // i adres mailowy — zgłoszenie nie ginie po cichu.
 import { put } from '@vercel/blob';
+import { createHash } from 'node:crypto';
+
+// Meta Conversions API: po przyjętym zgłoszeniu wysyłamy Lead z serwera na
+// piksel letsautomate.pl, z tym samym event_id, z którym Lead wysyła
+// przeglądarka (Zgody.astro), więc Meta liczy jedno zgłoszenie. Tylko gdy
+// ktoś zgodził się w banerze na marketing (`meta.zgoda`) i jest token
+// META_CAPI_TOKEN (Vercel env, production; z Menedżera zdarzeń piksela).
+// Błąd Mety nigdy nie psuje zgłoszenia: najwyżej wpis w logu.
+const META_PIKSEL = '419937373267135';
+const SHA = (v) => createHash('sha256').update(v).digest('hex');
+
+async function wyslijDoMety(req, { email, telefon, zrodlo, meta }) {
+  const token = process.env.META_CAPI_TOKEN;
+  if (!token || !meta || meta.zgoda !== true) return;
+  const id = CZYSC(meta.event_id, 80);
+  if (!id) return;
+  const cyfry = telefon.replace(/\D/g, '');
+  const ph = cyfry.length === 9 ? '48' + cyfry : cyfry.replace(/^00/, '');
+  const ip = String(req.headers['x-forwarded-for'] || '').split(',')[0].trim();
+  const user_data = {
+    em: [SHA(email.trim().toLowerCase())],
+    ...(ph.length >= 9 ? { ph: [SHA(ph)] } : {}),
+    ...(ip ? { client_ip_address: ip } : {}),
+    ...(req.headers['user-agent'] ? { client_user_agent: CZYSC(req.headers['user-agent'], 500) } : {}),
+    ...(meta.fbp ? { fbp: CZYSC(meta.fbp, 200) } : {}),
+    ...(meta.fbc ? { fbc: CZYSC(meta.fbc, 500) } : {}),
+  };
+  const url = CZYSC(meta.url, 500);
+  const cialo = {
+    data: [{
+      event_name: 'Lead',
+      event_time: Math.floor(Date.now() / 1000),
+      event_id: id,
+      action_source: 'website',
+      ...(/^https:\/\/(www\.)?letsautomate\.pl\//.test(url) ? { event_source_url: url } : {}),
+      user_data,
+      custom_data: { content_name: zrodlo.split(' · ')[0].slice(0, 120) },
+    }],
+    ...(meta.test ? { test_event_code: CZYSC(meta.test, 40) } : {}),
+  };
+  try {
+    const odp = await fetch(`https://graph.facebook.com/v27.0/${META_PIKSEL}/events`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(cialo),
+      signal: AbortSignal.timeout(3000),
+    });
+    if (!odp.ok) console.error('[kontakt] Meta CAPI:', odp.status, (await odp.text()).slice(0, 400));
+  } catch (e) {
+    console.error('[kontakt] Meta CAPI nie odpowiada:', e && e.message);
+  }
+}
 
 
 const CZYSC = (v, max) => String(v == null ? '' : v).replace(/\s+/g, ' ').trim().slice(0, max);
@@ -148,6 +200,8 @@ export default async function handler(req, res) {
   }
   // Część kanałów padła (np. webhook), ale zgłoszenie jest zapisane gdzie indziej.
   if (padly.length) console.error('[kontakt] nie wszystkie kanały zadziałały:', padly);
+
+  await wyslijDoMety(req, { email, telefon, zrodlo, meta: dane.meta && typeof dane.meta === 'object' ? dane.meta : null });
 
   return res.status(200).json({ ok: true });
 }

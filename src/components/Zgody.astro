@@ -94,6 +94,51 @@
     if (ref) localStorage.setItem('referrer', ref);
   } catch (e) {}
 
+  // ---- Meta: Lead z przeglądarki i z serwera (Conversions API) ----
+  // Każdy formularz na stronie wysyła POST na /api/kontakt. Tu, w jednym
+  // miejscu, dokładamy do tego zgłoszenia pole `meta` (event_id, ciasteczka
+  // _fbp/_fbc, adres strony, zgoda na marketing). Po udanej odpowiedzi
+  // przeglądarka wysyła Lead z tym samym event_id, a api/kontakt.js wysyła
+  // go z serwera. Meta skleja oba w jedno zgłoszenie. Bez zgody na
+  // marketing nie idzie ani jedno, ani drugie.
+  var METAHOST = /^(www\.)?letsautomate\.pl$/.test(location.hostname);
+  function metaTest(){
+    try {
+      var k = new URLSearchParams(location.search).get('meta_test');
+      if (k) sessionStorage.setItem('meta_test', k);
+      return sessionStorage.getItem('meta_test') || '';
+    } catch (e) { return ''; }
+  }
+  metaTest();
+  function ciastko(n){
+    var m = document.cookie.match(new RegExp('(?:^|; )' + n + '=([^;]*)'));
+    return m ? decodeURIComponent(m[1]) : '';
+  }
+  if (window.fetch && !window.fetch.laMeta) {
+    var fetchPierwotny = window.fetch;
+    var fetchMeta = function(url, opcje){
+      var dane = null;
+      try {
+        if (typeof url === 'string' && /\/api\/kontakt$/.test(url.split('?')[0]) && opcje && typeof opcje.body === 'string') dane = JSON.parse(opcje.body);
+      } catch (e) { dane = null; }
+      if (!dane || typeof dane !== 'object') return fetchPierwotny.apply(this, arguments);
+      var zgoda = !!(zapis && zapis.ad_storage === 'granted') && (METAHOST || !!metaTest());
+      var id = 'lead-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
+      dane.meta = { event_id: id, zgoda: zgoda, url: location.href.slice(0, 500), fbp: ciastko('_fbp'), fbc: ciastko('_fbc'), test: metaTest() };
+      var nowe = Object.assign({}, opcje, { body: JSON.stringify(dane) });
+      return fetchPierwotny.call(this, url, nowe).then(function(odp){
+        if (odp && odp.ok && zgoda) {
+          try {
+            if (typeof window.fbq === 'function') window.fbq('track', 'Lead', { content_name: String(dane.zrodlo || '').split(' · ')[0] }, { eventID: id });
+          } catch (e) {}
+        }
+        return odp;
+      });
+    };
+    fetchMeta.laMeta = true;
+    window.fetch = fetchMeta;
+  }
+
   var zaladowane = {};
   var NARZEDZIA = {
     statystyki: function(){
@@ -102,6 +147,10 @@
       wstaw('https://static.hotjar.com/c/hotjar-2886465.js?sv=6');
     },
     marketing: function(){
+      // Piksel tylko na prawdziwej stronie. Do 18.11.2026 podglądy z Maca
+      // (localhost, 127.0.0.1) dawały 2/3 zdarzeń piksela. Do testu
+      // na innym adresie: ?meta_test=<kod z „Testowanie zdarzeń”>.
+      if (!METAHOST && !metaTest()) return;
       if (!window.fbq) {
         var n = window.fbq = function(){ n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments); };
         if (!window._fbq) window._fbq = n;
