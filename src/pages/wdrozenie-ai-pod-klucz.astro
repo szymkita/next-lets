@@ -11,9 +11,11 @@
 //
 // Osobna strona zamiast rozbudowy /wdrozenie-ai: /wdrozenie-ai sprzedaje
 // wybór narzędzia AI dla całej firmy (próba Copilot/Gemini/ChatGPT/Appto,
-// przykład hurtowni) i ma inną obietnicę. Ta strona przedłuża jedną reklamę,
-// więc ma odchudzony nagłówek (logo, telefon, jeden przycisk), jest poza
-// menu i poza sitemapą, z noindex.
+// przykład hurtowni) i ma inną obietnicę. Ta strona przedłuża jedną reklamę.
+// Od 18.11.2026 (Szymon: „to chyba tak zróbmy”) jest w strukturze serwisu:
+// pierwsza pozycja pasa „Wdrażamy AI” w menu Usługi, link pod tą drogą na
+// stronie głównej i blok „Całość za Was” na /strategia-ai, /wdrozenie-ai
+// i /szkolenia-ai; pełne menu, w sitemapie, bez noindex.
 //
 // Wzorzec techniczny: /integracja-systemow-z-ai (strona pod film z posta).
 // Formularz: moduł Kontakt (POST /api/kontakt: e-mail, telefon, opis).
@@ -70,8 +72,6 @@ const description = 'Przytłacza Cię wdrażanie AI w firmie? Zrobimy to za Was.
 // „bezpłatna diagnoza” (Sztab d-pierwszy-krok, otwarta).
 const CTA = 'Zbudujmy plan wdrożenia';
 const CTA_POD = 'Zaczynamy od bezpłatnej diagnozy. Po niej dostajecie plan z ceną pierwszego etapu.';
-const TEL = '+48 571 399 932';
-const TEL_H = 'tel:+48571399932';
 const dwa = (n: number) => String(n).padStart(2, '0');
 
 // Plan wdrożenia: tytuły (t) słowo w słowo z reklamy, podpisy (p) też,
@@ -249,6 +249,10 @@ const faq = [
     q: 'Czy diagnoza zobowiązuje do współpracy?',
     a: 'Nie. Plan zostaje u Was. Możecie go zrealizować z własnym zespołem albo z inną firmą.',
   },
+  {
+    q: 'Czym to się różni od Let’s Up i Let’s Shift?',
+    a: 'Wdrożenie pod klucz ustawia AI w narzędziach i procesach, które już macie. Programy <a href="/lets-up" style="font-weight:700;color:#0a7a52">Let’s Up</a> i <a href="/lets-shift" style="font-weight:700;color:#0a7a52">Let’s Shift</a> idą dalej: oprócz AI wymieniają albo budują systemy, na których pracuje firma.',
+  },
 ];
 
 const kanon = new URL(ADRES, Astro.site).href;
@@ -265,33 +269,34 @@ const dane = {
       provider: { '@id': new URL('/#organizacja', Astro.site).href },
       areaServed: { '@type': 'Country', name: 'Polska' },
     },
+    {
+      '@type': 'BreadcrumbList',
+      '@id': `${kanon}#okruszki`,
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Strona główna', item: new URL('/', Astro.site).href },
+        { '@type': 'ListItem', position: 2, name: 'Wdrożenie AI pod klucz', item: kanon },
+      ],
+    },
+    {
+      '@type': 'FAQPage',
+      '@id': `${kanon}#faq`,
+      mainEntity: faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a.replace(/<[^>]+>/g, '') } })),
+    },
   ],
 };
 ---
-<LaBase topbar={false} naglowek={false} noindex={true} title={title} description={description} ctaHref="#kontakt" nav={null}>
+<LaBase topbar={false} title={title} description={description} ctaHref="#kontakt" nav="uslugi">
 <script type="application/ld+json" is:inline set:html={JSON.stringify(dane)} slot="head"></script>
 <KitStyl slot="head" />
 <style is:global slot="head">
   /* =====================================================================
-     NAGŁÓWEK STRONY REKLAMOWEJ: logo, telefon, jeden przycisk
-     ===================================================================== */
-  .pk-top{position:relative;z-index:3;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:clamp(18px,2.2vw,28px) 0}
-  .pk-top img{display:block;height:30px;width:auto}
-  .pk-top-r{display:flex;align-items:center;gap:clamp(14px,2vw,28px)}
-  .pk-tel{font-size:15px;font-weight:650;color:rgba(255,255,255,0.78);transition:color .15s}
-  .pk-tel:hover{color:#ffffff}
-  .pk-top .v3-btn{font-size:15px;padding:7px 7px 7px 20px;gap:12px}
-  .pk-top .v3-btn span{width:32px;height:32px}
-  @media (max-width:720px){ .pk-tel{display:none} .pk-top .v3-btn{display:none} .pk-top img{height:26px} }
-
-  /* =====================================================================
      HERO: pytanie z reklamy i kadr z reklamy w pętli
      ===================================================================== */
-  .pk-hero{position:relative;overflow:hidden;padding:0 var(--pad) clamp(28px,3vw,40px);background:
+  .pk-hero{position:relative;overflow:hidden;padding:clamp(28px,3.4vw,52px) var(--pad) clamp(28px,3vw,40px);background:
       radial-gradient(900px 560px at 86% 70%,rgba(0,205,119,0.16),rgba(0,205,119,0) 70%),
       radial-gradient(700px 420px at 4% -10%,rgba(0,205,119,0.06),rgba(0,205,119,0) 70%),
       var(--ink);color:#ffffff}
-  .pk-hero-in{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6.4fr);grid-template-areas:"t v" "r v";column-gap:clamp(32px,5vw,88px);align-items:center;margin-top:clamp(20px,3.4vw,56px)}
+  .pk-hero-in{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6.4fr);grid-template-areas:"t v" "r v";column-gap:clamp(32px,5vw,88px);align-items:center;margin-top:0}
   .pk-ht{grid-area:t;align-self:end}
   .pk-hr{grid-area:r;align-self:start}
   .pk-kadr{grid-area:v}
@@ -468,13 +473,6 @@ const dane = {
      Nagłówek = pytanie z reklamy (?h= podmienia go na inny hak z testu,
      skrypt zaraz pod nagłówkiem). Kadr z reklamy w pętli obok. -->
 <section class="pk-hero" id="start">
-<header class="pk-top">
-<a href="/" aria-label="Let's automate — strona główna"><img src="/pod-klucz/la-logo-light.svg" alt="Let's automate" width="190" height="30"></a>
-<div class="pk-top-r">
-<a class="pk-tel" href={TEL_H}>{TEL}</a>
-<a href="#kontakt" class="v3-btn">{CTA} <span aria-hidden="true">→</span></a>
-</div>
-</header>
 <div class="pk-hero-in">
 <div class="pk-ht">
 <span class="pk-ety">Wdrożenie AI pod klucz</span>

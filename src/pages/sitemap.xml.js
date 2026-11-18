@@ -12,6 +12,7 @@ const STRONY = [
   { u: '/', p: '1.0' },
   { u: '/strategia-ai', p: '0.9' },
   { u: '/wdrozenie-ai', p: '0.9' },
+  { u: '/wdrozenie-ai-pod-klucz', p: '0.8' },
   { u: '/rozwiazania-ai', p: '0.9' },
   { u: '/szkolenia-ai', p: '0.9' },
   { u: '/systemy-procesowe', p: '0.9' },
