@@ -54,7 +54,6 @@ import GcFaq from '../components/GcFaq.astro';
 import Styl from '../components/usluga/Styl.astro';
 import Anim from '../components/usluga/Anim.astro';
 import Kontakt from '../components/usluga/Kontakt.astro';
-import Cytat from '../components/usluga/Cytat.astro';
 import KitStyl from '../components/pod-klucz/KitStyl.astro';
 import AppKit from '../components/pod-klucz/AppKit.astro';
 import PulpitMontaz from '../components/pod-klucz/PulpitMontaz.astro';
@@ -102,49 +101,49 @@ const LICZBY = [
   { l: '200+', d: 'wdrożeń' },
   { l: '30+', d: 'ekspertów' },
 ];
-// Wynik „Przygotowanie oferty” stoi pod sceną appto (ta sama praca), reszta w dowodach.
-const OFERTA = { l: '−80%', ld: 'czasu przygotowania oferty', po: 'Szkic oferty powstaje z danych CRM w kilka minut, handlowiec go dopina.' };
-// CO JESZCZE MOŻE PRZEJĄĆ AI (v3: inspirować tym, co da się zrobić, na innych
-// przykładach niż oferta, „pożenić” z wynikami klientów; v4, Szymon: „toporne…
-// zobacz, jak mamy to zrobione na appto.ai”, studio/marki/lets-automate.md,
-// „Appto na stronach Let's”). Układ i zachowanie z sekcji „AI na każdą
-// potrzebę” na appto.ai (ApptoAI/landing-page, AnyNeed.astro, wariant kart
-// przeglądarki): przykłady to karty okna przeglądarki, w oknie pełny ekran
-// appto; wątek stoi zrobiony, po chwili przychodzi krótka poprawka, która
-// powstaje na oczach. Wyniki klientów tylko przy przykładach ze strony
-// głównej (index.astro, karty efektów), słowo w słowo. Sceny przykładowe,
-// świat Wolsenty z filmu (nazwy do potwierdzenia).
-// v5 (Szymon: „pokaż, jak działa appto w narzędziach… ten sam interfejs appto jest
-// po prostu słaby”, studio/marki/lets-automate.md, „Appto w narzędziach klienta”):
-// każdy przykład to efekt pracy agenta w innym narzędziu klienta, w wiernym UI
-// z kitu web apps filmów appto (ScenaNarzedzia, narzedzia.ts). Nie ma tu
-// wtyczki appto: widać sam wynik w Gmailu, Slacku, Arkuszach i HubSpocie,
-// z małym znacznikiem „zrobione przez agenta”.
-// fazy = liczba kroków efektu (data-n) + znacznik; tel = kadr na telefonie [x, szerokość].
-const ZNACZNIK = 'Zrobione przez agenta';
-const MOZLIWE = [
-  { karta: 'Odpowiedź na reklamację', ikona: 'gmail' as const, scena: 'reklamacja', fazy: 7, adres: 'mail.google.com/mail/u/0/#drafts', tel: [330, 620] as [number, number],
-    d: 'Szkic odpowiedzi zgodny z procedurą reklamacji czeka w Gmailu, z protokołem ostatniego przeglądu w załączniku.' },
-  { karta: 'Pytania o zamówienia', ikona: 'slack' as const, scena: 'zamowienia', fazy: 3, adres: 'app.slack.com/client/wolsenta/obsluga-klienta', tel: [330, 580] as [number, number],
-    d: 'Agent sprawdza zamówienie w ERP i odpowiada w Slacku zespołu, a klient dostaje dane od razu.',
-    w: { l: '−90%', ld: 'zapytań obsługiwanych ręcznie' } },
-  { karta: 'Raport tygodniowy', ikona: 'sheets' as const, scena: 'raport', fazy: 8, adres: 'docs.google.com/spreadsheets/d/raport-tygodniowy', tel: [0, 640] as [number, number],
-    d: 'Dane z ERP i CRM same wpadają do arkusza, a raport czeka na zarząd w poniedziałek rano.',
-    w: { l: '65 h', ld: 'odzyskanych co miesiąc' } },
-  { karta: 'Faktury kosztowe', ikona: 'gmail' as const, scena: 'faktury', fazy: 6, adres: 'mail.google.com/mail/u/0/#inbox', tel: [256, 660] as [number, number],
-    d: 'Faktury z maili lądują w systemie księgowym, a w skrzynce dostają etykietę „Zaksięgowane”.',
-    w: { l: '99,7%', ld: 'skuteczności księgowania' } },
-  { karta: 'CRM po spotkaniu', ikona: 'hubspot' as const, scena: 'crm', fazy: 3, adres: 'app-eu1.hubspot.com/contacts/wolsenta/deal', tel: [372, 680] as [number, number],
-    d: 'Z notatek ze spotkania agent uzupełnia transakcję w HubSpocie i dodaje zadanie dla handlowca.' },
-];
 // ZESPÓŁ WCHODZI NA GOTOWE (v5, Szymon: „żeby to się scrollowało lewo-prawo…
 // ciekawsze”): pozioma karuzela spraw zespołu Wolsenty. Każda karta ma kursor
-// osoby, a wynik powstaje na oczach. Pierwsza: oferta Marty w appto z wynikiem
-// −80% ze strony głównej (karty efektów, „Przygotowanie oferty”).
-const SPRAWY = [
-  { kto: 'Marta · sprzedaż', t: 'Oferta dla Strelano', d: 'Jedno polecenie w appto, a oferta składa się z CRM-u, notatek ze spotkania i cennika.', w: OFERTA },
-  { kto: 'Tomek · serwis', t: 'Awaria w biurowcu B', d: 'Agent znajduje najbliższego serwisanta, wpisuje mu wizytę i daje znać klientce.' },
-  { kto: 'Ania · obsługa klienta', t: 'Odpowiedź na reklamację', d: 'Szkic czeka w Gmailu. Ania czyta go i wysyła jednym kliknięciem.' },
+// osoby, a wynik powstaje na oczach. v6 (Szymon o „Co jeszcze może przejąć
+// AI”: „ta sekcja chyba nie ma sensu, skoro wyżej jest bardziej rozbudowana”):
+// tamta sekcja zniknęła, a jej przykłady, które się nie powtarzają, są kartami
+// tutaj. Pierwsza karta: oferta Marty w appto; reszta w narzędziach klienta
+// (wierne UI z kitu web apps filmów appto, ScenaNarzedzia, narzedzia.ts).
+// Wyniki klientów tylko przy przykładach z kart efektów strony głównej
+// (index.astro), słowo w słowo. Pytania o zamówienia (−90%, Slack) wypadły,
+// bo dublowały kartę Tomka w Slacku; awaria zostaje jako jedyny przykład z
+// pracy w terenie. Osoby, firmy i kwoty zmyślone.
+// fazy = liczba kroków efektu (data-n); tel = kadr na telefonie [x, szerokość];
+// wskaz = element, na który na koniec wskazuje kursor osoby.
+const W_PODPIS = 'wynik wdrożenia u naszego klienta';
+const OFERTA = { l: '−80%', ld: 'czasu przygotowania oferty' };
+interface Sprawa {
+  kto: string; t: string; d: string; w?: { l: string; ld: string };
+  scena?: string; fazy?: number; tel?: [number, number]; karta?: string; ikona?: 'gmail' | 'slack' | 'sheets' | 'hubspot'; adres?: string;
+  kursor?: { imie: string; rola: string; kol: string; skad: [number, number] }; pol?: string; wyslij?: boolean; wskaz?: string; opis: string;
+}
+const SPRAWY: Sprawa[] = [
+  { kto: 'Marta · sprzedaż', t: 'Oferta dla Strelano', d: 'Jedno polecenie w appto, a oferta składa się z CRM-u, notatek ze spotkania i cennika.', w: OFERTA,
+    opis: 'Marta ze sprzedaży pisze w appto polecenie „Przygotuj ofertę dla Strelano z szablonu Oferta serwisowa”. Appto pobiera dane z HubSpota, notatek ze spotkania i cennika serwisu, otwiera ofertę i wypełnia jej pola: roczny serwis 42 jednostek klimatyzacji w trzech biurowcach za 46 740 zł netto.' },
+  { kto: 'Ania · obsługa klienta', t: 'Odpowiedź na reklamację', d: 'Szkic zgodny z procedurą reklamacji czeka w Gmailu, z protokołem przeglądu w załączniku. Ania czyta go i wysyła jednym kliknięciem.',
+    scena: 'ania', fazy: 6, tel: [330, 620], karta: 'Re: Reklamacja – jednostka 14 – Gmail', ikona: 'gmail', adres: 'mail.google.com/mail/u/0/#drafts', wyslij: true,
+    kursor: { imie: 'Ania', rola: 'obsługa klienta', kol: '#8B5CF6', skad: [980, 470] },
+    opis: 'W Gmailu Ani powstaje szkic odpowiedzi na reklamację jednostki 14, napisany przez agenta, z protokołem przeglądu w załączniku. Ania klika Wyślij.' },
+  { kto: 'Ewa · księgowość', t: 'Faktury kosztowe', d: 'Faktury z maili lądują w systemie księgowym, a w skrzynce dostają etykietę „Zaksięgowane”.', w: { l: '99,7%', ld: 'skuteczności księgowania' },
+    scena: 'faktury', fazy: 5, tel: [256, 660], karta: 'Odebrane – Wolsenta – Gmail', ikona: 'gmail', adres: 'mail.google.com/mail/u/0/#inbox', wskaz: '[data-n="5"]',
+    kursor: { imie: 'Ewa', rola: 'księgowość', kol: '#C2410C', skad: [1100, 620] },
+    opis: 'W skrzynce Ewy z księgowości faktury od dostawców po kolei dostają etykietę Zaksięgowane.' },
+  { kto: 'Tomek · serwis', t: 'Awaria w biurowcu B', d: 'Agent znajduje najbliższego serwisanta, wpisuje mu wizytę i daje znać klientce.',
+    scena: 'tomek', fazy: 2, tel: [330, 580], karta: 'serwis (kanał) – Wolsenta – Slack', ikona: 'slack', adres: 'app.slack.com/client/wolsenta/serwis', pol: '@Wise kto może dziś pojechać do Strelano, biurowiec B?',
+    kursor: { imie: 'Tomek', rola: 'serwis', kol: '#E0922F', skad: [900, 560] },
+    opis: 'Tomek z serwisu pisze w Slacku do Wise: kto może dziś pojechać do Strelano, biurowiec B. Wise odpowiada: najbliżej jest Kamil Nowak, ma części w aucie, wizyta wpisana na 15:00, klientka powiadomiona.' },
+  { kto: 'Kuba · sprzedaż', t: 'CRM po spotkaniu', d: 'Z notatek ze spotkania agent uzupełnia transakcję w HubSpocie i dodaje Kubie zadanie: oferta do 25 listopada.',
+    scena: 'crm', fazy: 2, tel: [372, 680], karta: 'Biurowce Korvina – serwis 2027 – HubSpot', ikona: 'hubspot', adres: 'app-eu1.hubspot.com/contacts/wolsenta/deal', wskaz: '[data-n="2"]',
+    kursor: { imie: 'Kuba', rola: 'sprzedaż', kol: '#0EA5E9', skad: [1150, 600] },
+    opis: 'W HubSpocie przy transakcji Biurowce Korvina pojawia się notatka ze spotkania utworzona przez Appto i zadanie dla Kuby: przygotować ofertę serwisową.' },
+  { kto: 'Piotr · zarząd', t: 'Raport tygodniowy', d: 'Dane z ERP i CRM same wpadają do arkusza. W poniedziałek rano raport czeka na zarząd.', w: { l: '65 h', ld: 'odzyskanych co miesiąc' },
+    scena: 'raport', fazy: 7, tel: [0, 640], karta: 'Raport tygodniowy – Arkusze Google', ikona: 'sheets', adres: 'docs.google.com/spreadsheets/d/raport-tygodniowy', wskaz: '[data-n="7"]',
+    kursor: { imie: 'Piotr', rola: 'zarząd', kol: '#475569', skad: [1100, 640] },
+    opis: 'W arkuszu Raport tygodniowy wiersze z danymi z ERP i CRM wypełniają się po kolei: przeglądy, awarie, czas reakcji, oferty i faktury.' },
 ];
 const LOGA = [
   ['sports-med.svg', 'Sports-Med', 308], ['nars.svg', 'NARS', 235], ['sevium.svg', 'Sevium', 206],
@@ -377,28 +376,19 @@ const dane = {
   /* =====================================================================
      DOWODY: liczby, logotypy i wyniki ze strony głównej, cytat
      ===================================================================== */
-  .pk-li{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));margin-top:clamp(40px,4.4vw,64px);border-top:1px solid var(--linia)}
-  .pk-li div{padding:clamp(20px,2.4vw,32px) clamp(16px,2vw,28px) 0 0}
-  .pk-li div + div{padding-left:clamp(16px,2vw,28px);border-left:1px solid var(--linia)}
-  .pk-li b{display:block;font-size:clamp(44px,6vw,92px);line-height:0.95;letter-spacing:-0.05em;font-weight:800;color:var(--t1)}
-  .pk-li span{display:block;margin-top:8px;font-size:clamp(15px,1.3vw,18px);color:var(--t2)}
-  /* przykłady jak „AI na każdą potrzebę” na appto.ai: okno przeglądarki na tle */
-  .pk-mz2{margin-top:clamp(32px,3.4vw,48px)}
-  .pk-mz2-st{max-width:1180px;margin:0 auto;position:relative;isolation:isolate;overflow:hidden;padding:clamp(14px,2.8vw,40px) clamp(10px,2.8vw,40px) clamp(14px,2.2vw,32px);border-radius:clamp(20px,2vw,28px);background:#C9C3D6}
-  .pk-mz2-bg{position:absolute;inset:0;z-index:-1;width:100%;height:100%;object-fit:cover}
-  /* telefon: karty przewijają się w pasku, wybrana zawsze w kadrze (skrypt) */
-  @media (max-width:760px){ .pk-mz2 .rw-tabs{overflow-x:auto;scrollbar-width:none} .pk-mz2 .rw-tabs::-webkit-scrollbar{display:none} .pk-mz2 .rw-tab--b{flex:0 0 172px} }
-  .pk-mz2-s{display:none}
-  .pk-mz2-s.on{display:block}
-  .pk-mz2-pod{position:relative;min-height:3.2em;max-width:820px;margin:18px auto 0;text-align:center}
-  .pk-mz2-pod p{display:none;margin:0;font-size:15px;line-height:1.55;color:var(--t2);text-wrap:pretty}
-  .pk-mz2-pod p.on{display:block}
-  .pk-mz2-pod b{color:var(--t1);font-weight:700}
-  .pk-mz2-pod .w{color:var(--t2)}
-  @media (max-width:560px){
-    .pk-li b{font-size:38px}
-    .pk-li span{font-size:14px}
-  }
+  .pk-kk-bg{position:absolute;inset:0;z-index:-1;width:100%;height:100%;object-fit:cover}
+  /* pas dowodów przed formularzem */
+  .pk-dw{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:clamp(28px,5vw,80px);align-items:center;padding:clamp(40px,4.4vw,64px) var(--pad);border-top:1px solid var(--linia)}
+  .pk-dw-li{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));margin:0;padding:0;list-style:none}
+  .pk-dw-li li + li{padding-left:clamp(14px,1.8vw,24px);border-left:1px solid var(--linia)}
+  .pk-dw-li b{display:block;font-size:clamp(38px,4.2vw,60px);line-height:.95;letter-spacing:-0.05em;font-weight:800;color:var(--t1)}
+  .pk-dw-li span{display:block;margin-top:6px;font-size:15px;color:var(--t2)}
+  .pk-dw-c{margin:0}
+  .pk-dw-c blockquote{margin:0;font-size:clamp(18px,1.6vw,22px);font-weight:650;line-height:1.4;letter-spacing:-0.015em;color:var(--t1);text-wrap:pretty}
+  .pk-dw-c figcaption{display:flex;align-items:center;gap:14px;margin-top:16px;font-size:14px;color:var(--t2)}
+  .pk-dw-c figcaption img{width:auto;height:30px}
+  .pk-dw-c figcaption b{display:block;color:var(--t1);font-weight:700}
+  @media (max-width:860px){ .pk-dw{grid-template-columns:minmax(0,1fr)} }
 
   /* =====================================================================
      DIAGNOZA: od formularza do planu, obok to, co jest w planie
@@ -554,10 +544,10 @@ const dane = {
 </section>
 
 <!-- ============ 4 · ZESPÓŁ WCHODZI NA GOTOWE ============
-     Jedyna scena appto na stronie. Zaczyna się od pustego okna (sam
-     kompozytor), potem polecenie, praca w CRM, notatkach i Kontekście,
-     a oferta powstaje na końcu (studio/ZASADY.md, „Praca w UI od stanu
-     »przed«”). Na telefonie sama kolumna czatu. Przykład zmyślony. -->
+     Karuzela spraw zespołu (dane: SPRAWY). Pierwsza karta to jedyna scena
+     appto na stronie, reszta to narzędzia klienta. Każda zaczyna się od stanu
+     „przed” (studio/ZASADY.md). Na telefonie appto pokazuje samą kolumnę
+     czatu, a narzędzia wycinek ekranu. Przykłady zmyślone. -->
 <section id="na-gotowe" class="v3-sek v3-papier">
 <div class="v8-gl">
 <h2 class="v3-h2">Zespół wchodzi na gotowe</h2>
@@ -565,34 +555,24 @@ const dane = {
 </div>
 <div class="pk-kar" data-kar>
 <div class="pk-kar-tor" data-kar-tor tabindex="0" role="region" aria-label="Sprawy zespołu, przewijane w poziomie">
-<article class="pk-kk" data-kk="0" aria-label="Marta ze sprzedaży pisze w appto polecenie „Przygotuj ofertę dla Strelano z szablonu Oferta serwisowa”. Appto pobiera dane z HubSpota, notatek ze spotkania i cennika serwisu, otwiera ofertę i wypełnia jej pola: roczny serwis 42 jednostek klimatyzacji w trzech biurowcach za 46 740 zł netto.">
-<header class="pk-kk-gl"><span class="kto">{SPRAWY[0].kto}</span><h3>{SPRAWY[0].t}</h3><p>{SPRAWY[0].d}</p><p class="wy"><b>{SPRAWY[0].w.l}</b><span>{SPRAWY[0].w.ld}<small>wynik wdrożenia u naszego klienta</small></span></p></header>
+{SPRAWY.map((k, i) => (
+<article class="pk-kk" data-kk={i} aria-label={k.opis}>
+<header class="pk-kk-gl"><span class="kto">{k.kto}</span><h3>{k.t}</h3><p>{k.d}</p>{k.w && <p class="wy"><b>{k.w.l}</b><span>{k.w.ld}<small>{W_PODPIS}</small></span></p>}</header>
 <div class="pk-kk-ok">
-<img class="pk-mz2-bg" src="/pod-klucz/tapeta.webp" alt="" width="1920" height="1080" loading="lazy" decoding="async">
+<img class="pk-kk-bg" src="/pod-klucz/tapeta.webp" alt="" width="1920" height="1080" loading="lazy" decoding="async">
+{k.scena ? (
+<Przegladarka karty={[{ t: k.karta!, ikona: k.ikona }]} adres={k.adres}>
+<ScenaNarzedzia scena={k.scena} fazy={k.fazy!} tel={k.tel} pol={k.pol} wyslij={k.wyslij} wskaz={k.wskaz} kursor={k.kursor} />
+</Przegladarka>
+) : (
 <Przegladarka karty={[{ t: 'Oferta dla Strelano — appto' }]}>
 <AppKit klasa="caly" wys={1020} demo />
 <AppKit klasa="czat krotki" wys={860} kadr={620} od={66} demo />
 </Przegladarka>
+)}
 </div>
 </article>
-<article class="pk-kk" data-kk="1" aria-label="Tomek z serwisu pisze w Slacku do Wise: kto może dziś pojechać do Strelano, biurowiec B. Wise odpowiada: najbliżej jest Kamil Nowak, ma części w aucie, wizyta wpisana na 15:00, klientka powiadomiona.">
-<header class="pk-kk-gl"><span class="kto">{SPRAWY[1].kto}</span><h3>{SPRAWY[1].t}</h3><p>{SPRAWY[1].d}</p></header>
-<div class="pk-kk-ok">
-<img class="pk-mz2-bg" src="/pod-klucz/tapeta.webp" alt="" width="1920" height="1080" loading="lazy" decoding="async">
-<Przegladarka karty={[{ t: 'serwis (kanał) – Wolsenta – Slack', ikona: 'slack' }]} adres="app.slack.com/client/wolsenta/serwis">
-<ScenaNarzedzia scena="tomek" fazy={2} tel={[330, 580]} pol="@Wise kto może dziś pojechać do Strelano, biurowiec B?" kursor={{ imie: 'Tomek', rola: 'serwis', kol: '#E0922F', cel: [380, 676], skad: [900, 560] }} />
-</Przegladarka>
-</div>
-</article>
-<article class="pk-kk" data-kk="2" aria-label="W Gmailu Ani czeka szkic odpowiedzi na reklamację Strelano, napisany przez agenta, z protokołem przeglądu w załączniku. Ania klika Wyślij.">
-<header class="pk-kk-gl"><span class="kto">{SPRAWY[2].kto}</span><h3>{SPRAWY[2].t}</h3><p>{SPRAWY[2].d}</p></header>
-<div class="pk-kk-ok">
-<img class="pk-mz2-bg" src="/pod-klucz/tapeta.webp" alt="" width="1920" height="1080" loading="lazy" decoding="async">
-<Przegladarka karty={[{ t: 'Re: Reklamacja – jednostka 14 – Gmail', ikona: 'gmail' }]} adres="mail.google.com/mail/u/0/#drafts">
-<ScenaNarzedzia scena="ania" fazy={6} tel={[330, 620]} wyslij kursor={{ imie: 'Ania', rola: 'obsługa klienta', kol: '#8B5CF6', cel: [372, 566], skad: [980, 470] }} />
-</Przegladarka>
-</div>
-</article>
+))}
 </div>
 <div class="pk-kar-ster">
 <span class="pk-kar-n" data-kar-n aria-live="polite">1 / {SPRAWY.length}</span>
@@ -605,42 +585,9 @@ const dane = {
 <p><b>Nie musicie z niej korzystać.</b> Agent pracuje też w narzędziach, które już macie: w poczcie, w Slacku albo Teams, w CRM-ie.<small>Firmy, osoby i kwoty w przykładach są zmyślone.</small></p>
 </div>
 <div class="pk-cta2">
-<p>Chcecie tak u siebie? Zaczynamy od bezpłatnej diagnozy.</p>
+<p>Chcecie, żeby tak pracował Wasz zespół?</p>
 <a href="#kontakt" class="v3-btn ciemny">{CTA} <span aria-hidden="true">→</span></a>
 </div>
-</section>
-
-<!-- ============ 5 · CO JESZCZE MOŻE PRZEJĄĆ AI + DOWODY ============
-     Jeden układ: po lewej lista przykładów, po prawej jedna scena w appto,
-     która gra wybrany przykład (przełącza się sama, póki sekcja jest
-     w kadrze). Wyniki tylko ze strony głównej i tylko przy przykładach,
-     które tam są; pod spodem liczby i cytat NARS (prawdziwy). -->
-<section id="mozliwosci" class="v3-sek">
-<div class="v8-gl">
-<h2 class="v3-h2">Co jeszcze może przejąć AI</h2>
-<p class="v3-sub">Agent pracuje w Gmailu, Slacku, arkuszach i CRM-ie. Wybierzcie zadanie i zobaczcie, co robi. Przy części przykładów podajemy wynik u naszego klienta.</p>
-</div>
-<div class="pk-mz2" data-mz>
-<div class="pk-mz2-st">
-<img class="pk-mz2-bg" src="/pod-klucz/tapeta.webp" alt="" width="1920" height="1080" loading="lazy" decoding="async">
-<Przegladarka karty={MOZLIWE.map((m) => ({ t: m.karta, ikona: m.ikona, adres: m.adres }))} klikalne>
-{MOZLIWE.map((m, i) => (
-  <div class={i === 0 ? 'pk-mz2-s on' : 'pk-mz2-s'} data-mz-s={i} role="tabpanel" aria-label={`${m.karta}. ${m.d}`}>
-    <ScenaNarzedzia scena={m.scena} fazy={m.fazy} tel={m.tel} znacznik={ZNACZNIK} />
-  </div>
-))}
-</Przegladarka>
-</div>
-<div class="pk-mz2-pod">
-{MOZLIWE.map((m, i) => (
-  <p class={i === 0 ? 'on' : ''} data-mz-p={i}><b>{m.karta}.</b> {m.d}{m.w && <span class="w"> Wynik u naszego klienta: <b>{m.w.l}</b> {m.w.ld}.</span>}</p>
-))}
-</div>
-</div>
-<div class="pk-li">
-{LICZBY.map((x) => (<div><b>{x.l}</b><span>{x.d}</span></div>))}
-</div>
-<Cytat cytat="Let’s automate wziął pełną odpowiedzialność za projekt i dowiózł go do końca. To dlatego powierzyliśmy im kolejny, znacznie większy." logo="/uploads/klienci/nars.svg" logoAlt="NARS Polska" logoW={235} logoH={88} imie="Jakub Ciołkowski" rola="Członek Zarządu, NARS Polska" />
 </section>
 
 <!-- ============ 6 · DIAGNOZA ============ -->
@@ -681,6 +628,19 @@ const dane = {
 </section>
 
 <!-- ============ 7 · FORMULARZ ============ -->
+<!-- ============ DOWODY ============
+     Krótki pas przed formularzem (v6: przeniesiony spod „Co jeszcze…”):
+     liczby ze strony głównej słowo w słowo i prawdziwy cytat NARS. -->
+<section id="zaufali" class="pk-dw" aria-label="Let’s automate w liczbach i opinia klienta">
+<ul class="pk-dw-li">
+{LICZBY.map((x) => (<li><b>{x.l}</b><span>{x.d}</span></li>))}
+</ul>
+<figure class="pk-dw-c">
+<blockquote>„Let’s automate wziął pełną odpowiedzialność za projekt i dowiózł go do końca. To dlatego powierzyliśmy im kolejny, znacznie większy.”</blockquote>
+<figcaption><img src="/uploads/klienci/nars.svg" alt="NARS Polska" width="235" height="88" loading="lazy"><span><b>Jakub Ciołkowski</b>Członek Zarządu, NARS Polska</span></figcaption>
+</figure>
+</section>
+
 <Kontakt
   tytul={CTA}
   lead="Przerwijmy pętlę braku czasu. Zaczynamy od bezpłatnej diagnozy: napiszcie, co AI ma przejąć najpierw, a Piotr oddzwoni w jeden dzień roboczy i umówi termin."
@@ -1043,8 +1003,16 @@ const dane = {
         t += (n - 1) * 800 + 3800;
         return t;
       }
+      var wskaz = o.dataset.wskaz ? o.querySelector(o.dataset.wskaz) : null;
+      if(kur && wskaz){ po(150, function(){ kur!.classList.add('on'); var c0 = gdzie(o, wskaz!); ruch(c0[0] + 140, c0[1] + 60); }); }
       for(var f2 = 1; f2 <= n; f2++){ (function(f){ po(t + (f - 1) * 650, function(){ o.classList.add('f' + f); }); })(f2); }
       t += n * 650 + 400;
+      if(kur && wskaz){
+        po(t, function(){ var c1 = gdzie(o, wskaz!); ruch(c1[0], c1[1]); });
+        po(t + 1200, function(){ kur!.classList.add('klik'); });
+        po(t + 1350, function(){ kur!.classList.remove('klik'); });
+        t += 1400;
+      }
       if(kur && wyslij){
         var b = o.querySelector('.wa-g-send');
         if(b){
@@ -1070,7 +1038,7 @@ const dane = {
     var karty = Array.prototype.slice.call(kar.querySelectorAll('[data-kk]')) as HTMLElement[];
     var wstecz = kar.querySelector('[data-kar-wstecz]') as HTMLButtonElement, dalej = kar.querySelector('[data-kar-dalej]') as HTMLButtonElement;
     var licznik = kar.querySelector('[data-kar-n]') as HTMLElement;
-    function ktora(){ var x = tor.scrollLeft, best = 0, d = 1e9; karty.forEach(function(k, i){ var dd = Math.abs(k.offsetLeft - tor.offsetLeft - x - parseFloat(getComputedStyle(tor).scrollPaddingLeft || '0')); if(dd < d){ d = dd; best = i; } }); return best; }
+    function ktora(){ var z = tor.getBoundingClientRect().left + parseFloat(getComputedStyle(tor).paddingLeft || '0'), best = 0, d = 1e9; karty.forEach(function(k, i){ var dd = Math.abs(k.getBoundingClientRect().left - z); if(dd < d){ d = dd; best = i; } }); return best; }
     function stan(){
       var i = ktora(), koniecToru = tor.scrollLeft + tor.clientWidth >= tor.scrollWidth - 4;
       licznik.textContent = (koniecToru ? karty.length : i + 1) + ' / ' + karty.length;
@@ -1097,56 +1065,6 @@ const dane = {
         else if(!teraz && widac){ widac = false; czysc(); NZ.zeruj(o); }
       }, { threshold: 0.5 }).observe(o);
     });
-  })();
-
-  // ---- CO JESZCZE MOŻE PRZEJĄĆ AI: karty przeglądarki jak na appto.ai ----
-  // Wybrana karta pokazuje narzędzie klienta w stanie „przed”, potem efekt pracy
-  // agenta wchodzi po kolei i stoi. Pasek na karcie pokazuje, ile zostało do
-  // następnej. Kliknięcie wybiera kartę i zatrzymuje przełączanie. Poza kadrem
-  // stoi. Przy ograniczonym ruchu stan końcowy.
-  (function(){
-    var mz = document.querySelector('[data-mz]') as HTMLElement | null;
-    if(!mz) return;
-    var karty = Array.prototype.slice.call(mz.querySelectorAll('[data-karta]')) as HTMLElement[];
-    var sceny = Array.prototype.slice.call(mz.querySelectorAll('[data-mz-s]')) as HTMLElement[];
-    var podpisy = Array.prototype.slice.call(mz.querySelectorAll('[data-mz-p]')) as HTMLElement[];
-    var okna = sceny.map(function(s){ return s.querySelector('[data-nz]') as HTMLElement; });
-    var adres = mz.querySelector('[data-rw-adres]') as HTMLElement | null;
-    var biez = 0, timery: number[] = [], widac = false, sam = true;
-    function czysc(){ timery.forEach(function(t){ clearTimeout(t); }); timery = []; }
-    function po(ms: number, fn: () => void){ timery.push(window.setTimeout(fn, ms)); }
-    function pokaz(i: number){
-      biez = i;
-      karty.forEach(function(b, j){ b.classList.toggle('is-on', i === j); b.classList.remove('gra'); b.setAttribute('aria-selected', i === j ? 'true' : 'false'); });
-      sceny.forEach(function(s, j){ s.classList.toggle('on', i === j); });
-      podpisy.forEach(function(p, j){ p.classList.toggle('on', i === j); });
-      if(adres && karty[i].dataset.adres) adres.textContent = karty[i].dataset.adres!;
-      var pas = karty[i].parentElement as HTMLElement;
-      if(pas && pas.scrollWidth > pas.clientWidth){ var b = karty[i]; var cel = b.offsetLeft - (pas.clientWidth - b.offsetWidth) / 2; pas.scrollTo({ left: Math.max(0, cel), behavior: redukcja ? 'auto' : 'smooth' }); }
-      window.dispatchEvent(new Event('resize'));
-    }
-    function graj(i: number){
-      czysc();
-      pokaz(i);
-      var o = okna[i];
-      if(redukcja){ NZ.koniec(o); return; }
-      var calosc = NZ.graj(o, po) + 600;
-      var karta = karty[i];
-      karta.style.setProperty('--czas', calosc + 'ms');
-      if(sam){ requestAnimationFrame(function(){ requestAnimationFrame(function(){ karta.classList.add('gra'); }); }); po(calosc, function(){ if(widac) graj((biez + 1) % sceny.length); }); }
-    }
-    karty.forEach(function(b, i){
-      b.addEventListener('click', function(){ sam = false; graj(i); });
-      b.addEventListener('keydown', function(e){
-        if(e.key === 'ArrowRight' || e.key === 'ArrowLeft'){ e.preventDefault(); var j = (i + (e.key === 'ArrowRight' ? 1 : -1) + karty.length) % karty.length; sam = false; graj(j); karty[j].focus(); }
-      });
-    });
-    if(!('IntersectionObserver' in window)){ okna.forEach(NZ.koniec); return; }
-    new IntersectionObserver(function(w){
-      var teraz = w[0].isIntersecting;
-      if(teraz && !widac){ widac = true; graj(biez); }
-      else if(!teraz && widac){ widac = false; czysc(); }
-    }, { threshold: 0.3 }).observe(mz);
   })();
 
   // ---- Telefon: przycisk na dole ekranu, gdy hero i formularz są poza kadrem ----

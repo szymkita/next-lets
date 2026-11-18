@@ -3,6 +3,8 @@
 // (~/.claude/skills/appto-feature-film/kit/v2/webapps/compositions/wa-demo.html),
 // uruchamia je w Node i zapisuje gotowy HTML do src/components/pod-klucz/narzedzia.ts
 // oraz CSS do NarzedziaStyl.astro. Dane: świat Wolsenty z filmu.
+// v6: sceny tylko dla kart karuzeli „Zespół wchodzi na gotowe”
+// (Ania: reklamacja w Gmailu, Tomek: awaria w Slacku, Ewa: faktury, Kuba: CRM, Piotr: raport).
 import fs from 'node:fs';
 import vm from 'node:vm';
 
@@ -27,7 +29,6 @@ const K = vm.runInNewContext('(function(){' + js + '})()', ctx);
 const A = (s) => s.replace(/(src|href)="assets\/brand-gmail\.svg"/g, '$1="/pod-klucz/brand-gmail.svg"').replace(/(src|href)="assets\//g, '$1="/pod-klucz/kit/');
 const n = (html, id, k) => html.replace(`id="${id}"`, `id="${id}" data-n="${k}"`);
 
-const ME_M = ['MZ', '#00A36C'];
 const LAB = [['Klienci', '#16A765', '#E3F4EA', '#0F5F37'], ['Dostawcy', '#F2A600', '#FEF1D0', '#7A5300'], ['Zaksięgowane', '#4A86E8', '#E3ECFC', '#1A4E9C']];
 const G = K.U.gm;
 const cfg = (me, extra) => Object.assign({ me, org: 'Wolsenta', inboxN: '3', draftsN: '1', labels: LAB, range: '1–50 z 1 184', one: '1 z 1 184', drange: '1–1 z 1' }, extra || {});
@@ -119,9 +120,9 @@ function crm(pref, me) {
   const left = '<div class="wa-hs-bk">' + K.hi('chevl') + H.deals + '<span class="r">' + H.actions + K.hi('chev') + '</span></div>' +
     '<div class="wa-hs-id"><span class="ph sq">' + K.hi('deal') + '</span><b>Biurowce Korvina – serwis 2027</b><small style="top:28px">Kwota: 38 900 zł</small><small style="top:45px">Data zamknięcia: 15.12.2026</small></div>' +
     K.hsActs(H) + '<div class="wa-hs-sec" style="top:212px">' + K.hi('chev') + H.aboutD + '<span class="r">' + H.actions + '</span></div>' +
-    K.hsProps(266, [['Właściciel transakcji', 'Marta Zielińska', 'ow'], ['Lejek', 'Lejek sprzedaży'], ['Etap transakcji', 'Kwalifikacja do zakupu'], ['Następny krok', 'Oferta do 25.11']], me);
+    K.hsProps(266, [['Właściciel transakcji', 'Kuba Sowa', 'ow'], ['Lejek', 'Lejek sprzedaży'], ['Etap transakcji', 'Kwalifikacja do zakupu'], ['Następny krok', 'Oferta do 25.11']], me);
   const note = ['note', 'Notatka', 'utworzona przez Appto', 'dziś o 11:02', ['<div>Spotkanie z działem administracji, 20 listopada</div>', '<div class="li">Dwa biurowce przy Prostej, 30 jednostek klimatyzacji</div>', '<div class="li">Budżet na 2027 zatwierdzony, decyzja w grudniu</div>', '<div class="li">Prośba: przegląd co kwartał i reakcja na awarię do 24 h</div>'], 'przed chwilą'];
-  const task = ['Przygotować ofertę serwisową', 'Zadanie · Marta Zielińska', 'Termin: śr., 25 lis 2026'];
+  const task = ['Przygotować ofertę serwisową', 'Zadanie · Kuba Sowa', 'Termin: śr., 25 lis 2026'];
   const mid = K.hsMid(H, 1, '<div class="wa-hs-mh" style="top:0">' + H.upcoming + '</div>' + K.hsTask(`${pref}-t`, 30, task) + '<div class="wa-hs-mh" style="top:125px">Listopad 2026</div>' + K.hsCard(`${pref}-n`, 155, note, H));
   const right = K.hsAssoc(12, H.contacts, 1, H, '<div class="wa-hs-ac"><b>Paweł Lis</b>Kierownik administracji<br>p.lis@biurowce-prosta.example</div>') +
     K.hsAssoc(142, H.companies, 1, H, '<div class="wa-hs-ac"><b>Biurowce Korvina</b>2 budynki · 30 jednostek</div>');
@@ -132,14 +133,9 @@ function crm(pref, me) {
 }
 
 const SCENY = {
-  reklamacja: reklamacja('nzr', ['AW', '#8B5CF6']),
-  zamowienia: slack('nzz', ['AW', '#8B5CF6'], 'obsługa-klienta', [
-    ['KN', '#2F7BE8', 'Kamil Nowak', '8:05', ['Jadę na przegląd do Strelano, biurowiec B.']],
-  ], ['AW', '#8B5CF6', 'Ania Wysocka', '9:14', ['<span class="wa-s-at">@Wise</span> klient z Ostrenia Park pyta o zamówienie ZM/2026/3381. Co z nim?']],
-  ['9:14', ['Zamówienie ZM/2026/3381 według ERP:', '• filtry F7, 24 szt. wyjechały wczoraj, dostawa jutro do 12:00,', '• numer przesyłki: 0098 4471 2210.', 'Odpisałem klientowi z tymi danymi.']]),
-  raport: raport('nzs', ['MZ', '#00A36C']),
+  raport: raport('nzs', ['PW', '#64748B']),
   faktury: faktury('nzf', ['EL', '#C2410C']),
-  crm: crm('nzh', ME_M),
+  crm: crm('nzh', ['KS', '#0EA5E9']),
   tomek: slack('nzt', ['TK', '#E0922F'], 'serwis', [
     ['AW', '#8B5CF6', 'Ania Wysocka', '13:40', ['Strelano zgłasza: jednostka 7 w biurowcu B nie chłodzi, w serwerowni robi się ciepło.']],
   ], ['TK', '#E0922F', 'Tomek Kowal', '13:42', ['<span class="wa-s-at">@Wise</span> kto może dziś pojechać do Strelano, biurowiec B?']],

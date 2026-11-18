@@ -4,23 +4,23 @@
 // skalowane do szerokości pudełka (data-ak-skaluj). Efekt pracy agenta wchodzi
 // po kolei (elementy z data-n, klasy .f1… daje skrypt strony), a przed startem
 // widać stan „przed” (studio/ZASADY.md). Opcjonalnie kursor osoby z zespołu,
-// który pisze polecenie w kompozytorze Slacka (pol) albo klika „Wyślij” w Gmailu (wyslij).
+// który pisze polecenie w kompozytorze Slacka (pol), klika „Wyślij” w Gmailu (wyslij)
+// albo na koniec wskazuje wynik (wskaz: selektor elementu w scenie).
 // Treść narzędzia leży w <template> i wchodzi do DOM-u dopiero blisko kadru
 // (lżejsza strona na starcie, skrypt strony: „narzędzia klienta”).
 // Na telefonie kadr wycina pas `tel` (x, szerokość w px logicznych).
 import { SCENY } from './narzedzia';
-interface Kursor { imie: string; rola: string; kol: string; tx?: string; cel: [number, number]; skad: [number, number] }
-interface Props { scena: string; fazy: number; tel?: [number, number]; kursor?: Kursor; pol?: string; znacznik?: string; wyslij?: boolean }
-const { scena, fazy, tel = [0, 1440], kursor, pol, znacznik, wyslij = false } = Astro.props;
+interface Kursor { imie: string; rola: string; kol: string; tx?: string; skad: [number, number] }
+interface Props { scena: string; fazy: number; tel?: [number, number]; kursor?: Kursor; pol?: string; wyslij?: boolean; wskaz?: string }
+const { scena, fazy, tel = [0, 1440], kursor, pol, wyslij = false, wskaz } = Astro.props;
 const html = SCENY[scena] ?? '';
 ---
-<div class="ak nz" style={`--kw:1440px;--kh:765px;--mkk:${tel[1]};--mko:${tel[0]};--ma:${tel[1]} / 765`} data-ak-skaluj data-nz data-fazy={fazy} data-pol={pol} data-wyslij={wyslij ? '' : undefined} aria-hidden="true">
+<div class="ak nz" style={`--kw:1440px;--kh:765px;--mkk:${tel[1]};--mko:${tel[0]};--ma:${tel[1]} / 765`} data-ak-skaluj data-nz data-fazy={fazy} data-pol={pol} data-wskaz={wskaz} data-wyslij={wyslij ? '' : undefined} aria-hidden="true">
 <div class="ak-in">
 <template data-nz-t set:html={html}></template>
 {wyslij && <span class="nz-toast">Wiadomość wysłana.<b>Cofnij</b><b>Wyświetl wiadomość</b></span>}
-{znacznik && <span class="nz-zn" data-n={fazy}><img src="/pod-klucz/kit/appto-sygnet.svg" alt="" />{znacznik}</span>}
 {kursor && (
-  <div class="nz-kur" data-nz-kur data-cel={kursor.cel.join(',')} data-skad={kursor.skad.join(',')} style={`--kx:${kursor.skad[0]}px;--ky:${kursor.skad[1]}px`}>
+  <div class="nz-kur" data-nz-kur data-skad={kursor.skad.join(',')} style={`--kx:${kursor.skad[0]}px;--ky:${kursor.skad[1]}px`}>
     <svg viewBox="0 0 24 30"><path d="M2 2v22l6-5.5 4 9 4-1.8-4-8.7h8.5z" fill={kursor.kol} stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg>
     <span style={`background:${kursor.kol};color:${kursor.tx ?? '#ffffff'}`}>{kursor.imie}<small>{kursor.rola}</small></span>
   </div>
@@ -35,8 +35,6 @@ const html = SCENY[scena] ?? '';
   .nz [data-n]{opacity:0;transform:translateY(8px);transition:opacity .4s ease,transform .45s cubic-bezier(.2,.7,.2,1)}
   .nz.f1 [data-n="1"],.nz.f2 [data-n="2"],.nz.f3 [data-n="3"],.nz.f4 [data-n="4"],.nz.f5 [data-n="5"],.nz.f6 [data-n="6"],.nz.f7 [data-n="7"],.nz.f8 [data-n="8"],.nz.gotowe [data-n]{opacity:1;transform:none}
   .nz .wa-g-lc[data-n]{display:inline-block}
-  .nz-zn{position:absolute;right:calc((1440 - var(--ko) - var(--kk)) * 1px + 22px);bottom:22px;z-index:20;display:inline-flex;align-items:center;gap:8px;padding:7px 12px 7px 8px;border-radius:999px;background:#141414;color:#fff;font:600 13px/1 "InterApp",system-ui,sans-serif;box-shadow:0 10px 24px -12px rgba(0,0,0,.5)}
-  .nz-zn img{width:16px;height:16px;filter:invert(1)}
   /* pasek Gmaila po wysłaniu (snackbar), jak w prawdziwym Gmailu */
   .nz-toast{position:absolute;left:calc(var(--ko) * 1px + 24px);bottom:24px;z-index:20;display:flex;align-items:center;gap:22px;padding:14px 18px;border-radius:6px;background:#303030;color:#fff;font:500 14px/1 "InterApp",system-ui,sans-serif;opacity:0;transform:translateY(12px);transition:opacity .35s ease,transform .4s cubic-bezier(.2,.7,.2,1)}
   .nz-toast b{font-weight:600;color:#A8C7FA}
