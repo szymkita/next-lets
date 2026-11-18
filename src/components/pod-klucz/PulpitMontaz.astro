@@ -1,19 +1,21 @@
 ---
-// HERO: kadr z reklamy Stories „Wdrożenie AI pod klucz” (pk3 v7), w pętli.
-// Monitor na biurku, pulpit macOS z Podglądem „Instrukcja montażu AI”. Kroki
-// samodzielnego montażu wyskakują w prawdziwych oknach (Finder, TextEdit,
-// Chrome, Numbers, Kalendarz), wylewają się poza monitor, licznik „23 z 64
-// kroków”, potem wszystko wpada w ekran, instrukcja się zamyka, pulpit
-// zostaje czysty i pojawia się „Zrobimy to za Was” z sygnetem Let's.
-// Appto nie stoi w hero (v2, 18.11): jedyna scena pracy w appto jest niżej
-// i zaczyna się od pustego okna (studio/ZASADY.md, „Praca w UI od stanu
-// »przed«”). Okna i liczby to rekwizyty metafory
-// instrukcji montażu z reklamy (WYTYCZNE-reklamy §8), nie twierdzenia.
-//
+// HERO (v3, 18.11): kadr z reklamy Stories „Wdrożenie AI pod klucz”, dłuższy
+// i spokojniejszy niż w v2 (ok. 23 s, pętla tylko wtedy, gdy hero widać).
+//   1. monitor na biurku, w Podglądzie „Instrukcja wdrożenia AI”;
+//   2. kroki samodzielnego wdrożenia wyskakują po kolei w prawdziwych oknach
+//      (Finder, TextEdit, Chrome, Numbers, Kalendarz), licznik „23 z 64 kroków”;
+//   3. wszystko wpada w ekran, instrukcja się zamyka, „Zrobimy to za Was”;
+//   4. na czystym pulpicie stoją trzy okna appto, gotowe do pracy (puste);
+//      wchodzą kursory trzech osób z zespołu, podpisane imionami jak w Figmie,
+//      klikają, piszą polecenia, a wynik powstaje w oknie dopiero po nich
+//      (studio/ZASADY.md, „Praca w UI od stanu »przed«”).
+// Okna i liczby to rekwizyty metafory instrukcji wdrożenia (WYTYCZNE-reklamy §8),
+// nie twierdzenia. Motyw montażu wycofany w v3 (Szymon).
 // Scena ma stały rozmiar logiczny 1080 × 920 (kadr zdjęcia z reklamy od 540 px
 // w dół) i skaluje się skryptem strony (data-pm). Bez skryptu i przy
-// ograniczonym ruchu stoi kadr z oknami (klasa .stat).
-// Źródło okien i pozycji: ~/filmy/appto-stories/build_pk3.py.
+// ograniczonym ruchu stoi stan końcowy: zespół z wynikami w oknach (.stat).
+// Wszystko mieści się w kadrze z marginesem (studio/ZASADY.md, „Krawędzie kadru”).
+// Źródło okien: ~/filmy/appto-stories/build_pk3.py (okna.ts).
 import { W } from './okna';
 
 const SX = 46, SY = 113, SW = 985, SH = 505;       // ekran monitora na zdjęciu
@@ -24,15 +26,15 @@ const d2s = (x: number, y: number) => [SX + x * DS, SY + y * DS];
 // [id, x, y, w, h, obrót, czas ms, numer, nazwa, gdzie]  gdzie: d = pulpit (px pulpitu), s = scena (skala SP)
 const SP = 1.18;
 const OKNA: [string, number, number, number, number, number, number, string, string, 'd' | 's'][] = [
-  ['w1', 40, 60, 600, 300, -0.6, 600, '1', 'Znajdź kontekst firmy', 'd'],
-  ['w2', 650, 80, 590, 300, 0.8, 1250, '2', 'Rozdziel instrukcje', 'd'],
-  ['w3', 90, 290, 560, 290, 0.9, 1850, '3', 'Napisz skille', 'd'],
-  ['w4', 670, 280, 580, 300, -0.8, 2400, '4', 'Podłącz Gmaila i CRM', 'd'],
-  ['w5', 512, 560, 455, 270, 2.2, 2900, '5', 'Przetestuj 20 przypadków', 's'],
-  ['w6', 20, 588, 430, 265, -2.0, 3350, '6', 'Naucz zespół', 's'],
-  ['w7', 16, 58, 430, 245, -2.6, 3750, '7', 'Ustaw uprawnienia', 's'],
-  ['w8', 520, 44, 450, 235, 2.6, 4100, '8', 'Popraw instrukcje', 's'],
-  ['w9', 300, 292, 430, 260, -3.4, 4450, '9', 'Złóż agenta ofert', 's'],
+  ['w1', 40, 60, 600, 300, -0.6, 900, '1', 'Znajdź kontekst firmy', 'd'],
+  ['w2', 650, 80, 590, 300, 0.8, 1600, '2', 'Rozdziel instrukcje', 'd'],
+  ['w3', 90, 290, 560, 290, 0.9, 2300, '3', 'Napisz skille', 'd'],
+  ['w4', 670, 280, 580, 300, -0.8, 3000, '4', 'Podłącz Gmaila i CRM', 'd'],
+  ['w5', 500, 540, 455, 270, 2.0, 3700, '5', 'Przetestuj 20 przypadków', 's'],
+  ['w6', 40, 556, 430, 265, -1.8, 4300, '6', 'Naucz zespół', 's'],
+  ['w7', 44, 92, 430, 245, -2.2, 4900, '7', 'Ustaw uprawnienia', 's'],
+  ['w8', 496, 80, 450, 235, 2.2, 5400, '8', 'Popraw instrukcje', 's'],
+  ['w9', 300, 300, 430, 260, -2.8, 5900, '9', 'Zbuduj agenta ofert', 's'],
 ];
 const pulpit = [] as string[], scena = [] as string[], znaczki = [] as string[];
 for (const [id, x, y, w, h, r, t, n, nazwa, gdzie] of OKNA) {
@@ -46,12 +48,64 @@ for (const [id, x, y, w, h, r, t, n, nazwa, gdzie] of OKNA) {
     const dx = SCX - (x + w * SP / 2), dy = SCY - (y + h * SP / 2);
     scena.push(`<div class="pm-w pm-sp" data-t="${t}" style="left:${x}px;top:${y}px;width:${w}px;height:${h}px;--k:${SP};--r:${r}deg;--dx:${dx.toFixed(0)}px;--dy:${dy.toFixed(0)}px">${W[id]}</div>`);
   }
-  const bx = Math.max(10, fx - 8), by = Math.max(6, fy - 34);
+  const bx = Math.max(28, fx - 8), by = Math.max(28, fy - 34);
   znaczki.push(`<div class="pm-b" data-t="${t}" style="left:${bx.toFixed(0)}px;top:${by.toFixed(0)}px;--dx:${(SCX - bx - 120).toFixed(0)}px;--dy:${(SCY - by - 30).toFixed(0)}px"><span class="pm-bn">${n}</span><span class="pm-bt">${nazwa}</span></div>`);
 }
-const DUZY_T = 5000, LA_T = 7400;
+const DUZY_T = 6600, LA_T = 9300;
+
+// ---- Zespół przy gotowym narzędziu: trzy okna appto na pulpicie ----
+// Okno 406 × 540 px pulpitu, w nim kolumna czatu z kitu (700 px logicznie,
+// skala 0,58). Polecenie pisze kursor danej osoby; wynik pojawia się po nim.
+const ZW = 406, ZH = 540, ZY = 34, ZS = ZW / 700, ZX = [14, 437, 860];
+const ZESPOL = [
+  { kto: 'Marta', rola: 'sprzedaż', kol: '#00CD77', tx: '#07140D', in: 'MZ',
+    pol: 'Przygotuj ofertę dla Strelano z szablonu', wzm: 'Oferta serwisowa',
+    kroki: [['hub', 'Appto używa HubSpot', 'Transakcja · Strelano — serwis 2027', ['Strelano Sp. z o.o.', '3 biurowce']],
+            ['mic', 'Appto używa Fireflies', 'Spotkanie · 17 listopada · notatki', ['42 jednostki', 'Przegląd co kwartał']]],
+    dok: 'Oferta — Strelano' },
+  { kto: 'Tomek', rola: 'serwis', kol: '#5B8DEF', tx: '#ffffff', in: 'TK',
+    pol: 'Kto jedzie jutro na przegląd do Strelano?',
+    kroki: [['kal', 'Appto czyta Kalendarz', 'Serwis · środa, 19 listopada', ['Kamil Nowak', '8:00', 'Biurowiec B']]],
+    odp: 'Jutro jedzie Kamil Nowak, przegląd w biurowcu B o 8:00. Klucze do maszynowni są na recepcji.' },
+  { kto: 'Ania', rola: 'obsługa klienta', kol: '#A78BFA', tx: '#140b2e', in: 'AW',
+    pol: 'Odpowiedz na zgłoszenie z biurowca C',
+    kroki: [['gm', 'Appto używa Gmail', 'Zgłoszenie · Strelano · biurowiec C', ['Jednostka 14', 'Nie chłodzi']]],
+    odp: 'Szkic odpowiedzi czeka w Gmailu. Zaproponowałem wizytę serwisu w czwartek rano.' },
+];
+const IKO: Record<string, string> = {
+  hub: '<img src="/pod-klucz/kit/brand-hubspot.svg" alt="">',
+  gm: '<img src="/pod-klucz/brand-gmail.svg" alt="">',
+  mic: '<svg class="w-ico" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><path d="M12 19v3"/></svg>',
+  kal: '<svg class="w-ico" viewBox="0 0 24 24"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>',
+};
+const PTAK = '<div class="w-check"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>';
+const PLIK = '<svg class="w-ico" viewBox="0 0 24 24"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/></svg>';
+const WYSLIJ = '<span class="w-send"><svg class="w-ico" viewBox="0 0 24 24"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg></span>';
+const zespolHtml = ZESPOL.map((o, i) => {
+  const kroki = o.kroki.map(([ik, t, sub, pills]) => `<div class="w-step pz-f2"><div class="w-step-tile">${IKO[ik]}</div><div class="w-step-main"><div class="w-step-title">${t}</div><div class="w-step-sub">${sub}</div><div class="w-step-data">${(pills as string[]).map((x) => `<span class="w-pill">${x}</span>`).join('')}</div></div>${PTAK}</div>`).join('');
+  const wynik = o.dok
+    ? `<div class="w-doccard pz-f3"><div class="w-doccard-tile">${PLIK}<img class="w-wise" src="/pod-klucz/kit/wise-avatar.svg" alt=""></div><div><div class="w-doccard-title">${o.dok}</div><div class="w-doccard-sub">Dokument · utworzony przez Wise</div></div></div>`
+    : `<div class="w-msg-wise pz-f3">${o.odp}</div>`;
+  const wzm = o.wzm ? ` <span class="w-mention">${PLIK}${o.wzm}</span>` : '';
+  return `<div class="pz-w" data-pz="${i}" style="left:${ZX[i]}px;top:${ZY}px;width:${ZW}px;height:${ZH}px">
+<div class="pm-tbar"><span class="pm-tl"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></span><span class="pm-tt">appto</span><span class="pz-av" style="background:${o.kol};color:${o.tx}">${o.in}</span></div>
+<div class="w-app pz-app" style="transform:scale(${ZS.toFixed(4)})"><div class="pz-chat">
+<div class="w-msg-user pz-f1" data-pz-msg>${o.pol}${wzm}</div>
+<div class="w-steps"><div class="w-steps-head pz-f2"><img class="w-wise" src="/pod-klucz/kit/wise-avatar.svg" alt=""><span>${o.dok ? 'Appto wypełnia szablon' : 'Appto sprawdza'}</span></div>${kroki}</div>
+${wynik}
+<div class="w-composer"><div class="w-composer-text" data-pz-pole><span class="w-composer-ph">Pokieruj agentem…</span></div><div class="w-composer-row"><span class="w-agent"><img class="w-wise" src="/pod-klucz/kit/wise-avatar.svg" alt="">Wise</span><span style="flex:1"></span>${WYSLIJ}</div></div>
+</div></div></div>`;
+}).join('');
+// Kursory: cel kliknięcia = pole tekstowe kompozytora danego okna (współrzędne sceny).
+const celKursora = (i: number) => d2s(ZX[i] + 150 * ZS, ZY + 30 + (ZH - 30) - 100 * ZS);
+const KURSORY = ZESPOL.map((o, i) => {
+  const [cx, cy] = celKursora(i);
+  const start = [[150, 880], [560, 890], [940, 880]][i];
+  const t0 = 11600 + i * 900;          // wejście kursora
+  return { ...o, i, cx: Math.round(cx), cy: Math.round(cy), sx: start[0], sy: start[1], t0 };
+});
 ---
-<div class="pm stat" data-pm role="img" aria-label="Monitor na biurku. Na pulpicie otwiera się instrukcja montażu AI: 64 kroki. Kolejne kroki wyskakują w oknach: znajdź kontekst firmy, rozdziel instrukcje, napisz skille, podłącz Gmaila i CRM, przetestuj 20 przypadków, naucz zespół, ustaw uprawnienia, popraw instrukcje, złóż agenta ofert. Licznik pokazuje 23 z 64 kroków. Potem wszystkie okna znikają w ekranie, pulpit robi się czysty i pojawia się napis: Zrobimy to za Was.">
+<div class="pm stat" data-pm role="img" aria-label="Monitor na biurku. Na pulpicie otwiera się instrukcja wdrożenia AI: 64 kroki. Kolejne kroki wyskakują w oknach: znajdź kontekst firmy, rozdziel instrukcje, napisz skille, podłącz Gmaila i CRM, przetestuj 20 przypadków, naucz zespół, ustaw uprawnienia, popraw instrukcje, zbuduj agenta ofert. Licznik pokazuje 23 z 64 kroków. Potem wszystkie okna znikają w ekranie, pulpit robi się czysty i pojawia się napis: Zrobimy to za Was. Na pulpicie stoją trzy okna appto. Trzy osoby z zespołu, Marta ze sprzedaży, Tomek z serwisu i Ania z obsługi klienta, piszą w nich polecenia: oferta dla klienta, kto jedzie jutro na przegląd, odpowiedź na zgłoszenie. W oknach powstają oferta i odpowiedzi.">
 <div class="pm-sc" aria-hidden="true">
 <img class="pm-bg" src="/pod-klucz/biurko.jpg" alt="" width="1080" height="920" fetchpriority="high" decoding="async">
 <div class="pm-ekran" style={`left:${SX}px;top:${SY}px;width:${SW}px;height:${SH}px`}>
@@ -60,12 +114,19 @@ const DUZY_T = 5000, LA_T = 7400;
 <div class="pm-mbar"><svg viewBox="0 0 14 17" class="pm-apl"><path d="M11.6 9c0-2 1.6-2.9 1.7-3-1-1.4-2.4-1.6-2.9-1.6-1.2-.1-2.4.7-3 .7s-1.6-.7-2.6-.7C3.4 4.4 2 5.3 1.3 6.6c-1.5 2.6-.4 6.4 1 8.5.7 1 1.5 2.1 2.6 2.1 1 0 1.4-.7 2.6-.7s1.6.7 2.6.7c1.1 0 1.8-1 2.5-2 .8-1.1 1.1-2.2 1.1-2.3 0 0-2.1-.8-2.1-3.9zM9.6 3c.6-.7.9-1.6.8-2.5-.8 0-1.8.5-2.3 1.2-.5.6-1 1.5-.9 2.4.9.1 1.8-.4 2.4-1.1z" fill="#111"/></svg><b>Finder</b><span>Plik</span><span>Edycja</span><span>Widok</span><span>Idź</span><span>Okno</span><span>Pomoc</span><em>wt. 18 lis  9:41</em></div>
 <div class="pm-w pm-p0 on" style="left:400px;top:48px;width:481px;height:538px;--r:0deg;--dx:0px;--dy:0px" set:html={W.p0}></div>
 <Fragment set:html={pulpit.join('')} />
+<div class="pz" set:html={zespolHtml}></div>
 <div class="pm-dock"><i class="ap"><img src="/pod-klucz/kit/appto-sygnet.svg" alt=""></i></div>
 </div>
 </div>
 <Fragment set:html={scena.join('')} />
 <Fragment set:html={znaczki.join('')} />
 <div class="pm-duzy" data-t={DUZY_T}><span class="pm-bn">23</span><span class="pm-bt">z 64 kroków</span></div>
+{KURSORY.map((k) => (
+  <div class="pz-k" data-pz-k={k.i} data-t0={k.t0} data-cel={`${k.cx},${k.cy}`} data-start={`${k.sx},${k.sy}`} style={`--x:${k.cx}px;--y:${k.cy}px;--kol:${k.kol}`}>
+    <svg viewBox="0 0 24 30" aria-hidden="true"><path d="M2 2v22l6-5.5 4 9 4-1.8-4-8.7h8.5z" fill="var(--kol)" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg>
+    <span style={`background:${k.kol};color:${k.tx}`}>{k.kto}<small>{k.rola}</small></span>
+  </div>
+))}
 <div class="pm-la" data-t-la={LA_T}><span class="pm-bn"><svg viewBox="0 0 40.5 41" aria-hidden="true"><path d="M31.1674 0.5V17.4327C29.7901 11.2307 26.1381 0.5 26.1381 0.5H17.1107C18.599 6.44658 20.7794 12.7694 21.6328 16.7405H21.6193C20.7291 14.2443 18.7435 10.4076 14.2919 4.60213C13.1564 3.12389 12.0275 1.72963 11.0029 0.5H0C6.53453 7.53847 13.5092 17.1168 13.5092 20.5C13.5092 23.8832 6.53453 33.4614 0 40.5H11.0029C12.0309 39.2705 13.1597 37.8762 14.2919 36.3979C18.636 30.7301 20.635 26.9405 21.5522 24.4409C20.6484 28.4254 18.4176 34.6543 16.8822 40.5H25.9298C25.9298 40.5 29.6389 30.4245 31.1035 24.3636L30.8349 40.5H39.6641L39.9966 20.5538V0.5H31.1674Z" fill="#07140D"/></svg></span><span class="pm-bt">Zrobimy to za Was</span></div>
 </div>
 </div>
@@ -88,8 +149,9 @@ const DUZY_T = 5000, LA_T = 7400;
   /* okna */
   .pm-w{position:absolute;opacity:0;transform:translateY(12px) scale(.94) rotate(var(--r));transition:opacity .32s ease,transform .45s cubic-bezier(.2,.9,.25,1.15)}
   .pm-sp{transform-origin:0 0;transform:translateY(12px) scale(calc(var(--k) * .94)) rotate(var(--r))}
-  .pm-w.on,.pm.stat .pm-w{opacity:1;transform:rotate(var(--r))}
-  .pm-sp.on,.pm.stat .pm-sp{transform:scale(var(--k)) rotate(var(--r))}
+  .pm-w.on{opacity:1;transform:rotate(var(--r))}
+  .pm.stat .pm-p0{opacity:0}
+  .pm-sp.on{transform:scale(var(--k)) rotate(var(--r))}
   .pm-mw{position:absolute;inset:0;background:#fff;border-radius:11px;overflow:hidden;box-shadow:0 0 0 .5px rgba(0,0,0,.22),0 18px 44px -10px rgba(0,0,0,.45)}
   .pm-tbar{height:30px;background:#ececec;border-bottom:1px solid #d6d6d6;display:flex;align-items:center;padding:0 12px;position:relative}
   .pm-tl{display:flex;gap:8px;position:relative;z-index:2}.pm-tl i{width:12px;height:12px;border-radius:50%;display:block}
@@ -143,17 +205,20 @@ const DUZY_T = 5000, LA_T = 7400;
   .pm-pvtool{height:30px;background:#f3f3f3;border-bottom:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:12px;color:#5d5d65;margin-top:-1px}
   .pm-pvbg{position:absolute;top:60px;left:0;right:0;bottom:0;background:#8e8e93;display:flex;align-items:center;justify-content:center}
   .pm-page{background:#fff;height:92%;aspect-ratio:1/1.3;padding:8% 9%;display:flex;flex-direction:column;justify-content:center;box-shadow:0 4px 14px rgba(0,0,0,.25)}
-  .pm-box{width:46%;margin-bottom:8%}
+  .pm-box{width:40%;margin-bottom:10%}
   .pm-page h3{margin:0;font-family:"Schibsted Grotesk",sans-serif;font-weight:700;font-size:30px;line-height:.98;letter-spacing:-.045em}
   .pm-page p{margin:8px 0 0;font-size:13px;color:#5d5d65}
-  .pm-lost{display:flex;flex-direction:column;align-items:flex-start;gap:8px}
-  .pm-fig{width:90px}
-  .pm-miss{font-family:"Schibsted Grotesk",sans-serif;font-weight:700;font-size:24px;letter-spacing:-.03em;line-height:1}
+  .pm-krok{display:flex;flex-direction:column;gap:6px;font-size:12px;color:#5d5d65}
+  .pm-krok small{font-size:11px;font-weight:600;letter-spacing:.02em;text-transform:uppercase}
+  .pm-krok b{font-family:"Schibsted Grotesk",sans-serif;font-weight:700;font-size:22px;line-height:1.02;letter-spacing:-.03em;color:#0a0a0b}
+  .pm-krok span{color:#c4251a;font-weight:600}
+  .pm-krok i{display:block;height:6px;margin-top:4px;border-radius:3px;background:#e4e4e8}
+  .pm-krok i.kr{width:60%}
   .pm-sub{font-size:12px;color:#5d5d65;margin-top:6px}
 
   /* znaczki kroków jak w reklamie: zielony kwadrat z numerem + ciemny pasek */
   .pm-b,.pm-duzy,.pm-la{position:absolute;display:flex;align-items:center;opacity:0;transform:translateY(10px);transition:opacity .3s ease,transform .4s cubic-bezier(.2,.9,.25,1.15);font-family:"Schibsted Grotesk",sans-serif;z-index:5}
-  .pm-b.on,.pm.stat .pm-b,.pm-duzy.on,.pm.stat .pm-duzy,.pm-la.on{opacity:1;transform:none}
+  .pm-b.on,.pm-duzy.on,.pm-la.on{opacity:1;transform:none}
   .pm-bn{min-width:64px;height:64px;padding:0 14px;border-radius:4px;background:#00CD77;color:#07140D;font-weight:800;font-size:40px;display:flex;align-items:center;justify-content:center;position:relative;z-index:2}
   .pm-bt{background:#07140D;color:#fff;font-weight:800;font-size:32px;letter-spacing:-.03em;height:64px;display:flex;align-items:center;padding:0 24px;border-radius:0 4px 4px 0;white-space:nowrap}
   .pm-duzy{left:110px;top:350px;z-index:6}
@@ -170,6 +235,29 @@ const DUZY_T = 5000, LA_T = 7400;
   .pm.zwin .pm-sp.on{transform:translate(var(--dx),var(--dy)) scale(.12)}
   /* po zwinięciu instrukcja też się zamyka: zostaje czysty pulpit */
   .pm.app .pm-p0{opacity:0;transform:scale(.9);transition:opacity .4s ease,transform .45s cubic-bezier(.65,0,.35,1)}
+  /* ---- zespół przy gotowym narzędziu ---- */
+  .pz{position:absolute;inset:0;z-index:44;pointer-events:none}
+  .pz-w{position:absolute;background:#FAF9F7;border-radius:10px;overflow:hidden;box-shadow:0 0 0 .5px rgba(0,0,0,.2),0 20px 50px -10px rgba(0,0,0,.4);opacity:0;transform:translateY(16px) scale(.97);transition:opacity .5s ease calc(var(--d,0) * 1ms),transform .7s cubic-bezier(.2,.8,.2,1) calc(var(--d,0) * 1ms)}
+  .pz-w:nth-child(2){--d:150}.pz-w:nth-child(3){--d:300}
+  .pm.zespol .pz-w,.pm.stat .pz-w{opacity:1;transform:none}
+  .pz-w .pm-tbar{height:28px;background:#ECEAE6}
+  .pz-av{position:relative;z-index:2;margin-left:auto;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-size:8px;font-weight:700}
+  .pz-app{position:absolute !important;left:0;top:28px !important;width:700px !important;height:883px !important;transform-origin:0 0;border-radius:0 !important;box-shadow:none !important}
+  .pz-chat{position:absolute;inset:0;padding:34px}
+  .pz-f1,.pz-f2,.pz-f3{opacity:0;transform:translateY(12px);transition:opacity .45s ease,transform .5s cubic-bezier(.2,.7,.2,1)}
+  .pz-w.f1 .pz-f1,.pz-w.f2 .pz-f2,.pz-w.f3 .pz-f3,.pm.stat .pz-f1,.pm.stat .pz-f2,.pm.stat .pz-f3{opacity:1;transform:none}
+  .pz-w .w-check{transform:scale(0);transition:transform .35s cubic-bezier(.34,1.5,.64,1) .4s}
+  .pz-w.f2 .w-check,.pm.stat .pz-w .w-check{transform:scale(1)}
+  .pz-w .w-send{transition:transform .2s ease,background .2s}
+  .pz-w.wyslij .w-send{transform:scale(.86);background:#00CD77}
+  .pz-w .ak-kursor{display:inline-block;width:2px;height:22px;margin-left:1px;background:#141414;vertical-align:-4px}
+  .pz-k.bez{transition:opacity .4s ease}
+  .pz-k{position:absolute;left:0;top:0;z-index:8;display:flex;align-items:flex-start;gap:2px;opacity:0;transform:translate(var(--x),var(--y));transition:transform 1.3s cubic-bezier(.45,0,.2,1),opacity .4s ease}
+  .pz-k svg{width:30px;height:38px;flex-shrink:0;filter:drop-shadow(0 2px 3px rgba(0,0,0,.35));transition:transform .12s ease}
+  .pz-k.klik svg{transform:scale(.82)}
+  .pz-k span{margin-top:26px;padding:6px 12px 7px;border-radius:8px;font-family:"InterApp",system-ui,sans-serif;font-size:24px;font-weight:650;line-height:1.1;white-space:nowrap;box-shadow:0 6px 16px -6px rgba(0,0,0,.4)}
+  .pz-k small{display:block;font-size:17px;font-weight:500;opacity:.8}
+  .pz-k.on,.pm.stat .pz-k{opacity:1}
   .pm.reset .pm-sc{opacity:0;transition:opacity .6s ease}
   .pm-sc{transition:opacity .6s ease}
   @media (prefers-reduced-motion:reduce){ .pm-w,.pm-b,.pm-duzy,.pm-la,.pm-sc{transition:none !important} }

@@ -22,19 +22,27 @@ interface Props {
 const { szer = 1920, wys = 1080, kadr = szer, od = 0, skala, klasa = '', demo = false } = Astro.props;
 const styl = `--kw:${szer}px;--kh:${wys}px;--kk:${kadr};--ko:${od};aspect-ratio:${kadr} / ${wys};` + (skala ? `--s:${skala};` : '');
 ---
-<div class={`ak ${klasa}${demo ? ' gra' : ''}`} style={styl} data-ak-skaluj={skala ? undefined : ''} data-ak-demo={demo ? '' : undefined} aria-hidden="true">
-<div class="ak-in" set:html={KIT_MARKUP}></div>
+<div class={`ak ${klasa}${demo ? ' gra sam' : ''}`} style={styl} data-ak-skaluj={skala ? undefined : ''} data-ak-demo={demo ? '' : undefined} aria-hidden="true">
+<div class="ak-in"><Fragment set:html={KIT_MARKUP} />
+{demo && (
+  <div class="ak-kur" data-ak-kur>
+    <svg viewBox="0 0 24 30"><path d="M2 2v22l6-5.5 4 9 4-1.8-4-8.7h8.5z" fill="#00CD77" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg>
+    <span>Marta<small>sprzedaż, Wolsenta</small></span>
+  </div>
+)}
 </div>
-{demo && <noscript><style is:inline>.ak.gra [data-w]{opacity:1 !important;transform:none !important}.ak.gra .w-check{transform:none !important}</style></noscript>}
+</div>
+{demo && <noscript><style is:inline>.ak.gra [data-w]{opacity:1 !important;transform:none !important}.ak.gra .w-check{transform:none !important}.ak.sam .w-rail,.ak.sam .w-top{opacity:1 !important}.ak.sam .w-app{background:#FAF9F7 !important}.pk-ok.sam{background:#FAF9F7 !important}.pk-ok.sam .pk-ok-bar{opacity:1 !important}.ak-kur{display:none}</style></noscript>}
 
 <style is:global>
   .ak{position:relative;overflow:hidden;width:100%;--s:0.4}
   .ak-in{position:absolute;left:0;top:0;width:var(--kw);height:var(--kh);transform:scale(var(--s)) translateX(calc(var(--ko,0) * -1px));transform-origin:0 0}
   .ak .w-app{width:var(--kw);height:var(--kh);border-radius:0;box-shadow:none}
   /* ---- demo: praca od stanu „przed” (studio/ZASADY.md) ----
-     Kit z `demo` startuje już w HTML jako pusty appto (klasa .gra): sam
-     kompozytor, bez rozmowy i bez dokumentu, żeby gotowa oferta nie mignęła
-     przy przewijaniu. Fazy f1…f7 nadaje skrypt strony: polecenie, kroki,
+     Kit z `demo` startuje już w HTML jako sam kompozytor (klasy .gra .sam):
+     bez okna, paska bocznego, rozmowy i dokumentu, żeby gotowa oferta nie
+     mignęła przy przewijaniu. Kursor Marty klika i pisze polecenie, po
+     wysłaniu kompozytor rozwija się w pełne okno appto (v3, 18.11). Fazy f1…f7 nadaje skrypt strony: polecenie, kroki,
      dokument wjeżdża z prawej i jego pola wypełniają się po kolei, na końcu
      odpowiedź „Gotowe” z kartą dokumentu.
      Bez skryptu (noscript) i przy ograniczonym ruchu stoi stan końcowy. */
@@ -53,6 +61,23 @@ const styl = `--kw:${szer}px;--kh:${wys}px;--kk:${kadr};--ko:${od};aspect-ratio:
   .ak.caly.gra:not(.f6) [data-w="w-chat"]{transform:translateX(534px)}
   .ak [data-w="w-pane"]{transition:opacity .5s ease .25s,transform .9s cubic-bezier(.2,.8,.2,1) .1s}
   .ak.gra:not(.f6) [data-w="w-pane"]{opacity:0;transform:translateX(120px)}
+  /* sam kompozytor: okno appto jeszcze się nie rozwinęło */
+  .ak .w-app{transition:background .6s ease}
+  .ak .w-rail,.ak .w-top{transition:opacity .6s ease .25s}
+  .ak [data-w="w-composer"]{transition:transform .9s cubic-bezier(.65,0,.35,1),box-shadow .6s ease}
+  .ak.sam .w-app{background:transparent}
+  .ak.sam .w-rail,.ak.sam .w-top{opacity:0;transition-delay:0s}
+  .ak.sam [data-w="w-composer"]{transform:translateY(-430px) scale(1.12);box-shadow:0 30px 70px -30px rgba(8,26,17,.45),0 0 0 1px rgba(20,20,20,.06)}
+  /* na telefonie kadr czatu jest wąski: bez powiększenia, żeby kompozytor nie dotykał krawędzi */
+  .ak.czat.sam [data-w="w-composer"]{transform:translateY(-430px)}
+  /* kursor osoby z zespołu (jak w Figmie), w px logicznych kitu */
+  .ak-kur{position:absolute;left:0;top:0;z-index:30;display:flex;align-items:flex-start;gap:2px;opacity:0;transform:translate(var(--kx,1500px),var(--ky,1000px));transition:transform 1.2s cubic-bezier(.45,0,.2,1),opacity .4s ease;pointer-events:none}
+  .ak-kur.bez{transition:opacity .4s ease}
+  .ak-kur.on{opacity:1}
+  .ak-kur svg{width:40px;height:50px;flex-shrink:0;filter:drop-shadow(0 2px 4px rgba(0,0,0,.3));transition:transform .12s ease}
+  .ak-kur.klik svg{transform:scale(.82)}
+  .ak-kur span{margin-top:34px;padding:8px 16px 9px;border-radius:10px;background:#00CD77;color:#07140D;font-family:"InterApp",system-ui,sans-serif;font-size:28px;font-weight:650;line-height:1.1;white-space:nowrap;box-shadow:0 8px 20px -8px rgba(0,0,0,.4)}
+  .ak-kur small{display:block;font-size:20px;font-weight:500;opacity:.8}
   .ak .ak-kursor{display:inline-block;width:2px;height:24px;margin-left:1px;background:#141414;vertical-align:-4px;animation:ak-mig 1s steps(1) infinite}
   .ak [data-w="w-send"]{transition:transform .2s ease,background .2s}
   .ak.wyslij [data-w="w-send"]{transform:scale(.88);background:#00CD77}

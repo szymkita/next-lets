@@ -1,0 +1,155 @@
+---
+// SEKCJA PROBLEMU: lista kroków samodzielnego wdrożenia AI (v3, 18.11,
+// zaprojektowana od zera po uwadze Szymona, potem „daj tych kroków dużo więcej”: „niech te rzeczy od razu się
+// pojawiają… rosnące, ale w jakimś wymiarze tylko okna… lecą kolejne rzeczy
+// na czerwono… później, że tym wszystkim możemy zająć się my, i wtedy robi się
+// to zielone”).
+//
+// Jedno okno o stałej wysokości (lista nie rośnie w dół strony). Przebieg:
+//   1. od pierwszej chwili wpadają kroki (48, głównie ogólne etapy każdego
+//      wdrożenia, kilka nazw narzędzi jako przyprawa), coraz szybciej, prawie
+//      wszystkie na czerwono (błąd, zablokowane, do poprawy, czeka); lista
+//      przewija się w oknie, licznik „0 z 48”;
+//   2. chwila, w której widać całą czerwień;
+//   3. zwrot: „Tym wszystkim zajmiemy się my” z sygnetem Let's; lista na ten
+//      czas gaśnie i wraca na górę;
+//   4. te same kroki po kolei robią się zielone (odhaczone), licznik i zielona
+//      linia rosną do „24 z 24”. Koniec stoi.
+// Wiersze, które wyjeżdżają poza okno listy, gasną, zanim dotkną krawędzi
+// (studio/ZASADY.md, „Krawędzie kadru”). Bez skryptu i przy ograniczonym
+// ruchu stoi stan końcowy (cała lista zielona).
+// Scena 560 × 700 skaluje się skryptem strony (data-lk).
+const WIERSZ = 64, WIDAC = 8;
+// [krok, stan na czerwono]; „szary” = jeszcze nie zaczęte
+const KROKI: [string, string, boolean?][] = [
+  ['Wybierz procesy na start', 'czeka na decyzję zarządu'],
+  ['Rozpisz proces ofertowy krok po kroku', 'do dokończenia'],
+  ['Rozpisz obsługę zgłoszeń', 'nie zaczęte', true],
+  ['Zbierz wiedzę z głów zespołu', '3 z 9 rozmów'],
+  ['Uporządkuj dokumenty na dysku', 'cztery wersje tych samych plików'],
+  ['Wybierz aktualny cennik', 'trzy wersje cennika'],
+  ['Spisz warunki handlowe i rabaty', 'sprzeczne z umowami'],
+  ['Ustal zasady i ton odpowiedzi', 'brak decyzji'],
+  ['Napisz instrukcje dla agenta ofert', 'do poprawy'],
+  ['Napisz instrukcje dla obsługi klienta', 'nie zaczęte', true],
+  ['Ustal wersjonowanie instrukcji', 'instrukcje_v7_FINAL_2'],
+  ['Podłącz pocztę', 'błąd autoryzacji'],
+  ['Podłącz HubSpot', 'brak klucza API'],
+  ['Podłącz starszy program branżowy', 'brak API, zablokowane'],
+  ['Ustaw uprawnienia do dokumentów', 'kto widzi płace?'],
+  ['Sprawdź bezpieczeństwo danych', 'czeka na dział IT'],
+  ['Podpisz NDA i umowy z dostawcami', 'czeka na prawnika'],
+  ['Wybierz model i narzędzie', 'trzy narzędzia w próbie'],
+  ['Spisz przypadki brzegowe', '12 bez odpowiedzi'],
+  ['Przygotuj sprawy z archiwum do testów', 'brak danych'],
+  ['Przetestuj agenta na archiwum', 'zgodne 6 z 20'],
+  ['Porównaj wyniki z tym, co wysłaliście', 'rozbieżności w cenach'],
+  ['Popraw instrukcje po testach', 'do poprawy'],
+  ['Powtórz testy', 'czeka na poprawki'],
+  ['Uruchom pilotaż z jedną osobą', 'przesunięty'],
+  ['Zbierz uwagi z pilotażu', '14 uwag otwartych'],
+  ['Wybierz championów w działach', 'brak chętnych'],
+  ['Zaplanuj szkolenie zespołu', 'przeniesione'],
+  ['Przeszkol sprzedaż', 'przyszły 2 z 9 osób'],
+  ['Przeszkol obsługę klienta', 'nie zaczęte', true],
+  ['Odpowiedz na obawy zespołu', 'opór w dziale'],
+  ['Napisz instrukcję dla zespołu', 'nie zaczęte', true],
+  ['Ustal, kto odpowiada za AI w firmie', 'brak właściciela'],
+  ['Ustal, jak zgłaszać błędy agenta', 'brak zasad'],
+  ['Zmierz czas pracy przed wdrożeniem', 'brak danych'],
+  ['Ustal, jak mierzyć efekty', 'brak decyzji'],
+  ['Sprawdź oferty wysłane przez agenta', 'zły rabat w 3 ofertach'],
+  ['Zaktualizuj cennik w wiedzy agenta', 'agent liczy ze starego'],
+  ['Dopisz wyjątki do instrukcji', 'czeka'],
+  ['Zaktualizuj procedury po zmianach', 'nieaktualne'],
+  ['Sprawdź agenta po zmianie modelu', 'inne odpowiedzi niż wczoraj'],
+  ['Napraw synchronizację z CRM', 'błąd synchronizacji'],
+  ['Nadaj dostęp nowym osobom', 'zablokowane'],
+  ['Przeszkol nowe osoby', 'nie zaczęte', true],
+  ['Zaktualizuj instrukcje po zmianie narzędzia', 'do poprawy'],
+  ['Odpowiedz na pytania zespołu', '23 bez odpowiedzi'],
+  ['Zrób przegląd po miesiącu', 'przesunięty'],
+  ['Ustal plan na kolejne procesy', 'czeka'],
+];
+const N = KROKI.length;
+// Czasy wejścia: od razu, coraz szybciej (560 ms → 85 ms); pod koniec lista leci.
+const WEJSCIA: number[] = [];
+{ let t = 150, d = 560; for (let i = 0; i < N; i++) { WEJSCIA.push(Math.round(t)); t += d; d = Math.max(85, d * 0.91); } }
+const KULMINACJA = WEJSCIA[N - 1] + 900;
+const ZWROT = KULMINACJA + 700;
+const ZIELEN = ZWROT + 2600;
+const PTAK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 12.5l4 4L18 8" fill="none" stroke="#07140D" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+---
+<div class="lk stat" data-lk data-n={N} data-wiersz={WIERSZ} data-widac={WIDAC} data-wejscia={JSON.stringify(WEJSCIA)} data-zwrot={ZWROT} data-zielen={ZIELEN} role="img" aria-label={`Lista ${N} kroków samodzielnego wdrożenia AI, między innymi: wybierz procesy na start, zbierz wiedzę z głów zespołu, wybierz aktualny cennik, napisz instrukcje dla agentów, podłącz systemy, ustaw uprawnienia, przetestuj agenta na archiwum, uruchom pilotaż, przeszkol zespół, ustal, kto odpowiada za AI, zaktualizuj instrukcje po zmianach. Kroki wpadają coraz szybciej, prawie wszystkie na czerwono: błąd autoryzacji, zablokowane, do poprawy, czeka. Potem napis: Tym wszystkim zajmiemy się my. Kroki po kolei robią się zielone, aż zrobione są wszystkie ${N}.`}>
+<div class="lk-sc" aria-hidden="true">
+<div class="lk-ok">
+<div class="lk-bar"><span class="pm-tl"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></span><span class="lk-tt">Lista kroków</span></div>
+<div class="lk-gl">
+<div><b>Wdrożenie AI</b><span data-lk-pod>{N} kroków, zrobione wszystkie</span></div>
+<div class="lk-licz"><b data-lk-zr>{N}</b><span>z {N}</span></div>
+</div>
+<div class="lk-pasek"><i data-lk-pas style={`--p:1`}></i></div>
+<div class="lk-widok" style={`height:${WIDAC * WIERSZ}px`}>
+<ol class="lk-lista" data-lk-lista>
+{KROKI.map(([t, st, szary], i) => (
+  <li class={`lk-k${szary ? ' szary' : ''}`} data-i={i} style={`top:${i * WIERSZ}px`}>
+    <span class="lk-o" set:html={PTAK}></span>
+    <span class="lk-tx"><b>{t}</b><span class="zle">{st}</span><span class="ok">zrobione</span></span>
+  </li>
+))}
+</ol>
+</div>
+<div class="lk-zw" data-lk-zw>
+<span class="pm-bn"><svg viewBox="0 0 40.5 41" aria-hidden="true"><path d="M31.1674 0.5V17.4327C29.7901 11.2307 26.1381 0.5 26.1381 0.5H17.1107C18.599 6.44658 20.7794 12.7694 21.6328 16.7405H21.6193C20.7291 14.2443 18.7435 10.4076 14.2919 4.60213C13.1564 3.12389 12.0275 1.72963 11.0029 0.5H0C6.53453 7.53847 13.5092 17.1168 13.5092 20.5C13.5092 23.8832 6.53453 33.4614 0 40.5H11.0029C12.0309 39.2705 13.1597 37.8762 14.2919 36.3979C18.636 30.7301 20.635 26.9405 21.5522 24.4409C20.6484 28.4254 18.4176 34.6543 16.8822 40.5H25.9298C25.9298 40.5 29.6389 30.4245 31.1035 24.3636L30.8349 40.5H39.6641L39.9966 20.5538V0.5H31.1674Z" fill="#07140D"/></svg></span>
+<span class="pm-bt">Tym wszystkim zajmiemy się my</span>
+</div>
+</div>
+</div>
+</div>
+
+<style is:global>
+  .lk{position:relative;width:100%;aspect-ratio:560 / 700;--lk:0.9}
+  .lk-sc{position:absolute;left:0;top:0;width:560px;height:700px;transform:scale(var(--lk));transform-origin:0 0;font-family:"InterApp",system-ui,sans-serif;color:#1d1d1f}
+  .lk-ok{position:absolute;left:12px;top:12px;width:536px;height:676px;border-radius:12px;overflow:hidden;background:#ffffff;box-shadow:0 0 0 .5px rgba(0,0,0,.22),0 24px 60px -24px rgba(0,0,0,.4)}
+  .lk-bar{position:relative;height:30px;display:flex;align-items:center;padding:0 12px;background:#ececec;border-bottom:1px solid #d6d6d6}
+  .lk-tt{position:absolute;left:0;right:0;text-align:center;font-size:13px;font-weight:600;color:#4b4b4f}
+  .lk-gl{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;padding:20px 26px 12px}
+  .lk-gl b{display:block;font-family:"Schibsted Grotesk",sans-serif;font-size:32px;font-weight:800;letter-spacing:-.035em;line-height:1;color:#0a0a0b}
+  .lk-gl span{display:block;margin-top:6px;font-size:14px;color:#6b6b73}
+  .lk-licz{display:flex;align-items:baseline;gap:6px;font-family:"Schibsted Grotesk",sans-serif}
+  .lk-licz b{font-size:40px;color:#c4251a;transition:color .4s ease}
+  .lk-licz span{margin:0;font-size:20px;font-weight:700;color:#6b6b73}
+  .lk.zielen .lk-licz b,.lk.stat .lk-licz b{color:#0a7a52}
+  .lk-pasek{margin:0 26px 10px;height:4px;border-radius:2px;background:#eeeeef;overflow:hidden}
+  .lk-pasek i{display:block;height:100%;width:100%;background:#00CD77;transform-origin:0 50%;transform:scaleX(var(--p,0));transition:transform .35s ease}
+  /* krawędzie okna listy wygaszone na 10 px: wiersz w ruchu wchodzi i schodzi miękko, a w spoczynku wiersze stoją równo w oknie */
+  .lk-widok{position:relative;margin:0 12px;overflow:hidden;-webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 10px,#000 calc(100% - 10px),transparent 100%);mask-image:linear-gradient(to bottom,transparent 0,#000 10px,#000 calc(100% - 10px),transparent 100%)}
+  .lk-lista{position:absolute;left:0;right:0;top:0;margin:0;padding:0;list-style:none;transform:translateY(var(--y,0px));transition:transform .3s cubic-bezier(.3,.6,.3,1)}
+  .lk-k{position:absolute;left:0;right:0;height:64px;display:flex;align-items:center;gap:14px;padding:0 14px;border-top:1px solid #f0f0f1;opacity:0;transform:translateY(-18px);transition:opacity .3s ease,transform .45s cubic-bezier(.2,.9,.25,1.15)}
+  .lk-k.on{opacity:1;transform:none}
+  .lk-k.poza{opacity:0 !important;transition:opacity .18s ease}
+  .lk-o{flex-shrink:0;display:grid;place-items:center;width:24px;height:24px;border-radius:50%;border:2px solid #e5483f;background:#fff;transition:background .3s ease,border-color .3s ease}
+  .lk-o svg{width:16px;height:16px;opacity:0;transform:scale(.5);transition:opacity .25s ease,transform .3s cubic-bezier(.34,1.5,.64,1)}
+  .lk-k.szary .lk-o{border-color:#c7c7cc}
+  .lk-tx{display:flex;flex-direction:column;min-width:0}
+  .lk-tx b{font-size:18px;font-weight:600;color:#1d1d1f;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .lk-tx span{font-size:14px;font-weight:600;margin-top:2px}
+  .lk-tx .zle{color:#c4251a}
+  .lk-k.szary .zle{color:#8a8a92}
+  .lk-tx .ok{display:none;color:#0a7a52}
+  .lk-k.zrob .lk-o,.lk.stat .lk-o{background:#00CD77;border-color:#00CD77}
+  .lk-k.zrob .lk-o svg,.lk.stat .lk-o svg{opacity:1;transform:none}
+  .lk-k.zrob .zle,.lk.stat .zle{display:none}
+  .lk-k.zrob .ok,.lk.stat .ok{display:block}
+  .lk-k.zrob b,.lk.stat .lk-k b{color:#4b4b4f}
+  .lk.stat .lk-k{opacity:1;transform:none}
+  /* zwrot: sygnet i zdanie na środku okna, lista przygasa */
+  .lk-zw{position:absolute;left:50%;top:56%;display:flex;align-items:center;font-family:"Schibsted Grotesk",sans-serif;opacity:0;transform:translate(-50%,-50%) scale(.92);transition:opacity .4s ease,transform .5s cubic-bezier(.2,.9,.25,1.15);z-index:4;pointer-events:none}
+  .lk-zw .pm-bn{width:64px;height:64px;min-width:0;padding:0}
+  .lk-zw .pm-bn svg{width:32px;height:32px}
+  .lk-zw .pm-bt{height:64px;font-size:25px;padding:0 22px}
+  .lk.zwrot .lk-zw{opacity:1;transform:translate(-50%,-50%)}
+  .lk.zwrot .lk-widok{opacity:0;transition:opacity .35s ease}
+  .lk-widok{transition:opacity .4s ease}
+  @media (prefers-reduced-motion:reduce){ .lk-k,.lk-o,.lk-o svg,.lk-lista,.lk-pasek i,.lk-zw{transition:none !important} }
+</style>

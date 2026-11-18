@@ -1,14 +1,13 @@
 // OKNA PULPITU macOS z reklamy Stories pk3 (~/filmy/appto-stories/build_pk3.py):
-// Podgląd, Finder, TextEdit, Chrome, Numbers, Kalendarz. Znaczniki jako tekst,
-// bo te same okna stoją w hero (PulpitMontaz) i w sekcji problemu
-// (InstrukcjaSypie). Style okien (klasy pm-*) są w PulpitMontaz.astro.
+// Podgląd, Finder, TextEdit, Chrome, Numbers, Kalendarz. Znaczniki jako tekst
+// dla hero (PulpitMontaz); style okien (klasy pm-*) są w PulpitMontaz.astro.
 export const TL = '<span class="pm-tl"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></span>';
 const FOLDER = '<svg viewBox="0 0 24 20" class="pm-ic"><path d="M1 3.5C1 2.4 1.9 1.5 3 1.5h6l2 2.5h10c1.1 0 2 .9 2 2V17c0 1.1-.9 2-2 2H3c-1.1 0-2-.9-2-2z" fill="#6aa9e9"/><path d="M1 7h22v10c0 1.1-.9 2-2 2H3c-1.1 0-2-.9-2-2z" fill="#86bdf3"/></svg>';
 const DOC = '<svg viewBox="0 0 20 24" class="pm-ic"><path d="M2 1h11l5 5v17H2z" fill="#fff" stroke="#a2a2aa" stroke-width="1.4"/><path d="M13 1v5h5" fill="none" stroke="#a2a2aa" stroke-width="1.4"/></svg>';
 const XLS = '<svg viewBox="0 0 20 24" class="pm-ic"><path d="M2 1h11l5 5v17H2z" fill="#fff" stroke="#a2a2aa" stroke-width="1.4"/><rect x="5" y="10" width="10" height="9" rx="1" fill="#1f9d55"/></svg>';
 const BIGDOC = '<svg viewBox="0 0 64 80" class="pm-bigdoc"><path d="M4 2h38l18 18v58H4z" fill="#fff" stroke="#b9b9c0" stroke-width="2"/><path d="M42 2v18h18" fill="#f1f1f3" stroke="#b9b9c0" stroke-width="2"/><text x="32" y="60" text-anchor="middle" font-family="InterApp,sans-serif" font-weight="700" font-size="13" fill="#8a8a92">MD</text></svg>';
-const BOX = '<svg viewBox="0 0 250 230" class="pm-box"><path d="M125 18L228 66V170L125 218L22 170V66Z" fill="#fff" stroke="#0a0a0b" stroke-width="6" stroke-linejoin="round"/><path d="M22 66L125 114L228 66M125 114V218" fill="none" stroke="#0a0a0b" stroke-width="6" stroke-linejoin="round"/><path d="M73 42L176 90" stroke="#0a0a0b" stroke-width="5" stroke-dasharray="12 9"/></svg>';
-const FIG = '<svg viewBox="0 0 160 170" class="pm-fig"><circle cx="58" cy="40" r="22" fill="none" stroke="#0a0a0b" stroke-width="5"/><path d="M58 62v54M58 80l-28 22M58 80l26 18M58 116l-22 44M58 116l22 44" fill="none" stroke="#0a0a0b" stroke-width="5" stroke-linecap="round"/><text x="104" y="58" font-family="Schibsted Grotesk,sans-serif" font-weight="700" font-size="64" fill="#0a0a0b">?</text></svg>';
+// Okładka instrukcji: lista kroków z polami do odhaczenia (v3: bez motywu montażu).
+const LISTA = '<svg viewBox="0 0 200 150" class="pm-box">' + [0, 1, 2, 3].map((i) => `<rect x="6" y="${8 + i * 36}" width="22" height="22" rx="4" fill="#fff" stroke="#0a0a0b" stroke-width="5"/><path d="M44 ${19 + i * 36}H${i % 2 ? 150 : 190}" stroke="#0a0a0b" stroke-width="6" stroke-linecap="round"/>`).join('') + '<path d="M11 19l5 5 9-10" fill="none" stroke="#0a0a0b" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
 const win = (kind: string, title: string, body: string) => kind === 'chr'
   ? `<div class="pm-mw ${kind}">${body}</div>`
@@ -20,7 +19,7 @@ const chrome = (tab: string, url: string, body: string) => `<div class="pm-cbar"
 const preview = (title: string, page: string, pg: string) => win('pv', title, `<div class="pm-pvtool"><span>${pg}</span></div><div class="pm-pvbg"><div class="pm-page">${page}</div></div>`);
 
 export const W: Record<string, string> = {
-  p0: preview('Instrukcja montażu AI.pdf', `${BOX}<h3>Instrukcja<br>montażu AI</h3><p>64 kroki · 37 części</p>`, 'Strona 1 z 64'),
+  p0: preview('Instrukcja wdrożenia AI.pdf', `${LISTA}<h3>Instrukcja<br>wdrożenia AI</h3><p>64 kroki · wersja 7</p>`, 'Strona 1 z 64'),
   w1: win('fn', 'Kontekst firmy', finder([
     [FOLDER, 'Cenniki 2026', 'dziś, 9:02', '—'], [FOLDER, 'Umowy ramowe', 'wczoraj, 16:40', '—'],
     [FOLDER, 'Procedury obsługi', '12 lis 2026', '—'], [XLS, 'cennik_FINAL_v7.xlsx', '12 lis 2026', '88 KB'],
@@ -43,6 +42,7 @@ export const W: Record<string, string> = {
     ['Sprzedaż', '1?1'], ['Magazyn', '010'], ['Zarząd', '11?'], ['Księgowość', '?0?']]
     .map(([r, v]) => `<tr><td>${r}</td>` + v.split('').map((c) => ({ '1': '<td><span class="pm-dot on"></span></td>', '0': '<td><span class="pm-dot"></span></td>', '?': '<td class="q">?</td>' } as Record<string, string>)[c]).join('') + '</tr>').join('') + '</table>')),
   w8: win('te', 'instrukcje_v7_FINAL.txt', '<div class="pm-txt"><s>Zawsze licz rabat z cennika 2026.</s><br>Licz rabat z cennika, chyba że klient ma umowę…<br><s>Nie obiecuj terminów.</s><br>Obiecuj termin tylko, gdy magazyn potwierdzi…<br><s>Odpowiadaj krótko.</s><br>Odpowiadaj krótko, ale…</div>'),
-  w9: preview('Instrukcja montażu AI.pdf', `<div class="pm-lost">${FIG}<div><div class="pm-miss">Brakuje<br>części C</div><div class="pm-sub">Wróć do kroku 4.</div></div></div>`, 'Strona 18 z 64'),
+  // Strona instrukcji z krokiem 9, który czeka na wcześniejsze (v3: zamiast „Brakuje części C”).
+  w9: preview('Instrukcja wdrożenia AI.pdf', '<div class="pm-krok"><small>Krok 9 z 64</small><b>Zbuduj agenta ofert</b><span>Zanim zaczniesz, dokończ kroki 2, 4 i 5.</span><i></i><i></i><i class="kr"></i></div>', 'Strona 18 z 64'),
 };
 

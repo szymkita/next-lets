@@ -5,7 +5,7 @@
 // ~/Downloads/landing-pod-klucz/BRIEF.md, wytyczne: WYTYCZNE-reklamy.md).
 // Reklama kończy się CTA „Zobacz, jak wygląda wdrożenie pod klucz”, więc
 // strona od pierwszego ekranu pokazuje to, co było w reklamie, i prowadzi
-// dalej tą samą drogą: chaos samodzielnego montażu → „Zrobimy to za Was”
+// dalej tą samą drogą: chaos samodzielnego wdrożenia → „Zrobimy to za Was”
 // → plan 6 kroków (słowo w słowo jak w reklamie) → zespół pisze polecenie
 // w appto → dowody → bezpłatna diagnoza → formularz → pytania.
 //
@@ -27,6 +27,13 @@
 // krokiem, jedna scena appto od pustego okna (hero bez appto), hero kończy
 // się pasem klientów, a diagnoza stoi na jasnym tle.
 //
+// v3 (18.11, uwagi do v2): „Instrukcja wdrożenia AI” zamiast montażu; hero
+// kończy się zespołem przy gotowym appto (kursory z imionami); instrukcja
+// w sekcji problemu dłuższa, bez części i bez ucinania krawędzią; scena oferty
+// od samego kompozytora, oferta Wolsenty dla Strelano z filmu (46 740 zł
+// netto); nowa sekcja „Co jeszcze może przejąć AI” połączona z wynikami
+// klientów; „Co jest w planie” jako kartka planu.
+//
 // DO POTWIERDZENIA PRZED PUBLIKACJĄ (pytania w raportach z 18.11.2026):
 //   1. Obietnica po formularzu: zostaje to, co już jest na stronie (telefon
 //      w jeden dzień roboczy, diagnoza, plan z ceną pierwszego etapu).
@@ -34,8 +41,8 @@
 //      stronie głównej i na /integracja-systemow-z-ai (Sztab d-pierwszy-krok).
 //   3. Liczby 140+ / 200+ / 30+ i wyniki ze strony głównej (Sztab d-claimy:
 //      liczba wdrożeń w rewizji).
-//   4. Nazwy w przykładzie appto („Firma Przykładowa”, „Twoja firma”, Marta
-//      Zielińska) zamiast VeloPol i Norda Systems z kitu reklamy.
+//   4. Nazwy w przykładach: Wolsenta, Strelano, Joanna Krawiec, Marta, Tomek,
+//      Ania, Kamil Nowak (świat filmu ~/filmy/lets-pod-klucz-film, niepotwierdzone).
 //   5. Zdania kroków planu pod podpisami z reklamy są nowe (propozycja).
 //   6. Podpis kroku 1 („diagnoza: gdzie ucieka czas, co przejmie AI”) różni
 //      się od reklamy („rozmowy z zespołem, Wasze procesy”) po uwadze Szymona.
@@ -49,7 +56,8 @@ import Cytat from '../components/usluga/Cytat.astro';
 import KitStyl from '../components/pod-klucz/KitStyl.astro';
 import AppKit from '../components/pod-klucz/AppKit.astro';
 import PulpitMontaz from '../components/pod-klucz/PulpitMontaz.astro';
-import InstrukcjaSypie from '../components/pod-klucz/InstrukcjaSypie.astro';
+import ListaKrokow from '../components/pod-klucz/ListaKrokow.astro';
+import CzatScena from '../components/pod-klucz/CzatScena.astro';
 import { HI } from '../components/usluga/ikony';
 
 const ADRES = '/wdrozenie-ai-pod-klucz';
@@ -93,13 +101,51 @@ const LICZBY = [
 ];
 // Wynik „Przygotowanie oferty” stoi pod sceną appto (ta sama praca), reszta w dowodach.
 const OFERTA = { l: '−80%', ld: 'czasu przygotowania oferty', po: 'Szkic oferty powstaje z danych CRM w kilka minut, handlowiec go dopina.' };
-const WYNIKI = [
-  { dz: 'Finanse', p: 'Obieg faktur kosztowych', l: '99,7%', ld: 'skuteczności księgowania',
-    po: 'Faktury z maili księgują się same, zespół zajmuje się wyjątkami.' },
-  { dz: 'Operacje', p: 'Raport tygodniowy', l: '65 h', ld: 'odzyskanych co miesiąc',
-    po: 'Dane spływają same, raport czeka w poniedziałek o 7:00.' },
-  { dz: 'Obsługa klienta', p: 'Pytania o zamówienia', l: '−90%', ld: 'zapytań obsługiwanych ręcznie',
-    po: 'Agent AI odpowiada w kilka minut, z danymi zamówienia.' },
+// CO JESZCZE MOŻE PRZEJĄĆ AI (v3, Szymon: inspirować tym, co w ogóle da się
+// zrobić, na innych przykładach niż oferta; „pożenić” z wynikami klientów).
+// Każdy przykład to krótka scena w appto (CzatScena). Przy przykładach, które
+// mamy u klientów na stronie głównej, stoi wynik klienta, słowo w słowo
+// z index.astro (karty efektów). Pozostałe pokazują możliwość, bez liczb.
+// Sceny są przykładowe (świat Wolsenty z filmu; nazwy do potwierdzenia).
+const MOZLIWE = [
+  { t: 'Odpowiedź na reklamację z historią klienta', d: 'AI czyta zgłoszenie, sprawdza historię klienta i umowę, a szkic odpowiedzi czeka w poczcie.',
+    s: { pol: 'Odpowiedz na reklamację Strelano z biurowca C', glowa: 'Appto sprawdza',
+      kroki: [
+        { ik: 'gm', t: 'Appto używa Gmail', sub: 'Reklamacja · biurowiec C · jednostka 14', pills: ['Nie chłodzi', 'Drugie zgłoszenie'] },
+        { ik: 'hub', t: 'Appto używa HubSpot', sub: 'Historia klienta i umowa · Strelano', pills: ['3 zgłoszenia w 2026', 'Wizyta do 48 h'] },
+      ],
+      odp: 'Szkic odpowiedzi czeka w Gmailu: przepraszamy za drugie zgłoszenie i proponujemy wizytę w czwartek rano, w ramach umowy.' } },
+  { t: 'Odpowiedzi na pytania o zamówienia', d: 'Agent odpowiada klientowi z danymi zamówienia z ERP, zanim ktoś zdąży otworzyć maila.',
+    w: { l: '−90%', ld: 'zapytań obsługiwanych ręcznie' },
+    s: { glowa: 'Agent obsługi klienta',
+      kroki: [
+        { ik: 'gm', t: 'Appto czyta Gmail', sub: 'Pytanie klienta · kiedy dostawa filtrów?', pills: ['Zamówienie ZM/2026/3381'] },
+        { ik: 'db', t: 'Appto sprawdza ERP', sub: 'Zamówienie ZM/2026/3381', pills: ['Wysłane 18 listopada', 'Kurier, dostawa jutro'] },
+      ],
+      odp: 'Odpisałem klientowi: filtry wyjechały wczoraj i dotrą jutro, numer przesyłki jest w mailu.' } },
+  { t: 'Raport tygodniowy z ERP i CRM', d: 'Dane z kilku systemów spływają same, a raport czeka na zarząd w poniedziałek rano.',
+    w: { l: '65 h', ld: 'odzyskanych co miesiąc' },
+    s: { glowa: 'Rutyna: raport tygodniowy',
+      kroki: [
+        { ik: 'db', t: 'Appto czyta ERP', sub: 'Zlecenia serwisowe · tydzień 47', pills: ['Przeglądy', 'Awarie', 'Faktury'] },
+        { ik: 'hub', t: 'Appto czyta HubSpot', sub: 'Oferty · tydzień 47', pills: ['Wysłane', 'Przyjęte'] },
+      ],
+      dok: { t: 'Raport tygodniowy — tydzień 47', sub: 'Dokument · wysłany zarządowi w poniedziałek o 7:00' } } },
+  { t: 'Faktury kosztowe z maili', d: 'Faktury od dostawców księgują się same, a zespół zajmuje się tylko wyjątkami.',
+    w: { l: '99,7%', ld: 'skuteczności księgowania' },
+    s: { glowa: 'Agent księgowy',
+      kroki: [
+        { ik: 'gm', t: 'Appto czyta Gmail', sub: 'Faktury od dostawców · 14 nowych', pills: ['PDF', 'Skany'] },
+        { ik: 'fk', t: 'Appto księguje w programie FK', sub: 'Faktury kosztowe · listopad', pills: ['13 zaksięgowanych', '1 do wyjaśnienia'] },
+      ],
+      odp: 'Jedna faktura czeka na Ciebie: dostawca filtrów nie podał numeru zamówienia.' } },
+  { t: 'Porządek w CRM po spotkaniu', d: 'Z notatek ze spotkania AI uzupełnia transakcję w CRM i dodaje zadania zespołowi.',
+    s: { pol: 'Uzupełnij CRM po spotkaniu z nowym klientem', glowa: 'Appto sprawdza',
+      kroki: [
+        { ik: 'mic', t: 'Appto używa Fireflies', sub: 'Spotkanie · 20 listopada · notatki', pills: ['Budżet na 2027', 'Decyzja w grudniu'] },
+        { ik: 'hub', t: 'Appto aktualizuje HubSpot', sub: 'Transakcja · serwis 2027', pills: ['Etap: negocjacje', 'Zadanie: oferta'] },
+      ],
+      odp: 'Uzupełniłem transakcję i dodałem Marcie zadanie: oferta do 25 listopada.' } },
 ];
 const LOGA = [
   ['sports-med.svg', 'Sports-Med', 308], ['nars.svg', 'NARS', 235], ['sevium.svg', 'Sevium', 206],
@@ -114,12 +160,14 @@ const KROKI = [
   { t: 'Bezpłatna diagnoza', d: 'Analizujemy Wasze procesy, dokumenty i systemy. Szukamy miejsc, w których ucieka czas, i ustalamy, co oddać AI na początek. Dostęp do systemów nie jest do tego potrzebny.', kiedy: 'w terminie, który Wam pasuje' },
   { t: 'Plan wdrożenia z ceną', d: 'Kolejne kroki wdrożenia i cena pierwszego etapu. Kwota stała.', kiedy: 'po diagnozie', mocny: true },
 ];
-const W_PLANIE = [
-  { t: 'Od czego zaczynamy', d: 'Obszar, w którym AI da efekt najszybciej, np. oferty albo odpowiedzi na zapytania klientów.' },
-  { t: 'Co przejmie AI', d: 'Które czynności robią agenci i automatyzacje, a które zostają przy ludziach.' },
-  { t: 'Które systemy podłączymy', d: 'Poczta, CRM, ERP i programy branżowe, z których korzystacie.' },
-  { t: 'Ile kosztuje pierwszy etap', d: 'Kwota stała, znana przed startem. Każdy kolejny etap też ma cenę, zanim go zaczniemy.' },
-  { t: 'Co dalej', d: 'Kolejne procesy i działy w kolejności, która ma dla Was sens.' },
+// „Co jest w planie” jako kartka planu (v3, Szymon: „dać na jakiejś kartce”).
+// Przykład dla Wolsenty z filmu; cena etapu 1 to pole „stała kwota” bez liczby.
+const KARTKA = [
+  { t: 'Od czego zaczynamy', d: 'Oferty serwisowe dla biurowców. Dziś Marta składa je ręcznie z HubSpota, notatek ze spotkań i cennika.' },
+  { t: 'Co przejmie AI', d: 'Szkic oferty w szablonie firmy. Marta sprawdza go i wysyła.' },
+  { t: 'Które systemy podłączymy', d: 'HubSpot, Gmail, notatki ze spotkań i cennik serwisu.' },
+  { t: 'Kto zaczyna pracę', d: 'Sprzedaż, potem obsługa zgłoszeń serwisowych.' },
+  { t: 'Co dalej', d: 'Odpowiedzi na zgłoszenia i raport po każdym przeglądzie.' },
 ];
 
 const faq = [
@@ -230,14 +278,14 @@ const dane = {
   }
 
   /* =====================================================================
-     PROBLEM: instrukcja montażu, kroki jak znaczniki z reklamy
+     PROBLEM: instrukcja wdrożenia, kroki jak znaczniki z reklamy
      ===================================================================== */
   .pk-pr{display:grid;grid-template-columns:minmax(0,6fr) minmax(0,5fr);gap:clamp(40px,6vw,104px);align-items:center}
   .pk-h2s{font-size:clamp(34px,4vw,58px)}
   .pk-pr .v3-sub{margin-top:22px}
   .pk-pr .v3-sub + .v3-sub{margin-top:14px}
   .pk-pr .v3-sub b{color:var(--t1);font-weight:650}
-  .pk-is{width:100%;max-width:560px;justify-self:end}
+  .pk-is{width:100%;max-width:520px;justify-self:end}
   @media (max-width:900px){ .pk-pr{grid-template-columns:minmax(0,1fr)} .pk-is{justify-self:start;max-width:520px} }
 
   /* =====================================================================
@@ -271,7 +319,10 @@ const dane = {
   /* =====================================================================
      ZESPÓŁ NA GOTOWE: prawdziwy appto, rozmowa od polecenia do oferty
      ===================================================================== */
-  .pk-ok{margin-top:clamp(40px,4.4vw,64px);border-radius:14px;overflow:hidden;background:#FAF9F7;box-shadow:0 0 0 1px rgba(15,26,20,0.12),0 60px 120px -60px rgba(8,26,17,0.55)}
+  .pk-ok{margin-top:clamp(40px,4.4vw,64px);border-radius:14px;overflow:hidden;background:#FAF9F7;box-shadow:0 0 0 1px rgba(15,26,20,0.12),0 60px 120px -60px rgba(8,26,17,0.55);transition:background .6s ease,box-shadow .6s ease}
+  .pk-ok-bar{transition:opacity .6s ease .2s}
+  .pk-ok.sam{background:transparent;box-shadow:0 0 0 1px transparent,0 60px 120px -60px transparent}
+  .pk-ok.sam .pk-ok-bar{opacity:0;transition-delay:0s}
   .pk-ok-bar{display:flex;align-items:center;gap:14px;height:40px;padding:0 14px;background:#ECEAE6;border-bottom:1px solid rgba(20,20,20,0.08)}
   .pk-ok-bar .pm-tl{display:flex;gap:8px}.pk-ok-bar .pm-tl i{width:12px;height:12px;border-radius:50%;display:block}
   .pk-ok-bar .adr{flex:1;max-width:420px;margin:0 auto;padding:5px 14px;border-radius:8px;background:rgba(255,255,255,0.75);font-family:"InterApp",system-ui,sans-serif;font-size:13px;color:#55555c;text-align:center}
@@ -296,24 +347,29 @@ const dane = {
   .pk-li div + div{padding-left:clamp(16px,2vw,28px);border-left:1px solid var(--linia)}
   .pk-li b{display:block;font-size:clamp(44px,6vw,92px);line-height:0.95;letter-spacing:-0.05em;font-weight:800;color:var(--t1)}
   .pk-li span{display:block;margin-top:8px;font-size:clamp(15px,1.3vw,18px);color:var(--t2)}
-  .pk-wy{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 clamp(20px,2.4vw,36px);margin-top:clamp(56px,6vw,96px)}
-  .pk-wy article{padding-top:18px;border-top:2px solid var(--t1)}
-  .pk-wy small{display:block;font-size:13px;font-weight:650;color:var(--ziel-c)}
-  .pk-wy h3{margin:4px 0 0;font-size:17px;font-weight:700;letter-spacing:-0.015em}
-  .pk-wy b{display:block;margin-top:18px;font-size:clamp(38px,3.6vw,54px);line-height:1;letter-spacing:-0.045em;font-weight:800}
-  .pk-wy .ld{display:block;margin-top:6px;font-size:14px;color:var(--t2)}
-  .pk-wy p{margin:14px 0 0;font-size:15px;line-height:1.55;color:var(--t2);text-wrap:pretty}
-  .pk-wy-po{margin:22px 0 0;font-size:14px;color:var(--t3)}
-  @media (max-width:860px){ .pk-wy{grid-template-columns:minmax(0,1fr);gap:36px} }
+  .pk-mz{display:grid;grid-template-columns:minmax(0,4.6fr) minmax(0,7fr);gap:clamp(28px,4vw,64px);align-items:start;margin-top:clamp(40px,4.4vw,64px)}
+  .pk-mz-l{margin:0;padding:0;list-style:none;border-top:1px solid var(--linia)}
+  .pk-mz-l li{border-bottom:1px solid var(--linia)}
+  .pk-mz-l button{appearance:none;display:block;width:100%;padding:18px 4px 18px 18px;border:0;background:none;font:inherit;text-align:left;cursor:pointer;color:var(--t1);box-shadow:inset 3px 0 0 transparent;transition:box-shadow .3s ease,background .3s ease}
+  .pk-mz-l button:hover .t{color:var(--ziel-c)}
+  .pk-mz-l button.on{box-shadow:inset 3px 0 0 var(--ziel)}
+  .pk-mz-l .t{display:block;font-size:clamp(17px,1.5vw,20px);font-weight:750;letter-spacing:-0.02em;line-height:1.25;transition:color .15s}
+  .pk-mz-l .d{display:none;margin-top:6px;font-size:15px;line-height:1.55;color:var(--t2);text-wrap:pretty}
+  .pk-mz-l .w{display:block;margin-top:6px;font-size:14px;color:var(--t2)}
+  .pk-mz-l .w b{font-weight:800;color:var(--t1)}
+  .pk-mz-l .w i{font-style:normal;color:var(--t3)}
+  .pk-mz-l button.on .d{display:block}
+  .pk-mz-ok{position:sticky;top:32px;border-radius:14px;overflow:hidden;background:#FAF9F7;box-shadow:0 0 0 1px rgba(15,26,20,0.12),0 50px 100px -60px rgba(8,26,17,0.5)}
+  .pk-mz-sc{position:relative}
+  .pk-mz-s{display:none}
+  .pk-mz-s.on{display:block}
+  @media (max-width:900px){
+    .pk-mz{grid-template-columns:minmax(0,1fr)}
+    .pk-mz-ok{position:static;order:-1}
+  }
   @media (max-width:560px){
     .pk-li b{font-size:38px}
-    /* wyniki: liczba po lewej, opis po prawej, żeby trzy wyniki nie zajmowały trzech ekranów */
-    .pk-wy article{display:grid;grid-template-columns:104px minmax(0,1fr);column-gap:16px;align-items:start}
-    .pk-wy b{grid-column:1;grid-row:1 / 5;margin-top:4px;font-size:32px}
-    .pk-wy small,.pk-wy h3,.pk-wy .ld,.pk-wy p{grid-column:2}
-    .pk-wy p{margin-top:8px;font-size:14.5px}
     .pk-li span{font-size:14px}
-    .pk-wy{grid-template-columns:minmax(0,1fr)}
   }
 
   /* =====================================================================
@@ -333,12 +389,22 @@ const dane = {
   .pk-dos{display:flex;align-items:center;gap:10px;margin-top:12px;font-size:13.5px;line-height:1.3;color:var(--t3)}
   .pk-dos img{flex-shrink:0;width:32px;height:32px;border-radius:50%;object-fit:cover;object-position:50% 14%}
   .pk-dos b{display:block;font-weight:650;color:var(--t1)}
-  .pk-wp h3{margin:0;font-size:clamp(22px,2vw,28px);font-weight:800;letter-spacing:-0.035em;color:var(--t1)}
-  .pk-wp dl{margin:20px 0 0}
-  .pk-wp div{padding:16px 0;border-top:1px solid var(--linia)}
-  .pk-wp div:last-child{border-bottom:1px solid var(--linia)}
-  .pk-wp dt{font-size:16.5px;font-weight:700;color:var(--t1)}
-  .pk-wp dd{margin:4px 0 0;font-size:15px;line-height:1.55;color:var(--t2)}
+  /* kartka planu: wydruk leżący na tle (obiekt, nie karta interfejsu) */
+  .pk-kt{margin:0;justify-self:center;width:100%;max-width:470px}
+  .pk-kt-p{position:relative;padding:28px 30px 26px;border-radius:3px;background:#fffefb;color:#141a16;transform:rotate(-1.2deg);box-shadow:0 1px 0 rgba(0,0,0,.04),0 2px 6px -2px rgba(20,30,22,.18),0 40px 70px -40px rgba(20,30,22,.55)}
+  .pk-kt-gl{display:flex;justify-content:space-between;align-items:center;gap:10px;padding-bottom:12px;border-bottom:1px solid rgba(15,26,20,.14);font-size:12px;color:#7a827c}
+  .pk-kt-gl span:first-child{display:inline-flex;align-items:center;gap:7px;font-weight:700;color:#141a16}
+  .pk-kt-gl svg{width:14px;height:14px}
+  .pk-kt-t{display:block;margin-top:18px;font-size:27px;font-weight:800;letter-spacing:-.035em;line-height:1.05}
+  .pk-kt-f{display:block;margin-top:4px;font-size:13.5px;color:#5f6a63}
+  .pk-kt ol{margin:18px 0 0;padding:0;list-style:none}
+  .pk-kt li{display:grid;grid-template-columns:30px minmax(0,1fr);gap:4px;padding:11px 0;border-top:1px solid rgba(15,26,20,.09)}
+  .pk-kt em{font-style:normal;font-family:var(--mono);font-size:12px;line-height:1.6;color:var(--ziel-c)}
+  .pk-kt li b{display:block;font-size:14.5px;font-weight:700}
+  .pk-kt li span{display:block;margin-top:2px;font-size:13.5px;line-height:1.45;color:#4f5a53}
+  .pk-kt-c{display:flex;align-items:baseline;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-top:8px;padding-top:14px;border-top:1.5px solid #141a16;font-size:13px;color:#5f6a63}
+  .pk-kt-c .pole{padding:2px 8px 3px;border-bottom:2px dashed #0a7a52;background:rgba(0,205,119,.12);font-weight:700;color:#0a5c3e}
+  .pk-kt figcaption{margin-top:22px;font-size:14px;line-height:1.5;color:var(--t3);text-align:center}
   @media (max-width:980px){ .pk-dg{grid-template-columns:minmax(0,1fr)} }
 
   #kontakt{padding-top:clamp(64px,8vw,120px);padding-bottom:clamp(56px,7vw,96px);background:#ffffff}
@@ -418,11 +484,11 @@ const dane = {
 <section id="problem" class="v3-sek">
 <div class="pk-pr">
 <div>
-<h2 class="v3-h2 pk-h2s">AI do samodzielnego montażu ma długą instrukcję</h2>
+<h2 class="v3-h2 pk-h2s">Wdrożenie AI na własną rękę to długa lista kroków</h2>
 <p class="v3-sub">Licencję kupuje się w jeden dzień. Potem ktoś musi zebrać cenniki i umowy, napisać instrukcje, podłączyć pocztę i CRM, przetestować odpowiedzi i nauczyć zespół.</p>
-<p class="v3-sub"><b>Zwykle robi to ktoś, kto ma też swoją pracę.</b> Takie wdrożenie rzadko upada od razu. Osuwa się po cichu: instrukcje się rozjeżdżają, testy nie przechodzą, a kroków przybywa.</p>
+<p class="v3-sub"><b>Zwykle robi to ktoś, kto ma też swoją pracę.</b> Takie wdrożenie rzadko upada od razu. Osuwa się po cichu: kolejne kroki stają, a nowych przybywa.</p>
 </div>
-<div class="pk-is"><InstrukcjaSypie /></div>
+<div class="pk-is"><ListaKrokow /></div>
 </div>
 </section>
 
@@ -461,9 +527,9 @@ const dane = {
 <section id="na-gotowe" class="v3-sek v3-papier">
 <div class="v8-gl">
 <h2 class="v3-h2">Zespół wchodzi na gotowe</h2>
-<p class="v3-sub">Handlowiec pisze jedno polecenie. AI zbiera dane z CRM-u, notatek ze spotkania i zasad firmy, a oferta powstaje na jego oczach.</p>
+<p class="v3-sub">Marta z firmy serwisującej klimatyzację pisze jedno polecenie. AI zbiera dane z CRM-u, notatek ze spotkania i cennika serwisu, a oferta powstaje na jej oczach.</p>
 </div>
-<div class="pk-ok" role="img" aria-label="Appto, na początku puste okno. Handlowiec pisze polecenie „Przygotuj ofertę po wczorajszym spotkaniu z szablonu Oferta handlowa”. Appto pobiera transakcję z HubSpota, notatki ze spotkania z Fireflies i politykę handlową z Kontekstu, a potem otwiera ofertę i wypełnia jej pola.">
+<div class="pk-ok sam" role="img" aria-label="Na początku sam kompozytor appto. Marta z firmy serwisującej klimatyzację klika i pisze polecenie „Przygotuj ofertę dla Strelano z szablonu Oferta serwisowa”. Kompozytor rozwija się w pełne okno appto. Appto pobiera transakcję z HubSpota, notatki ze spotkania z Fireflies i cennik serwisu z Kontekstu, otwiera ofertę i wypełnia jej pola: roczny serwis 42 jednostek klimatyzacji w trzech biurowcach za 46 740 zł netto.">
 <div class="pk-ok-bar" aria-hidden="true"><span class="pm-tl"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></span><span class="adr">app.appto.ai</span></div>
 <AppKit klasa="caly" demo />
 <AppKit klasa="czat" kadr={680} od={92} demo />
@@ -478,26 +544,39 @@ const dane = {
 </div>
 </section>
 
-<!-- ============ 5 · DOWODY ============
-     Tylko to, co już jest na stronie głównej: liczby, logotypy, wyniki
-     i cytat NARS (prawdziwy, dotyczy współpracy ogólnie). -->
-<section id="dowody" class="v3-sek">
+<!-- ============ 5 · CO JESZCZE MOŻE PRZEJĄĆ AI + DOWODY ============
+     Jeden układ: po lewej lista przykładów, po prawej jedna scena w appto,
+     która gra wybrany przykład (przełącza się sama, póki sekcja jest
+     w kadrze). Wyniki tylko ze strony głównej i tylko przy przykładach,
+     które tam są; pod spodem liczby i cytat NARS (prawdziwy). -->
+<section id="mozliwosci" class="v3-sek">
 <div class="v8-gl">
-<h2 class="v3-h2">Tak to działa u&nbsp;naszych klientów</h2>
-<p class="v3-sub">Wdrażamy AI, automatyzacje i oprogramowanie dopasowane do firmy. Wyniki z prawdziwych wdrożeń.</p>
+<h2 class="v3-h2">Co jeszcze może przejąć AI</h2>
+<p class="v3-sub">Oferta to jeden przykład. Tak wygląda inna praca, którą AI przejmuje w firmach usługowych. Przy części przykładów podajemy wynik u naszego klienta.</p>
+</div>
+<div class="pk-mz" data-mz>
+<ol class="pk-mz-l" role="tablist" aria-label="Przykłady pracy, którą przejmuje AI">
+{MOZLIWE.map((m, i) => (
+  <li><button type="button" role="tab" class={i === 0 ? 'on' : ''} aria-selected={i === 0 ? 'true' : 'false'} data-mz-b={i}>
+    <span class="t">{m.t}</span>
+    <span class="d">{m.d}</span>
+    {m.w && <span class="w"><b>{m.w.l}</b> {m.w.ld} <i>u naszego klienta</i></span>}
+  </button></li>
+))}
+</ol>
+<div class="pk-mz-ok">
+<div class="pk-ok-bar" aria-hidden="true"><span class="pm-tl"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></span><span class="adr">app.appto.ai</span></div>
+<div class="pk-mz-sc">
+{MOZLIWE.map((m, i) => (
+  <div class={i === 0 ? 'pk-mz-s on' : 'pk-mz-s'} data-mz-s={i} role="tabpanel" aria-label={`${m.t}. ${m.d}`}>
+    <CzatScena {...m.s} />
+  </div>
+))}
+</div>
+</div>
 </div>
 <div class="pk-li">
 {LICZBY.map((x) => (<div><b>{x.l}</b><span>{x.d}</span></div>))}
-</div>
-<div class="pk-wy">
-{WYNIKI.map((x) => (
-  <article>
-    <small>{x.dz}</small>
-    <h3>{x.p}</h3>
-    <b>{x.l}</b><span class="ld">{x.ld}</span>
-    <p>{x.po}</p>
-  </article>
-))}
 </div>
 <Cytat cytat="Let’s automate wziął pełną odpowiedzialność za projekt i dowiózł go do końca. To dlatego powierzyliśmy im kolejny, znacznie większy." logo="/uploads/klienci/nars.svg" logoAlt="NARS Polska" logoW={235} logoH={88} imie="Jakub Ciołkowski" rola="Członek Zarządu, NARS Polska" />
 </section>
@@ -522,12 +601,20 @@ const dane = {
   </li>
 ))}
 </ol>
-<div class="pk-wp">
-<h3>Co jest w planie</h3>
-<dl>
-{W_PLANIE.map((x) => (<div><dt>{x.t}</dt><dd>{x.d}</dd></div>))}
-</dl>
+<figure class="pk-kt">
+<div class="pk-kt-p" role="img" aria-label="Przykładowy plan wdrożenia AI dla Wolsenty, firmy serwisującej klimatyzację. Od czego zaczynamy: oferty serwisowe dla biurowców. Co przejmie AI: szkic oferty w szablonie firmy. Które systemy podłączymy: HubSpot, Gmail, notatki ze spotkań i cennik serwisu. Kto zaczyna pracę: sprzedaż, potem obsługa zgłoszeń. Co dalej: odpowiedzi na zgłoszenia i raport po przeglądzie. Cena etapu 1: stała kwota, znana przed startem.">
+<div class="pk-kt-gl" aria-hidden="true"><span><svg viewBox="0 0 40.5 41"><path d="M31.1674 0.5V17.4327C29.7901 11.2307 26.1381 0.5 26.1381 0.5H17.1107C18.599 6.44658 20.7794 12.7694 21.6328 16.7405H21.6193C20.7291 14.2443 18.7435 10.4076 14.2919 4.60213C13.1564 3.12389 12.0275 1.72963 11.0029 0.5H0C6.53453 7.53847 13.5092 17.1168 13.5092 20.5C13.5092 23.8832 6.53453 33.4614 0 40.5H11.0029C12.0309 39.2705 13.1597 37.8762 14.2919 36.3979C18.636 30.7301 20.635 26.9405 21.5522 24.4409C20.6484 28.4254 18.4176 34.6543 16.8822 40.5H25.9298C25.9298 40.5 29.6389 30.4245 31.1035 24.3636L30.8349 40.5H39.6641L39.9966 20.5538V0.5H31.1674Z" fill="#00CD77"/></svg>Let’s Automate</span><span>po diagnozie · strona 1 z 2</span></div>
+<div aria-hidden="true">
+<b class="pk-kt-t">Plan wdrożenia AI</b>
+<span class="pk-kt-f">dla: Wolsenta · serwis klimatyzacji i wentylacji</span>
+<ol>
+{KARTKA.map((x, i) => (<li><em>{dwa(i + 1)}</em><div><b>{x.t}</b><span>{x.d}</span></div></li>))}
+</ol>
+<div class="pk-kt-c"><span>Etap 1 · oferty serwisowe</span><span class="pole">stała kwota, znana przed startem</span></div>
 </div>
+</div>
+<figcaption>Przykładowy plan. Wasz powstaje po diagnozie, z Waszych procesów i systemów.</figcaption>
+</figure>
 </div>
 </section>
 
@@ -584,12 +671,12 @@ const dane = {
 
   // ---- Skalowanie scen o stałym rozmiarze (kadr z reklamy, kit appto) ----
   (function(){
-    var sceny = Array.prototype.slice.call(document.querySelectorAll('[data-pm],[data-is],[data-ak-skaluj]')) as HTMLElement[];
+    var sceny = Array.prototype.slice.call(document.querySelectorAll('[data-pm],[data-lk],[data-ak-skaluj]')) as HTMLElement[];
     function licz(el: HTMLElement){
       var w = el.clientWidth;
       if(!w) return;
       if(el.hasAttribute('data-pm')) el.style.setProperty('--ps', String(w / 1080));
-      else if(el.hasAttribute('data-is')) el.style.setProperty('--is', String(w / 720));
+      else if(el.hasAttribute('data-lk')) el.style.setProperty('--lk', String(w / 560));
       else el.style.setProperty('--s', String(w / parseFloat(getComputedStyle(el).getPropertyValue('--kk') || '1920')));
     }
     sceny.forEach(licz);
@@ -599,28 +686,63 @@ const dane = {
     } else window.addEventListener('resize', function(){ sceny.forEach(licz); });
   })();
 
-  // ---- HERO: pętla kadru z reklamy ----
-  // Okna i znaczki wchodzą według data-t (ms), duży licznik, potem wszystko
-  // wpada w ekran, otwiera się appto i „Zrobimy to za Was”. Pętla stoi,
-  // kiedy hero nie widać. Bez ruchu zostaje kadr z oknami (.stat).
+  // ---- HERO: kadr z reklamy, potem zespół przy gotowym narzędziu ----
+  // 0–8 s: okna i znaczki kroków według data-t, duży licznik. 8,2 s: wszystko
+  // wpada w ekran, instrukcja się zamyka, „Zrobimy to za Was”. Od 10,8 s trzy
+  // puste okna appto; kursory Marty, Tomka i Ani wchodzą po kolei, klikają
+  // kompozytor, piszą polecenie i wysyłają, a wynik pojawia się po nich.
+  // Pętla stoi, kiedy hero nie widać. Bez ruchu zostaje stan końcowy (.stat).
   (function(){
     var pm = document.querySelector('[data-pm]') as HTMLElement | null;
     if(!pm || redukcja || !('IntersectionObserver' in window)) return;
     var el = Array.prototype.slice.call(pm.querySelectorAll('[data-t]')) as HTMLElement[];
     var la = pm.querySelector('[data-t-la]') as HTMLElement;
-    var T = { zwin: 6500, app: 6950, la: 7500, reset: 12600, od: 13300 };
+    var okna = Array.prototype.slice.call(pm.querySelectorAll('[data-pz]')) as HTMLElement[];
+    var kursory = Array.prototype.slice.call(pm.querySelectorAll('[data-pz-k]')) as HTMLElement[];
+    var puste = okna.map(function(o){ return (o.querySelector('[data-pz-pole]') as HTMLElement).innerHTML; });
+    var T = { zwin: 8200, app: 8700, la: 9300, laOff: 10700, zespol: 10800, reset: 23500, od: 24300 };
     var timery: number[] = [], widac = false;
     function czysc(){ timery.forEach(function(t){ clearTimeout(t); }); timery = []; }
     function po(ms: number, fn: () => void){ timery.push(window.setTimeout(fn, ms)); }
+    function xy(k: HTMLElement, v: string){ var p = v.split(','); k.style.setProperty('--x', p[0] + 'px'); k.style.setProperty('--y', p[1] + 'px'); }
+    function osoba(k: HTMLElement){
+      var i = +(k.dataset.pzK || 0), okno = okna[i];
+      var pole = okno.querySelector('[data-pz-pole]') as HTMLElement;
+      var msg = okno.querySelector('[data-pz-msg]') as HTMLElement;
+      var tekst = (msg.firstChild && msg.firstChild.textContent) || '';
+      var wzm = msg.querySelector('.w-mention');
+      var t = +(k.dataset.t0 || 0);
+      var cel = k.dataset.cel || '0,0', c = cel.split(',').map(Number);
+      po(t, function(){ k.classList.add('bez'); xy(k, k.dataset.start || cel); k.classList.add('on'); });
+      po(t + 60, function(){ k.classList.remove('bez'); xy(k, cel); });
+      po(t + 1450, function(){ k.classList.add('klik'); pole.innerHTML = '<span class="ak-kursor"></span>'; });
+      po(t + 1600, function(){ k.classList.remove('klik'); });
+      var t1 = t + 1750;
+      for(var n = 1; n <= tekst.length; n++){
+        (function(n){ po(t1 + n * 55, function(){ pole.textContent = tekst.slice(0, n); var kk = document.createElement('span'); kk.className = 'ak-kursor'; pole.appendChild(kk); }); })(n);
+      }
+      var t2 = t1 + tekst.length * 55 + 200;
+      if(wzm) po(t2, function(){ pole.insertBefore(wzm!.cloneNode(true), pole.querySelector('.ak-kursor')); });
+      po(t2 + 500, function(){ okno.classList.add('wyslij'); k.classList.add('klik'); });
+      po(t2 + 650, function(){ k.classList.remove('klik'); });
+      po(t2 + 800, function(){ okno.classList.remove('wyslij'); pole.innerHTML = puste[i]; okno.classList.add('f1'); xy(k, (c[0] + 70) + ',' + (c[1] + 60)); });
+      po(t2 + 1500, function(){ okno.classList.add('f2'); });
+      po(t2 + 2500, function(){ okno.classList.add('f3'); });
+    }
     function start(){
       czysc();
-      pm!.classList.remove('stat', 'zwin', 'app', 'reset');
+      pm!.classList.remove('stat', 'zwin', 'app', 'reset', 'zespol');
       el.forEach(function(e){ e.classList.remove('on'); });
       la.classList.remove('on');
+      okna.forEach(function(o, i){ o.classList.remove('f1', 'f2', 'f3', 'wyslij'); (o.querySelector('[data-pz-pole]') as HTMLElement).innerHTML = puste[i]; });
+      kursory.forEach(function(k){ k.classList.remove('on', 'klik'); });
       el.forEach(function(e){ po(+(e.dataset.t || 0), function(){ e.classList.add('on'); }); });
       po(T.zwin, function(){ pm!.classList.add('zwin'); });
       po(T.app, function(){ pm!.classList.add('app'); });
       po(T.la, function(){ la.classList.add('on'); });
+      po(T.laOff, function(){ la.classList.remove('on'); });
+      po(T.zespol, function(){ pm!.classList.add('zespol'); });
+      kursory.forEach(osoba);
       po(T.reset, function(){ pm!.classList.add('reset'); });
       po(T.od, function(){ if(widac) start(); });
     }
@@ -631,42 +753,61 @@ const dane = {
     }, { threshold: 0.2 }).observe(pm);
   })();
 
-  // ---- PROBLEM: instrukcja, która się sypie ----
-  // Gra raz, kiedy scena wejdzie w kadr, i kończy się kulminacją (stoi).
-  // Kroki i okna wchodzą według data-t, licznik według data-licznik,
-  // przy oknie psuje się jego krok (czerwony numer). Od pierwszego nowego
-  // kroku lista jedzie w górę i się rozjeżdża, na końcu osiada.
+  // ---- PROBLEM: lista kroków, najpierw czerwona, potem zielona ----
+  // Gra raz, kiedy scena wejdzie w kadr, i stoi na końcu (cała lista
+  // zielona). Kroki wpadają od razu i coraz szybciej; lista przewija się
+  // w oknie o całe wiersze, a wiersze nad oknem gasną. Zwrot „Tym wszystkim
+  // zajmiemy się my”, lista wraca na górę i po kolei robi się zielona.
   (function(){
-    var sc = document.querySelector('[data-is]') as HTMLElement | null;
-    if(!sc || redukcja || !('IntersectionObserver' in window)) return;
-    var el = Array.prototype.slice.call(sc.querySelectorAll('[data-t]')) as HTMLElement[];
-    var zr = sc.querySelector('[data-is-zr]') as HTMLElement, wsz = sc.querySelector('[data-is-wsz]') as HTMLElement;
-    var licznik = JSON.parse(sc.dataset.licznik || '[]') as number[][];
-    var kulminacja = +(sc.dataset.kulminacja || 8300);
-    var pierwszyNowy = 0;
-    el.forEach(function(e){ var nr = +(e.dataset.nr || 0); if(nr === 10) pierwszyNowy = +(e.dataset.t || 0); });
-    sc.classList.remove('stat');
-    zr.textContent = '0'; wsz.textContent = '64'; wsz.classList.remove('ucieka');
+    var lk = document.querySelector('[data-lk]') as HTMLElement | null;
+    if(!lk || redukcja || !('IntersectionObserver' in window)) return;
+    var N = +(lk.dataset.n || 0), H = +(lk.dataset.wiersz || 64), V = +(lk.dataset.widac || 8);
+    var wejscia = JSON.parse(lk.dataset.wejscia || '[]') as number[];
+    var zwrot = +(lk.dataset.zwrot || 0), zielen = +(lk.dataset.zielen || 0);
+    var lista = lk.querySelector('[data-lk-lista]') as HTMLElement;
+    var wiersze = Array.prototype.slice.call(lk.querySelectorAll('.lk-k')) as HTMLElement[];
+    var zr = lk.querySelector('[data-lk-zr]') as HTMLElement, pas = lk.querySelector('[data-lk-pas]') as HTMLElement;
+    var pod = lk.querySelector('[data-lk-pod]') as HTMLElement;
+    function kroki(n: number){ var r = n % 10, rr = n % 100; return n + (n === 1 ? ' krok' : (r >= 2 && r <= 4 && (rr < 12 || rr > 14)) ? ' kroki' : ' kroków'); }
+    function przewin(od: number){
+      lista.style.setProperty('--y', (-od * H) + 'px');
+      wiersze.forEach(function(w, i){ w.classList.toggle('poza', i < od || i >= od + V); });
+    }
+    lk.classList.remove('stat');
+    zr.textContent = '0'; pas.style.setProperty('--p', '0'); pod.textContent = '0 kroków';
+    przewin(0);
     var ruszylo = false;
     function start(){
       ruszylo = true;
-      el.forEach(function(e){
+      wejscia.forEach(function(t, i){
         window.setTimeout(function(){
-          e.classList.add('on');
-          var nr = e.dataset.psuje;
-          if(nr){ var k = sc!.querySelector('.is-k[data-nr="' + nr + '"]'); if(k) k.classList.add('zepsuty'); }
-        }, +(e.dataset.t || 0));
+          if(i >= V) przewin(i - V + 1);
+          wiersze[i].classList.add('on');
+          pod.textContent = kroki(i + 1) + ', zrobione: 0';
+        }, t);
       });
-      licznik.forEach(function(x){
-        window.setTimeout(function(){ zr.textContent = String(x[1]); wsz.textContent = String(x[2]); wsz.classList.toggle('ucieka', x[2] > 64); }, x[0]);
-      });
-      window.setTimeout(function(){ sc!.classList.add('rosnie', 'rozjazd'); }, pierwszyNowy);
-      window.setTimeout(function(){ sc!.classList.add('osiada'); }, kulminacja);
+      window.setTimeout(function(){ lk!.classList.add('zwrot'); }, zwrot);
+      window.setTimeout(function(){ przewin(0); }, zwrot + 500);
+      window.setTimeout(function(){ lk!.classList.remove('zwrot'); lk!.classList.add('zielen'); }, zielen);
+      var t = zielen + 300, d = 380;
+      for(var j = 0; j < N; j++){
+        (function(j, t){
+          window.setTimeout(function(){
+            var od = Math.min(N - V, Math.max(0, j - V + 3));
+            przewin(od);
+            wiersze[j].classList.add('zrob');
+            zr.textContent = String(j + 1);
+            pas.style.setProperty('--p', String((j + 1) / N));
+            pod.textContent = j + 1 === N ? kroki(N) + ', zrobione wszystkie' : kroki(N) + ', zrobione: ' + (j + 1);
+          }, t);
+        })(j, t);
+        t += d; d = Math.max(90, d * 0.88);
+      }
     }
     var io = new IntersectionObserver(function(w){
       if(w[0].isIntersecting && !ruszylo){ start(); io.disconnect(); }
-    }, { threshold: 0.45 });
-    io.observe(sc);
+    }, { threshold: 0.4 });
+    io.observe(lk);
   })();
 
   // ---- PLAN: kropki zapalają się, linia rośnie, gdy krok wchodzi w kadr ----
@@ -681,56 +822,83 @@ const dane = {
   })();
 
   // ---- APPTO: praca od stanu „przed” (studio/ZASADY.md) ----
-  // Kit startuje w HTML jako pusty appto (klasa .gra). Kolejno: polecenie
-  // pisane znak po znaku, wysłanie, kroki z HubSpota, notatek i Kontekstu,
-  // dokument wjeżdża z prawej i jego pola wypełniają się po kolei, na końcu
-  // odpowiedź „Gotowe” z kartą dokumentu. Pętla, póki scena jest w kadrze; po
-  // wyjściu z kadru wraca do pustego okna. Przy ograniczonym ruchu stan końcowy.
+  // v3: na początku sam kompozytor (bez okna appto). Wchodzi kursor Marty,
+  // klika, pisze polecenie i wysyła; kompozytor rozwija się w pełne okno,
+  // potem kroki z HubSpota, notatek i Kontekstu, dokument wjeżdża z prawej
+  // i jego pola wypełniają się po kolei, na końcu „Gotowe” z kartą dokumentu.
+  // Pętla, póki scena jest w kadrze; po wyjściu z kadru wraca do kompozytora.
+  // Przy ograniczonym ruchu stan końcowy.
   (function(){
     var kity = Array.prototype.slice.call(document.querySelectorAll('[data-ak-demo]')) as HTMLElement[];
     if(!kity.length) return;
-    if(redukcja || !('IntersectionObserver' in window)){ kity.forEach(function(ak){ ak.classList.remove('gra'); }); return; }
+    function rama(ak: HTMLElement, sam: boolean){ var r = ak.closest('.pk-ok'); if(r && ak.offsetParent) r.classList.toggle('sam', sam); }
+    if(redukcja || !('IntersectionObserver' in window)){ kity.forEach(function(ak){ ak.classList.remove('gra', 'sam'); var r = ak.closest('.pk-ok'); if(r) r.classList.remove('sam'); }); return; }
     kity.forEach(function(ak){
       var pole = ak.querySelector('[data-w="w-composer-text"]') as HTMLElement;
       var msg = ak.querySelector('[data-w="w-msg1"]') as HTMLElement;
       var tytul = ak.querySelector('[data-w="w-top-title"]') as HTMLElement;
+      var kur = ak.querySelector('[data-ak-kur]') as HTMLElement;
       var pola = Array.prototype.slice.call(ak.querySelectorAll('.w-field')) as HTMLElement[];
       var wzmianka = msg.querySelector('.w-mention') as HTMLElement;
       var tekst = (msg.firstChild && msg.firstChild.textContent) || '';
       var pusto = pole.innerHTML, tytulKoniec = tytul.textContent || '';
+      // cel kursora: pole tekstowe kompozytora w stanie „sam” (px logiczne kitu)
+      var czat = ak.classList.contains('czat');
+      var cel = czat ? [190, 530] : [720, 530], skad = czat ? [640, 980] : [1480, 980];
       var timery: number[] = [], widac = false;
       function czysc(){ timery.forEach(function(t){ clearTimeout(t); }); timery = []; }
       function po(ms: number, fn: () => void){ timery.push(window.setTimeout(fn, ms)); }
       function faza(n: number){ for(var i = 1; i <= 7; i++) ak.classList.toggle('f' + i, i <= n); }
+      var scroll = ak.querySelector('[data-w="w-scroll"]') as HTMLElement | null;
+      var strona = ak.querySelector('[data-w="w-page"]') as HTMLElement | null;
+      var plotno = ak.querySelector('.w-canvas') as HTMLElement | null;
+      function przewin(dol: boolean){
+        if(!scroll || !strona || !plotno) return;
+        var ile = dol ? Math.max(0, scroll.offsetTop + strona.offsetHeight + 28 - plotno.clientHeight) : 0;
+        scroll.style.transition = dol ? 'transform 3.2s cubic-bezier(.45,0,.2,1)' : 'none';
+        scroll.style.transform = 'translateY(' + (-ile) + 'px)';
+      }
+      function kursor(x: number, y: number, bez?: boolean){ kur.classList.toggle('bez', !!bez); kur.style.setProperty('--kx', x + 'px'); kur.style.setProperty('--ky', y + 'px'); }
       function przed(){
         czysc();
-        ak.classList.add('gra');
+        ak.classList.add('gra', 'sam');
+        rama(ak, true);
         ak.classList.remove('wyslij');
         faza(0);
         pola.forEach(function(f){ f.classList.add('pusty'); });
         tytul.textContent = 'Nowa rozmowa';
         pole.innerHTML = pusto;
+        kur.classList.remove('on', 'klik');
+        kursor(skad[0], skad[1], true);
+        przewin(false);
       }
       function start(){
         przed();
-        var t = 900;
-        po(t - 200, function(){ pole.innerHTML = '<span class="ak-kursor"></span>'; });
+        po(500, function(){ kur.classList.add('on'); });
+        po(560, function(){ kursor(cel[0], cel[1]); });
+        po(1900, function(){ kur.classList.add('klik'); pole.innerHTML = '<span class="ak-kursor"></span>'; });
+        po(2050, function(){ kur.classList.remove('klik'); });
+        var t = 2200;
         for(var i = 1; i <= tekst.length; i++){
-          (function(n){ po(t + n * 38, function(){ pole.innerHTML = ''; pole.appendChild(document.createTextNode(tekst.slice(0, n))); var k = document.createElement('span'); k.className = 'ak-kursor'; pole.appendChild(k); }); })(i);
+          (function(n){ po(t + n * 45, function(){ pole.innerHTML = ''; pole.appendChild(document.createTextNode(tekst.slice(0, n))); var k = document.createElement('span'); k.className = 'ak-kursor'; pole.appendChild(k); }); })(i);
         }
-        t += tekst.length * 38 + 150;
+        t += tekst.length * 45 + 150;
         po(t, function(){ var k = pole.querySelector('.ak-kursor'); pole.insertBefore(wzmianka.cloneNode(true), k); });
         t += 700;
-        po(t, function(){ ak.classList.add('wyslij'); });
-        po(t + 250, function(){ ak.classList.remove('wyslij'); pole.innerHTML = pusto; tytul.textContent = tytulKoniec; faza(1); });
-        po(t + 900, function(){ faza(2); });
-        po(t + 1500, function(){ faza(3); });
-        po(t + 2300, function(){ faza(4); });
-        po(t + 3100, function(){ faza(5); });
-        po(t + 3900, function(){ faza(6); });
-        pola.forEach(function(f, i){ po(t + 5000 + i * 380, function(){ f.classList.remove('pusty'); }); });
-        po(t + 5000 + pola.length * 380 + 300, function(){ faza(7); });
-        po(t + 15000, function(){ if(widac) start(); });
+        po(t, function(){ ak.classList.add('wyslij'); kur.classList.add('klik'); kursor(cel[0] + (czat ? 420 : 560), cel[1]); });
+        po(t + 150, function(){ kur.classList.remove('klik'); });
+        po(t + 300, function(){ ak.classList.remove('wyslij'); pole.innerHTML = pusto; ak.classList.remove('sam'); rama(ak, false); kur.classList.remove('on'); });
+        po(t + 1000, function(){ tytul.textContent = tytulKoniec; faza(1); });
+        po(t + 1800, function(){ faza(2); });
+        po(t + 2500, function(){ faza(3); });
+        po(t + 3300, function(){ faza(4); });
+        po(t + 4100, function(){ faza(5); });
+        po(t + 5000, function(){ faza(6); });
+        pola.forEach(function(f, i){ po(t + 6100 + i * 420, function(){ f.classList.remove('pusty'); }); });
+        po(t + 6100 + pola.length * 420 + 300, function(){ faza(7); });
+        // dokument przewija się do wyceny i harmonogramu, żeby było widać, z czego jest suma
+        po(t + 6100 + pola.length * 420 + 900, function(){ przewin(true); });
+        po(t + 17000, function(){ if(widac) start(); });
       }
       przed();
       new IntersectionObserver(function(w){
@@ -739,6 +907,50 @@ const dane = {
         else if(!teraz && widac){ widac = false; przed(); }
       }, { threshold: 0.35 }).observe(ak);
     });
+  })();
+
+  // ---- CO JESZCZE MOŻE PRZEJĄĆ AI: jedna scena, przykłady po kolei ----
+  // Wybrany przykład gra od pustego okna: polecenie, kroki, wynik. Potem
+  // chwila na przeczytanie i następny przykład. Kliknięcie wybiera przykład
+  // i zatrzymuje przełączanie. Poza kadrem stoi. Przy ograniczonym ruchu
+  // każdy przykład stoi w stanie końcowym.
+  (function(){
+    var mz = document.querySelector('[data-mz]') as HTMLElement | null;
+    if(!mz) return;
+    var przyciski = Array.prototype.slice.call(mz.querySelectorAll('[data-mz-b]')) as HTMLElement[];
+    var sceny = Array.prototype.slice.call(mz.querySelectorAll('[data-mz-s]')) as HTMLElement[];
+    var cz = sceny.map(function(s){ return s.querySelector('[data-cz]') as HTMLElement; });
+    var biez = 0, timery: number[] = [], widac = false, sam = true;
+    function czysc(){ timery.forEach(function(t){ clearTimeout(t); }); timery = []; }
+    function po(ms: number, fn: () => void){ timery.push(window.setTimeout(fn, ms)); }
+    function pokaz(i: number){
+      biez = i;
+      przyciski.forEach(function(b, j){ b.classList.toggle('on', i === j); b.setAttribute('aria-selected', i === j ? 'true' : 'false'); });
+      sceny.forEach(function(s, j){ s.classList.toggle('on', i === j); });
+      // skala sceny liczy się dopiero, kiedy jest widoczna
+      window.dispatchEvent(new Event('resize'));
+    }
+    function graj(i: number){
+      czysc();
+      pokaz(i);
+      var c = cz[i], n = +(c.dataset.fazy || 1);
+      if(redukcja){ c.classList.add('gotowe'); return; }
+      for(var k = 1; k <= 7; k++) c.classList.remove('f' + k);
+      for(var f = 1; f <= n; f++){ (function(f){ po(400 + f * 850, function(){ c.classList.add('f' + f); }); })(f); }
+      if(sam) po(400 + n * 850 + 4200, function(){ if(widac) graj((biez + 1) % sceny.length); });
+    }
+    przyciski.forEach(function(b, i){
+      b.addEventListener('click', function(){ sam = false; graj(i); });
+      b.addEventListener('keydown', function(e){
+        if(e.key === 'ArrowDown' || e.key === 'ArrowUp'){ e.preventDefault(); var j = (i + (e.key === 'ArrowDown' ? 1 : -1) + przyciski.length) % przyciski.length; sam = false; graj(j); przyciski[j].focus(); }
+      });
+    });
+    if(!('IntersectionObserver' in window)){ cz.forEach(function(c){ c.classList.add('gotowe'); }); return; }
+    new IntersectionObserver(function(w){
+      var teraz = w[0].isIntersecting;
+      if(teraz && !widac){ widac = true; graj(biez); }
+      else if(!teraz && widac){ widac = false; czysc(); }
+    }, { threshold: 0.3 }).observe(mz);
   })();
 
   // ---- Telefon: przycisk na dole ekranu, gdy hero i formularz są poza kadrem ----
