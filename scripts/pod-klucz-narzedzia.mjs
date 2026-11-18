@@ -117,14 +117,14 @@ function faktury(pref, me) {
 function crm(pref, me) {
   const H = K.U.hs;
   const left = '<div class="wa-hs-bk">' + K.hi('chevl') + H.deals + '<span class="r">' + H.actions + K.hi('chev') + '</span></div>' +
-    '<div class="wa-hs-id"><span class="ph sq">' + K.hi('deal') + '</span><b>Biurowce Prosta – serwis 2027</b><small style="top:28px">Kwota: 38 900 zł</small><small style="top:45px">Data zamknięcia: 15.12.2026</small></div>' +
+    '<div class="wa-hs-id"><span class="ph sq">' + K.hi('deal') + '</span><b>Biurowce Korvina – serwis 2027</b><small style="top:28px">Kwota: 38 900 zł</small><small style="top:45px">Data zamknięcia: 15.12.2026</small></div>' +
     K.hsActs(H) + '<div class="wa-hs-sec" style="top:212px">' + K.hi('chev') + H.aboutD + '<span class="r">' + H.actions + '</span></div>' +
     K.hsProps(266, [['Właściciel transakcji', 'Marta Zielińska', 'ow'], ['Lejek', 'Lejek sprzedaży'], ['Etap transakcji', 'Kwalifikacja do zakupu'], ['Następny krok', 'Oferta do 25.11']], me);
   const note = ['note', 'Notatka', 'utworzona przez Appto', 'dziś o 11:02', ['<div>Spotkanie z działem administracji, 20 listopada</div>', '<div class="li">Dwa biurowce przy Prostej, 30 jednostek klimatyzacji</div>', '<div class="li">Budżet na 2027 zatwierdzony, decyzja w grudniu</div>', '<div class="li">Prośba: przegląd co kwartał i reakcja na awarię do 24 h</div>'], 'przed chwilą'];
   const task = ['Przygotować ofertę serwisową', 'Zadanie · Marta Zielińska', 'Termin: śr., 25 lis 2026'];
   const mid = K.hsMid(H, 1, '<div class="wa-hs-mh" style="top:0">' + H.upcoming + '</div>' + K.hsTask(`${pref}-t`, 30, task) + '<div class="wa-hs-mh" style="top:125px">Listopad 2026</div>' + K.hsCard(`${pref}-n`, 155, note, H));
   const right = K.hsAssoc(12, H.contacts, 1, H, '<div class="wa-hs-ac"><b>Paweł Lis</b>Kierownik administracji<br>p.lis@biurowce-prosta.example</div>') +
-    K.hsAssoc(142, H.companies, 1, H, '<div class="wa-hs-ac"><b>Biurowce Prosta</b>2 budynki · 30 jednostek</div>');
+    K.hsAssoc(142, H.companies, 1, H, '<div class="wa-hs-ac"><b>Biurowce Korvina</b>2 budynki · 30 jednostek</div>');
   let h = K.HUBSPOT(H, 'Wolsenta', me, 1, K.HSREC(`${pref}-rec`, left, mid, right));
   h = n(h, `${pref}-n`, 1);
   h = n(h, `${pref}-t`, 2);
@@ -135,7 +135,7 @@ const SCENY = {
   reklamacja: reklamacja('nzr', ['AW', '#8B5CF6']),
   zamowienia: slack('nzz', ['AW', '#8B5CF6'], 'obsługa-klienta', [
     ['KN', '#2F7BE8', 'Kamil Nowak', '8:05', ['Jadę na przegląd do Strelano, biurowiec B.']],
-  ], ['AW', '#8B5CF6', 'Ania Wysocka', '9:14', ['<span class="wa-s-at">@Wise</span> klient z Grand Office pyta o zamówienie ZM/2026/3381. Co z nim?']],
+  ], ['AW', '#8B5CF6', 'Ania Wysocka', '9:14', ['<span class="wa-s-at">@Wise</span> klient z Ostrenia Park pyta o zamówienie ZM/2026/3381. Co z nim?']],
   ['9:14', ['Zamówienie ZM/2026/3381 według ERP:', '• filtry F7, 24 szt. wyjechały wczoraj, dostawa jutro do 12:00,', '• numer przesyłki: 0098 4471 2210.', 'Odpisałem klientowi z tymi danymi.']]),
   raport: raport('nzs', ['MZ', '#00A36C']),
   faktury: faktury('nzf', ['EL', '#C2410C']),
