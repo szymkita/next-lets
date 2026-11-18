@@ -4,24 +4,27 @@
 // i style .rw / .kp4-tab w src/styles/home-next-prod.css, 16.11.2026). Wymiary,
 // kolory paska i kart przepisane z tamtego CSS; treść okna daje slot.
 // Karty mogą być przyciskami (data-karta), wtedy przełączają przykłady.
-interface Karta { t: string; ikona?: 'appto' | 'wise' }
+import { FAV as FAV_N } from './narzedzia';
+interface Karta { t: string; adres?: string; ikona?: 'appto' | 'wise' | 'gmail' | 'slack' | 'sheets' | 'hubspot' }
 interface Props { karty: Karta[]; adres?: string; klikalne?: boolean; klasa?: string }
 const { karty, adres = 'chat.appto.ai', klikalne = false, klasa = '' } = Astro.props;
-const FAV = { appto: '/pod-klucz/kit/appto-sygnet.svg', wise: '/pod-klucz/kit/wise-avatar.svg' };
+const FAV: Record<string, string> = { appto: '/pod-klucz/kit/appto-sygnet.svg', wise: '/pod-klucz/kit/wise-avatar.svg' };
+// ikona karty: plik (appto, wise) albo znak narzędzia z kitu web apps (Gmail, Slack, Arkusze, HubSpot)
+const ikona = (k?: string, dom = 'appto') => { const n = k ?? dom; return FAV[n] ? `<img class="rw-fav rw-fav--${n}" src="${FAV[n]}" alt="" width="16" height="16" />` : `<span class="rw-fav rw-fav--n">${FAV_N[n] ?? ''}</span>`; };
 ---
 <div class={`rw ${klasa}`}>
 <div class="rw-tabs" role={klikalne ? 'tablist' : undefined} aria-label={klikalne ? 'Przykłady' : undefined}>
 <span class="rw-dots" aria-hidden="true"><i></i><i></i><i></i></span>
 {karty.map((k, i) => klikalne ? (
-  <button type="button" role="tab" class={`rw-tab rw-tab--b${i === 0 ? ' is-on' : ''}`} data-karta={i} aria-selected={i === 0 ? 'true' : 'false'}>
-    <img class={`rw-fav rw-fav--${k.ikona ?? 'wise'}`} src={FAV[k.ikona ?? 'wise']} alt="" width="16" height="16" /><span>{k.t}</span><i aria-hidden="true">×</i><b class="rw-pr" aria-hidden="true"><i></i></b>
+  <button type="button" role="tab" class={`rw-tab rw-tab--b${i === 0 ? ' is-on' : ''}`} data-karta={i} data-adres={k.adres} aria-selected={i === 0 ? 'true' : 'false'}>
+    <Fragment set:html={ikona(k.ikona, 'wise')} /><span>{k.t}</span><i aria-hidden="true">×</i><b class="rw-pr" aria-hidden="true"><i></i></b>
   </button>
 ) : (
-  <span class={`rw-tab${i === 0 ? ' is-on' : ''}`} aria-hidden="true"><img class={`rw-fav rw-fav--${k.ikona ?? 'appto'}`} src={FAV[k.ikona ?? 'appto']} alt="" width="16" height="16" /><span>{k.t}</span><i>×</i></span>
+  <span class={`rw-tab${i === 0 ? ' is-on' : ''}`} aria-hidden="true"><Fragment set:html={ikona(k.ikona)} /><span>{k.t}</span><i>×</i></span>
 ))}
 <span class="rw-plus" aria-hidden="true">+</span>
 </div>
-<div class="rw-bar" aria-hidden="true"><span><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></span><span><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></span><span><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg></span><span class="rw-url"><svg viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>{adres}</span></div>
+<div class="rw-bar" aria-hidden="true"><span><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></span><span><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></span><span><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg></span><span class="rw-url"><svg viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><span data-rw-adres>{karty[0]?.adres ?? adres}</span></span></div>
 <div class="rw-vp"><slot /></div>
 </div>
 
@@ -42,9 +45,13 @@ const FAV = { appto: '/pod-klucz/kit/appto-sygnet.svg', wise: '/pod-klucz/kit/wi
   .rw-tab.is-on::after{right:-9px;background:radial-gradient(circle at 100% 0,transparent 8.5px,#F7F7F3 9px)}
   .rw-fav{flex:none;width:16px;height:16px;border-radius:4px;object-fit:contain}
   .rw-fav--appto{padding:1px}
+  .rw-fav--n{display:grid;place-items:center}
+  .rw-fav--n svg,.rw-fav--n img{display:block;width:16px;height:16px}
+  .rw-fav--n img.gm{height:12px;width:auto}
   .rw-tab > span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis}
   .rw-tab > i{flex:none;font-style:normal;font-size:14px;color:#8A8984}
-  .rw-pr{position:absolute;top:0;left:12px;right:12px;height:2px;border-radius:2px;overflow:hidden;opacity:0}
+  /* postęp aktywnej karty: gruby zielony pasek na dole karty, z widocznym torem */
+  .rw-pr{position:absolute;bottom:3px;left:10px;right:10px;height:4px;border-radius:2px;overflow:hidden;opacity:0;background:rgba(0,205,119,.18)}
   .rw-pr i{display:block;height:100%;background:#00CD77;transform-origin:0 50%;transform:scaleX(0)}
   .rw-tab.is-on .rw-pr{opacity:1}
   .rw-tab.is-on.gra .rw-pr i{transform:scaleX(1);transition:transform var(--czas,10s) linear}

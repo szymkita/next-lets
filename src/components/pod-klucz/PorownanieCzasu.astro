@@ -1,0 +1,103 @@
+---
+// PORÓWNANIE CZASU ZESPOŁU (v5, Szymon 18.11.2026: „taki typ wdrożenia angażuje
+// prawie 6x mniej czasu niż dotychczasowe, zwykłe podejście”). Bez godzin i kwot:
+// Szymon nie podał podstawy liczby, więc pokazujemy samą proporcję. Tor
+// „zwykłe” ma 5,8 jednostki czasu zespołu, tor „pod klucz” 1 jednostkę, a reszta
+// toru jest „po naszej stronie”. Czerwień tylko jako stan (czas zabrany
+// zespołowi), zieleń przy „pod klucz”. Przy wejściu w kadr tor „zwykłe” zapełnia
+// się blok po bloku i rośnie, „pod klucz” kończy się od razu; na końcu wchodzi
+// „prawie 6×”. Na komputerze tory poziome, na telefonie dwie kolumny pionowe.
+// Bez JS i przy ograniczonym ruchu: stan końcowy.
+const ZWYKLE: [string, number][] = [
+  ['Warsztaty z zespołem', 0.8],
+  ['Zbieranie dokumentów', 0.9],
+  ['Pisanie instrukcji', 1],
+  ['Konfiguracja narzędzi', 0.7],
+  ['Testy', 0.5],
+  ['Poprawki', 0.6],
+  ['Szkolenia', 0.6],
+  ['Ping-pong z poprawkami', 0.7],
+];
+const POD_KLUCZ: [string, number][] = [
+  ['Rozmowa przy diagnozie', 0.4],
+  ['Odbiór', 0.3],
+  ['Krótkie szkolenie', 0.3],
+];
+const SUMA = ZWYKLE.reduce((a, [, u]) => a + u, 0);
+const RESZTA = SUMA - POD_KLUCZ.reduce((a, [, u]) => a + u, 0);
+---
+<div class="cz" data-cz role="img" aria-label={`Porównanie czasu zespołu klienta. Zwykłe wdrożenie: długi pasek wypełniony pracą zespołu: ${ZWYKLE.map(([t]) => t.toLowerCase()).join(', ')}. Wdrożenie pod klucz: krótki pasek, zespół bierze udział w rozmowie przy diagnozie, odbiorze i krótkim szkoleniu, resztę robimy my. Prawie 6 razy mniej czasu Waszego zespołu.`}>
+  <div class="cz-x" aria-hidden="true"><span class="cz-p">prawie</span><b>6×</b><span class="cz-d">mniej czasu Waszego zespołu</span></div>
+  <div class="cz-tory" aria-hidden="true">
+    <div class="cz-r zw">
+      <p class="cz-l"><b>Zwykłe wdrożenie</b><span>zespół robi większość pracy sam</span></p>
+      <div class="cz-tor">
+        {ZWYKLE.map(([t, u], i) => <span class="cz-b" style={`--u:${u};--i:${i}`}><i>{t}</i></span>)}
+      </div>
+    </div>
+    <div class="cz-r pk">
+      <p class="cz-l"><b>Wdrożenie pod klucz</b><span>zespół jest potrzebny na kilka rozmów</span></p>
+      <div class="cz-tor">
+        {POD_KLUCZ.map(([t, u], i) => <span class="cz-b" style={`--u:${u};--i:${i}`}><i>{t}</i></span>)}
+        <span class="cz-my" style={`--u:${RESZTA}`}><i>Resztę robimy my</i></span>
+      </div>
+      <ul class="cz-pod">{POD_KLUCZ.map(([t]) => <li>{t}</li>)}</ul>
+    </div>
+  </div>
+  <p class="cz-st">Czas zespołu klienta w naszych wdrożeniach: zwykłe podejście a pod klucz. Pokazujemy proporcję, nie liczbę godzin.</p>
+</div>
+
+<style is:global>
+  .cz{--cz-r:#c4251a;--cz-rt:#fbe5e2;--cz-g:#00CD77;display:grid;grid-template-columns:minmax(0,260px) minmax(0,1fr);gap:clamp(28px,4vw,64px);align-items:center;margin-top:clamp(32px,3.4vw,48px)}
+  .cz-x{display:flex;flex-direction:column}
+  .cz-x .cz-p{font-size:clamp(17px,1.5vw,20px);font-weight:700;color:var(--t2)}
+  .cz-x b{font-size:clamp(88px,9vw,140px);line-height:.88;letter-spacing:-0.06em;font-weight:800;color:var(--t1)}
+  .cz-x .cz-d{margin-top:10px;max-width:220px;font-size:clamp(17px,1.5vw,20px);font-weight:700;line-height:1.25;color:var(--t1)}
+  .cz-tory{display:flex;flex-direction:column;gap:clamp(22px,2.4vw,32px);min-width:0}
+  .cz-l{margin:0 0 10px;font-size:15px;line-height:1.35;color:var(--t2)}
+  .cz-l b{margin-right:8px;font-size:16px;font-weight:800;color:var(--t1)}
+  .cz-tor{display:flex;gap:3px;height:64px}
+  .cz-b,.cz-my{position:relative;flex:var(--u) 1 0;min-width:0;display:flex;align-items:center;padding:0 10px;border-radius:8px;overflow:hidden}
+  .cz-b i,.cz-my i{font-style:normal;font-size:12.5px;font-weight:650;line-height:1.2;overflow-wrap:break-word;hyphens:manual}
+  .zw .cz-b{background:var(--cz-rt);box-shadow:inset 3px 0 0 var(--cz-r);color:#8f1b12}
+  .pk .cz-b{background:var(--cz-g);color:#07140d}
+  .pk .cz-b i{display:none}
+  .cz-my{justify-content:center;background:repeating-linear-gradient(135deg,rgba(0,205,119,.07) 0 8px,transparent 8px 16px);box-shadow:inset 0 0 0 1.5px rgba(10,122,82,.35);color:#0a7a52}
+  .cz-my i{font-size:14px;font-weight:700}
+  .cz-pod{display:flex;flex-wrap:wrap;gap:4px 16px;margin:10px 0 0;padding:0;list-style:none;font-size:13.5px;font-weight:600;color:#0a7a52}
+  .cz-pod li::before{content:"";display:inline-block;width:8px;height:8px;margin-right:7px;border-radius:2px;background:var(--cz-g);vertical-align:0}
+  .cz-st{grid-column:1 / -1;margin:0;font-size:13.5px;line-height:1.5;color:var(--t3)}
+
+  /* animacja: bloki odsłaniają się po kolei (clip-path, bez ściskania tekstu) */
+  .cz.czeka .cz-b,.cz.czeka .cz-my{clip-path:inset(0 100% 0 0)}
+  .cz.czeka .cz-x b,.cz.czeka .cz-x .cz-p,.cz.czeka .cz-x .cz-d{opacity:0;transform:translateY(14px)}
+  .cz.czeka .cz-pod{opacity:0}
+  .cz.gra .cz-b,.cz.gra .cz-my{clip-path:inset(0 0 0 0);transition:clip-path .42s cubic-bezier(.3,.7,.2,1)}
+  .cz.gra .pk .cz-b{transition-delay:calc(.25s + var(--i) * .14s)}
+  .cz.gra .pk .cz-my{transition:clip-path 1s cubic-bezier(.3,.7,.2,1) .8s}
+  .cz.gra .pk .cz-pod{opacity:1;transition:opacity .4s ease .9s}
+  .cz.gra .zw .cz-b{transition-delay:calc(.35s + var(--i) * .36s)}
+  .cz.gra .cz-x b,.cz.gra .cz-x .cz-p,.cz.gra .cz-x .cz-d{opacity:1;transform:none;transition:opacity .5s ease 3.4s,transform .6s cubic-bezier(.2,.7,.2,1) 3.4s}
+  .cz.gra .cz-x .cz-p{transition-delay:3.25s}
+  .cz.gra .cz-x .cz-d{transition-delay:3.6s}
+
+  @media (max-width:760px){
+    .cz{grid-template-columns:minmax(0,1fr)}
+    .cz-x{flex-direction:row;flex-wrap:wrap;align-items:baseline;gap:0 10px}
+    .cz-x b{font-size:76px}
+    .cz-x .cz-d{flex-basis:100%;max-width:none;margin-top:4px}
+    /* dwie kolumny pionowe, czas biegnie w dół */
+    .cz-tory{flex-direction:row;gap:12px;align-items:stretch}
+    .cz-r{flex:1 1 0;min-width:0;display:flex;flex-direction:column}
+    .cz-l{min-height:58px}
+    .cz-l b{display:block;margin:0 0 2px}
+    .cz-l span{font-size:13px}
+    .cz-tor{flex-direction:column;height:400px;gap:3px}
+    .cz-b,.cz-my{padding:0 9px}
+    .pk .cz-b i{display:block;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:clip}
+    .cz-pod{display:none}
+    .cz-my i{text-align:center}
+    .cz.czeka .cz-b,.cz.czeka .cz-my{clip-path:inset(0 0 100% 0)}
+  }
+  @media (prefers-reduced-motion:reduce){ .cz *{transition:none !important} }
+</style>
