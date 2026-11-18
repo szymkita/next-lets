@@ -22,24 +22,37 @@ interface Props {
 const { szer = 1920, wys = 1080, kadr = szer, od = 0, skala, klasa = '', demo = false } = Astro.props;
 const styl = `--kw:${szer}px;--kh:${wys}px;--kk:${kadr};--ko:${od};aspect-ratio:${kadr} / ${wys};` + (skala ? `--s:${skala};` : '');
 ---
-<div class={`ak ${klasa}`} style={styl} data-ak-skaluj={skala ? undefined : ''} data-ak-demo={demo ? '' : undefined} aria-hidden="true">
+<div class={`ak ${klasa}${demo ? ' gra' : ''}`} style={styl} data-ak-skaluj={skala ? undefined : ''} data-ak-demo={demo ? '' : undefined} aria-hidden="true">
 <div class="ak-in" set:html={KIT_MARKUP}></div>
 </div>
+{demo && <noscript><style is:inline>.ak.gra [data-w]{opacity:1 !important;transform:none !important}.ak.gra .w-check{transform:none !important}</style></noscript>}
 
 <style is:global>
   .ak{position:relative;overflow:hidden;width:100%;--s:0.4}
   .ak-in{position:absolute;left:0;top:0;width:var(--kw);height:var(--kh);transform:scale(var(--s)) translateX(calc(var(--ko,0) * -1px));transform-origin:0 0}
   .ak .w-app{width:var(--kw);height:var(--kh);border-radius:0;box-shadow:none}
-  /* ---- demo: rozmowa od zera ----
-     Klasy faz nadaje skrypt strony. Bez skryptu kit stoi w stanie końcowym. */
+  /* ---- demo: praca od stanu „przed” (studio/ZASADY.md) ----
+     Kit z `demo` startuje już w HTML jako pusty appto (klasa .gra): sam
+     kompozytor, bez rozmowy i bez dokumentu, żeby gotowa oferta nie mignęła
+     przy przewijaniu. Fazy f1…f7 nadaje skrypt strony: polecenie, kroki,
+     dokument wjeżdża z prawej i jego pola wypełniają się po kolei, na końcu
+     odpowiedź „Gotowe” z kartą dokumentu.
+     Bez skryptu (noscript) i przy ograniczonym ruchu stoi stan końcowy. */
   .ak [data-w]{transition:opacity .45s ease,transform .5s cubic-bezier(.2,.7,.2,1)}
   .ak.gra [data-w="w-msg1"],.ak.gra [data-w="w-steps-head"],.ak.gra [data-w="w-step1"],.ak.gra [data-w="w-step2"],
   .ak.gra [data-w="w-step3"],.ak.gra [data-w="w-reply"],.ak.gra [data-w="w-doccard"]{opacity:0;transform:translateY(14px)}
   .ak.gra.f1 [data-w="w-msg1"],.ak.gra.f2 [data-w="w-steps-head"],.ak.gra.f3 [data-w="w-step1"],.ak.gra.f4 [data-w="w-step2"],
-  .ak.gra.f5 [data-w="w-step3"],.ak.gra.f6 [data-w="w-reply"],.ak.gra.f6 [data-w="w-doccard"]{opacity:1;transform:none}
+  .ak.gra.f5 [data-w="w-step3"],.ak.gra.f7 [data-w="w-reply"],.ak.gra.f7 [data-w="w-doccard"]{opacity:1;transform:none}
   .ak.gra .w-check{transform:scale(0);transition:transform .35s cubic-bezier(.34,1.5,.64,1) .35s}
   .ak.gra.f3 [data-w="w-c1"],.ak.gra.f4 [data-w="w-c2"],.ak.gra.f5 [data-w="w-c3"]{transform:scale(1)}
   .ak .w-f-value,.ak .w-f-label,.ak .w-f-tint{transition:opacity .4s ease}
+  .ak .w-field.pusty .w-f-label,.ak .w-field.pusty .w-f-tint{opacity:1}
+  .ak .w-field.pusty .w-f-value{opacity:0}
+  /* przed dokumentem czat stoi na środku okna, dokumentu nie ma */
+  .ak [data-w="w-chat"]{transition:transform .9s cubic-bezier(.65,0,.35,1)}
+  .ak.caly.gra:not(.f6) [data-w="w-chat"]{transform:translateX(534px)}
+  .ak [data-w="w-pane"]{transition:opacity .5s ease .25s,transform .9s cubic-bezier(.2,.8,.2,1) .1s}
+  .ak.gra:not(.f6) [data-w="w-pane"]{opacity:0;transform:translateX(120px)}
   .ak .ak-kursor{display:inline-block;width:2px;height:24px;margin-left:1px;background:#141414;vertical-align:-4px;animation:ak-mig 1s steps(1) infinite}
   .ak [data-w="w-send"]{transition:transform .2s ease,background .2s}
   .ak.wyslij [data-w="w-send"]{transform:scale(.88);background:#00CD77}

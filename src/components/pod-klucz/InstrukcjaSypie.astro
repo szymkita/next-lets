@@ -1,0 +1,95 @@
+---
+// SEKCJA PROBLEMU: samodzielny montaż AI, który z czasem się sypie (v2, 18.11:
+// Szymon: „niech później coś się tam dzieje, niech kolejne rzeczy zaczynają się
+// niszczyć albo niech będzie więcej tych kroków”).
+//
+// Przebieg (raz, kiedy scena wejdzie w kadr; kończy się kulminacją i stoi):
+//   1. kroki 1–9 z reklamy wchodzą jeden po drugim, licznik rośnie do 23 z 64;
+//   2. wcześniejsze kroki się psują: przy kroku wyskakuje prawdziwe okno
+//      (testy 6 z 20, błąd autoryzacji Gmaila, instrukcje_v7_FINAL, stary
+//      cennik, uprawnienia ze znakami zapytania, „Brakuje części C”), numer
+//      kroku robi się czerwony, licznik zrobionych spada;
+//   3. kroków przybywa coraz szybciej, lista jedzie w górę, liczba wszystkich
+//      kroków ucieka (64 → 97), wiersze się rozjeżdżają;
+//   4. kulminacja: całość osiada, licznik „17 z 97 kroków”.
+// Bez skryptu i przy ograniczonym ruchu stoi stan końcowy (.stat).
+// Okna i liczby to rekwizyty metafory instrukcji montażu (WYTYCZNE-reklamy §8).
+// Scena 720 × 900 skaluje się skryptem strony (data-is).
+import { W } from './okna';
+
+const KROK = 62;            // odstęp wierszy listy
+// [nazwa, czas wejścia ms, obrót po rozjechaniu]
+const KROKI: [string, number, number][] = [
+  ['Znajdź kontekst firmy', 200, -1.4], ['Rozdziel instrukcje', 420, 1.8], ['Napisz skille', 640, -0.8],
+  ['Podłącz Gmaila i CRM', 860, 2.2], ['Przetestuj 20 przypadków', 1080, -2.0], ['Naucz zespół', 1300, 1.2],
+  ['Ustaw uprawnienia', 1520, -2.6], ['Popraw instrukcje', 1740, 1.6], ['Złóż agenta ofert', 1960, -1.8],
+  // kroki, których przybywa
+  ['Napraw integrację z CRM', 5600, 2.0], ['Popraw instrukcje jeszcze raz', 6100, -2.2],
+  ['Zaktualizuj cennik w kontekście', 6500, 1.8], ['Powtórz 20 testów', 6850, -2.4],
+  ['Odpowiedz na pytania zespołu', 7150, 2.2], ['Napisz skille od nowa', 7400, -2.0],
+  ['Sprawdź uprawnienia po zmianie', 7620, 2.6], ['Naucz nowe osoby', 7800, -2.8],
+];
+// Psucie: [numer kroku 1…, okno, czas ms, x, y względem wiersza, obrót, skala]
+const PSUCIE: [number, string, number, number, number, number, number][] = [
+  [5, 'w5', 2800, 380, -40, 2.6, 0.7],
+  [4, 'w4', 3400, 350, -56, -2.2, 0.62],
+  [2, 'w8', 3900, 390, -30, 3.0, 0.68],
+  [1, 'w1', 4300, 330, -44, -2.8, 0.62],
+  [7, 'w7', 4700, 390, -46, 2.4, 0.74],
+  [9, 'w9', 5100, 400, -60, -3.2, 0.74],
+];
+const ZLE = new Set(PSUCIE.map((p) => p[0]));
+const ROZMIARY: Record<string, [number, number]> = { w1: [600, 300], w4: [580, 300], w5: [455, 270], w7: [430, 245], w8: [450, 235], w9: [430, 260] };
+// Licznik: [czas ms, zrobione, wszystkie]
+const LICZNIK: [number, number, number][] = [
+  [200, 1, 64], [700, 5, 64], [1200, 11, 64], [1700, 17, 64], [2200, 23, 64],
+  [2800, 22, 64], [3400, 21, 64], [3900, 20, 64], [4300, 19, 64], [4700, 18, 64], [5100, 17, 64],
+  [5600, 17, 71], [6100, 17, 78], [6500, 17, 83], [6850, 17, 88], [7150, 17, 91], [7400, 17, 94], [7620, 17, 96], [7800, 17, 97],
+];
+const KONIEC = LICZNIK[LICZNIK.length - 1];
+const KULMINACJA_T = 8300;
+const WIDOK = 760;          // wysokość okna listy
+const PRZESUN = Math.max(0, KROKI.length * KROK + 20 - WIDOK);
+---
+<div class="is stat" data-is data-licznik={JSON.stringify(LICZNIK)} data-kulminacja={KULMINACJA_T} role="img" aria-label={`Lista kroków samodzielnego wdrożenia AI. Najpierw dziewięć kroków: znajdź kontekst firmy, rozdziel instrukcje, napisz skille, podłącz Gmaila i CRM, przetestuj 20 przypadków, naucz zespół, ustaw uprawnienia, popraw instrukcje, złóż agenta ofert. Potem wcześniejsze kroki się psują: testy zaliczone w 6 z 20 przypadków, błąd autoryzacji Gmaila, sprzeczne instrukcje, stary cennik, niejasne uprawnienia, brakuje części. Przybywa nowych kroków, a licznik pokazuje ${KONIEC[1]} z ${KONIEC[2]} kroków.`}>
+<div class="is-sc" aria-hidden="true">
+<div class="is-licz"><span class="pm-bn" data-is-zr>{KONIEC[1]}</span><span class="pm-bt">z&nbsp;<b data-is-wsz class="ucieka">{KONIEC[2]}</b>&nbsp;kroków</span></div>
+<div class="is-widok" style={`height:${WIDOK}px`}>
+<div class="is-lista" style={`--przesun:${-PRZESUN}px`}>
+{KROKI.map(([n, t, r], i) => (
+  <div class="is-k" data-t={t} style={`top:${i * KROK}px;--r:${r}deg`} data-nr={i + 1} data-zly={ZLE.has(i + 1) ? '' : undefined}>
+    <span class="pm-bn">{i + 1}</span><span class="pm-bt">{n}</span>
+  </div>
+))}
+{PSUCIE.map(([nr, id, t, x, y, r, k]) => (
+  <div class="is-o" data-t={t} data-psuje={nr} style={`left:${x}px;top:${(nr - 1) * KROK + y}px;width:${ROZMIARY[id][0]}px;height:${ROZMIARY[id][1]}px;--r:${r}deg;--k:${k}`} set:html={W[id]}></div>
+))}
+</div>
+</div>
+</div>
+</div>
+
+<style is:global>
+  .is{position:relative;width:100%;aspect-ratio:720 / 900;--is:0.7}
+  .is-sc{position:absolute;left:0;top:0;width:720px;height:900px;transform:scale(var(--is));transform-origin:0 0;font-family:"InterApp",system-ui,sans-serif;color:#1d1d1f}
+  .is .pm-bn{min-width:52px;height:52px;font-size:28px;transition:background .3s ease,color .3s ease}
+  .is .pm-bt{height:52px;font-size:24px;padding:0 18px}
+  .is-licz{position:absolute;left:0;top:0;display:flex;align-items:center;font-family:"Schibsted Grotesk",sans-serif;z-index:3}
+  .is-licz .pm-bn{min-width:96px;height:84px;font-size:52px}
+  .is-licz .pm-bt{height:84px;font-size:40px;padding:0 28px}
+  .is-licz b{font-weight:800;transition:color .3s ease}
+  .is-licz b.ucieka{color:#ff7a6e}
+  .is-widok{position:absolute;left:0;right:0;top:124px;overflow:hidden;-webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 40px,#000 100%);mask-image:linear-gradient(to bottom,transparent 0,#000 40px,#000 100%)}
+  .is-lista{position:absolute;left:0;right:0;top:24px;transition:transform 2.2s cubic-bezier(.45,0,.2,1)}
+  .is.rosnie .is-lista,.is.stat .is-lista{transform:translateY(var(--przesun))}
+  .is-k{position:absolute;left:0;display:flex;align-items:center;font-family:"Schibsted Grotesk",sans-serif;opacity:0;transform:translateY(10px);transition:opacity .3s ease,transform .5s cubic-bezier(.2,.9,.25,1.15);z-index:3}
+  .is-k:nth-child(even){left:34px}
+  .is-k.on,.is.stat .is-k{opacity:1;transform:none}
+  .is.rozjazd .is-k.on,.is.stat .is-k{transform:rotate(var(--r));transition:transform 1.4s cubic-bezier(.3,.6,.3,1)}
+  .is.osiada .is-k.on,.is.stat .is-k{transform:translateY(6px) rotate(calc(var(--r) * 1.3))}
+  .is-k.zepsuty .pm-bn,.is.stat .is-k[data-zly] .pm-bn{background:#e5483f;color:#ffffff}
+  .is-o{position:absolute;transform-origin:0 0;opacity:0;transform:translateY(14px) scale(calc(var(--k) * .92)) rotate(var(--r));transition:opacity .3s ease,transform .45s cubic-bezier(.2,.9,.25,1.2);z-index:2}
+  .is-o.on,.is.stat .is-o{opacity:1;transform:scale(var(--k)) rotate(var(--r))}
+  .is.osiada .is-o.on,.is.stat .is-o{transform:translateY(10px) scale(var(--k)) rotate(calc(var(--r) * 1.5));transition:transform 1.2s cubic-bezier(.3,.6,.3,1)}
+  @media (prefers-reduced-motion:reduce){ .is-k,.is-o,.is-lista,.is .pm-bn{transition:none !important} }
+</style>

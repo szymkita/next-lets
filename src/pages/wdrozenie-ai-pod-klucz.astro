@@ -21,7 +21,13 @@
 // zgłoszenia. Zdarzenie Meta „Lead” idzie po udanym wysłaniu (piksel
 // z Zgody.astro, tylko po zgodzie na marketing).
 //
-// DO POTWIERDZENIA PRZED PUBLIKACJĄ (pytania w raporcie z 18.11.2026):
+// v2 (18.11, uwagi Szymona do v1, studio/DZIENNIK.md): sekcja problemu
+// z instrukcją, która się sypie (InstrukcjaSypie), krok 1 planu i diagnoza
+// mówią o analizie, CTA „Zbudujmy plan wdrożenia” z diagnozą jako pierwszym
+// krokiem, jedna scena appto od pustego okna (hero bez appto), hero kończy
+// się pasem klientów, a diagnoza stoi na jasnym tle.
+//
+// DO POTWIERDZENIA PRZED PUBLIKACJĄ (pytania w raportach z 18.11.2026):
 //   1. Obietnica po formularzu: zostaje to, co już jest na stronie (telefon
 //      w jeden dzień roboczy, diagnoza, plan z ceną pierwszego etapu).
 //   2. Nazwa pierwszego kroku: „bezpłatna diagnoza” jak w nawigacji, na
@@ -31,6 +37,9 @@
 //   4. Nazwy w przykładzie appto („Firma Przykładowa”, „Twoja firma”, Marta
 //      Zielińska) zamiast VeloPol i Norda Systems z kitu reklamy.
 //   5. Zdania kroków planu pod podpisami z reklamy są nowe (propozycja).
+//   6. Podpis kroku 1 („diagnoza: gdzie ucieka czas, co przejmie AI”) różni
+//      się od reklamy („rozmowy z zespołem, Wasze procesy”) po uwadze Szymona.
+//   7. CTA „Zbudujmy plan wdrożenia” (Sztab d-pierwszy-krok nadal otwarta).
 import LaBase from '../layouts/LaBase.astro';
 import GcFaq from '../components/GcFaq.astro';
 import Styl from '../components/usluga/Styl.astro';
@@ -40,35 +49,37 @@ import Cytat from '../components/usluga/Cytat.astro';
 import KitStyl from '../components/pod-klucz/KitStyl.astro';
 import AppKit from '../components/pod-klucz/AppKit.astro';
 import PulpitMontaz from '../components/pod-klucz/PulpitMontaz.astro';
+import InstrukcjaSypie from '../components/pod-klucz/InstrukcjaSypie.astro';
 import { HI } from '../components/usluga/ikony';
 
 const ADRES = '/wdrozenie-ai-pod-klucz';
 const ZRODLO = 'Wdrożenie AI pod klucz';
 const title = "Wdrożenie AI pod klucz — Let's automate";
-const description = 'Przytłacza Cię wdrażanie AI w firmie? Zrobimy to za Was: poznajemy, jak pracuje Twoja firma, i ustawiamy AI, automatyzacje i połączenia z Waszymi systemami. Zaczynamy od bezpłatnej diagnozy.';
+const description = 'Przytłacza Cię wdrażanie AI w firmie? Zrobimy to za Was. Poznajemy, jak pracuje Twoja firma, ustawiamy AI i automatyzacje i podłączamy je do Waszych systemów. Pierwszy krok to bezpłatna diagnoza.';
+// CTA: napis wszystkich przycisków strony (hero, nagłówek, plan, pasek na
+// telefonie, formularz) zmienia się tutaj. Pierwszy krok nazywa się dalej
+// „bezpłatna diagnoza” (Sztab d-pierwszy-krok, otwarta).
+const CTA = 'Zbudujmy plan wdrożenia';
+const CTA_POD = 'Zaczynamy od bezpłatnej diagnozy. Po niej dostajecie plan z ceną pierwszego etapu.';
 const TEL = '+48 571 399 932';
 const TEL_H = 'tel:+48571399932';
 const dwa = (n: number) => String(n).padStart(2, '0');
 
-// Kroki samodzielnego montażu, te same co w reklamie (WYTYCZNE-reklamy §2).
-const MONTAZ = [
-  'Znajdź kontekst firmy', 'Rozdziel instrukcje', 'Napisz skille', 'Podłącz Gmaila i CRM', 'Przetestuj 20 przypadków',
-  'Naucz zespół', 'Ustaw uprawnienia', 'Popraw instrukcje', 'Złóż agenta ofert',
-];
-
-// Plan wdrożenia: t i p słowo w słowo z reklamy (nie zmieniać bez zgody
-// Szymona). d = jedno zdanie rozwinięcia, nowe na stronie (propozycja).
+// Plan wdrożenia: tytuły (t) słowo w słowo z reklamy, podpisy (p) też,
+// poza krokiem 1 (v2, Szymon: „nie tylko rozmawiamy, ale też analizujemy,
+// diagnozujemy”; w reklamie: „rozmowy z zespołem, Wasze procesy”).
+// d = jedno zdanie rozwinięcia, nowe na stronie (propozycja).
 const PLAN = [
-  { t: 'Analizujemy, jak pracujecie', p: 'rozmowy z zespołem, Wasze procesy',
-    d: 'Rozmawiamy z osobami, które robią tę pracę na co dzień, i wybieramy miejsca, w których AI pomoże najbardziej.' },
+  { t: 'Analizujemy, jak pracujecie', p: 'diagnoza: gdzie ucieka czas, co przejmie AI',
+    d: 'Przechodzimy przez Wasze procesy, dokumenty i systemy. Sprawdzamy, gdzie ucieka czas, i wskazujemy, co oddać AI na początek.' },
   { t: 'Zbieramy kontekst firmy', p: 'cenniki, umowy, procedury',
-    d: 'Porządkujemy dokumenty, z których AI ma korzystać, żeby odpowiadało według Waszych zasad.' },
+    d: 'Porządkujemy dokumenty, z których korzysta AI, żeby odpowiadało według Waszych zasad.' },
   { t: 'Ustawiamy agentów AI i automatyzacje', p: 'oferty, obsługa klienta, umowy',
     d: 'Piszemy instrukcje i skille. Gdy gotowe narzędzie nie wystarcza, budujemy aplikację dopasowaną do firmy.' },
   { t: 'Podłączamy Wasze systemy', p: 'poczta, CRM, ERP, także bez API',
-    d: 'AI sięga po dane tam, gdzie leżą, także w starszych programach bez gotowej integracji. Ustalamy też, do czego ma dostęp.' },
+    d: 'AI sięga do danych tam, gdzie leżą, także w starszych programach bez gotowej integracji. Ustalamy, do czego ma dostęp.' },
   { t: 'Testujemy na Waszych sprawach', p: 'zanim zespół zacznie pracę',
-    d: 'Sprawdzamy odpowiedzi na prawdziwych przykładach z firmy i poprawiamy, aż wynik się zgadza.' },
+    d: 'Sprawdzamy odpowiedzi na prawdziwych przykładach z firmy i poprawiamy, aż się zgadzają.' },
   { t: 'Zespół wchodzi na gotowe', p: 'na naszej platformie appto albo w Waszych narzędziach',
     d: 'Uczymy zespół pracy z gotowymi agentami na jego własnych sprawach.' },
 ];
@@ -80,11 +91,11 @@ const LICZBY = [
   { l: '200+', d: 'wdrożeń' },
   { l: '30+', d: 'ekspertów' },
 ];
+// Wynik „Przygotowanie oferty” stoi pod sceną appto (ta sama praca), reszta w dowodach.
+const OFERTA = { l: '−80%', ld: 'czasu przygotowania oferty', po: 'Szkic oferty powstaje z danych CRM w kilka minut, handlowiec go dopina.' };
 const WYNIKI = [
   { dz: 'Finanse', p: 'Obieg faktur kosztowych', l: '99,7%', ld: 'skuteczności księgowania',
     po: 'Faktury z maili księgują się same, zespół zajmuje się wyjątkami.' },
-  { dz: 'Sprzedaż', p: 'Przygotowanie oferty', l: '−80%', ld: 'czasu przygotowania oferty',
-    po: 'Szkic oferty powstaje z danych CRM w kilka minut, handlowiec go dopina.' },
   { dz: 'Operacje', p: 'Raport tygodniowy', l: '65 h', ld: 'odzyskanych co miesiąc',
     po: 'Dane spływają same, raport czeka w poniedziałek o 7:00.' },
   { dz: 'Obsługa klienta', p: 'Pytania o zamówienia', l: '−90%', ld: 'zapytań obsługiwanych ręcznie',
@@ -98,10 +109,10 @@ const LOGA = [
 // Od formularza do planu (jak na /integracja-systemow-z-ai).
 const KROKI = [
   { t: 'Formularz', d: 'E-mail, telefon i jedno zdanie o tym, co AI ma przejąć najpierw.', kiedy: 'minuta' },
-  { t: 'Dzwoni Piotr', d: 'Pyta, jak dziś wygląda ta praca i na czym pracujecie. Kiedy nie umiemy pomóc, mówi to od razu.', kiedy: 'w jeden dzień roboczy',
+  { t: 'Dzwoni Piotr', d: 'Pyta, jak dziś wygląda ta praca i na czym pracujecie. Jeśli nie umiemy pomóc, mówi to od razu.', kiedy: 'w jeden dzień roboczy',
     os: { f: '/piotr-avatar.jpg', n: 'Piotr Wojciuk', r: 'New Business Lead' } },
-  { t: 'Diagnoza', d: 'Rozmawiamy o Waszych procesach, dokumentach i systemach. Do diagnozy nie potrzebujemy dostępu do żadnego systemu.', kiedy: 'w terminie, który Wam pasuje' },
-  { t: 'Plan wdrożenia z ceną', d: 'Od czego zaczynamy, co przejmie AI i ile kosztuje pierwszy etap. Kwota stała.', kiedy: 'po diagnozie', mocny: true },
+  { t: 'Bezpłatna diagnoza', d: 'Analizujemy Wasze procesy, dokumenty i systemy. Szukamy miejsc, w których ucieka czas, i ustalamy, co oddać AI na początek. Dostęp do systemów nie jest do tego potrzebny.', kiedy: 'w terminie, który Wam pasuje' },
+  { t: 'Plan wdrożenia z ceną', d: 'Kolejne kroki wdrożenia i cena pierwszego etapu. Kwota stała.', kiedy: 'po diagnozie', mocny: true },
 ];
 const W_PLANIE = [
   { t: 'Od czego zaczynamy', d: 'Obszar, w którym AI da efekt najszybciej, np. oferty albo odpowiedzi na zapytania klientów.' },
@@ -113,8 +124,12 @@ const W_PLANIE = [
 
 const faq = [
   {
+    q: 'Czym jest bezpłatna diagnoza?',
+    a: 'To pierwszy krok wdrożenia. Razem z Wami przechodzimy przez procesy, dokumenty i systemy, szukamy miejsc, w których ucieka czas, i ustalamy, od czego zacząć. Po diagnozie dostajecie plan wdrożenia z ceną pierwszego etapu.',
+  },
+  {
     q: 'Ile kosztuje wdrożenie?',
-    a: 'Diagnoza jest bezpłatna. W planie po diagnozie wyceniamy pierwszy etap kwotą stałą, znaną przed startem. Każdy kolejny etap też ma cenę, zanim go zaczniemy.',
+    a: 'Pierwszy etap wyceniamy w planie kwotą stałą, znaną przed startem. Każdy kolejny etap też ma cenę, zanim go zaczniemy.',
   },
   {
     q: 'Ile to trwa?',
@@ -122,7 +137,7 @@ const faq = [
   },
   {
     q: 'Czy musimy korzystać z appto?',
-    a: 'Nie. Appto to nasza platforma i przydaje się, kiedy z AI ma korzystać cała firma. Jeśli pracujecie w Copilocie, ChatGPT albo Claude, ustawiamy AI tam. Narzędzie dobieramy do Waszej pracy.',
+    a: 'Nie. Appto to nasza platforma i przydaje się, kiedy z AI ma korzystać cała firma. Jeśli pracujecie w Copilocie, ChatGPT albo Claude, ustawiamy AI tam.',
   },
   {
     q: 'Co z systemami, do których nie ma integracji?',
@@ -134,7 +149,7 @@ const faq = [
   },
   {
     q: 'Co z danymi firmy?',
-    a: 'Do diagnozy nie potrzebujemy dostępu do żadnego systemu, a NDA podpisujemy także przed nią, jeśli tego potrzebujecie. Przed startem ustalamy z Wami, do czego AI ma dostęp i co może zrobić.',
+    a: 'Do diagnozy nie potrzebujemy dostępu do systemów, a NDA podpisujemy także przed nią, jeśli tego potrzebujecie. Przed startem ustalamy z Wami, do czego AI ma dostęp i co może zrobić.',
   },
   {
     q: 'Czy diagnoza zobowiązuje do współpracy?',
@@ -178,7 +193,7 @@ const dane = {
   /* =====================================================================
      HERO: pytanie z reklamy i kadr z reklamy w pętli
      ===================================================================== */
-  .pk-hero{position:relative;overflow:hidden;padding:0 var(--pad) clamp(56px,7vw,104px);background:
+  .pk-hero{position:relative;overflow:hidden;padding:0 var(--pad) clamp(28px,3vw,40px);background:
       radial-gradient(900px 560px at 86% 70%,rgba(0,205,119,0.16),rgba(0,205,119,0) 70%),
       radial-gradient(700px 420px at 4% -10%,rgba(0,205,119,0.06),rgba(0,205,119,0) 70%),
       var(--ink);color:#ffffff}
@@ -192,6 +207,16 @@ const dane = {
   .pk-lead b{display:block;margin-bottom:6px;font-size:clamp(22px,2vw,28px);line-height:1.2;letter-spacing:-0.03em;font-weight:800;color:#ffffff}
   .pk-akcje{display:flex;flex-wrap:wrap;align-items:center;gap:14px 26px;margin-top:clamp(28px,3vw,40px)}
   .pk-po{margin:18px 0 0;font-size:14px;color:#A3ABA5}
+  .pk-kl{display:flex;align-items:center;gap:16px clamp(28px,4vw,64px);margin-top:clamp(48px,6vw,88px);padding-top:clamp(22px,2.4vw,32px);border-top:1px solid rgba(255,255,255,0.12)}
+  .pk-kl p{flex-shrink:0;max-width:220px;margin:0;font-size:14px;line-height:1.45;color:#A3ABA5}
+  .pk-kl strong{color:#ffffff;font-weight:700}
+  .pk-kl ul{flex:1;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:4px 32px;margin:0;padding:0;list-style:none}
+  .pk-kl img{display:block;height:50px;width:auto;filter:grayscale(1) invert(1);mix-blend-mode:screen;opacity:0.6}
+  @media (max-width:900px){
+    .pk-kl{flex-direction:column;align-items:flex-start}
+    .pk-kl ul{justify-content:flex-start;gap:0 22px}
+    .pk-kl img{height:40px}
+  }
   .pk-kadr{position:relative;border-radius:clamp(14px,1.6vw,22px);overflow:hidden;box-shadow:0 0 0 1px rgba(255,255,255,0.08),0 50px 100px -50px rgba(0,0,0,0.8)}
   @media (max-width:980px){
     .pk-hero-in{grid-template-columns:minmax(0,1fr);grid-template-areas:"t" "v" "r";row-gap:clamp(24px,4vw,40px)}
@@ -212,16 +237,8 @@ const dane = {
   .pk-pr .v3-sub{margin-top:22px}
   .pk-pr .v3-sub + .v3-sub{margin-top:14px}
   .pk-pr .v3-sub b{color:var(--t1);font-weight:650}
-  .pk-mk{margin:0;padding:0;list-style:none;display:grid;gap:10px}
-  .pk-mk li{display:flex;align-items:stretch;width:fit-content;max-width:100%;transform:rotate(var(--r));font-weight:800;letter-spacing:-0.025em}
-  .pk-mk li:nth-child(even){margin-left:clamp(16px,3vw,48px)}
-  .pk-mk em{display:flex;align-items:center;justify-content:center;min-width:44px;padding:0 10px;border-radius:4px 0 0 4px;background:var(--ziel);color:var(--ink);font-style:normal;font-size:22px}
-  .pk-mk span{display:flex;align-items:center;padding:10px 18px;border-radius:0 4px 4px 0;background:var(--ink);color:#ffffff;font-size:clamp(17px,1.5vw,21px);line-height:1.2}
-  .pk-mk li.ostatni span{background:transparent;color:var(--t3);font-weight:650;padding-left:14px}
-  .pk-mk li.ostatni em{background:transparent;color:var(--t3);box-shadow:inset 0 0 0 2px rgba(15,26,20,0.18);border-radius:4px}
-  .pk-mk.gra li{opacity:0;transform:translateY(10px) rotate(var(--r))}
-  .pk-mk.gra.on li{opacity:1;transform:rotate(var(--r));transition:opacity .35s ease calc(var(--i) * .09s),transform .45s cubic-bezier(.2,.9,.25,1.15) calc(var(--i) * .09s)}
-  @media (max-width:900px){ .pk-pr{grid-template-columns:minmax(0,1fr)} }
+  .pk-is{width:100%;max-width:560px;justify-self:end}
+  @media (max-width:900px){ .pk-pr{grid-template-columns:minmax(0,1fr)} .pk-is{justify-self:start;max-width:520px} }
 
   /* =====================================================================
      PLAN: zielona linia z kropkami, jak w reklamie
@@ -248,6 +265,8 @@ const dane = {
   .pk-os .p{display:block;margin-top:6px;letter-spacing:-0.005em;line-height:1.35;font-size:clamp(15.5px,1.3vw,18px);font-weight:500;color:#A3ABA5}
   .pk-os p{margin:12px 0 0;max-width:520px;font-size:15.5px;line-height:1.6;color:rgba(255,255,255,0.62);text-wrap:pretty}
   @media (max-width:980px){ .pk-plan{grid-template-columns:minmax(0,1fr)} .pk-plan-l{position:static} }
+  /* na telefonie przycisk daje pasek na dole ekranu, w planie byłby drugi raz */
+  @media (max-width:720px){ .pk-plan-l .v3-btn{display:none} }
 
   /* =====================================================================
      ZESPÓŁ NA GOTOWE: prawdziwy appto, rozmowa od polecenia do oferty
@@ -259,6 +278,10 @@ const dane = {
   .pk-ok .ak.czat{display:none}
   .pk-ok .ak.czat .w-top{padding-left:120px}
   @media (max-width:760px){ .pk-ok .ak.caly{display:none} .pk-ok .ak.czat{display:block} }
+  .pk-ok-wy{display:flex;align-items:center;gap:clamp(18px,2.4vw,32px);margin-top:clamp(28px,3vw,40px);padding:clamp(18px,2vw,24px) 0;border-top:1px solid var(--linia);border-bottom:1px solid var(--linia)}
+  .pk-ok-wy b{flex-shrink:0;font-size:clamp(44px,5vw,72px);line-height:0.9;letter-spacing:-0.05em;font-weight:800;color:var(--t1)}
+  .pk-ok-wy p{margin:0;font-size:clamp(15.5px,1.3vw,18px);line-height:1.5;color:var(--t2);text-wrap:pretty}
+  .pk-ok-wy span{display:block;font-weight:700;color:var(--t1)}
   .pk-ok-op{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px clamp(32px,5vw,88px);margin-top:clamp(32px,3.4vw,48px)}
   .pk-ok-op p{margin:0;font-size:clamp(16px,1.3vw,18px);line-height:1.6;color:var(--t2);text-wrap:pretty}
   .pk-ok-op b{color:var(--t1);font-weight:700}
@@ -273,9 +296,7 @@ const dane = {
   .pk-li div + div{padding-left:clamp(16px,2vw,28px);border-left:1px solid var(--linia)}
   .pk-li b{display:block;font-size:clamp(44px,6vw,92px);line-height:0.95;letter-spacing:-0.05em;font-weight:800;color:var(--t1)}
   .pk-li span{display:block;margin-top:8px;font-size:clamp(15px,1.3vw,18px);color:var(--t2)}
-  .pk-loga{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:4px 32px;margin:clamp(36px,4vw,56px) 0 0;padding:0;list-style:none}
-  .pk-loga img{display:block;height:52px;width:auto;filter:grayscale(1);opacity:0.6;mix-blend-mode:multiply}
-  .pk-wy{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0 clamp(20px,2.4vw,36px);margin-top:clamp(56px,6vw,96px)}
+  .pk-wy{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 clamp(20px,2.4vw,36px);margin-top:clamp(56px,6vw,96px)}
   .pk-wy article{padding-top:18px;border-top:2px solid var(--t1)}
   .pk-wy small{display:block;font-size:13px;font-weight:650;color:var(--ziel-c)}
   .pk-wy h3{margin:4px 0 0;font-size:17px;font-weight:700;letter-spacing:-0.015em}
@@ -283,13 +304,16 @@ const dane = {
   .pk-wy .ld{display:block;margin-top:6px;font-size:14px;color:var(--t2)}
   .pk-wy p{margin:14px 0 0;font-size:15px;line-height:1.55;color:var(--t2);text-wrap:pretty}
   .pk-wy-po{margin:22px 0 0;font-size:14px;color:var(--t3)}
-  @media (max-width:1000px){ .pk-wy{grid-template-columns:repeat(2,minmax(0,1fr));gap:40px clamp(20px,3vw,36px)} }
+  @media (max-width:860px){ .pk-wy{grid-template-columns:minmax(0,1fr);gap:36px} }
   @media (max-width:560px){
     .pk-li b{font-size:38px}
+    /* wyniki: liczba po lewej, opis po prawej, żeby trzy wyniki nie zajmowały trzech ekranów */
+    .pk-wy article{display:grid;grid-template-columns:104px minmax(0,1fr);column-gap:16px;align-items:start}
+    .pk-wy b{grid-column:1;grid-row:1 / 5;margin-top:4px;font-size:32px}
+    .pk-wy small,.pk-wy h3,.pk-wy .ld,.pk-wy p{grid-column:2}
+    .pk-wy p{margin-top:8px;font-size:14.5px}
     .pk-li span{font-size:14px}
     .pk-wy{grid-template-columns:minmax(0,1fr)}
-    .pk-loga{justify-content:flex-start;gap:0 22px}
-    .pk-loga img{height:42px}
   }
 
   /* =====================================================================
@@ -299,26 +323,25 @@ const dane = {
   .pk-dk{margin:0;padding:0;list-style:none}
   .pk-dk li{position:relative;display:grid;grid-template-columns:40px minmax(0,1fr);gap:20px;padding-bottom:34px}
   .pk-dk li:last-child{padding-bottom:0}
-  .pk-dk li::before{content:"";position:absolute;left:19.5px;top:46px;bottom:6px;width:1px;background:repeating-linear-gradient(180deg,rgba(255,255,255,0.3) 0 5px,transparent 5px 11px)}
+  .pk-dk li::before{content:"";position:absolute;left:19.5px;top:46px;bottom:6px;width:1px;background:repeating-linear-gradient(180deg,rgba(15,26,20,0.3) 0 5px,transparent 5px 11px)}
   .pk-dk li:last-child::before{display:none}
-  .pk-dn{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(255,255,255,0.22);font-size:14px;font-weight:700;color:#ffffff}
+  .pk-dn{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(15,26,20,0.22);font-size:14px;font-weight:700;color:var(--t1)}
   .pk-dk li.mocny .pk-dn{background:var(--ziel);box-shadow:none;color:var(--ink)}
-  .pk-dk h3{margin:7px 0 0;font-size:clamp(19px,1.7vw,23px);font-weight:750;letter-spacing:-0.025em;line-height:1.15;color:#ffffff}
-  .pk-dk .kiedy{display:block;margin-top:4px;font-size:14px;font-weight:600;color:var(--ziel)}
-  .pk-dk p{margin:10px 0 0;max-width:520px;font-size:15.5px;line-height:1.6;color:rgba(255,255,255,0.68);text-wrap:pretty}
-  .pk-dos{display:flex;align-items:center;gap:10px;margin-top:12px;font-size:13.5px;line-height:1.3;color:rgba(255,255,255,0.6)}
+  .pk-dk h3{margin:7px 0 0;font-size:clamp(19px,1.7vw,23px);font-weight:750;letter-spacing:-0.025em;line-height:1.15;color:var(--t1)}
+  .pk-dk .kiedy{display:block;margin-top:4px;font-size:14px;font-weight:600;color:var(--ziel-c)}
+  .pk-dk p{margin:10px 0 0;max-width:520px;font-size:15.5px;line-height:1.6;color:var(--t2);text-wrap:pretty}
+  .pk-dos{display:flex;align-items:center;gap:10px;margin-top:12px;font-size:13.5px;line-height:1.3;color:var(--t3)}
   .pk-dos img{flex-shrink:0;width:32px;height:32px;border-radius:50%;object-fit:cover;object-position:50% 14%}
-  .pk-dos b{display:block;font-weight:650;color:#ffffff}
-  .pk-wp h3{margin:0;font-size:clamp(22px,2vw,28px);font-weight:800;letter-spacing:-0.035em;color:#ffffff}
+  .pk-dos b{display:block;font-weight:650;color:var(--t1)}
+  .pk-wp h3{margin:0;font-size:clamp(22px,2vw,28px);font-weight:800;letter-spacing:-0.035em;color:var(--t1)}
   .pk-wp dl{margin:20px 0 0}
-  .pk-wp div{padding:16px 0;border-top:1px solid rgba(255,255,255,0.14)}
-  .pk-wp div:last-child{border-bottom:1px solid rgba(255,255,255,0.14)}
-  .pk-wp dt{font-size:16.5px;font-weight:700;color:#ffffff}
-  .pk-wp dd{margin:4px 0 0;font-size:15px;line-height:1.55;color:rgba(255,255,255,0.64)}
-  .pk-wp p{margin:20px 0 0;font-size:15px;line-height:1.55;color:#A3ABA5}
+  .pk-wp div{padding:16px 0;border-top:1px solid var(--linia)}
+  .pk-wp div:last-child{border-bottom:1px solid var(--linia)}
+  .pk-wp dt{font-size:16.5px;font-weight:700;color:var(--t1)}
+  .pk-wp dd{margin:4px 0 0;font-size:15px;line-height:1.55;color:var(--t2)}
   @media (max-width:980px){ .pk-dg{grid-template-columns:minmax(0,1fr)} }
 
-  #kontakt{padding-top:clamp(64px,8vw,120px);padding-bottom:clamp(56px,7vw,96px);background:#f4f8f2}
+  #kontakt{padding-top:clamp(64px,8vw,120px);padding-bottom:clamp(56px,7vw,96px);background:#ffffff}
   .v3 > .v3-sek{padding-top:clamp(80px,9vw,140px);padding-bottom:clamp(80px,9vw,140px)}
 
   /* =====================================================================
@@ -345,7 +368,7 @@ const dane = {
 <a href="/" aria-label="Let's automate — strona główna"><img src="/pod-klucz/la-logo-light.svg" alt="Let's automate" width="190" height="30"></a>
 <div class="pk-top-r">
 <a class="pk-tel" href={TEL_H}>{TEL}</a>
-<a href="#kontakt" class="v3-btn">Umów bezpłatną diagnozę <span aria-hidden="true">→</span></a>
+<a href="#kontakt" class="v3-btn">{CTA} <span aria-hidden="true">→</span></a>
 </div>
 </header>
 <div class="pk-hero-in">
@@ -370,16 +393,24 @@ const dane = {
 </script>
 </div>
 <div class="pk-hr">
-<p class="pk-lead"><b>Zrobimy to za Was</b>Poznajemy, jak pracuje Twoja firma, i ustawiamy AI za Was, razem z podłączeniem Waszych systemów. Zespół wchodzi na gotowe.</p>
+<p class="pk-lead"><b>Zrobimy to za Was</b>Poznajemy, jak pracuje Twoja firma, i ustawiamy AI za Was. Podłączamy je też do Waszych systemów, a zespół wchodzi na gotowe.</p>
 <div class="pk-akcje">
-<a href="#kontakt" class="v3-btn">Umów bezpłatną diagnozę <span aria-hidden="true">→</span></a>
-<a href="#plan" class="v3-lnk">Zobacz plan wdrożenia</a>
+<a href="#kontakt" class="v3-btn">{CTA} <span aria-hidden="true">→</span></a>
+<a href="#plan" class="v3-lnk">Zobacz, jak wygląda wdrożenie pod klucz</a>
 </div>
-<p class="pk-po">Bezpłatnie i bez zobowiązań. Odzywamy się w jeden dzień roboczy.</p>
+<p class="pk-po">{CTA_POD}</p>
 </div>
 <div class="pk-kadr">
 <PulpitMontaz />
 </div>
+</div>
+<!-- Dół hero: klienci zamiast zapowiedzi diagnozy (v2, Szymon: dół hero
+     „zlewa się” z sekcją diagnozy). Logotypy jak w pasku pod hero podstron. -->
+<div class="pk-kl">
+<p><strong>140+ firm</strong> zmienia z nami sposób działania</p>
+<ul>
+{LOGA.map(([plik, nazwa, w]) => (<li><img src={`/uploads/klienci/${plik}`} alt={nazwa} width={w} height="88" loading="lazy"></li>))}
+</ul>
 </div>
 </section>
 
@@ -388,15 +419,10 @@ const dane = {
 <div class="pk-pr">
 <div>
 <h2 class="v3-h2 pk-h2s">AI do samodzielnego montażu ma długą instrukcję</h2>
-<p class="v3-sub">Licencję kupuje się w jeden dzień. Żeby AI naprawdę pracowało w firmie, ktoś musi zebrać cenniki, umowy i procedury, rozpisać instrukcje, podłączyć pocztę i CRM, ustawić uprawnienia, sprawdzić odpowiedzi na prawdziwych sprawach i nauczyć zespół.</p>
-<p class="v3-sub"><b>Zwykle spada to na kogoś, kto ma też swoją pracę.</b> Takie wdrożenia rzadko upadają nagle. Częściej osuwają się po cichu: instrukcje się rozjeżdżają, testy czekają, a zespół wraca do starych nawyków.</p>
+<p class="v3-sub">Licencję kupuje się w jeden dzień. Potem ktoś musi zebrać cenniki i umowy, napisać instrukcje, podłączyć pocztę i CRM, przetestować odpowiedzi i nauczyć zespół.</p>
+<p class="v3-sub"><b>Zwykle robi to ktoś, kto ma też swoją pracę.</b> Takie wdrożenie rzadko upada od razu. Osuwa się po cichu: instrukcje się rozjeżdżają, testy nie przechodzą, a kroków przybywa.</p>
 </div>
-<ol class="pk-mk" data-anim data-gra aria-label="Kroki samodzielnego wdrożenia AI">
-{MONTAZ.map((k, i) => (
-  <li style={`--i:${i};--r:${[-0.6, 0.8, -0.4, 0.6, -0.9, 0.5, -0.5, 0.9, -0.7][i]}deg`}><em>{i + 1}</em><span>{k}</span></li>
-))}
-<li class="ostatni" style={`--i:9;--r:0deg`}><em>…</em><span>i 55 kolejnych kroków</span></li>
-</ol>
+<div class="pk-is"><InstrukcjaSypie /></div>
 </div>
 </section>
 
@@ -406,8 +432,8 @@ const dane = {
 <div class="pk-plan">
 <div class="pk-plan-l">
 <h2 class="v3-h2 jasny">Zrobimy to za Was</h2>
-<p class="v3-sub jasny">Wy opowiadacie, jak pracujecie, i dajecie dostęp do dokumentów i systemów. Resztę składamy my, a zespół zaczyna pracę na gotowym.</p>
-<a href="#kontakt" class="v3-btn">Umów bezpłatną diagnozę <span aria-hidden="true">→</span></a>
+<p class="v3-sub jasny">Wy pokazujecie, jak pracujecie, i dajecie dostęp do dokumentów i systemów. Resztę składamy my.</p>
+<a href="#kontakt" class="v3-btn">{CTA} <span aria-hidden="true">→</span></a>
 </div>
 <div>
 <h3 class="pk-ph">Plan wdrożenia</h3>
@@ -428,21 +454,27 @@ const dane = {
 </section>
 
 <!-- ============ 4 · ZESPÓŁ WCHODZI NA GOTOWE ============
-     Kit appto z reklamy, rozmowa gra od polecenia do gotowej oferty.
-     Na telefonie sama kolumna czatu. Firma i osoby w przykładzie zmyślone. -->
+     Jedyna scena appto na stronie. Zaczyna się od pustego okna (sam
+     kompozytor), potem polecenie, praca w CRM, notatkach i Kontekście,
+     a oferta powstaje na końcu (studio/ZASADY.md, „Praca w UI od stanu
+     »przed«”). Na telefonie sama kolumna czatu. Przykład zmyślony. -->
 <section id="na-gotowe" class="v3-sek v3-papier">
 <div class="v8-gl">
 <h2 class="v3-h2">Zespół wchodzi na gotowe</h2>
-<p class="v3-sub">Handlowiec pisze jedno polecenie. AI bierze dane z CRM-u, z notatek ze spotkania i z zasad firmy, a gotowa oferta czeka do przejrzenia.</p>
+<p class="v3-sub">Handlowiec pisze jedno polecenie. AI zbiera dane z CRM-u, notatek ze spotkania i zasad firmy, a oferta powstaje na jego oczach.</p>
 </div>
-<div class="pk-ok" role="img" aria-label="Appto: handlowiec pisze polecenie „Przygotuj ofertę po wczorajszym spotkaniu z szablonu Oferta handlowa”. Appto pobiera transakcję z HubSpota, notatki ze spotkania z Fireflies i politykę handlową z Kontekstu, a potem wypełnia szablon oferty.">
+<div class="pk-ok" role="img" aria-label="Appto, na początku puste okno. Handlowiec pisze polecenie „Przygotuj ofertę po wczorajszym spotkaniu z szablonu Oferta handlowa”. Appto pobiera transakcję z HubSpota, notatki ze spotkania z Fireflies i politykę handlową z Kontekstu, a potem otwiera ofertę i wypełnia jej pola.">
 <div class="pk-ok-bar" aria-hidden="true"><span class="pm-tl"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></span><span class="adr">app.appto.ai</span></div>
 <AppKit klasa="caly" demo />
 <AppKit klasa="czat" kadr={680} od={92} demo />
 </div>
+<div class="pk-ok-wy">
+<b>{OFERTA.l}</b>
+<p><span>{OFERTA.ld} u naszego klienta.</span>{OFERTA.po}</p>
+</div>
 <div class="pk-ok-op">
-<p><b>To appto, nasza platforma.</b> Cała firma ma w niej dostęp do AI, a ludzie nie muszą uczyć się pisania promptów. Agenci znają zasady firmy i sięgają do podłączonych systemów.</p>
-<p><b>Nie musicie z niej korzystać.</b> Jeśli pracujecie w Copilocie, ChatGPT albo Claude, ustawiamy AI tam, gdzie zespół już pracuje. Narzędzie dobieramy do Waszej pracy.<small>Firma, osoby i kwoty w przykładzie są zmyślone.</small></p>
+<p><b>To appto, nasza platforma.</b> Cała firma ma w niej dostęp do AI, a ludzie nie muszą uczyć się pisania promptów.</p>
+<p><b>Nie musicie z niej korzystać.</b> Jeśli pracujecie w Copilocie, ChatGPT albo Claude, ustawiamy AI tam.<small>Firma, osoby i kwoty w przykładzie są zmyślone.</small></p>
 </div>
 </section>
 
@@ -451,15 +483,12 @@ const dane = {
      i cytat NARS (prawdziwy, dotyczy współpracy ogólnie). -->
 <section id="dowody" class="v3-sek">
 <div class="v8-gl">
-<h2 class="v3-h2">Przeszliśmy tę drogę z&nbsp;ponad 140 firmami</h2>
-<p class="v3-sub">Wdrażamy AI, automatyzacje i oprogramowanie dopasowane do firmy. Poniżej realne wdrożenia u naszych klientów.</p>
+<h2 class="v3-h2">Tak to działa u&nbsp;naszych klientów</h2>
+<p class="v3-sub">Wdrażamy AI, automatyzacje i oprogramowanie dopasowane do firmy. Wyniki z prawdziwych wdrożeń.</p>
 </div>
 <div class="pk-li">
 {LICZBY.map((x) => (<div><b>{x.l}</b><span>{x.d}</span></div>))}
 </div>
-<ul class="pk-loga">
-{LOGA.map(([plik, nazwa, w]) => (<li><img src={`/uploads/klienci/${plik}`} alt={nazwa} width={w} height="88" loading="lazy"></li>))}
-</ul>
 <div class="pk-wy">
 {WYNIKI.map((x) => (
   <article>
@@ -474,10 +503,10 @@ const dane = {
 </section>
 
 <!-- ============ 6 · DIAGNOZA ============ -->
-<section id="diagnoza" class="v3-sek v3-scena v3-ziarno">
+<section id="diagnoza" class="v3-sek v3-papier">
 <div class="v8-gl">
-<h2 class="v3-h2 jasny">Zaczynamy od bezpłatnej diagnozy</h2>
-<p class="v3-sub jasny">Po niej wiecie, od czego zacząć i ile kosztuje pierwszy etap. Plan zostaje u Was, także jeśli nie zaczniemy współpracy.</p>
+<h2 class="v3-h2">Plan wdrożenia zaczyna się od bezpłatnej diagnozy</h2>
+<p class="v3-sub">Po niej wiecie, od czego zacząć, co przejmie AI i ile kosztuje pierwszy etap. Plan zostaje u Was, także jeśli nie zaczniemy współpracy.</p>
 </div>
 <div class="pk-dg">
 <ol class="pk-dk">
@@ -504,20 +533,27 @@ const dane = {
 
 <!-- ============ 7 · FORMULARZ ============ -->
 <Kontakt
-  tytul="Umówcie bezpłatną diagnozę"
-  lead="Zostawcie kontakt i napiszcie, co AI ma przejąć najpierw. Piotr oddzwoni w jeden dzień roboczy i umówi termin rozmowy."
+  tytul={CTA}
+  lead="Pierwszy krok to bezpłatna diagnoza. Napiszcie, co AI ma przejąć najpierw, a Piotr oddzwoni w jeden dzień roboczy i umówi termin."
   zrodlo={ZRODLO}
   pytanie="Co AI ma przejąć najpierw?"
   podpowiedz="Np. oferty: handlowcy składają je z CRM-u i cennika. 15 osób, pracujemy w Microsoft 365…"
   osoba={{ foto: '/piotr-wojciuk.jpg', w: 1002, h: 1100, imie: 'Piotr Wojciuk', rola: 'New Business Lead, oddzwania po zgłoszeniu' }}
-  po="Bezpłatnie i bez zobowiązań. Wolicie od razu porozmawiać? Zadzwońcie."
+  po="Bezpłatnie i bez zobowiązań."
 />
 
 <!-- ============ 8 · FAQ ============ -->
 <GcFaq heading="Zanim wyślecie formularz" ctaLabel="Zadajcie nam swoje →" items={faq} />
 </div>
 
-<div class="pk-pasek" data-pasek aria-hidden="true"><a href="#kontakt" class="v3-btn" tabindex="-1">Umów bezpłatną diagnozę <span aria-hidden="true">→</span></a></div>
+<div class="pk-pasek" data-pasek aria-hidden="true"><a href="#kontakt" class="v3-btn" tabindex="-1">{CTA} <span aria-hidden="true">→</span></a></div>
+
+{/* Napis przycisku w module Kontakt jest zaszyty („Wyślij zapytanie”), a ten
+     sam moduł zmienia gałąź ai-crm-leads, więc go nie ruszamy: podmiana
+     tutaj, zanim ruszy skrypt modułu. */}
+<script is:inline define:vars={{ CTA }}>
+  (function(){ var l = document.querySelector('#kontakt [data-kt-label]'); if(l) l.textContent = CTA; })();
+</script>
 
 {/* SKĄD PRZYSZEDŁ KLIENT: UTM-y z linku reklamy (schemat z WYTYCZNE-reklamy §7:
      utm_source={{site_source_name}}, utm_medium=reklama, utm_campaign=lets-meta,
@@ -548,11 +584,12 @@ const dane = {
 
   // ---- Skalowanie scen o stałym rozmiarze (kadr z reklamy, kit appto) ----
   (function(){
-    var sceny = Array.prototype.slice.call(document.querySelectorAll('[data-pm],[data-ak-skaluj]')) as HTMLElement[];
+    var sceny = Array.prototype.slice.call(document.querySelectorAll('[data-pm],[data-is],[data-ak-skaluj]')) as HTMLElement[];
     function licz(el: HTMLElement){
       var w = el.clientWidth;
       if(!w) return;
       if(el.hasAttribute('data-pm')) el.style.setProperty('--ps', String(w / 1080));
+      else if(el.hasAttribute('data-is')) el.style.setProperty('--is', String(w / 720));
       else el.style.setProperty('--s', String(w / parseFloat(getComputedStyle(el).getPropertyValue('--kk') || '1920')));
     }
     sceny.forEach(licz);
@@ -594,6 +631,44 @@ const dane = {
     }, { threshold: 0.2 }).observe(pm);
   })();
 
+  // ---- PROBLEM: instrukcja, która się sypie ----
+  // Gra raz, kiedy scena wejdzie w kadr, i kończy się kulminacją (stoi).
+  // Kroki i okna wchodzą według data-t, licznik według data-licznik,
+  // przy oknie psuje się jego krok (czerwony numer). Od pierwszego nowego
+  // kroku lista jedzie w górę i się rozjeżdża, na końcu osiada.
+  (function(){
+    var sc = document.querySelector('[data-is]') as HTMLElement | null;
+    if(!sc || redukcja || !('IntersectionObserver' in window)) return;
+    var el = Array.prototype.slice.call(sc.querySelectorAll('[data-t]')) as HTMLElement[];
+    var zr = sc.querySelector('[data-is-zr]') as HTMLElement, wsz = sc.querySelector('[data-is-wsz]') as HTMLElement;
+    var licznik = JSON.parse(sc.dataset.licznik || '[]') as number[][];
+    var kulminacja = +(sc.dataset.kulminacja || 8300);
+    var pierwszyNowy = 0;
+    el.forEach(function(e){ var nr = +(e.dataset.nr || 0); if(nr === 10) pierwszyNowy = +(e.dataset.t || 0); });
+    sc.classList.remove('stat');
+    zr.textContent = '0'; wsz.textContent = '64'; wsz.classList.remove('ucieka');
+    var ruszylo = false;
+    function start(){
+      ruszylo = true;
+      el.forEach(function(e){
+        window.setTimeout(function(){
+          e.classList.add('on');
+          var nr = e.dataset.psuje;
+          if(nr){ var k = sc!.querySelector('.is-k[data-nr="' + nr + '"]'); if(k) k.classList.add('zepsuty'); }
+        }, +(e.dataset.t || 0));
+      });
+      licznik.forEach(function(x){
+        window.setTimeout(function(){ zr.textContent = String(x[1]); wsz.textContent = String(x[2]); wsz.classList.toggle('ucieka', x[2] > 64); }, x[0]);
+      });
+      window.setTimeout(function(){ sc!.classList.add('rosnie', 'rozjazd'); }, pierwszyNowy);
+      window.setTimeout(function(){ sc!.classList.add('osiada'); }, kulminacja);
+    }
+    var io = new IntersectionObserver(function(w){
+      if(w[0].isIntersecting && !ruszylo){ start(); io.disconnect(); }
+    }, { threshold: 0.45 });
+    io.observe(sc);
+  })();
+
   // ---- PLAN: kropki zapalają się, linia rośnie, gdy krok wchodzi w kadr ----
   (function(){
     var li = Array.prototype.slice.call(document.querySelectorAll('[data-os] li')) as HTMLElement[];
@@ -605,51 +680,63 @@ const dane = {
     li.forEach(function(x){ io.observe(x); });
   })();
 
-  // ---- APPTO: rozmowa od polecenia do gotowej oferty ----
-  // Kolejno: polecenie pisane znak po znaku, wysłanie, kroki z HubSpota,
-  // notatek i Kontekstu, odpowiedź i dokument; pola oferty wypełniają się
-  // razem z odpowiedzią. Bez JS i przy ograniczonym ruchu stan końcowy.
+  // ---- APPTO: praca od stanu „przed” (studio/ZASADY.md) ----
+  // Kit startuje w HTML jako pusty appto (klasa .gra). Kolejno: polecenie
+  // pisane znak po znaku, wysłanie, kroki z HubSpota, notatek i Kontekstu,
+  // dokument wjeżdża z prawej i jego pola wypełniają się po kolei, na końcu
+  // odpowiedź „Gotowe” z kartą dokumentu. Pętla, póki scena jest w kadrze; po
+  // wyjściu z kadru wraca do pustego okna. Przy ograniczonym ruchu stan końcowy.
   (function(){
     var kity = Array.prototype.slice.call(document.querySelectorAll('[data-ak-demo]')) as HTMLElement[];
-    if(!kity.length || redukcja || !('IntersectionObserver' in window)) return;
+    if(!kity.length) return;
+    if(redukcja || !('IntersectionObserver' in window)){ kity.forEach(function(ak){ ak.classList.remove('gra'); }); return; }
     kity.forEach(function(ak){
-      var app = ak.querySelector('.w-app') as HTMLElement;
       var pole = ak.querySelector('[data-w="w-composer-text"]') as HTMLElement;
       var msg = ak.querySelector('[data-w="w-msg1"]') as HTMLElement;
+      var tytul = ak.querySelector('[data-w="w-top-title"]') as HTMLElement;
+      var pola = Array.prototype.slice.call(ak.querySelectorAll('.w-field')) as HTMLElement[];
       var wzmianka = msg.querySelector('.w-mention') as HTMLElement;
       var tekst = (msg.firstChild && msg.firstChild.textContent) || '';
-      var pusto = pole.innerHTML;
+      var pusto = pole.innerHTML, tytulKoniec = tytul.textContent || '';
       var timery: number[] = [], widac = false;
       function czysc(){ timery.forEach(function(t){ clearTimeout(t); }); timery = []; }
       function po(ms: number, fn: () => void){ timery.push(window.setTimeout(fn, ms)); }
-      function faza(n: number){ for(var i = 1; i <= 6; i++) ak.classList.toggle('f' + i, i <= n); }
-      function start(){
+      function faza(n: number){ for(var i = 1; i <= 7; i++) ak.classList.toggle('f' + i, i <= n); }
+      function przed(){
         czysc();
         ak.classList.add('gra');
         ak.classList.remove('wyslij');
         faza(0);
-        app.classList.add('is-template');
-        pole.innerHTML = '<span class="ak-kursor"></span>';
-        var t = 500;
+        pola.forEach(function(f){ f.classList.add('pusty'); });
+        tytul.textContent = 'Nowa rozmowa';
+        pole.innerHTML = pusto;
+      }
+      function start(){
+        przed();
+        var t = 900;
+        po(t - 200, function(){ pole.innerHTML = '<span class="ak-kursor"></span>'; });
         for(var i = 1; i <= tekst.length; i++){
           (function(n){ po(t + n * 38, function(){ pole.innerHTML = ''; pole.appendChild(document.createTextNode(tekst.slice(0, n))); var k = document.createElement('span'); k.className = 'ak-kursor'; pole.appendChild(k); }); })(i);
         }
         t += tekst.length * 38 + 150;
-        po(t, function(){ var k = pole.querySelector('.ak-kursor'); var m = wzmianka.cloneNode(true); pole.insertBefore(m, k); });
+        po(t, function(){ var k = pole.querySelector('.ak-kursor'); pole.insertBefore(wzmianka.cloneNode(true), k); });
         t += 700;
         po(t, function(){ ak.classList.add('wyslij'); });
-        po(t + 250, function(){ ak.classList.remove('wyslij'); pole.innerHTML = pusto; faza(1); });
+        po(t + 250, function(){ ak.classList.remove('wyslij'); pole.innerHTML = pusto; tytul.textContent = tytulKoniec; faza(1); });
         po(t + 900, function(){ faza(2); });
         po(t + 1500, function(){ faza(3); });
         po(t + 2300, function(){ faza(4); });
         po(t + 3100, function(){ faza(5); });
-        po(t + 4000, function(){ faza(6); app.classList.remove('is-template'); });
-        po(t + 11000, function(){ if(widac) start(); });
+        po(t + 3900, function(){ faza(6); });
+        pola.forEach(function(f, i){ po(t + 5000 + i * 380, function(){ f.classList.remove('pusty'); }); });
+        po(t + 5000 + pola.length * 380 + 300, function(){ faza(7); });
+        po(t + 15000, function(){ if(widac) start(); });
       }
+      przed();
       new IntersectionObserver(function(w){
         var teraz = w[0].isIntersecting;
         if(teraz && !widac){ widac = true; start(); }
-        else if(!teraz && widac){ widac = false; czysc(); ak.classList.remove('gra'); faza(6); app.classList.remove('is-template'); pole.innerHTML = pusto; }
+        else if(!teraz && widac){ widac = false; przed(); }
       }, { threshold: 0.35 }).observe(ak);
     });
   })();
