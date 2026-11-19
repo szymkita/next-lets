@@ -2,52 +2,137 @@
 // AI SALES — /aisales. Strona z zaproszeniem dla uczestników kursu AI Sales,
 // pod kod QR i link z ostatniego slajdu webinaru „Jak wdrożyć AI w firmie?”
 // (19.11.2026). Oferta od Szymona: bezpłatna diagnoza i 5 000 zł rabatu na
-// wdrożenie AI. noindex, bez nawigacji, formularz jak w module Kontakt
-// (POST /api/kontakt, źródło „AI Sales”).
+// wdrożenie AI. v2 (Szymon: „z chęcią zostaniemy waszym partnerem we wdrażaniu
+// AI i przechodzeniu na firmy AI Native… jak najlepsze landingi… moje zdjęcia,
+// a nie Piotra”): hero ze zdjęciem Szymona, etapy z webinaru, dowody jak na
+// /wdrozenie-ai-pod-klucz, formularz modułu Kontakt z Szymonem.
+// noindex, bez nawigacji, źródło zgłoszeń „AI Sales”.
 import LaBase from '../layouts/LaBase.astro';
 import Styl from '../components/usluga/Styl.astro';
 import Kontakt from '../components/usluga/Kontakt.astro';
 
 const title = "Dla uczestników AI Sales | Let's automate";
-const description = 'Bezpłatna diagnoza i 5 000 zł rabatu na wdrożenie AI dla uczestników kursu AI Sales.';
+const description = 'Zostańmy Waszym partnerem we wdrażaniu AI. Bezpłatna diagnoza i 5 000 zł rabatu na wdrożenie dla uczestników kursu AI Sales.';
+const LOGA = [
+  ['sports-med.svg', 'Sports-Med', 308], ['nars.svg', 'NARS', 235], ['sevium.svg', 'Sevium', 206],
+  ['odo-24.svg', 'ODO 24', 158], ['x3d.svg', 'X3D', 143],
+];
+const LICZBY = [{ l: '140+', d: 'firm' }, { l: '200+', d: 'wdrożeń' }, { l: '30+', d: 'ekspertów' }];
+const ETAPY = [
+  { n: '01', t: 'AI w rozmowie', c: 'w 30 dni', d: 'Czat z wiedzą firmy i skillami do Waszych zadań. Zespół odzyskuje czas od pierwszych tygodni.' },
+  { n: '02', t: 'Analiza, diagnoza, projekt', c: 'przed budową', d: 'Wchodzimy w procesy, na których zarabiacie, i ustalamy, gdzie jest przewaga i jak ma działać.' },
+  { n: '03', t: 'Firma, która dzieje się sama', c: 'w 80–90%', d: 'Budujemy systemy i agentów połączonych z Waszymi narzędziami. Ludzie nadzorują i decydują.' },
+];
 ---
-<LaBase topbar={false} title={title} description={description} ctaHref="#kontakt" ctaLabel="Zostaw kontakt" nav={null} noindex={true}>
+<LaBase topbar={false} title={title} description={description} ctaHref="#kontakt" ctaLabel="Umów diagnozę" nav={null} noindex={true}>
 <Styl />
 <style>
-  .as{max-width:1180px;margin:0 auto;padding:clamp(48px,8vw,112px) 24px clamp(40px,6vw,80px)}
-  .as-k{font-size:15px;font-weight:600;letter-spacing:.02em;color:#0A7A52}
-  .as h1{margin-top:14px;font-size:clamp(40px,6vw,76px);line-height:1.02;letter-spacing:-.04em;font-weight:700;max-width:900px}
-  .as-l{margin-top:20px;max-width:680px;font-size:clamp(18px,2vw,22px);line-height:1.5;color:#5E6A62}
-  .as-g{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;margin-top:clamp(32px,5vw,56px)}
-  .as-c{padding:30px 32px;border-radius:22px;background:#fff;box-shadow:inset 0 0 0 1.5px rgba(22,33,26,.12)}
-  .as-c.on{box-shadow:inset 0 0 0 3px #00CD77}
-  .as-c small{display:block;font-size:14px;font-weight:600;color:#5E6A62}
-  .as-c b{display:block;margin-top:12px;font-size:clamp(30px,3.4vw,42px);line-height:1.05;letter-spacing:-.03em}
-  .as-c.on b{color:#0A7A52}
-  .as-c p{margin-top:12px;font-size:17px;line-height:1.5;color:#5E6A62}
-  .as-e{margin-top:28px;font-size:16px;color:#5E6A62}
-  .as-e a{color:inherit;font-weight:600}
+  .as-hero{background:#0E1511;color:#fff;overflow:hidden}
+  .as-in{max-width:1240px;margin:0 auto;padding:clamp(48px,7vw,104px) 24px clamp(40px,6vw,80px);display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:clamp(28px,5vw,72px);align-items:center}
+  .as-ety{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:999px;background:rgba(0,205,119,.14);color:#00CD77;font-size:14px;font-weight:600}
+  .as-h1{margin-top:18px;font-size:clamp(40px,5.6vw,72px);line-height:1.02;letter-spacing:-.045em;font-weight:800;color:#fff}
+  .as-h1 em{font-style:normal;color:#00CD77}
+  .as-lead{margin-top:20px;max-width:620px;font-size:clamp(18px,1.8vw,21px);line-height:1.55;color:#B9C2BC}
+  .as-of{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:30px;max-width:640px}
+  .as-of div{padding:20px 22px;border-radius:18px;background:rgba(255,255,255,.05);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.12)}
+  .as-of div.on{box-shadow:inset 0 0 0 2px #00CD77}
+  .as-of small{display:block;font-size:13px;font-weight:600;color:#9AA39D}
+  .as-of b{display:block;margin-top:8px;font-size:clamp(24px,2.4vw,30px);line-height:1.05;letter-spacing:-.03em;color:#fff}
+  .as-of .on b{color:#00CD77}
+  .as-ak{display:flex;flex-wrap:wrap;align-items:center;gap:18px;margin-top:30px}
+  .as-ak .v3-lnk{color:#C9D1CC}
+  .as-fot{position:relative;margin:0;border-radius:28px;overflow:hidden;aspect-ratio:870/1100;background:#1a221d}
+  .as-fot img{display:block;width:100%;height:100%;object-fit:cover;object-position:50% 20%}
+  .as-fot figcaption{position:absolute;left:16px;right:16px;bottom:16px;padding:16px 18px;border-radius:18px;background:rgba(14,21,17,.78);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);color:#fff}
+  .as-fot figcaption b{display:block;font-size:18px}
+  .as-fot figcaption span{display:block;margin-top:4px;font-size:14px;line-height:1.45;color:#C9D1CC}
+  .as-kl{max-width:1240px;margin:0 auto;padding:22px 24px 36px;display:flex;align-items:center;gap:32px;border-top:1px solid rgba(255,255,255,.08)}
+  .as-kl p{flex-shrink:0;max-width:220px;margin:0;font-size:14px;line-height:1.45;color:#A3ABA5}
+  .as-kl strong{color:#fff}
+  .as-kl ul{flex:1;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:4px 32px;margin:0;padding:0;list-style:none}
+  .as-kl img{display:block;height:46px;width:auto;filter:grayscale(1) invert(1);mix-blend-mode:screen;opacity:.6}
+  .as-et{max-width:1240px;margin:0 auto;padding:clamp(56px,7vw,104px) 24px}
+  .as-et ol{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin:clamp(28px,4vw,48px) 0 0;padding:0;list-style:none}
+  .as-et li{padding:28px 28px 32px;border-radius:22px;background:#fff;box-shadow:inset 0 0 0 1.5px rgba(22,33,26,.1)}
+  .as-et li:last-child{background:#0E1511;color:#fff;box-shadow:none}
+  .as-et em{font-style:normal;font-size:15px;font-weight:700;color:#0A7A52}
+  .as-et li:last-child em{color:#00CD77}
+  .as-et h3{margin-top:14px;font-size:26px;line-height:1.12;letter-spacing:-.025em}
+  .as-et .c{display:inline-block;margin-top:10px;padding:4px 10px;border-radius:8px;background:rgba(0,205,119,.12);font-size:13px;font-weight:700;color:#0A7A52}
+  .as-et li:last-child .c{color:#00CD77}
+  .as-et p{margin-top:14px;font-size:16.5px;line-height:1.55;color:#5E6A62}
+  .as-et li:last-child p{color:#B9C2BC}
+  .as-dw{max-width:1240px;margin:0 auto;padding:clamp(36px,4vw,56px) 24px;display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:clamp(28px,5vw,80px);align-items:center;border-top:1px solid rgba(22,33,26,.1)}
+  .as-dw ul{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));margin:0;padding:0;list-style:none}
+  .as-dw li+li{padding-left:clamp(14px,1.8vw,24px);border-left:1px solid rgba(22,33,26,.1)}
+  .as-dw li b{display:block;font-size:clamp(38px,4.2vw,58px);line-height:.95;letter-spacing:-.05em;font-weight:800}
+  .as-dw li span{display:block;margin-top:6px;font-size:15px;color:#5E6A62}
+  .as-dw figure{margin:0}
+  .as-dw blockquote{margin:0;font-size:clamp(19px,1.9vw,23px);line-height:1.5;letter-spacing:-.01em}
+  .as-dw figcaption{display:flex;align-items:center;gap:16px;margin-top:16px;font-size:14px;color:#5E6A62}
+  .as-dw figcaption img{height:34px;width:auto}
+  .as-dw figcaption b{display:block;color:#16211A}
+  @media (max-width:900px){
+    .as-in{grid-template-columns:1fr}
+    .as-fot{max-width:420px;aspect-ratio:870/980}
+    .as-of{grid-template-columns:1fr}
+    .as-kl{flex-direction:column;align-items:flex-start;gap:14px}
+    .as-kl ul{justify-content:flex-start;gap:0 22px}
+    .as-kl img{height:38px}
+    .as-et ol{grid-template-columns:1fr}
+    .as-dw{grid-template-columns:1fr}
+  }
 </style>
 
 <div class="v3">
-<section class="as" aria-labelledby="as-h1">
-  <div class="as-k">Dla uczestników kursu AI Sales</div>
-  <h1 id="as-h1">Kolejne etapy wdrożenia AI zróbmy razem</h1>
-  <p class="as-l">Czat z wiedzą firmy wdrożycie w 30 dni. Przewagę dają procesy, na których zarabiacie: wchodzimy w nie, ustalamy, co i jak, i budujemy system, który dzieje się sam.</p>
-  <div class="as-g">
-    <div class="as-c"><small>Na start</small><b>Bezpłatna diagnoza</b><p>Gdzie w Waszej firmie jest przewaga i od czego zacząć. Bez zobowiązań.</p></div>
-    <div class="as-c on"><small>Dla uczestników AI Sales</small><b>5 000 zł rabatu</b><p>Na wdrożenie AI z Let's automate.</p></div>
+<section class="as-hero" aria-labelledby="as-h1">
+<div class="as-in">
+<div>
+  <span class="as-ety">Dla uczestników kursu AI Sales</span>
+  <h1 class="as-h1" id="as-h1">Zostańmy Waszym partnerem we&nbsp;wdrażaniu <em>AI</em></h1>
+  <p class="as-lead">Przeprowadzimy Waszą firmę od czatu z&nbsp;wiedzą firmy do AI Native: procesy, na których zarabiacie, dzieją się same, a&nbsp;ludzie nadzorują i&nbsp;decydują.</p>
+  <div class="as-of">
+    <div><small>Na start</small><b>Bezpłatna diagnoza</b></div>
+    <div class="on"><small>Dla uczestników AI Sales</small><b>5 000 zł rabatu</b></div>
   </div>
-  <p class="as-e">Wolicie od razu napisać? <a href="mailto:hello@letsautomate.pl">hello@letsautomate.pl</a></p>
+  <div class="as-ak">
+    <a href="#kontakt" class="v3-btn">Umów bezpłatną diagnozę <span aria-hidden="true">→</span></a>
+    <a href="#etapy" class="v3-lnk">Zobacz, jak pracujemy</a>
+  </div>
+</div>
+<figure class="as-fot">
+  <img src="/szymon-kita.jpg" alt="Szymon Kita, CEO Let’s automate" width="870" height="1210" fetchpriority="high" decoding="async">
+  <figcaption><b>Szymon Kita</b><span>CEO Let’s automate, prowadzący webinar „Jak wdrożyć AI w firmie?”</span></figcaption>
+</figure>
+</div>
+<div class="as-kl">
+  <p><strong>140+ firm</strong> zmienia z&nbsp;nami sposób działania</p>
+  <ul>{LOGA.map(([plik, nazwa, w]) => (<li><img src={`/uploads/klienci/${plik}`} alt={nazwa} width={w} height="88" loading="lazy"></li>))}</ul>
+</div>
+</section>
+
+<section class="as-et" id="etapy" aria-labelledby="as-h2">
+  <h2 class="v3-h2" id="as-h2">Trzy etapy, które przejdziemy razem</h2>
+  <p class="v3-sub">Tak jak na webinarze: zaczynamy od czasu zespołu, a&nbsp;przewagę budujemy w&nbsp;procesach, na których zarabiacie.</p>
+  <ol>{ETAPY.map((e) => (<li><em>{e.n}</em><h3>{e.t}</h3><span class="c">{e.c}</span><p>{e.d}</p></li>))}</ol>
+</section>
+
+<section class="as-dw" aria-label="Let’s automate w liczbach i opinia klienta">
+  <ul>{LICZBY.map((x) => (<li><b>{x.l}</b><span>{x.d}</span></li>))}</ul>
+  <figure>
+    <blockquote>„Let’s automate wziął pełną odpowiedzialność za projekt i dowiózł go do końca. To dlatego powierzyliśmy im kolejny, znacznie większy.”</blockquote>
+    <figcaption><img src="/uploads/klienci/nars.svg" alt="NARS Polska" width="235" height="88" loading="lazy"><span><b>Jakub Ciołkowski</b>Członek Zarządu, NARS Polska</span></figcaption>
+  </figure>
 </section>
 
 <Kontakt
-  tytul="Zostawcie kontakt"
-  lead="Napiszcie jedno zdanie o tym, co chcecie usprawnić. Odezwiemy się w jeden dzień roboczy i umówimy bezpłatną diagnozę."
+  tytul="Umówmy bezpłatną diagnozę"
+  lead="Napiszcie jedno zdanie o tym, co chcecie oddać AI najpierw. Odezwiemy się w jeden dzień roboczy, a rabat 5 000 zł dla uczestników AI Sales doliczymy do pierwszego etapu."
   zrodlo="AI Sales"
-  pytanie="Co chcecie usprawnić?"
+  pytanie="Co chcecie oddać AI najpierw?"
   podpowiedz="Np. oferty po spotkaniach zajmują nam po półtorej godziny, a cennik zmienia się co kwartał…"
-  po="Bezpłatnie i bez zobowiązań. Rabat 5 000 zł dla uczestników AI Sales."
+  osoba={{ foto: '/szymon-kita.jpg', w: 870, h: 1210, imie: 'Szymon Kita', rola: 'CEO Let’s automate' }}
+  po="Bezpłatnie i bez zobowiązań."
 />
 </div>
 </LaBase>
