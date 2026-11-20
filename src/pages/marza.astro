@@ -2,24 +2,25 @@
 // MARŻA — /marza. Landing kampanii Meta „Marża” (paragon, klepsydra): historia jednego
 // zamówienia przewijana palcem. Źródło w ~/filmy/lets-meta-marza/landing (strona.html/css/js,
 // build.py generuje ten plik — zmiany rób tam). Szymon 20.11.2026: „jest ok… wrzuć na naszą
-// www i będziemy testować”. Liczby to przykład opisany na stronie (48 zł/h pracy biura).
+// www i będziemy testować”; v3 tego dnia: wybór branży (handel/produkcja/usługi), scena z systemem,
+// CTA „Twój paragon”. Liczby to przykład opisany na stronie (48 i 60 zł/h pracy biura).
 // noindex, bez nawigacji, zgłoszenia ze źródłem „Marża”.
 import LaBase from '../layouts/LaBase.astro';
 import Styl from '../components/usluga/Styl.astro';
 import Kontakt from '../components/usluga/Kontakt.astro';
 const title = "Podniesiemy Twoją marżę | Let's automate";
-const description = "Zobacz jedno zamówienie od maila o 7:12 do pomyłki o 14:00 i policz, ile kosztuje Cię jego obsługa w biurze.";
+const description = "Zobacz jedno zamówienie od maila o 7:12 do pomyłki po południu: ile kosztuje jego obsługa w biurze i ile zostaje, gdy robi to system. Handel, produkcja albo usługi.";
 ---
 <LaBase topbar={false} title={title} description={description} ctaHref="#kontakt" nav={null} naglowek={false} noindex={true}>
 <Styl />
 <style is:global>
 .mz{
 
-  --deep:#07140D; --deep2:#0C1E14; --card:#0F2419; --fg:#F4F8F2; --mut:#93A69B; --line:rgba(244,248,242,.12);
-  --acc:#00CD77; --amber:#F2B233; --pen:#D3261B;
-  --paper:#F3F0E7; --pink:#1C1C1A;
+  --deep:#07140D; --deep2:#0C1E14; --card:#0F2419; --card2:#132C1F; --fg:#F4F8F2; --mut:#93A69B; --soft:#C9D5CE; --line:rgba(244,248,242,.12);
+  --acc:#00CD77; --acc2:#7FE9B9; --amber:#F2B233; --pen:#D3261B; --pen2:#FF8A80;
+  --paper:#F3F0E7; --ink:#1C1C1A;
   --erp:#ECEEF1; --erp2:#DDE1E6; --erpHead:#27415E; --erpLine:#C5CBD2; --erpInk:#1E2833;
-  --mail:#FFFFFF; --mailInk:#1F2328; --mailMut:#6B7280; --marker:rgba(255,214,0,.55);
+  --mail:#FFFFFF; --mailInk:#1F2328; --mailMut:#6B7280; --marker:rgba(255,214,0,.58); --postit:#FFE680;
   --f-d:"Schibsted Grotesk", "Helvetica Neue", Arial, sans-serif;
   --f-m:"JetBrains Mono", ui-monospace, Menlo, monospace;
   --f-h:"Caveat", "Comic Sans MS", cursive;
@@ -33,71 +34,130 @@ margin:0;background:var(--deep);color:var(--fg);font-family:var(--f-d);-webkit-f
 content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--deep)}
 .mz .hist{
 background:var(--deep);color:var(--fg);font-family:var(--f-d);-webkit-font-smoothing:antialiased}
+.mz .hist button{
+font-family:var(--f-d)}
 .mz .bar{
 position:fixed;left:0;right:0;top:0;z-index:20;padding-top:env(safe-area-inset-top,0px);
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
-  background:linear-gradient(180deg,rgba(7,20,13,.96) 60%,rgba(7,20,13,0));transition:opacity .3s,transform .3s}
+  background:linear-gradient(180deg,rgba(7,20,13,.97) 62%,rgba(7,20,13,0));transition:opacity .3s,transform .3s}
 .mz .bar.off{
 opacity:0;transform:translateY(-100%);pointer-events:none}
 .mz .bar-in{
-position:relative;max-width:1120px;margin:0 auto;height:60px;display:flex;align-items:center;justify-content:space-between}
+position:relative;max-width:1180px;margin:0 auto;height:62px;display:flex;align-items:center;gap:12px}
+.mz .logo{
+display:flex;align-items:center;flex:none}
 .mz .logo svg{
-height:17px;width:auto;display:block}
+display:block;width:auto}
+.mz .lg-full svg{
+height:17px}
+.mz .lg-mark svg{
+height:24px}
+.mz .lg-full{
+display:none}
+.mz .typ-wrap{
+position:relative}
+.mz .typ-chip{
+display:inline-flex;align-items:center;gap:7px;height:34px;padding:0 11px 0 12px;border-radius:999px;border:1px solid rgba(244,248,242,.22);background:rgba(244,248,242,.06);
+  color:var(--fg);font:600 13.5px/1 var(--f-d);cursor:pointer;transition:background .2s,border-color .2s}
+.mz .typ-chip:hover{
+background:rgba(244,248,242,.12)}
+.mz .typ-chip svg{
+width:10px;height:7px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;transition:transform .2s}
+.mz .typ-chip[aria-expanded="true"] svg{
+transform:rotate(180deg)}
+.mz .typ-chip::before{
+content:"";width:7px;height:7px;border-radius:50%;background:var(--acc);box-shadow:0 0 8px var(--acc)}
+.mz .typ-menu{
+position:absolute;left:0;top:calc(100% + 8px);min-width:232px;padding:6px;border-radius:14px;background:#0B1D13;border:1px solid rgba(244,248,242,.16);
+  box-shadow:0 24px 48px -16px rgba(0,0,0,.9);opacity:0;transform:translateY(-6px) scale(.98);transform-origin:top left;pointer-events:none;transition:opacity .18s,transform .18s}
+.mz .typ-menu.on{
+opacity:1;transform:none;pointer-events:auto}
+.mz .typ-menu button{
+display:grid;gap:3px;width:100%;text-align:left;padding:10px 12px;border:0;border-radius:9px;background:transparent;color:var(--fg);cursor:pointer;font-family:var(--f-d)}
+.mz .typ-menu button:hover,.mz .typ-menu button[aria-current="true"]{
+background:rgba(0,205,119,.1)}
+.mz .typ-menu b{
+font:700 15px/1.1 var(--f-d)}
+.mz .typ-menu span{
+font:400 12.5px/1.2 var(--f-d);color:var(--mut)}
+.mz .typ-menu button[aria-current="true"] b{
+color:var(--acc)}
+.mz .prawa{
+position:relative;margin-left:auto;height:44px;display:flex;align-items:center;justify-content:flex-end;min-width:136px}
 .mz .bar-cta{
-position:absolute;right:0;top:50%;transform:translateY(-50%);font:700 14px/1 var(--f-d);color:#06170E;background:var(--acc);padding:10px 14px;border-radius:999px;text-decoration:none;transition:opacity .3s}
+font:700 13.5px/1 var(--f-d);color:#06170E;background:var(--acc);padding:11px 14px;border-radius:999px;text-decoration:none;white-space:nowrap;transition:opacity .3s,transform .3s}
 .mz .bar-cta.off{
-opacity:0;pointer-events:none}
+opacity:0;transform:translateY(-4px);pointer-events:none}
 .mz .meter{
-display:flex;align-items:center;gap:10px;background:#020604;border:1px solid rgba(0,205,119,.28);border-radius:12px;padding:6px 11px 6px 10px;
-  box-shadow:0 0 0 3px rgba(0,205,119,.05),0 8px 24px -10px rgba(0,0,0,.8);opacity:0;transform:translateY(-6px);transition:opacity .35s,transform .35s,border-color .35s}
+position:absolute;right:0;top:50%;display:grid;justify-items:end;gap:3px;padding:6px 11px 6px;border-radius:11px;background:#020604;border:1px solid rgba(0,205,119,.3);
+  box-shadow:0 0 0 3px rgba(0,205,119,.05),0 8px 24px -10px rgba(0,0,0,.8);opacity:0;transform:translateY(-50%) translateY(-6px);transition:opacity .35s,transform .35s,border-color .35s;pointer-events:none;white-space:nowrap}
 .mz .meter.on{
-opacity:1;transform:none}
-.mz .meter .lb{
-font:600 8.5px/1.15 var(--f-d);letter-spacing:.09em;text-transform:uppercase;color:var(--mut);max-width:76px}
+opacity:1;transform:translateY(-50%)}
 .mz .meter .v{
-display:flex;gap:10px;align-items:baseline;font-family:var(--f-m);font-weight:700;color:var(--acc);text-shadow:0 0 10px rgba(0,205,119,.55)}
-.mz .meter .zl{
-font-size:19px;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
-.mz .meter .mn{
-font-size:12px;color:#7FE9B9;font-variant-numeric:tabular-nums}
-.mz .meter.bump{
-animation:mz-bump .35s}
+font:700 18px/1 var(--f-m);letter-spacing:-.02em;color:var(--acc);text-shadow:0 0 10px rgba(0,205,119,.5);font-variant-numeric:tabular-nums}
+.mz .meter .lb{
+font:600 10.5px/1 var(--f-d);color:var(--mut);font-variant-numeric:tabular-nums}
+.mz .meter .lb #mmn{
+color:var(--acc2);font-family:var(--f-m);font-weight:700}
+.mz .meter.bump .v{
+animation:mz-bump .32s}
 .mz .meter.po{
-border-color:rgba(242,178,51,.45)}
+border-color:rgba(242,178,51,.5)}
+.mz .meter.po .v{
+color:var(--amber);text-shadow:0 0 10px rgba(242,178,51,.45)}
+.mz .meter.po .lb #mmn{
+color:#FFD98A}
 @keyframes mz-bump{
 40%{
-transform:scale(1.06)}}
+transform:scale(1.08)}}
 .mz .scene{
 position:relative;height:calc(var(--h) * 1svh)}
 .mz .stage{
 position:sticky;top:0;height:100svh;overflow:hidden;
-  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0}
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 .mz .inner{
-position:relative;max-width:1120px;height:100%;margin:0 auto;display:grid;grid-template-rows:auto 1fr;padding-top:calc(72px + env(safe-area-inset-top,0px));padding-bottom:18px}
+position:relative;max-width:1180px;height:100%;margin:0 auto;display:grid;grid-template-rows:auto minmax(0,1fr) auto;grid-template-areas:"cap" "vis" "ft";row-gap:14px;
+  padding-top:calc(76px + env(safe-area-inset-top,0px));padding-bottom:calc(12px + env(safe-area-inset-bottom,0px))}
 .mz .cap{
-position:relative;z-index:3}
+grid-area:cap;position:relative;z-index:3}
+.mz .vis{
+grid-area:vis;position:relative;min-height:0}
+.mz .ft{
+grid-area:ft;position:relative;min-height:64px}
+.mz .box{
+position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);transform-origin:50% 50%}
 .mz .clock{
-display:inline-flex;align-items:center;gap:8px;font:700 13px/1 var(--f-m);color:var(--acc);letter-spacing:.02em;padding:6px 10px;border-radius:999px;background:rgba(0,205,119,.1);border:1px solid rgba(0,205,119,.25);font-variant-numeric:tabular-nums}
+display:inline-flex;align-items:center;gap:8px;font:700 13px/1 var(--f-m);color:var(--acc);padding:6px 10px;border-radius:999px;background:rgba(0,205,119,.1);border:1px solid rgba(0,205,119,.25);font-variant-numeric:tabular-nums}
 .mz .clock::before{
 content:"";width:7px;height:7px;border-radius:50%;background:var(--acc);box-shadow:0 0 8px var(--acc)}
+.mz .clock.po{
+color:var(--amber);background:rgba(242,178,51,.1);border-color:rgba(242,178,51,.3)}
+.mz .clock.po::before{
+background:var(--amber);box-shadow:0 0 8px var(--amber)}
 .mz .hist h1,.mz .hist h2{
 margin:0;font-weight:800;letter-spacing:-.045em;text-wrap:balance;color:var(--fg);font-family:var(--f-d)}
 .mz .hist h1{
-font-size:clamp(38px,10.6vw,84px);line-height:1.02}
+font-size:clamp(40px,11vw,88px);line-height:1}
 .mz .hist h1 em,.mz .hist h2 em{
 font-style:normal;color:var(--acc)}
 .mz .hist h2{
-font-size:clamp(27px,7.3vw,56px);line-height:1.04;margin-top:12px}
+font-size:clamp(28px,7.4vw,58px);line-height:1.04;margin-top:12px}
+.mz .hist h2.bez-zeg{
+margin-top:0}
 .mz .lead{
-margin:12px 0 0;font:500 clamp(16px,4.3vw,21px)/1.4 var(--f-d);color:#C9D5CE;max-width:30em}
-.mz .vis{
-position:relative;min-height:0}
+margin:12px 0 0;font:500 clamp(16px,4.3vw,21px)/1.42 var(--f-d);color:var(--soft);max-width:30em;text-wrap:pretty}
+.mz .lead.krotki{
+font-size:clamp(15px,3.9vw,19px);margin-top:9px}
 .mz .foot{
-position:absolute;left:0;right:0;bottom:calc(env(safe-area-inset-bottom,0px) + 4px);font:600 clamp(18px,4.8vw,24px)/1.25 var(--f-d);letter-spacing:-.02em;opacity:0;text-wrap:balance;z-index:6;color:var(--fg)}
+margin:0;font:650 clamp(17px,4.6vw,24px)/1.28 var(--f-d);letter-spacing:-.02em;opacity:0;text-wrap:balance;color:var(--fg)}
+.mz .foot b{
+color:var(--acc);font-weight:800}
+.mz .foot .zle{
+color:var(--pen2)}
 .mz .foot small{
-display:block;margin-top:6px;font:500 12px/1.3 var(--f-d);color:var(--mut);letter-spacing:0}
+display:block;margin-top:6px;font:500 12.5px/1.35 var(--f-d);color:var(--mut);letter-spacing:0}
 .mz .hint{
-position:absolute;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 4px);transform:translateX(-50%);font:600 12px/1 var(--f-d);letter-spacing:.12em;text-transform:uppercase;color:var(--mut);display:flex;flex-direction:column;align-items:center;gap:8px;z-index:4}
+position:absolute;left:50%;bottom:0;transform:translateX(-50%);font:600 12px/1 var(--f-d);letter-spacing:.12em;text-transform:uppercase;color:var(--mut);display:flex;flex-direction:column;align-items:center;gap:8px}
 .mz .hint i{
 width:1.5px;height:22px;background:linear-gradient(var(--mut),transparent);animation:mz-drip 1.6s infinite}
 @keyframes mz-drip{
@@ -112,11 +172,27 @@ transform:scaleY(0);transform-origin:bottom}}
 .mz .swap{
 position:relative}
 .mz .after{
-position:absolute;inset:0 0 auto 0;opacity:0}
+position:absolute;inset:0 0 auto 0;opacity:0;pointer-events:none}
+.mz .after h2{
+margin-top:0}
+.mz .typy{
+margin-top:20px;display:grid;gap:9px}
+.mz .typy-lb{
+font:600 12px/1 var(--f-d);letter-spacing:.1em;text-transform:uppercase;color:var(--mut)}
+.mz .typy-b{
+display:flex;gap:4px;padding:4px;border-radius:14px;background:rgba(244,248,242,.06);border:1px solid rgba(244,248,242,.14);width:max-content;max-width:100%}
+.mz .typy-b button{
+border:0;border-radius:10px;padding:11px 15px;background:transparent;color:var(--soft);font:650 15px/1 var(--f-d);cursor:pointer;transition:background .25s,color .25s,box-shadow .25s}
+.mz .typy-b button:hover{
+color:var(--fg)}
+.mz .typy-b button[aria-pressed="true"]{
+background:var(--acc);color:#06170E;box-shadow:0 6px 18px -8px rgba(0,205,119,.8)}
 .mz .rig{
-position:absolute;left:50%;bottom:52px;width:min(358px,92vw);transform:translateX(-50%)}
+width:340px}
+.mz .box.rig{
+top:auto;bottom:0;transform-origin:50% 100%}
 .mz .printer{
-position:relative;height:78px;border-radius:16px 16px 22px 22px;background:linear-gradient(180deg,#3A403C 0%,#22272A 30%,#15191A 100%);
+position:absolute;left:0;right:0;bottom:0;height:78px;border-radius:16px 16px 22px 22px;background:linear-gradient(180deg,#3A403C 0%,#22272A 30%,#15191A 100%);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.18),inset 0 -6px 14px rgba(0,0,0,.5),0 30px 50px -20px rgba(0,0,0,.9),0 0 0 1px rgba(255,255,255,.04)}
 .mz .printer::before{
 content:"";position:absolute;left:18px;right:18px;top:12px;height:7px;border-radius:4px;background:#050606;box-shadow:inset 0 2px 3px rgba(0,0,0,.9),0 1px 0 rgba(255,255,255,.08)}
@@ -130,99 +206,134 @@ opacity:.25}}
 .mz .printer .nm{
 position:absolute;left:24px;bottom:19px;font:700 10px/1 var(--f-m);letter-spacing:.2em;color:#69726D}
 .mz .clip{
-position:absolute;left:30px;right:30px;bottom:calc(100% - 15px);height:0;overflow:hidden}
+position:absolute;left:26px;right:26px;bottom:63px;height:0;overflow:hidden}
 .mz .paper{
-position:absolute;left:0;right:0;top:0;background:var(--paper);color:var(--pink);font-family:var(--f-m);font-weight:500;
-  padding:16px 18px 22px;background-image:linear-gradient(90deg,rgba(0,0,0,.035),transparent 12%,transparent 88%,rgba(0,0,0,.05));
+position:absolute;left:0;right:0;top:0;background:var(--paper);color:var(--ink);font-family:var(--f-m);font-weight:500;
+  padding:16px 16px 20px;background-image:linear-gradient(90deg,rgba(0,0,0,.035),transparent 12%,transparent 88%,rgba(0,0,0,.05));
   box-shadow:inset 0 -18px 16px -14px rgba(0,0,0,.25)}
 .mz .paper::before{
 content:"";position:absolute;left:0;right:0;top:-1px;height:7px;
   background:linear-gradient(135deg,var(--deep) 33%,transparent 34%) 0 0/10px 7px repeat-x,linear-gradient(225deg,var(--deep) 33%,transparent 34%) 0 0/10px 7px repeat-x}
 .mz .paper .hd{
-text-align:center;font-size:12px;line-height:1.45;letter-spacing:.06em;color:#4A4A45}
+text-align:center;font-size:11.5px;line-height:1.45;letter-spacing:.06em;color:#4A4A45}
 .mz .paper .hd b{
-display:block;font-size:14px;color:var(--pink);letter-spacing:.14em}
-.mz .paper .dl{
+display:block;font-size:14px;color:var(--ink);letter-spacing:.14em}
+.mz .paper .dl,.mz .rach .dl{
 border-top:2px dashed #8E8C84;margin:10px 0 8px;opacity:.8}
 .mz .paper .r{
-display:flex;justify-content:space-between;gap:8px;font-size:clamp(14px,4.2vw,17px);line-height:1.75;letter-spacing:0}
+display:flex;justify-content:space-between;gap:8px;font-size:15px;line-height:1.8;white-space:nowrap}
+.mz .paper .r span:last-child{
+font-variant-numeric:tabular-nums}
 .mz .paper .r.q{
 position:relative;font-weight:700}
+.mz .paper .r.nowa{
+color:#0A7A52;font-weight:700}
+.mz .paper .z{
+display:flex;justify-content:space-between;gap:12px;font-size:26px;font-weight:700;line-height:1.2;font-variant-numeric:tabular-nums}
 .mz .paper .z.ok{
 color:#0A7A52}
-.mz .paper .z{
-display:flex;justify-content:space-between;font-size:clamp(26px,8vw,34px);font-weight:700;line-height:1.2;letter-spacing:0}
 .mz .paper .ft{
-margin-top:8px;text-align:center;font-size:10.5px;color:#6A6862;letter-spacing:.08em}
+margin-top:8px;text-align:center;font-size:10px;color:#6A6862;letter-spacing:.08em}
 .mz .ring{
 position:absolute;left:-10px;right:-8px;top:-5px;bottom:-5px;overflow:visible;pointer-events:none}
-.mz .ring path,.mz .mark path{
+.mz .ring path{
 fill:none;stroke:var(--pen);stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1;opacity:.92}
 .mz .qm{
-position:absolute;right:112px;top:-36px;font:700 40px/1 var(--f-h);color:var(--pen);transform:rotate(-8deg);opacity:0}
-.mz .phone{
-position:absolute;left:50%;top:14px;width:min(370px,100%);transform:translateX(-50%)}
+position:absolute;right:0;top:-38px;font:700 34px/1 var(--f-h);color:var(--pen);transform:rotate(-6deg);opacity:0;white-space:nowrap}
+.mz .przed{
+position:absolute;left:50%;top:0;transform:translateX(-50%);display:flex;align-items:center;gap:8px;white-space:nowrap;padding:8px 12px;border-radius:999px;
+  background:rgba(211,38,27,.14);border:1px solid rgba(211,38,27,.4);color:var(--pen2);font:600 13px/1 var(--f-d);opacity:0}
+.mz .przed s{
+font:700 13px/1 var(--f-m);text-decoration-thickness:2px}
+.mz .mailbox{
+width:360px}
 .mz .mailc{
-background:var(--mail);color:var(--mailInk);border-radius:20px;box-shadow:0 30px 60px -24px rgba(0,0,0,.85),0 0 0 1px rgba(255,255,255,.06);position:relative}
-.mz .mtop{
-display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid #EEF0F2;font:600 13px/1 var(--f-d);color:#2563EB}
-.mz .mtop span:last-child{
-color:var(--mailMut);font-weight:500}
+background:var(--mail);color:var(--mailInk);border-radius:18px;box-shadow:0 30px 60px -24px rgba(0,0,0,.85),0 0 0 1px rgba(255,255,255,.06);overflow:hidden}
 .mz .mhd{
-display:grid;grid-template-columns:38px 1fr auto;gap:10px;align-items:center;padding:14px 16px 6px}
+display:grid;grid-template-columns:36px 1fr auto;gap:10px;align-items:center;padding:14px 16px 4px}
 .mz .av{
-width:38px;height:38px;border-radius:50%;background:#F59E0B;color:#fff;display:grid;place-items:center;font:700 16px/1 var(--f-d)}
+width:36px;height:36px;border-radius:50%;background:#F59E0B;color:#fff;display:grid;place-items:center;font:700 15px/1 var(--f-d)}
+.mz .who{
+min-width:0}
 .mz .who b{
 display:block;font:700 15px/1.2 var(--f-d)}
 .mz .who span{
-font:400 12.5px/1.2 var(--f-d);color:var(--mailMut)}
+display:block;font:400 12.5px/1.25 var(--f-d);color:var(--mailMut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mz .tm{
 font:500 12.5px/1 var(--f-d);color:var(--mailMut)}
 .mz .subj{
-padding:6px 16px 0;font:800 18px/1.25 var(--f-d);letter-spacing:-.01em}
+padding:6px 16px 0;font:800 17px/1.25 var(--f-d);letter-spacing:-.01em}
 .mz .mbody{
-padding:10px 16px 6px;font:400 16px/1.55 var(--f-d)}
+padding:8px 16px 4px;font:400 15.5px/1.55 var(--f-d)}
 .mz .mbody p{
-margin:0 0 6px}
+margin:0 0 5px}
 .mz .mbody p:first-child{
-margin-bottom:18px}
+margin-bottom:10px}
 .mz .sig{
 color:var(--mailMut);font-size:13px}
 .mz .hl{
 position:relative;white-space:nowrap}
 .mz .hl .bg{
-position:absolute;left:-3px;right:-3px;top:.12em;bottom:.06em;background:var(--marker);border-radius:3px;transform-origin:left;transform:scaleX(0);z-index:0}
+position:absolute;left:-3px;right:-3px;top:.12em;bottom:.06em;background:var(--marker);border-radius:3px;transform-origin:left;transform:scaleX(0)}
 .mz .hl .t{
-position:relative;z-index:1}
-.mz .note{
-position:absolute;font:700 23px/1.02 var(--f-h);color:var(--pen);white-space:nowrap;transform:rotate(-4deg);clip-path:inset(0 100% 0 0);z-index:3}
-.mz .mark{
-position:absolute;inset:-8px -5px -8px -9px;overflow:visible;pointer-events:none;z-index:2}
+position:relative}
+.mz .nr{
+display:grid;place-items:center;width:18px;height:18px;border-radius:50%;background:var(--pen);color:#fff;font:700 10.5px/1 var(--f-m);font-style:normal;transform:scale(0);box-shadow:0 0 0 2px #fff}
+.mz .nrw{
+position:relative;display:inline-block;width:0;height:1em;vertical-align:top}
+.mz .hl .nr{
+position:absolute;left:-4px;top:-8px;z-index:2;width:16px;height:16px;font-size:9.5px}
+.mz .att .nr{
+flex:none}
 .mz .att{
-margin:4px 16px 16px;display:flex;align-items:center;gap:10px;border:1px solid #E5E7EB;border-radius:12px;padding:9px 11px;position:relative}
+margin:6px 16px 0;display:flex;align-items:center;gap:10px;border:1px solid #E5E7EB;border-radius:12px;padding:9px 11px;position:relative;transition:border-color .3s}
+.mz .att.on{
+border-color:#F3C200;background:#FFFBEA}
 .mz .att .ic{
-width:30px;height:36px;border-radius:5px;background:#DC2626;color:#fff;display:grid;place-items:center;font:800 9px/1 var(--f-d)}
-.mz .att b{
-display:block;font:600 13.5px/1.2 var(--f-d)}
-.mz .att span{
+flex:none;width:30px;height:36px;border-radius:5px;background:#DC2626;color:#fff;display:grid;place-items:center;font:800 9px/1 var(--f-d)}
+.mz .att .ic.img{
+background:#2563EB}
+.mz .att .ai{
+min-width:0;flex:1}
+.mz .att .ai b{
+display:block;font:600 13.5px/1.2 var(--f-d);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mz .att .ai span{
 font:400 12px/1.2 var(--f-d);color:var(--mailMut)}
-.mz .att .note{
-font:700 22px/1 var(--f-h);color:var(--pen)}
-.mz .scan{
-position:absolute;left:50%;width:min(330px,92%);top:414px;transform:translateX(-50%) rotate(2.2deg) translateY(40px);opacity:0;z-index:4;
-  background:#E9E6DE;color:#2B3A55;border-radius:3px;padding:16px 16px 18px;box-shadow:0 26px 50px -18px rgba(0,0,0,.85)}
-.mz .scan::after,.mz .mini::after{
+.mz .skan{
+margin:8px 16px 16px;border-radius:6px;background:#E9E6DE;color:#2B3A55;padding:11px 13px 12px;position:relative;opacity:.28;filter:blur(5px);box-shadow:inset 0 0 0 1px rgba(0,0,0,.06)}
+.mz .skan::after{
 content:"";position:absolute;inset:0;pointer-events:none;mix-blend-mode:multiply;opacity:.5;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 .45 0 0 0 0 .44 0 0 0 0 .4 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E")}
-.mz .scan .sh{
-font:700 12px/1 var(--f-d);letter-spacing:.14em;color:#55595F;text-transform:uppercase;border-bottom:1.5px solid #9EA2A8;padding-bottom:7px;margin-bottom:8px}
-.mz .scan .ln{
-position:relative;font:600 21px/1.35 var(--f-h)}
-.mz .scan .ln span{
-position:relative}
+.mz .skan .sh{
+font:700 10.5px/1 var(--f-d);letter-spacing:.14em;color:#55595F;text-transform:uppercase;border-bottom:1.5px solid #9EA2A8;padding-bottom:6px;margin-bottom:5px}
+.mz .skan .ln{
+font:600 19px/1.3 var(--f-h);white-space:nowrap}
+.mz .postit{
+position:relative;margin:14px 6px 0;padding:13px 16px 14px;background:var(--postit);color:#2B2410;border-radius:2px 2px 14px 2px;transform:rotate(-1.2deg);
+  box-shadow:0 20px 34px -18px rgba(0,0,0,.9),inset 0 -10px 18px -14px rgba(120,90,0,.35)}
+.mz .postit::before{
+content:"";position:absolute;left:50%;top:-9px;width:86px;height:20px;transform:translateX(-50%) rotate(2deg);background:rgba(244,248,242,.35);border-radius:2px}
+.mz .postit .pt{
+font:700 11px/1 var(--f-d);letter-spacing:.12em;text-transform:uppercase;color:#7A6315;margin-bottom:6px}
+.mz .postit ol{
+list-style:none;margin:0;padding:0;display:grid;gap:3px}
+.mz .postit li{
+display:grid;grid-template-columns:20px 1fr;gap:8px;align-items:center;font:700 21px/1.12 var(--f-h);color:#B0190F;clip-path:inset(-10% 100% -10% 0)}
+.mz .postit li i{
+width:18px;height:18px;border-radius:50%;background:var(--pen);color:#fff;font:700 10.5px/18px var(--f-m);font-style:normal;text-align:center}
+.mz .erpbox{
+width:384px}
+.mz .zrodlo{
+display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:center;height:46px;padding:0 13px;margin-bottom:10px;border-radius:10px;background:#E9E6DE;color:#2B3A55;
+  box-shadow:0 14px 28px -14px rgba(0,0,0,.9);transform:rotate(-.8deg)}
+.mz .zrodlo small{
+font:700 10px/1.1 var(--f-d);letter-spacing:.1em;text-transform:uppercase;color:#6B6F75;max-width:64px}
+.mz .zrodlo span{
+font:600 20px/1 var(--f-h);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:opacity .15s}
+.mz .zrodlo span mark{
+background:var(--marker);color:inherit;border-radius:3px;padding:0 3px}
 .mz .erp{
-position:absolute;left:50%;top:112px;width:min(420px,100%);transform:translateX(-50%);background:var(--erp);color:var(--erpInk);border-radius:8px;overflow:hidden;
-  box-shadow:0 30px 60px -24px rgba(0,0,0,.9),0 0 0 1px rgba(255,255,255,.06);font-family:"Segoe UI",var(--f-d)}
+position:relative;background:var(--erp);color:var(--erpInk);border-radius:8px;overflow:hidden;box-shadow:0 30px 60px -24px rgba(0,0,0,.9),0 0 0 1px rgba(255,255,255,.06);font-family:"Segoe UI",var(--f-d)}
 .mz .wt{
 display:flex;align-items:center;gap:8px;background:var(--erpHead);color:#E8EEF5;padding:7px 10px;font:600 12px/1.2 var(--f-d)}
 .mz .wt i{
@@ -242,19 +353,23 @@ color:#5B6673;font-weight:600}
 .mz .e-inp{
 background:#fff;border:1px solid #AEB6C0;border-radius:2px;padding:4px 6px;min-height:24px;font:500 12.5px/1.2 var(--f-d);white-space:nowrap;overflow:hidden}
 .mz .e-grid{
-margin:0 10px 10px;border:1px solid #AEB6C0;background:#fff;font-size:12px}
+margin:0 10px 8px;border:1px solid #AEB6C0;background:#fff;font-size:12px}
 .mz .gr{
-display:grid;grid-template-columns:24px 76px 1fr 34px 62px;align-items:center;border-bottom:1px solid #E1E5EA;min-height:27px}
+display:grid;grid-template-columns:24px 76px minmax(0,1fr) 40px 72px;align-items:center;border-bottom:1px solid #E1E5EA;min-height:27px}
+.mz .gr:last-child{
+border-bottom:0}
 .mz .gr>div{
-padding:4px 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+padding:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mz .gr.h{
 background:#E4E8ED;font-weight:700;color:#4B5562;min-height:24px}
 .mz .gr .n{
 text-align:right;font-variant-numeric:tabular-nums}
 .mz .gr .k{
-font-family:var(--f-m);font-size:11px;font-weight:600}
+font-family:var(--f-m);font-size:10.5px;font-weight:600}
 .mz .gr.act{
 background:#E8F1FF;box-shadow:inset 2px 0 0 #2563EB}
+.mz .gr.bad{
+background:#FDECEC;box-shadow:inset 2px 0 0 #D32F2F}
 .mz .gr.bad .k{
 color:#C62828}
 .mz .caret::after{
@@ -262,138 +377,231 @@ content:"";display:inline-block;width:1.5px;height:1.05em;background:#1E2833;ver
 @keyframes mz-car{
 50%{
 opacity:0}}
+.mz .err{
+margin:0 10px 8px;min-height:34px;background:#FDECEC;border:1px solid #E57373;color:#8E1B1B;border-radius:4px;padding:7px 9px;font:600 12px/1.3 var(--f-d);display:flex;gap:8px;align-items:center;opacity:0}
+.mz .err i{
+flex:none;width:18px;height:18px;border-radius:50%;background:#D32F2F;color:#fff;font:800 12px/18px var(--f-d);text-align:center;font-style:normal}
 .mz .sum{
 display:flex;justify-content:space-between;padding:8px 10px 10px;font-weight:700;font-size:13px;border-top:1px solid var(--erpLine);background:var(--erp2)}
 .mz .sum span:last-child{
 font-variant-numeric:tabular-nums}
-.mz .err{
-position:absolute;left:10px;right:10px;top:150px;background:#FDECEC;border:1px solid #E57373;color:#8E1B1B;border-radius:4px;padding:8px 10px;font:600 12px/1.3 var(--f-d);display:flex;gap:8px;align-items:center;opacity:0;transform:translateY(6px);z-index:5;box-shadow:0 10px 24px -10px rgba(0,0,0,.4)}
-.mz .err i{
-flex:none;width:18px;height:18px;border-radius:50%;background:#D32F2F;color:#fff;font:800 12px/18px var(--f-d);text-align:center;font-style:normal}
-.mz .mini{
-position:absolute;left:50%;top:16px;width:min(300px,82%);transform:translateX(-50%) rotate(-1.6deg);z-index:6;background:#E9E6DE;color:#2B3A55;border-radius:3px;padding:8px 12px 9px;box-shadow:0 18px 34px -14px rgba(0,0,0,.9)}
-.mz .mini .ln{
-position:relative;font:600 18px/1.25 var(--f-h)}
-.mz .mini .ln .bg{
-position:absolute;left:-4px;right:-4px;top:.18em;bottom:.08em;background:var(--marker);border-radius:3px;opacity:0;transition:opacity .2s}
-.mz .mini .ln.on .bg{
-opacity:1}
-.mz .mini .ln span{
-position:relative}
-.mz .n3{
-position:absolute;font:700 22px/1 var(--f-h);color:var(--pen);transform:rotate(-5deg);clip-path:inset(0 100% 0 0);z-index:7;white-space:nowrap}
+.mz .pod{
+height:44px;position:relative}
+.mz .zgad{
+position:absolute;right:6px;top:10px;font:700 23px/1 var(--f-h);color:var(--pen2);transform:rotate(-4deg);clip-path:inset(-20% 100% -20% 0);white-space:nowrap}
+.mz .zgad::before{
+content:"↑";display:inline-block;margin-right:6px;font-family:var(--f-d);font-weight:700;font-size:18px;transform:rotate(18deg)}
 .mz .evs{
-position:absolute;left:50%;top:18px;width:min(420px,100%);transform:translateX(-50%);display:grid;gap:12px}
+width:384px;display:grid;gap:11px}
 .mz .ev{
-display:grid;grid-template-columns:44px 1fr;gap:12px;padding:15px 16px 16px;border-radius:18px;background:var(--card);border:1px solid var(--line);opacity:0;transform:translateY(30px)}
+display:grid;grid-template-columns:42px 1fr;gap:12px;padding:14px 15px 15px;border-radius:18px;background:var(--card);border:1px solid var(--line);opacity:0;transform:translateY(30px)}
 .mz .ev .ico{
-width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:rgba(244,248,242,.06);color:var(--fg)}
+width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:rgba(244,248,242,.06);color:var(--fg)}
 .mz .ev .ico svg{
-width:22px;height:22px}
+width:21px;height:21px}
 .mz .ev .tt{
 display:flex;justify-content:space-between;align-items:baseline;gap:8px}
 .mz .ev .tt b{
-font:700 17px/1.2 var(--f-d);letter-spacing:-.01em;color:var(--fg)}
+font:700 16.5px/1.2 var(--f-d);letter-spacing:-.01em;color:var(--fg)}
 .mz .ev .tt span{
-font:700 12px/1 var(--f-m);color:var(--mut);font-variant-numeric:tabular-nums}
+flex:none;font:700 12px/1 var(--f-m);color:var(--mut);font-variant-numeric:tabular-nums}
 .mz .ev p{
-margin:5px 0 0;font:400 15px/1.45 var(--f-d);color:#C9D5CE}
+margin:5px 0 0;font:400 14.5px/1.45 var(--f-d);color:var(--soft)}
 .mz .ev .koszt{
-display:inline-block;margin-top:9px;font:700 12px/1 var(--f-m);color:var(--acc);background:rgba(0,205,119,.1);padding:5px 8px;border-radius:6px}
+display:inline-block;margin-top:8px;font:700 12px/1 var(--f-m);color:var(--acc);background:rgba(0,205,119,.1);padding:5px 8px;border-radius:6px}
 .mz .ev.zly{
 border-color:rgba(211,38,27,.55);background:linear-gradient(180deg,rgba(211,38,27,.14),var(--card))}
 .mz .ev.zly .ico{
-background:rgba(211,38,27,.2);color:#FF8A80}
+background:rgba(211,38,27,.2);color:var(--pen2)}
 .mz .ev.zly .koszt{
-color:#FF8A80;background:rgba(211,38,27,.16)}
+color:var(--pen2);background:rgba(211,38,27,.16)}
+.mz .skalabox{
+width:360px}
 .mz .koperty{
-position:absolute;left:50%;top:22px;transform:translateX(-50%);display:grid;grid-template-columns:repeat(10,1fr);gap:6px;width:min(360px,100%)}
+display:grid;grid-template-columns:repeat(10,1fr);gap:6px}
 .mz .kp{
-aspect-ratio:4/3;border-radius:4px;background:rgba(244,248,242,.08);border:1px solid rgba(244,248,242,.14);position:relative;opacity:.15;transform:scale(.7)}
+aspect-ratio:4/3;border-radius:4px;background:rgba(244,248,242,.08);border:1px solid rgba(244,248,242,.14);position:relative;opacity:.12;transform:scale(.7)}
 .mz .kp svg{
 position:absolute;inset:18% 16%;width:68%;height:64%;stroke:rgba(244,248,242,.6);fill:none;stroke-width:1.6}
-.mz .kp.ten svg{
-stroke:#FF8A80}
 .mz .kp.ten{
 background:rgba(211,38,27,.22);border-color:var(--pen)}
+.mz .kp.ten svg{
+stroke:var(--pen2)}
 .mz .liczby{
-position:absolute;left:0;right:0;top:232px;display:grid;gap:14px;max-width:420px;margin:0 auto}
+margin-top:22px;display:grid;gap:13px}
 .mz .lz{
 display:grid;gap:3px;opacity:0;transform:translateY(16px)}
 .mz .lz b{
-font:800 clamp(28px,8.4vw,46px)/1 var(--f-d);letter-spacing:-.04em;color:var(--fg);font-variant-numeric:tabular-nums}
+font:800 36px/1 var(--f-d);letter-spacing:-.035em;color:var(--fg)}
 .mz .lz span{
-font:500 15px/1.3 var(--f-d);color:#C9D5CE}
+font:500 14.5px/1.3 var(--f-d);color:var(--soft)}
 .mz .lz.wyn b{
-color:var(--acc)}
+color:var(--acc);font-size:44px}
 .mz .lekcja{
-background:var(--paper);color:var(--pink);padding-block:clamp(64px,12vw,120px);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+background:var(--paper);color:var(--ink);padding-block:clamp(64px,12vw,120px);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 .mz .lekcja .w{
 max-width:880px;margin:0 auto}
 .mz .ety{
 font:700 12px/1 var(--f-m);letter-spacing:.12em;text-transform:uppercase;color:#0A7A52}
 .mz .lekcja h2{
-color:var(--pink)!important;font-size:clamp(30px,7.6vw,58px)!important;margin-top:14px!important}
+color:var(--ink)!important;font-size:clamp(30px,7.4vw,56px)!important;margin-top:14px!important}
 .mz .lekcja h2 em{
 color:#0A7A52!important}
 .mz .waga{
-margin-top:36px;display:grid;gap:18px}
+margin-top:36px;display:grid;gap:20px}
 .mz .waga .rz{
 display:grid;gap:8px}
-.mz .waga .rz span{
+.mz .waga .rz>span{
 font:600 15px/1.3 var(--f-d);color:#4A4A45}
+.mz .waga .tor{
+height:36px;border-radius:9px;background:rgba(28,28,26,.07);overflow:hidden}
 .mz .waga .pas{
-height:34px;border-radius:8px;background:#0A7A52;display:flex;align-items:center;padding:0 12px;color:#fff;font:700 15px/1 var(--f-m);white-space:nowrap;transform-origin:left;transform:scaleX(0);transition:transform 1.4s cubic-bezier(.2,.7,.2,1)}
-.mz .waga .pas.duzy{
-background:#1C1C1A}
-.mz .waga.on .pas{
-transform:scaleX(1)}
+height:100%;border-radius:9px;background:var(--ink);display:flex;align-items:center;padding:0 12px;color:#fff;font:700 15px/1 var(--f-m);white-space:nowrap;
+  clip-path:inset(0 100% 0 0);transition:clip-path 1.5s cubic-bezier(.2,.7,.2,1)}
 .mz .waga .pas.maly{
-width:4%;min-width:96px}
+background:#0A7A52;min-width:96px;transition-delay:.5s}
+.mz .waga.on .pas{
+clip-path:inset(0 0 0 0)}
 .mz .lekcja p.t{
 margin:28px 0 0;font:500 clamp(17px,4.4vw,21px)/1.5 var(--f-d);color:#33332F;max-width:36em}
-.mz .minim{
-position:absolute;left:50%;top:14px;width:min(400px,100%);transform:translateX(-50%);background:var(--mail);color:var(--mailInk);border-radius:16px;padding:11px 14px;display:grid;grid-template-columns:32px 1fr auto;gap:10px;align-items:center;box-shadow:0 20px 40px -20px rgba(0,0,0,.8);opacity:0}
-.mz .minim .av{
-width:32px;height:32px;font-size:14px}
-.mz .minim>div{
+.mz .rozw{
+width:384px;display:grid;gap:10px}
+.mz .nowy{
+display:grid;grid-template-columns:32px 1fr auto;gap:10px;align-items:center;padding:10px 13px;border-radius:14px;background:var(--mail);color:var(--mailInk);box-shadow:0 18px 34px -18px rgba(0,0,0,.9);opacity:0}
+.mz .nowy .av{
+width:32px;height:32px;font-size:13px}
+.mz .nowy>div{
 min-width:0}
-.mz .minim b{
-display:block;font:700 14px/1.2 var(--f-d)}
-.mz .minim span{
-font:400 13px/1.3 var(--f-d);color:var(--mailMut);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.mz .minim .tm{
+.mz .nowy b{
+display:block;font:700 13.5px/1.2 var(--f-d)}
+.mz .nowy span{
+display:block;font:400 12.5px/1.3 var(--f-d);color:var(--mailMut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mz .nowy .tm{
 font-size:12px}
-.mz .log{
-opacity:0;position:absolute;left:50%;top:88px;width:min(400px,100%);transform:translateX(-50%);border-radius:18px;background:var(--card);border:1px solid rgba(0,205,119,.25);padding:6px 14px;box-shadow:0 30px 60px -30px rgba(0,0,0,.9)}
-.mz .lg-r{
-display:grid;grid-template-columns:20px 1fr;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);opacity:0;transform:translateY(10px)}
-.mz .lg-r:last-child{
+.mz .lacze{
+display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;height:30px;padding:0 4px;font:600 13px/1 var(--f-d);color:var(--acc2);opacity:0}
+.mz .lacze .tor{
+height:4px;border-radius:4px;background:rgba(0,205,119,.15);overflow:hidden}
+.mz .lacze .tor i{
+display:block;height:100%;width:100%;background:var(--acc);transform-origin:left;transform:scaleX(0);box-shadow:0 0 10px var(--acc)}
+.mz .lacze em{
+font:700 12px/1 var(--f-m);font-style:normal;color:var(--mut);font-variant-numeric:tabular-nums}
+.mz .erp.auto-w{
+opacity:0}
+.mz .erp.auto-w .wt{
+background:#1F5A3E}
+.mz .pz{
+display:grid;grid-template-columns:76px minmax(0,1fr) 30px 72px;column-gap:4px;row-gap:2px;align-items:center;padding:6px 8px;border-bottom:1px solid #E1E5EA;background:#fff;font-size:12px;opacity:.22;transition:background .6s}
+.mz .pz:last-child{
 border-bottom:0}
-.mz .lg-r i{
-width:20px;height:20px;border-radius:50%;background:var(--acc);display:grid;place-items:center;margin-top:1px}
-.mz .lg-r i svg{
-width:12px;height:12px}
-.mz .lg-r.cz i{
-background:var(--amber)}
-.mz .lg-r small{
-display:block;font:700 11.5px/1 var(--f-m);color:var(--mut);margin-bottom:4px;font-variant-numeric:tabular-nums}
-.mz .lg-r div{
-font:500 14.5px/1.38 var(--f-d);color:var(--fg);min-width:0}
-.mz .lg-r s{
-color:#FF8A80;text-decoration-thickness:1.5px}
-.mz .zatw{
-display:inline-flex;align-items:center;gap:6px;margin-top:7px;font:700 12.5px/1 var(--f-d);padding:7px 10px;border-radius:8px;background:var(--amber);color:#2A1D00}
-.mz .zatw.ok{
-background:rgba(0,205,119,.16);color:var(--acc)}
-.mz .stary{
-position:absolute;left:4px;top:8px;width:150px;background:var(--paper);color:var(--pink);font-family:var(--f-m);padding:10px 10px 12px;transform:rotate(-7deg);opacity:.55;z-index:1;box-shadow:0 12px 24px -10px rgba(0,0,0,.8)}
-.mz .stary .r{
-display:flex;justify-content:space-between;font-size:9.5px;line-height:1.5}
-.mz .stary .z{
-display:flex;justify-content:space-between;font-size:15px;font-weight:700;margin-top:4px;border-top:1.5px dashed #8E8C84;padding-top:4px}
-.mz .stary .x{
-position:absolute;left:6px;right:6px;bottom:16px;height:3px;background:var(--pen);transform:rotate(-8deg);border-radius:3px}
+.mz .pz>div{
+white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mz .pz .k{
+font-family:var(--f-m);font-size:10.5px;font-weight:600}
+.mz .pz .k s{
+color:#C62828;margin-right:3px;text-decoration-thickness:1.5px}
+.mz .pz .n{
+text-align:right;font-variant-numeric:tabular-nums}
+.mz .pz .chip{
+grid-column:1 / -1;justify-self:start;display:inline-flex;align-items:center;gap:5px;font:600 10.5px/1 var(--f-d);color:#0A6B47;background:#DDF6EA;border-radius:999px;padding:3px 7px 3px 5px;opacity:0;transform:translateY(3px)}
+.mz .pz .chip::before{
+content:"✓";display:grid;place-items:center;width:12px;height:12px;border-radius:50%;background:#0A7A52;color:#fff;font-size:8px}
+.mz .pz .chip.q{
+color:#7A4D00;background:#FFF0CC}
+.mz .pz .chip.q::before{
+content:"?";background:#C98500}
+.mz .pz.lit{
+background:#EAFBF2}
+.mz .pz.pyt{
+background:#FFF7E0}
+.mz .e-list{
+margin:0 10px 8px;border:1px solid #AEB6C0;background:#fff;overflow:hidden}
+.mz .stan{
+display:flex;gap:9px;align-items:center;padding:9px 12px;border-radius:11px;background:rgba(0,205,119,.08);border:1px solid rgba(0,205,119,.25);font:500 13.5px/1.35 var(--f-d);color:var(--fg);opacity:0}
+.mz .stan i{
+flex:none;width:18px;height:18px;border-radius:50%;background:var(--acc);color:#06170E;display:grid;place-items:center;font:800 10px/1 var(--f-d);font-style:normal}
+.mz .slot{
+position:relative;height:138px}
+.mz .karta{
+position:absolute;inset:0;border-radius:16px;padding:12px 14px;opacity:0}
+.mz .karta small{
+display:block;font:700 10.5px/1 var(--f-m);letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px}
+.mz .karta p{
+margin:0;font:500 14px/1.38 var(--f-d)}
+.mz .karta.pyt{
+background:#2A2208;border:1px solid rgba(242,178,51,.55);color:#FFF4D6}
+.mz .karta.pyt small{
+color:var(--amber)}
+.mz .odp{
+display:flex;gap:8px;margin-top:10px}
+.mz .odp span{
+position:relative;display:inline-flex;align-items:center;height:32px;padding:0 13px;border-radius:9px;font:700 13px/1 var(--f-d);overflow:hidden}
+.mz .odp .tak{
+background:var(--amber);color:#2A1D00}
+.mz .odp .nie{
+background:rgba(255,244,214,.08);color:#FFE7A8;border:1px solid rgba(255,244,214,.2)}
+.mz .odp .tap{
+position:absolute;left:50%;top:50%;width:70px;height:70px;margin:-35px 0 0 -35px;border-radius:50%;background:rgba(255,255,255,.65);transform:scale(0);opacity:0;pointer-events:none}
+.mz .palec{
+position:absolute;left:0;top:0;width:34px;height:34px;border-radius:50%;border:2px solid rgba(255,255,255,.9);background:rgba(255,255,255,.18);box-shadow:0 4px 14px rgba(0,0,0,.5);opacity:0;pointer-events:none;z-index:3}
+.mz .karta.wys{
+background:#0D2A1C;border:1px solid rgba(0,205,119,.45);color:var(--fg)}
+.mz .karta.wys small{
+color:var(--acc)}
+.mz .karta .w2{
+margin-top:8px;padding-top:8px;border-top:1px solid var(--line);font:500 13px/1.35 var(--f-d);color:var(--soft);opacity:0}
+.mz .karta .w2 b{
+color:var(--acc2);font-family:var(--f-m);font-size:11.5px}
+.mz .policzmy{
+background:var(--deep2);padding-block:clamp(72px,13vw,130px);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));border-top:1px solid var(--line)}
+.mz .policzmy .w{
+max-width:1120px;margin:0 auto;display:grid;gap:44px;align-items:center}
+.mz .policzmy .ety{
+color:var(--acc)}
+.mz .policzmy h2{
+margin-top:14px!important;font-size:clamp(34px,8.6vw,64px)!important}
+.mz .cta-btn{
+display:inline-flex;align-items:center;gap:12px;margin-top:28px;padding:18px 26px;border-radius:999px;background:var(--acc);color:#06170E;font:800 18px/1 var(--f-d);text-decoration:none;
+  box-shadow:0 14px 34px -12px rgba(0,205,119,.7);transition:transform .2s,box-shadow .2s}
+.mz .cta-btn:hover{
+transform:translateY(-2px);box-shadow:0 18px 40px -12px rgba(0,205,119,.85)}
+.mz .cta-btn svg{
+width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;transition:transform .2s}
+.mz .cta-btn:hover svg{
+transform:translateX(3px)}
+.mz .cta-pod{
+margin:14px 0 0;font:500 14px/1.4 var(--f-d);color:var(--mut)}
+.mz .rach{
+position:relative;justify-self:center;width:min(380px,100%);background:var(--paper);color:var(--ink);font-family:var(--f-m);padding:22px 20px 26px;transform:rotate(1.2deg);
+  box-shadow:0 40px 70px -30px rgba(0,0,0,.95)}
+.mz .rach::before,.mz .rach::after{
+content:"";position:absolute;left:0;right:0;height:7px;background:linear-gradient(135deg,var(--deep2) 33%,transparent 34%) 0 0/10px 7px repeat-x,linear-gradient(225deg,var(--deep2) 33%,transparent 34%) 0 0/10px 7px repeat-x}
+.mz .rach::before{
+top:-1px}
+.mz .rach::after{
+bottom:-1px;transform:scaleY(-1)}
+.mz .rach .hd{
+text-align:center;font-size:11.5px;line-height:1.5;letter-spacing:.06em;color:#4A4A45}
+.mz .rach .hd b{
+display:block;font-size:14px;color:var(--ink);letter-spacing:.14em}
+.mz .rr{
+display:grid;grid-template-columns:1fr auto;gap:12px;align-items:start;padding:7px 0;font:500 13.5px/1.4 var(--f-m);opacity:0;transform:translateY(8px);transition:opacity .5s,transform .5s}
+.mz .rr i{
+font-style:normal;font-weight:700;color:#0A7A52;margin-right:7px}
+.mz .rr b{
+color:#0A7A52}
+.mz .rach.on .rr{
+opacity:1;transform:none}
+.mz .rach.on .rr:nth-child(4){
+transition-delay:.15s}
+.mz .rach.on .rr:nth-child(5){
+transition-delay:.3s}
+.mz .rach.on .rr:nth-child(6){
+transition-delay:.45s}
+.mz .rach .rz{
+display:flex;justify-content:space-between;font-size:28px;font-weight:700;line-height:1.2;color:#0A7A52}
+.mz .rach .ft2{
+margin-top:8px;text-align:center;font-size:10px;color:#6A6862;letter-spacing:.08em}
 .mz .jak{
 background:var(--deep2);padding-block:clamp(64px,12vw,120px);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 .mz .jak .w{
@@ -409,195 +617,114 @@ font:700 13px/1 var(--f-m);font-style:normal;color:var(--acc)}
 .mz .jak li b{
 display:block;margin-top:14px;font:700 21px/1.2 var(--f-d);letter-spacing:-.02em;color:var(--fg)}
 .mz .jak li p{
-margin:8px 0 0;font:400 16px/1.5 var(--f-d);color:#C9D5CE}
+margin:8px 0 0;font:400 16px/1.5 var(--f-d);color:var(--soft)}
 .mz .jak .fakty{
-margin-top:26px;display:flex;flex-wrap:wrap;gap:10px 28px;font:500 15px/1.4 var(--f-d);color:#C9D5CE}
+margin-top:26px;display:flex;flex-wrap:wrap;gap:10px 28px;font:500 15px/1.4 var(--f-d);color:var(--soft)}
 .mz .jak .fakty b{
 color:var(--fg)}
-@media (min-width:960px){
-.mz .inner{
-grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:1fr;gap:56px;align-items:center;padding-top:80px}
-.mz .cap{
-align-self:center}
-.mz .vis{
-height:100%}
-.mz .rig{
-bottom:40px;width:440px}
-.mz .paper .r{
-font-size:19px}
-.mz .paper .z{
-font-size:38px}
-.mz .phone{
-top:50%;transform:translate(-50%,-50%);width:430px}
-.mz .mbody{
-font-size:17px}
-.mz .scan{
-top:auto;bottom:6%;width:360px}
-.mz .erp{
-top:50%;transform:translate(-50%,-44%);width:min(600px,100%)}
-.mz .gr{
-grid-template-columns:28px 96px 1fr 44px 80px;font-size:13.5px;min-height:31px}
-.mz .flds{
-font-size:13.5px}
-.mz .e-inp{
-font-size:14px}
-.mz .mini{
-top:8%;width:340px}
-.mz .evs{
-top:50%;transform:translate(-50%,-50%);width:460px}
-.mz .koperty{
-top:50%;transform:translate(-50%,-110%);width:440px}
-.mz .liczby{
-top:52%}
-.mz .minim{
-top:12%}
-.mz .log{
-top:calc(12% + 74px);width:440px}
-.mz .minim{
-width:440px}
-.mz .foot{
-bottom:4%}
-.mz .hint{
-left:auto;right:40px;transform:none}
-}
+@media (min-width:640px){
+.mz .lg-full{
+display:block}
+.mz .lg-mark{
+display:none}}
 @media (max-width:800px){
 .mz .jak ol{
 grid-template-columns:1fr}}
-@media (max-height:720px){
-.mz .paper .r{
-line-height:1.55}
-.mz .paper{
-padding-top:12px}
-.mz .scan{
-top:330px}
-.mz .erp{
-top:82px}
-.mz .ev{
-padding:11px 13px 12px}
-.mz .ev p{
-font-size:14px}
-.mz .lg-r{
-padding:7px 0}
-.mz .lg-r div{
-font-size:13.5px}
+@media (min-width:960px){
+.mz .inner{
+grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);grid-template-rows:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"cap vis" "ft vis";column-gap:64px;row-gap:26px;
+    padding-top:96px;padding-bottom:40px}
+.mz .cap{
+align-self:end}
+.mz .ft{
+align-self:start;min-height:0}
+.mz .hint{
+left:0;transform:none;bottom:auto;top:30px;flex-direction:row}
+.mz .hint i{
+width:22px;height:1.5px;animation:none}
+.mz .policzmy .w{
+grid-template-columns:1.1fr .9fr}
 }
+@media (max-height:740px) and (max-width:959px){
+.mz .lead.krotki{
+display:none}
+.mz .inner{
+row-gap:10px;padding-top:calc(70px + env(safe-area-inset-top,0px))}
+.mz .ft{
+min-height:56px}}
 @media (prefers-reduced-motion:reduce){
 .mz .hint i,.mz .printer .led.blink,.mz .caret::after{
 animation:none}
-.mz .waga .pas{
+.mz .waga .pas,.mz .rr{
 transition:none}}
+.mz .pz .chip s{
+color:#B3261E;text-decoration-thickness:1.5px;margin:0 2px}
 </style>
 <div class="mz">
 <header class="bar" id="bar"><div class="bar-in">
-  <a class="logo" href="/" aria-label="Let's Automate, strona główna"><svg width="237" height="41" viewBox="0 0 237 41" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_4016_1321)"><path d="M126.179 11.1201H119.973L121.055 13.1157H123.346V13.6903H123.276C122.456 13.6903 121.72 14.1976 121.428 14.9669L115.801 29.877H118.115L119.711 25.6741H129.263L130.859 29.877H133.174L126.175 11.1201H126.179ZM126.83 23.6785H120.43L124.395 13.2502H124.633L128.571 23.6785H126.827H126.83Z" fill="#F4F8F2"></path><path d="M158.801 23.1478C158.801 18.918 161.781 15.9111 166.011 15.9111C170.241 15.9111 173.22 18.918 173.22 23.1478C173.22 27.3776 170.214 30.4113 166.011 30.4113C161.808 30.4113 158.801 27.4045 158.801 23.1478ZM171.013 23.1478C171.013 20.1141 168.91 17.9068 166.011 17.9068C163.111 17.9068 161.008 20.1141 161.008 23.1478C161.008 26.1816 163.084 28.4157 166.011 28.4157C168.937 28.4157 171.013 26.2084 171.013 23.1478Z" fill="#F4F8F2"></path><path d="M222.55 22.986C222.55 18.8872 225.53 15.9072 229.679 15.9072C233.829 15.9072 236.731 18.8873 236.731 23.0129C236.731 23.2783 236.731 23.5975 236.704 23.8898H224.811C225.13 26.6044 227.099 28.4119 229.841 28.4119C231.836 28.4119 233.593 27.4006 234.443 25.8048L236.278 26.7354C235.186 29.0233 232.767 30.4074 229.787 30.4074C225.584 30.4074 222.55 27.2931 222.55 22.9827V22.986ZM234.42 21.9479C234.02 19.5256 232.132 17.9029 229.579 17.9029C227.025 17.9029 225.214 19.5256 224.841 21.9479H234.42Z" fill="#F4F8F2"></path><path d="M153.664 26.3388V20.0999C153.664 19.3742 153.076 18.7829 152.347 18.7829H152.112V18.2118H153.661V18.195L157.118 18.2118V16.4379H153.661L153.687 12.1006H151.957L151.45 16.4379H149.27V18.195H151.45V26.416C151.45 28.7846 152.888 30.3806 155.149 30.3806C155.814 30.3806 156.691 30.2461 157.329 30.0345V28.2504C156.826 28.4117 156.133 28.5158 155.734 28.5158C154.457 28.5158 153.657 27.6121 153.657 26.3354L153.664 26.3388Z" fill="#F4F8F2"></path><path d="M217.389 26.3388V20.0999C217.389 19.3742 216.802 18.7829 216.073 18.7829H215.837V18.2118H217.386V18.195L220.843 18.2118V16.4379H217.386L217.413 12.1006H215.683L215.176 16.4379H212.995V18.195H215.176V26.416C215.176 28.7846 216.613 30.3806 218.875 30.3806C219.54 30.3806 220.416 30.2461 221.055 30.0345V28.2504C220.551 28.4117 219.859 28.5158 219.459 28.5158C218.182 28.5158 217.383 27.6121 217.383 26.3354L217.389 26.3388Z" fill="#F4F8F2"></path><path d="M144.643 16.4419V24.2631C144.643 26.6317 142.702 28.3619 140.44 28.3619C138.179 28.3619 136.795 26.7392 136.795 24.4512V16.4419H134.588V24.6596C134.588 27.5892 136.802 30.0989 139.722 30.3375C141.143 30.4549 142.433 30.0214 143.417 29.1616C143.84 28.7919 144.072 28.251 144.072 27.69V27.1961H144.643V28.0394V29.8736H146.851V16.4385H144.643V16.4419Z" fill="#F4F8F2"></path><path d="M191.366 15.938C189.344 15.938 187.801 16.9493 186.871 18.5182H186.632C185.86 16.9493 184.133 15.9111 182.241 15.9111C181.072 15.9111 180.057 16.3244 179.288 17.0064C178.875 17.3759 178.646 17.9101 178.646 18.4645V19.0927H178.065V16.4419H175.935V29.8771H178.142V21.8409C178.142 19.4724 179.58 17.9034 181.761 17.9034C183.941 17.9034 185.221 19.4724 185.221 21.8409V29.8771H187.428V21.8409C187.428 19.553 188.944 17.9034 191.101 17.9034C193.123 17.9034 194.584 19.553 194.584 21.8409V29.8771H196.792V21.8678C196.792 18.3838 194.531 15.9347 191.363 15.9347L191.366 15.938Z" fill="#F4F8F2"></path><path d="M205.151 15.9375C201.771 15.9375 199.563 17.7484 199.563 20.594H201.798C201.771 18.9175 203.101 17.9331 205.124 17.9331C207.331 17.9331 208.635 19.1023 208.635 20.9131V21.444L204.909 21.8975C200.917 22.3511 198.895 24.1048 198.895 26.4734C198.895 28.8419 200.81 30.3033 203.709 30.3033C205.221 30.3033 206.444 29.8834 207.371 29.1007C207.805 28.7344 208.04 28.1868 208.04 27.619V27.068H208.631V29.88H210.839V20.9669C210.839 17.9063 208.631 15.9375 205.144 15.9375H205.151ZM208.635 24.5315C208.635 26.7925 206.773 28.469 204.032 28.469C202.221 28.469 201.106 27.6963 201.106 26.4196C201.106 25.1429 202.17 24.1048 204.909 23.7588L208.635 23.3321V24.5281V24.5315Z" fill="#F4F8F2"></path><path d="M89.4541 17.6842H92.9111L89.4541 17.6641V17.6842Z" fill="#F4F8F2"></path><path d="M57.9139 28.5764L57.5108 28.1733L57.8634 27.8205C58.4816 27.2023 58.8277 26.3658 58.8277 25.4956V10.5889H56.4053V29.3458H68.2717V27.2158H60.6351C59.7616 27.2158 58.925 27.5618 58.3102 28.18L57.9139 28.5764Z" fill="#F4F8F2"></path><path d="M89.4542 25.8085V19.5696C89.4542 18.844 88.8661 18.2526 88.137 18.2526H87.9018V17.6815H89.4508V17.6647L92.9078 17.6815V15.9076H89.4508L89.4774 11.5703H87.7472L87.24 15.9076H85.0596V17.6647H87.24V25.8858C87.24 28.2543 88.678 29.85 90.939 29.85C91.6043 29.85 92.4811 29.7158 93.1194 29.5042V27.7202C92.6156 27.8814 91.9234 27.9855 91.5237 27.9855C90.2468 27.9855 89.4474 27.0818 89.4474 25.8051L89.4542 25.8085Z" fill="#F4F8F2"></path><path d="M104.593 21.5515C102.597 21.313 100.79 21.1786 100.79 19.5022C100.79 18.118 102.12 17.2411 104.062 17.2411C106.138 17.2411 107.546 18.2793 107.573 19.9288H109.727C109.727 17.1605 107.439 15.3799 104.086 15.3799C100.733 15.3799 98.6834 16.9757 98.6834 19.5828C98.6834 22.6434 101.583 23.3086 104.086 23.6009C106.108 23.8664 107.942 24.0007 107.942 25.7545C107.942 27.1655 106.639 28.0155 104.616 28.0155C102.09 28.0155 100.598 26.712 100.571 24.797H98.4414C98.4414 27.9886 100.675 29.8801 104.536 29.8801C107.969 29.8801 110.015 28.3649 110.015 25.7309C110.015 22.5124 107.116 21.8741 104.586 21.5549L104.593 21.5515Z" fill="#F4F8F2"></path><path d="M96.5263 12.5846V12.9172L96.2372 13.2061C95.73 13.7134 95.4443 14.4021 95.4443 15.1177V17.7248C96.5431 17.7248 97.4333 16.8345 97.4333 15.7359V11.3516H95.4443V12.5879H96.5263V12.5846Z" fill="#F4F8F2"></path><path d="M76.8151 15.377C72.6659 15.377 69.686 18.357 69.686 22.4557C69.686 26.7662 72.7198 29.8806 76.9226 29.8806C79.9028 29.8806 82.3249 28.4964 83.4134 26.2085L81.5791 25.2779C80.7292 26.8737 78.972 27.8849 76.9765 27.8849C74.235 27.8849 72.2662 26.0741 71.947 23.3629H83.8401C83.867 23.0706 83.867 22.7514 83.867 22.486C83.867 18.3603 80.9138 15.3803 76.8151 15.3803V15.377ZM71.974 21.4176C72.3467 18.9953 74.235 17.3726 76.711 17.3726C79.187 17.3726 81.1524 18.9953 81.5521 21.4176H71.974Z" fill="#F4F8F2"></path><path d="M31.1674 0.5V17.4327C29.7901 11.2307 26.1381 0.5 26.1381 0.5H17.1107C18.599 6.44658 20.7794 12.7694 21.6328 16.7405H21.6193C20.7291 14.2443 18.7435 10.4076 14.2919 4.60213C13.1564 3.12389 12.0275 1.72963 11.0029 0.5H0C6.53453 7.53847 13.5092 17.1168 13.5092 20.5C13.5092 23.8832 6.53453 33.4614 0 40.5H11.0029C12.0309 39.2705 13.1597 37.8762 14.2919 36.3979C18.636 30.7301 20.635 26.9405 21.5522 24.4409C20.6484 28.4254 18.4176 34.6543 16.8822 40.5H25.9298C25.9298 40.5 29.6389 30.4245 31.1035 24.3636L30.8349 40.5H39.6641L39.9966 20.5538V0.5H31.1674Z" fill="#00CD77"></path></g><defs><clipPath id="clip0_4016_1321"><rect width="236.879" height="40" fill="white" transform="translate(0 0.5)"></rect></clipPath></defs></svg></a>
-  <a class="bar-cta" id="barCta" href="#kontakt">Umów rozmowę</a>
-  <div class="meter" id="meter" aria-hidden="true">
-    <div class="lb" id="mlb">Obsługa tego zamówienia</div>
-    <div class="v"><span class="zl" id="mzl">0,00 zł</span><span class="mn" id="mmn">0 min</span></div>
+  <a class="logo" href="/" aria-label="Let's Automate, strona główna"><span class="lg-full"><svg width="237" height="41" viewBox="0 0 237 41" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_4016_1321)"><path d="M126.179 11.1201H119.973L121.055 13.1157H123.346V13.6903H123.276C122.456 13.6903 121.72 14.1976 121.428 14.9669L115.801 29.877H118.115L119.711 25.6741H129.263L130.859 29.877H133.174L126.175 11.1201H126.179ZM126.83 23.6785H120.43L124.395 13.2502H124.633L128.571 23.6785H126.827H126.83Z" fill="#F4F8F2"></path><path d="M158.801 23.1478C158.801 18.918 161.781 15.9111 166.011 15.9111C170.241 15.9111 173.22 18.918 173.22 23.1478C173.22 27.3776 170.214 30.4113 166.011 30.4113C161.808 30.4113 158.801 27.4045 158.801 23.1478ZM171.013 23.1478C171.013 20.1141 168.91 17.9068 166.011 17.9068C163.111 17.9068 161.008 20.1141 161.008 23.1478C161.008 26.1816 163.084 28.4157 166.011 28.4157C168.937 28.4157 171.013 26.2084 171.013 23.1478Z" fill="#F4F8F2"></path><path d="M222.55 22.986C222.55 18.8872 225.53 15.9072 229.679 15.9072C233.829 15.9072 236.731 18.8873 236.731 23.0129C236.731 23.2783 236.731 23.5975 236.704 23.8898H224.811C225.13 26.6044 227.099 28.4119 229.841 28.4119C231.836 28.4119 233.593 27.4006 234.443 25.8048L236.278 26.7354C235.186 29.0233 232.767 30.4074 229.787 30.4074C225.584 30.4074 222.55 27.2931 222.55 22.9827V22.986ZM234.42 21.9479C234.02 19.5256 232.132 17.9029 229.579 17.9029C227.025 17.9029 225.214 19.5256 224.841 21.9479H234.42Z" fill="#F4F8F2"></path><path d="M153.664 26.3388V20.0999C153.664 19.3742 153.076 18.7829 152.347 18.7829H152.112V18.2118H153.661V18.195L157.118 18.2118V16.4379H153.661L153.687 12.1006H151.957L151.45 16.4379H149.27V18.195H151.45V26.416C151.45 28.7846 152.888 30.3806 155.149 30.3806C155.814 30.3806 156.691 30.2461 157.329 30.0345V28.2504C156.826 28.4117 156.133 28.5158 155.734 28.5158C154.457 28.5158 153.657 27.6121 153.657 26.3354L153.664 26.3388Z" fill="#F4F8F2"></path><path d="M217.389 26.3388V20.0999C217.389 19.3742 216.802 18.7829 216.073 18.7829H215.837V18.2118H217.386V18.195L220.843 18.2118V16.4379H217.386L217.413 12.1006H215.683L215.176 16.4379H212.995V18.195H215.176V26.416C215.176 28.7846 216.613 30.3806 218.875 30.3806C219.54 30.3806 220.416 30.2461 221.055 30.0345V28.2504C220.551 28.4117 219.859 28.5158 219.459 28.5158C218.182 28.5158 217.383 27.6121 217.383 26.3354L217.389 26.3388Z" fill="#F4F8F2"></path><path d="M144.643 16.4419V24.2631C144.643 26.6317 142.702 28.3619 140.44 28.3619C138.179 28.3619 136.795 26.7392 136.795 24.4512V16.4419H134.588V24.6596C134.588 27.5892 136.802 30.0989 139.722 30.3375C141.143 30.4549 142.433 30.0214 143.417 29.1616C143.84 28.7919 144.072 28.251 144.072 27.69V27.1961H144.643V28.0394V29.8736H146.851V16.4385H144.643V16.4419Z" fill="#F4F8F2"></path><path d="M191.366 15.938C189.344 15.938 187.801 16.9493 186.871 18.5182H186.632C185.86 16.9493 184.133 15.9111 182.241 15.9111C181.072 15.9111 180.057 16.3244 179.288 17.0064C178.875 17.3759 178.646 17.9101 178.646 18.4645V19.0927H178.065V16.4419H175.935V29.8771H178.142V21.8409C178.142 19.4724 179.58 17.9034 181.761 17.9034C183.941 17.9034 185.221 19.4724 185.221 21.8409V29.8771H187.428V21.8409C187.428 19.553 188.944 17.9034 191.101 17.9034C193.123 17.9034 194.584 19.553 194.584 21.8409V29.8771H196.792V21.8678C196.792 18.3838 194.531 15.9347 191.363 15.9347L191.366 15.938Z" fill="#F4F8F2"></path><path d="M205.151 15.9375C201.771 15.9375 199.563 17.7484 199.563 20.594H201.798C201.771 18.9175 203.101 17.9331 205.124 17.9331C207.331 17.9331 208.635 19.1023 208.635 20.9131V21.444L204.909 21.8975C200.917 22.3511 198.895 24.1048 198.895 26.4734C198.895 28.8419 200.81 30.3033 203.709 30.3033C205.221 30.3033 206.444 29.8834 207.371 29.1007C207.805 28.7344 208.04 28.1868 208.04 27.619V27.068H208.631V29.88H210.839V20.9669C210.839 17.9063 208.631 15.9375 205.144 15.9375H205.151ZM208.635 24.5315C208.635 26.7925 206.773 28.469 204.032 28.469C202.221 28.469 201.106 27.6963 201.106 26.4196C201.106 25.1429 202.17 24.1048 204.909 23.7588L208.635 23.3321V24.5281V24.5315Z" fill="#F4F8F2"></path><path d="M89.4541 17.6842H92.9111L89.4541 17.6641V17.6842Z" fill="#F4F8F2"></path><path d="M57.9139 28.5764L57.5108 28.1733L57.8634 27.8205C58.4816 27.2023 58.8277 26.3658 58.8277 25.4956V10.5889H56.4053V29.3458H68.2717V27.2158H60.6351C59.7616 27.2158 58.925 27.5618 58.3102 28.18L57.9139 28.5764Z" fill="#F4F8F2"></path><path d="M89.4542 25.8085V19.5696C89.4542 18.844 88.8661 18.2526 88.137 18.2526H87.9018V17.6815H89.4508V17.6647L92.9078 17.6815V15.9076H89.4508L89.4774 11.5703H87.7472L87.24 15.9076H85.0596V17.6647H87.24V25.8858C87.24 28.2543 88.678 29.85 90.939 29.85C91.6043 29.85 92.4811 29.7158 93.1194 29.5042V27.7202C92.6156 27.8814 91.9234 27.9855 91.5237 27.9855C90.2468 27.9855 89.4474 27.0818 89.4474 25.8051L89.4542 25.8085Z" fill="#F4F8F2"></path><path d="M104.593 21.5515C102.597 21.313 100.79 21.1786 100.79 19.5022C100.79 18.118 102.12 17.2411 104.062 17.2411C106.138 17.2411 107.546 18.2793 107.573 19.9288H109.727C109.727 17.1605 107.439 15.3799 104.086 15.3799C100.733 15.3799 98.6834 16.9757 98.6834 19.5828C98.6834 22.6434 101.583 23.3086 104.086 23.6009C106.108 23.8664 107.942 24.0007 107.942 25.7545C107.942 27.1655 106.639 28.0155 104.616 28.0155C102.09 28.0155 100.598 26.712 100.571 24.797H98.4414C98.4414 27.9886 100.675 29.8801 104.536 29.8801C107.969 29.8801 110.015 28.3649 110.015 25.7309C110.015 22.5124 107.116 21.8741 104.586 21.5549L104.593 21.5515Z" fill="#F4F8F2"></path><path d="M96.5263 12.5846V12.9172L96.2372 13.2061C95.73 13.7134 95.4443 14.4021 95.4443 15.1177V17.7248C96.5431 17.7248 97.4333 16.8345 97.4333 15.7359V11.3516H95.4443V12.5879H96.5263V12.5846Z" fill="#F4F8F2"></path><path d="M76.8151 15.377C72.6659 15.377 69.686 18.357 69.686 22.4557C69.686 26.7662 72.7198 29.8806 76.9226 29.8806C79.9028 29.8806 82.3249 28.4964 83.4134 26.2085L81.5791 25.2779C80.7292 26.8737 78.972 27.8849 76.9765 27.8849C74.235 27.8849 72.2662 26.0741 71.947 23.3629H83.8401C83.867 23.0706 83.867 22.7514 83.867 22.486C83.867 18.3603 80.9138 15.3803 76.8151 15.3803V15.377ZM71.974 21.4176C72.3467 18.9953 74.235 17.3726 76.711 17.3726C79.187 17.3726 81.1524 18.9953 81.5521 21.4176H71.974Z" fill="#F4F8F2"></path><path d="M31.1674 0.5V17.4327C29.7901 11.2307 26.1381 0.5 26.1381 0.5H17.1107C18.599 6.44658 20.7794 12.7694 21.6328 16.7405H21.6193C20.7291 14.2443 18.7435 10.4076 14.2919 4.60213C13.1564 3.12389 12.0275 1.72963 11.0029 0.5H0C6.53453 7.53847 13.5092 17.1168 13.5092 20.5C13.5092 23.8832 6.53453 33.4614 0 40.5H11.0029C12.0309 39.2705 13.1597 37.8762 14.2919 36.3979C18.636 30.7301 20.635 26.9405 21.5522 24.4409C20.6484 28.4254 18.4176 34.6543 16.8822 40.5H25.9298C25.9298 40.5 29.6389 30.4245 31.1035 24.3636L30.8349 40.5H39.6641L39.9966 20.5538V0.5H31.1674Z" fill="#00CD77"></path></g><defs><clipPath id="clip0_4016_1321"><rect width="236.879" height="40" fill="white" transform="translate(0 0.5)"></rect></clipPath></defs></svg></span><span class="lg-mark"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40.5 41"><path d="M31.1674 0.5V17.4327C29.7901 11.2307 26.1381 0.5 26.1381 0.5H17.1107C18.599 6.44658 20.7794 12.7694 21.6328 16.7405H21.6193C20.7291 14.2443 18.7435 10.4076 14.2919 4.60213C13.1564 3.12389 12.0275 1.72963 11.0029 0.5H0C6.53453 7.53847 13.5092 17.1168 13.5092 20.5C13.5092 23.8832 6.53453 33.4614 0 40.5H11.0029C12.0309 39.2705 13.1597 37.8762 14.2919 36.3979C18.636 30.7301 20.635 26.9405 21.5522 24.4409C20.6484 28.4254 18.4176 34.6543 16.8822 40.5H25.9298C25.9298 40.5 29.6389 30.4245 31.1035 24.3636L30.8349 40.5H39.6641L39.9966 20.5538V0.5H31.1674Z" fill="#00CD77"></path></svg></span></a>
+  <div class="typ-wrap" id="typWrap">
+    <button class="typ-chip" id="typChip" type="button" aria-haspopup="true" aria-expanded="false"><span id="typChipT">Handel</span><svg viewBox="0 0 12 8" aria-hidden="true"><path d="M1 1.5 6 6.5 11 1.5"/></svg></button>
+    <div class="typ-menu" id="typMenu" role="menu">
+      <button type="button" role="menuitem" data-typ="handel"><b>Handel</b><span>hurtownia, dystrybucja</span></button>
+      <button type="button" role="menuitem" data-typ="produkcja"><b>Produkcja</b><span>zakład, produkcja na zlecenie</span></button>
+      <button type="button" role="menuitem" data-typ="uslugi"><b>Usługi</b><span>serwis, firma usługowa</span></button>
+    </div>
+  </div>
+  <div class="prawa">
+    <a class="bar-cta" id="barCta" href="#policzmy">Policz swój paragon</a>
+    <div class="meter" id="meter" aria-hidden="true">
+      <div class="v" id="mzl">0,00 zł</div>
+      <div class="lb"><span id="mmn">0 min</span> · <span id="mlb">obsługi</span></div>
+    </div>
   </div>
 </div></header>
 
 <div class="hist">
 <!-- 1. PARAGON -->
-<section class="scene" id="paragon" style="--h:250">
+<section class="scene" id="paragon" style="--h:260">
  <div class="stage"><div class="inner">
   <div class="cap swap">
     <div id="s1a">
       <h1>Podniesiemy Twoją&nbsp;<em>marżę.</em></h1>
       <p class="lead">Bez podnoszenia cen. Najpierw zobacz, gdzie dziś znika.</p>
+      <div class="typy" role="group" aria-label="Pokaż na przykładzie firmy">
+        <span class="typy-lb">Pokaż na przykładzie:</span>
+        <div class="typy-b">
+          <button type="button" data-typ="handel" aria-pressed="true">Handel</button>
+          <button type="button" data-typ="produkcja" aria-pressed="false">Produkcja</button>
+          <button type="button" data-typ="uslugi" aria-pressed="false">Usługi</button>
+        </div>
+      </div>
     </div>
-    <div class="after" id="s1b">
-      <h2 style="margin-top:0">Z&nbsp;800&nbsp;zł zostają <em>2&nbsp;zł.</em></h2>
-      <p class="lead">98 zł z każdego zamówienia zjada jego obsługa w biurze. Zobacz jedno takie zamówienie od rana.</p>
-    </div>
+    <div class="after" id="s1b" aria-live="polite"></div>
   </div>
-  <div class="vis">
-   <div class="rig" id="rig1">
-    <div class="clip"><div class="paper">
-      <div class="hd"><b>HURTOWNIA</b>PARAGON NR 4417<br>20.11.2026 · 07:12</div>
-      <div class="dl"></div>
-      <div class="r"><span>ZAMÓWIENIE</span><span>800,00</span></div>
-      <div class="r"><span>TOWAR</span><span>-612,00</span></div>
-      <div class="r"><span>TRANSPORT</span><span>-48,00</span></div>
-      <div class="r"><span>RABAT</span><span>-40,00</span></div>
-      <div class="r q"><span>OBSŁUGA W BIURZE?</span><span>-98,00</span><svg class="ring" viewBox="0 0 300 40" preserveAspectRatio="none"><path pathLength="1" id="ring" d="M30 6 C 110 -2, 250 0, 292 10 C 304 16, 300 32, 270 36 C 190 42, 70 42, 14 34 C -6 30, 0 10, 26 6 C 50 3, 80 4, 96 5"/></svg><span class="qm" id="qm">?!</span></div>
-      <div class="dl"></div>
-      <div class="z"><span>ZOSTAJE</span><span>2,00</span></div>
-      <div class="ft">DZIĘKUJEMY · ZAPRASZAMY PONOWNIE</div>
-    </div></div>
-    <div class="printer"><span class="nm">LA-80</span><span class="led"></span></div>
-   </div>
-  </div>
-  <div class="hint" id="hint"><span>Przewiń</span><i></i></div>
+  <div class="vis"><div class="box rig" id="rig1"><div class="clip"><div class="paper" id="paper1"></div></div><div class="printer"><span class="nm">LA-80</span><span class="led"></span></div></div></div>
+  <div class="ft"><div class="hint" id="hint"><span>Przewiń</span><i></i></div></div>
  </div></div>
 </section>
 
 <!-- 2. MAIL -->
-<section class="scene" id="mail" style="--h:330">
+<section class="scene" id="mail" style="--h:340">
  <div class="stage"><div class="inner">
   <div class="cap">
     <span class="clock">07:12</span>
-    <h2>Przychodzi <em>zamówienie.</em></h2>
+    <h2>Ania z&nbsp;biura otwiera <em>pocztę.</em></h2>
   </div>
-  <div class="vis">
-   <div class="phone" id="phone">
-    <div class="mailc">
-     <div class="mtop"><span>‹ Odebrane</span><span>3 z 41</span></div>
-     <div class="mhd"><div class="av">M</div><div class="who"><b>Marek</b><span>stały klient · sklep budowlany</span></div><div class="tm">07:12</div></div>
-     <div class="subj">zamówienie pilne!!</div>
-     <div class="mbody">
-      <p>Dzień dobry,</p>
-      <p>proszę <span class="hl" id="h1"><span class="bg"></span><span class="t">to co zwykle</span><svg class="mark" viewBox="0 0 120 30" preserveAspectRatio="none"><path pathLength="1" d="M14 4 C 50 -2, 108 0, 116 10 C 122 20, 104 28, 70 28 C 30 29, 2 26, 3 15 C 4 6, 20 3, 40 3"/></svg><span class="note" id="n1" style="left:-6px;top:-30px">czyli co? szukam w starych mailach</span></span> <span class="hl" id="h2"><span class="bg"></span><span class="t">+ 2 palety</span><svg class="mark" viewBox="0 0 100 30" preserveAspectRatio="none" style="inset:auto -4px -10px -4px;height:14px"><path pathLength="1" d="M2 8 C 30 4, 70 12, 98 5"/></svg><span class="note" id="n2" style="right:-4px;top:30px">palety czego??</span></span>, na&nbsp;czwartek.</p>
-      <p>Reszta w&nbsp;załączniku.</p>
-      <p class="sig">Pozdr. Marek<br>Wysłano z iPhone’a</p>
-     </div>
-     <div class="att"><div class="ic">PDF</div><div><b>skan_zamowienie (2).pdf</b><span>1 strona · 2,4 MB</span></div><span class="note" id="n3" style="right:4px;top:-26px">skan. nic się nie skopiuje</span></div>
-    </div>
-   </div>
-   <div class="scan" id="scan">
-     <div class="sh">Zamówienie · sklep Marek</div>
-     <div class="ln"><span>1. kratka </span><span class="hl" id="h4"><span class="bg"></span><span class="t">KRT-4O21</span><span class="note" id="n4" style="left:4px;top:28px;font-size:26px">O czy 0?</span></span><span> – 6 szt</span></div>
-     <div class="ln"><span>2. reszta jak zwykle</span></div>
-     <div class="ln"><span>dostawa czwartek rano!</span></div>
-   </div>
-   <div class="foot" id="f2">8 minut. A&nbsp;w&nbsp;systemie nie ma jeszcze ani jednej pozycji.</div>
-  </div>
+  <div class="vis"><div class="box mailbox" id="mailBox"></div></div>
+  <div class="ft"><p class="foot" id="f2"></p></div>
  </div></div>
 </section>
 
 <!-- 3. PRZEPISYWANIE -->
-<section class="scene" id="przepisywanie" style="--h:360">
+<section class="scene" id="przepisywanie" style="--h:380">
  <div class="stage"><div class="inner">
   <div class="cap">
     <span class="clock" id="clk3">07:40</span>
-    <h2>Ktoś przepisuje je do&nbsp;systemu. <em>Ręcznie.</em></h2>
+    <h2>Przepisuje to do&nbsp;systemu. <em>Ręcznie.</em></h2>
   </div>
-  <div class="vis">
-   <div class="mini">
-     <div class="ln" data-r="1 2"><span class="bg"></span><span>2. reszta jak zwykle</span></div>
-     <div class="ln" data-r="3"><span class="bg"></span><span>1. kratka KRT-4O21 – 6 szt</span></div>
-     <div class="ln" data-r="4"><span class="bg"></span><span>mail: + 2 palety</span></div>
-   </div>
-   <div class="erp" id="erp">
-     <div class="wt"><i></i><span>Zamówienie od odbiorcy · ZK 1187/11/2026</span><em>–▢✕</em></div>
-     <div class="tb"><b>Zapisz</b><b>Pozycje</b><b>Rezerwuj</b><b>Drukuj</b></div>
-     <div class="flds">
-       <label>Odbiorca</label><div class="e-inp" data-type="Marek – sklep budowlany" id="f-od"></div>
-       <label>Termin</label><div class="e-inp" data-type="26.11.2026, rano" id="f-te"></div>
-     </div>
-     <div class="e-grid">
-       <div class="gr h"><div>Lp</div><div>Kod</div><div>Nazwa</div><div class="n">Szt.</div><div class="n">Wartość</div></div>
-       <div class="gr" data-row="1"><div>1</div><div class="k" data-type="CEM-325R"></div><div data-type="Cement 32,5R 25 kg"></div><div class="n" data-type="20"></div><div class="n" data-type="290,00"></div></div>
-       <div class="gr" data-row="2"><div>2</div><div class="k" data-type="KLJ-C2TE"></div><div data-type="Klej do płytek C2TE"></div><div class="n" data-type="10"></div><div class="n" data-type="380,00"></div></div>
-       <div class="gr" data-row="3"><div>3</div><div class="k" id="k3"></div><div data-type="Kratka wentylacyjna 14×21"></div><div class="n" data-type="6"></div><div class="n" data-type="90,00"></div></div>
-       <div class="gr" data-row="4"><div>4</div><div class="k" data-type="PAL-EUR"></div><div data-type="Paleta EURO (zwrotna)"></div><div class="n" data-type="2"></div><div class="n" data-type="40,00"></div></div>
-     </div>
-     <div class="sum"><span>Razem brutto</span><span id="sum">0,00 zł</span></div>
-     <div class="err" id="err"><i>!</i>Nie znaleziono towaru o kodzie KRT-4O21</div>
-   </div>
-   <span class="n3" id="n5">palety? zgaduję…</span>
-   <div class="foot" id="f3">18 minut. I&nbsp;nadal nikt nie wie, czy ten towar jest na&nbsp;magazynie.<small>Liczymy 48 zł za godzinę pracy biura razem z&nbsp;kosztami stanowiska.</small></div>
-  </div>
+  <div class="vis"><div class="box erpbox" id="erpBox"></div></div>
+  <div class="ft"><p class="foot" id="f3"></p></div>
  </div></div>
 </section>
 
@@ -608,36 +735,19 @@ transition:none}}
     <span class="clock" id="clk4">08:15</span>
     <h2>A&nbsp;potem <em>reszta dnia.</em></h2>
   </div>
-  <div class="vis">
-   <div class="evs">
-    <div class="ev"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg></div>
-      <div><div class="tt"><b>„Jest na stanie?”</b><span>08:15</span></div><p>Telefon do magazynu. Magazynier idzie sprawdzić kratki i oddzwania po kwadransie.</p><span class="koszt">+8 min</span></div></div>
-    <div class="ev"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></div>
-      <div><div class="tt"><b>„Czy już wyszło?”</b><span>10:30</span></div><p>Dzwoni Marek. Biuro szuka zamówienia w&nbsp;systemie i&nbsp;w&nbsp;mailach, potem pyta magazyn.</p><span class="koszt">+6 min</span></div></div>
-    <div class="ev zly"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7"/><circle cx="7" cy="17.5" r="1.8"/><circle cx="17.5" cy="17.5" r="1.8"/></svg></div>
-      <div><div class="tt"><b>Pomyłka</b><span>14:00</span></div><p>Przy poprawianiu kodu ktoś wybrał złą kratkę. Reklamacja, przeprosiny i&nbsp;drugi kurs.</p><span class="koszt">+30 min i&nbsp;48,40 zł za transport</span></div></div>
-   </div>
-   <div class="foot" id="f4">98 zł. Tyle kosztowała obsługa tego jednego zamówienia.<small>To te 98 zł z&nbsp;paragonu na początku.</small></div>
-  </div>
+  <div class="vis"><div class="box evs" id="evs"></div></div>
+  <div class="ft"><p class="foot" id="f4"></p></div>
  </div></div>
 </section>
 
 <!-- 5. SKALA -->
-<section class="scene" id="skala" style="--h:260">
+<section class="scene" id="skala" style="--h:270">
  <div class="stage"><div class="inner">
   <div class="cap">
-    <h2 style="margin-top:0">A&nbsp;to było <em>jedno</em> zamówienie.</h2>
+    <h2 class="bez-zeg">A&nbsp;to było <em>jedno</em> <span data-w="n">zamówienie</span>.</h2>
   </div>
-  <div class="vis">
-   <div class="koperty" id="koperty"></div>
-   <div class="liczby">
-     <div class="lz"><b>60</b><span>zamówień dziennie</span></div>
-     <div class="lz"><b>× 32 min</b><span>pracy biura przy każdym, nawet bez pomyłki</span></div>
-     <div class="lz"><b>= 4 etaty</b><span>tylko na czytanie, przepisywanie i&nbsp;pilnowanie</span></div>
-     <div class="lz wyn"><b>384&nbsp;tys.&nbsp;zł</b><span>rocznie</span></div>
-   </div>
-   <div class="foot" id="f5"><small>Przykład: 60 zamówień dziennie, 250 dni roboczych, 48 zł za godzinę pracy biura.</small></div>
-  </div>
+  <div class="vis"><div class="box skalabox"><div class="koperty" id="koperty"></div><div class="liczby" id="liczby"></div></div></div>
+  <div class="ft"><p class="foot" id="f5"></p></div>
  </div></div>
 </section>
 
@@ -645,63 +755,34 @@ transition:none}}
 <section class="lekcja" id="lekcja">
  <div class="w">
   <div class="ety">Dlaczego to takie ważne</div>
-  <h2>Przy marży 4% złotówka mniej na obsłudze daje tyle zysku, co <em>25&nbsp;zł więcej sprzedaży.</em></h2>
-  <div class="waga" id="waga">
-   <div class="rz"><span>Żeby zarobić 1 000 zł więcej, możesz sprzedać za</span><div class="pas duzy">25 000 zł więcej</div></div>
-   <div class="rz"><span>albo wydać mniej na obsługę zamówień, które już masz</span><div class="pas maly">1 000 zł</div></div>
-  </div>
-  <p class="t">Dlatego marżę najszybciej podnosi się w&nbsp;biurze. Klient płaci tyle samo, towar kosztuje tyle samo, a&nbsp;z&nbsp;każdego zamówienia zostaje więcej.</p>
+  <h2 id="lekH"></h2>
+  <div class="waga" id="waga"></div>
+  <p class="t">Dlatego marżę najszybciej podnosi się w&nbsp;biurze. Klient płaci tyle samo, towar i&nbsp;materiał kosztują tyle samo, a&nbsp;z&nbsp;każdego <span data-w="g">zamówienia</span> zostaje więcej.</p>
  </div>
 </section>
 
-<!-- 7. TEN SAM DZIEŃ -->
-<section class="scene" id="zmiana" style="--h:360">
+<!-- 7. TEN SAM DZIEŃ, Z SYSTEMEM -->
+<section class="scene" id="zmiana" style="--h:440">
  <div class="stage"><div class="inner">
   <div class="cap">
-    <span class="clock" id="clk7">14:00</span>
-    <h2>Ten sam dzień. <em>Jeszcze raz.</em></h2>
+    <span class="clock po" id="clk7">14:00</span>
+    <h2>Ten sam dzień. <em>Z&nbsp;systemem.</em></h2>
+    <p class="lead krotki">Ten sam mail. System robi to, co rano robiła Ania. Ona tylko odpowiada na jedno pytanie.</p>
   </div>
-  <div class="vis">
-   <div class="minim" id="minim"><div class="av">M</div><div><b>zamówienie pilne!!</b><span>proszę to co zwykle + 2 palety, na czwartek…</span></div><div class="tm">07:12</div></div>
-   <div class="log">
-    <div class="lg-r"><i><svg viewBox="0 0 24 24" fill="none" stroke="#06170E" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></i><div><small>07:12:20</small>Odczytany mail i&nbsp;skan z&nbsp;załącznika.</div></div>
-    <div class="lg-r"><i><svg viewBox="0 0 24 24" fill="none" stroke="#06170E" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></i><div><small>07:12:31</small>„To co zwykle” u&nbsp;Marka: cement 20&nbsp;szt. i&nbsp;klej 10&nbsp;szt., tak jak w&nbsp;6 ostatnich zamówieniach.</div></div>
-    <div class="lg-r"><i><svg viewBox="0 0 24 24" fill="none" stroke="#06170E" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></i><div><small>07:12:33</small>Kod <s>KRT-4O21</s> poprawiony na KRT-4021. Stany sprawdzone: wszystko jest.</div></div>
-    <div class="lg-r cz"><i><svg viewBox="0 0 24 24" fill="none" stroke="#2A1D00" stroke-width="3" stroke-linecap="round"><path d="M12 7v6M12 17h.01"/></svg></i><div><small>07:12:40 · pytanie do biura</small>„2 palety czego?” Najpewniej palety EURO pod towar.<br><span class="zatw" id="zatw">Zatwierdź</span></div></div>
-    <div class="lg-r"><i><svg viewBox="0 0 24 24" fill="none" stroke="#06170E" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></i><div><small>07:14</small>ZK 1188 w&nbsp;systemie. Marek dostaje potwierdzenie z&nbsp;terminem.</div></div>
-    <div class="lg-r"><i><svg viewBox="0 0 24 24" fill="none" stroke="#06170E" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></i><div><small>10:30</small>Marek dostaje numer przesyłki, zanim zdąży zadzwonić.</div></div>
-   </div>
-   <div class="foot" id="f7">1 minuta pracy biura. Bez telefonów i&nbsp;bez pomyłki.</div>
-  </div>
+  <div class="vis"><div class="box rozw" id="rozw"></div></div>
+  <div class="ft"><p class="foot" id="f7"></p></div>
  </div></div>
 </section>
 
 <!-- 8. DRUGI PARAGON -->
-<section class="scene" id="po" style="--h:230">
+<section class="scene" id="po" style="--h:240">
  <div class="stage"><div class="inner">
   <div class="cap">
-    <h2 style="margin-top:0">To samo zamówienie. <em>Zostaje 90&nbsp;zł.</em></h2>
-    <p class="lead">Ta sama cena, ten sam towar, ten sam klient.</p>
+    <h2 class="bez-zeg" id="poH"></h2>
+    <p class="lead">Ta sama cena, ten sam klient, ten sam towar.</p>
   </div>
-  <div class="vis">
-   <div class="stary" id="stary"><div class="r"><span>OBSŁUGA</span><span>-98,00</span></div><div class="z"><span>ZOSTAJE</span><span>2,00</span></div><div class="x"></div></div>
-   <div class="rig" id="rig2">
-    <div class="clip"><div class="paper">
-      <div class="hd"><b>HURTOWNIA</b>PARAGON NR 4418<br>20.11.2026 · 07:14</div>
-      <div class="dl"></div>
-      <div class="r"><span>ZAMÓWIENIE</span><span>800,00</span></div>
-      <div class="r"><span>TOWAR</span><span>-612,00</span></div>
-      <div class="r"><span>TRANSPORT</span><span>-48,00</span></div>
-      <div class="r"><span>RABAT</span><span>-40,00</span></div>
-      <div class="r"><span>OBSŁUGA W BIURZE</span><span>-0,80</span></div>
-      <div class="r"><span>SYSTEM</span><span>-9,20</span></div>
-      <div class="dl"></div>
-      <div class="z ok"><span>ZOSTAJE</span><span>90,00</span></div>
-      <div class="ft">PRZYKŁAD · TWOJE LICZBY POLICZYMY RAZEM</div>
-    </div></div>
-    <div class="printer"><span class="nm">LA-80</span><span class="led"></span></div>
-   </div>
-  </div>
+  <div class="vis"><div class="box rig" id="rig2"><div class="przed" id="przed"></div><div class="clip"><div class="paper" id="paper2"></div></div><div class="printer"><span class="nm">LA-80</span><span class="led"></span></div></div></div>
+  <div class="ft"><p class="foot" id="f8"></p></div>
  </div></div>
 </section>
 
@@ -711,19 +792,43 @@ transition:none}}
   <div class="ety">Jak to robimy</div>
   <h2>Biuro przestaje przepisywać. <em>Zostaje przy decyzjach.</em></h2>
   <ol>
-   <li><em>1</em><b>Łączymy się z&nbsp;Waszą skrzynką i&nbsp;systemem</b><p>Z&nbsp;pocztą, do której przychodzą zamówienia, i&nbsp;z&nbsp;systemem, w&nbsp;którym je dziś wpisujecie. Bez zmiany programów.</p></li>
-   <li><em>2</em><b>Uczymy go na Waszych zamówieniach</b><p>Kody, nazwy, „to co zwykle” każdego klienta, skany, Excele i&nbsp;wyjątki, które zna tylko biuro.</p></li>
-   <li><em>3</em><b>Biuro zatwierdza tylko wątpliwe</b><p>Reszta przechodzi sama, a&nbsp;przy każdym zamówieniu widać, co i&nbsp;dlaczego zostało zrobione.</p></li>
+   <li><em>1</em><b>Podłączamy się do poczty i&nbsp;systemu</b><p>Do skrzynki, na którą przychodzą <span data-w="np">zamówienia</span>, i&nbsp;do systemu, w&nbsp;którym je dziś wpisujecie. Nie zmieniacie programów.</p></li>
+   <li><em>2</em><b>Uczymy go na Waszych <span data-w="lp">zamówieniach</span></b><p>Kody, nazwy, „to co zwykle” każdego klienta, skany, Excele i&nbsp;wyjątki, które dziś zna tylko biuro.</p></li>
+   <li><em>3</em><b>Biuro zatwierdza tylko wątpliwe</b><p>Reszta przechodzi sama. Przy każdym <span data-w="ls">zamówieniu</span> widać, co system zrobił i&nbsp;dlaczego.</p></li>
   </ol>
   <div class="fakty"><span><b>140+ firm</b> pracuje z&nbsp;nami</span><span><b>200+ wdrożeń</b></span><span><b>Stała cena</b> znana przed startem</span></div>
  </div>
 </section>
 
+<!-- 10. CTA -->
+<section class="policzmy" id="policzmy">
+ <div class="w">
+  <div class="pl-txt">
+   <div class="ety">Twój paragon</div>
+   <h2>Policzmy, ile zostaje <em>u&nbsp;Ciebie.</em></h2>
+   <p class="lead">Ten paragon był przykładem. Na 30-minutowej rozmowie przejdziemy przez jedno Wasze prawdziwe <span data-w="n">zamówienie</span> i&nbsp;policzymy Wasze liczby.</p>
+   <a class="cta-btn" href="#kontakt" id="ctaBtn">Umów 30 minut<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h11M11 5l5 5-5 5"/></svg></a>
+   <p class="cta-pod">Bezpłatnie i&nbsp;bez zobowiązań. Odzywamy się w&nbsp;jeden dzień roboczy.</p>
+  </div>
+  <div class="rach" id="rach">
+   <div class="hd"><b>LET'S AUTOMATE</b>ROZMOWA 30 MIN<br>TWOJE <span data-w="nU">ZAMÓWIENIE</span></div>
+   <div class="dl"></div>
+   <div class="rr"><span><i>1</i>Koszt obsługi jednego <span data-w="g">zamówienia</span> w&nbsp;Waszym biurze</span><b>✓</b></div>
+   <div class="rr"><span><i>2</i>Co system przejmie, a&nbsp;co zostaje u&nbsp;ludzi, na Waszym przykładzie</span><b>✓</b></div>
+   <div class="rr"><span><i>3</i>Ile zostanie z&nbsp;każdego <span data-w="g">zamówienia</span> po zmianie</span><b>✓</b></div>
+   <div class="rr"><span><i>4</i>Stała cena wdrożenia, zanim cokolwiek zaczniemy</span><b>✓</b></div>
+   <div class="dl"></div>
+   <div class="rz"><span>DO ZAPŁATY</span><span>0,00</span></div>
+   <div class="ft2">BEZPŁATNIE · ONLINE ALBO TELEFONICZNIE</div>
+  </div>
+ </div>
+</section>
+
 <div class="v3"><Kontakt
-  tytul="Pokażemy Twój dzień na Twoich zamówieniach"
-  lead="Na 30-minutowej rozmowie policzymy, ile kosztuje Was obsługa jednego zamówienia i ile da się odzyskać. Odezwiemy się w jeden dzień roboczy."
+  tytul="Umów 30 minut o Twoim paragonie"
+  lead="Napisz, ile zamówień albo zleceń dziennie przyjmujecie i skąd przychodzą. Na rozmowie przejdziemy przez jedno Wasze prawdziwe zamówienie i policzymy, ile z niego zostaje dziś, a ile po zmianie. Odezwiemy się w jeden dzień roboczy."
   zrodlo="Marża"
-  pytanie="Ile zamówień dziennie przyjmujecie i skąd przychodzą?"
+  pytanie="Ile zamówień albo zleceń dziennie przyjmujecie i skąd przychodzą?"
   podpowiedz="Np. ok. 60 dziennie, głównie mailem z PDF-em, część telefonicznie…"
   po="Rozmowa jest bezpłatna i bez zobowiązań, online albo telefonicznie."
 /></div>
@@ -732,151 +837,369 @@ transition:none}}
 </div>
 <script is:inline>
 (()=>{
+/* ───── pomocnicze ───── */
 const cl=(x,a=0,b=1)=>Math.min(b,Math.max(a,x)), seg=(p,a,b)=>cl((p-a)/(b-a)), eo=t=>1-Math.pow(1-t,3), eio=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
-const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
 const type=(el,t,full)=>{const n=Math.round(full.length*cl(t));const s=full.slice(0,n);if(el.textContent!==s)el.textContent=s;el.classList.toggle('caret',t>0&&t<1);};
-const pen=(path,t)=>{path.style.strokeDashoffset=String(1-cl(t));};
 const write=(el,t)=>{el.style.clipPath=`inset(-20% ${(1-cl(t))*100}% -20% 0)`;};
-const mark=(bg,t)=>{bg.style.transform=`scaleX(${eo(cl(t))})`;};
-const show=(el,t,dy=12)=>{const e=eo(cl(t));el.style.opacity=e;el.style.transform=`translateY(${(1-e)*dy}px)`;};
+const show=(el,t,dy=12)=>{const e=eo(cl(t));el.style.opacity=e;el.style.transform=e>=1?'':`translateY(${(1-e)*dy}px)`;};
+const pop=(el,t)=>{el.style.transform=`scale(${eo(cl(t))})`;};
+const html=(el,h)=>{if(el.innerHTML!==h)el.innerHTML=h;};
 const desk=()=>innerWidth>=960;
 const hhmm=m=>{m=Math.round(m);return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');};
-const zl=v=>v.toLocaleString('pl-PL',{minimumFractionDigits:2,maximumFractionDigits:2})+' zł';
-const S={}; ['paragon','mail','przepisywanie','reszta','skala','zmiana','po'].forEach(id=>S[id]=document.getElementById(id));
-const prog=el=>{const r=el.getBoundingClientRect();const tot=r.height-innerHeight;return tot<=0?0:cl(-r.top/tot);};
+const num=v=>{const a=Math.abs(v),i=Math.floor(a+1e-9),d=Math.round((a-i)*100);return (v<0?'-':'')+String(i).replace(/\B(?=(\d{3})+(?!\d))/g,' ')+','+String(d).padStart(2,'0');};
+const zl=v=>num(v)+' zł';
+const NBSP=s=>s.replace(/ (\S{1,2}) /g,' $1 ');
+const hm=(h,m)=>h*60+m;
 
-/* drukarka */
-function drukarka(rig){
+/* ───── trzy branże: te same sceny, inne zamówienie. Liczby to przykład opisany na stronie. ───── */
+const B={
+handel:{nazwa:'Handel',
+ w:{n:'zamówienie',g:'zamówienia',gp:'zamówień',np:'zamówienia',lp:'zamówieniach',ls:'zamówieniu',nU:'ZAMÓWIENIE'},
+ rate:48,
+ rc:{firma:'HURTOWNIA',nr:'PARAGON NR 4417',nr2:'PARAGON NR 4418',czas:'20.11.2026 · 07:12',czas2:'20.11.2026 · 07:14',
+  rows:[['ZAMÓWIENIE',800],['TOWAR',-612],['TRANSPORT',-48],['RABAT',-40]],q:['OBSŁUGA W BIURZE?',-98],zost:2,
+  po:[['OBSŁUGA W BIURZE',-.8],['SYSTEM',-9.2]],zost2:90},
+ s1b:['Z 800 zł zostają <em>2 zł.</em>','98 zł z tego zamówienia zjada jego obsługa w biurze. Zobacz, skąd się biorą.'],
+ mail:{od:'Marek',av:'M',avc:'#F59E0B',kto:'stały klient · sklep budowlany',subj:'zamówienie pilne!!',
+  body:['proszę [[1|to co zwykle]] [[2|+ 2 palety]], na czwartek.','Reszta w załączniku.'],sig:'Pozdr. Marek · wysłano z iPhone’a',
+  att:['PDF','skan_zamowienie (2).pdf','skan · 1 strona · 2,4 MB'],skan:['Zamówienie · sklep Marek',['1. kratka [[4|KRT-4O21]] – 6 szt','2. reszta jak zwykle','dostawa czwartek rano!']],
+  notki:['czyli co? szukam w starych mailach','palety czego??','skan, nic się nie skopiuje','O czy 0?']},
+ min:{mail:8,sys:10},sys0:hm(7,40),
+ erp:{tyt:'Zamówienie od odbiorcy · ZK 1187/11/2026',l1:'Odbiorca',v1:'Marek – sklep budowlany',l2:'Termin',v2:'26.11.2026, rano',
+  rows:[['CEM-325R','Cement 32,5R 25 kg','20',290],['KLJ-C2TE','Klej do płytek C2TE','10',380],['KRT-4O21','Kratka wentylacyjna 14×21','6',90,'KRT-4021'],['PAL-EUR','Paleta EURO (zwrotna)','2',40]],
+  err:'Nie znaleziono towaru o kodzie KRT-4O21',zgad:'palety? zgaduję…',
+  zr:[['mail','zamówienie pilne!! · Marek'],['stare maile','<mark>to co zwykle</mark> = cement i klej?'],['stare maile','<mark>to co zwykle</mark> = cement i klej?'],['skan','kratka <mark>KRT-4O21</mark> – 6 szt'],['mail','<mark>+ 2 palety</mark>']]},
+ ev:[{i:'tel',b:'„Jest na stanie?”',t:'08:15',p:'Telefon do magazynu. Magazynier idzie sprawdzić kratki i oddzwania po kwadransie.',min:8},
+     {i:'lupa',b:'„Czy już wyszło?”',t:'10:30',p:'Dzwoni Marek. Biuro szuka zamówienia w systemie i w mailach, potem pyta magazyn.',min:6},
+     {i:'auto',b:'Pomyłka',t:'14:00',p:'Przy poprawianiu kodu ktoś wybrał złą kratkę. Reklamacja, przeprosiny i drugi kurs.',min:30,zl:48.4,k:'+30 min i 48,40 zł za drugi kurs'}],
+ f:{f2:'<b>8 minut.</b> A w systemie nie ma jeszcze ani jednej pozycji.',
+    f3:'<b>18 minut</b> od otwarcia maila. I nadal nikt nie wie, czy towar jest na magazynie.<small>Liczymy 48 zł za godzinę pracy biura razem z kosztami stanowiska.</small>',
+    f4:'<b>98 zł.</b> Tyle kosztowała obsługa tego jednego zamówienia.<small>To te 98 zł z paragonu na początku.</small>',
+    f7:'<b>1 minuta</b> pracy biura zamiast 62. Bez telefonów i bez pomyłki.',
+    f8:'<b>88 zł więcej</b> z tego samego zamówienia.<small>Koszt systemu jest już odjęty. Twoje liczby policzymy razem.</small>'},
+ sk:{n:60,l:[['60','zamówień dziennie'],['× 32 min','pracy biura przy każdym, nawet bez pomyłki'],['= 4 etaty','tylko na czytanie, przepisywanie i pilnowanie'],['384 tys. zł','rocznie']],
+     przyp:'Przykład: 60 zamówień dziennie, 250 dni roboczych, 48 zł za godzinę pracy biura.'},
+ lek:{m:4,mn:'25 zł',sprz:25000},
+ rz:{nb:'zamówienie pilne!!',ns:'proszę to co zwykle + 2 palety, na czwartek…',tyt:'Zamówienie od odbiorcy · ZK 1188/11/2026',
+  chips:['jak w 6 ostatnich zamówieniach Marka','jak w 6 ostatnich zamówieniach Marka','kod ze skanu poprawiony','palety czego? pytanie do Ani'],ok4:'palety EURO, zatwierdziła Ania',
+  stan:'Stany sprawdzone: wszystko jest na magazynie. Towar zarezerwowany.',
+  pyt:'„2 palety czego?” Marek zwykle bierze palety EURO pod towar. Dodać 2 palety EURO?',tak:'Tak, EURO',nie:'Zapytaj Marka',
+  wys:['Potwierdzenie wysłane · 07:14','Marek dostał potwierdzenie: ZK 1188, dostawa w czwartek rano.','<b>10:30</b> Marek dostaje numer przesyłki, zanim zdąży zadzwonić.'],min:1,c0:hm(7,12),c1:hm(7,14)},
+ po:['To samo zamówienie. <em>Zostaje 90 zł.</em>','Wcześniej zostawało <s>2,00 zł</s>']},
+
+produkcja:{nazwa:'Produkcja',
+ w:{n:'zlecenie',g:'zlecenia',gp:'zleceń',np:'zlecenia',lp:'zleceniach',ls:'zleceniu',nU:'ZLECENIE'},
+ rate:60,
+ rc:{firma:'ZAKŁAD PRODUKCYJNY',nr:'ZLECENIE NR 342',nr2:'ZLECENIE NR 343',czas:'20.11.2026 · 07:12',czas2:'20.11.2026 · 07:24',
+  rows:[['ZLECENIE',12400],['MATERIAŁ',-6200],['PRACA MASZYN',-4100],['TRANSPORT',-420]],q:['OBSŁUGA ZLECENIA?',-1560],zost:120,
+  po:[['OBSŁUGA W BIURZE',-12],['SYSTEM',-38]],zost2:1630},
+ s1b:['Z 12 400 zł zostaje <em>120 zł.</em>','1 560 zł z tego zlecenia zjada jego obsługa w biurze. Zobacz, skąd się biorą.'],
+ mail:{od:'Tomasz',av:'T',avc:'#0EA5E9',kto:'zaopatrzenie · stały klient',subj:'Re: wsporniki W-118',
+  body:['proszę [[1|jak ostatnio]], 300 szt., tylko [[2|w nowym kolorze]].','Rysunek w załączniku, termin jak zwykle.'],sig:'Tomasz · dział zaopatrzenia',
+  att:['PDF','W-118_rysunek.pdf','rysunek · 1 strona · 0,8 MB'],skan:['Rysunek · wspornik',['nr rys. [[4|W-118/B]]','blacha S235, 3 mm','gięcie 2 × 90°']],
+  notki:['jak ostatnio? szukam oferty','jaki kolor??','rysunek w PDF, przepisuję','B czy C? stara rewizja?']},
+ min:{mail:15,sys:75},sys0:hm(7,40),
+ erp:{tyt:'Zlecenie produkcyjne · ZP 342/11/2026',l1:'Klient',v1:'Tomasz – zaopatrzenie',l2:'Termin',v2:'04.12.2026',
+  rows:[['BL-S235-3','Blacha S235 3 mm','8',2960],['LAS-CIEC','Cięcie laserem','300',3300],['W-118/B','Gięcie wg rys. W-118','300',4040,'W-118/C'],['MAL-PROSZ','Malowanie proszkowe','300',2100]],
+  err:'Rysunek W-118/B wycofany. Aktualna rewizja: C',zgad:'RAL 7016? zgaduję…',
+  zr:[['mail','Re: wsporniki W-118 · Tomasz'],['stara oferta','<mark>jak ostatnio</mark> = blacha 3 mm?'],['mail','<mark>300 szt.</mark>, cięcie laserem'],['rysunek','nr rys. <mark>W-118/B</mark>'],['mail','<mark>w nowym kolorze</mark>']]},
+ ev:[{i:'tel',b:'„Materiał jest?”',t:'09:10',p:'Telefon do magazynu i na halę. Blachy 3 mm brakuje, trzeba ją domówić u dostawcy.',min:20},
+     {i:'lupa',b:'„Kiedy będzie gotowe?”',t:'11:00',p:'Dzwoni Tomasz. Biuro pyta kierownika zmiany, kiedy zlecenie wejdzie na laser.',min:10},
+     {i:'auto',b:'Pomyłka',t:'dzień 9',p:'Na malowanie poszedł kolor z poprzedniego zlecenia. 300 sztuk do przemalowania.',min:50,zl:1390,k:'+50 min i 1 390 zł za przemalowanie'}],
+ f:{f2:'<b>15 minut.</b> A nikt jeszcze nie wie, ile to będzie kosztować.',
+    f3:'<b>90 minut</b> od otwarcia maila. I nadal nikt nie wie, czy jest blacha.<small>Liczymy 60 zł za godzinę pracy biura razem z kosztami stanowiska.</small>',
+    f4:'<b>1 560 zł.</b> Tyle kosztowała obsługa tego jednego zlecenia.<small>To te 1 560 zł z paragonu na początku.</small>',
+    f7:'<b>12 minut</b> pracy biura zamiast 170. Bez telefonów i bez przemalowania.',
+    f8:'<b>1 510 zł więcej</b> z tego samego zlecenia.<small>Koszt systemu jest już odjęty. Twoje liczby policzymy razem.</small>'},
+ sk:{n:15,l:[['15','zleceń dziennie'],['× 120 min','pracy biura przy każdym, nawet bez pomyłki'],['≈ 4 etaty','tylko na liczenie, przepisywanie i dopytywanie'],['450 tys. zł','rocznie']],
+     przyp:'Przykład: 15 zleceń dziennie, 250 dni roboczych, 60 zł za godzinę pracy biura.'},
+ lek:{m:8,mn:'12,50 zł',sprz:12500},
+ rz:{nb:'Re: wsporniki W-118',ns:'proszę jak ostatnio, 300 szt., tylko w nowym kolorze…',tyt:'Zlecenie produkcyjne · ZP 343/11/2026',
+  chips:['materiał jak w zleceniu ZP 298','cięcie wyliczone z cennika','rysunek zmieniony na aktualną rewizję','nowy kolor? pytanie do Ani'],ok4:'RAL 7016, zatwierdziła Ania',
+  stan:'Magazyn sprawdzony: brakuje 2 arkuszy blachy. Zamówienie do dostawcy przygotowane.',
+  pyt:'„W nowym kolorze”: w ostatniej ofercie dla Tomasza był RAL 7016. Przyjąć ten kolor?',tak:'Tak, RAL 7016',nie:'Zapytaj Tomasza',
+  wys:['Potwierdzenie wysłane · 07:24','Tomasz dostał potwierdzenie: ZP 343, termin 04.12, kolor RAL 7016.','<b>Dzień 7</b> Tomasz dostaje wiadomość, że zlecenie jest na malowaniu.'],min:12,c0:hm(7,12),c1:hm(7,24)},
+ po:['To samo zlecenie. <em>Zostaje 1 630 zł.</em>','Wcześniej zostawało <s>120,00 zł</s>']},
+
+uslugi:{nazwa:'Usługi',
+ w:{n:'zlecenie',g:'zlecenia',gp:'zleceń',np:'zlecenia',lp:'zleceniach',ls:'zleceniu',nU:'ZLECENIE'},
+ rate:48,
+ rc:{firma:'SERWIS KLIMATYZACJI',nr:'ZLECENIE NR 618',nr2:'ZLECENIE NR 619',czas:'20.11.2026 · 07:12',czas2:'20.11.2026 · 07:14',
+  rows:[['ZLECENIE',2400],['PRACA TECHNIKÓW',-1260],['DOJAZD',-180],['CZĘŚCI',-320]],q:['OBSŁUGA W BIURZE?',-610],zost:30,
+  po:[['OBSŁUGA W BIURZE',-1.6],['SYSTEM',-8.4]],zost2:630},
+ s1b:['Z 2 400 zł zostaje <em>30 zł.</em>','610 zł z tego zlecenia zjada jego obsługa w biurze. Zobacz, skąd się biorą.'],
+ mail:{od:'Joanna',av:'J',avc:'#8B5CF6',kto:'biuro zarządu · stały klient',subj:'Przegląd klimatyzacji',
+  body:['proszę o [[1|to samo co w lipcu]], tym razem dla [[2|wszystkich jednostek]].','Adres jak zawsze, protokół na zdjęciu.'],sig:'Joanna · biuro zarządu',
+  att:['JPG','IMG_2291.jpg','zdjęcie · 3,1 MB'],skan:['Protokół 14.07 · przegląd',['filtr [[4|FLT-G4O]] – 1 szt.','14 jednostek, sala 2','Okopowa 12 / Prosta 8']],
+  notki:['co było w lipcu? szukam protokołu','ile ich jest??','zdjęcie, nic się nie skopiuje','O czy 0?']},
+ min:{mail:12,sys:35},sys0:hm(7,30),
+ erp:{tyt:'Zlecenie serwisowe · ZS 618/11/2026',l1:'Klient',v1:'Joanna – biuro zarządu',l2:'Termin',v2:'27.11.2026',
+  rows:[['PRZ-KLIM','Przegląd klimatyzatora','14',1680],['DIAG','Diagnostyka instalacji','1',220],['FLT-G4O','Filtr G4 do jednostki','1',320,'FLT-G40'],['DOJ-WAW','Dojazd, Warszawa','1',180]],
+  err:'Nie znaleziono części o kodzie FLT-G4O',zgad:'adres: Prosta? zgaduję…',
+  zr:[['mail','Przegląd klimatyzacji · Joanna'],['protokół','<mark>to samo co w lipcu</mark> = przegląd'],['protokół','<mark>14 jednostek</mark>, sala 2'],['zdjęcie','filtr <mark>FLT-G4O</mark> – 1 szt.'],['mail','adres <mark>jak zawsze</mark>']]},
+ ev:[{i:'tel',b:'„Kto pojedzie?”',t:'08:05',p:'Biuro dzwoni do techników i układa grafik od nowa, żeby zmieścić 14 jednostek.',min:20},
+     {i:'lupa',b:'„Kiedy będziecie?”',t:'11:20',p:'Dzwoni Joanna. Biuro szuka zlecenia i dzwoni do technika, który jest w trasie.',min:8},
+     {i:'auto',b:'Pomyłka',t:'14:00',p:'Technik pojechał na Prostą, a jednostki są na Okopowej. Drugi dojazd i stracone pół dnia.',min:15,zl:538,k:'+15 min i 538 zł straconej pracy'}],
+ f:{f2:'<b>12 minut.</b> A w grafiku nie ma jeszcze nikogo.',
+    f3:'<b>47 minut</b> od otwarcia maila. I nadal nikt nie wie, kto pojedzie.<small>Liczymy 48 zł za godzinę pracy biura razem z kosztami stanowiska.</small>',
+    f4:'<b>610 zł.</b> Tyle kosztowała obsługa tego jednego zlecenia.<small>To te 610 zł z paragonu na początku.</small>',
+    f7:'<b>2 minuty</b> pracy biura zamiast 90. Bez telefonów i bez drugiego dojazdu.',
+    f8:'<b>600 zł więcej</b> z tego samego zlecenia.<small>Koszt systemu jest już odjęty. Twoje liczby policzymy razem.</small>'},
+ sk:{n:25,l:[['25','zleceń dziennie'],['× 75 min','pracy biura przy każdym, nawet bez pomyłki'],['≈ 4 etaty','tylko na czytanie, przepisywanie i grafik'],['375 tys. zł','rocznie']],
+     przyp:'Przykład: 25 zleceń dziennie, 250 dni roboczych, 48 zł za godzinę pracy biura.'},
+ lek:{m:10,mn:'10 zł',sprz:10000},
+ rz:{nb:'Przegląd klimatyzacji',ns:'proszę o to samo co w lipcu, tym razem dla wszystkich…',tyt:'Zlecenie serwisowe · ZS 619/11/2026',
+  chips:['jak w protokole z 14.07','14 jednostek z umowy serwisowej','kod ze zdjęcia poprawiony','który adres? pytanie do Ani'],ok4:'Okopowa 12, zatwierdziła Ania',
+  stan:'Grafik sprawdzony: wolny technik w środę o 9:00. Filtr jest na magazynie.',
+  pyt:'Joanna ma dwa adresy. Jednostki z umowy są na Okopowej 12. Wysłać technika tam?',tak:'Tak, Okopowa',nie:'Zapytaj Joannę',
+  wys:['Potwierdzenie wysłane · 07:14','Joanna dostała potwierdzenie: ZS 619, środa 9:00, Okopowa 12.','<b>Środa 8:30</b> Joanna dostaje SMS, że technik jest w drodze.'],min:2,c0:hm(7,12),c1:hm(7,14)},
+ po:['To samo zlecenie. <em>Zostaje 630 zł.</em>','Wcześniej zostawało <s>30,00 zł</s>']}
+};
+const ICO={tel:'<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/>',
+  lupa:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
+  auto:'<path d="M3 7h11v9H3zM14 10h4l3 3v3h-7"/><circle cx="7" cy="17.5" r="1.8"/><circle cx="17.5" cy="17.5" r="1.8"/>'};
+const svgI=k=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ICO[k]}</svg>`;
+const ENV='<svg viewBox="0 0 24 18"><rect x="1" y="1" width="22" height="16" rx="2"/><path d="m2 2 10 8 10-8"/></svg>';
+const RING='<svg class="ring" viewBox="0 0 300 40" preserveAspectRatio="none"><path pathLength="1" d="M30 6 C 110 -2, 250 0, 292 10 C 304 16, 300 32, 270 36 C 190 42, 70 42, 14 34 C -6 30, 0 10, 26 6 C 50 3, 80 4, 96 5"/></svg>';
+const hlz=s=>s.replace(/\[\[(\d)\|([^\]]+)\]\]/g,(_,i,t)=>`<span class="hl" data-i="${i}"><span class="bg"></span><span class="t">${t}</span><span class="nrw"><i class="nr" data-i="${i}">${i}</i></span></span>`);
+
+/* ───── budowanie scen z danych ───── */
+let T, K, E={};
+function paper(n){
+  const r=T.rc, rows=r.rows.map(([l,v])=>`<div class="r"><span>${l}</span><span>${num(v)}</span></div>`).join('');
+  if(n===1) return `<div class="hd"><b>${r.firma}</b>${r.nr}<br>${r.czas}</div><div class="dl"></div>${rows}<div class="r q"><span>${r.q[0]}</span><span>${num(r.q[1])}</span>${RING}</div><div class="dl"></div><div class="z"><span>ZOSTAJE</span><span>${num(r.zost)}</span></div><div class="ft">DZIĘKUJEMY · ZAPRASZAMY PONOWNIE</div>`;
+  return `<div class="hd"><b>${r.firma}</b>${r.nr2}<br>${r.czas2}</div><div class="dl"></div>${rows}${r.po.map(([l,v])=>`<div class="r nowa"><span>${l}</span><span>${num(v)}</span></div>`).join('')}<div class="dl"></div><div class="z ok"><span>ZOSTAJE</span><span>${num(r.zost2)}</span></div><div class="ft">PRZYKŁAD · TWOJE LICZBY POLICZYMY RAZEM</div>`;
+}
+function render(){
+  const m=T.mail, e=T.erp, rz=T.rz;
+  $$('[data-w]').forEach(el=>{const v=T.w[el.dataset.w]; if(v&&el.textContent!==v)el.textContent=v;});
+  $('#paper1').innerHTML=paper(1); $('#paper2').innerHTML=paper(2);
+  $('#s1b').innerHTML=`<h2>${T.s1b[0]}</h2><p class="lead">${T.s1b[1]}</p>`;
+  $('#mailBox').innerHTML=`<div class="mailc"><div class="mhd"><div class="av" style="background:${m.avc}">${m.av}</div><div class="who"><b>${m.od}</b><span>${m.kto}</span></div><div class="tm">07:12</div></div>
+    <div class="subj">${m.subj}</div><div class="mbody"><p>Dzień dobry,</p>${m.body.map(b=>`<p>${hlz(b)}</p>`).join('')}<p class="sig">${m.sig}</p></div>
+    <div class="att"><div class="ic${m.att[0]==='JPG'?' img':''}">${m.att[0]}</div><div class="ai"><b>${m.att[1]}</b><span>${m.att[2]}</span></div><i class="nr" data-i="3">3</i></div>
+    <div class="skan"><div class="sh">${m.skan[0]}</div>${m.skan[1].map(l=>`<div class="ln">${hlz(l)}</div>`).join('')}</div></div>
+    <div class="postit"><div class="pt">Notatki Ani</div><ol>${m.notki.map((t,i)=>`<li><i>${i+1}</i><span>${t}</span></li>`).join('')}</ol></div>`;
+  $('#erpBox').innerHTML=`<div class="zrodlo"><small id="zrL">${e.zr[0][0]}</small><span id="zrT">${e.zr[0][1]}</span></div>
+    <div class="erp"><div class="wt"><i></i><span>${e.tyt}</span><em>–▢✕</em></div><div class="tb"><b>Zapisz</b><b>Pozycje</b><b>Rezerwuj</b><b>Drukuj</b></div>
+    <div class="flds"><label>${e.l1}</label><div class="e-inp" data-type="${e.v1}"></div><label>${e.l2}</label><div class="e-inp" data-type="${e.v2}"></div></div>
+    <div class="e-grid"><div class="gr h"><div>Lp</div><div>Kod</div><div>Nazwa</div><div class="n">Ilość</div><div class="n">Wartość</div></div>
+    ${e.rows.map((r,i)=>`<div class="gr"><div>${i+1}</div><div class="k"${r[4]?'':` data-type="${r[0]}"`}></div><div data-type="${r[1]}"></div><div class="n" data-type="${r[2]}"></div><div class="n" data-type="${num(r[3])}"></div></div>`).join('')}</div>
+    <div class="err" id="err"><i>!</i><span>${e.err}</span></div><div class="sum"><span>Razem netto</span><span id="sum">0,00 zł</span></div></div>
+    <div class="pod"><span class="zgad" id="zgad">${e.zgad}</span></div>`;
+  $('#evs').innerHTML=T.ev.map((v,i)=>`<div class="ev${i===2?' zly':''}"><div class="ico">${svgI(v.i)}</div><div><div class="tt"><b>${v.b}</b><span>${v.t}</span></div><p>${NBSP(v.p)}</p><span class="koszt">${v.k||'+'+v.min+' min'}</span></div></div>`).join('');
+  const kop=$('#koperty'); kop.innerHTML=Array.from({length:T.sk.n},(_,i)=>`<div class="kp${i===0?' ten':''}">${ENV}</div>`).join('');
+  $('#liczby').innerHTML=T.sk.l.map((l,i)=>`<div class="lz${i===3?' wyn':''}"><b>${l[0]}</b><span>${NBSP(l[1])}</span></div>`).join('');
+  $('#lekH').innerHTML=`Przy marży ${T.lek.m}% złotówka mniej na obsłudze daje tyle zysku, co <em>${T.lek.mn.replace(' ','\u00A0')} więcej sprzedaży.</em>`;
+  $('#waga').innerHTML=`<div class="rz"><span>Żeby zarobić 1 000 zł więcej, możesz sprzedać za</span><div class="tor"><div class="pas duzy">${num(T.lek.sprz).replace(',00','')} zł więcej</div></div></div>
+    <div class="rz"><span>albo wydać o 1 000 zł mniej na obsługę ${T.w.gp}, które już masz</span><div class="tor"><div class="pas maly" style="width:${(100000/T.lek.sprz).toFixed(1)}%">1 000 zł</div></div></div>`;
+  $('#rozw').innerHTML=`<div class="nowy"><div class="av" style="background:${m.avc}">${m.av}</div><div><b>${rz.nb}</b><span>${rz.ns}</span></div><div class="tm">07:12</div></div>
+    <div class="lacze"><span id="lzT">System czyta mail i załącznik</span><div class="tor"><i id="lzB"></i></div><em id="lzE">0/4</em></div>
+    <div class="erp auto-w"><div class="wt"><i></i><span>${rz.tyt}</span><em>–▢✕</em></div><div class="e-list" style="margin-top:8px">
+    ${e.rows.map((r,i)=>`<div class="pz"><div class="k">${r[4]||r[0]}</div><div>${r[1]}</div><div class="n">${r[2]}</div><div class="n">${num(r[3])}</div><span class="chip${i===3?' q':''}">${i===2?`${rz.chips[2]}: <s>${r[0]}</s> → ${r[4]}`:rz.chips[i]}</span></div>`).join('')}</div>
+    <div class="sum"><span>Razem netto</span><span id="sum7">0,00 zł</span></div></div>
+    <div class="stan"><i>✓</i><span>${rz.stan}</span></div>
+    <div class="slot"><div class="karta pyt"><small>Pytanie do Ani · 07:12</small><p>${NBSP(rz.pyt)}</p><div class="odp"><span class="tak">${rz.tak}<b class="tap"></b></span><span class="nie">${rz.nie}</span><i class="palec"></i></div></div>
+    <div class="karta wys"><small>${rz.wys[0]}</small><p>${NBSP(rz.wys[1])}</p><div class="w2">${rz.wys[2]}</div></div></div>`;
+  $('#poH').innerHTML=T.po[0]; $('#przed').innerHTML=T.po[1];
+  ['f2','f3','f4','f7','f8'].forEach(k=>$('#'+k).innerHTML=T.f[k]); $('#f5').innerHTML=`<small>${T.sk.przyp}</small>`;
+  /* odnośniki */
+  const mb=$('#mailBox'), eb=$('#erpBox'), ro=$('#rozw');
+  E={mailc:$('.mailc',mb), postit:$('.postit',mb), hl:$$('.hl',mb), nr:[1,2,3,4].map(i=>mb.querySelector(`.nr[data-i="${i}"]`)), li:$$('.postit li',mb), att:$('.att',mb), skan:$('.skan',mb),
+    inp:$$('.e-inp',eb), rows:$$('.gr:not(.h)',eb), err:$('#err'), errT:$('#err span'), sum:$('#sum'), zgad:$('#zgad'), zrL:$('#zrL'), zrT:$('#zrT'), zrodlo:$('.zrodlo',eb), zi:-1,
+    evs:$$('.ev'), kps:$$('#koperty .kp'), lz:$$('.lz'),
+    nowy:$('.nowy',ro), lacze:$('.lacze',ro), lzB:$('#lzB'), lzE:$('#lzE'), lzT:$('#lzT'), erp7:$('.erp',ro), pz:$$('.pz',ro), chips:$$('.pz .chip',ro), sum7:$('#sum7'), stan:$('.stan',ro),
+    pyt:$('.karta.pyt',ro), wys:$('.karta.wys',ro), w2:$('.w2',ro), tak:$('.tak',ro), tap:$('.tap',ro), palec:$('.palec',ro)};
+  E.err.classList.remove('on');
+  d1=drukarka($('#rig1')); d2=drukarka($('#rig2'),48);
+  fit();
+}
+
+/* paragon wychodzi z drukarki: okno rośnie w górę, papier ma stałą wysokość */
+let d1,d2;
+function drukarka(rig,extra=0){
   const clip=rig.querySelector('.clip'), paper=rig.querySelector('.paper'), rows=[...paper.children], led=rig.querySelector('.led');
-  return {rowEnd:i=>rows[i].offsetTop+rows[i].offsetHeight+6, H:()=>paper.offsetHeight,
-    set(len){clip.style.height=len+'px'; led.classList.toggle('blink',len>2&&len<paper.offsetHeight-1);}};
+  rig.style.height=(paper.offsetHeight+63+extra)+'px';
+  return {rows, rowEnd:i=>rows[i].offsetTop+rows[i].offsetHeight+6, H:()=>paper.offsetHeight,
+    set(len){const v=len.toFixed(1)+'px'; if(clip.style.height!==v)clip.style.height=v; led.classList.toggle('blink',len>2&&len<paper.offsetHeight-1);}};
 }
 
-/* 1. paragon */
-const d1=drukarka($('#rig1')), ring=$('#ring'), qm=$('#qm'), s1a=$('#s1a'), s1b=$('#s1b'), hint=$('#hint'), t0=performance.now();
+/* każdy obraz skalowany do swojej strefy: nic nie wchodzi na podpis ani na zdanie pod spodem */
+function fit(){
+  $$('.box').forEach(b=>{const v=b.parentElement, vw=v.clientWidth, vh=v.clientHeight, bw=b.offsetWidth, bh=b.offsetHeight; if(!bw||!bh||!vh)return;
+    const s=Math.min(vw/bw, vh/bh, desk()?1.3:1); b.style.transform=b.classList.contains('rig')?`translateX(-50%) scale(${s.toFixed(4)})`:`translate(-50%,-50%) scale(${s.toFixed(4)})`;});
+}
+
+/* ───── 1. paragon ───── */
+const s1a=$('#s1a'), s1b=$('#s1b'), hint=$('#hint'); let t0=performance.now();
 function s1(p){
-  const H=d1.H(), r4=d1.rowEnd(4);
-  const auto=eio(cl((performance.now()-t0-350)/1600))*r4;
-  d1.set(Math.max(auto, r4+eio(seg(p,.04,.62))*(H-r4)));
-  pen(ring,seg(p,.66,.8)); qm.style.opacity=seg(p,.78,.84); qm.style.transform=`rotate(-8deg) scale(${.7+.3*eo(seg(p,.78,.86))})`;
-  const sw=seg(p,.8,.9); s1a.style.opacity=1-sw; s1a.style.transform=`translateY(${-14*sw}px)`; s1b.style.opacity=sw; s1b.style.transform=`translateY(${14*(1-sw)}px)`;
-  hint.style.opacity=1-seg(p,.05,.15);
+  const H=d1.H(), qi=d1.rows.findIndex(r=>r.classList.contains('q')), rA=d1.rowEnd(qi-1);
+  const auto=eio(cl((performance.now()-t0-300)/1500))*rA;
+  d1.set(Math.max(auto, rA+eio(seg(p,.04,.6))*(H-rA)));
+  const q=d1.rows[qi], ring=q.querySelector('.ring path'); ring.style.strokeDashoffset=String(1-seg(p,.62,.76)); q.style.color=p>.74?'#C2261B':'';
+  const sw=eio(seg(p,.78,.9)); s1a.style.opacity=1-sw; s1a.style.transform=`translateY(${-16*sw}px)`; s1a.style.pointerEvents=sw>.5?'none':'';
+  s1b.style.opacity=sw; s1b.style.transform=`translateY(${16*(1-sw)}px)`;
+  hint.style.opacity=1-seg(p,.04,.12);
 }
 
-/* 2. mail */
-const phone=$('#phone'), scan=$('#scan'), f2=$('#f2'), h=[1,2,4].map(i=>$('#h'+i)), n=[1,2,3,4].map(i=>$('#n'+i));
+/* ───── 2. mail ───── */
 function s2(p){
-  const a=eo(seg(p,0,.1)); phone.style.opacity=.25+.75*a;
-  phone.style.transform=(desk()?'translate(-50%,-50%)':'translateX(-50%)')+` translateY(${(1-a)*40}px) scale(${1-.04*seg(p,.5,.62)})`;
-  mark(h[0].querySelector('.bg'),seg(p,.13,.28)); pen(h[0].querySelector('.mark path'),seg(p,.15,.27)); write(n[0],seg(p,.2,.3));
-  const b2=seg(p,.32,.44); mark(h[1].querySelector('.bg'),b2); pen(h[1].querySelector('.mark path'),b2); write(n[1],seg(p,.36,.46));
-  write(n[2],seg(p,.49,.56));
-  const sa=eo(seg(p,.52,.64)); scan.style.opacity=sa; scan.style.transform=`translateX(-50%) rotate(${2.2*sa}deg) translateY(${(1-sa)*60}px)`;
-  mark(h[2].querySelector('.bg'),seg(p,.68,.76)); write(n[3],seg(p,.73,.82));
-  show(f2,seg(p,.86,.93),10);
-  return 4*seg(p,.13,.3)+2*seg(p,.32,.46)+1*seg(p,.49,.64)+1*seg(p,.68,.82);
+  const a=eo(seg(p,0,.08)); E.mailc.style.opacity=.3+.7*a; E.mailc.style.transform=`translateY(${(1-a)*30}px)`;
+  const pa=eo(seg(p,.08,.16)); E.postit.style.opacity=pa; E.postit.style.transform=`rotate(-1.2deg) translateY(${(1-pa)*24}px)`;
+  const W=[[.1,.2,.2,.3],[.3,.38,.38,.47],[.49,.54,.55,.64],[.67,.74,.75,.84]];
+  W.forEach(([a1,b1,a2,b2],i)=>{
+    if(i===2){E.att.classList.toggle('on',p>a1); const sk=eio(seg(p,.5,.62)); E.skan.style.opacity=.28+.72*sk; E.skan.style.filter=sk>=1?'':`blur(${(1-sk)*5}px)`;}
+    else{const h=E.hl[i===3?2:i]; h.querySelector('.bg').style.transform=`scaleX(${eo(seg(p,a1,b1))})`;}
+    pop(E.nr[i],seg(p,b1-.03,b1+.01)); write(E.li[i],seg(p,a2,b2));
+  });
+  show($('#f2'),seg(p,.86,.93),10);
+  const M=T.min.mail; return M*(.4*seg(p,.1,.3)+.2*seg(p,.3,.47)+.2*seg(p,.49,.64)+.2*seg(p,.67,.84));
 }
 
-/* 3. przepisywanie */
-const clk3=$('#clk3'), err=$('#err'), k3=$('#k3'), sum=$('#sum'), n5=$('#n5'), f3=$('#f3'), erp=$('#erp'), od=$('#f-od'), te=$('#f-te');
-const R=[1,2,3,4].map(i=>$(`.gr[data-row="${i}"]`)), W=[[.06,.2],[.2,.33],[.36,.62],[.64,.78]], miniL=$$('.mini .ln');
+/* ───── 3. przepisywanie ───── */
+const clk3=$('#clk3');
 function s3(p){
-  erp.style.opacity=.3+.7*eo(seg(p,0,.08));
-  type(od,seg(p,.02,.07),od.dataset.type); type(te,seg(p,.07,.1),te.dataset.type);
-  let active=0,total=0;
-  R.forEach((row,i)=>{
-    const [s,e]=W[i], t=seg(p,s,e); if(t>0&&t<1)active=i+1;
-    const cells=[...row.children].slice(1);
+  const e=T.erp;
+  type(E.inp[0],seg(p,.02,.07),E.inp[0].dataset.type); type(E.inp[1],seg(p,.07,.1),E.inp[1].dataset.type);
+  const W=[[.1,.23],[.24,.36],[.38,.62],[.64,.78]]; let total=0, zi=0;
+  E.rows.forEach((row,i)=>{
+    const [s,en]=W[i], t=seg(p,s,en), cells=[...row.children].slice(1); if(p>=s)zi=i+1;
     if(i===2){
+      const bad=e.rows[2][0], good=e.rows[2][4], k=cells[0];
       const tA=seg(p,s,s+.06), tDel=seg(p,s+.12,s+.15), tB=seg(p,s+.15,s+.18);
-      let txt='KRT-4O21'.slice(0,Math.round(8*tA));
-      if(tDel>0) txt='KRT-4O21'.slice(0,8-Math.round(4*tDel));
-      if(tB>0) txt='KRT-'+'4021'.slice(0,Math.round(4*tB));
-      if(k3.textContent!==txt)k3.textContent=txt; k3.classList.toggle('caret',tA>0&&tB<1);
-      row.classList.toggle('bad',tA>=1&&tDel<1);
-      const eon=seg(p,s+.065,s+.08)*(1-seg(p,s+.11,s+.13)); err.style.opacity=eon; err.style.transform=`translateY(${(1-eon)*6}px)`;
-      const rest=seg(p,s+.19,e); cells.slice(1).forEach((c,j)=>type(c,seg(rest,j*.25,j*.25+.45),c.dataset.type));
+      let txt=bad.slice(0,Math.round(bad.length*tA));
+      const common=(()=>{let c=0;while(c<bad.length&&bad[c]===good[c])c++;return c;})();
+      if(tDel>0)txt=bad.slice(0,bad.length-Math.round((bad.length-common)*tDel));
+      if(tB>0)txt=good.slice(0,common+Math.round((good.length-common)*tB));
+      if(k.textContent!==txt)k.textContent=txt; k.classList.toggle('caret',tA>0&&tB<1);
+      const isBad=tA>=1&&tDel<1; row.classList.toggle('bad',isBad);
+      const eon=seg(p,s+.065,s+.08)*(1-seg(p,s+.12,s+.14)); E.err.style.opacity=eon; E.err.style.transform=`translateY(${(1-eo(eon))*6}px)`;
+      const rest=seg(p,s+.19,en); cells.slice(1).forEach((c,j)=>type(c,seg(rest,j*.25,j*.25+.45),c.dataset.type));
     } else {
       const sg=[[0,.3],[.3,.75],[.75,.85],[.85,1]]; cells.forEach((c,j)=>type(c,seg(t,sg[j][0],sg[j][1]),c.dataset.type));
     }
-    row.classList.toggle('act',t>0&&t<1);
-    if(t>=1) total+=[290,380,90,40][i];
+    row.classList.toggle('act',t>0&&t<1&&!row.classList.contains('bad'));
+    if(t>=1)total+=e.rows[i][3];
   });
-  miniL.forEach(l=>l.classList.toggle('on',l.dataset.r.split(' ').includes(String(active))));
-  const st=zl(total); if(sum.textContent!==st)sum.textContent=st;
-  write(n5,seg(p,.74,.8));
-  const eb=erp.getBoundingClientRect(), vb=erp.parentElement.getBoundingClientRect();
-  n5.style.left=(eb.right-vb.left-170)+'px'; n5.style.top=(eb.bottom-vb.top+10)+'px';
-  clk3.textContent=hhmm(7*60+40+18*seg(p,.02,.9));
-  show(f3,seg(p,.86,.93),10);
-  return 10*seg(p,.02,.86);
+  if(zi!==E.zi){E.zi=zi; E.zrL.textContent=e.zr[zi][0]; E.zrT.innerHTML=e.zr[zi][1]; E.zrodlo.animate&&E.zrodlo.animate([{transform:'rotate(-.8deg) translateY(-4px)',opacity:.4},{transform:'rotate(-.8deg)',opacity:1}],{duration:260,easing:'ease-out'});}
+  const st=zl(total); if(E.sum.textContent!==st)E.sum.textContent=st;
+  write(E.zgad,seg(p,.72,.8));
+  clk3.textContent=hhmm(T.sys0+T.min.sys*seg(p,.02,.86));
+  show($('#f3'),seg(p,.86,.93),10);
+  return T.min.sys*seg(p,.02,.86);
 }
 
-/* 4. reszta dnia */
-const evs=$$('.ev'), clk4=$('#clk4'), f4=$('#f4');
+/* ───── 4. reszta dnia ───── */
+const clk4=$('#clk4');
 function s4(p){
   const a=[seg(p,.05,.2),seg(p,.3,.45),seg(p,.55,.72)];
-  evs.forEach((e,i)=>show(e,a[i],30));
-  clk4.textContent=a[2]>0?'14:00':a[1]>0?'10:30':'08:15';
-  show(f4,seg(p,.84,.92),10);
-  return {min:8*a[0]+6*a[1]+30*a[2], zl:48.4*a[2]};
+  E.evs.forEach((e,i)=>show(e,a[i],30));
+  const ix=a[2]>0?2:a[1]>0?1:0, ct=T.ev[ix].t; if(clk4.textContent!==ct)clk4.textContent=ct;
+  show($('#f4'),seg(p,.82,.9),10);
+  return {min:T.ev.reduce((s,v,i)=>s+v.min*a[i],0), zl:(T.ev[2].zl||0)*a[2]};
 }
 
-/* 5. skala */
-const kop=$('#koperty'), envSvg='<svg viewBox="0 0 24 18"><rect x="1" y="1" width="22" height="16" rx="2"/><path d="m2 2 10 8 10-8"/></svg>';
-kop.innerHTML=Array.from({length:60},(_,i)=>`<div class="kp${i===0?' ten':''}">${envSvg}</div>`).join('');
-const kps=[...kop.children], lz=$$('.lz'), f5=$('#f5');
+/* ───── 5. skala ───── */
 function s5(p){
-  const k=seg(p,.03,.4); kps.forEach((el,i)=>{const t=cl(k*60-i*.92); el.style.opacity=i===0?1:.15+.85*t; el.style.transform=`scale(${i===0?1:.7+.3*eo(t)})`;});
-  [[.38,.48],[.5,.6],[.62,.72],[.74,.84]].forEach(([a,b],i)=>show(lz[i],seg(p,a,b),16));
-  show(f5,seg(p,.8,.88),6);
+  const n=E.kps.length, k=seg(p,.03,.38);
+  E.kps.forEach((el,i)=>{const t=i===0?1:cl(k*n*1.08-i); el.style.opacity=.12+.88*t; el.style.transform=`scale(${.7+.3*eo(t)})`;});
+  [[.36,.46],[.48,.58],[.6,.7],[.72,.82]].forEach(([a,b],i)=>show(E.lz[i],seg(p,a,b),16));
+  show($('#f5'),seg(p,.8,.88),6);
 }
 
-/* 6. lekcja: pasy rosną, gdy sekcja wchodzi na ekran */
-const waga=$('#waga');
-if('IntersectionObserver' in window){new IntersectionObserver((es,o)=>es.forEach(e=>{if(e.isIntersecting){waga.classList.add('on');o.disconnect();}}),{threshold:.5}).observe(waga);} else waga.classList.add('on');
-
-/* 7. ten sam dzień */
-const clk7=$('#clk7'), minim=$('#minim'), log=$('.log'), lgr=$$('.lg-r'), zatw=$('#zatw'), f7=$('#f7');
+/* ───── 7. ten sam dzień, z systemem ───── */
+const clk7=$('#clk7');
 function s7(p){
-  const rw=eio(seg(p,0,.14)); clk7.textContent=p<.15?hhmm(14*60-(14*60-(7*60+12))*rw):(p<.8?'07:1'+(p<.62?'2':'4'):'10:30');
-  const mi7=eo(seg(p,.12,.2)); minim.style.opacity=mi7; minim.style.transform=`translateX(-50%) translateY(${(1-mi7)*14}px)`; log.style.opacity=eo(seg(p,.14,.22));
-  const W7=[[.2,.27],[.28,.35],[.36,.43],[.44,.51],[.6,.67],[.7,.77]];
-  lgr.forEach((r,i)=>show(r,seg(p,...W7[i]),10));
-  const ok=p>.56; zatw.classList.toggle('ok',ok); zatw.textContent=ok?'Zatwierdzone przez Anię ✓':'Zatwierdź';
-  show(f7,seg(p,.84,.92),10);
-  return 1*seg(p,.44,.58);
+  const rz=T.rz, rw=eio(seg(p,0,.1));
+  clk7.textContent=hhmm(p<.1?hm(14,0)-(hm(14,0)-rz.c0)*rw:(p<.78?rz.c0:rz.c1));
+  show(E.nowy,seg(p,.06,.14),14);
+  show(E.lacze,seg(p,.12,.18),8);
+  const lb=seg(p,.16,.28); E.lzB.style.transform=`scaleX(${lb})`;
+  const lt=lb>=1?'Przeczytane: mail i załącznik':'System czyta mail i załącznik'; if(E.lzT.textContent!==lt)E.lzT.textContent=lt;
+  const done=E.pz.filter((_,i)=>p>=.32+i*.05).length, le=`${done}/4`; if(E.lzE.textContent!==le)E.lzE.textContent=le;
+  show(E.erp7,seg(p,.2,.26),14);
+  let total=0;
+  E.pz.forEach((r,i)=>{const t=seg(p,.28+i*.05,.32+i*.05); r.style.opacity=.22+.78*eo(t);
+    r.classList.toggle('lit',t>0&&(i<3?p<.34+i*.05+.04:p>.72)); r.classList.toggle('pyt',i===3&&t>=1&&p<=.72);
+    show(E.chips[i],seg(p,.31+i*.05,.35+i*.05),3); if(t>=1)total+=T.erp.rows[i][3];});
+  const c4=E.chips[3], ok=p>.72; c4.classList.toggle('q',!ok); const ct=ok?rz.ok4:rz.chips[3]; if(c4.textContent!==ct)c4.textContent=ct;
+  const st=zl(total); if(E.sum7.textContent!==st)E.sum7.textContent=st;
+  show(E.stan,seg(p,.48,.54),8);
+  const pin=eo(seg(p,.56,.62)), pout=eo(seg(p,.75,.79)); E.pyt.style.opacity=pin*(1-pout); E.pyt.style.transform=`translateY(${(1-pin)*14-pout*10}px)`;
+  const fx=seg(p,.62,.69), tk=E.tak; const tx=tk.offsetLeft+tk.offsetWidth*.55-17, ty=tk.offsetTop+tk.offsetHeight*.5-17;
+  E.palec.style.opacity=seg(p,.62,.64)*(1-seg(p,.73,.75)); E.palec.style.transform=`translate(${tx+(1-eo(fx))*90}px,${ty+(1-eo(fx))*60}px) scale(${p>.69&&p<.72?.82:1})`;
+  const tp=seg(p,.69,.74); E.tap.style.transform=`scale(${eo(tp)*3})`; E.tap.style.opacity=tp>0?.6*(1-tp):0;
+  const win=eo(seg(p,.77,.83)); E.wys.style.opacity=win; E.wys.style.transform=`translateY(${(1-win)*14}px)`;
+  show(E.w2,seg(p,.85,.9),6);
+  show($('#f7'),seg(p,.9,.96),10);
+  return rz.min*seg(p,.56,.74);
 }
 
-/* 8. drugi paragon */
-const d2=drukarka($('#rig2')), stary=$('#stary');
+/* ───── 8. drugi paragon ───── */
+const przed=$('#przed');
 function s8(p){
-  d2.set(eio(seg(p,.06,.75))*d2.H());
-  const a=eo(seg(p,0,.12)); stary.style.opacity=.55*a; stary.style.transform=`rotate(-7deg) translateY(${(1-a)*20}px)`;
+  d2.set(eio(seg(p,.06,.72))*d2.H());
+  const a=eo(seg(p,.02,.12)); przed.style.opacity=a; przed.style.transform=`translateX(-50%) translateY(${(1-a)*-10}px)`;
+  show($('#f8'),seg(p,.76,.86),10);
 }
 
-/* licznik i pasek */
-const bar=$('#bar'), barCta=$('#barCta'), meter=$('#meter'), mlb=$('#mlb'), mzl=$('#mzl'), mmn=$('#mmn'), kontakt=document.getElementById('kontakt');
+/* ───── wybór branży ───── */
+const chip=$('#typChip'), chipT=$('#typChipT'), menu=$('#typMenu');
+function setTyp(k,zrodlo){
+  if(!B[k])k='handel'; const zmiana=K&&K!==k; K=k; T=B[k];
+  render(); chipT.textContent=T.nazwa;
+  $$('[data-typ]').forEach(b=>{const on=b.dataset.typ===k; if(b.hasAttribute('aria-pressed'))b.setAttribute('aria-pressed',on); if(b.getAttribute('role')==='menuitem')b.setAttribute('aria-current',on);});
+  document.documentElement.dataset.typ=k;
+  if(zmiana){
+    t0=performance.now();
+    try{localStorage.setItem('mzTyp',k);}catch(e){}
+    try{const u=new URL(location.href); u.searchParams.set('typ',k); history.replaceState(history.state,'',u);}catch(e){}
+    try{window.laStat&&window.laStat('branza',{typ:k,zrodlo:zrodlo||''});}catch(e){}
+  }
+}
+$$('.typy-b [data-typ]').forEach(b=>b.addEventListener('click',()=>setTyp(b.dataset.typ,'hero')));
+$$('#typMenu [data-typ]').forEach(b=>b.addEventListener('click',()=>{setTyp(b.dataset.typ,'pasek');zamknij();}));
+const zamknij=()=>{menu.classList.remove('on');chip.setAttribute('aria-expanded','false');};
+chip.addEventListener('click',e=>{e.stopPropagation();const on=!menu.classList.contains('on');menu.classList.toggle('on',on);chip.setAttribute('aria-expanded',on);});
+document.addEventListener('click',e=>{if(!menu.contains(e.target))zamknij();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')zamknij();});
+
+/* ───── lekcja i paragon CTA: pojawiają się, gdy wejdą na ekran ───── */
+const naEkran=(el,cb,th=.4)=>{if(!('IntersectionObserver' in window)){cb();return;} new IntersectionObserver((es,o)=>es.forEach(x=>{if(x.isIntersecting){cb();o.disconnect();}}),{threshold:th}).observe(el);};
+naEkran($('#waga'),()=>$('#waga').classList.add('on'));
+naEkran($('#rach'),()=>$('#rach').classList.add('on'),.3);
+
+/* ───── pętla: postęp przewijania wygładzony, licznik w pasku ───── */
+const qs=new URLSearchParams(location.search);
+let start=qs.get('typ'); if(!B[start]){try{start=localStorage.getItem('mzTyp');}catch(e){start=null;}}
+setTyp(B[start]?start:'handel');
+const IDS=['paragon','mail','przepisywanie','reszta','skala','zmiana','po'], S={}, P={};
+IDS.forEach(id=>{S[id]=document.getElementById(id);P[id]=0;});
+const prog=el=>{const r=el.getBoundingClientRect();const tot=r.height-innerHeight;return tot<=0?0:cl(-r.top/tot);};
+const snap=()=>window.__snap||qs.has('s');
+const bar=$('#bar'), barCta=$('#barCta'), meter=$('#meter'), mlb=$('#mlb'), mzl=$('#mzl'), mmn=$('#mmn'), jak=$('#jak'), plz=$('#policzmy');
 let lastMin=-1;
 function frame(){
-  s1(prog(S.paragon)); const m2=s2(prog(S.mail)), m3=s3(prog(S.przepisywanie)), r4=s4(prog(S.reszta));
-  s5(prog(S.skala)); const m7=s7(prog(S.zmiana)); s8(prog(S.po));
-  const po=S.zmiana.getBoundingClientRect().top<innerHeight*.5;
-  const on=S.mail.getBoundingClientRect().top<innerHeight*.15 && S.jak && document.getElementById('jak').getBoundingClientRect().top>innerHeight*.3;
-  meter.classList.toggle('on',on); barCta.classList.toggle('off',S.mail.getBoundingClientRect().top<innerHeight*.15 && on);
-  meter.classList.toggle('po',po);
-  let mins, money;
-  if(po){ mins=m7; money=mins*0.8; mlb.textContent='Ten sam dzień, po zmianie'; }
-  else { mins=m2+m3+r4.min; money=mins*0.8+r4.zl; mlb.textContent='Obsługa tego zamówienia'; }
+  const sn=snap();
+  IDS.forEach(id=>{const t=prog(S[id]); let c=P[id]; c=sn?t:c+(t-c)*.16; if(Math.abs(t-c)<.0006)c=t; P[id]=c;});
+  s1(P.paragon); const m2=s2(P.mail), m3=s3(P.przepisywanie), r4=s4(P.reszta); s5(P.skala); const m7=s7(P.zmiana); s8(P.po);
+  const vh=innerHeight, po=S.zmiana.getBoundingClientRect().top<vh*.5;
+  const on=S.mail.getBoundingClientRect().top<vh*.15 && jak.getBoundingClientRect().top>vh*.3;
+  meter.classList.toggle('on',on); barCta.classList.toggle('off',on); meter.classList.toggle('po',po);
+  let mins,money;
+  if(po){mins=m7; money=mins*T.rate/60; if(mlb.textContent!=='po zmianie')mlb.textContent='po zmianie';}
+  else{mins=m2+m3+r4.min; money=mins*T.rate/60+r4.zl; if(mlb.textContent!=='obsługi')mlb.textContent='obsługi';}
   const zt=zl(money); if(mzl.textContent!==zt)mzl.textContent=zt;
-  const mi=Math.floor(mins+1e-6); mmn.textContent=mi+' min';
+  const mi=Math.floor(mins+1e-6), mt=mi+' min'; if(mmn.textContent!==mt)mmn.textContent=mt;
   if(mi!==lastMin&&lastMin>=0&&on){meter.classList.remove('bump');void meter.offsetWidth;meter.classList.add('bump');} lastMin=mi;
-  if(kontakt){const kr=kontakt.getBoundingClientRect(); bar.classList.toggle('off',kr.top<innerHeight*.6);}
+  bar.classList.toggle('off',plz.getBoundingClientRect().top<vh*.55);
   requestAnimationFrame(frame);
 }
-S.jak=document.getElementById('jak');
-const qs=new URLSearchParams(location.search), qsS=qs.get('s');
-if(qsS){const el=document.getElementById(qsS); if(el){const tot=el.offsetHeight-innerHeight; scrollTo(0, el.getBoundingClientRect().top+scrollY+parseFloat(qs.get('p')||0)*Math.max(0,tot));}}
+addEventListener('resize',fit);
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{d1=drukarka($('#rig1'));d2=drukarka($('#rig2'),48);fit();});
+const qsS=qs.get('s');
+if(qsS){const el=document.getElementById(qsS); if(el){document.documentElement.style.scrollBehavior='auto'; const tot=el.offsetHeight-innerHeight; scrollTo(0,el.getBoundingClientRect().top+scrollY+parseFloat(qs.get('p')||0)*Math.max(0,tot));}}
 requestAnimationFrame(frame);
 })();
 
