@@ -18,6 +18,7 @@
 // i adres mailowy — zgłoszenie nie ginie po cichu.
 import { put } from '@vercel/blob';
 import { createHash } from 'node:crypto';
+import { zapisz, visitor, device } from './_staty.js';
 
 // Meta Conversions API: po przyjętym zgłoszeniu wysyłamy Lead z serwera na
 // piksel letsautomate.pl, z tym samym event_id, z którym Lead wysyła
@@ -74,6 +75,16 @@ async function wyslijDoMety(req, { email, telefon, zrodlo, meta }) {
 const CZYSC = (v, max) => String(v == null ? '' : v).replace(/\s+/g, ' ').trim().slice(0, max);
 const MAIL_OK = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
 
+// Własne statystyki (api/_staty.js): zgłoszenie i błąd formularza jako zdarzenia, bez danych osoby
+// (tylko źródło, strona i to, czy podano telefon). Ten sam identyfikator odwiedzającego co w /api/hit.
+function stat(req, e, dane, p) {
+  let path = null;
+  try { path = new URL(String(dane?.meta?.url || '')).pathname.slice(0, 200); } catch {}
+  const ua = String(req.headers['user-agent'] || '');
+  return zapisz({ vid: visitor(req), e, path, urz: device(ua), kraj: String(req.headers['x-vercel-ip-country'] || '').slice(0, 4) || null, p })
+    .catch((x) => console.error('[kontakt] staty:', x.message));
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST');
@@ -117,8 +128,8 @@ export default async function handler(req, res) {
     return res.status(200).json({ ok: true });
   }
 
-  if (!MAIL_OK.test(email)) return res.status(422).json({ blad: 'email' });
-  if (telefon && telefon.replace(/\D/g, '').length < 9) return res.status(422).json({ blad: 'telefon' });
+  if (!MAIL_OK.test(email)) { await stat(req, 'zgloszenie_blad', dane, { powod: 'email', zrodlo: zrodlo.split(' · ')[0].slice(0, 60) }); return res.status(422).json({ blad: 'email' }); }
+  if (telefon && telefon.replace(/\D/g, '').length < 9) { await stat(req, 'zgloszenie_blad', dane, { powod: 'telefon', zrodlo: zrodlo.split(' · ')[0].slice(0, 60) }); return res.status(422).json({ blad: 'telefon' }); }
 
   const tresc = [
     `E-mail: ${email}`,
@@ -196,12 +207,16 @@ export default async function handler(req, res) {
   const padly = wyniki.map((w, i) => (dziala(w) ? null : `${kanaly[i]}: ${w.reason || (w.value && w.value.status)}`)).filter(Boolean);
   if (padly.length === wyniki.length) {
     console.error('[kontakt] wszystkie kanały odpadły:', padly);
+    await stat(req, 'zgloszenie_blad', dane, { powod: 'dostarczenie', zrodlo: zrodlo.split(' · ')[0].slice(0, 60) });
     return res.status(502).json({ blad: 'dostarczenie' });
   }
   // Część kanałów padła (np. webhook), ale zgłoszenie jest zapisane gdzie indziej.
   if (padly.length) console.error('[kontakt] nie wszystkie kanały zadziałały:', padly);
 
-  await wyslijDoMety(req, { email, telefon, zrodlo, meta: dane.meta && typeof dane.meta === 'object' ? dane.meta : null });
+  await Promise.all([
+    wyslijDoMety(req, { email, telefon, zrodlo, meta: dane.meta && typeof dane.meta === 'object' ? dane.meta : null }),
+    stat(req, 'zgloszenie', dane, { zrodlo: zrodlo.split(' · ')[0].slice(0, 60), miejsce: zrodlo.split(' · ').slice(-1)[0].slice(0, 60), telefon: !!telefon }),
+  ]);
 
   return res.status(200).json({ ok: true });
 }
