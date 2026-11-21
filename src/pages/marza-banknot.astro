@@ -592,7 +592,7 @@ function rozpoznaj(v){
 }
 formy.forEach(f=>{
   const i=$('.kz-i',f), z=$('input[name=zgoda]',f);
-  i.addEventListener('input',()=>{ const mail=i.value.includes('@'); formy.forEach(g=>{ if(g!==f) $('.kz-i',g).value=i.value; $('.kz-err',g).textContent=''; $('.kz-wt',g).textContent=mail?'Napiszcie do mnie':'Zadzwońcie do mnie'; }); });
+  i.addEventListener('input',()=>{ const mail=/[a-ząćęłńóśźż@]/i.test(i.value); formy.forEach(g=>{ if(g!==f) $('.kz-i',g).value=i.value; $('.kz-err',g).textContent=''; $('.kz-wt',g).textContent=mail?'Napiszcie do mnie':'Zadzwońcie do mnie'; }); });
   z.addEventListener('change',()=>formy.forEach(g=>{ $('input[name=zgoda]',g).checked=z.checked; $('.kz-z',g).classList.remove('err'); }));
   f.addEventListener('submit',e=>{ e.preventDefault(); wyslij(f); });
 });
