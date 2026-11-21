@@ -1,0 +1,523 @@
+---
+// MARŻA · BANKNOT — /marza-banknot. Landing pod reklamę Meta „Marża” k32 (wygryziony banknot,
+// „Wiemy, co zjada Twoją marżę.”). Szymon 21.11.2026: „ale przecież to nie tylko zamówienia… zrób najpierw
+// landing”. 100 zł marży z zamówienia za 800 zł zjadane przez pięć obszarów (oferta, zamówienie, telefony,
+// faktura, pomyłka), liczby te same co na /marza (88,64 zł obsługi, zostaje 11,36 zł; z systemem 9,52 / 90,48).
+// Źródło: ~/filmy/lets-meta-marza/landing-banknot (build.py generuje ten plik — zmiany rób tam).
+// noindex, bez nawigacji, zgłoszenia ze źródłem „Marża · banknot · <miejsce>”.
+import LaBase from '../layouts/LaBase.astro';
+const title = "Wiemy, co zjada Twoją marżę | Let's automate";
+const description = "Ze 100 zł marży na zamówieniu za 800 zł zostaje 11,36 zł. Zobacz, co ją zjada, i jak zostaje 90,48 zł. Pokażemy to u Ciebie, za darmo.";
+---
+<LaBase topbar={false} title={title} description={description} ctaHref="#kontakt" nav={null} naglowek={false} noindex={true} ogImage="/marza-banknot/og.jpg">
+<style is:global>
+@font-face{
+font-family:"BkMono";font-style:normal;font-weight:400 700;font-display:swap;src:url(/fonts/jetbrains-mono-v24-normal-400-700-latin-ext.woff2) format("woff2");unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{
+font-family:"BkMono";font-style:normal;font-weight:400 700;font-display:swap;src:url(/fonts/jetbrains-mono-v24-normal-400-700-latin.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+.bk{
+
+  --ink:#07140d; --ink2:#0d2118; --papier:#f4f3ee;
+  --t1:#0f1a14; --t2:#46524b; --t3:#7b867f;
+  --ziel:#00CD77; --ziel-c:#0a7a52; --burs:#f0a33a; --burs-j:#ffc879;
+  --f:"Schibsted Grotesk",system-ui,-apple-system,sans-serif;
+  --f-m:"BkMono","JetBrains Mono",ui-monospace,Menlo,monospace;
+  --pad:clamp(16px,5vw,56px); --ram:clamp(6px,.9vw,14px);}
+.bk{
+margin:0;background:#fff;color:var(--t1);font-family:var(--f);-webkit-font-smoothing:antialiased;overflow-x:clip}
+.bk *{
+box-sizing:border-box}
+.bk a{
+color:inherit}
+.bk .w{
+max-width:1240px;margin:0 auto;padding:0 var(--pad)}
+.bk button{
+font:inherit}
+.bk .btn{
+display:inline-flex;align-items:center;gap:14px;border:0;cursor:pointer;background:var(--ziel);color:var(--ink);font-weight:700;font-size:16px;letter-spacing:-.01em;padding:9px 9px 9px 22px;border-radius:999px;white-space:nowrap;transition:background .2s,transform .15s}
+.bk .btn span{
+display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;background:var(--ink);color:var(--ziel);font-size:15px;transition:transform .25s}
+.bk .btn:hover{
+background:#25dd8b}
+.bk .btn:hover span{
+transform:translateX(3px)}
+.bk .btn:active{
+transform:scale(.98)}
+.bk .btn[disabled]{
+opacity:.6;cursor:default}
+.bk .hero{
+padding:var(--ram) var(--ram) 0}
+.bk .hero-pl{
+position:relative;max-width:1440px;margin:0 auto;border-radius:clamp(20px,2.2vw,32px);background:var(--ink);color:#fff;overflow:hidden;min-height:calc(100svh - var(--ram));display:flex;flex-direction:column}
+.bk .hero-f{
+position:absolute;left:-12%;top:-7%;width:142%;max-width:none;height:auto}
+.bk .hero-pl::after{
+content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(7,20,13,.55) 0,rgba(7,20,13,0) 18%,rgba(7,20,13,0) 34%,rgba(7,20,13,.92) 56%,var(--ink) 66%);pointer-events:none}
+.bk .hero-pl > *:not(.hero-f){
+position:relative;z-index:1}
+.bk .bar{
+display:flex;align-items:center;justify-content:space-between;padding:16px var(--pad)}
+.bk .logo{
+line-height:0}
+.bk .logo svg{
+width:130px;height:auto}
+.bk .bar-tel{
+font-size:14px;font-weight:650;text-decoration:none;color:#fff;padding:8px 14px;border-radius:999px;background:rgba(255,255,255,.1);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.bk .hero-t{
+margin-top:auto;padding:0 var(--pad) clamp(28px,6vw,64px)}
+.bk .hero h1{
+margin:0;font-size:clamp(42px,11.4vw,88px);line-height:1.02;letter-spacing:-.05em;font-weight:700;text-wrap:balance}
+.bk .lead{
+margin:16px 0 0;font-size:clamp(16px,4.2vw,19px);line-height:1.55;color:rgba(255,255,255,.74);max-width:560px;text-wrap:pretty}
+.bk .akcje{
+display:flex;flex-wrap:wrap;align-items:center;gap:14px 22px;margin-top:24px}
+.bk .dalej{
+display:inline-flex;align-items:center;gap:9px;font-size:15px;font-weight:650;text-decoration:none;color:rgba(255,255,255,.8)}
+.bk .dalej i{
+width:8px;height:8px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:translateY(-2px) rotate(45deg)}
+.bk .scena{
+position:relative;height:calc(var(--h) * 1vh);height:calc(var(--h) * 1svh);background:#0a130e}
+.bk .scena::before{
+content:"";position:absolute;inset:0;background:radial-gradient(120% 70% at 18% 0%,rgba(255,236,200,.08),rgba(0,0,0,0) 55%),radial-gradient(90% 60% at 80% 100%,rgba(0,205,119,.06),rgba(0,0,0,0) 60%);pointer-events:none}
+.bk .st{
+position:sticky;top:0;height:100vh;height:100svh;display:flex;flex-direction:column;gap:10px;padding:18px var(--pad) calc(86px + env(safe-area-inset-bottom));max-width:1240px;margin:0 auto;color:#fff;overflow:hidden}
+.bk .op{
+flex-shrink:0}
+.bk .op-g{
+display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.bk .op-n{
+font:600 13px/1 var(--f-m);letter-spacing:.04em;color:rgba(255,255,255,.55);padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.08)}
+.bk .op-k{
+font:700 clamp(22px,6.2vw,30px)/1 var(--f-m);letter-spacing:-.02em;color:var(--burs-j);font-variant-numeric:tabular-nums}
+.bk .op-zd{
+position:relative;height:calc(1.1em * 1 + 10px + 3 * 1.45 * 16px);font-size:clamp(26px,7.4vw,34px)}
+.bk .oz{
+position:absolute;inset:0 0 auto;opacity:0;transform:translateY(8px);transition:opacity .35s ease,transform .45s cubic-bezier(.2,.8,.2,1)}
+.bk .oz.on{
+opacity:1;transform:none}
+.bk .oz h2{
+margin:0;font-size:1em;line-height:1.1;letter-spacing:-.035em;font-weight:700}
+.bk .oz p{
+margin:8px 0 0;font-size:16px;line-height:1.45;color:rgba(255,255,255,.72);text-wrap:pretty}
+.bk .stol{
+position:relative;flex:1;min-height:0}
+.bk .stol .bn-o{
+position:absolute;left:50%;top:50%;width:var(--L,300px);transform:translate(-50%,-50%) rotate(var(--rot,-84deg))}
+.bk .bn{
+display:block;width:100%;height:auto;overflow:visible;filter:drop-shadow(0 14px 18px rgba(0,0,0,.55)) drop-shadow(0 2px 3px rgba(0,0,0,.4))}
+.bk .dol{
+flex-shrink:0}
+.bk .lz{
+display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.bk .lz span{
+font-size:14px;font-weight:600;color:rgba(255,255,255,.6)}
+.bk .lz b{
+font:700 clamp(30px,8.4vw,40px)/1 var(--f-m);letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.bk .sy-zd{
+position:relative;height:calc(2 * 1.45em + 4px);margin-top:10px;font-size:14.5px}
+.bk .sy{
+position:absolute;inset:0 0 auto;margin:0;display:flex;gap:9px;line-height:1.45;color:#8fe3bb;opacity:0;transition:opacity .35s ease}
+.bk .sy.on{
+opacity:1}
+.bk .sy i{
+flex-shrink:0;width:7px;height:7px;margin-top:.55em;border-radius:50%;background:var(--ziel);box-shadow:0 0 0 3px rgba(0,205,119,.18)}
+.bk .por{
+padding:clamp(64px,11vw,140px) 0 clamp(56px,9vw,110px);background:var(--papier)}
+.bk .pod-m{
+display:flex;align-items:center;gap:12px;margin:0 0 16px;font-size:15px;font-weight:650;color:var(--t1)}
+.bk .pod-m::before{
+content:"";width:22px;height:2px;background:var(--ziel)}
+.bk .h2{
+margin:0;font-size:clamp(34px,8.6vw,68px);line-height:1.02;letter-spacing:-.046em;font-weight:700;text-wrap:balance}
+.bk .h2 span{
+color:#a3aba5}
+.bk .h2.jasny{
+color:#fff}
+.bk .dwa{
+display:grid;grid-template-columns:1fr 1fr;gap:clamp(14px,3vw,40px);margin:clamp(28px,5vw,56px) 0 0}
+.bk .bn-k{
+margin:0;padding:clamp(18px,3vw,40px) clamp(10px,2vw,28px) clamp(14px,2vw,24px);border-radius:18px;background:#0a130e;display:flex;flex-direction:column;gap:16px;align-items:center}
+.bk .bn-k .bn-o{
+width:100%;transform:rotate(-3deg)}
+.bk .bn-k figcaption{
+display:flex;flex-direction:column;align-items:center;gap:2px;color:#fff;text-align:center}
+.bk .bn-k figcaption span{
+font-size:13px;font-weight:650;color:rgba(255,255,255,.6)}
+.bk .bn-k figcaption b{
+font:700 clamp(22px,5.6vw,34px)/1.1 var(--f-m);letter-spacing:-.03em;color:var(--burs-j)}
+.bk .bn-k.ok figcaption b{
+color:var(--ziel)}
+.bk .bn-k figcaption small{
+font-size:12.5px;color:rgba(255,255,255,.5)}
+.bk .por-t{
+max-width:640px;margin:clamp(24px,4vw,40px) 0 0;font-size:clamp(16px,4.2vw,18px);line-height:1.6;color:var(--t2);text-wrap:pretty}
+.bk .przyk{
+margin:12px 0 0;font-size:13px;color:var(--t3)}
+.bk .kon{
+padding:var(--ram) var(--ram) calc(100px + env(safe-area-inset-bottom))}
+.bk .kon-pl{
+max-width:1440px;margin:0 auto;border-radius:clamp(20px,2.2vw,32px);background:var(--ink);color:#fff;padding:clamp(40px,8vw,100px) var(--pad);display:grid;gap:28px;position:relative;overflow:hidden}
+.bk .kon-pl::before{
+content:"";position:absolute;inset:auto -20% -60% 30%;height:100%;background:radial-gradient(closest-side,rgba(0,205,119,.18),rgba(0,205,119,0));pointer-events:none}
+.bk .kon-pl > *{
+position:relative}
+.bk .kon-l{
+margin:16px 0 0;font-size:clamp(16px,4.2vw,19px);line-height:1.55;color:rgba(255,255,255,.72)}
+.bk .kon-kto{
+display:flex;align-items:center;gap:12px;margin:22px 0 0;font-size:15px;line-height:1.45;color:rgba(255,255,255,.72)}
+.bk .kon-kto img{
+width:48px;height:48px;border-radius:50%;object-fit:cover;object-position:50% 14%}
+.bk .kon-kto b{
+color:#fff}
+.bk .kon-kto a{
+font-weight:700;color:#fff;white-space:nowrap}
+.bk .fakty{
+max-width:1440px;margin:20px auto 0;padding:0 var(--pad);display:flex;flex-wrap:wrap;gap:8px 22px;font-size:14px;color:var(--t2)}
+.bk .fakty b{
+color:var(--t1)}
+.bk .kz{
+display:block;border-radius:18px;background:#fff;color:var(--t1);padding:18px}
+.bk .kz-l{
+display:block;font-size:14px;font-weight:650;margin-bottom:8px}
+.bk .kz-i{
+display:block;width:100%;font:600 22px/1.2 var(--f);letter-spacing:.01em;color:var(--t1);padding:13px 14px;border:0;border-radius:12px;background:var(--papier);box-shadow:inset 0 0 0 1.5px rgba(15,26,20,.12);outline:none;transition:box-shadow .2s,background .2s}
+.bk .kz-i::placeholder{
+color:#9aa39d;font-weight:500}
+.bk .kz-i:focus{
+background:#fff;box-shadow:inset 0 0 0 2px var(--ziel-c)}
+.bk .kz-err{
+display:block;min-height:18px;margin-top:5px;font-size:13px;color:#c0392b}
+.bk .kz-z{
+display:flex;align-items:flex-start;gap:9px;margin:4px 0 14px;font-size:12.5px;line-height:1.4;color:var(--t2);cursor:pointer}
+.bk .kz-z input{
+position:absolute;opacity:0;pointer-events:none}
+.bk .kz-box{
+flex-shrink:0;width:18px;height:18px;border-radius:5px;box-shadow:inset 0 0 0 1.5px #a8b0aa;background:#fff;position:relative}
+.bk .kz-z input:checked + .kz-box{
+background:var(--ziel-c);box-shadow:none}
+.bk .kz-z input:checked + .kz-box::after{
+content:"";position:absolute;left:6px;top:2.5px;width:5px;height:9px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg)}
+.bk .kz-z input:focus-visible + .kz-box{
+outline:2px solid var(--ziel-c);outline-offset:2px}
+.bk .kz-z.err .kz-box{
+box-shadow:inset 0 0 0 2px #c0392b}
+.bk .kz-z a{
+color:var(--t2)}
+.bk .kz .btn{
+width:100%;justify-content:space-between}
+.bk .kz-hp{
+position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.bk .kz-ok{
+display:flex;align-items:center;gap:12px;font-size:17px;font-weight:650;line-height:1.4;color:var(--ziel-c)}
+.bk .kz-ok[hidden]{
+display:none}
+.bk .kz-ok svg{
+width:26px;height:26px;flex-shrink:0;fill:none;stroke:var(--ziel-c);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.bk .kz.wyslane > :not(.kz-ok){
+display:none}
+.bk .pas{
+position:fixed;inset:auto 0 0 0;z-index:40;pointer-events:none}
+.bk .pas-bar{
+pointer-events:auto;display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 10px calc(10px + env(safe-area-inset-bottom));padding:8px 8px 8px 18px;border-radius:999px;background:rgba(7,20,13,.94);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);color:#fff;box-shadow:0 14px 40px -12px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.08);transform:translateY(calc(100% + 20px));transition:transform .45s cubic-bezier(.2,.8,.2,1)}
+.bk .pas.on .pas-bar{
+transform:none}
+.bk .pas.otw .pas-bar{
+transform:translateY(calc(100% + 20px))}
+.bk .pas-t{
+display:flex;flex-direction:column;min-width:0}
+.bk .pas-t small{
+font-size:11.5px;color:rgba(255,255,255,.6)}
+.bk .pas-t b{
+font:700 19px/1.1 var(--f-m);letter-spacing:-.02em;color:var(--burs-j);font-variant-numeric:tabular-nums}
+.bk .btn-m{
+font-size:15px;padding:7px 7px 7px 18px;gap:10px}
+.bk .btn-m span{
+width:32px;height:32px}
+.bk .pas-tlo{
+position:fixed;inset:0;background:rgba(7,20,13,.45);opacity:0;transition:opacity .3s;pointer-events:none}
+.bk .pas.otw .pas-tlo{
+opacity:1;pointer-events:auto}
+.bk .ark{
+pointer-events:auto;position:absolute;left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom));border-radius:20px;background:#fff;box-shadow:0 20px 60px -20px rgba(0,0,0,.6);transform:translateY(calc(100% + 30px));visibility:hidden;transition:transform .45s cubic-bezier(.2,.8,.2,1),visibility 0s .45s}
+.bk .pas.otw .ark{
+transform:none;visibility:visible;transition:transform .45s cubic-bezier(.2,.8,.2,1)}
+.bk .ark-g{
+display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 18px 0;font-size:17px;letter-spacing:-.015em}
+.bk .ark-x{
+border:0;background:var(--papier);border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+.bk .ark-x svg{
+width:14px;height:14px;fill:none;stroke:var(--t1);stroke-width:2;stroke-linecap:round}
+@media (min-width:1000px){
+.bk .hero-f{
+left:auto;right:0;top:0;width:52%;height:100%}
+.bk .hero-pl::after{
+background:linear-gradient(90deg,var(--ink) 40%,rgba(7,20,13,.6) 52%,rgba(7,20,13,0) 70%)}
+.bk .hero-t{
+max-width:640px;margin:auto 0;padding:0 var(--pad) 40px}
+.bk .st{
+display:grid;grid-template-columns:minmax(0,4fr) minmax(0,8fr);grid-template-rows:1fr auto;column-gap:56px;padding:48px var(--pad) 110px}
+.bk .op{
+grid-column:1;grid-row:1;align-self:center}
+.bk .op-zd{
+font-size:44px;height:220px}
+.bk .oz p{
+font-size:18px}
+.bk .stol{
+grid-column:2;grid-row:1 / 3}
+.bk .dol{
+grid-column:1;grid-row:2}
+.bk .sy-zd{
+font-size:16px;height:calc(3 * 1.45em)}
+.bk .lz{
+flex-direction:column;align-items:flex-start;gap:6px}
+.bk .kon-pl{
+grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);align-items:center;column-gap:72px}
+.bk .pas{
+inset:auto 24px 0 auto;width:440px}
+.bk .pas-bar{
+margin:0 0 20px}
+.bk .ark{
+left:0;right:0;bottom:20px}
+.bk .pas-tlo{
+background:rgba(7,20,13,.25)}
+}
+@media (max-height:700px) and (max-width:999px){
+.bk .op-zd{
+font-size:24px}
+.bk .oz p{
+font-size:15px}
+.bk .st{
+padding-top:12px;gap:6px}
+}
+@media (prefers-reduced-motion:reduce){
+.bk .oz,.bk .sy,.bk .pas-bar,.bk .ark{
+transition:none}
+}
+</style>
+<div class="bk">
+<!-- 0. HERO: ta sama fotografia co w reklamie -->
+<section class="hero" id="hero">
+ <div class="hero-pl">
+  <img class="hero-f" src="/marza-banknot/hero.webp" alt="" width="1080" height="1350" fetchpriority="high" decoding="async">
+  <header class="bar"><a class="logo" href="/" aria-label="Let's Automate, strona główna"><svg width="237" height="41" viewBox="0 0 237 41" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_4016_1321)"><path d="M126.179 11.1201H119.973L121.055 13.1157H123.346V13.6903H123.276C122.456 13.6903 121.72 14.1976 121.428 14.9669L115.801 29.877H118.115L119.711 25.6741H129.263L130.859 29.877H133.174L126.175 11.1201H126.179ZM126.83 23.6785H120.43L124.395 13.2502H124.633L128.571 23.6785H126.827H126.83Z" fill="#F4F8F2"></path><path d="M158.801 23.1478C158.801 18.918 161.781 15.9111 166.011 15.9111C170.241 15.9111 173.22 18.918 173.22 23.1478C173.22 27.3776 170.214 30.4113 166.011 30.4113C161.808 30.4113 158.801 27.4045 158.801 23.1478ZM171.013 23.1478C171.013 20.1141 168.91 17.9068 166.011 17.9068C163.111 17.9068 161.008 20.1141 161.008 23.1478C161.008 26.1816 163.084 28.4157 166.011 28.4157C168.937 28.4157 171.013 26.2084 171.013 23.1478Z" fill="#F4F8F2"></path><path d="M222.55 22.986C222.55 18.8872 225.53 15.9072 229.679 15.9072C233.829 15.9072 236.731 18.8873 236.731 23.0129C236.731 23.2783 236.731 23.5975 236.704 23.8898H224.811C225.13 26.6044 227.099 28.4119 229.841 28.4119C231.836 28.4119 233.593 27.4006 234.443 25.8048L236.278 26.7354C235.186 29.0233 232.767 30.4074 229.787 30.4074C225.584 30.4074 222.55 27.2931 222.55 22.9827V22.986ZM234.42 21.9479C234.02 19.5256 232.132 17.9029 229.579 17.9029C227.025 17.9029 225.214 19.5256 224.841 21.9479H234.42Z" fill="#F4F8F2"></path><path d="M153.664 26.3388V20.0999C153.664 19.3742 153.076 18.7829 152.347 18.7829H152.112V18.2118H153.661V18.195L157.118 18.2118V16.4379H153.661L153.687 12.1006H151.957L151.45 16.4379H149.27V18.195H151.45V26.416C151.45 28.7846 152.888 30.3806 155.149 30.3806C155.814 30.3806 156.691 30.2461 157.329 30.0345V28.2504C156.826 28.4117 156.133 28.5158 155.734 28.5158C154.457 28.5158 153.657 27.6121 153.657 26.3354L153.664 26.3388Z" fill="#F4F8F2"></path><path d="M217.389 26.3388V20.0999C217.389 19.3742 216.802 18.7829 216.073 18.7829H215.837V18.2118H217.386V18.195L220.843 18.2118V16.4379H217.386L217.413 12.1006H215.683L215.176 16.4379H212.995V18.195H215.176V26.416C215.176 28.7846 216.613 30.3806 218.875 30.3806C219.54 30.3806 220.416 30.2461 221.055 30.0345V28.2504C220.551 28.4117 219.859 28.5158 219.459 28.5158C218.182 28.5158 217.383 27.6121 217.383 26.3354L217.389 26.3388Z" fill="#F4F8F2"></path><path d="M144.643 16.4419V24.2631C144.643 26.6317 142.702 28.3619 140.44 28.3619C138.179 28.3619 136.795 26.7392 136.795 24.4512V16.4419H134.588V24.6596C134.588 27.5892 136.802 30.0989 139.722 30.3375C141.143 30.4549 142.433 30.0214 143.417 29.1616C143.84 28.7919 144.072 28.251 144.072 27.69V27.1961H144.643V28.0394V29.8736H146.851V16.4385H144.643V16.4419Z" fill="#F4F8F2"></path><path d="M191.366 15.938C189.344 15.938 187.801 16.9493 186.871 18.5182H186.632C185.86 16.9493 184.133 15.9111 182.241 15.9111C181.072 15.9111 180.057 16.3244 179.288 17.0064C178.875 17.3759 178.646 17.9101 178.646 18.4645V19.0927H178.065V16.4419H175.935V29.8771H178.142V21.8409C178.142 19.4724 179.58 17.9034 181.761 17.9034C183.941 17.9034 185.221 19.4724 185.221 21.8409V29.8771H187.428V21.8409C187.428 19.553 188.944 17.9034 191.101 17.9034C193.123 17.9034 194.584 19.553 194.584 21.8409V29.8771H196.792V21.8678C196.792 18.3838 194.531 15.9347 191.363 15.9347L191.366 15.938Z" fill="#F4F8F2"></path><path d="M205.151 15.9375C201.771 15.9375 199.563 17.7484 199.563 20.594H201.798C201.771 18.9175 203.101 17.9331 205.124 17.9331C207.331 17.9331 208.635 19.1023 208.635 20.9131V21.444L204.909 21.8975C200.917 22.3511 198.895 24.1048 198.895 26.4734C198.895 28.8419 200.81 30.3033 203.709 30.3033C205.221 30.3033 206.444 29.8834 207.371 29.1007C207.805 28.7344 208.04 28.1868 208.04 27.619V27.068H208.631V29.88H210.839V20.9669C210.839 17.9063 208.631 15.9375 205.144 15.9375H205.151ZM208.635 24.5315C208.635 26.7925 206.773 28.469 204.032 28.469C202.221 28.469 201.106 27.6963 201.106 26.4196C201.106 25.1429 202.17 24.1048 204.909 23.7588L208.635 23.3321V24.5281V24.5315Z" fill="#F4F8F2"></path><path d="M89.4541 17.6842H92.9111L89.4541 17.6641V17.6842Z" fill="#F4F8F2"></path><path d="M57.9139 28.5764L57.5108 28.1733L57.8634 27.8205C58.4816 27.2023 58.8277 26.3658 58.8277 25.4956V10.5889H56.4053V29.3458H68.2717V27.2158H60.6351C59.7616 27.2158 58.925 27.5618 58.3102 28.18L57.9139 28.5764Z" fill="#F4F8F2"></path><path d="M89.4542 25.8085V19.5696C89.4542 18.844 88.8661 18.2526 88.137 18.2526H87.9018V17.6815H89.4508V17.6647L92.9078 17.6815V15.9076H89.4508L89.4774 11.5703H87.7472L87.24 15.9076H85.0596V17.6647H87.24V25.8858C87.24 28.2543 88.678 29.85 90.939 29.85C91.6043 29.85 92.4811 29.7158 93.1194 29.5042V27.7202C92.6156 27.8814 91.9234 27.9855 91.5237 27.9855C90.2468 27.9855 89.4474 27.0818 89.4474 25.8051L89.4542 25.8085Z" fill="#F4F8F2"></path><path d="M104.593 21.5515C102.597 21.313 100.79 21.1786 100.79 19.5022C100.79 18.118 102.12 17.2411 104.062 17.2411C106.138 17.2411 107.546 18.2793 107.573 19.9288H109.727C109.727 17.1605 107.439 15.3799 104.086 15.3799C100.733 15.3799 98.6834 16.9757 98.6834 19.5828C98.6834 22.6434 101.583 23.3086 104.086 23.6009C106.108 23.8664 107.942 24.0007 107.942 25.7545C107.942 27.1655 106.639 28.0155 104.616 28.0155C102.09 28.0155 100.598 26.712 100.571 24.797H98.4414C98.4414 27.9886 100.675 29.8801 104.536 29.8801C107.969 29.8801 110.015 28.3649 110.015 25.7309C110.015 22.5124 107.116 21.8741 104.586 21.5549L104.593 21.5515Z" fill="#F4F8F2"></path><path d="M96.5263 12.5846V12.9172L96.2372 13.2061C95.73 13.7134 95.4443 14.4021 95.4443 15.1177V17.7248C96.5431 17.7248 97.4333 16.8345 97.4333 15.7359V11.3516H95.4443V12.5879H96.5263V12.5846Z" fill="#F4F8F2"></path><path d="M76.8151 15.377C72.6659 15.377 69.686 18.357 69.686 22.4557C69.686 26.7662 72.7198 29.8806 76.9226 29.8806C79.9028 29.8806 82.3249 28.4964 83.4134 26.2085L81.5791 25.2779C80.7292 26.8737 78.972 27.8849 76.9765 27.8849C74.235 27.8849 72.2662 26.0741 71.947 23.3629H83.8401C83.867 23.0706 83.867 22.7514 83.867 22.486C83.867 18.3603 80.9138 15.3803 76.8151 15.3803V15.377ZM71.974 21.4176C72.3467 18.9953 74.235 17.3726 76.711 17.3726C79.187 17.3726 81.1524 18.9953 81.5521 21.4176H71.974Z" fill="#F4F8F2"></path><path d="M31.1674 0.5V17.4327C29.7901 11.2307 26.1381 0.5 26.1381 0.5H17.1107C18.599 6.44658 20.7794 12.7694 21.6328 16.7405H21.6193C20.7291 14.2443 18.7435 10.4076 14.2919 4.60213C13.1564 3.12389 12.0275 1.72963 11.0029 0.5H0C6.53453 7.53847 13.5092 17.1168 13.5092 20.5C13.5092 23.8832 6.53453 33.4614 0 40.5H11.0029C12.0309 39.2705 13.1597 37.8762 14.2919 36.3979C18.636 30.7301 20.635 26.9405 21.5522 24.4409C20.6484 28.4254 18.4176 34.6543 16.8822 40.5H25.9298C25.9298 40.5 29.6389 30.4245 31.1035 24.3636L30.8349 40.5H39.6641L39.9966 20.5538V0.5H31.1674Z" fill="#00CD77"></path></g><defs><clipPath id="clip0_4016_1321"><rect width="236.879" height="40" fill="white" transform="translate(0 0.5)"></rect></clipPath></defs></svg></a><a class="bar-tel" href="tel:+48571399932" data-tel="pasek">571&nbsp;399&nbsp;932</a></header>
+  <div class="hero-t">
+   <h1>Wiemy, co zjada Twoją marżę.</h1>
+   <p class="lead">Weźmy jedno zamówienie za 800&nbsp;zł. Po zapłacie za towar i&nbsp;dostawę zostaje 100&nbsp;zł marży. Zobacz, co z&nbsp;niej zostaje, zanim zamówienie się zamknie.</p>
+   <div class="akcje">
+    <button type="button" class="btn" data-otworz="hero">Pokażcie, co zjada u&nbsp;mnie<span>→</span></button>
+    <a class="dalej" href="#zjada">Zobacz po kolei<i aria-hidden="true"></i></a>
+   </div>
+  </div>
+ </div>
+</section>
+
+<!-- 1. UGRYZIENIA: banknot 100 zł traci kawałek po kawałku -->
+<section class="scena" id="zjada" style="--h:620">
+ <div class="st">
+  <div class="op">
+   <div class="op-g"><span class="op-n" data-n>1/5</span><span class="op-k" data-kw>−9,60&nbsp;zł</span></div>
+   <div class="op-zd">
+    <div class="oz on"><h2>Oferta i&nbsp;wycena</h2><p>12 minut na ofertę od zera: cennik, rabaty, dostępność, PDF.</p></div>
+    <div class="oz"><h2>Zamówienie z&nbsp;maila</h2><p>14 minut przepisywania maila i&nbsp;skanu do programu, pozycja po pozycji.</p></div>
+    <div class="oz"><h2>„Czy już wyszło?”</h2><p>8 minut na sprawdzanie statusu i&nbsp;oddzwanianie do klienta.</p></div>
+    <div class="oz"><h2>Faktura i&nbsp;płatność</h2><p>6 minut na fakturę i&nbsp;przypominanie, że minął termin.</p></div>
+    <div class="oz"><h2>Jedna pomyłka</h2><p>Z&nbsp;listy wybrana podobna pozycja. 22 minuty reklamacji i&nbsp;drugi kurs za 39,04&nbsp;zł.</p></div>
+    <div class="oz"><h2>Tyle zostało</h2><p>Z&nbsp;zamówienia za 800&nbsp;zł marża 1,42%. Najwięcej zjadła jedna pomyłka.</p></div>
+   </div>
+  </div>
+  <div class="stol">
+   <div class="bn-o" data-bn="glowny"><svg class="bn" viewBox="0 0 1000 467" aria-hidden="true"><defs><mask id="bo-glowny" maskUnits="userSpaceOnUse" x="-50" y="-50" width="1100" height="567"><rect x="-50" y="-50" width="1100" height="567" fill="#fff"/><path data-out d="M0 0Z" fill="#000"/></mask><mask id="bi-glowny" maskUnits="userSpaceOnUse" x="-50" y="-50" width="1100" height="567"><rect x="-50" y="-50" width="1100" height="567" fill="#fff"/><path data-in d="M0 0Z" fill="#000"/></mask></defs><rect width="1000" height="467" rx="3" fill="#ddd4bd" mask="url(#bi-glowny)"/><image href="/marza-banknot/banknot.webp" width="1000" height="467" preserveAspectRatio="none" mask="url(#bo-glowny)"/></svg></div>
+  </div>
+  <div class="dol">
+   <div class="lz"><span>Zostało ze 100&nbsp;zł</span><b data-zost>100,00&nbsp;zł</b></div>
+   <div class="sy-zd">
+    <p class="sy on"><i></i>Z&nbsp;systemem: oferta składa się z&nbsp;cennika i&nbsp;historii klienta, handlowiec tylko ją sprawdza.</p>
+    <p class="sy"><i></i>Z&nbsp;systemem: mail i&nbsp;skan czyta system i&nbsp;sam wpisuje pozycje do Waszego programu.</p>
+    <p class="sy"><i></i>Z&nbsp;systemem: klient sam dostaje potwierdzenie z&nbsp;terminem i&nbsp;numer przesyłki.</p>
+    <p class="sy"><i></i>Z&nbsp;systemem: faktura i&nbsp;przypomnienie o&nbsp;płatności wychodzą same.</p>
+    <p class="sy"><i></i>Z&nbsp;systemem: pozycje są sprawdzane z&nbsp;historią klienta, zanim zamówienie pójdzie.</p>
+    <p class="sy"><i></i>Przewiń dalej i&nbsp;zobacz, ile zostaje, gdy robi to system.</p>
+   </div>
+  </div>
+ </div>
+</section>
+
+<!-- 2. PORÓWNANIE na dwóch banknotach -->
+<section class="por" id="porownanie">
+ <div class="w">
+  <p class="pod-m">To samo zamówienie za 800&nbsp;zł</p>
+  <h2 class="h2"><span>Z&nbsp;systemem zostaje</span> 90,48&nbsp;zł zamiast 11,36&nbsp;zł.</h2>
+  <div class="dwa">
+   <figure class="bn-k"><div class="bn-o" data-bn="strzep"><svg class="bn" viewBox="0 0 1000 467" aria-hidden="true"><defs><mask id="bo-strzep" maskUnits="userSpaceOnUse" x="-50" y="-50" width="1100" height="567"><rect x="-50" y="-50" width="1100" height="567" fill="#fff"/><path data-out d="M0 0Z" fill="#000"/></mask><mask id="bi-strzep" maskUnits="userSpaceOnUse" x="-50" y="-50" width="1100" height="567"><rect x="-50" y="-50" width="1100" height="567" fill="#fff"/><path data-in d="M0 0Z" fill="#000"/></mask></defs><rect width="1000" height="467" rx="3" fill="#ddd4bd" mask="url(#bi-strzep)"/><image href="/marza-banknot/banknot.webp" width="1000" height="467" preserveAspectRatio="none" mask="url(#bo-strzep)"/></svg></div><figcaption><span>Dziś</span><b>11,36&nbsp;zł</b><small>marża 1,42%</small></figcaption></figure>
+   <figure class="bn-k ok"><div class="bn-o" data-bn="system"><svg class="bn" viewBox="0 0 1000 467" aria-hidden="true"><defs><mask id="bo-system" maskUnits="userSpaceOnUse" x="-50" y="-50" width="1100" height="567"><rect x="-50" y="-50" width="1100" height="567" fill="#fff"/><path data-out d="M0 0Z" fill="#000"/></mask><mask id="bi-system" maskUnits="userSpaceOnUse" x="-50" y="-50" width="1100" height="567"><rect x="-50" y="-50" width="1100" height="567" fill="#fff"/><path data-in d="M0 0Z" fill="#000"/></mask></defs><rect width="1000" height="467" rx="3" fill="#ddd4bd" mask="url(#bi-system)"/><image href="/marza-banknot/banknot.webp" width="1000" height="467" preserveAspectRatio="none" mask="url(#bo-system)"/></svg></div><figcaption><span>Z&nbsp;systemem</span><b>90,48&nbsp;zł</b><small>marża 11,31%</small></figcaption></figure>
+  </div>
+  <p class="por-t">Ta sama cena i&nbsp;ten sam towar. System pracuje obok programu, w&nbsp;którym już pracujecie, a&nbsp;ludzie zatwierdzają tylko to, czego system nie rozstrzygnie. Obsługa zamówienia kosztuje wtedy 9,52&nbsp;zł.</p>
+  <p class="przyk">Przykład: hurtownia, zamówienie za 800&nbsp;zł, 48&nbsp;zł za godzinę pracy biura.</p>
+ </div>
+</section>
+
+<!-- 3. KONTAKT -->
+<section class="kon" id="kontakt">
+ <div class="kon-pl">
+  <div class="kon-t">
+   <h2 class="h2 jasny">Pokażemy, co zjada marżę u&nbsp;Ciebie.</h2>
+   <p class="kon-l">Za darmo i&nbsp;bez zobowiązań. Bez zmiany programu, w&nbsp;którym pracujecie.</p>
+   <p class="kon-kto"><img src="/piotr-wojciuk.jpg" alt="" width="48" height="48" loading="lazy" decoding="async"><span>Zadzwoni <b>Piotr Wojciuk</b>. Wolisz od razu? <a href="tel:+48571399932" data-tel="kontakt">+48&nbsp;571&nbsp;399&nbsp;932</a></span></p>
+  </div>
+  <form class="kz" data-k="koniec" novalidate>
+<label class="kz-l" for="kz-koniec">Twój telefon albo e-mail</label>
+<input class="kz-i" id="kz-koniec" name="kontakt" type="text" autocomplete="tel" autocapitalize="off" spellcheck="false" placeholder="571 000 000" aria-describedby="kze-koniec">
+<span class="kz-err" id="kze-koniec" aria-live="polite"></span>
+<label class="kz-z"><input type="checkbox" name="zgoda"><span class="kz-box" aria-hidden="true"></span><span>Zgoda na kontakt w&nbsp;sprawie zapytania (<a href="/polityka-prywatnosci">polityka prywatności</a>)</span></label>
+<button type="submit" class="btn"><i class="kz-wt" style="font-style:normal">Zadzwońcie do mnie</i><span>→</span></button>
+<div class="kz-hp" aria-hidden="true"><input name="kontrola" tabindex="-1" autocomplete="off" data-1p-ignore data-lpignore="true"></div>
+<div class="kz-ok" hidden><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m4.5 10.5 3.5 3.5 7.5-8"/></svg><span>Dzięki! Piotr zadzwoni w&nbsp;jeden dzień roboczy.</span></div>
+</form>
+ </div>
+ <p class="fakty"><span><b>140+ firm</b> pracuje z&nbsp;nami</span><span><b>200+ wdrożeń</b></span><span><b>Stała cena</b> znana przed startem</span></p>
+</section>
+
+<!-- przyklejony pasek: ile zostało + formularz w arkuszu -->
+<div class="pas" id="pas">
+ <div class="pas-tlo" data-zamknij></div>
+ <div class="ark" role="dialog" aria-label="Zostaw numer, zadzwonimy">
+  <div class="ark-g"><b>Pokażemy, co zjada marżę u&nbsp;Ciebie</b><button type="button" class="ark-x" data-zamknij aria-label="Zamknij"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m5 5 10 10M15 5 5 15"/></svg></button></div>
+  <form class="kz" data-k="pasek" novalidate>
+<label class="kz-l" for="kz-pasek">Twój telefon albo e-mail</label>
+<input class="kz-i" id="kz-pasek" name="kontakt" type="text" autocomplete="tel" autocapitalize="off" spellcheck="false" placeholder="571 000 000" aria-describedby="kze-pasek">
+<span class="kz-err" id="kze-pasek" aria-live="polite"></span>
+<label class="kz-z"><input type="checkbox" name="zgoda"><span class="kz-box" aria-hidden="true"></span><span>Zgoda na kontakt w&nbsp;sprawie zapytania (<a href="/polityka-prywatnosci">polityka prywatności</a>)</span></label>
+<button type="submit" class="btn"><i class="kz-wt" style="font-style:normal">Zadzwońcie do mnie</i><span>→</span></button>
+<div class="kz-hp" aria-hidden="true"><input name="kontrola" tabindex="-1" autocomplete="off" data-1p-ignore data-lpignore="true"></div>
+<div class="kz-ok" hidden><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m4.5 10.5 3.5 3.5 7.5-8"/></svg><span>Dzięki! Piotr zadzwoni w&nbsp;jeden dzień roboczy.</span></div>
+</form>
+ </div>
+ <div class="pas-bar"><span class="pas-t"><small>Zostało ze 100&nbsp;zł</small><b id="pasZ">100,00&nbsp;zł</b></span><button type="button" class="btn btn-m" data-otworz="pasek">Zatrzymajcie to<span>→</span></button></div>
+</div>
+
+</div>
+<script is:inline>
+/* MARŻA · BANKNOT — ugryzienia banknotu przewijane palcem i jedno pole kontaktu.
+   Banknot to obraz w SVG z dwiema maskami: zewnętrzna wycina obraz, wewnętrzna (mniejsza, z włóknami)
+   wycina jasny rdzeń papieru, więc na brzegu ugryzienia widać postrzępiony papier. */
+(()=>{
+const SNAP=!!window.__snap, RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const cl=(v,a=0,b=1)=>Math.min(b,Math.max(a,v)), ss=v=>{v=cl(v);return v*v*(3-2*v);};
+const zl=v=>v.toFixed(2).replace('.',',')+' zł';
+const NS='http://www.w3.org/2000/svg';
+
+/* ugryzienia: koła [cx, cy, r] w układzie 1000×467, kwota, okno w scenie */
+const UG=[
+  {k:[[992,-12,132],[884,-42,96]], zl:9.60, od:.06, do:.16},
+  {k:[[1042,252,142],[1012,446,112]], zl:11.20, od:.22, do:.32},
+  {k:[[642,522,112],[540,532,86]], zl:6.40, od:.38, do:.46},
+  {k:[[584,-52,116],[694,-32,86]], zl:4.80, od:.52, do:.60},
+  {k:[[1150,233,520],[700,-330,480],[700,800,480],[640,233,300],[470,233,150]], zl:56.64, od:.64, do:.82},
+];
+const SKUB=[{k:[[982,18,64],[930,-8,40]], zl:9.52, od:0, do:0}];
+const PROGI=[0,.19,.35,.49,.63,.84];
+
+/* poszarpany brzeg: ząbki co ~36 jednostek + szum; wewnętrzny brzeg z włóknami */
+let ziarno=7; const los=()=>{ziarno=(ziarno*16807)%2147483647;return (ziarno-1)/2147483646;};
+function ksztalt(r){
+  const n=Math.max(64,Math.round(r/1.6)), k=Math.max(6,Math.round(2*Math.PI*r/36));
+  const f=[los()*6.28,los()*6.28,los()*6.28], out=[], inn=[];
+  for(let i=0;i<n;i++){
+    const t=i/n*Math.PI*2;
+    const sz=1+.055*Math.sin(3*t+f[0])+.03*Math.sin(7*t+f[1])+.02*Math.sin(13*t+f[2])+.012*Math.sin(31*t+f[0])+(los()-.5)*Math.min(.05,7/r);
+    const z=1-.03*Math.pow(Math.sin(k*t/2),2);
+    const ro=sz*z; out.push([t,ro*1.0]);
+    let ri=ro*(1-Math.min(.028,9/r))-(los()<.3?(.006+los()*.016)*Math.min(1,60/r*2):0);
+    inn.push([t,ri]);
+  }
+  return {out,inn};
+}
+UG.concat(SKUB).forEach(u=>u.ks=u.k.map(([,,r])=>ksztalt(r)));
+const sciezka=(cx,cy,r,pts)=>{ if(r<.5) return ''; let d=''; pts.forEach(([t,f],i)=>{ d+=(i?'L':'M')+(cx+Math.cos(t)*r*f).toFixed(1)+' '+(cy+Math.sin(t)*r*f).toFixed(1); }); return d+'Z'; };
+function rysuj(bn,stan){ /* stan: lista [ugryzienie, skala 0..1] */
+  let dO='', dI='';
+  stan.forEach(([u,t])=>{ if(t<=0) return; const n=u.k.length, sp=n>2?.5:.8, kr=n>1?(1-sp)/(n-1):0;
+    u.k.forEach(([cx,cy,r],j)=>{ const s=ss((t-j*kr)/sp); const R=r*s; dO+=sciezka(cx,cy,R,u.ks[j].out); dI+=sciezka(cx,cy,R,u.ks[j].inn); }); });
+  bn.o.setAttribute('d',dO||'M0 0Z'); bn.i.setAttribute('d',dI||'M0 0Z');
+}
+const banknoty={}; $$('[data-bn]').forEach(el=>{ banknoty[el.dataset.bn]={el,o:$('[data-out]',el),i:$('[data-in]',el)}; });
+if(banknoty.strzep) rysuj(banknoty.strzep,UG.map(u=>[u,1]));
+if(banknoty.system) rysuj(banknoty.system,SKUB.map(u=>[u,1]));
+
+/* scena */
+const sc=$('#zjada'), stol=$('.stol',sc), oz=$$('.oz',sc), sy=$$('.sy',sc), nEl=$('[data-n]',sc), kw=$('[data-kw]',sc), zost=$('[data-zost]',sc), pasZ=$('#pasZ');
+const KW=['−9,60 zł','−11,20 zł','−6,40 zł','−4,80 zł','−56,64 zł','11,36 zł'];
+let cur=-1,tgt=0,krok=-1,raf=0;
+function uklad(){
+  const r=stol.getBoundingClientRect(), R=1000/467, pion=r.height>r.width*1.1;
+  const L=pion?Math.min(r.height*.94, r.width/(1/R+.11)):Math.min(r.width*.96, r.height*R*.86);
+  const bo=banknoty.glowny.el; bo.style.setProperty('--L',L.toFixed(0)+'px'); bo.style.setProperty('--rot',pion?'84deg':'-4deg');
+}
+function ustaw(p){
+  rysuj(banknoty.glowny,UG.map(u=>[u,cl((p-u.od)/(u.do-u.od))]));
+  let z=100; UG.forEach(u=>z-=u.zl*ss((p-u.od)/(u.do-u.od)));
+  const t=zl(Math.max(0,z)); zost.textContent=t; if(pasZ) pasZ.textContent=t;
+  let k=0; PROGI.forEach((q,i)=>{ if(p>=q) k=i; });
+  if(k!==krok){ krok=k; oz.forEach((e,i)=>e.classList.toggle('on',i===k)); sy.forEach((e,i)=>e.classList.toggle('on',i===k)); nEl.textContent=k<5?(k+1)+'/5':'koniec'; kw.textContent=KW[k]; kw.style.color=k===5?'#fff':''; }
+}
+function cel(){ const r=sc.getBoundingClientRect(); tgt=cl(-r.top/Math.max(1,r.height-innerHeight)); }
+function klatka(){ raf=0; const n=(SNAP||RM||cur<0)?tgt:cur+(tgt-cur)*.16; const kon=Math.abs(tgt-n)<.0004; cur=kon?tgt:n; ustaw(cur); if(!kon) raf=requestAnimationFrame(klatka); }
+const ruch=()=>{ cel(); if(!raf) raf=requestAnimationFrame(klatka); };
+addEventListener('scroll',ruch,{passive:true}); addEventListener('resize',()=>{uklad();ruch();});
+uklad(); cel(); cur=tgt; ustaw(cur);
+})();
+
+/* ───── kontakt: arkusz z paska i formularz na dole, jedna treść ─────
+   POST /api/kontakt jak formularz strony (Zgody.astro dokłada Lead dla Mety). */
+(()=>{
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const stat=(e,p)=>{try{window.laStat&&window.laStat(e,p||{});}catch(x){}};
+const pas=$('#pas'), hero=$('#hero'), kon=$('#kontakt'), formy=$$('.kz');
+const MAIL=/^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
+let otw=false, wysylam=false, wyslane=false;
+function widac(){ const vh=innerHeight, h=hero.getBoundingClientRect(), k=kon.getBoundingClientRect(); const on=!wyslane&&h.bottom<vh*.4&&k.top>vh*.85; pas.classList.toggle('on',on); if(!on&&otw&&k.top<vh*.85) zamknij(); }
+addEventListener('scroll',widac,{passive:true}); addEventListener('resize',widac); widac();
+function otworz(skad){ otw=true; pas.classList.add('otw'); stat('banknot_otworz',{skad}); setTimeout(()=>{try{$('.kz-i',$('.ark')).focus({preventScroll:true});}catch(x){}},320); }
+function zamknij(){ otw=false; pas.classList.remove('otw'); }
+$$('[data-otworz]').forEach(b=>b.addEventListener('click',()=>otworz(b.dataset.otworz)));
+$$('[data-zamknij]',pas).forEach(b=>b.addEventListener('click',zamknij));
+addEventListener('keydown',e=>{ if(e.key==='Escape'&&otw) zamknij(); });
+$$('[data-tel]').forEach(el=>el.addEventListener('click',()=>stat('tel_klik',{skad:el.dataset.tel})));
+function rozpoznaj(v){
+  if(v.includes('@')) return MAIL.test(v)?{email:v,telefon:''}:{blad:'adres chyba niepełny?'};
+  const c=v.replace(/\D/g,''); if(c.length<9) return {blad:v?'za mało cyfr?':'tu wpisz numer albo mail'};
+  return {email:'',telefon:(c.length===9?'+48 ':'+')+c.replace(/^00/,'')};
+}
+formy.forEach(f=>{
+  const i=$('.kz-i',f), z=$('input[name=zgoda]',f);
+  i.addEventListener('input',()=>formy.forEach(g=>{ if(g!==f) $('.kz-i',g).value=i.value; $('.kz-err',g).textContent=''; }));
+  z.addEventListener('change',()=>formy.forEach(g=>{ $('input[name=zgoda]',g).checked=z.checked; $('.kz-z',g).classList.remove('err'); }));
+  f.addEventListener('submit',e=>{ e.preventDefault(); wyslij(f); });
+});
+function wyslij(f){
+  if(wysylam||wyslane) return;
+  const i=$('.kz-i',f), err=$('.kz-err',f), z=$('input[name=zgoda]',f), btn=$('.btn',f), bt=$('.kz-wt',f);
+  const r=rozpoznaj(i.value.trim());
+  if(r.blad){ err.textContent=r.blad; i.focus(); return; }
+  if(!z.checked){ $('.kz-z',f).classList.add('err'); err.textContent='zaznacz zgodę poniżej'; return; }
+  wysylam=true; btn.disabled=true; const napis=bt.textContent; bt.textContent='Wysyłam…';
+  const miejsce=f.dataset.k; let ref=''; try{ref=localStorage.getItem('referrer')||'';}catch(x){}
+  fetch('/api/kontakt',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},
+    body:JSON.stringify({email:r.email,telefon:r.telefon,
+      wiadomosc:'Landing '+location.pathname+' ('+miejsce+'): proszę o '+(r.telefon?'telefon':'maila')+', chcę zobaczyć, co zjada marżę u nas.',
+      firma_www:f.elements.kontrola.value||'',zrodlo:'Marża · banknot · '+location.pathname+' · '+miejsce,referrer:ref})})
+  .then(o=>{ if(!o.ok) return o.json().catch(()=>({})).then(j=>{throw new Error(j.blad||'blad');});
+    wyslane=true;
+    try{window.dataLayer=window.dataLayer||[];window.dataLayer.push({event:'formularz_wyslany',zrodlo:'Marża · banknot'});}catch(x){}
+    stat('banknot_wyslane',{miejsce,kanal:r.telefon?'telefon':'email'});
+    formy.forEach(g=>{ g.classList.add('wyslane'); $('.kz-ok',g).hidden=false; });
+    setTimeout(()=>{ zamknij(); widac(); },2200); })
+  .catch(x=>{ wysylam=false; btn.disabled=false; bt.textContent=napis;
+    err.textContent=x&&x.message==='brak-konfiguracji'?'nie działa, zadzwoń: 571 399 932':'nie doszło, spróbuj jeszcze raz';
+    stat('banknot_blad',{powod:String(x&&x.message||'blad').slice(0,30)}); });
+}
+})();
+
+</script>
+</LaBase>
