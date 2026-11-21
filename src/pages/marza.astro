@@ -8,18 +8,16 @@
 import LaBase from '../layouts/LaBase.astro';
 import Styl from '../components/usluga/Styl.astro';
 const title = "Podniesiemy Twoją marżę | Let's automate";
-const description = "Zobacz jedno zamówienie od maila o 7:12 do pomyłki o 14:00 i policz, ile kosztuje Cię jego obsługa w biurze.";
+const description = "To samo zamówienie za 800 zł w dwóch firmach: u Ciebie zostają 2 zł, u konkurencji 90 zł. Zobacz, gdzie jest różnica i jak zrobić to u siebie.";
 ---
 <LaBase topbar={false} title={title} description={description} ctaHref="#kontakt" nav={null} naglowek={false} noindex={true}>
 <Styl />
 <style is:global>
 .mz{
 
-  --deep:#07140D; --deep2:#0C1E14; --card:#0F2419; --fg:#F4F8F2; --mut:#93A69B; --line:rgba(244,248,242,.12);
-  --acc:#00CD77; --amber:#F2B233; --pen:#D3261B;
-  --paper:#F3F0E7; --pink:#1C1C1A;
-  --erp:#ECEEF1; --erp2:#DDE1E6; --erpHead:#27415E; --erpLine:#C5CBD2; --erpInk:#1E2833;
-  --mail:#FFFFFF; --mailInk:#1F2328; --mailMut:#6B7280; --marker:rgba(255,214,0,.55);
+  --deep:#07140D; --deep2:#0C1E14; --card:#0F2419; --fg:#F4F8F2; --mut:#93A69B; --soft:#C9D5CE; --line:rgba(244,248,242,.12);
+  --acc:#00CD77; --acc2:#7FE9B9; --amber:#F2B233; --pen:#D3261B; --pen2:#FF8A80;
+  --paper:#F3F0E7; --paper2:#E9E4D6; --ink:#1C1C1A; --ok:#0A7A52;
   --f-d:"Schibsted Grotesk", "Helvetica Neue", Arial, sans-serif;
   --f-m:"JetBrains Mono", ui-monospace, Menlo, monospace;
   --f-h:"Caveat", "Comic Sans MS", cursive;
@@ -33,79 +31,77 @@ margin:0;background:var(--deep);color:var(--fg);font-family:var(--f-d);-webkit-f
 content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--deep)}
 .mz .hist{
 background:var(--deep);color:var(--fg);font-family:var(--f-d);-webkit-font-smoothing:antialiased}
+.mz .hist h1,.mz .hist h2{
+margin:0;font-weight:800;letter-spacing:-.045em;text-wrap:balance;color:var(--fg);font-family:var(--f-d)}
+.mz .hist h1 em,.mz .hist h2 em{
+font-style:normal;color:var(--acc)}
+.mz .lead{
+margin:14px 0 0;font:500 clamp(16px,4.3vw,21px)/1.42 var(--f-d);color:var(--soft);max-width:32em;text-wrap:pretty}
+.mz .ety{
+font:700 12px/1 var(--f-m);letter-spacing:.12em;text-transform:uppercase;color:var(--ok)}
+.mz .zle{
+color:var(--pen2)}
 .mz .bar{
-position:fixed;left:0;right:0;top:0;z-index:20;padding-top:env(safe-area-inset-top,0px);
-  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+position:fixed;left:0;right:0;top:0;z-index:20;padding-top:env(safe-area-inset-top,0px);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
   background:linear-gradient(180deg,rgba(7,20,13,.96) 60%,rgba(7,20,13,0));transition:opacity .3s,transform .3s}
 .mz .bar.off{
 opacity:0;transform:translateY(-100%);pointer-events:none}
+.mz .bar.jasny{
+background:linear-gradient(180deg,rgba(243,240,231,.96) 60%,rgba(243,240,231,0))}
+.mz .bar.jasny .logo{
+filter:invert(1) hue-rotate(180deg) brightness(.35)}
 .mz .bar-in{
 position:relative;max-width:1120px;margin:0 auto;height:60px;display:flex;align-items:center;justify-content:space-between}
 .mz .logo svg{
 height:17px;width:auto;display:block}
 .mz .bar-cta{
-position:absolute;right:0;top:50%;transform:translateY(-50%);font:700 14px/1 var(--f-d);color:#06170E;background:var(--acc);padding:10px 14px;border-radius:999px;text-decoration:none;transition:opacity .3s}
-.mz .bar-cta.off{
-opacity:0;pointer-events:none}
-.mz .meter{
-display:flex;align-items:center;gap:10px;background:#020604;border:1px solid rgba(0,205,119,.28);border-radius:12px;padding:6px 11px 6px 10px;
-  box-shadow:0 0 0 3px rgba(0,205,119,.05),0 8px 24px -10px rgba(0,0,0,.8);opacity:0;transform:translateY(-6px);transition:opacity .35s,transform .35s,border-color .35s}
-.mz .meter.on{
-opacity:1;transform:none}
-.mz .meter .lb{
-font:600 8.5px/1.15 var(--f-d);letter-spacing:.09em;text-transform:uppercase;color:var(--mut);max-width:72px}
-.mz .meter .v{
-display:flex;gap:8px;white-space:nowrap;align-items:baseline;font-family:var(--f-m);font-weight:700;color:var(--acc);text-shadow:0 0 10px rgba(0,205,119,.55)}
-.mz .meter .zl{
-font-size:19px;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
-.mz .meter .mn{
-font-size:12px;color:#7FE9B9;font-variant-numeric:tabular-nums}
-.mz .meter.bump{
-animation:mz-bump .35s}
-.mz .meter.po{
-border-color:rgba(242,178,51,.45)}
-@keyframes mz-bump{
-40%{
-transform:scale(1.06)}}
-.mz .scene{
-position:relative;height:calc(var(--h) * 1svh)}
-.mz .stage{
-position:sticky;top:0;height:100svh;overflow:hidden;
-  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0}
-.mz .inner{
-position:relative;max-width:1120px;height:100%;margin:0 auto;display:grid;grid-template-rows:auto minmax(0,1fr) auto;grid-template-areas:"cap" "vis" "ft";row-gap:14px;padding-top:calc(72px + env(safe-area-inset-top,0px));padding-bottom:calc(10px + env(safe-area-inset-bottom,0px))}
-.mz .cap{
-grid-area:cap;position:relative;z-index:3}
-.mz .clock{
-display:inline-flex;align-items:center;gap:8px;font:700 13px/1 var(--f-m);color:var(--acc);letter-spacing:.02em;padding:6px 10px;border-radius:999px;background:rgba(0,205,119,.1);border:1px solid rgba(0,205,119,.25);font-variant-numeric:tabular-nums}
-.mz .clock::before{
-content:"";width:7px;height:7px;border-radius:50%;background:var(--acc);box-shadow:0 0 8px var(--acc)}
-.mz .hist h1,.mz .hist h2{
-margin:0;font-weight:800;letter-spacing:-.045em;text-wrap:balance;color:var(--fg);font-family:var(--f-d)}
-.mz .hist h1{
-font-size:clamp(38px,10.6vw,84px);line-height:1.02}
-.mz .hist h1 em,.mz .hist h2 em{
-font-style:normal;color:var(--acc)}
-.mz .hist h2{
-font-size:clamp(27px,7.3vw,56px);line-height:1.04;margin-top:12px}
-.mz .lead{
-margin:12px 0 0;font:500 clamp(16px,4.3vw,21px)/1.4 var(--f-d);color:#C9D5CE;max-width:30em}
-.mz .vis{
-grid-area:vis;position:relative;min-height:0}
-.mz .ft{
-grid-area:ft;position:relative;min-height:58px}
-.mz .box{
-position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);transform-origin:50% 50%}
-.mz .box.rig{
-position:absolute;top:auto;bottom:0;transform:translateX(-50%);transform-origin:50% 100%}
-.mz .foot{
-font:600 clamp(18px,4.8vw,24px)/1.25 var(--f-d);letter-spacing:-.02em;opacity:0;text-wrap:balance;color:var(--fg)}
-.mz .foot b{
-color:var(--acc);font-weight:800}
-.mz .foot small{
-display:block;margin-top:6px;font:500 12px/1.3 var(--f-d);color:var(--mut);letter-spacing:0}
+font:700 14px/1 var(--f-d);color:#06170E;background:var(--acc);padding:11px 15px;border-radius:999px;text-decoration:none}
+.mz .hero{
+min-height:100svh;display:flex;align-items:center;padding:calc(84px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-left,0px)) 40px}
+.mz .hero .w{
+position:relative;max-width:1120px;width:100%;margin:0 auto}
+.mz .hero h1{
+font-size:clamp(34px,9.2vw,76px);line-height:1.02;max-width:14em}
+.mz .dwa{
+display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:28px;max-width:640px}
+.mz .pr{
+position:relative;border-radius:18px;padding:12px 10px 14px}
+.mz .pr-ty{
+background:var(--card);border:1px solid var(--line)}
+.mz .pr-on{
+background:var(--paper);color:var(--ink)}
+.mz .pr-k{
+display:flex;align-items:center;gap:7px;font:700 13px/1 var(--f-d);padding:2px 4px 10px}
+.mz .pr-k::before{
+content:"";width:8px;height:8px;border-radius:50%;background:var(--pen2)}
+.mz .pr-on .pr-k::before{
+background:var(--ok)}
+.mz .pr-p{
+position:relative;background:#FBF9F3;color:var(--ink);font-family:var(--f-m);padding:12px 10px 12px;border-radius:2px;box-shadow:0 14px 26px -16px rgba(0,0,0,.8)}
+.mz .pr-ty .pr-p{
+background:var(--paper)}
+.mz .pr-p::before{
+content:"";position:absolute;left:0;right:0;top:-1px;height:6px;background:linear-gradient(135deg,var(--card) 33%,transparent 34%) 0 0/8px 6px repeat-x,linear-gradient(225deg,var(--card) 33%,transparent 34%) 0 0/8px 6px repeat-x}
+.mz .pr-on .pr-p::before{
+background:linear-gradient(135deg,var(--paper) 33%,transparent 34%) 0 0/8px 6px repeat-x,linear-gradient(225deg,var(--paper) 33%,transparent 34%) 0 0/8px 6px repeat-x}
+.mz .pr-p .r{
+display:flex;justify-content:space-between;gap:6px;font-size:clamp(9.5px,2.6vw,13px);line-height:1.75;white-space:nowrap}
+.mz .pr-p .r.zle{
+color:#B3261E;font-weight:700}
+.mz .pr-p .r.ok{
+color:var(--ok);font-weight:700}
+.mz .pr-p .dl{
+border-top:2px dashed #8E8C84;margin:6px 0 5px;opacity:.8}
+.mz .pr-p .z{
+display:flex;justify-content:space-between;font-weight:700;font-size:clamp(15px,4.4vw,24px);line-height:1.2}
+.mz .pr-ty .z{
+color:#B3261E}
+.mz .pr-p .z.ok{
+color:var(--ok)}
+.mz .przyk{
+margin:12px 0 0;font:500 12.5px/1.3 var(--f-d);color:var(--mut)}
 .mz .hint{
-position:absolute;left:50%;bottom:0;transform:translateX(-50%);font:600 12px/1 var(--f-d);letter-spacing:.12em;text-transform:uppercase;color:var(--mut);display:flex;flex-direction:column;align-items:center;gap:8px;z-index:4}
+display:flex;align-items:center;gap:10px;margin-top:28px;font:600 12px/1 var(--f-d);letter-spacing:.12em;text-transform:uppercase;color:var(--mut)}
 .mz .hint i{
 width:1.5px;height:22px;background:linear-gradient(var(--mut),transparent);animation:mz-drip 1.6s infinite}
 @keyframes mz-drip{
@@ -117,724 +113,117 @@ transform:scaleY(1);transform-origin:top}
 transform-origin:bottom}
 100%{
 transform:scaleY(0);transform-origin:bottom}}
-.mz .swap{
-position:relative}
-.mz .after{
-position:absolute;inset:0 0 auto 0;opacity:0}
-.mz .rig{
-position:relative;width:358px;height:420px}
-.mz .printer{
-position:absolute;left:0;right:0;bottom:0;height:78px;border-radius:16px 16px 22px 22px;background:linear-gradient(180deg,#3A403C 0%,#22272A 30%,#15191A 100%);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.18),inset 0 -6px 14px rgba(0,0,0,.5),0 30px 50px -20px rgba(0,0,0,.9),0 0 0 1px rgba(255,255,255,.04)}
-.mz .printer::before{
-content:"";position:absolute;left:18px;right:18px;top:12px;height:7px;border-radius:4px;background:#050606;box-shadow:inset 0 2px 3px rgba(0,0,0,.9),0 1px 0 rgba(255,255,255,.08)}
-.mz .printer .led{
-position:absolute;right:22px;bottom:22px;width:8px;height:8px;border-radius:50%;background:var(--acc);box-shadow:0 0 10px var(--acc)}
-.mz .printer .led.blink{
-animation:mz-blink .18s steps(2) infinite}
-@keyframes mz-blink{
-50%{
-opacity:.25}}
-.mz .printer .nm{
-position:absolute;left:24px;bottom:19px;font:700 10px/1 var(--f-m);letter-spacing:.2em;color:#69726D}
-.mz .clip{
-position:absolute;left:30px;right:30px;bottom:63px;height:0;overflow:hidden}
-.mz .paper{
-position:absolute;left:0;right:0;top:0;background-color:var(--paper);color:var(--pink);font-family:var(--f-m);font-weight:500;
-  padding:16px 18px 22px;background-image:linear-gradient(90deg,rgba(0,0,0,.035),transparent 12%,transparent 88%,rgba(0,0,0,.05));
-  box-shadow:inset 0 -18px 16px -14px rgba(0,0,0,.25)}
-.mz .paper::before{
-content:"";position:absolute;left:0;right:0;top:-1px;height:7px;
-  background:linear-gradient(135deg,var(--deep) 33%,transparent 34%) 0 0/10px 7px repeat-x,linear-gradient(225deg,var(--deep) 33%,transparent 34%) 0 0/10px 7px repeat-x}
-.mz .paper .hd{
-text-align:center;font-size:12px;line-height:1.45;letter-spacing:.06em;color:#4A4A45}
-.mz .paper .hd b{
-display:block;font-size:14px;color:var(--pink);letter-spacing:.14em}
-.mz .paper .dl{
-border-top:2px dashed #8E8C84;margin:10px 0 8px;opacity:.8}
-.mz .paper .r{
-display:flex;justify-content:space-between;gap:8px;font-size:clamp(14px,4.2vw,17px);line-height:1.75;letter-spacing:0}
-.mz .paper .r.q{
-position:relative;font-weight:700}
-.mz .paper .z.ok{
-color:#0A7A52}
-.mz .paper .z{
-display:flex;justify-content:space-between;font-size:clamp(26px,8vw,34px);font-weight:700;line-height:1.2;letter-spacing:0}
-.mz .paper .ft{
-margin-top:8px;text-align:center;font-size:10.5px;color:#6A6862;letter-spacing:.08em}
-.mz .ring{
-position:absolute;left:-10px;right:-8px;top:-5px;bottom:-5px;overflow:visible;pointer-events:none}
-.mz .ring path,.mz .mark path{
-fill:none;stroke:var(--pen);stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1;opacity:.92}
-.mz .qm{
-position:absolute;right:112px;top:-36px;font:700 40px/1 var(--f-h);color:var(--pen);transform:rotate(-8deg);opacity:0}
-.mz .b-mail{
-width:372px;display:flex;flex-direction:column;align-items:center}
-.mz .phone{
-position:relative;width:372px}
-.mz .mailc{
-background:var(--mail);color:var(--mailInk);border-radius:20px;box-shadow:0 30px 60px -24px rgba(0,0,0,.85),0 0 0 1px rgba(255,255,255,.06);position:relative}
-.mz .mtop{
-display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid #EEF0F2;font:600 13px/1 var(--f-d);color:#2563EB}
-.mz .mtop span:last-child{
-color:var(--mailMut);font-weight:500}
-.mz .mhd{
-display:grid;grid-template-columns:38px 1fr auto;gap:10px;align-items:center;padding:14px 16px 6px}
-.mz .av{
-width:38px;height:38px;border-radius:50%;background:#F59E0B;color:#fff;display:grid;place-items:center;font:700 16px/1 var(--f-d)}
-.mz .who b{
-display:block;font:700 15px/1.2 var(--f-d)}
-.mz .who span{
-font:400 12.5px/1.2 var(--f-d);color:var(--mailMut)}
-.mz .tm{
-font:500 12.5px/1 var(--f-d);color:var(--mailMut)}
-.mz .subj{
-padding:6px 16px 0;font:800 18px/1.25 var(--f-d);letter-spacing:-.01em}
-.mz .mbody{
-padding:10px 16px 6px;font:400 16px/1.55 var(--f-d)}
-.mz .mbody p{
-margin:0 0 6px}
-.mz .mbody p:first-child{
-margin-bottom:18px}
-.mz .sig{
-color:var(--mailMut);font-size:13px}
-.mz .hl{
-position:relative;white-space:nowrap}
-.mz .hl .bg{
-position:absolute;left:-3px;right:-3px;top:.12em;bottom:.06em;background:var(--marker);border-radius:3px;transform-origin:left;transform:scaleX(0);z-index:0}
-.mz .hl .t{
-position:relative;z-index:1}
-.mz .note{
-position:absolute;font:700 23px/1.02 var(--f-h);color:var(--pen);white-space:nowrap;transform:rotate(-4deg);clip-path:inset(0 100% 0 0);z-index:3}
-.mz .mark{
-position:absolute;inset:-8px -5px -8px -9px;overflow:visible;pointer-events:none;z-index:2}
-.mz .att{
-margin:4px 16px 16px;display:flex;align-items:center;gap:10px;border:1px solid #E5E7EB;border-radius:12px;padding:9px 11px;position:relative}
-.mz .att .ic{
-width:30px;height:36px;border-radius:5px;background:#DC2626;color:#fff;display:grid;place-items:center;font:800 9px/1 var(--f-d)}
-.mz .att b{
-display:block;font:600 13.5px/1.2 var(--f-d)}
-.mz .att span{
-font:400 12px/1.2 var(--f-d);color:var(--mailMut)}
-.mz .att .note{
-font:700 22px/1 var(--f-h);color:var(--pen)}
-.mz .scan{
-position:relative;width:330px;margin-top:16px;transform:rotate(2.2deg) translateY(40px);opacity:0;z-index:4;
-  background:#E9E6DE;color:#2B3A55;border-radius:3px;padding:16px 16px 18px;box-shadow:0 26px 50px -18px rgba(0,0,0,.85)}
-.mz .scan::after,.mz .mini::after{
-content:"";position:absolute;inset:0;pointer-events:none;mix-blend-mode:multiply;opacity:.5;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 .45 0 0 0 0 .44 0 0 0 0 .4 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E")}
-.mz .scan .sh{
-font:700 12px/1 var(--f-d);letter-spacing:.14em;color:#55595F;text-transform:uppercase;border-bottom:1.5px solid #9EA2A8;padding-bottom:7px;margin-bottom:8px}
-.mz .scan .ln{
-position:relative;font:600 21px/1.35 var(--f-h)}
-.mz .scan .ln span{
-position:relative}
-.mz .b-erp{
-width:404px;display:flex;flex-direction:column;align-items:center}
-.mz .erp{
-position:relative;width:404px;background:var(--erp);color:var(--erpInk);border-radius:8px;overflow:hidden;
-  box-shadow:0 30px 60px -24px rgba(0,0,0,.9),0 0 0 1px rgba(255,255,255,.06);font-family:"Segoe UI",var(--f-d)}
-.mz .wt{
-display:flex;align-items:center;gap:8px;background:var(--erpHead);color:#E8EEF5;padding:7px 10px;font:600 12px/1.2 var(--f-d)}
-.mz .wt i{
-display:inline-block;width:14px;height:14px;border-radius:3px;background:var(--amber);flex:none}
-.mz .wt span{
-flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.mz .wt em{
-font-style:normal;opacity:.7;letter-spacing:.3em}
-.mz .tb{
-display:flex;gap:6px;padding:6px 8px;background:var(--erp2);border-bottom:1px solid var(--erpLine)}
-.mz .tb b{
-font:600 11px/1 var(--f-d);padding:5px 8px;border-radius:3px;background:#F7F8FA;border:1px solid var(--erpLine);color:#3B4654}
-.mz .flds{
-display:grid;grid-template-columns:auto 1fr;gap:6px 10px;padding:10px 10px 8px;font-size:12px;align-items:center}
-.mz .flds label{
-color:#5B6673;font-weight:600}
-.mz .e-inp{
-background:#fff;border:1px solid #AEB6C0;border-radius:2px;padding:4px 6px;min-height:24px;font:500 12.5px/1.2 var(--f-d);white-space:nowrap;overflow:hidden}
-.mz .e-grid{
-margin:0 10px 10px;border:1px solid #AEB6C0;background:#fff;font-size:12px}
-.mz .gr{
-display:grid;grid-template-columns:24px 72px minmax(0,1fr) 38px 66px;align-items:center;border-bottom:1px solid #E1E5EA;min-height:27px}
-.mz .gr>div{
-padding:4px 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.mz .gr.h{
-background:#E4E8ED;font-weight:700;color:#4B5562;min-height:24px}
-.mz .gr .n{
-text-align:right;font-variant-numeric:tabular-nums}
-.mz .gr .k{
-font-family:var(--f-m);font-size:11px;font-weight:600}
-.mz .gr.act{
-background:#E8F1FF;box-shadow:inset 2px 0 0 #2563EB}
-.mz .gr.bad .k{
-color:#C62828}
-.mz .caret::after{
-content:"";display:inline-block;width:1.5px;height:1.05em;background:#1E2833;vertical-align:-2px;margin-left:1px;animation:mz-car .8s steps(2) infinite}
-@keyframes mz-car{
-50%{
-opacity:0}}
-.mz .sum{
-display:flex;justify-content:space-between;padding:8px 10px 10px;font-weight:700;font-size:13px;border-top:1px solid var(--erpLine);background:var(--erp2)}
-.mz .sum span:last-child{
-font-variant-numeric:tabular-nums}
-.mz .err{
-position:absolute;left:10px;right:10px;top:150px;background:#FDECEC;border:1px solid #E57373;color:#8E1B1B;border-radius:4px;padding:8px 10px;font:600 12px/1.3 var(--f-d);display:flex;gap:8px;align-items:center;opacity:0;transform:translateY(6px);z-index:5;box-shadow:0 10px 24px -10px rgba(0,0,0,.4)}
-.mz .err i{
-flex:none;width:18px;height:18px;border-radius:50%;background:#D32F2F;color:#fff;font:800 12px/18px var(--f-d);text-align:center;font-style:normal}
-.mz .mini{
-position:relative;align-self:flex-end;width:300px;margin:0 4px 12px 0;transform:rotate(-1.6deg);z-index:6;background:#E9E6DE;color:#2B3A55;border-radius:3px;padding:8px 12px 9px;box-shadow:0 18px 34px -14px rgba(0,0,0,.9)}
-.mz .mini .ln{
-position:relative;font:600 18px/1.25 var(--f-h)}
-.mz .mini .ln .bg{
-position:absolute;left:-4px;right:-4px;top:.18em;bottom:.08em;background:var(--marker);border-radius:3px;opacity:0;transition:opacity .2s}
-.mz .mini .ln.on .bg{
-opacity:1}
-.mz .mini .ln span{
-position:relative}
-.mz .pod{
-position:relative;align-self:stretch;height:42px}
-.mz .n3{
-position:absolute;right:6px;top:10px;font:700 22px/1 var(--f-h);color:var(--pen);transform:rotate(-5deg);clip-path:inset(0 100% 0 0);z-index:7;white-space:nowrap}
-.mz .evs{
-width:404px;display:grid;gap:12px}
-.mz .ev{
-display:grid;grid-template-columns:44px 1fr;gap:12px;padding:15px 16px 16px;border-radius:18px;background:var(--card);border:1px solid var(--line);opacity:0;transform:translateY(30px)}
-.mz .ev .ico{
-width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:rgba(244,248,242,.06);color:var(--fg)}
-.mz .ev .ico svg{
-width:22px;height:22px}
-.mz .ev .tt{
-display:flex;justify-content:space-between;align-items:baseline;gap:8px}
-.mz .ev .tt b{
-font:700 17px/1.2 var(--f-d);letter-spacing:-.01em;color:var(--fg)}
-.mz .ev .tt span{
-font:700 12px/1 var(--f-m);color:var(--mut);font-variant-numeric:tabular-nums}
-.mz .ev p{
-margin:5px 0 0;font:400 15px/1.45 var(--f-d);color:#C9D5CE}
-.mz .ev .koszt{
-display:inline-block;margin-top:9px;font:700 12px/1 var(--f-m);color:var(--acc);background:rgba(0,205,119,.1);padding:5px 8px;border-radius:6px}
-.mz .ev.zly{
-border-color:rgba(211,38,27,.55);background:linear-gradient(180deg,rgba(211,38,27,.14),var(--card))}
-.mz .ev.zly .ico{
-background:rgba(211,38,27,.2);color:#FF8A80}
-.mz .ev.zly .koszt{
-color:#FF8A80;background:rgba(211,38,27,.16)}
-.mz .b-skala{
-width:364px}
-.mz .koperty{
-display:grid;grid-template-columns:repeat(10,1fr);gap:6px;width:364px}
-.mz .kp{
-aspect-ratio:4/3;border-radius:4px;background:rgba(244,248,242,.08);border:1px solid rgba(244,248,242,.14);position:relative;opacity:.15;transform:scale(.7)}
-.mz .kp svg{
-position:absolute;inset:18% 16%;width:68%;height:64%;stroke:rgba(244,248,242,.6);fill:none;stroke-width:1.6}
-.mz .kp.ten svg{
-stroke:#FF8A80}
-.mz .kp.ten{
-background:rgba(211,38,27,.22);border-color:var(--pen)}
-.mz .liczby{
-margin-top:26px;display:grid;gap:14px}
-.mz .lz{
-display:grid;gap:3px;opacity:0;transform:translateY(16px)}
-.mz .lz b{
-font:800 38px/1 var(--f-d);letter-spacing:-.035em;color:var(--fg);white-space:nowrap}
-.mz .lz.wyn b{
-font-size:48px}
-.mz .lz span{
-font:500 15px/1.3 var(--f-d);color:#C9D5CE}
-.mz .lz.wyn b{
-color:var(--acc)}
-.mz .lekcja{
-background:var(--paper);color:var(--pink);padding-block:clamp(64px,12vw,120px);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-.mz .lekcja .w{
-max-width:880px;margin:0 auto}
-.mz .ety{
-font:700 12px/1 var(--f-m);letter-spacing:.12em;text-transform:uppercase;color:#0A7A52}
-.mz .lekcja h2{
-color:var(--pink)!important;font-size:clamp(30px,7.6vw,58px)!important;margin-top:14px!important}
-.mz .lekcja h2 em{
-color:#0A7A52!important}
-.mz .waga{
-margin-top:36px;display:grid;gap:18px}
-.mz .waga .rz{
-display:grid;gap:8px}
-.mz .waga .rz span{
-font:600 15px/1.3 var(--f-d);color:#4A4A45}
-.mz .waga .pas{
-height:34px;border-radius:8px;background:#0A7A52;display:flex;align-items:center;padding:0 12px;color:#fff;font:700 15px/1 var(--f-m);white-space:nowrap;transform-origin:left;transform:scaleX(0);transition:transform 1.4s cubic-bezier(.2,.7,.2,1)}
-.mz .waga .pas.duzy{
-background:#1C1C1A}
-.mz .waga.on .pas{
-transform:scaleX(1)}
-.mz .waga .pas.maly{
-width:4%;min-width:96px}
-.mz .lekcja p.t{
-margin:28px 0 0;font:500 clamp(17px,4.4vw,21px)/1.5 var(--f-d);color:#33332F;max-width:36em}
-.mz .b-log{
-width:404px}
-.mz .minim{
-position:relative;width:404px;background:var(--mail);color:var(--mailInk);border-radius:16px;padding:11px 14px;display:grid;grid-template-columns:32px 1fr auto;gap:10px;align-items:center;box-shadow:0 20px 40px -20px rgba(0,0,0,.8);opacity:0}
-.mz .minim .av{
-width:32px;height:32px;font-size:14px}
-.mz .minim>div{
-min-width:0}
-.mz .minim b{
-display:block;font:700 14px/1.2 var(--f-d)}
-.mz .minim span{
-font:400 13px/1.3 var(--f-d);color:var(--mailMut);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.mz .minim .tm{
-font-size:12px}
-.mz .log{
-position:relative;margin-top:12px;display:grid;gap:8px}
-.mz .lg-r{
-display:grid;grid-template-columns:20px 1fr;gap:10px;padding:10px 13px 11px;border-radius:14px;background:var(--card);border:1px solid rgba(0,205,119,.18);box-shadow:0 18px 30px -22px rgba(0,0,0,.9);opacity:0;transform:translateY(10px)}
-.mz .lg-r.cz{
-border-color:rgba(242,178,51,.45);background:linear-gradient(180deg,rgba(242,178,51,.1),var(--card))}
-.mz .lg-r i{
-width:20px;height:20px;border-radius:50%;background:var(--acc);display:grid;place-items:center;margin-top:1px}
-.mz .lg-r i svg{
-width:12px;height:12px}
-.mz .lg-r.cz i{
-background:var(--amber)}
-.mz .lg-r small{
-display:block;font:700 11.5px/1 var(--f-m);color:var(--mut);margin-bottom:4px;font-variant-numeric:tabular-nums}
-.mz .lg-r div{
-font:500 14.5px/1.38 var(--f-d);color:var(--fg);min-width:0}
-.mz .lg-r s{
-color:#FF8A80;text-decoration-thickness:1.5px}
-.mz .zatw{
-position:relative;overflow:hidden;display:inline-flex;align-items:center;gap:6px;margin-top:7px;font:700 12.5px/1 var(--f-d);padding:7px 10px;border-radius:8px;background:var(--amber);color:#2A1D00}
-.mz .zatw.ok{
-background:rgba(0,205,119,.16);color:var(--acc)}
-.mz .zatw .tap{
-position:absolute;left:50%;top:50%;width:60px;height:60px;margin:-30px 0 0 -30px;border-radius:50%;background:rgba(255,255,255,.7);transform:scale(0);opacity:0;pointer-events:none}
-.mz .zatw span{
-position:relative}
-.mz .b-po{
-width:358px;display:flex;flex-direction:column}
-.mz .stary{
-position:relative;align-self:flex-start;margin:0 0 6px 6px;width:150px;background:var(--paper);color:var(--pink);font-family:var(--f-m);padding:10px 10px 12px;transform:rotate(-7deg);opacity:.55;z-index:1;box-shadow:0 12px 24px -10px rgba(0,0,0,.8)}
-.mz .stary .r{
-display:flex;justify-content:space-between;font-size:9.5px;line-height:1.5}
-.mz .stary .z{
-display:flex;justify-content:space-between;font-size:15px;font-weight:700;margin-top:4px;border-top:1.5px dashed #8E8C84;padding-top:4px}
-.mz .stary .x{
-position:absolute;left:6px;right:6px;bottom:16px;height:3px;background:var(--pen);transform:rotate(-8deg);border-radius:3px}
-.mz .jak{
-background:var(--deep2);padding-block:clamp(64px,12vw,120px);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-.mz .jak .w{
-max-width:1120px;margin:0 auto}
-.mz .jak .ety{
-color:var(--acc)}
-.mz .jak ol{
-list-style:none;margin:36px 0 0;padding:0;display:grid;gap:14px;grid-template-columns:repeat(3,minmax(0,1fr))}
-.mz .jak li{
-padding:24px 22px 26px;border-radius:20px;background:var(--card);border:1px solid var(--line)}
-.mz .jak li em{
-font:700 13px/1 var(--f-m);font-style:normal;color:var(--acc)}
-.mz .jak li b{
-display:block;margin-top:14px;font:700 21px/1.2 var(--f-d);letter-spacing:-.02em;color:var(--fg)}
-.mz .jak li p{
-margin:8px 0 0;font:400 16px/1.5 var(--f-d);color:#C9D5CE}
-.mz .jak .fakty{
-margin-top:26px;display:flex;flex-wrap:wrap;gap:10px 28px;font:500 15px/1.4 var(--f-d);color:#C9D5CE}
-.mz .jak .fakty b{
-color:var(--fg)}
-@media (min-width:960px){
+.mz .scene{
+position:relative;height:calc(var(--h) * 1svh)}
+.mz .stage{
+position:sticky;top:0;height:100svh;overflow:hidden;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 .mz .inner{
-grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);grid-template-rows:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"cap vis" "ft vis";column-gap:64px;row-gap:24px;padding-top:96px;padding-bottom:40px}
+position:relative;max-width:1120px;height:100%;margin:0 auto;display:grid;grid-template-rows:auto minmax(0,1fr) auto;grid-template-areas:"cap" "vis" "ft";row-gap:12px;
+  padding-top:calc(70px + env(safe-area-inset-top,0px));padding-bottom:calc(80px + env(safe-area-inset-bottom,0px))}
 .mz .cap{
-align-self:end}
+grid-area:cap;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.mz .cap h2{
+font-size:clamp(24px,6.4vw,46px);line-height:1.04}
+.mz .zegar{
+order:2;flex:none;font:700 clamp(26px,7vw,44px)/1 var(--f-m);letter-spacing:-.03em;color:var(--acc);text-shadow:0 0 18px rgba(0,205,119,.45);font-variant-numeric:tabular-nums}
+.mz .vis{
+grid-area:vis;position:relative;min-height:0}
 .mz .ft{
-align-self:start;min-height:0}
-.mz .hint{
-left:0;transform:none;bottom:auto;top:24px;flex-direction:row}
-.mz .hint i{
-width:22px;height:1.5px;animation:none}
-}
-@media (max-width:800px){
-.mz .jak ol{
-grid-template-columns:1fr}}
-@media (prefers-reduced-motion:reduce){
-.mz .hint i,.mz .printer .led.blink,.mz .caret::after{
-animation:none}
-.mz .waga .pas{
-transition:none}}
-.mz .wd{
-display:inline-block;overflow:hidden;vertical-align:top;padding:.14em .02em .1em;margin:-.14em -.02em -.1em}
-.mz .wd>i{
-display:inline-block;font-style:normal;transform:translateY(125%);will-change:transform}
-.mz .clock{
-opacity:0}
-.mz .od{
-display:inline-block;height:1em;line-height:1;overflow:hidden;vertical-align:top}
-.mz .od>span{
-display:block;transition:transform .5s cubic-bezier(.2,.8,.2,1)}
-.mz .od>span>i{
-display:block;height:1em;font-style:normal;text-align:center}
-.mz .meter .zl,.mz .meter .mn{
-line-height:1;display:inline-flex}
-.mz .paper::after{
-content:"";position:absolute;inset:0;pointer-events:none;mix-blend-mode:multiply;opacity:.28;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 .45 0 0 0 0 .44 0 0 0 0 .4 0 0 0 .5 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E")}
-.mz .printer::after{
-content:"";position:absolute;left:24px;right:24px;top:8px;height:16px;border-radius:50%;background:radial-gradient(closest-side,rgba(0,205,119,.22),transparent);opacity:0;transition:opacity .2s}
-.mz .printer.druk::after{
-opacity:1}
-.mz .cta-btn{
-display:inline-flex;align-items:center;gap:12px;margin-top:30px;padding:18px 26px;border-radius:999px;background:var(--acc);color:#06170E;font:800 18px/1 var(--f-d);text-decoration:none;
-  box-shadow:0 14px 34px -12px rgba(0,205,119,.7);transition:transform .2s,box-shadow .2s}
-.mz .cta-btn:hover{
-transform:translateY(-2px);box-shadow:0 18px 40px -12px rgba(0,205,119,.85)}
-.mz .cta-btn svg{
-width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;transition:transform .2s}
-.mz .cta-btn:hover svg{
-transform:translateX(3px)}
-.mz .wej{
-opacity:0;transform:translateY(22px);transition:opacity .8s cubic-bezier(.2,.7,.2,1),transform .8s cubic-bezier(.2,.7,.2,1)}
-.mz .wej.on{
-opacity:1;transform:none}
-@media (prefers-reduced-motion:reduce){
-.mz .wd>i{
-transform:none!important}
-.mz .clock{
-opacity:1!important}
-.mz .wej{
-opacity:1;transform:none;transition:none}
-.mz .od>span{
-transition:none}}
-.mz .cofka{
-position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);font:700 clamp(84px,26vw,180px)/1 var(--f-m);letter-spacing:-.06em;color:var(--acc);text-shadow:0 0 40px rgba(0,205,119,.45);font-variant-numeric:tabular-nums;pointer-events:none;z-index:2;white-space:nowrap}
-.mz .err{
-top:150px}
-@media (min-width:960px){
-.mz .hist h1{
-font-size:clamp(52px,5.4vw,76px)}}
-.mz .tb{
-position:relative;align-items:center}
-.mz .tb b{
-transition:background .15s,border-color .15s,color .15s}
-.mz .tb b.hit{
-background:#DCE8FA;border-color:#7AA3E0;color:#1D4E9E}
-.mz .zap{
-margin-left:auto;font:700 10.5px/1 var(--f-d);color:#0A7A52;background:#DDF6EA;border-radius:999px;padding:4px 8px;opacity:0;transition:opacity .25s}
-.mz .zap.on{
-opacity:1}
-.mz .e-inp.fokus,.mz .gr .k.fokus{
-box-shadow:inset 0 0 0 1.5px #2563EB;background:#fff}
-.mz .gr.flash{
-background:#EAFBF2;transition:background .6s}
-.mz .lista{
-position:absolute;z-index:8;min-width:250px;background:#fff;border:1px solid #9FB0C4;border-radius:4px;box-shadow:0 14px 28px -10px rgba(10,20,40,.45);padding:3px;opacity:0;transform:translateY(-4px);pointer-events:none;font:500 12px/1.2 var(--f-d);color:var(--erpInk)}
-.mz .lista.on{
-opacity:1;transform:none;transition:opacity .12s,transform .12s}
-.mz .li{
-display:grid;grid-template-columns:72px 1fr auto;gap:8px;align-items:center;height:25px;padding:0 7px;border-radius:3px;white-space:nowrap}
-.mz .li.kh{
-grid-template-columns:1fr}
-.mz .li b{
-font:600 10.5px/1 var(--f-m)}
-.mz .li span{
-overflow:hidden;text-overflow:ellipsis}
-.mz .li em{
-font-style:normal;color:#6B7684;font-variant-numeric:tabular-nums}
-.mz .li.on{
-background:#2563EB;color:#fff}
-.mz .li.on em{
-color:#DCE6FA}
-.mz .li.blad{
-grid-template-columns:18px 1fr;color:#8E1B1B;background:#FDECEC}
-.mz .li.blad i{
-width:16px;height:16px;border-radius:50%;background:#D32F2F;color:#fff;font:800 11px/16px var(--f-d);text-align:center;font-style:normal}
-.mz .li.q{
-grid-template-columns:1fr;color:#6B7684;height:20px;font-size:10.5px}
-.mz .okno{
-position:absolute;left:18px;right:18px;top:96px;z-index:9;background:#fff;border:1px solid #8FA3BA;border-radius:6px;box-shadow:0 24px 44px -14px rgba(10,20,40,.55);overflow:hidden;opacity:0;transform:translateY(8px) scale(.98);pointer-events:none}
-.mz .ok-h{
-background:var(--erpHead);color:#E8EEF5;font:600 11.5px/1 var(--f-d);padding:7px 10px}
-.mz .ok-r{
-display:grid;grid-template-columns:auto 1fr;gap:10px;padding:7px 10px;border-bottom:1px solid #E1E5EA;font:500 11.5px/1.25 var(--f-d)}
-.mz .ok-r b{
-font:600 10.5px/1.3 var(--f-m);white-space:nowrap}
-.mz .ok-r.on{
-background:#E8F1FF}
-.mz .ok-f{
-padding:8px 10px;background:var(--erp2);display:flex;justify-content:flex-end}
-.mz .ok-b{
-font:700 11.5px/1 var(--f-d);padding:7px 10px;border-radius:4px;background:#2563EB;color:#fff;transition:transform .1s}
-.mz .ok-b.hit{
-transform:scale(.95);background:#1D4E9E}
-.mz .kursor{
-position:absolute;left:0;top:0;width:20px;height:20px;z-index:12;pointer-events:none;filter:drop-shadow(0 2px 3px rgba(0,0,0,.45));opacity:0}
-.mz .kursor path{
-fill:#111;stroke:#fff;stroke-width:1.4;stroke-linejoin:round}
-.mz .n3.lewo{
-right:auto;left:6px;transform:rotate(-3deg)}
-.mz .kp{
-display:grid;place-items:center}
-.mz .kp b{
-font:800 8.5px/1 var(--f-m);letter-spacing:.02em}
-.mz .kp.t-pdf{
-border-color:rgba(255,120,110,.45)}
-.mz .kp.t-pdf b{
-color:#FF8A80}
-.mz .kp.t-xls{
-border-color:rgba(0,205,119,.4)}
-.mz .kp.t-xls b{
-color:#7FE9B9}
-.mz .kp.t-jpg{
-border-color:rgba(120,170,255,.45)}
-.mz .kp.t-jpg b{
-color:#9DBBFF}
-.mz .kp.t-tel{
-border-color:rgba(242,178,51,.45)}
-.mz .kp.t-tel b{
-color:#F2C661}
-.mz .kp.t-mail svg{
-position:absolute;inset:18% 16%;width:68%;height:64%;stroke:rgba(244,248,242,.6);fill:none;stroke-width:1.6}
-.mz .leg{
-display:flex;flex-wrap:wrap;gap:6px 12px;margin-top:12px;font:500 12px/1.2 var(--f-d);color:var(--mut);opacity:0}
-.mz .leg span{
-display:inline-flex;align-items:center;gap:6px}
-.mz .leg i{
-width:9px;height:9px;border-radius:2px;border:1.5px solid}
-.mz .leg .t-mail{
-border-color:rgba(244,248,242,.6)}
-.mz .leg .t-pdf{
-border-color:#FF8A80}
-.mz .leg .t-xls{
-border-color:#7FE9B9}
-.mz .leg .t-jpg{
-border-color:#9DBBFF}
-.mz .leg .t-tel{
-border-color:#F2C661}
-.mz .dzien{
-position:relative;max-width:1120px;margin:0 auto;height:2px;background:rgba(244,248,242,.08);border-radius:2px;opacity:0;transition:opacity .35s}
-.mz .dzien.on{
-opacity:1}
-.mz .dzien i{
-position:absolute;left:0;top:0;bottom:0;width:100%;transform-origin:left;transform:scaleX(0);background:var(--acc);border-radius:2px;box-shadow:0 0 8px rgba(0,205,119,.6)}
-.mz .dzien.po i{
-background:var(--amber);box-shadow:0 0 8px rgba(242,178,51,.6)}
-.mz .erp{
-overflow:visible}
-.mz .erp .wt{
-border-radius:8px 8px 0 0}
-.mz .erp .sum{
-border-radius:0 0 8px 8px}
-.mz .kp.ten{
-background:rgba(211,38,27,.3);border-color:var(--pen);box-shadow:0 0 0 2px rgba(211,38,27,.55),0 0 14px rgba(211,38,27,.5)}
-.mz .kp.ten b{
-color:#fff}
-.mz .sz[hidden]{
-display:none!important}
-.mz .sz{
-position:fixed;inset:0;z-index:40}
-.mz .sz-tlo{
-position:absolute;inset:0;background:radial-gradient(120% 80% at 50% 100%,rgba(0,205,119,.14),transparent 60%),rgba(3,10,6,.88);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);opacity:0;transition:opacity .35s}
-.mz .sz.on .sz-tlo{
-opacity:1}
-.mz .sz-x{
-position:absolute;right:14px;top:calc(14px + env(safe-area-inset-top,0px));z-index:3;width:42px;height:42px;border-radius:50%;border:1px solid rgba(244,248,242,.2);background:rgba(244,248,242,.06);color:var(--fg);cursor:pointer;display:grid;place-items:center}
-.mz .sz-x svg{
-width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
-.mz .sz-scena{
-position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:calc(60px + env(safe-area-inset-top,0px)) 12px calc(16px + env(safe-area-inset-bottom,0px));pointer-events:none}
-.mz .sz-scena>*{
-pointer-events:auto}
-.mz .sz-chip{
-display:inline-flex;align-items:center;gap:8px;padding:8px 13px;border-radius:999px;background:rgba(0,205,119,.14);border:1px solid rgba(0,205,119,.4);color:var(--acc2);font:700 13px/1 var(--f-d);
-  opacity:0;transform:translateY(-8px);transition:opacity .4s .15s,transform .4s .15s;margin-bottom:auto}
-.mz .sz-chip i{
-width:18px;height:18px;border-radius:50%;background:var(--acc);color:#06170E;display:grid;place-items:center;font:800 10px/1 var(--f-d);font-style:normal}
-.mz .sz.on .sz-chip{
-opacity:1;transform:none}
-.mz .sz-box{
-position:relative;width:360px;transform-origin:50% 100%}
-.mz .sz-rig{
-position:absolute;left:0;top:0;transform-origin:0 0;width:360px;height:520px;transform:translateY(40px);opacity:0;transition:transform .5s cubic-bezier(.2,.8,.2,1),opacity .35s}
-.mz .sz.on .sz-rig{
-transform:none;opacity:1}
-.mz .sz-rig .clip{
-transition:height 1.25s cubic-bezier(.45,.05,.3,1)}
-.mz .sz-rig .paper{
-padding-bottom:18px}
-.mz .pf{
-margin:2px 0 0}
-.mz .pf-l{
-display:block;font:700 13px/1.3 var(--f-m);letter-spacing:.08em;color:var(--ink)}
-.mz .pf-w{
-position:relative}
-.mz .pf-i{
-display:block;width:100%;margin-top:6px;height:46px;border:0;border-bottom:2px dashed #8E8C84;background:rgba(255,255,255,.5);border-radius:4px 4px 0 0;padding:0 10px;
-  font:700 20px/1 var(--f-m);color:var(--ink);outline:none;letter-spacing:.02em;transition:background .2s,border-color .2s}
-.mz .pf-i::placeholder{
-color:#9A978E;font-weight:500;font-size:16px;letter-spacing:.04em}
-.mz .pf-i:focus{
-background:#fff;border-bottom-color:#0A7A52}
-.mz .pf-note{
-position:absolute;right:4px;top:-20px;font:700 22px/1 var(--f-h);color:var(--pen);transform:rotate(-4deg);white-space:nowrap;clip-path:inset(-20% 100% -20% 0);transition:clip-path .45s ease-out}
-.mz .pf-note.on{
-clip-path:inset(-20% 0 -20% 0)}
-.mz .pf-z{
-display:flex;align-items:center;gap:9px;margin-top:12px;font:600 11px/1.3 var(--f-m);letter-spacing:.04em;color:#4A4A45;cursor:pointer}
-.mz .pf-z input{
-position:absolute;opacity:0;width:1px;height:1px}
-.mz .pf-box{
-flex:none;width:18px;height:18px;border:2px solid #4A4A45;border-radius:3px;display:grid;place-items:center}
-.mz .pf-z input:checked + .pf-box::after{
-content:"✕";font:800 13px/1 var(--f-m);color:var(--ink)}
-.mz .pf-z input:focus-visible + .pf-box{
-box-shadow:0 0 0 3px rgba(10,122,82,.4)}
-.mz .pf-z.err .pf-box{
-border-color:var(--pen)}
-.mz .pf-ent{
-position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
-.mz .sz-hp{
-position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
-.mz .po-wys .r span:last-child{
-font-weight:700}
-.mz .pieczatka{
-position:absolute;left:50%;margin-left:-74px;top:118px;padding:8px 14px;border:3px solid #0A7A52;border-radius:8px;color:#0A7A52;font:800 22px/1 var(--f-m);letter-spacing:.08em;transform:rotate(-12deg) scale(2.4);opacity:0;pointer-events:none;mix-blend-mode:multiply}
-.mz .pieczatka.on{
-animation:mz-stempel .45s cubic-bezier(.3,1.4,.5,1) forwards}
-@keyframes mz-stempel{
-0%{
-transform:rotate(-12deg) scale(2.4);opacity:0}
-100%{
-transform:rotate(-12deg) scale(1);opacity:.9}}
-.mz .pr-btn{
-position:absolute;right:46px;bottom:16px;height:32px;padding:0 14px;border:0;border-radius:999px;background:var(--acc);color:#06170E;font:800 12px/1 var(--f-m);letter-spacing:.12em;cursor:pointer;
-  box-shadow:0 0 0 3px rgba(0,205,119,.15),0 0 18px rgba(0,205,119,.55),inset 0 -2px 0 rgba(0,0,0,.2);transition:transform .1s,filter .2s}
-.mz .pr-btn:active{
-transform:translateY(1px) scale(.97)}
-.mz .pr-btn.gotowy{
-animation:mz-gotowy 1.4s infinite}
-.mz .pr-btn[disabled]{
-filter:grayscale(.6) brightness(.7);cursor:progress}
-@keyframes mz-gotowy{
-50%{
-box-shadow:0 0 0 7px rgba(0,205,119,.12),0 0 28px rgba(0,205,119,.85),inset 0 -2px 0 rgba(0,0,0,.2)}}
-.mz .sz-albo{
-margin-top:14px;font:500 13px/1.5 var(--f-d);color:var(--mut);text-align:center}
-.mz .sz-albo a{
-color:var(--soft)}
-@media (prefers-reduced-motion:reduce){
-.mz .sz-rig .clip{
-transition:none}
-.mz .pd-i,.mz .kf-h i{
-animation:none}}
-.mz .scene:not(#paragon) .inner{
-padding-bottom:calc(80px + env(safe-area-inset-bottom,0px))}
-.mz .sz-rig .paper .z{
-font-size:24px;gap:12px}
-.mz .miejsce{
-height:58px}
-.mz .hl{
-display:inline-block;line-height:1.25}
-.mz .ring path,.mz .mark path{
-vector-effect:non-scaling-stroke;stroke-width:2.6}
-.mz .mbody p:first-child{
-margin-bottom:30px}
-.mz .mbody p:nth-child(2){
-margin-bottom:34px}
-.mz .att{
-margin-top:34px!important}
-.mz .note{
-font-size:21px}
-.mz .skok{
-text-align:left}
-.mz .sk-l{
-display:flex;align-items:flex-end;gap:clamp(12px,4vw,40px);margin-top:22px;flex-wrap:wrap}
-.mz .sk-n{
-display:block;font:800 clamp(56px,15vw,132px)/.9 var(--f-d);letter-spacing:-.05em;font-variant-numeric:tabular-nums}
-.mz .sk-a .sk-n{
-color:#B3261E}
-.mz .sk-b .sk-n{
-color:#0A7A52}
-.mz .sk-l small{
-display:block;margin-top:10px;font:600 15px/1.3 var(--f-d);color:#4A4A45}
-.mz .sk-s{
-width:clamp(36px,8vw,64px);height:auto;margin-bottom:46px;fill:none;stroke:#1C1C1A;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
-.mz .sk-tor{
-position:relative;height:18px;margin-top:30px;border-radius:9px;background:rgba(28,28,26,.08);overflow:hidden}
-.mz .sk-tor i{
-position:absolute;left:0;top:0;bottom:0;border-radius:9px;transform-origin:left;transform:scaleX(0);transition:transform 1.6s cubic-bezier(.2,.7,.2,1)}
-.mz .sk-p1{
-width:2.2%;background:#B3261E;z-index:2}
-.mz .sk-p2{
-width:100%;background:#0A7A52;transition-delay:.5s!important}
-.mz .skok.on .sk-tor i{
-transform:scaleX(1)}
-.mz .pp{
-position:fixed;left:50%;bottom:0;z-index:25;width:250px;height:92px;padding:0;border:0;background:none;cursor:pointer;
-  transform:translate(-50%,100%);transition:transform .6s cubic-bezier(.2,.8,.2,1);filter:drop-shadow(0 -8px 22px rgba(0,0,0,.55))}
-.mz .pp.on{
-transform:translate(-50%,34px) rotate(-1.5deg)}
-.mz .pp.on:hover,.mz .pp.on:focus-visible{
-transform:translate(-50%,10px) rotate(-1.5deg)}
-.mz .pp-p{
-position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:16px;background:var(--paper);color:var(--ink);font-family:var(--f-m);
-  background-image:linear-gradient(90deg,rgba(0,0,0,.035),transparent 12%,transparent 88%,rgba(0,0,0,.05))}
-.mz .pp-p::before{
-content:"";position:absolute;left:0;right:0;top:-6px;height:7px;background:linear-gradient(135deg,transparent 33%,var(--paper) 34%) 0 0/10px 7px repeat-x,linear-gradient(225deg,transparent 33%,var(--paper) 34%) 0 0/10px 7px repeat-x}
-.mz .pp-p b{
-font:700 14px/1 var(--f-m);letter-spacing:.16em}
-.mz .pp-p span{
-margin-top:6px;font:600 11.5px/1 var(--f-m);letter-spacing:.06em;color:#4A4A45}
-.mz .pp-p i{
-position:absolute;right:14px;top:14px;font-style:normal;font-size:11px;color:#0A7A52;animation:mz-wyzej 1.6s ease-in-out infinite}
-@keyframes mz-wyzej{
-50%{
-transform:translateY(-3px)}}
-@media (min-width:960px){
-.mz .pp{
-left:calc(max(16px,(100vw - 1120px)/2) + 125px)}}
-.mz .final .lead{
-margin:14px auto 0;max-width:30em}
-.mz .fin-druk{
-position:relative;width:340px;max-width:100%;height:250px;margin:34px auto 0}
-.mz .fin-papier{
-position:absolute;left:26px;right:26px;bottom:63px;height:170px;overflow:hidden;background:var(--paper);color:var(--ink);font-family:var(--f-m);padding:16px 16px 0;
-  background-image:linear-gradient(90deg,rgba(0,0,0,.035),transparent 12%,transparent 88%,rgba(0,0,0,.05)),linear-gradient(180deg,transparent 70%,rgba(0,0,0,.12))}
-.mz .fin-papier::before{
-content:"";position:absolute;left:0;right:0;top:-1px;height:7px;background:linear-gradient(135deg,var(--deep) 33%,transparent 34%) 0 0/10px 7px repeat-x,linear-gradient(225deg,var(--deep) 33%,transparent 34%) 0 0/10px 7px repeat-x}
-.mz .fin-papier .hd{
-text-align:center;font-size:11.5px;line-height:1.45;letter-spacing:.06em;color:#4A4A45}
-.mz .fin-papier .hd b{
-display:block;font-size:14px;color:var(--ink);letter-spacing:.14em}
-.mz .fin-papier .dl{
-border-top:2px dashed #8E8C84;margin:10px 0 8px;opacity:.8}
-.mz .fin-papier .r{
-display:flex;justify-content:space-between;font-size:15px;line-height:1.75}
-.mz .fin-druk .printer .pr-btn{
-height:36px;padding:0 18px;font-size:13px}
-.mz .kf-kto a{
-color:var(--fg);font-weight:700}
-.mz .final{
-background:var(--deep);padding-block:clamp(80px,14vw,150px) clamp(120px,16vw,170px);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-.mz .final .w{
-max-width:720px;margin:0 auto;text-align:center}
-.mz .final .ety{
+grid-area:ft;min-height:56px}
+.mz .box{
+position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);transform-origin:50% 50%}
+.mz .foot{
+margin:0;font:650 clamp(16px,4.4vw,22px)/1.28 var(--f-d);letter-spacing:-.02em;opacity:0;text-wrap:balance}
+.mz .foot b{
+color:var(--acc);font-weight:800}
+.mz .foot .zle{
+font-weight:800}
+.mz .foot small{
+display:block;margin-top:6px;font:500 12px/1.35 var(--f-d);color:var(--mut);letter-spacing:0}
+.mz .tory{
+width:364px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.mz .tor{
+border-radius:18px;padding:10px 8px 10px;display:flex;flex-direction:column;min-height:640px}
+.mz .tor-ty{
+background:var(--card);border:1px solid var(--line)}
+.mz .tor-on{
+background:var(--paper);color:var(--ink);box-shadow:0 0 0 1px rgba(255,255,255,.4),0 30px 60px -30px rgba(0,205,119,.35)}
+.mz .tor-h{
+display:flex;align-items:center;gap:7px;font:800 14px/1.1 var(--f-d);padding:2px 4px 10px}
+.mz .tor-h i{
+width:9px;height:9px;border-radius:50%;background:var(--pen2);flex:none}
+.mz .tor-on .tor-h i{
+background:var(--ok)}
+.mz .kroki{
+display:grid;gap:6px;align-content:start;flex:1}
+.mz .kr{
+border-radius:11px;padding:7px 8px 8px;opacity:0;transform:translateY(10px)}
+.mz .tor-ty .kr{
+background:rgba(244,248,242,.06);border:1px solid rgba(244,248,242,.08)}
+.mz .tor-on .kr{
+background:#fff;border:1px solid rgba(28,28,26,.08)}
+.mz .kr small{
+display:block;font:700 10.5px/1 var(--f-m);color:var(--mut);margin-bottom:4px;font-variant-numeric:tabular-nums}
+.mz .tor-on .kr small{
+color:#7A776E}
+.mz .kr p{
+margin:0;font:500 12.5px/1.32 var(--f-d)}
+.mz .kr b{
+display:inline-block;margin-top:5px;font:700 10.5px/1 var(--f-m);color:var(--pen2);background:rgba(211,38,27,.14);padding:3px 6px;border-radius:5px}
+.mz .tor-on .kr b{
+color:#7A4D00;background:#FFF0CC}
+.mz .kr.zly{
+background:linear-gradient(180deg,rgba(211,38,27,.25),rgba(211,38,27,.08))!important;border-color:rgba(211,38,27,.55)!important}
+.mz .kr.pyt{
+background:#FFF7E0!important;border-color:rgba(242,178,51,.6)!important}
+.mz .kr.gotowe{
+background:#DDF6EA!important;border-color:rgba(10,122,82,.35)!important}
+.mz .kr.gotowe p{
+font-weight:700;color:#0A5C3E}
+.mz .kr.gotowe p::before{
+content:"✓ ";color:var(--ok)}
+.mz .licz{
+margin-top:8px;border-radius:11px;padding:8px 9px;display:flex;justify-content:space-between;align-items:baseline;gap:6px;font:700 12px/1 var(--f-m);font-variant-numeric:tabular-nums;white-space:nowrap}
+.mz .tor-ty .licz{
+background:#020604;color:var(--pen2);border:1px solid rgba(211,38,27,.35)}
+.mz .tor-ty .licz span:last-child{
+font-size:16px}
+.mz .tor-on .licz{
+background:#E2F4EA;color:var(--ok);border:1px solid rgba(10,122,82,.25)}
+.mz .tor-on .licz span:last-child{
+font-size:16px}
+.mz .roznica{
+background:var(--paper);color:var(--ink);padding:clamp(64px,12vw,120px) max(16px,env(safe-area-inset-left,0px))}
+.mz .roznica .w{
+max-width:760px;margin:0 auto}
+.mz .tab{
+margin-top:22px;border-radius:18px;overflow:hidden;background:#fff;box-shadow:0 30px 60px -40px rgba(0,0,0,.5);border:1px solid rgba(28,28,26,.08)}
+.mz .tw{
+display:grid;grid-template-columns:1.2fr 1fr 1fr;align-items:center;gap:8px;padding:13px 14px;border-top:1px solid rgba(28,28,26,.07);font:600 15px/1.25 var(--f-d);opacity:0;transform:translateY(10px);transition:opacity .5s,transform .5s}
+.mz .tw:first-child{
+border-top:0}
+.mz .tw.th{
+background:var(--ink);color:var(--fg);font:800 13.5px/1.2 var(--f-d)}
+.mz .tw.th span:nth-child(2){
+color:var(--pen2)}
+.mz .tw.th span:nth-child(3){
 color:var(--acc)}
-.mz .final h2{
-margin-top:14px!important;font-size:clamp(36px,9vw,66px)!important}
-.mz .kf-kto{
-display:inline-flex;align-items:center;gap:12px;margin-top:26px;font:500 14.5px/1.45 var(--f-d);color:var(--soft);text-align:left}
-.mz .kf-kto img{
-width:44px;height:44px;border-radius:50%;object-fit:cover;object-position:50% 20%;border:2px solid rgba(0,205,119,.5);background:#1A3326;flex:none}
-.mz .kf-kto b{
-color:var(--fg)}
-.mz .pp-p b{
-color:#1C1C1A}
-.mz .pp-p span{
+.mz .tw span:first-child{
 color:#4A4A45}
-.mz .sk-n{
-font-variant-numeric:normal;letter-spacing:-.04em}
-.mz .fin-papier,.mz .fin-papier .r,.mz .fin-papier .r span{
-color:#1C1C1A;opacity:1}
-.mz .fin-papier{
-background-image:linear-gradient(90deg,rgba(0,0,0,.035),transparent 12%,transparent 88%,rgba(0,0,0,.05))}
+.mz .tw.th span:first-child{
+color:var(--mut)}
+.mz .tw .a{
+color:#B3261E;font-family:var(--f-m);font-weight:700}
+.mz .tw .b{
+color:var(--ok);font-family:var(--f-m);font-weight:800}
+.mz .tw.duzy .a,.mz .tw.duzy .b{
+font-size:clamp(20px,5.6vw,28px)}
+.mz .tw.duzy{
+background:#FBF9F3}
+.mz .tab.on .tw{
+opacity:1;transform:none}
+.mz .roznica .t{
+margin:26px 0 0;font:500 clamp(17px,4.4vw,21px)/1.5 var(--f-d);color:#33332F}
 .mz .kartka-s{
 background:var(--deep);padding-block:clamp(70px,12vw,130px) clamp(110px,14vw,150px);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));overflow:hidden}
 .mz .kartka-s .w{
@@ -850,7 +239,7 @@ opacity:1}
 .mz .tasma{
 position:absolute;left:50%;top:-14px;width:120px;height:30px;transform:translateX(-50%) rotate(3deg);background:rgba(244,248,242,.42);box-shadow:0 2px 6px rgba(0,0,0,.15)}
 .mz .kartka-s h2.k-h{
-margin:0!important;font:700 clamp(44px,12vw,62px)/.95 var(--f-h)!important;letter-spacing:0!important;color:#1C1C1A!important}
+margin:0;font:700 clamp(44px,12vw,62px)/.95 var(--f-h);letter-spacing:0;color:#1C1C1A}
 .mz .k-t{
 margin:10px 0 0;font:600 clamp(23px,6vw,28px)/1.15 var(--f-h);color:#3A3010}
 .mz .k-f{
@@ -882,8 +271,7 @@ border-color:#B0190F}
 .mz .k-hp{
 position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
 .mz .k-btn{
-margin-top:20px;width:100%;height:60px;border:0;border-radius:14px;background:#1C1C1A;color:#FFE36E;font:800 19px/1 var(--f-d);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;
-  box-shadow:0 10px 24px -12px rgba(0,0,0,.7);transition:transform .15s}
+margin-top:20px;width:100%;height:60px;border:0;border-radius:14px;background:#1C1C1A;color:#FFE36E;font:800 19px/1 var(--f-d);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 10px 24px -12px rgba(0,0,0,.7);transition:transform .15s}
 .mz .k-btn:hover{
 transform:translateY(-2px)}
 .mz .k-btn:active{
@@ -914,218 +302,164 @@ margin:14px 0 0;display:flex;flex-wrap:wrap;justify-content:center;gap:6px 18px;
 color:var(--soft)}
 .mz .kc{
 position:fixed;right:14px;bottom:0;z-index:25;width:178px;height:84px;padding:14px 14px 0 16px;display:flex;align-items:flex-start;justify-content:space-between;gap:6px;text-decoration:none;
-  background:#FFE36E;color:#1C1C1A;border-radius:2px 2px 0 0;font:700 22px/1 var(--f-h);
-  box-shadow:0 -10px 30px -8px rgba(0,0,0,.6);transform:translateY(110%) rotate(3deg);transition:transform .55s cubic-bezier(.2,.9,.3,1.2)}
+  background:#FFE36E;color:#1C1C1A;border-radius:2px 2px 0 0;font:700 22px/1 var(--f-h);box-shadow:0 -10px 30px -8px rgba(0,0,0,.6);transform:translateY(110%) rotate(3deg);transition:transform .55s cubic-bezier(.2,.9,.3,1.2)}
 .mz .kc.on{
 transform:translateY(26px) rotate(3deg)}
 .mz .kc.on:hover,.mz .kc.on:focus-visible{
 transform:translateY(8px) rotate(1deg)}
 .mz .kc i{
 font-style:normal;font-family:var(--f-d);font-weight:800;font-size:18px;margin-top:2px}
+.mz .wd{
+display:inline-block;overflow:hidden;vertical-align:top;padding:.14em .02em .1em;margin:-.14em -.02em -.1em}
+.mz .wd>i{
+display:inline-block;font-style:normal;transform:translateY(125%);will-change:transform}
 @media (min-width:960px){
+.mz .hero .w{
+display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center}
+.mz .hero .dwa{
+margin-top:0;grid-row:1 / span 4;grid-column:2}
+.mz .hero h1,.mz .hero .lead,.mz .hero .przyk,.mz .hero .hint{
+grid-column:1}
+.mz .tory{
+width:720px;gap:16px}
+.mz .tor{
+padding:14px 12px 12px;min-height:600px}
+.mz .kr p{
+font-size:14px}
 .mz .kc{
-right:max(24px,calc((100vw - 1120px)/2));width:210px;font-size:25px}}
+right:max(24px,calc((100vw - 1120px)/2));width:210px;font-size:25px}
+}
 @media (prefers-reduced-motion:reduce){
-.mz .kartka,.mz .kc{
+.mz .hint i{
+animation:none}
+.mz .wd>i{
+transform:none!important}
+.mz .kartka,.mz .kc,.mz .tw{
 transition:none}}
-.mz .foot .zle{
-color:#FF8A80;font-weight:800}
+.mz .dwa{
+grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
+.mz .pr{
+padding:10px 8px 12px}
+.mz .pr-p{
+padding:11px 8px 11px}
+.mz .pr-p .r{
+font-size:clamp(8.6px,2.35vw,13px)}
+.mz .pr-p .z{
+font-size:clamp(14px,4.2vw,24px)}
+@media (min-width:960px){
+.mz .hero .w{
+grid-template-columns:1fr 1fr}
+.mz .hero h1{
+font-size:clamp(44px,4.6vw,64px)}
+.mz .pr-p .r{
+font-size:14px}
+.mz .pr-p .z{
+font-size:28px}
+.mz .pr{
+padding:14px 12px 16px}
+.mz .pr-k{
+font-size:15px}
+}
+@media (min-width:960px){
+.mz .hero h1{
+max-width:none}
+.mz .hero .w{
+grid-template-columns:1.15fr .85fr}}
 </style>
 <div class="mz">
 <header class="bar" id="bar"><div class="bar-in">
   <a class="logo" href="/" aria-label="Let's Automate, strona główna"><svg width="237" height="41" viewBox="0 0 237 41" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_4016_1321)"><path d="M126.179 11.1201H119.973L121.055 13.1157H123.346V13.6903H123.276C122.456 13.6903 121.72 14.1976 121.428 14.9669L115.801 29.877H118.115L119.711 25.6741H129.263L130.859 29.877H133.174L126.175 11.1201H126.179ZM126.83 23.6785H120.43L124.395 13.2502H124.633L128.571 23.6785H126.827H126.83Z" fill="#F4F8F2"></path><path d="M158.801 23.1478C158.801 18.918 161.781 15.9111 166.011 15.9111C170.241 15.9111 173.22 18.918 173.22 23.1478C173.22 27.3776 170.214 30.4113 166.011 30.4113C161.808 30.4113 158.801 27.4045 158.801 23.1478ZM171.013 23.1478C171.013 20.1141 168.91 17.9068 166.011 17.9068C163.111 17.9068 161.008 20.1141 161.008 23.1478C161.008 26.1816 163.084 28.4157 166.011 28.4157C168.937 28.4157 171.013 26.2084 171.013 23.1478Z" fill="#F4F8F2"></path><path d="M222.55 22.986C222.55 18.8872 225.53 15.9072 229.679 15.9072C233.829 15.9072 236.731 18.8873 236.731 23.0129C236.731 23.2783 236.731 23.5975 236.704 23.8898H224.811C225.13 26.6044 227.099 28.4119 229.841 28.4119C231.836 28.4119 233.593 27.4006 234.443 25.8048L236.278 26.7354C235.186 29.0233 232.767 30.4074 229.787 30.4074C225.584 30.4074 222.55 27.2931 222.55 22.9827V22.986ZM234.42 21.9479C234.02 19.5256 232.132 17.9029 229.579 17.9029C227.025 17.9029 225.214 19.5256 224.841 21.9479H234.42Z" fill="#F4F8F2"></path><path d="M153.664 26.3388V20.0999C153.664 19.3742 153.076 18.7829 152.347 18.7829H152.112V18.2118H153.661V18.195L157.118 18.2118V16.4379H153.661L153.687 12.1006H151.957L151.45 16.4379H149.27V18.195H151.45V26.416C151.45 28.7846 152.888 30.3806 155.149 30.3806C155.814 30.3806 156.691 30.2461 157.329 30.0345V28.2504C156.826 28.4117 156.133 28.5158 155.734 28.5158C154.457 28.5158 153.657 27.6121 153.657 26.3354L153.664 26.3388Z" fill="#F4F8F2"></path><path d="M217.389 26.3388V20.0999C217.389 19.3742 216.802 18.7829 216.073 18.7829H215.837V18.2118H217.386V18.195L220.843 18.2118V16.4379H217.386L217.413 12.1006H215.683L215.176 16.4379H212.995V18.195H215.176V26.416C215.176 28.7846 216.613 30.3806 218.875 30.3806C219.54 30.3806 220.416 30.2461 221.055 30.0345V28.2504C220.551 28.4117 219.859 28.5158 219.459 28.5158C218.182 28.5158 217.383 27.6121 217.383 26.3354L217.389 26.3388Z" fill="#F4F8F2"></path><path d="M144.643 16.4419V24.2631C144.643 26.6317 142.702 28.3619 140.44 28.3619C138.179 28.3619 136.795 26.7392 136.795 24.4512V16.4419H134.588V24.6596C134.588 27.5892 136.802 30.0989 139.722 30.3375C141.143 30.4549 142.433 30.0214 143.417 29.1616C143.84 28.7919 144.072 28.251 144.072 27.69V27.1961H144.643V28.0394V29.8736H146.851V16.4385H144.643V16.4419Z" fill="#F4F8F2"></path><path d="M191.366 15.938C189.344 15.938 187.801 16.9493 186.871 18.5182H186.632C185.86 16.9493 184.133 15.9111 182.241 15.9111C181.072 15.9111 180.057 16.3244 179.288 17.0064C178.875 17.3759 178.646 17.9101 178.646 18.4645V19.0927H178.065V16.4419H175.935V29.8771H178.142V21.8409C178.142 19.4724 179.58 17.9034 181.761 17.9034C183.941 17.9034 185.221 19.4724 185.221 21.8409V29.8771H187.428V21.8409C187.428 19.553 188.944 17.9034 191.101 17.9034C193.123 17.9034 194.584 19.553 194.584 21.8409V29.8771H196.792V21.8678C196.792 18.3838 194.531 15.9347 191.363 15.9347L191.366 15.938Z" fill="#F4F8F2"></path><path d="M205.151 15.9375C201.771 15.9375 199.563 17.7484 199.563 20.594H201.798C201.771 18.9175 203.101 17.9331 205.124 17.9331C207.331 17.9331 208.635 19.1023 208.635 20.9131V21.444L204.909 21.8975C200.917 22.3511 198.895 24.1048 198.895 26.4734C198.895 28.8419 200.81 30.3033 203.709 30.3033C205.221 30.3033 206.444 29.8834 207.371 29.1007C207.805 28.7344 208.04 28.1868 208.04 27.619V27.068H208.631V29.88H210.839V20.9669C210.839 17.9063 208.631 15.9375 205.144 15.9375H205.151ZM208.635 24.5315C208.635 26.7925 206.773 28.469 204.032 28.469C202.221 28.469 201.106 27.6963 201.106 26.4196C201.106 25.1429 202.17 24.1048 204.909 23.7588L208.635 23.3321V24.5281V24.5315Z" fill="#F4F8F2"></path><path d="M89.4541 17.6842H92.9111L89.4541 17.6641V17.6842Z" fill="#F4F8F2"></path><path d="M57.9139 28.5764L57.5108 28.1733L57.8634 27.8205C58.4816 27.2023 58.8277 26.3658 58.8277 25.4956V10.5889H56.4053V29.3458H68.2717V27.2158H60.6351C59.7616 27.2158 58.925 27.5618 58.3102 28.18L57.9139 28.5764Z" fill="#F4F8F2"></path><path d="M89.4542 25.8085V19.5696C89.4542 18.844 88.8661 18.2526 88.137 18.2526H87.9018V17.6815H89.4508V17.6647L92.9078 17.6815V15.9076H89.4508L89.4774 11.5703H87.7472L87.24 15.9076H85.0596V17.6647H87.24V25.8858C87.24 28.2543 88.678 29.85 90.939 29.85C91.6043 29.85 92.4811 29.7158 93.1194 29.5042V27.7202C92.6156 27.8814 91.9234 27.9855 91.5237 27.9855C90.2468 27.9855 89.4474 27.0818 89.4474 25.8051L89.4542 25.8085Z" fill="#F4F8F2"></path><path d="M104.593 21.5515C102.597 21.313 100.79 21.1786 100.79 19.5022C100.79 18.118 102.12 17.2411 104.062 17.2411C106.138 17.2411 107.546 18.2793 107.573 19.9288H109.727C109.727 17.1605 107.439 15.3799 104.086 15.3799C100.733 15.3799 98.6834 16.9757 98.6834 19.5828C98.6834 22.6434 101.583 23.3086 104.086 23.6009C106.108 23.8664 107.942 24.0007 107.942 25.7545C107.942 27.1655 106.639 28.0155 104.616 28.0155C102.09 28.0155 100.598 26.712 100.571 24.797H98.4414C98.4414 27.9886 100.675 29.8801 104.536 29.8801C107.969 29.8801 110.015 28.3649 110.015 25.7309C110.015 22.5124 107.116 21.8741 104.586 21.5549L104.593 21.5515Z" fill="#F4F8F2"></path><path d="M96.5263 12.5846V12.9172L96.2372 13.2061C95.73 13.7134 95.4443 14.4021 95.4443 15.1177V17.7248C96.5431 17.7248 97.4333 16.8345 97.4333 15.7359V11.3516H95.4443V12.5879H96.5263V12.5846Z" fill="#F4F8F2"></path><path d="M76.8151 15.377C72.6659 15.377 69.686 18.357 69.686 22.4557C69.686 26.7662 72.7198 29.8806 76.9226 29.8806C79.9028 29.8806 82.3249 28.4964 83.4134 26.2085L81.5791 25.2779C80.7292 26.8737 78.972 27.8849 76.9765 27.8849C74.235 27.8849 72.2662 26.0741 71.947 23.3629H83.8401C83.867 23.0706 83.867 22.7514 83.867 22.486C83.867 18.3603 80.9138 15.3803 76.8151 15.3803V15.377ZM71.974 21.4176C72.3467 18.9953 74.235 17.3726 76.711 17.3726C79.187 17.3726 81.1524 18.9953 81.5521 21.4176H71.974Z" fill="#F4F8F2"></path><path d="M31.1674 0.5V17.4327C29.7901 11.2307 26.1381 0.5 26.1381 0.5H17.1107C18.599 6.44658 20.7794 12.7694 21.6328 16.7405H21.6193C20.7291 14.2443 18.7435 10.4076 14.2919 4.60213C13.1564 3.12389 12.0275 1.72963 11.0029 0.5H0C6.53453 7.53847 13.5092 17.1168 13.5092 20.5C13.5092 23.8832 6.53453 33.4614 0 40.5H11.0029C12.0309 39.2705 13.1597 37.8762 14.2919 36.3979C18.636 30.7301 20.635 26.9405 21.5522 24.4409C20.6484 28.4254 18.4176 34.6543 16.8822 40.5H25.9298C25.9298 40.5 29.6389 30.4245 31.1035 24.3636L30.8349 40.5H39.6641L39.9966 20.5538V0.5H31.1674Z" fill="#00CD77"></path></g><defs><clipPath id="clip0_4016_1321"><rect width="236.879" height="40" fill="white" transform="translate(0 0.5)"></rect></clipPath></defs></svg></a>
   <a class="bar-cta" id="barCta" href="#kontakt">Chcę tak u siebie</a>
-  <div class="meter" id="meter" aria-hidden="true">
-    <div class="lb" id="mlb">Obsługa tego zamówienia</div>
-    <div class="v"><span class="zl" id="mzl">0,00 zł</span><span class="mn" id="mmn">0 min</span></div>
-  </div>
-</div><div class="dzien" id="dzien" aria-hidden="true"><i id="dzienI"></i></div></header>
+</div></header>
 
 <div class="hist">
-<!-- 1. PARAGON -->
-<section class="scene" id="paragon" style="--h:190">
- <div class="stage"><div class="inner">
-  <div class="cap swap">
-    <div id="s1a">
-      <h1>Podniesiemy Twoją&nbsp;<em>marżę.</em></h1>
-      <p class="lead">Bez podnoszenia cen. Najpierw zobacz, gdzie dziś znika.</p>
-    </div>
-    <div class="after" id="s1b">
-      <h2 style="margin-top:0">Z&nbsp;800&nbsp;zł zostają <em>2&nbsp;zł.</em></h2>
-      <p class="lead">98 zł z każdego zamówienia zjada jego obsługa w biurze. Zobacz jedno takie zamówienie od rana.</p>
-    </div>
-  </div>
-  <div class="vis">
-   <div class="box rig" id="rig1">
-    <div class="clip"><div class="paper">
-      <div class="hd"><b>HURTOWNIA</b>PARAGON NR 4417<br>20.11.2026 · 07:12</div>
-      <div class="dl"></div>
-      <div class="r"><span>ZAMÓWIENIE</span><span>800,00</span></div>
-      <div class="r"><span>TOWAR</span><span>-612,00</span></div>
-      <div class="r"><span>TRANSPORT</span><span>-48,00</span></div>
-      <div class="r"><span>RABAT</span><span>-40,00</span></div>
-      <div class="r q"><span>OBSŁUGA W BIURZE?</span><span>-98,00</span><svg class="ring" viewBox="0 0 300 40" preserveAspectRatio="none"><path pathLength="1" id="ring" d="M30 6 C 110 -2, 250 0, 292 10 C 304 16, 300 32, 270 36 C 190 42, 70 42, 14 34 C -6 30, 0 10, 26 6 C 50 3, 80 4, 96 5"/></svg><span class="qm" id="qm">?!</span></div>
-      <div class="dl"></div>
-      <div class="z"><span>ZOSTAJE</span><span>2,00</span></div>
-      <div class="ft">DZIĘKUJEMY · ZAPRASZAMY PONOWNIE</div>
-    </div></div>
-    <div class="printer"><span class="nm">LA-80</span><span class="led"></span></div>
-   </div>
-  </div>
-  <div class="ft"><div class="hint" id="hint"><span>Przewiń</span><i></i></div></div>
- </div></div>
-</section>
-
-<!-- 2. MAIL -->
-<section class="scene" id="mail" style="--h:230">
- <div class="stage"><div class="inner">
-  <div class="cap">
-    <span class="clock">07:12</span>
-    <h2>Przychodzi <em>zamówienie.</em></h2>
-  </div>
-  <div class="vis"><div class="box b-mail">
-   <div class="phone" id="phone">
-    <div class="mailc">
-     <div class="mtop"><span>‹ Odebrane</span><span>3 z 41</span></div>
-     <div class="mhd"><div class="av">M</div><div class="who"><b>Marek</b><span>stały klient · sklep budowlany</span></div><div class="tm">07:12</div></div>
-     <div class="subj">zamówienie pilne!!</div>
-     <div class="mbody">
-      <p>Dzień dobry,</p>
-      <p>proszę <span class="hl" id="h1"><span class="bg"></span><span class="t">to co zwykle</span><svg class="mark" viewBox="0 0 120 30" preserveAspectRatio="none"><path pathLength="1" d="M14 4 C 50 -2, 108 0, 116 10 C 122 20, 104 28, 70 28 C 30 29, 2 26, 3 15 C 4 6, 20 3, 40 3"/></svg><span class="note" id="n1" style="left:-6px;top:-36px">czyli co? szukam w starych mailach</span></span> <span class="hl" id="h2"><span class="bg"></span><span class="t">+ 2 palety</span><svg class="mark" viewBox="0 0 100 30" preserveAspectRatio="none" style="inset:auto -4px -10px -4px;height:14px"><path pathLength="1" d="M2 8 C 30 4, 70 12, 98 5"/></svg><span class="note" id="n2" style="left:22px;top:30px">palety czego??</span></span>,<br>na&nbsp;czwartek.</p>
-      <p>Reszta w&nbsp;załączniku.</p>
-      <p class="sig">Pozdr. Marek<br>Wysłano z iPhone’a</p>
-     </div>
-     <div class="att"><div class="ic">PDF</div><div><b>skan_zamowienie (2).pdf</b><span>1 strona · 2,4 MB</span></div><span class="note" id="n3" style="right:6px;top:-30px">skan. nic się nie skopiuje</span></div>
+<!-- 1. HAK: dwa paragony z tego samego zamówienia -->
+<section class="hero" id="hero">
+ <div class="w">
+  <h1>Twoja konkurencja zarabia na tym samym zamówieniu <em>45&nbsp;razy więcej.</em></h1>
+  <p class="lead">Ta sama cena, ten sam towar. Różnica jest w&nbsp;biurze. Zobacz jedno zamówienie za 800&nbsp;zł w&nbsp;dwóch firmach naraz.</p>
+  <div class="dwa">
+   <div class="pr pr-ty">
+    <div class="pr-k">U&nbsp;Ciebie</div>
+    <div class="pr-p">
+     <div class="r"><span>ZAMÓWIENIE</span><span>800,00</span></div>
+     <div class="r"><span>TOWAR I DOSTAWA</span><span>-700,00</span></div>
+     <div class="r zle"><span>OBSŁUGA W BIURZE</span><span>-98,00</span></div>
+     <div class="dl"></div>
+     <div class="z"><span>ZOSTAJE</span><span>2,00</span></div>
     </div>
    </div>
-   <div class="scan" id="scan">
-     <div class="sh">Zamówienie · sklep Marek</div>
-     <div class="ln"><span>1. kratka </span><span class="hl" id="h4"><span class="bg"></span><span class="t">KRT-4O21</span><span class="note" id="n4" style="left:4px;top:28px;font-size:26px">O czy 0?</span></span><span> – 6 szt</span></div>
-     <div class="ln"><span>2. reszta jak zwykle</span></div>
-     <div class="ln"><span>dostawa czwartek rano!</span></div>
+   <div class="pr pr-on">
+    <div class="pr-k">U&nbsp;konkurencji</div>
+    <div class="pr-p">
+     <div class="r"><span>ZAMÓWIENIE</span><span>800,00</span></div>
+     <div class="r"><span>TOWAR I DOSTAWA</span><span>-700,00</span></div>
+     <div class="r ok"><span>OBSŁUGA + SYSTEM</span><span>-10,00</span></div>
+     <div class="dl"></div>
+     <div class="z ok"><span>ZOSTAJE</span><span>90,00</span></div>
+    </div>
    </div>
-  </div></div>
-  <div class="ft"><div class="foot" id="f2"><b>8 minut.</b> A&nbsp;w&nbsp;systemie nie ma jeszcze ani jednej pozycji.</div></div>
- </div></div>
+  </div>
+  <p class="przyk">Przykład: hurtownia, jedno zamówienie za 800&nbsp;zł.</p>
+  <div class="hint" id="hint"><span>Zobacz, jak to wygląda</span><i></i></div>
+ </div>
 </section>
 
-<!-- 3. PRZEPISYWANIE -->
-<section class="scene" id="przepisywanie" style="--h:300">
+<!-- 2. WYŚCIG: ten sam mail o 7:12, dwa biura, wspólny zegar -->
+<section class="scene" id="wyscig" style="--h:520">
  <div class="stage"><div class="inner">
   <div class="cap">
-    <span class="clock" id="clk3">07:40</span>
-    <h2>Ktoś przepisuje je do&nbsp;systemu. <em>Ręcznie.</em></h2>
+   <div class="zegar"><span id="zeg">07:12</span></div>
+   <h2>Ten sam mail. <em>Dwa biura.</em></h2>
   </div>
-  <div class="vis"><div class="box b-erp">
-   <div class="mini">
-     <div class="ln" data-r="1 2"><span class="bg"></span><span>2. reszta jak zwykle</span></div>
-     <div class="ln" data-r="3"><span class="bg"></span><span>1. kratka KRT-4O21 – 6 szt</span></div>
-     <div class="ln" data-r="4"><span class="bg"></span><span>mail: + 2 palety</span></div>
+  <div class="vis"><div class="box tory" id="tory">
+   <div class="tor tor-ty">
+    <div class="tor-h"><i></i>U&nbsp;Ciebie</div>
+    <div class="kroki" id="krA">
+     <div class="kr"><small>07:12</small><p>Mail: „to co zwykle + 2&nbsp;palety”, skan w&nbsp;załączniku.</p></div>
+     <div class="kr"><small>07:20</small><p>Ania szuka w&nbsp;starych mailach, co to jest „to co zwykle”.</p><b>+8 min</b></div>
+     <div class="kr"><small>07:40</small><p>Przepisuje do systemu. Kodu ze skanu nie ma, więc wybiera kratkę z&nbsp;listy.</p><b>+10 min</b></div>
+     <div class="kr"><small>08:15</small><p>Telefon do magazynu: „jest na stanie?”</p><b>+8 min</b></div>
+     <div class="kr"><small>10:30</small><p>Dzwoni klient: „czy już wyszło?”</p><b>+6 min</b></div>
+     <div class="kr zly"><small>14:00</small><p>Pomyłka: zła kratka. Reklamacja i&nbsp;drugi kurs.</p><b>+30 min, +48&nbsp;zł</b></div>
+    </div>
+    <div class="licz" id="liA"><span id="liAm">0 min</span><span id="liAz">0,00 zł</span></div>
    </div>
-   <div class="erp" id="erp">
-     <div class="wt"><i></i><span>Zamówienie od odbiorcy · ZK 1187/11/2026</span><em>–▢✕</em></div>
-     <div class="tb"><b id="tbZap">Zapisz</b><b id="tbHis">Historia</b><b>Rezerwuj</b><b>Drukuj</b><span class="zap" id="zap">Zapisano</span></div>
-     <div class="flds">
-       <label>Odbiorca</label><div class="e-inp" id="f-od"></div>
-       <label>Termin</label><div class="e-inp" id="f-te"></div>
-     </div>
-     <div class="e-grid">
-       <div class="gr h"><div>Lp</div><div>Kod</div><div>Nazwa</div><div class="n">Szt.</div><div class="n">Wartość</div></div>
-       <div class="gr" data-row="1"><div>1</div><div class="k"></div><div></div><div class="n"></div><div class="n"></div></div>
-       <div class="gr" data-row="2"><div>2</div><div class="k"></div><div></div><div class="n"></div><div class="n"></div></div>
-       <div class="gr" data-row="3"><div>3</div><div class="k"></div><div></div><div class="n"></div><div class="n"></div></div>
-       <div class="gr" data-row="4"><div>4</div><div class="k"></div><div></div><div class="n"></div><div class="n"></div></div>
-     </div>
-     <div class="sum"><span>Razem netto</span><span id="sum">0,00 zł</span></div>
-     <div class="lista" id="lista"></div>
-     <div class="okno" id="okno">
-       <div class="ok-h">Poprzednie zamówienia · Marek</div>
-       <div class="ok-r on"><b>ZK 1142 · 13.11</b><span>Cement 32,5R × 20, Klej C2TE × 10</span></div>
-       <div class="ok-r"><b>ZK 1098 · 06.11</b><span>Cement 32,5R × 20, Klej C2TE × 10</span></div>
-       <div class="ok-r"><b>ZK 1051 · 30.10</b><span>Cement × 20, Klej × 10, Fuga × 4</span></div>
-       <div class="ok-f"><span class="ok-b" id="okB">Kopiuj pozycje z ZK 1142</span></div>
-     </div>
-     <svg class="kursor" id="kursor" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3l14 8.5-6.2 1.3 3.6 6.6-2.6 1.4-3.6-6.6L5 18.5z"/></svg>
-   </div>
-   <div class="pod"><span class="n3 lewo" id="n6">kratka: chyba ta?</span><span class="n3" id="n5">palety? zgaduję…</span></div>
-  </div></div>
-  <div class="ft"><div class="foot" id="f3"><b>18 minut.</b> I&nbsp;nadal nikt nie wie, czy ten towar jest na&nbsp;magazynie.<small>Liczymy 48 zł za godzinę pracy biura razem z&nbsp;kosztami stanowiska.</small></div></div>
- </div></div>
-</section>
-
-<!-- 4. RESZTA DNIA -->
-<section class="scene" id="reszta" style="--h:230">
- <div class="stage"><div class="inner">
-  <div class="cap">
-    <span class="clock" id="clk4">08:15</span>
-    <h2>A&nbsp;potem <em>reszta dnia.</em></h2>
-  </div>
-  <div class="vis">
-   <div class="box evs">
-    <div class="ev"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg></div>
-      <div><div class="tt"><b>„Jest na stanie?”</b><span>08:15</span></div><p>Telefon do magazynu. Magazynier idzie sprawdzić kratki i oddzwania po kwadransie.</p><span class="koszt">+8 min</span></div></div>
-    <div class="ev"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></div>
-      <div><div class="tt"><b>„Czy już wyszło?”</b><span>10:30</span></div><p>Dzwoni Marek. Biuro szuka zamówienia w&nbsp;systemie i&nbsp;w&nbsp;mailach, potem pyta magazyn.</p><span class="koszt">+6 min</span></div></div>
-    <div class="ev zly"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7"/><circle cx="7" cy="17.5" r="1.8"/><circle cx="17.5" cy="17.5" r="1.8"/></svg></div>
-      <div><div class="tt"><b>Pomyłka</b><span>14:00</span></div><p>Na liście stały prawie takie same kratki. Wybrana 14×24 zamiast 14×21. Reklamacja, przeprosiny i&nbsp;drugi kurs.</p><span class="koszt">+30 min i&nbsp;48,40 zł za transport</span></div></div>
-   </div>
-  </div>
-  <div class="ft"><div class="foot" id="f4"><b>98 zł</b> na jednym zamówieniu. <span class="zle">A&nbsp;przychodzi ich 60 dziennie.</span><small>To 4 etaty tylko na przepisywanie i&nbsp;pilnowanie. Przykład: 48 zł za godzinę pracy biura.</small></div></div>
- </div></div>
-</section>
-
-<!-- 7. TEN SAM DZIEŃ -->
-<section class="scene" id="zmiana" style="--h:260">
- <div class="stage"><div class="inner">
-  <div class="cap">
-    <span class="clock" id="clk7">14:00</span>
-    <h2>Ten sam dzień. <em>Jeszcze raz.</em></h2>
-  </div>
-  <div class="vis"><div class="cofka" id="cofka" aria-hidden="true">14:00</div><div class="box b-log">
-   <div class="minim" id="minim"><div class="av">M</div><div><b>zamówienie pilne!!</b><span>proszę to co zwykle + 2 palety, na czwartek…</span></div><div class="tm">07:12</div></div>
-   <div class="log">
-    <div class="lg-r"><i><svg viewBox="0 0 24 24" fill="none" stroke="#06170E" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></i><div><small>07:12:20</small>Odczytany mail i&nbsp;skan z&nbsp;załącznika.</div></div>
-    <div class="lg-r"><i><svg viewBox="0 0 24 24" fill="none" stroke="#06170E" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></i><div><small>07:12:31</small>„To co zwykle” u&nbsp;Marka: cement 20&nbsp;szt. i&nbsp;klej 10&nbsp;szt., tak jak w&nbsp;6 ostatnich zamówieniach.</div></div>
-    <div class="lg-r"><i><svg viewBox="0 0 24 24" fill="none" stroke="#06170E" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></i><div><small>07:12:33</small>Kod <s>KRT-4O21</s> poprawiony na KRT-4021. Stany sprawdzone: wszystko jest.</div></div>
-    <div class="lg-r cz"><i><svg viewBox="0 0 24 24" fill="none" stroke="#2A1D00" stroke-width="3" stroke-linecap="round"><path d="M12 7v6M12 17h.01"/></svg></i><div><small>07:12:40 · pytanie do biura</small>„2 palety czego?” Najpewniej palety EURO pod towar.<br><span class="zatw" id="zatw"><b class="tap" id="tap"></b><span id="zatwT">Zatwierdź</span></span></div></div>
-    <div class="lg-r"><i><svg viewBox="0 0 24 24" fill="none" stroke="#06170E" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></i><div><small>07:14</small>ZK 1188 w&nbsp;systemie. Marek dostaje potwierdzenie z&nbsp;terminem.</div></div>
-    <div class="lg-r"><i><svg viewBox="0 0 24 24" fill="none" stroke="#06170E" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></i><div><small>10:30</small>Marek dostaje numer przesyłki, zanim zdąży zadzwonić.</div></div>
+   <div class="tor tor-on">
+    <div class="tor-h"><i></i>U&nbsp;konkurencji</div>
+    <div class="kroki" id="krB">
+     <div class="kr"><small>07:12</small><p>Mail: „to co zwykle + 2&nbsp;palety”, skan w&nbsp;załączniku.</p></div>
+     <div class="kr"><small>07:12</small><p>System czyta mail i&nbsp;skan. „To co zwykle” to cement i&nbsp;klej z&nbsp;6 ostatnich zamówień.</p></div>
+     <div class="kr"><small>07:12</small><p>Kod ze skanu poprawiony, stany sprawdzone, towar zarezerwowany.</p></div>
+     <div class="kr pyt"><small>07:13</small><p>Jedno pytanie do Ani: „2&nbsp;palety czego?” Klik: EURO.</p><b>1 min</b></div>
+     <div class="kr gotowe"><small>07:14</small><p>Klient ma potwierdzenie z&nbsp;terminem. Gotowe.</p></div>
+     <div class="kr"><small>10:30</small><p>Klient dostaje numer przesyłki, zanim zadzwoni.</p></div>
+    </div>
+    <div class="licz" id="liB"><span id="liBm">0 min</span><span id="liBz">0,00 zł</span></div>
    </div>
   </div></div>
-  <div class="ft"><div class="foot" id="f7"><b>1 minuta</b> pracy biura. Bez telefonów i&nbsp;bez pomyłki.</div></div>
+  <div class="ft"><p class="foot" id="fW">U&nbsp;Ciebie <span class="zle">62 minuty i&nbsp;98&nbsp;zł.</span> U&nbsp;konkurencji <b>1 minuta i&nbsp;10&nbsp;zł.</b><small>Przykład: hurtownia, zamówienie za 800 zł, 48 zł za godzinę pracy biura. U konkurencji 10 zł to minuta pracy biura i koszt systemu.</small></p></div>
  </div></div>
 </section>
 
-<!-- 8. DRUGI PARAGON -->
-<section class="scene" id="po" style="--h:180">
- <div class="stage"><div class="inner">
-  <div class="cap">
-    <h2 style="margin-top:0">To samo zamówienie. <em>Zostaje 90&nbsp;zł.</em></h2>
+<!-- 3. RÓŻNICA na jednym zamówieniu -->
+<section class="roznica" id="roznica">
+ <div class="w">
+  <div class="ety">Różnica na jednym zamówieniu</div>
+  <div class="tab" id="tab">
+   <div class="tw th"><span></span><span>U&nbsp;Ciebie</span><span>U&nbsp;konkurencji</span></div>
+   <div class="tw"><span>Praca biura</span><span class="a">62&nbsp;min</span><span class="b">1&nbsp;min</span></div>
+   <div class="tw"><span>Telefony</span><span class="a">2</span><span class="b">0</span></div>
+   <div class="tw"><span>Pomyłki</span><span class="a">1</span><span class="b">0</span></div>
+   <div class="tw"><span>Koszt obsługi</span><span class="a">98&nbsp;zł</span><span class="b">10&nbsp;zł</span></div>
+   <div class="tw duzy"><span>Zostaje z&nbsp;800&nbsp;zł</span><span class="a">2&nbsp;zł</span><span class="b">90&nbsp;zł</span></div>
+   <div class="tw duzy"><span>Marża</span><span class="a">0,25%</span><span class="b">11,25%</span></div>
   </div>
-  <div class="vis"><div class="box b-po">
-   <div class="stary" id="stary"><div class="r"><span>OBSŁUGA</span><span>-98,00</span></div><div class="z"><span>ZOSTAJE</span><span>2,00</span></div><div class="x"></div></div>
-   <div class="rig" id="rig2">
-    <div class="clip"><div class="paper">
-      <div class="hd"><b>HURTOWNIA</b>PARAGON NR 4418<br>20.11.2026 · 07:14</div>
-      <div class="dl"></div>
-      <div class="r"><span>ZAMÓWIENIE</span><span>800,00</span></div>
-      <div class="r"><span>TOWAR</span><span>-612,00</span></div>
-      <div class="r"><span>TRANSPORT</span><span>-48,00</span></div>
-      <div class="r"><span>RABAT</span><span>-40,00</span></div>
-      <div class="r"><span>OBSŁUGA W BIURZE</span><span>-0,80</span></div>
-      <div class="r"><span>SYSTEM</span><span>-9,20</span></div>
-      <div class="dl"></div>
-      <div class="z ok"><span>ZOSTAJE</span><span>90,00</span></div>
-      <div class="ft">PRZYKŁAD · TWOJE LICZBY POLICZYMY RAZEM</div>
-    </div></div>
-    <div class="printer"><span class="nm">LA-80</span><span class="led"></span></div>
-   </div>
-  </div></div>
-  <div class="ft"><div class="foot" id="f8">Marża z&nbsp;tego zamówienia: <span class="zle">0,25%</span> → <b>11,25%</b>.<small>Ta sama cena, ten sam towar, ten sam klient. Koszt systemu jest już odjęty.</small></div></div>
- </div></div>
+  <p class="t">A&nbsp;takich zamówień przychodzi kilkadziesiąt dziennie. Klient płaci tyle samo, towar kosztuje tyle samo. Różnica jest tylko w&nbsp;tym, kto przepisuje.</p>
+ </div>
 </section>
 
-<!-- 7. ŻÓŁTA KARTECZKA: chcesz tak u siebie? -->
+<!-- 4. ŻÓŁTA KARTECZKA: chcesz tak u siebie? -->
 <section class="kartka-s" id="kontakt">
  <div class="w">
   <div class="kartka" id="kartka">
@@ -1150,7 +484,6 @@ color:#FF8A80;font-weight:800}
  </div>
 </section>
 
-<!-- róg karteczki wystaje z dołu ekranu -->
 <a class="kc" id="kc" href="#kontakt" aria-label="Chcesz tak u siebie? Przejdź do formularza"><span>Chcesz tak u&nbsp;siebie?</span><i aria-hidden="true">→</i></a>
 
 
@@ -1159,259 +492,84 @@ color:#FF8A80;font-weight:800}
 </div>
 <script is:inline>
 (()=>{
-const cl=(x,a=0,b=1)=>Math.min(b,Math.max(a,x)), seg=(p,a,b)=>cl((p-a)/(b-a)), eo=t=>1-Math.pow(1-t,3), eio=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
-const eb=t=>{const c=1.70158;t=cl(t);return 1+(c+1)*Math.pow(t-1,3)+c*Math.pow(t-1,2);};
+const cl=(x,a=0,b=1)=>Math.min(b,Math.max(a,x)), seg=(p,a,b)=>cl((p-a)/(b-a)), eo=t=>1-Math.pow(1-t,3);
 const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
-const type=(el,t,full)=>{const n=Math.round(full.length*cl(t));const s=full.slice(0,n);if(el.textContent!==s)el.textContent=s;el.classList.toggle('caret',t>0&&t<1);};
-const pen=(path,t)=>{path.style.strokeDashoffset=String(1-cl(t));};
-const write=(el,t)=>{el.style.clipPath=`inset(-20% ${(1-cl(t))*100}% -20% 0)`;};
-const mark=(bg,t)=>{bg.style.transform=`scaleX(${eo(cl(t))})`;};
-const show=(el,t,dy=12)=>{const e=eo(cl(t));el.style.opacity=e;el.style.transform=e>=1?'none':`translateY(${(1-e)*dy}px)`;};
+const qs=new URLSearchParams(location.search), snap=()=>window.__snap||qs.has('s');
 const desk=()=>innerWidth>=960;
 const hhmm=m=>{m=Math.round(m);return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');};
 const zl=v=>{const a=Math.abs(v),i=Math.floor(a+1e-9),d=Math.round((a-i)*100);return String(i).replace(/\B(?=(\d{3})+(?!\d))/g,' ')+','+String(d).padStart(2,'0')+' zł';};
-const IDS=['paragon','mail','przepisywanie','reszta','zmiana','po'], S={}; IDS.forEach(id=>S[id]=document.getElementById(id));
-const qs=new URLSearchParams(location.search), snap=()=>window.__snap||qs.has('s');
+const set=(el,v)=>{if(el.textContent!==v)el.textContent=v;};
+const show=(el,t,dy=10)=>{const e=eo(cl(t));el.style.opacity=e;el.style.transform=e>=1?'none':`translateY(${(1-e)*dy}px)`;};
 
-/* ───── nagłówki: każde słowo w masce, wysuwa się, gdy scena wchodzi na ekran ───── */
+/* nagłówki: słowa wysuwają się spod maski */
 function slowa(h){
   const walk=n=>{[...n.childNodes].forEach(c=>{
-    if(c.nodeType===3){const parts=c.textContent.split(/( +)/); const f=document.createDocumentFragment();
-      parts.forEach(t=>{if(!t)return; if(/^ +$/.test(t)){f.appendChild(document.createTextNode(t));return;}
+    if(c.nodeType===3){const f=document.createDocumentFragment();
+      c.textContent.split(/( +)/).forEach(t=>{if(!t)return; if(/^ +$/.test(t)){f.appendChild(document.createTextNode(t));return;}
         const w=document.createElement('span');w.className='wd';const i=document.createElement('i');i.textContent=t;w.appendChild(i);f.appendChild(w);});
       c.replaceWith(f);}
     else if(c.nodeType===1&&!c.classList.contains('wd'))walk(c);});};
   walk(h); return $$('.wd>i',h);
 }
-const NAG=$$('.hist .scene h1,.hist .scene h2').filter(h=>!h.closest('.after')).map(h=>{const sec=h.closest('section'); return {h,sec,w:slowa(h),clk:$('.clock',sec),lead:$$('.lead',h.parentElement)};});
-NAG.forEach(n=>n.lead.forEach(l=>{l.style.opacity=0;}));
 const t0=performance.now();
+const NAG=[...$$('.hero h1'),...$$('.scene h2')].map(h=>({h,sec:h.closest('section'),w:slowa(h)}));
 function nagl(){
   const vh=innerHeight;
   NAG.forEach(n=>{
-    let e;
-    if(n.sec.id==='paragon') e=snap()?1:cl((performance.now()-t0-150)/900);
-    else {const r=n.sec.getBoundingClientRect(); e=snap()?(r.top<vh?1:0):seg(1-r.top/vh,.25,.85);}
-    const k=n.w.length;
-    n.w.forEach((w,i)=>{const t=eo(cl(e*(1+k*.18)-i*.18)); const v=t>=1?'none':`translateY(${((1-t)*125).toFixed(2)}%)`; if(w.style.transform!==v)w.style.transform=v;});
-    if(n.clk){const c=eo(seg(e,0,.5)); n.clk.style.opacity=c; n.clk.style.transform=c>=1?'none':`translateY(${(1-c)*8}px)`;}
-    n.lead.forEach(l=>{const c=eo(seg(e,.45,1)); l.style.opacity=c; l.style.transform=c>=1?'none':`translateY(${(1-c)*10}px)`;});
+    const e=snap()?1:n.sec.id==='hero'?cl((performance.now()-t0-100)/1000):seg(1-n.sec.getBoundingClientRect().top/vh,.25,.85);
+    n.w.forEach((w,i)=>{const t=eo(cl(e*(1+n.w.length*.12)-i*.12)); const v=t>=1?'none':`translateY(${((1-t)*125).toFixed(1)}%)`; if(w.style.transform!==v)w.style.transform=v;});
   });
 }
 
-/* ───── obrazy scen dopasowane do strefy: nic nie wchodzi na nagłówek ani na zdanie pod spodem ───── */
+/* hak: paragony wchodzą po nagłówku */
+const prs=$$('.pr'), hint=$('#hint');
+function hak(){
+  const t=snap()?9:(performance.now()-t0)/1000;
+  prs.forEach((el,i)=>show(el,(t-.55-i*.18)/.6,24));
+  show($('.hero .lead'),(t-.35)/.6,10); show($('.przyk'),(t-1.2)/.6,4);
+  hint.style.opacity=cl((t-1.6)/.6)*(1-cl(scrollY/(innerHeight*.25)));
+}
+
+/* obraz wyścigu dopasowany do miejsca między nagłówkiem a zdaniem */
 function fit(){
-  $$('.box').forEach(b=>{const v=b.parentElement, vw=v.clientWidth, vh=v.clientHeight, bw=b.offsetWidth, bh=b.offsetHeight; if(!bw||!bh||!vh)return;
-    const s=Math.min(vw/bw, vh/bh, desk()?1.3:1).toFixed(4);
-    b.style.transform=b.classList.contains('rig')?`translateX(-50%) scale(${s})`:`translate(-50%,-50%) scale(${s})`;});
+  $$('.box').forEach(b=>{const v=b.parentElement, s=Math.min(v.clientWidth/b.offsetWidth, v.clientHeight/b.offsetHeight, desk()?1.15:1); b.style.transform=`translate(-50%,-50%) scale(${s.toFixed(4)})`;});
 }
 
-/* ───── drukarka: okno nad szczeliną rośnie, papier ma stałą wysokość ───── */
-function drukarka(rig){
-  const clip=$('.clip',rig), paper=$('.paper',rig), rows=[...paper.children], led=$('.led',rig), pr=$('.printer',rig);
-  const wys=()=>{rig.style.height=(paper.offsetHeight+63)+'px';}; wys();
-  let last=-1;
-  return {wys, rowEnd:i=>rows[i].offsetTop+rows[i].offsetHeight+6, H:()=>paper.offsetHeight,
-    set(len){const v=len.toFixed(1)+'px'; if(clip.style.height!==v)clip.style.height=v; const ruch=Math.abs(len-last)>.3&&len>2&&len<paper.offsetHeight-1;
-      led.classList.toggle('blink',ruch); pr.classList.toggle('druk',ruch); last=len;}};
+/* wyścig: wspólny zegar, dwa biura */
+const W=$('#wyscig'), zeg=$('#zeg'), krA=$$('#krA .kr'), krB=$$('#krB .kr'), liAm=$('#liAm'), liAz=$('#liAz'), liBm=$('#liBm'), liBz=$('#liBz'), fW=$('#fW');
+const PA=[.04,.14,.26,.44,.58,.74], PB=[.04,.09,.14,.19,.24,.58], MA=[0,8,10,8,6,30];
+const ZEG=[[0,432],[.04,432],[.26,460],[.34,478],[.44,495],[.58,630],[.74,840],[1,840]];
+function czas(p){for(let i=1;i<ZEG.length;i++){if(p<=ZEG[i][0]){const [a,ma]=ZEG[i-1],[b,mb]=ZEG[i];return ma+(mb-ma)*seg(p,a,b);}}return 840;}
+function wyscig(p){
+  set(zeg,hhmm(czas(p)));
+  krA.forEach((k,i)=>show(k,seg(p,PA[i],PA[i]+.05),12));
+  krB.forEach((k,i)=>show(k,seg(p,PB[i],PB[i]+.04),12));
+  let mA=0; MA.forEach((m,i)=>mA+=m*seg(p,PA[i],PA[i]+.06));
+  const zA=mA*.8+48.4*seg(p,PA[5],PA[5]+.06);
+  const mB=seg(p,PB[3],PB[3]+.04), zB=mB*.8+9.2*seg(p,PB[1],PB[1]+.04);
+  set(liAm,Math.floor(mA+1e-6)+' min'); set(liAz,zl(zA)); set(liBm,Math.floor(mB+1e-6)+' min'); set(liBz,zl(zB));
+  show(fW,seg(p,.84,.92),10);
 }
 
-/* ───── 1. paragon ───── */
-const d1=drukarka($('#rig1')), ring=$('#ring'), qm=$('#qm'), s1a=$('#s1a'), s1b=$('#s1b'), hint=$('#hint');
-const s1bW=slowa($('h2',s1b)), s1bL=$('.lead',s1b);
-function s1(p){
-  const H=d1.H(), r4=d1.rowEnd(4);
-  const auto=snap()?r4:eio(cl((performance.now()-t0-700)/1700))*r4;
-  d1.set(Math.max(auto, r4+eio(seg(p,.04,.6))*(H-r4)));
-  pen(ring,seg(p,.64,.78)); qm.style.opacity=seg(p,.76,.8); qm.style.transform=`rotate(-8deg) scale(${.6+.4*eb(seg(p,.76,.84))})`;
-  const sw=seg(p,.79,.92), wy=eo(seg(sw,0,.42)); s1a.style.opacity=1-wy; s1a.style.transform=`translateY(${-22*wy}px)`;
-  s1b.style.opacity=sw>0?1:0;
-  s1bW.forEach((w,i)=>{const t=eo(cl((sw-.3)*2.6-i*.14)); w.style.transform=t>=1?'none':`translateY(${(1-t)*125}%)`;});
-  const c=eo(seg(p,.88,.96)); s1bL.style.opacity=c; s1bL.style.transform=`translateY(${(1-c)*10}px)`;
-  hint.style.opacity=(snap()?1:cl((performance.now()-t0-1800)/600))*(1-seg(p,.03,.1));
-}
+/* tabela różnicy: wiersze jeden po drugim */
+const tab=$('#tab');
+$$('.tw',tab).forEach((r,i)=>r.style.transitionDelay=(i*.12)+'s');
+const naEkran=(el,cb,th)=>{if(snap()||!('IntersectionObserver' in window)){cb();return;} new IntersectionObserver((es,o)=>es.forEach(x=>{if(x.isIntersecting){cb();o.disconnect();}}),{threshold:th}).observe(el);};
+naEkran(tab,()=>tab.classList.add('on'),.3);
 
-/* ───── 2. mail ───── */
-const phone=$('#phone'), scan=$('#scan'), f2=$('#f2'), h=[1,2,4].map(i=>$('#h'+i)), n=[1,2,3,4].map(i=>$('#n'+i));
-function s2(p){
-  const a=eo(seg(p,0,.1)); phone.style.opacity=.25+.75*a;
-  phone.style.transform=`translateY(${(1-a)*40}px)`;
-  mark($('.bg',h[0]),seg(p,.13,.28)); pen($('.mark path',h[0]),seg(p,.15,.27)); write(n[0],seg(p,.2,.3));
-  const b2=seg(p,.32,.44); mark($('.bg',h[1]),b2); pen($('.mark path',h[1]),b2); write(n[1],seg(p,.36,.46));
-  write(n[2],seg(p,.49,.56));
-  const sa=seg(p,.52,.64), se=eb(sa); scan.style.opacity=eo(sa); scan.style.transform=`rotate(${-3+5.2*eo(sa)}deg) translateY(${(1-se)*70}px)`;
-  mark($('.bg',h[2]),seg(p,.68,.76)); write(n[3],seg(p,.73,.82));
-  show(f2,seg(p,.86,.93),10);
-  return 4*seg(p,.13,.3)+2*seg(p,.32,.46)+1*seg(p,.49,.64)+1*seg(p,.68,.82);
-}
-
-/* ───── 3. przepisywanie: tak jak w prawdziwym programie ─────
-   kilka liter i wybór z listy, „to co zwykle” skopiowane z poprzedniego zamówienia,
-   kodu ze skanu nie ma, więc szukanie po nazwie i wybór złej, podobnej kratki (pomyłka o 14:00) */
-const clk3=$('#clk3'), sum=$('#sum'), n5=$('#n5'), n6=$('#n6'), f3=$('#f3'), erp=$('#erp'), od=$('#f-od'), te=$('#f-te');
-const lista=$('#lista'), okno=$('#okno'), okB=$('#okB'), kursor=$('#kursor'), tbHis=$('#tbHis'), tbZap=$('#tbZap'), zap=$('#zap');
-const R=[1,2,3,4].map(i=>$(`.gr[data-row="${i}"]`)), miniL=$$('.mini .ln');
-const POZ=[['CEM-325R','Cement 32,5R 25 kg','20','290,00'],['KLJ-C2TE','Klej do płytek C2TE','10','380,00'],['KRT-4024','Kratka wentylacyjna 14×24','6','90,00'],['PAL-EUR','Paleta EURO (zwrotna)','2','40,00']];
-const L={
-  kh:{items:[['','Marek – sklep budowlany, Radom'],['','Marek-Trans sp. z o.o., Kielce'],['','Marekpol, Warszawa']],kh:1},
-  brak:{err:'Brak towaru o kodzie KRT-4O21'},
-  kratka:{items:[['KRT-1515','Kratka wentylacyjna 15×15','9,00'],['KRT-4024','Kratka wentylacyjna 14×24','15,00'],['KRT-4021','Kratka wentylacyjna 14×21','15,00'],['KRT-4021B','Kratka 14×21 brązowa','17,00']]},
-  pal:{items:[['PAL-EUR','Paleta EURO (zwrotna)','20,00'],['PAL-JED','Paleta jednorazowa','12,00'],['PAL-PRZ','Paleta przemysłowa','26,00']]}
-};
-let listaK='';
-function pokazListe(k,hl,anchor){
-  if(!k){lista.classList.toggle('on',false); listaK=''; return;}
-  if(k!==listaK){const d=L[k]; listaK=k;
-    lista.innerHTML=d.err?`<div class="li blad"><i>!</i><span>${d.err}</span></div>`:d.items.map(([c,nm,cn])=>d.kh?`<div class="li kh"><span>${nm}</span></div>`:`<div class="li"><b>${c}</b><span>${nm}</span><em>${cn}</em></div>`).join('');}
-  $$('.li',lista).forEach((el,i)=>el.classList.toggle('on',i===hl));
-  const r=wRz(anchor); lista.style.left=r.x+'px'; lista.style.top=(r.y+r.h+2)+'px'; lista.classList.toggle('on',true);
-}
-const wRz=el=>{let x=0,y=0,e=el;while(e&&e!==erp){x+=e.offsetLeft;y+=e.offsetTop;e=e.offsetParent;}return {x,y,w:el.offsetWidth,h:el.offsetHeight};};
-const cel=el=>{const r=wRz(el);return {x:r.x+r.w*.55,y:r.y+r.h*.6};};
-const liPos=(anchor,i)=>{const r=wRz(anchor);return {x:r.x+110,y:r.y+r.h+2+3+i*25+13};};
-const wpisz=(el,v)=>{if(el.textContent!==v)el.textContent=v;};
-const fillRow=(row,v,ile)=>{const c=[...row.children].slice(1); c.forEach((el,j)=>wpisz(el,j<ile?v[j]:''));};
-function s3(p){
-  erp.style.opacity=.3+.7*eo(seg(p,0,.06));
-  const k3=$('.k',R[2]), k4=$('.k',R[3]);
-  /* A. odbiorca: „marek” i wybór z listy */
-  if(p<.085){type(od,seg(p,.03,.055),'marek');} else {wpisz(od,'Marek – sklep budowlany, Radom'); od.classList.toggle('caret',false);}
-  od.classList.toggle('fokus',p>.03&&p<.085);
-  /* B. termin */
-  type(te,seg(p,.09,.115),'26.11.2026'); te.classList.toggle('fokus',p>.09&&p<.12);
-  /* C. „to co zwykle”: Historia → kopiuj pozycje */
-  tbHis.classList.toggle('hit',p>.135&&p<.15);
-  const ok=eo(seg(p,.145,.16))*(1-eo(seg(p,.205,.22))); okno.style.opacity=ok; okno.style.transform=`translateY(${(1-ok)*8}px) scale(${.98+.02*ok})`;
-  okB.classList.toggle('hit',p>.195&&p<.205);
-  const c12=p>=.215;
-  fillRow(R[0],POZ[0],c12?4:0); fillRow(R[1],POZ[1],c12?4:0);
-  R[0].classList.toggle('flash',c12&&p<.26); R[1].classList.toggle('flash',c12&&p<.26);
-  /* D. kratka: kodu ze skanu nie ma, szukanie po nazwie, wybór złej, podobnej z listy */
-  const pick3=p>=.505;
-  if(!pick3){
-    let kTxt='';
-    if(p>=.25&&p<.37) kTxt='KRT-4O21'.slice(0,Math.round(8*seg(p,.25,.29)));
-    else if(p>=.37&&p<.39) kTxt='KRT-4O21'.slice(0,Math.round(8*(1-seg(p,.37,.39))));
-    else if(p>=.39) kTxt='kratka'.slice(0,Math.round(6*seg(p,.39,.42)));
-    fillRow(R[2],POZ[2],0); wpisz(k3,kTxt);
-    k3.classList.toggle('caret',p>.25); k3.classList.toggle('fokus',p>.245);
-  } else {
-    k3.classList.toggle('caret',false); k3.classList.toggle('fokus',false);
-    fillRow(R[2],POZ[2],p>.555?4:p>.545?3:2);
-  }
-  R[2].classList.toggle('flash',pick3&&p<.54);
-  /* E. palety */
-  const pick4=p>=.665;
-  if(!pick4){fillRow(R[3],POZ[3],0); wpisz(k4,'pal'.slice(0,Math.round(3*seg(p,.6,.615)))); k4.classList.toggle('caret',p>.6); k4.classList.toggle('fokus',p>.595);}
-  else {k4.classList.toggle('caret',false); k4.classList.toggle('fokus',false); fillRow(R[3],POZ[3],p>.70?4:p>.69?3:2);}
-  R[3].classList.toggle('flash',pick4&&p<.70);
-  /* listy podpowiedzi */
-  if(p>.055&&p<.085) pokazListe('kh',p>.07?0:-1,od);
-  else if(p>.295&&p<.365) pokazListe('brak',-1,k3);
-  else if(p>.425&&p<.505) pokazListe('kratka',p<.47?0:1,k3);
-  else if(p>.615&&p<.665) pokazListe('pal',p>.645?0:-1,k4);
-  else pokazListe('');
-  /* zapis */
-  tbZap.classList.toggle('hit',p>.8&&p<.815); zap.classList.toggle('on',p>.81);
-  /* kursor myszy */
-  const K=[[0,{x:erp.offsetWidth*.86,y:erp.offsetHeight*.9}],[.02,cel(od)],[.07,liPos(od,0)],[.088,cel(te)],[.13,cel(tbHis)],[.155,cel(tbHis)],[.19,cel(okB)],[.235,cel(okB)],[.245,cel(k3)],
-    [.43,cel(k3)],[.46,liPos(k3,0)],[.495,liPos(k3,1)],[.53,cel($$('.n',R[2])[0])],[.59,cel(k4)],[.63,cel(k4)],[.655,liPos(k4,0)],[.68,cel($$('.n',R[3])[0])],[.79,cel(tbZap)],[1,cel(tbZap)]];
-  let i=0; while(i<K.length-2&&p>K[i+1][0])i++;
-  const [pa,A]=K[i],[pb,Bp]=K[i+1], t=eio(seg(p,pa,pb));
-  const klik=[.07,.088,.145,.2,.245,.505,.545,.6,.66,.69,.81].some(c=>Math.abs(p-c)<.006);
-  kursor.style.opacity=eo(seg(p,.01,.03))*(1-seg(p,.84,.88));
-  kursor.style.transform=`translate(${(A.x+(Bp.x-A.x)*t).toFixed(1)}px,${(A.y+(Bp.y-A.y)*t).toFixed(1)}px) scale(${klik?.82:1})`;
-  /* źródło: zaznaczona linia na kartce */
-  const akt=p>.13&&p<.24?1:p>.24&&p<.56?3:p>.56&&p<.72?4:0;
-  miniL.forEach(l=>l.classList.toggle('on',l.dataset.r.split(' ').includes(String(akt))));
-  let total=0; if(c12)total+=670; if(p>.555)total+=90; if(p>.70)total+=40;
-  wpisz(sum,zl(total));
-  write(n6,seg(p,.515,.555)); write(n5,seg(p,.72,.78));
-  clk3.textContent=hhmm(7*60+40+18*seg(p,.02,.9));
-  show(f3,seg(p,.86,.93),10);
-  return 10*seg(p,.02,.86);
-}
-
-/* ───── 4. reszta dnia ───── */
-const evs=$$('.ev'), clk4=$('#clk4'), f4=$('#f4');
-function s4(p){
-  const a=[seg(p,.05,.2),seg(p,.3,.45),seg(p,.55,.72)];
-  evs.forEach((e,i)=>{const t=a[i], k=eo(t); e.style.opacity=k; e.style.transform=t>=1?'none':`translateY(${(1-k)*28}px) scale(${.97+.03*k})`;});
-  const c=a[2]>0?'14:00':a[1]>0?'10:30':'08:15'; if(clk4.textContent!==c)clk4.textContent=c;
-  show(f4,seg(p,.84,.92),10);
-  return {min:8*a[0]+6*a[1]+30*a[2], zl:48.4*a[2]};
-}
-
-/* ───── 6. lekcja i sekcje statyczne wchodzą, gdy pojawią się na ekranie ───── */
-const naEkran=(el,cb,th=.4)=>{if(!('IntersectionObserver' in window)){cb();return;} new IntersectionObserver((es,o)=>es.forEach(x=>{if(x.isIntersecting){cb();o.disconnect();}}),{threshold:th}).observe(el);};
-const skok=$('#skok');
-if(skok){naEkran(skok,()=>{skok.classList.add('on'); $$('.sk-n',skok).forEach(el=>{const N=+el.dataset.n, t0=performance.now(); const krok=()=>{const k=Math.min(1,(performance.now()-t0)/1400), v=N*(1-Math.pow(1-k,3)); el.textContent=v.toFixed(2).replace('.',',')+'%'; if(k<1)requestAnimationFrame(krok);}; if(window.__snap){el.textContent=N.toFixed(2).replace('.',',')+'%';} else krok();});},.4);}
-$$('.jak .w > *:not(ol), .jak li').forEach(el=>{el.classList.add('wej'); naEkran(el,()=>el.classList.add('on'),.15);});
-$$('.jak li').forEach((li,i)=>li.style.transitionDelay=(i*.12)+'s');
-
-/* ───── 7. ten sam dzień ───── */
-const cofka=$('#cofka'), clk7=$('#clk7'), minim=$('#minim'), lgr=$$('.lg-r'), zatw=$('#zatw'), zatwT=$('#zatwT'), tap=$('#tap'), f7=$('#f7');
-function s7(p){
-  const rw=eio(seg(p,0,.12)); clk7.textContent=p<.13?hhmm(14*60-(14*60-(7*60+12))*rw):(p<.8?'07:1'+(p<.62?'2':'4'):'10:30');
-  const cf=1-eo(seg(p,.12,.18)); cofka.textContent=hhmm(14*60-(14*60-(7*60+12))*rw); cofka.style.opacity=cf; cofka.style.transform=`translate(-50%,-50%) scale(${.9+.1*cf})`; cofka.style.filter=rw>0&&rw<1?`blur(${Math.sin(rw*Math.PI)*1.6}px)`:'none';
-  const mi7=eo(seg(p,.1,.18)); minim.style.opacity=mi7; minim.style.transform=`translateY(${(1-mi7)*14}px)`;
-  const W7=[[.18,.25],[.26,.33],[.34,.41],[.42,.49],[.6,.67],[.7,.77]];
-  lgr.forEach((r,i)=>{const t=seg(p,...W7[i]); r.style.opacity=eo(t); r.style.transform=t>=1?'none':`translateY(${(1-eb(t))*14}px)`;});
-  const tp=seg(p,.53,.58); tap.style.transform=`scale(${eo(tp)*2.6})`; tap.style.opacity=tp>0&&tp<1?.55*(1-tp):0;
-  const ok=p>.56; zatw.classList.toggle('ok',ok); const zt=ok?'Zatwierdzone przez Anię ✓':'Zatwierdź'; if(zatwT.textContent!==zt)zatwT.textContent=zt;
-  show(f7,seg(p,.84,.92),10);
-  return 1*seg(p,.44,.58);
-}
-
-/* ───── 8. drugi paragon ───── */
-const d2=drukarka($('#rig2')), stary=$('#stary'), f8=$('#f8');
-function s8(p){
-  d2.set(eio(seg(p,.06,.72))*d2.H());
-  const a=eo(seg(p,0,.12)); stary.style.opacity=.6*a; stary.style.transform=`rotate(-7deg) translateY(${(1-a)*20}px)`;
-  show(f8,seg(p,.78,.88),10);
-}
-
-/* ───── licznik w pasku: cyfry przewijają się jak w taksometrze ───── */
-function odo(el){
-  let shape='';
-  return v=>{ const sh=v.replace(/\d/g,'0');
-    if(sh!==shape){
-      el.innerHTML=[...v].map(c=>/\d/.test(c)?`<span class="od"><span>${'0123456789'.split('').map(d=>`<i>${d}</i>`).join('')}</span></span>`:`<span>${c===' '||c===' '?'&nbsp;':c}</span>`).join('');
-      shape=sh; }
-    const cols=$$('.od>span',el); let k=0;
-    [...v].forEach(c=>{if(/\d/.test(c)){const t=`translateY(${-c}em)`; if(cols[k].style.transform!==t)cols[k].style.transform=t; k++;}});
-  };
-}
-const dzien=$('#dzien'), dzienI=$('#dzienI'), bar=$('#bar'), barCta=$('#barCta'), meter=$('#meter'), mlb=$('#mlb'), oZl=odo($('#mzl')), oMn=odo($('#mmn')), kontakt=document.getElementById('kontakt');
-
-/* ───── pętla: postęp przewijania wygładzony ───── */
-const P={}; IDS.forEach(id=>P[id]=0);
+/* pętla */
+const bar=$('#bar'), kontakt=document.getElementById('kontakt');
+let P=0;
 const prog=el=>{const r=el.getBoundingClientRect();const tot=r.height-innerHeight;return tot<=0?0:cl(-r.top/tot);};
-let lastMin=-1;
 function frame(){
-  const sn=snap();
-  IDS.forEach(id=>{const t=prog(S[id]); let c=sn?t:P[id]+(t-P[id])*.15; if(Math.abs(t-c)<.0005)c=t; P[id]=c;});
-  nagl();
-  s1(P.paragon); const m2=s2(P.mail), m3=s3(P.przepisywanie), r4=s4(P.reszta);
-  const m7=s7(P.zmiana); s8(P.po);
-  const vh=innerHeight, po=S.zmiana.getBoundingClientRect().top<vh*.5;
-  const on=S.mail.getBoundingClientRect().top<vh*.15 && kontakt.getBoundingClientRect().top>vh*.3;
-  meter.classList.toggle('on',on); barCta.classList.toggle('off',on);
-  meter.classList.toggle('po',po);
-  let mins, money;
-  if(po){ mins=m7; money=mins*0.8; if(mlb.textContent!=='Ten sam dzień, po zmianie')mlb.textContent='Ten sam dzień, po zmianie'; }
-  else { mins=m2+m3+r4.min; money=mins*0.8+r4.zl; if(mlb.textContent!=='Obsługa tego zamówienia')mlb.textContent='Obsługa tego zamówienia'; }
-  oZl(zl(money)); const mi=Math.floor(mins+1e-6); oMn(mi+' min');
-  if(mi!==lastMin&&lastMin>=0&&on){meter.classList.remove('bump');void meter.offsetWidth;meter.classList.add('bump');} lastMin=mi;
-  if(kontakt){const kr=kontakt.getBoundingClientRect(); bar.classList.toggle('off',kr.top<vh*.6);}
-  const dz=po?P.zmiana*.8+P.po*.2:(P.mail+P.przepisywanie+P.reszta)/3; dzienI.style.transform=`scaleX(${cl(dz).toFixed(4)})`; dzien.classList.toggle('on',on); dzien.classList.toggle('po',po);
+  const t=prog(W); P=snap()?t:P+(t-P)*.15; if(Math.abs(t-P)<.0005)P=t;
+  nagl(); hak(); wyscig(P);
+  bar.classList.toggle('off',kontakt.getBoundingClientRect().top<innerHeight*.6);
   requestAnimationFrame(frame);
 }
-const przelicz=()=>{d1.wys();d2.wys();fit();};
-przelicz(); addEventListener('resize',fit);
-if(document.fonts&&document.fonts.ready)document.fonts.ready.then(przelicz);
+fit(); addEventListener('resize',fit); if(document.fonts&&document.fonts.ready)document.fonts.ready.then(fit);
 const qsS=qs.get('s');
-if(qsS){const el=document.getElementById(qsS); if(el){document.documentElement.style.scrollBehavior='auto'; const tot=el.offsetHeight-innerHeight; scrollTo(0, el.getBoundingClientRect().top+scrollY+parseFloat(qs.get('p')||0)*Math.max(0,tot));}}
+if(qsS){const el=document.getElementById(qsS); if(el){document.documentElement.style.scrollBehavior='auto'; scrollTo(0,el.getBoundingClientRect().top+scrollY+parseFloat(qs.get('p')||0)*Math.max(0,el.offsetHeight-innerHeight));}}
 requestAnimationFrame(frame);
 })();
 
@@ -1421,7 +579,7 @@ requestAnimationFrame(frame);
 (()=>{
 const $=(s)=>document.querySelector(s), $$=(s)=>[...document.querySelectorAll(s)];
 const stat=(e,p)=>{try{window.laStat&&window.laStat(e,p||{});}catch(x){}};
-const kartka=$('#kartka'), f=$('#kF'), inp=$('#kK'), err=$('#kE'), zg=$('#kZ'), btn=$('#kB'), btnT=$('#kBT'), ok=$('#kOk'), okT=$('#kOkT'), kc=$('#kc'), sekcja=document.getElementById('kontakt'), reszta=$('#reszta');
+const kartka=$('#kartka'), f=$('#kF'), inp=$('#kK'), err=$('#kE'), zg=$('#kZ'), btn=$('#kB'), btnT=$('#kBT'), ok=$('#kOk'), okT=$('#kOkT'), kc=$('#kc'), sekcja=document.getElementById('kontakt'), reszta=$('#wyscig');
 if(!kartka||!f)return;
 const MAIL=/^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
 let wysylam=false, wyslane=false;
