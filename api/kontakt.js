@@ -38,7 +38,7 @@ async function wyslijDoMety(req, { email, telefon, zrodlo, meta }) {
   const ph = cyfry.length === 9 ? '48' + cyfry : cyfry.replace(/^00/, '');
   const ip = String(req.headers['x-forwarded-for'] || '').split(',')[0].trim();
   const user_data = {
-    em: [SHA(email.trim().toLowerCase())],
+    ...(email ? { em: [SHA(email.trim().toLowerCase())] } : {}),
     ...(ph.length >= 9 ? { ph: [SHA(ph)] } : {}),
     ...(ip ? { client_ip_address: ip } : {}),
     ...(req.headers['user-agent'] ? { client_user_agent: CZYSC(req.headers['user-agent'], 500) } : {}),
@@ -128,11 +128,14 @@ export default async function handler(req, res) {
     return res.status(200).json({ ok: true });
   }
 
-  if (!MAIL_OK.test(email)) { await stat(req, 'zgloszenie_blad', dane, { powod: 'email', zrodlo: zrodlo.split(' · ')[0].slice(0, 60) }); return res.status(422).json({ blad: 'email' }); }
+  // Od 21.11.2026 wystarczy jeden kanał kontaktu: e-mail albo telefon (szybki kontakt na /marza:
+  // „oddzwońcie do mnie”). Formularze, które wymagają obu pól, sprawdzają to same po stronie strony.
+  if (email && !MAIL_OK.test(email)) { await stat(req, 'zgloszenie_blad', dane, { powod: 'email', zrodlo: zrodlo.split(' · ')[0].slice(0, 60) }); return res.status(422).json({ blad: 'email' }); }
+  if (!email && telefon.replace(/\D/g, '').length < 9) { await stat(req, 'zgloszenie_blad', dane, { powod: 'kontakt', zrodlo: zrodlo.split(' · ')[0].slice(0, 60) }); return res.status(422).json({ blad: 'kontakt' }); }
   if (telefon && telefon.replace(/\D/g, '').length < 9) { await stat(req, 'zgloszenie_blad', dane, { powod: 'telefon', zrodlo: zrodlo.split(' · ')[0].slice(0, 60) }); return res.status(422).json({ blad: 'telefon' }); }
 
   const tresc = [
-    `E-mail: ${email}`,
+    `E-mail: ${email || '—'}`,
     telefon ? `Telefon: ${telefon}` : 'Telefon: —',
     `Skąd: ${zrodlo}`,
     referrer ? `Polecenie (ref): ${referrer}` : null,
@@ -189,8 +192,8 @@ export default async function handler(req, res) {
         body: JSON.stringify({
           from: process.env.LEAD_FROM || 'strona@letsautomate.pl',
           to: process.env.LEAD_TO.split(',').map((x) => x.trim()),
-          reply_to: email,
-          subject: `Zgłoszenie ze strony — ${email}`,
+          ...(email ? { reply_to: email } : {}),
+          subject: `Zgłoszenie ze strony — ${email || ('telefon ' + telefon)}`,
           text: tresc,
         }),
       })
