@@ -1,0 +1,799 @@
+---
+// MAPA CZYNNOŚCI — /mapa-czynnosci. Landing kampanii „Mapa czynności” (arkusz + 5 skilli za e-mail).
+// Źródło w ~/filmy/lets-mapa-czynnosci/landing (strona.html/css/js, build.py generuje ten plik i kopiuje
+// zestaw do public/materialy — zmiany rób tam). Plan kampanii: ~/filmy/lets-mapa-czynnosci/PLAN.md.
+// Liczby na stronie to opisany przykład (firma serwisowa, 5 osób). noindex, bez nawigacji.
+// Zgłoszenia: „Mapa czynności · pobranie” i „Mapa czynności · omówienie” (?z= dopisuje źródło, np. raport).
+import LaBase from '../layouts/LaBase.astro';
+const title = "Mapa czynności: sprawdź, co AI może przejąć w Twojej firmie | Let's automate";
+const description = "Arkusz i 5 skilli do Claude, ChatGPT, Copilota i Gemini. Zespół spisuje swoją pracę przez tydzień, a AI robi z tego plan na start. Za darmo.";
+---
+<LaBase topbar={false} title={title} description={description} ctaHref="#wiersz" nav={null} naglowek={false} noindex={true}>
+<style is:global>
+html{scroll-behavior:smooth}
+.mc{
+
+  --deep:#07140D; --deep2:#0C1E14; --card:#0F2419; --fg:#F4F8F2; --mut:#93A69B; --soft:#C9D5CE; --line:rgba(244,248,242,.12);
+  --acc:#00CD77; --acc2:#7FE9B9; --amber:#F2B233; --pen:#D3261B; --blue:#5AA9FF;
+  --paper:#FBFAF6; --grid:#DCE2DE; --head:#EEF2EF; --ink:#1C2420; --gray:#6B7A72; --ok:#0A7A52;
+  --t-ai:#00A862; --t-sys:#2F7FE0; --t-cz:#D98A00; --t-zn:#9AA39E;
+  --f-d:"Schibsted Grotesk","Helvetica Neue",Arial,sans-serif;
+  --f-m:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  color-scheme:dark;}
+.mc *{
+box-sizing:border-box}
+
+.mc{
+margin:0;background:var(--deep);color:var(--fg);font-family:var(--f-d);-webkit-font-smoothing:antialiased;overflow-x:clip}
+.mc .hist h1,.mc .hist h2{
+margin:0;font-weight:800;letter-spacing:-.04em;line-height:1.04;text-wrap:balance;color:var(--fg)}
+.mc .hist h1 em,.mc .hist h2 em{
+font-style:normal;color:var(--acc)}
+.mc .wrap{
+max-width:1120px;margin:0 auto;padding:0 max(16px,env(safe-area-inset-left,0px))}
+.mc .ety{
+margin:0;font:700 12px/1.2 var(--f-m);letter-spacing:.12em;text-transform:uppercase;color:var(--acc)}
+.mc .lead{
+margin:14px 0 0;font:500 clamp(16px,4.3vw,21px)/1.42 var(--f-d);color:var(--soft);max-width:34em;text-wrap:pretty}
+.mc .btn{
+display:inline-flex;align-items:center;justify-content:center;gap:8px;font:700 16px/1 var(--f-d);color:#06170E;background:var(--acc);padding:16px 22px;border-radius:999px;text-decoration:none;border:0;cursor:pointer}
+.mc .btn-2{
+background:transparent;color:var(--fg);box-shadow:inset 0 0 0 1.5px var(--line)}
+.mc .sr{
+position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.mc .pulapka{
+position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
+.mc .bar{
+position:fixed;left:0;right:0;top:0;z-index:20;padding-top:env(safe-area-inset-top,0px);background:linear-gradient(180deg,rgba(7,20,13,.96) 60%,rgba(7,20,13,0));transition:opacity .3s,transform .3s}
+.mc .bar.off{
+opacity:0;transform:translateY(-100%);pointer-events:none}
+.mc .bar-in{
+max-width:1120px;margin:0 auto;height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 max(16px,env(safe-area-inset-left,0px))}
+.mc .logo svg{
+height:17px;width:auto;display:block}
+.mc .bar-cta{
+font:700 14px/1 var(--f-d);color:#06170E;background:var(--acc);padding:11px 15px;border-radius:999px;text-decoration:none}
+.mc .hero{
+min-height:100svh;display:flex;flex-direction:column;justify-content:center;gap:34px;padding:calc(88px + env(safe-area-inset-top,0px)) 0 40px}
+.mc .hero h1{
+font-size:clamp(38px,10.4vw,78px);margin-top:14px;max-width:13em}
+.mc .hero-cta{
+margin-top:26px;display:flex;flex-wrap:wrap;align-items:center;gap:12px 18px}
+.mc .hero-dop{
+font:500 14px/1.3 var(--f-d);color:var(--mut)}
+.mc .ark{
+background:var(--paper);color:var(--ink);border-radius:14px;box-shadow:0 30px 80px -30px rgba(0,0,0,.7),0 0 0 1px rgba(0,0,0,.05);overflow:hidden;font-family:var(--f-d)}
+.mc .ark-tab{
+display:flex;gap:2px;padding:8px 10px 0;background:#E7ECE8;font:600 12px/1 var(--f-d);color:var(--gray)}
+.mc .ark-tab span{
+padding:8px 12px;border-radius:8px 8px 0 0}
+.mc .ark-tab .on{
+background:var(--paper);color:var(--ink)}
+.mc .ark-g{
+display:grid;font-size:14px;line-height:1.3}
+.mc .ark-g>*{
+border-right:1px solid var(--grid);border-bottom:1px solid var(--grid);padding:9px 10px;min-height:38px;min-width:0}
+.mc .ark-g>b{
+background:var(--head);font:700 12px/1.2 var(--f-d);color:#3D4A43;display:flex;align-items:center}
+.mc .ark-g>.rn{
+background:var(--head);font:500 11px/1 var(--f-m);color:var(--gray);font-style:normal;display:flex;align-items:center;justify-content:center;padding:0}
+.mc .mn{
+text-align:right;justify-content:flex-end;font-family:var(--f-m)}
+.mc .g-hero{
+grid-template-columns:30px 1fr 1.4fr 2fr 70px}
+.mc .g-hero>span{
+height:44px}
+.mc .kur{
+position:relative;outline:2px solid var(--t-ai);outline-offset:-2px}
+.mc .kursor{
+display:inline-block;width:2px;height:18px;background:var(--ink);animation:mc-blink 1s steps(1) infinite;vertical-align:middle}
+@keyframes mc-blink{
+50%{
+opacity:0}}
+@media (min-width:1000px){
+.mc .hero{
+display:grid;grid-template-columns:1.1fr .9fr;align-items:center;max-width:1120px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:16px}
+.mc .hero>.wrap{
+padding:0;max-width:none}
+.mc .ark-hero{
+transform:rotate(1.5deg);width:100%}
+.mc .g-hero>span{
+height:56px}}
+@media (max-width:640px){
+.mc .g-hero{
+grid-template-columns:26px 1fr 1.2fr 1.4fr}
+.mc .g-hero .mn{
+display:none}}
+.mc .sc{
+position:relative;height:calc(var(--h) * 1svh)}
+.mc .pin{
+position:sticky;top:0;height:100svh;overflow:hidden;display:flex}
+.mc .strefy{
+display:flex;flex-direction:column;width:100%;padding-top:calc(76px + env(safe-area-inset-top,0px));padding-bottom:max(22px,env(safe-area-inset-bottom,0px))}
+.mc .pod{
+font-size:clamp(26px,7vw,52px);margin-top:10px;max-width:16em}
+.mc .obraz{
+flex:1;min-height:0;position:relative;margin:18px 0 14px;display:flex;align-items:center;justify-content:center}
+.mc .zd{
+margin:0;font:600 clamp(17px,4.6vw,23px)/1.35 var(--f-d);color:var(--fg);max-width:32em;position:relative;min-height:2.7em}
+.mc .zd small{
+display:block;margin-top:6px;font:500 13px/1.3 var(--f-d);color:var(--mut)}
+.mc .zd .z0,.mc .zd .z1{
+display:block;transition:opacity .35s}
+.mc .zd .z1{
+position:absolute;inset:0;opacity:0}
+.mc .zd.dwa .z0{
+opacity:0}
+.mc .zd.dwa .z1{
+opacity:1}
+.mc .zd b{
+color:var(--acc)}
+.mc .proc{
+position:absolute;inset:auto 0;margin:auto;width:min(520px,100%);background:#fff;color:var(--ink);border-radius:6px;padding:22px 24px 26px;box-shadow:0 30px 80px -30px rgba(0,0,0,.7);transform-origin:50% 0;transition:transform .5s cubic-bezier(.2,.8,.2,1),opacity .5s}
+.mc .proc-h{
+font:700 12px/1.3 var(--f-m);letter-spacing:.06em;text-transform:uppercase;color:var(--gray);padding-bottom:12px;border-bottom:2px solid var(--ink)}
+.mc .proc ol{
+margin:14px 0 0;padding-left:26px;font:600 20px/1.6 var(--f-d)}
+.mc .proc.won{
+transform:translateY(-38%) scale(.6) rotate(-3deg);opacity:.35}
+.mc .ark-ania{
+position:relative;width:min(560px,100%);opacity:0;transform:translateY(40px);transition:opacity .45s,transform .45s cubic-bezier(.2,.8,.2,1)}
+.mc .ark-ania.on{
+opacity:1;transform:none}
+.mc .g-ania{
+grid-template-columns:30px 1fr 78px}
+.mc .g-ania .co{
+font-weight:600}
+.mc .jak{
+padding:10px 12px 12px;border-top:2px solid var(--t-ai);background:#fff}
+.mc .jak-h{
+font:700 12px/1 var(--f-m);color:var(--t-ai);letter-spacing:.04em;margin-bottom:6px}
+.mc .jak ol{
+margin:0;padding:0;list-style:none;counter-reset:k;display:grid;gap:3px}
+.mc .jak li{
+counter-increment:k;display:flex;gap:8px;align-items:baseline;font:500 13.5px/1.3 var(--f-d);color:var(--ink);animation:mc-wjedz .3s ease-out both}
+.mc .jak li::before{
+content:counter(k);font:600 11px/1 var(--f-m);color:var(--gray);min-width:16px;text-align:right}
+.mc .jak li i{
+font-style:normal;font:600 10.5px/1 var(--f-m);color:var(--gray);background:var(--head);padding:3px 5px;border-radius:4px;white-space:nowrap;margin-left:auto}
+.mc .jak li.nowy::before{
+color:var(--pen)}
+@keyframes mc-wjedz{
+from{
+opacity:0;transform:translateY(6px)}}
+@media (max-height:740px){
+.mc .jak li{
+font-size:12.5px}
+.mc .jak ol{
+gap:1px}}
+.mc .ark-zesp{
+width:min(760px,100%)}
+.mc .g-zesp{
+grid-template-columns:30px 64px 1fr 74px 1fr}
+.mc .g-zesp>span{
+font-size:13px;animation:mc-wjedz .25s ease-out both}
+.mc .g-zesp .kto{
+font-weight:700;color:#3D4A43}
+.mc .g-zesp .ai{
+font-size:12px;color:var(--gray)}
+.mc .g-zesp .ai.brak{
+color:var(--pen)}
+.mc .suma{
+display:flex;align-items:baseline;justify-content:flex-end;gap:10px;padding:12px 14px;background:var(--deep2);color:var(--fg);font:600 14px/1 var(--f-d)}
+.mc .suma b{
+font:700 30px/1 var(--f-m);color:var(--acc)}
+@media (max-width:640px){
+.mc .g-zesp{
+grid-template-columns:24px 50px 1fr 58px}
+.mc .g-zesp .ai{
+display:none}
+.mc .g-zesp>*{
+padding:7px 7px}}
+.mc .czat{
+width:min(560px,100%);background:#fff;color:var(--ink);border-radius:16px;overflow:hidden;box-shadow:0 30px 80px -30px rgba(0,0,0,.7);display:flex;flex-direction:column;max-height:100%}
+.mc .czat-h{
+display:flex;align-items:center;gap:10px;padding:12px 14px;font:700 14px/1 var(--f-d);border-bottom:1px solid var(--grid)}
+.mc .kropki{
+display:flex;gap:5px}
+.mc .kropki i{
+width:9px;height:9px;border-radius:50%;background:#E1E5E2}
+.mc .czat-b{
+padding:12px 14px;display:flex;flex-direction:column;gap:8px;flex:1;min-height:0;overflow:hidden;justify-content:flex-end}
+.mc .dm{
+max-width:84%;padding:9px 12px;border-radius:14px;font:500 14.5px/1.35 var(--f-d);animation:mc-wjedz .3s ease-out both}
+.mc .dm.ai{
+background:#EEF6F1;align-self:flex-start;border-bottom-left-radius:4px}
+.mc .dm.ty{
+background:var(--ink);color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
+.mc .czat-w{
+border-top:1px solid var(--grid);background:var(--head);padding:10px}
+.mc .wiersz-z{
+display:grid;grid-template-columns:1fr 1.6fr 56px;background:var(--paper);border:1px solid var(--grid);font-size:12px;line-height:1.25;opacity:0;transform:translateY(10px);transition:all .4s}
+.mc .wiersz-z span{
+padding:7px 8px;border-right:1px solid var(--grid)}
+.mc .wiersz-z span:last-child{
+font-family:var(--f-m);text-align:right;border:0}
+.mc .wiersz-z.on{
+opacity:1;transform:none;box-shadow:0 0 0 2px var(--t-ai)}
+.mc .procesy{
+width:min(620px,100%);display:grid;gap:10px}
+.mc .pr{
+background:var(--card);border:1px solid var(--line);border-radius:12px;padding:13px 14px;opacity:0;transform:translateX(30px);transition:opacity .4s,transform .45s cubic-bezier(.2,.8,.2,1)}
+.mc .pr.on{
+opacity:1;transform:none}
+.mc .pr-g{
+display:flex;justify-content:space-between;gap:12px;align-items:baseline}
+.mc .pr-g b{
+font:700 17px/1.2 var(--f-d)}
+.mc .pr-h{
+font:700 20px/1 var(--f-m);color:var(--acc);white-space:nowrap}
+.mc .pr-h i{
+font-style:normal}
+.mc .pr-kto{
+margin-top:4px;font:500 13px/1.2 var(--f-d);color:var(--mut)}
+.mc .pr-bar{
+margin-top:9px;height:6px;border-radius:3px;background:rgba(255,255,255,.07);overflow:hidden}
+.mc .pr-bar i{
+display:block;height:100%;width:0;background:var(--acc);border-radius:3px;transition:width .6s}
+.mc .pr-uw{
+margin-top:9px;font:600 13px/1.3 var(--f-d);color:var(--amber);opacity:0;transition:opacity .4s}
+.mc .pr.uw .pr-uw{
+opacity:1}
+.mc #s5o{
+flex-direction:column;align-items:stretch;justify-content:center;gap:10px}
+.mc .leg{
+display:flex;flex-wrap:wrap;gap:6px 14px;font:700 12px/1 var(--f-m);letter-spacing:.04em}
+.mc .leg span::before{
+content:"";display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.mc .l-ai::before{
+background:var(--t-ai)}
+.mc .l-sys::before{
+background:var(--t-sys)}
+.mc .l-cz::before{
+background:var(--t-cz)}
+.mc .l-zn::before{
+background:var(--t-zn)}
+.mc .rozk{
+margin:0;padding:0;list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:5px 6px;max-width:760px;width:100%;transition:opacity .5s,transform .5s}
+.mc .rozk li{
+display:flex;gap:7px;align-items:center;padding:7px 9px;border-radius:7px;background:#16301F;font:500 12.5px/1.2 var(--f-d);color:var(--soft);border-left:4px solid transparent;transition:background .35s,border-color .35s,color .35s,opacity .35s}
+.mc .rozk li b{
+font:600 10px/1 var(--f-m);color:var(--mut);min-width:14px}
+.mc .rozk li.ai{
+border-color:var(--t-ai);background:rgba(0,168,98,.16);color:var(--fg)}
+.mc .rozk li.sys{
+border-color:var(--t-sys);background:rgba(47,127,224,.16);color:var(--fg)}
+.mc .rozk li.cz{
+border-color:var(--t-cz);background:rgba(217,138,0,.18);color:var(--fg)}
+.mc .rozk li.zn{
+border-color:var(--t-zn);color:var(--mut);text-decoration:line-through;opacity:.6}
+.mc .rozk.zwin{
+opacity:0;transform:scale(.94)}
+.mc .leg{
+transition:opacity .4s}
+.mc .leg.zwin{
+opacity:0}
+.mc .po{
+position:absolute;left:0;right:0;top:50%;margin:0 auto;width:min(560px,100%);transform:translateY(-40%);opacity:0;transition:opacity .5s,transform .5s cubic-bezier(.2,.8,.2,1);pointer-events:none;background:var(--paper);color:var(--ink);border-radius:14px;padding:18px 18px 16px;box-shadow:0 30px 80px -30px rgba(0,0,0,.7)}
+.mc .po.on{
+opacity:1;transform:translateY(-50%)}
+.mc .po-h{
+font:700 12px/1 var(--f-m);letter-spacing:.08em;text-transform:uppercase;color:var(--gray);margin-bottom:10px}
+.mc .po ol{
+margin:0;padding:0;list-style:none;display:grid;gap:7px}
+.mc .po li{
+padding:10px 12px;border-radius:9px;font:600 15px/1.3 var(--f-d);border-left:5px solid}
+.mc .po .t-ai{
+border-color:var(--t-ai);background:#E6F6EE}
+.mc .po .t-sys{
+border-color:var(--t-sys);background:#E7F0FC}
+.mc .po .t-cz{
+border-color:var(--t-cz);background:#FCF1DC}
+@media (max-width:640px){
+.mc .rozk{
+grid-template-columns:1fr 1fr}
+.mc .rozk li{
+font-size:11px;padding:5px 6px;gap:5px}
+.mc .rozk li b{
+display:none}}
+.mc .raport{
+width:min(500px,100%);background:#fff;color:var(--ink);border-radius:6px;padding:20px 20px 18px;box-shadow:0 30px 80px -30px rgba(0,0,0,.7);transform:rotate(-1.2deg) translateY(30px);opacity:0;transition:all .6s cubic-bezier(.2,.8,.2,1)}
+.mc .raport.on{
+transform:rotate(-1.2deg);opacity:1}
+.mc .raport header{
+display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:4px 12px;border-bottom:2px solid var(--ink);padding-bottom:9px}
+.mc .raport header b{
+font:800 18px/1 var(--f-d);white-space:nowrap}
+.mc .raport header span{
+font:500 12px/1 var(--f-m);color:var(--gray);white-space:nowrap}
+.mc .raport h3{
+margin:14px 0 6px;font:700 11px/1 var(--f-m);letter-spacing:.08em;text-transform:uppercase;color:var(--gray)}
+.mc .raport ol{
+margin:0;padding-left:20px;display:grid;gap:6px}
+.mc .raport li b{
+display:block;font:700 15px/1.2 var(--f-d)}
+.mc .raport li span{
+font:500 13px/1.3 var(--f-d);color:#46524C}
+.mc .tyg{
+display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.mc .tyg span{
+background:var(--head);border-radius:6px;padding:8px 6px;font:600 12px/1.1 var(--f-d);text-align:center;color:#3D4A43}
+.mc .tyg b{
+display:block;font:700 16px/1 var(--f-m);color:var(--ok);margin-bottom:3px}
+.mc .decyzja{
+margin-top:12px;padding:11px 12px;border-radius:8px;background:#E6F6EE;border-left:5px solid var(--t-ai);font:700 14px/1.3 var(--f-d)}
+.mc .zestaw{
+padding:90px 0 40px}
+.mc .zestaw h2{
+font-size:clamp(28px,7.4vw,52px);margin-top:10px;max-width:16em}
+.mc .pliki{
+margin:26px 0 0;padding:0;list-style:none;display:grid;gap:8px;max-width:640px}
+.mc .pliki li{
+display:flex;gap:14px;align-items:center;padding:12px 14px;border-radius:12px;background:var(--card);border:1px solid var(--line)}
+.mc .pliki b{
+display:block;font:700 16px/1.2 var(--f-d)}
+.mc .pliki li span:not(.ik){
+font:500 14px/1.3 var(--f-d);color:var(--mut)}
+.mc .ik{
+flex:none;width:38px;height:38px;border-radius:9px;display:grid;place-items:center;font:700 15px/1 var(--f-m);background:rgba(0,205,119,.14);color:var(--acc)}
+.mc .ik.xl{
+background:#1D6F42;color:#fff;font-size:11px}
+.mc .ik.txt{
+background:#2A3B32;color:var(--soft);font-size:11px}
+.mc .gdzie{
+margin:20px 0 0;font:500 15px/1.45 var(--f-d);color:var(--soft);max-width:36em}
+.mc .koniec{
+padding:70px 0 70px}
+.mc .koniec h2{
+font-size:clamp(34px,9vw,64px)}
+.mc .ark-cta{
+margin-top:24px;max-width:760px}
+.mc .g-cta{
+grid-template-columns:30px .8fr 1.3fr 1.5fr}
+.mc .g-cta .szary{
+color:var(--gray);font-size:13px}
+.mc .cel-in{
+position:relative;display:flex;align-items:center;padding:0!important;outline:2px solid var(--t-ai);outline-offset:-2px;background:#fff;animation:mc-puls 1.8s ease-in-out infinite}
+.mc .cel-in input{
+flex:1;min-width:0;border:0;background:transparent;font:600 16px/1 var(--f-d);color:var(--ink);padding:12px 8px 12px 10px;outline:none}
+.mc .cel-in input::placeholder{
+color:#9AA7A0}
+.mc .cel-in button{
+flex:none;border:0;background:var(--t-ai);color:#fff;font:700 18px/1 var(--f-m);width:42px;align-self:stretch;cursor:pointer}
+@keyframes mc-puls{
+50%{
+outline-color:rgba(0,168,98,.35)}}
+.mc .ark-cta.ok .cel-in,.mc .ark-om.ok .cel-in{
+animation:none;outline-color:var(--t-ai);background:#E6F6EE}
+.mc .ark-cta.ok .g-cta>span{
+background:#E6F6EE}
+.mc .blad{
+margin:0;min-height:0;padding:0 14px;font:600 13px/1.3 var(--f-d);color:var(--pen)}
+.mc .blad:not(:empty){
+padding:8px 14px}
+.mc .zgoda{
+display:flex;gap:9px;align-items:flex-start;padding:10px 14px 14px;font:500 12px/1.35 var(--f-d);color:var(--gray)}
+.mc .zgoda input{
+margin-top:2px;accent-color:var(--t-ai)}
+.mc .zgoda a{
+color:var(--gray)}
+.mc .zgoda.err{
+color:var(--pen)}
+.mc .pobrane{
+padding:4px 14px 16px;color:var(--ink);font:500 15px/1.4 var(--f-d)}
+.mc .pobrane p{
+margin:8px 0}
+.mc .pob-l{
+display:flex;flex-wrap:wrap;gap:8px}
+.mc .pob-l .btn{
+font-size:14px;padding:12px 16px}
+.mc .pob-l .btn-2{
+color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--grid)}
+.mc .pob-d{
+font-size:13px;color:var(--gray)}
+.mc .ark-om{
+margin-top:12px;border-radius:0 0 14px 14px}
+.mc .ark-om .cel-in{
+animation:none;outline-color:var(--grid)}
+.mc .om-ok{
+margin:0;padding:10px 14px 14px;font:600 14px/1.3 var(--f-d);color:var(--ok)}
+.mc .om-d{
+margin:18px 0 0;font:500 14px/1.4 var(--f-d);color:var(--mut)}
+.mc .om-d a{
+color:var(--acc)}
+@media (max-width:640px){
+.mc .g-cta{
+grid-template-columns:24px 1fr 1.25fr}
+.mc .g-cta>b.jk{
+display:none}
+.mc .g-cta .cel-in{
+grid-column:1/-1}
+.mc .g-cta>*{
+padding:8px 8px}
+}
+.mc .stopka{
+padding:30px 0 calc(30px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line)}
+.mc .stopka .wrap{
+display:flex;justify-content:space-between;align-items:center;gap:12px;font:500 13px/1.3 var(--f-d);color:var(--mut)}
+.mc .stopka a{
+color:var(--mut)}
+@media (prefers-reduced-motion:reduce){
+.mc *{
+animation:none!important;transition:none!important}}
+.mc [data-fit]{
+transform-origin:50% 50%}
+</style>
+<div class="mc">
+<header class="bar" id="bar"><div class="bar-in">
+  <a class="logo" href="/" aria-label="Let's automate"><svg width="237" height="41" viewBox="0 0 237 41" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_4016_1321)"><path d="M126.179 11.1201H119.973L121.055 13.1157H123.346V13.6903H123.276C122.456 13.6903 121.72 14.1976 121.428 14.9669L115.801 29.877H118.115L119.711 25.6741H129.263L130.859 29.877H133.174L126.175 11.1201H126.179ZM126.83 23.6785H120.43L124.395 13.2502H124.633L128.571 23.6785H126.827H126.83Z" fill="#F4F8F2"></path><path d="M158.801 23.1478C158.801 18.918 161.781 15.9111 166.011 15.9111C170.241 15.9111 173.22 18.918 173.22 23.1478C173.22 27.3776 170.214 30.4113 166.011 30.4113C161.808 30.4113 158.801 27.4045 158.801 23.1478ZM171.013 23.1478C171.013 20.1141 168.91 17.9068 166.011 17.9068C163.111 17.9068 161.008 20.1141 161.008 23.1478C161.008 26.1816 163.084 28.4157 166.011 28.4157C168.937 28.4157 171.013 26.2084 171.013 23.1478Z" fill="#F4F8F2"></path><path d="M222.55 22.986C222.55 18.8872 225.53 15.9072 229.679 15.9072C233.829 15.9072 236.731 18.8873 236.731 23.0129C236.731 23.2783 236.731 23.5975 236.704 23.8898H224.811C225.13 26.6044 227.099 28.4119 229.841 28.4119C231.836 28.4119 233.593 27.4006 234.443 25.8048L236.278 26.7354C235.186 29.0233 232.767 30.4074 229.787 30.4074C225.584 30.4074 222.55 27.2931 222.55 22.9827V22.986ZM234.42 21.9479C234.02 19.5256 232.132 17.9029 229.579 17.9029C227.025 17.9029 225.214 19.5256 224.841 21.9479H234.42Z" fill="#F4F8F2"></path><path d="M153.664 26.3388V20.0999C153.664 19.3742 153.076 18.7829 152.347 18.7829H152.112V18.2118H153.661V18.195L157.118 18.2118V16.4379H153.661L153.687 12.1006H151.957L151.45 16.4379H149.27V18.195H151.45V26.416C151.45 28.7846 152.888 30.3806 155.149 30.3806C155.814 30.3806 156.691 30.2461 157.329 30.0345V28.2504C156.826 28.4117 156.133 28.5158 155.734 28.5158C154.457 28.5158 153.657 27.6121 153.657 26.3354L153.664 26.3388Z" fill="#F4F8F2"></path><path d="M217.389 26.3388V20.0999C217.389 19.3742 216.802 18.7829 216.073 18.7829H215.837V18.2118H217.386V18.195L220.843 18.2118V16.4379H217.386L217.413 12.1006H215.683L215.176 16.4379H212.995V18.195H215.176V26.416C215.176 28.7846 216.613 30.3806 218.875 30.3806C219.54 30.3806 220.416 30.2461 221.055 30.0345V28.2504C220.551 28.4117 219.859 28.5158 219.459 28.5158C218.182 28.5158 217.383 27.6121 217.383 26.3354L217.389 26.3388Z" fill="#F4F8F2"></path><path d="M144.643 16.4419V24.2631C144.643 26.6317 142.702 28.3619 140.44 28.3619C138.179 28.3619 136.795 26.7392 136.795 24.4512V16.4419H134.588V24.6596C134.588 27.5892 136.802 30.0989 139.722 30.3375C141.143 30.4549 142.433 30.0214 143.417 29.1616C143.84 28.7919 144.072 28.251 144.072 27.69V27.1961H144.643V28.0394V29.8736H146.851V16.4385H144.643V16.4419Z" fill="#F4F8F2"></path><path d="M191.366 15.938C189.344 15.938 187.801 16.9493 186.871 18.5182H186.632C185.86 16.9493 184.133 15.9111 182.241 15.9111C181.072 15.9111 180.057 16.3244 179.288 17.0064C178.875 17.3759 178.646 17.9101 178.646 18.4645V19.0927H178.065V16.4419H175.935V29.8771H178.142V21.8409C178.142 19.4724 179.58 17.9034 181.761 17.9034C183.941 17.9034 185.221 19.4724 185.221 21.8409V29.8771H187.428V21.8409C187.428 19.553 188.944 17.9034 191.101 17.9034C193.123 17.9034 194.584 19.553 194.584 21.8409V29.8771H196.792V21.8678C196.792 18.3838 194.531 15.9347 191.363 15.9347L191.366 15.938Z" fill="#F4F8F2"></path><path d="M205.151 15.9375C201.771 15.9375 199.563 17.7484 199.563 20.594H201.798C201.771 18.9175 203.101 17.9331 205.124 17.9331C207.331 17.9331 208.635 19.1023 208.635 20.9131V21.444L204.909 21.8975C200.917 22.3511 198.895 24.1048 198.895 26.4734C198.895 28.8419 200.81 30.3033 203.709 30.3033C205.221 30.3033 206.444 29.8834 207.371 29.1007C207.805 28.7344 208.04 28.1868 208.04 27.619V27.068H208.631V29.88H210.839V20.9669C210.839 17.9063 208.631 15.9375 205.144 15.9375H205.151ZM208.635 24.5315C208.635 26.7925 206.773 28.469 204.032 28.469C202.221 28.469 201.106 27.6963 201.106 26.4196C201.106 25.1429 202.17 24.1048 204.909 23.7588L208.635 23.3321V24.5281V24.5315Z" fill="#F4F8F2"></path><path d="M89.4541 17.6842H92.9111L89.4541 17.6641V17.6842Z" fill="#F4F8F2"></path><path d="M57.9139 28.5764L57.5108 28.1733L57.8634 27.8205C58.4816 27.2023 58.8277 26.3658 58.8277 25.4956V10.5889H56.4053V29.3458H68.2717V27.2158H60.6351C59.7616 27.2158 58.925 27.5618 58.3102 28.18L57.9139 28.5764Z" fill="#F4F8F2"></path><path d="M89.4542 25.8085V19.5696C89.4542 18.844 88.8661 18.2526 88.137 18.2526H87.9018V17.6815H89.4508V17.6647L92.9078 17.6815V15.9076H89.4508L89.4774 11.5703H87.7472L87.24 15.9076H85.0596V17.6647H87.24V25.8858C87.24 28.2543 88.678 29.85 90.939 29.85C91.6043 29.85 92.4811 29.7158 93.1194 29.5042V27.7202C92.6156 27.8814 91.9234 27.9855 91.5237 27.9855C90.2468 27.9855 89.4474 27.0818 89.4474 25.8051L89.4542 25.8085Z" fill="#F4F8F2"></path><path d="M104.593 21.5515C102.597 21.313 100.79 21.1786 100.79 19.5022C100.79 18.118 102.12 17.2411 104.062 17.2411C106.138 17.2411 107.546 18.2793 107.573 19.9288H109.727C109.727 17.1605 107.439 15.3799 104.086 15.3799C100.733 15.3799 98.6834 16.9757 98.6834 19.5828C98.6834 22.6434 101.583 23.3086 104.086 23.6009C106.108 23.8664 107.942 24.0007 107.942 25.7545C107.942 27.1655 106.639 28.0155 104.616 28.0155C102.09 28.0155 100.598 26.712 100.571 24.797H98.4414C98.4414 27.9886 100.675 29.8801 104.536 29.8801C107.969 29.8801 110.015 28.3649 110.015 25.7309C110.015 22.5124 107.116 21.8741 104.586 21.5549L104.593 21.5515Z" fill="#F4F8F2"></path><path d="M96.5263 12.5846V12.9172L96.2372 13.2061C95.73 13.7134 95.4443 14.4021 95.4443 15.1177V17.7248C96.5431 17.7248 97.4333 16.8345 97.4333 15.7359V11.3516H95.4443V12.5879H96.5263V12.5846Z" fill="#F4F8F2"></path><path d="M76.8151 15.377C72.6659 15.377 69.686 18.357 69.686 22.4557C69.686 26.7662 72.7198 29.8806 76.9226 29.8806C79.9028 29.8806 82.3249 28.4964 83.4134 26.2085L81.5791 25.2779C80.7292 26.8737 78.972 27.8849 76.9765 27.8849C74.235 27.8849 72.2662 26.0741 71.947 23.3629H83.8401C83.867 23.0706 83.867 22.7514 83.867 22.486C83.867 18.3603 80.9138 15.3803 76.8151 15.3803V15.377ZM71.974 21.4176C72.3467 18.9953 74.235 17.3726 76.711 17.3726C79.187 17.3726 81.1524 18.9953 81.5521 21.4176H71.974Z" fill="#F4F8F2"></path><path d="M31.1674 0.5V17.4327C29.7901 11.2307 26.1381 0.5 26.1381 0.5H17.1107C18.599 6.44658 20.7794 12.7694 21.6328 16.7405H21.6193C20.7291 14.2443 18.7435 10.4076 14.2919 4.60213C13.1564 3.12389 12.0275 1.72963 11.0029 0.5H0C6.53453 7.53847 13.5092 17.1168 13.5092 20.5C13.5092 23.8832 6.53453 33.4614 0 40.5H11.0029C12.0309 39.2705 13.1597 37.8762 14.2919 36.3979C18.636 30.7301 20.635 26.9405 21.5522 24.4409C20.6484 28.4254 18.4176 34.6543 16.8822 40.5H25.9298C25.9298 40.5 29.6389 30.4245 31.1035 24.3636L30.8349 40.5H39.6641L39.9966 20.5538V0.5H31.1674Z" fill="#00CD77"></path></g><defs><clipPath id="clip0_4016_1321"><rect width="236.879" height="40" fill="white" transform="translate(0 0.5)"></rect></clipPath></defs></svg></a>
+  <a class="bar-cta" id="barCta" href="#wiersz">Pobierz zestaw</a>
+</div></header>
+
+<main class="hist">
+
+<!-- 0. HERO -->
+<section class="hero" id="h">
+  <div class="wrap hero-in">
+    <p class="ety">Zestaw za darmo · arkusz i 5 skilli</p>
+    <h1>Sprawdź w tydzień, co <em>AI może przejąć</em> w&nbsp;Twojej firmie.</h1>
+    <p class="lead">Zespół spisuje swoją pracę, a pięć skilli w Waszym AI robi z tego plan na start. To ten sam arkusz, od którego zaczynamy wdrożenia.</p>
+    <div class="hero-cta"><a class="btn" href="#wiersz">Pobierz arkusz i 5 skilli</a><span class="hero-dop">Claude, ChatGPT, Copilot, Gemini albo Appto</span></div>
+  </div>
+  <div class="wrap">
+    <div class="ark ark-hero" aria-hidden="true">
+      <div class="ark-tab"><span class="on">Moje czynności</span><span>Podsumowanie</span></div>
+      <div class="ark-g g-hero">
+        <i class="rn"></i><b>Gdy</b><b>Co</b><b>Jak</b><b class="mn">Czas</b>
+        <i class="rn">1</i><span class="cel kur"><span class="kursor"></span></span><span></span><span></span><span class="mn"></span>
+        <i class="rn">2</i><span></span><span></span><span></span><span class="mn"></span>
+        <i class="rn">3</i><span></span><span></span><span></span><span class="mn"></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 1. PROCEDURA: 3 KROKI → 14 -->
+<section class="sc" id="s1" style="--h:300">
+  <div class="pin"><div class="wrap strefy">
+    <p class="ety">Co AI może u Was zrobić?</p>
+    <h2 class="pod">Najpierw trzeba wiedzieć, co <em>naprawdę</em> robicie.</h2>
+    <div class="obraz" id="s1o">
+      <div class="proc" id="proc">
+        <div class="proc-h">Procedura · Przyjęcie zgłoszenia serwisowego</div>
+        <ol><li>Przyjmij zgłoszenie</li><li>Umów technika</li><li>Potwierdź klientowi</li></ol>
+      </div>
+      <div class="ark ark-ania" id="ania" data-fit>
+        <div class="ark-g g-ania">
+          <i class="rn"></i><b>Co</b><b class="mn">Czas</b>
+          <i class="rn">4</i><span class="co">Przyjmuję zgłoszenie serwisowe od klienta</span><span class="mn" id="aMin">0 min</span>
+        </div>
+        <div class="jak" id="jak"><div class="jak-h">Jak <span id="jakN">0</span> kroków</div><ol id="kroki"></ol></div>
+      </div>
+    </div>
+    <p class="zd" id="s1z"><span class="z0">Procedura mówi 3 kroki.</span><span class="z1">Ania zapisała <b>14</b>. Połowy nie ma w żadnym dokumencie.</span></p>
+  </div></div>
+</section>
+
+<!-- 2. CAŁY ZESPÓŁ -->
+<section class="sc" id="s2" style="--h:240">
+  <div class="pin"><div class="wrap strefy">
+    <p class="ety">Wtorek–czwartek</p>
+    <h2 class="pod">Tak samo spisuje się <em>cały zespół</em>.</h2>
+    <div class="obraz" id="s2o">
+      <div class="ark ark-zesp" data-fit>
+        <div class="ark-g g-zesp" id="zesp">
+          <i class="rn"></i><b>Kto</b><b>Co</b><b class="mn">h / mies.</b><b class="ai">AI</b>
+        </div>
+        <div class="suma"><span>Razem</span><b id="suma">0 h</b><span>w miesiącu</span></div>
+      </div>
+    </div>
+    <p class="zd">Pięć osób, cztery dni, 61 czynności. Tak wygląda Wasz miesiąc, kiedy ktoś go wreszcie spisze.<small>Przykład: firma serwisowa, 5 osób.</small></p>
+  </div></div>
+</section>
+
+<!-- 3. SPISZ DZIEŃ -->
+<section class="sc" id="s3" style="--h:260">
+  <div class="pin"><div class="wrap strefy">
+    <p class="ety">Skill 1 · Spisz dzień</p>
+    <h2 class="pod">Nikt nie musi siedzieć <em>nad Excelem</em>.</h2>
+    <div class="obraz" id="s3o">
+      <div class="czat">
+        <div class="czat-h"><span class="kropki"><i></i><i></i><i></i></span>Spisz dzień</div>
+        <div class="czat-b" id="czat"></div>
+        <div class="czat-w"><div class="wiersz-z" id="wz"><span>Gdy przyjdzie mail ze zgłoszeniem</span><span>Czytam mail → szukam klienta → umowa w PDF → brak numeru seryjnego: piszę i czekam → …</span><span>22 min</span></div></div>
+      </div>
+    </div>
+    <p class="zd">Pięć minut na koniec dnia. AI dopytuje jak dobry analityk i samo wpisuje wiersze.</p>
+  </div></div>
+</section>
+
+<!-- 4. DIAGNOZA -->
+<section class="sc" id="s4" style="--h:240">
+  <div class="pin"><div class="wrap strefy">
+    <p class="ety">Piątek · Skill 2 · Diagnoza zespołu</p>
+    <h2 class="pod">Te same sprawy u różnych osób <em>składają się w procesy</em>.</h2>
+    <div class="obraz" id="s4o">
+      <div class="procesy" id="procesy" data-fit>
+        <div class="pr" data-h="86"><div class="pr-g"><b>Przyjęcie zgłoszenia</b><span class="pr-h"><i>0</i> h</span></div><div class="pr-kto">Ania · Marek · Kasia</div><div class="pr-bar"><i></i></div><div class="pr-uw">9 min u Marka, 35 min u Kasi: każdy robi to inaczej</div></div>
+        <div class="pr" data-h="41"><div class="pr-g"><b>Wyceny dla klientów</b><span class="pr-h"><i>0</i> h</span></div><div class="pr-kto">Marek · Piotr</div><div class="pr-bar"><i></i></div></div>
+        <div class="pr" data-h="28"><div class="pr-g"><b>Protokoły i faktury po wizycie</b><span class="pr-h"><i>0</i> h</span></div><div class="pr-kto">Kasia</div><div class="pr-bar"><i></i></div></div>
+        <div class="pr" data-h="17"><div class="pr-g"><b>Raport miesięczny dla klienta</b><span class="pr-h"><i>0</i> h</span></div><div class="pr-kto">Piotr</div><div class="pr-bar"><i></i></div></div>
+      </div>
+    </div>
+    <p class="zd">Skill łączy arkusze, liczy, gdzie naprawdę idzie czas, i wskazuje, od czego zacząć.</p>
+  </div></div>
+</section>
+
+<!-- 5. AI / SYSTEM / CZŁOWIEK -->
+<section class="sc" id="s5" style="--h:260">
+  <div class="pin"><div class="wrap strefy">
+    <p class="ety">Skille 3 i 4 · Standard, potem podział</p>
+    <h2 class="pod">Każdy krok dostaje <em>swoje miejsce</em>.</h2>
+    <div class="obraz" id="s5o">
+      <div class="leg"><span class="l-ai">AI</span><span class="l-sys">System</span><span class="l-cz">Człowiek</span><span class="l-zn">Znika</span></div>
+      <ol class="rozk" id="rozk"></ol>
+      <div class="po" id="po" data-fit>
+        <div class="po-h">Po zmianie</div>
+        <ol><li class="t-ai">AI czyta zgłoszenie, sprawdza umowę i gwarancję</li><li class="t-sys">System proponuje technika, termin i część z magazynu</li><li class="t-cz">Ania zatwierdza jednym kliknięciem</li><li class="t-sys">Klient i technik dostają termin</li></ol>
+      </div>
+    </div>
+    <p class="zd"><span class="z0">Najpierw jeden standard z trzech wersji, potem podział.</span><span class="z1">Z 14 kroków Ani zostaje jeden: decyzja.</span></p>
+  </div></div>
+</section>
+
+<!-- 6. RAPORT DLA ZARZĄDU -->
+<section class="sc" id="s6" style="--h:170">
+  <div class="pin"><div class="wrap strefy">
+    <p class="ety">Skill 5 · Plan dla zarządu</p>
+    <h2 class="pod">Po tygodniu masz plan, który szef przeczyta <em>w trzy minuty</em>.</h2>
+    <div class="obraz" id="s6o">
+      <article class="raport" id="raport" data-fit>
+        <header><b>Mapa czynności</b><span>Firma serwisowa · grudzień</span></header>
+        <h3>Trzy procesy na start</h3>
+        <ol>
+          <li><b>Przyjęcie zgłoszenia</b><span>ok. 86 h w miesiącu · AI czyta i sprawdza, Ania zatwierdza</span></li>
+          <li><b>Wyceny dla klientów</b><span>ok. 41 h · szkic z cennika, handlowiec wysyła</span></li>
+          <li><b>Protokoły i faktury</b><span>ok. 28 h · system z protokołu technika</span></li>
+        </ol>
+        <h3>Plan na 30 dni</h3>
+        <div class="tyg"><span><b>1</b>kontekst</span><span><b>2</b>budowa</span><span><b>3</b>testy</span><span><b>4</b>zespół</span></div>
+        <div class="decyzja">Czy zaczynamy od przyjęcia zgłoszeń i dajemy Ani 4 h tygodniowo na miesiąc?</div>
+      </article>
+    </div>
+    <p class="zd">Rachunek liczy się na Waszych stawkach. Skill o nie zapyta i niczego nie zakłada.</p>
+  </div></div>
+</section>
+
+<!-- 7. ZESTAW -->
+<section class="zestaw" id="s7">
+  <div class="wrap">
+    <p class="ety">W zestawie</p>
+    <h2>Wszystko na tydzień pracy. <em>Dane zostają u Was.</em></h2>
+    <ul class="pliki">
+      <li><span class="ik xl">xlsx</span><div><b>Arkusz „Mapa czynności”</b><span>każdy wypełnia swój, podsumowanie liczy się samo</span></div></li>
+      <li><span class="ik">1</span><div><b>Spisz dzień</b><span>5 minut rozmowy zamiast wpisywania</span></div></li>
+      <li><span class="ik">2</span><div><b>Diagnoza zespołu</b><span>wszystkie arkusze → gdzie idzie czas</span></div></li>
+      <li><span class="ik">3</span><div><b>Jeden standard</b><span>najlepsza wersja procesu i wiedza z głów</span></div></li>
+      <li><span class="ik">4</span><div><b>AI, system czy człowiek</b><span>każdy krok na swoim miejscu, 5 przypadków do testów</span></div></li>
+      <li><span class="ik">5</span><div><b>Plan dla zarządu</b><span>jedna strona i plan na 30 dni</span></div></li>
+      <li><span class="ik txt">txt</span><div><b>Wiadomość do zespołu</b><span>do wklejenia na Slacka, Teams albo w mail</span></div></li>
+    </ul>
+    <p class="gdzie">Skille działają w Claude, ChatGPT, Copilocie, Gemini i Appto. Analiza dzieje się w Waszym AI: nikomu niczego nie wysyłacie.</p>
+  </div>
+</section>
+
+<!-- 8. TWOJA FIRMA: nowy wiersz w arkuszu -->
+<section class="koniec" id="wiersz">
+  <div class="wrap">
+    <h2>Teraz <em>Twoja firma</em>.</h2>
+    <p class="lead">Dopisz wiersz. Wpisz e-mail i naciśnij Enter, a zestaw pobierze się od razu.</p>
+    <div class="ark ark-cta" id="arkCta">
+      <div class="ark-tab"><span class="on">Mapa czynności · Twoja firma</span></div>
+      <form class="ark-g g-cta" id="fZ" novalidate>
+        <i class="rn"></i><b>Gdy</b><b>Co</b><b class="jk">Jak</b>
+        <i class="rn">1</i><span class="szary">W tym tygodniu</span><span class="szary">Sprawdzamy, co AI może u nas przejąć</span>
+        <label class="cel-in jk" id="celZ"><span class="sr">Twój e-mail</span><input id="iZ" type="email" inputmode="email" autocomplete="email" placeholder="Twój e-mail" enterkeyhint="send"><button type="submit" id="bZ" aria-label="Pobierz zestaw">↵</button></label>
+        <input type="text" name="kontrola" class="pulapka" tabindex="-1" autocomplete="off" aria-hidden="true">
+      </form>
+      <p class="blad" id="eZ" role="alert"></p>
+      <label class="zgoda" id="zgZ"><input type="checkbox" id="cZ"><span>Zgadzam się na wiadomości od Let's automate o tym zestawie (najwyżej kilka maili, wypis jednym kliknięciem). <a href="/polityka-prywatnosci">Prywatność</a></span></label>
+      <div class="pobrane" id="okZ" hidden>
+        <p><b>Gotowe.</b> Zestaw się pobiera. Jeśli nie ruszył:</p>
+        <div class="pob-l"><a class="btn" id="dZip" href="/materialy/mapa-czynnosci-zestaw.zip" download>Cały zestaw (.zip)</a><a class="btn btn-2" href="/materialy/Mapa-czynnosci.xlsx" download>Sam arkusz (.xlsx)</a></div>
+        <p class="pob-d">Zacznij od pliku JAK-UZYWAC.md: tam jest plan tygodnia i jak włączyć skille.</p>
+      </div>
+    </div>
+
+    <div class="ark ark-cta ark-om" id="omowienie">
+      <form class="ark-g g-cta" id="fO" novalidate>
+        <i class="rn">2</i><span class="szary">Po tygodniu</span><span class="szary">Omawiamy wynik z Let's automate, 30 min, za darmo</span>
+        <label class="cel-in jk"><span class="sr">Telefon albo e-mail</span><input id="iO" type="text" autocomplete="email" placeholder="telefon albo e-mail" enterkeyhint="send"><button type="submit" id="bO" aria-label="Umów omówienie">↵</button></label>
+        <input type="text" name="kontrola" class="pulapka" tabindex="-1" autocomplete="off" aria-hidden="true">
+      </form>
+      <p class="blad" id="eO" role="alert"></p>
+      <p class="om-ok" id="okO" hidden>Dzięki! Odezwiemy się w jeden dzień roboczy i umówimy termin.</p>
+    </div>
+    <p class="om-d">Wolisz, żebyśmy przeprowadzili ten tydzień z Wami? <a href="/wdrozenie-ai-pod-klucz">Wdrożenie AI pod klucz</a></p>
+  </div>
+</section>
+
+</main>
+
+<footer class="stopka"><div class="wrap"><a class="logo" href="/" aria-label="Let's automate"><svg width="237" height="41" viewBox="0 0 237 41" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_4016_1321)"><path d="M126.179 11.1201H119.973L121.055 13.1157H123.346V13.6903H123.276C122.456 13.6903 121.72 14.1976 121.428 14.9669L115.801 29.877H118.115L119.711 25.6741H129.263L130.859 29.877H133.174L126.175 11.1201H126.179ZM126.83 23.6785H120.43L124.395 13.2502H124.633L128.571 23.6785H126.827H126.83Z" fill="#F4F8F2"></path><path d="M158.801 23.1478C158.801 18.918 161.781 15.9111 166.011 15.9111C170.241 15.9111 173.22 18.918 173.22 23.1478C173.22 27.3776 170.214 30.4113 166.011 30.4113C161.808 30.4113 158.801 27.4045 158.801 23.1478ZM171.013 23.1478C171.013 20.1141 168.91 17.9068 166.011 17.9068C163.111 17.9068 161.008 20.1141 161.008 23.1478C161.008 26.1816 163.084 28.4157 166.011 28.4157C168.937 28.4157 171.013 26.2084 171.013 23.1478Z" fill="#F4F8F2"></path><path d="M222.55 22.986C222.55 18.8872 225.53 15.9072 229.679 15.9072C233.829 15.9072 236.731 18.8873 236.731 23.0129C236.731 23.2783 236.731 23.5975 236.704 23.8898H224.811C225.13 26.6044 227.099 28.4119 229.841 28.4119C231.836 28.4119 233.593 27.4006 234.443 25.8048L236.278 26.7354C235.186 29.0233 232.767 30.4074 229.787 30.4074C225.584 30.4074 222.55 27.2931 222.55 22.9827V22.986ZM234.42 21.9479C234.02 19.5256 232.132 17.9029 229.579 17.9029C227.025 17.9029 225.214 19.5256 224.841 21.9479H234.42Z" fill="#F4F8F2"></path><path d="M153.664 26.3388V20.0999C153.664 19.3742 153.076 18.7829 152.347 18.7829H152.112V18.2118H153.661V18.195L157.118 18.2118V16.4379H153.661L153.687 12.1006H151.957L151.45 16.4379H149.27V18.195H151.45V26.416C151.45 28.7846 152.888 30.3806 155.149 30.3806C155.814 30.3806 156.691 30.2461 157.329 30.0345V28.2504C156.826 28.4117 156.133 28.5158 155.734 28.5158C154.457 28.5158 153.657 27.6121 153.657 26.3354L153.664 26.3388Z" fill="#F4F8F2"></path><path d="M217.389 26.3388V20.0999C217.389 19.3742 216.802 18.7829 216.073 18.7829H215.837V18.2118H217.386V18.195L220.843 18.2118V16.4379H217.386L217.413 12.1006H215.683L215.176 16.4379H212.995V18.195H215.176V26.416C215.176 28.7846 216.613 30.3806 218.875 30.3806C219.54 30.3806 220.416 30.2461 221.055 30.0345V28.2504C220.551 28.4117 219.859 28.5158 219.459 28.5158C218.182 28.5158 217.383 27.6121 217.383 26.3354L217.389 26.3388Z" fill="#F4F8F2"></path><path d="M144.643 16.4419V24.2631C144.643 26.6317 142.702 28.3619 140.44 28.3619C138.179 28.3619 136.795 26.7392 136.795 24.4512V16.4419H134.588V24.6596C134.588 27.5892 136.802 30.0989 139.722 30.3375C141.143 30.4549 142.433 30.0214 143.417 29.1616C143.84 28.7919 144.072 28.251 144.072 27.69V27.1961H144.643V28.0394V29.8736H146.851V16.4385H144.643V16.4419Z" fill="#F4F8F2"></path><path d="M191.366 15.938C189.344 15.938 187.801 16.9493 186.871 18.5182H186.632C185.86 16.9493 184.133 15.9111 182.241 15.9111C181.072 15.9111 180.057 16.3244 179.288 17.0064C178.875 17.3759 178.646 17.9101 178.646 18.4645V19.0927H178.065V16.4419H175.935V29.8771H178.142V21.8409C178.142 19.4724 179.58 17.9034 181.761 17.9034C183.941 17.9034 185.221 19.4724 185.221 21.8409V29.8771H187.428V21.8409C187.428 19.553 188.944 17.9034 191.101 17.9034C193.123 17.9034 194.584 19.553 194.584 21.8409V29.8771H196.792V21.8678C196.792 18.3838 194.531 15.9347 191.363 15.9347L191.366 15.938Z" fill="#F4F8F2"></path><path d="M205.151 15.9375C201.771 15.9375 199.563 17.7484 199.563 20.594H201.798C201.771 18.9175 203.101 17.9331 205.124 17.9331C207.331 17.9331 208.635 19.1023 208.635 20.9131V21.444L204.909 21.8975C200.917 22.3511 198.895 24.1048 198.895 26.4734C198.895 28.8419 200.81 30.3033 203.709 30.3033C205.221 30.3033 206.444 29.8834 207.371 29.1007C207.805 28.7344 208.04 28.1868 208.04 27.619V27.068H208.631V29.88H210.839V20.9669C210.839 17.9063 208.631 15.9375 205.144 15.9375H205.151ZM208.635 24.5315C208.635 26.7925 206.773 28.469 204.032 28.469C202.221 28.469 201.106 27.6963 201.106 26.4196C201.106 25.1429 202.17 24.1048 204.909 23.7588L208.635 23.3321V24.5281V24.5315Z" fill="#F4F8F2"></path><path d="M89.4541 17.6842H92.9111L89.4541 17.6641V17.6842Z" fill="#F4F8F2"></path><path d="M57.9139 28.5764L57.5108 28.1733L57.8634 27.8205C58.4816 27.2023 58.8277 26.3658 58.8277 25.4956V10.5889H56.4053V29.3458H68.2717V27.2158H60.6351C59.7616 27.2158 58.925 27.5618 58.3102 28.18L57.9139 28.5764Z" fill="#F4F8F2"></path><path d="M89.4542 25.8085V19.5696C89.4542 18.844 88.8661 18.2526 88.137 18.2526H87.9018V17.6815H89.4508V17.6647L92.9078 17.6815V15.9076H89.4508L89.4774 11.5703H87.7472L87.24 15.9076H85.0596V17.6647H87.24V25.8858C87.24 28.2543 88.678 29.85 90.939 29.85C91.6043 29.85 92.4811 29.7158 93.1194 29.5042V27.7202C92.6156 27.8814 91.9234 27.9855 91.5237 27.9855C90.2468 27.9855 89.4474 27.0818 89.4474 25.8051L89.4542 25.8085Z" fill="#F4F8F2"></path><path d="M104.593 21.5515C102.597 21.313 100.79 21.1786 100.79 19.5022C100.79 18.118 102.12 17.2411 104.062 17.2411C106.138 17.2411 107.546 18.2793 107.573 19.9288H109.727C109.727 17.1605 107.439 15.3799 104.086 15.3799C100.733 15.3799 98.6834 16.9757 98.6834 19.5828C98.6834 22.6434 101.583 23.3086 104.086 23.6009C106.108 23.8664 107.942 24.0007 107.942 25.7545C107.942 27.1655 106.639 28.0155 104.616 28.0155C102.09 28.0155 100.598 26.712 100.571 24.797H98.4414C98.4414 27.9886 100.675 29.8801 104.536 29.8801C107.969 29.8801 110.015 28.3649 110.015 25.7309C110.015 22.5124 107.116 21.8741 104.586 21.5549L104.593 21.5515Z" fill="#F4F8F2"></path><path d="M96.5263 12.5846V12.9172L96.2372 13.2061C95.73 13.7134 95.4443 14.4021 95.4443 15.1177V17.7248C96.5431 17.7248 97.4333 16.8345 97.4333 15.7359V11.3516H95.4443V12.5879H96.5263V12.5846Z" fill="#F4F8F2"></path><path d="M76.8151 15.377C72.6659 15.377 69.686 18.357 69.686 22.4557C69.686 26.7662 72.7198 29.8806 76.9226 29.8806C79.9028 29.8806 82.3249 28.4964 83.4134 26.2085L81.5791 25.2779C80.7292 26.8737 78.972 27.8849 76.9765 27.8849C74.235 27.8849 72.2662 26.0741 71.947 23.3629H83.8401C83.867 23.0706 83.867 22.7514 83.867 22.486C83.867 18.3603 80.9138 15.3803 76.8151 15.3803V15.377ZM71.974 21.4176C72.3467 18.9953 74.235 17.3726 76.711 17.3726C79.187 17.3726 81.1524 18.9953 81.5521 21.4176H71.974Z" fill="#F4F8F2"></path><path d="M31.1674 0.5V17.4327C29.7901 11.2307 26.1381 0.5 26.1381 0.5H17.1107C18.599 6.44658 20.7794 12.7694 21.6328 16.7405H21.6193C20.7291 14.2443 18.7435 10.4076 14.2919 4.60213C13.1564 3.12389 12.0275 1.72963 11.0029 0.5H0C6.53453 7.53847 13.5092 17.1168 13.5092 20.5C13.5092 23.8832 6.53453 33.4614 0 40.5H11.0029C12.0309 39.2705 13.1597 37.8762 14.2919 36.3979C18.636 30.7301 20.635 26.9405 21.5522 24.4409C20.6484 28.4254 18.4176 34.6543 16.8822 40.5H25.9298C25.9298 40.5 29.6389 30.4245 31.1035 24.3636L30.8349 40.5H39.6641L39.9966 20.5538V0.5H31.1674Z" fill="#00CD77"></path></g><defs><clipPath id="clip0_4016_1321"><rect width="236.879" height="40" fill="white" transform="translate(0 0.5)"></rect></clipPath></defs></svg></a><span>Let's automate · <a href="/polityka-prywatnosci">Polityka prywatności</a></span></div></footer>
+
+</div>
+<script is:inline>
+/* Mapa czynności: sceny przypięte, postęp p (0–1) z przewijania. Każda scena ustawia stan z p,
+   więc przewijanie w górę cofa obraz. ?s=<id>&p=<0-1> ustawia stronę na danej scenie (zrzuty). */
+(()=>{
+const $=(s,r=document)=>r.querySelector(s);
+const qs=new URLSearchParams(location.search);
+const stat=(e,p)=>{try{window.laStat&&window.laStat(e,p||{});}catch(x){}};
+
+/* pasek: znika nad samym końcem, żeby nie zasłaniał wiersza */
+const bar=$('#bar'), kon=$('#wiersz');
+
+/* ── s1: 14 kroków Ani ── */
+const KROKI=[
+ ['Czytam mail od klienta','Outlook'],['Szukam klienta w systemie po nazwie','system'],
+ ['Otwieram umowę serwisową','PDF na dysku'],['Sprawdzam, czy urządzenie jest na gwarancji','arkusz'],
+ ['Brak numeru seryjnego: proszę klienta o zdjęcie tabliczki','Outlook',1],['Czekam, wracam do maila po 2 h','',1],
+ ['Szukam wolnego technika','kalendarz'],['Dzwonię do technika, czy zdąży','telefon',1],
+ ['Pytam magazyn o część','WhatsApp',1],['Wpisuję zlecenie do systemu','system'],
+ ['Przeklejam opis usterki z maila','system',1],['Wysyłam klientowi termin','Outlook'],
+ ['Wpisuję termin technikowi','kalendarz',1],['Odhaczam zgłoszenie w zestawieniu','arkusz',1]];
+const kroki=$('#kroki'), jakN=$('#jakN'), aMin=$('#aMin'), proc=$('#proc'), ania=$('#ania'), s1z=$('#s1z');
+let n1=-1;
+function s1(p){
+  proc.classList.toggle('won',p>.12); ania.classList.toggle('on',p>.14);
+  const n=Math.max(0,Math.min(14,Math.round((p-.18)/.62*14)));
+  if(n!==n1){
+    if(n>n1){for(let i=Math.max(0,n1);i<n;i++){const [t,nz,nw]=KROKI[i];const li=document.createElement('li');if(nw)li.className='nowy';li.innerHTML=t+(nz?'<i>'+nz+'</i>':'');kroki.appendChild(li);}}
+    else{while(kroki.children.length>n)kroki.lastChild.remove();}
+    n1=n; jakN.textContent=n; aMin.textContent=Math.round(n/14*22)+' min';
+  }
+  s1z.classList.toggle('dwa',n>=14);
+}
+
+/* ── s2: zespół ── */
+const ZESP=[
+ ['Ania','Przyjmuję zgłoszenie serwisowe',33,'nie używam'],['Marek','Przygotowuję wycenę naprawy',24,'ChatGPT do maila, cennik ręcznie'],
+ ['Kasia','Przepisuję protokół technika do faktury',28,'nie wiem, czy mogę wkleić dane klienta'],['Ania','Odpowiadam, kiedy przyjedzie technik',19,'nie używam'],
+ ['Piotr','Raport miesięczny dla klienta',17,'Copilot do podsumowania'],['Marek','Przyjmuję zgłoszenie z telefonu',27,'nie używam'],
+ ['Tomek','Sprawdzam stan części i zamawiam',22,'nie używam'],['Kasia','Przyjmuję zgłoszenie z formularza',26,'nie używam'],
+ ['Piotr','Akceptuję wyceny powyżej progu',17,'nie używam'],['Kasia','Przypominam o niezapłaconych fakturach',12,'nie używam'],
+ ['Tomek','Odpowiadam technikom o części',15,'nie używam'],['Ania','Uzupełniam zestawienie zgłoszeń',21,'nie używam']];
+const zesp=$('#zesp'), suma=$('#suma');
+let n2=0; const lim2=()=>innerHeight<700?6:innerWidth<640?8:12;
+function s2(p){
+  const L=lim2(), n=Math.max(0,Math.min(L,Math.round((p-.06)/.6*L)));
+  while(n2<n){const [k,c,h,a]=ZESP[n2];zesp.insertAdjacentHTML('beforeend',`<i class="rn">${n2+5}</i><span class="kto">${k}</span><span>${c}</span><span class="mn">${h}</span><span class="ai${/nie używam|nie wiem/.test(a)?' brak':''}">${a}</span>`);n2++;}
+  while(n2>n){for(let i=0;i<5;i++)zesp.lastElementChild.remove();n2--;}
+  const t=Math.max(0,Math.min(1,(p-.1)/.75));
+  suma.textContent=Math.round(312*t*t*(3-2*t))+' h';
+}
+
+/* ── s3: rozmowa ── */
+const CZAT=[['ai','Co dziś zajęło Ci najwięcej czasu?'],['ty','Zgłoszenia z maili, jak zwykle.'],
+ ['ai','Skąd wiesz, czy klient ma umowę serwisową?'],['ty','Otwieram jego umowę w PDF na dysku.'],
+ ['ai','A co robisz, gdy w mailu nie ma numeru seryjnego?'],['ty','Piszę do klienta i czekam. Czasem dwie godziny.'],
+ ['ai','Ile takich zgłoszeń masz dziennie i ile trwa jedno?'],['ty','Koło dziewięciu, każde jakieś 20 minut.']];
+const czat=$('#czat'), wz=$('#wz'); let n3=0;
+function s3(p){
+  const ord=innerHeight<720?[0,1,2,3,6,7]:[0,1,2,3,4,5,6,7], lim=ord.length;
+  const n=Math.max(0,Math.min(lim,Math.floor((p-.04)/.66*lim+.0001)));
+  while(n3<n){const [k,t]=CZAT[ord[n3]];czat.insertAdjacentHTML('beforeend',`<div class="dm ${k}">${t}</div>`);n3++;}
+  while(n3>n){czat.lastElementChild.remove();n3--;}
+  wz.classList.toggle('on',p>.78);
+}
+
+/* ── s4: procesy ── */
+const prs=[...document.querySelectorAll('.pr')];
+function s4(p){
+  prs.forEach((el,i)=>{
+    const on=p>.08+i*.13; el.classList.toggle('on',on);
+    const h=+el.dataset.h, t=on?Math.min(1,(p-.08-i*.13)/.25):0;
+    el.querySelector('.pr-h i').textContent=Math.round(h*t);
+    el.querySelector('.pr-bar i').style.width=(on?h/86*100*t:0)+'%';
+  });
+  prs[0].classList.toggle('uw',p>.7);
+}
+
+/* ── s5: rozkład kroków ── */
+const RODZ=['ai','sys','ai','ai','ai','zn','sys','cz','sys','sys','zn','sys','sys','zn'];
+const rozk=$('#rozk'); rozk.innerHTML=KROKI.map((k,i)=>`<li><b>${i+1}</b>${k[0]}</li>`).join('');
+const rl=[...rozk.children], leg=document.querySelector('#s5 .leg'), po=$('#po'), s5z=$('#s5z')||document.querySelector('#s5 .zd');
+function s5(p){
+  rl.forEach((li,i)=>{li.className=p>.1+i*.04?RODZ[i]:'';});
+  const zw=p>.76; rozk.classList.toggle('zwin',zw); po.classList.toggle('on',zw); leg.classList.toggle('zwin',zw);
+  s5z.classList.toggle('dwa',zw);
+}
+
+/* ── s6: raport ── */
+const raport=$('#raport');
+function s6(p){raport.classList.toggle('on',p>.08);}
+
+/* dopasowanie: obraz sceny nigdy nie wychodzi poza swoją strefę (zmniejsza, nie powiększa) */
+function fit(){document.querySelectorAll('[data-fit]').forEach(el=>{const o=el.closest('.obraz');if(!o)return;el.style.scale='';
+  const k=Math.min(1,o.clientHeight/el.offsetHeight,o.clientWidth/el.offsetWidth);el.style.scale=k<1?k.toFixed(3):'';});}
+addEventListener('resize',fit);
+const SC=[['s1',s1],['s2',s2],['s3',s3],['s4',s4],['s5',s5],['s6',s6]].map(([id,f])=>({el:document.getElementById(id),f,last:-1}));
+function frame(){
+  const vh=innerHeight;
+  for(const s of SC){
+    const r=s.el.getBoundingClientRect(), span=Math.max(1,r.height-vh);
+    const p=Math.max(0,Math.min(1,-r.top/span));
+    if(r.bottom>-vh&&r.top<vh*2&&Math.abs(p-s.last)>.002){s.last=p;s.f(p);fit();}
+  }
+  const k=kon.getBoundingClientRect(); bar.classList.toggle('off',k.top<vh*.5&&k.bottom>0);
+  if(!window.__snap)requestAnimationFrame(frame);
+}
+if(window.__snap||qs.get('s')){SC.forEach(s=>s.f(0));}
+const qsS=qs.get('s');
+if(qsS){const el=document.getElementById(qsS); if(el){document.documentElement.style.scrollBehavior='auto'; scrollTo(0,el.getBoundingClientRect().top+scrollY+parseFloat(qs.get('p')||0)*Math.max(0,el.offsetHeight-innerHeight));}}
+window.__klatka=frame;
+requestAnimationFrame(frame);
+if(window.__snap)addEventListener('scroll',()=>requestAnimationFrame(frame),{passive:true});
+})();
+
+/* ── wiersze w arkuszu: pobranie zestawu (e-mail) i omówienie (telefon albo e-mail) ──
+   POST /api/kontakt jak formularz strony (Zgody.astro dokłada Lead dla Mety).
+   Do statystyk idzie tylko zdarzenie i kanał, nigdy dane osoby. */
+(()=>{
+const $=(s)=>document.querySelector(s);
+const stat=(e,p)=>{try{window.laStat&&window.laStat(e,p||{});}catch(x){}};
+const MAIL=/^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
+const qs=new URLSearchParams(location.search);
+const z=qs.get('z')||'';
+const ref=()=>{try{return localStorage.getItem('referrer')||'';}catch(x){return '';}};
+function wyslij(dane){
+  return fetch('/api/kontakt',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(dane)})
+   .then(o=>{if(!o.ok)return o.json().catch(()=>({})).then(j=>{throw new Error(j.blad||'blad');});});
+}
+/* 1. pobranie */
+const fZ=$('#fZ'), iZ=$('#iZ'), eZ=$('#eZ'), cZ=$('#cZ'), zgZ=$('#zgZ'), okZ=$('#okZ'), ark=$('#arkCta'), bZ=$('#bZ');
+let w1=false;
+iZ.addEventListener('input',()=>{eZ.textContent='';});
+cZ.addEventListener('change',()=>zgZ.classList.remove('err'));
+iZ.addEventListener('focus',()=>stat('mapa_pole',{}),{once:true});
+document.querySelectorAll('a[href="#wiersz"]').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();stat('mapa_cta',{skad:a.id||'tresc'});$('#wiersz').scrollIntoView({behavior:'smooth',block:'start'});setTimeout(()=>{try{iZ.focus({preventScroll:true});}catch(x){}},800);}));
+fZ.addEventListener('submit',e=>{
+  e.preventDefault(); if(w1)return;
+  const v=iZ.value.trim();
+  if(!MAIL.test(v)){eZ.textContent=v?'Ten e-mail chyba jest niepełny.':'Wpisz e-mail, na który wyślemy zestaw.';iZ.focus();return;}
+  if(!cZ.checked){zgZ.classList.add('err');eZ.textContent='Zaznacz zgodę poniżej.';return;}
+  w1=true; bZ.disabled=true; bZ.textContent='…';
+  wyslij({email:v,telefon:'',wiadomosc:'Pobranie zestawu „Mapa czynności” (arkusz + 5 skilli) z landingu /mapa-czynnosci.',
+    firma_www:fZ.elements.kontrola.value||'',zrodlo:'Mapa czynności · pobranie'+(z?' · '+z:'')+' · '+location.pathname,referrer:ref()})
+  .then(()=>{
+    try{window.dataLayer=window.dataLayer||[];window.dataLayer.push({event:'formularz_wyslany',zrodlo:'Mapa czynności · pobranie'});}catch(x){}
+    stat('mapa_pobranie',{});
+    ark.classList.add('ok'); bZ.textContent='✓'; iZ.readOnly=true; zgZ.hidden=true; okZ.hidden=false;
+    setTimeout(()=>{try{$('#dZip').click();}catch(x){}},400);
+  })
+  .catch(x=>{w1=false;bZ.disabled=false;bZ.textContent='↵';eZ.textContent='Nie doszło. Spróbuj jeszcze raz albo napisz: hello@letsautomate.pl';stat('mapa_blad',{powod:String(x&&x.message||'blad').slice(0,30)});});
+});
+/* 2. omówienie */
+const fO=$('#fO'), iO=$('#iO'), eO=$('#eO'), okO=$('#okO'), om=$('#omowienie'), bO=$('#bO');
+let w2=false;
+iO.addEventListener('input',()=>{eO.textContent='';});
+fO.addEventListener('submit',e=>{
+  e.preventDefault(); if(w2)return;
+  const v=iO.value.trim(); let email='',telefon='';
+  if(v.includes('@')){if(!MAIL.test(v)){eO.textContent='Ten e-mail chyba jest niepełny.';return;}email=v;}
+  else{const c=v.replace(/\D/g,''); if(c.length<9){eO.textContent=v?'Za mało cyfr?':'Wpisz telefon albo e-mail.';return;} telefon=(c.length===9?'+48 ':'+')+c.replace(/^00/,'');}
+  w2=true; bO.disabled=true; bO.textContent='…';
+  wyslij({email,telefon,wiadomosc:'Prośba o omówienie wyników „Mapy czynności” (30 min, bezpłatnie).',
+    firma_www:fO.elements.kontrola.value||'',zrodlo:'Mapa czynności · omówienie'+(z?' · '+z:'')+' · '+location.pathname,referrer:ref()})
+  .then(()=>{
+    try{window.dataLayer=window.dataLayer||[];window.dataLayer.push({event:'formularz_wyslany',zrodlo:'Mapa czynności · omówienie'});}catch(x){}
+    stat('mapa_omowienie',{kanal:telefon?'telefon':'email'});
+    om.classList.add('ok'); bO.textContent='✓'; iO.readOnly=true; okO.hidden=false;
+  })
+  .catch(x=>{w2=false;bO.disabled=false;bO.textContent='↵';eO.textContent='Nie doszło. Spróbuj jeszcze raz.';});
+});
+if(location.hash==='#omowienie'||z==='raport'){setTimeout(()=>{om.scrollIntoView({block:'center'});},300);}
+})();
+
+</script>
+</LaBase>
