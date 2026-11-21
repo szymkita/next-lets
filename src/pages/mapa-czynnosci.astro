@@ -1,1147 +1,631 @@
 ---
-// MAPA CZYNNOŚCI — /mapa-czynnosci. Landing kampanii „Mapa czynności” (arkusz + 5 skilli za e-mail).
-// Źródło w ~/filmy/lets-mapa-czynnosci/landing (strona.html/css/js, build.py generuje ten plik i kopiuje
-// zestaw do public/materialy — zmiany rób tam). Plan kampanii: ~/filmy/lets-mapa-czynnosci/PLAN.md.
-// Liczby na stronie to opisany przykład (firma serwisowa, 5 osób). noindex, bez nawigacji.
-// Zgłoszenia: „Mapa czynności · pobranie” i „Mapa czynności · omówienie” (?z= dopisuje źródło, np. raport).
+// MAPA CZYNNOŚCI — /mapa-czynnosci. Landing kampanii „Mapa czynności” (zestaw za e-mail: arkusz dla zespołu
+// i skill AI dla osoby prowadzącej). Plan kampanii: ~/filmy/lets-mapa-czynnosci/PLAN.md. Źródło tej strony:
+// ~/filmy/lets-mapa-czynnosci/landing/v6 (glowa.astro + mc.css + mc.js → build6.py składa ten plik).
+//
+// v6 (21.11.2026) po uwadze Szymona do v5: „strona… jest taka ciemna, wygląda jak AI slop… najlepszą stronę,
+// jaką jesteśmy w stanie zrobić w naszym design systemie” i „design tych exeli trzeba dopracować… nie może być
+// tak, że one się rozszerzają dziwnie”. Strona stoi w standardzie podstron usługowych (docs/uslugi-standard.md),
+// wzór: /strategia-ai (hero „jasny”, bo wynik to dokument). Rysunki to wierny Excel o stałym układzie: długi tekst
+// widać w pasku formuły o stałej wysokości, komórki nie rosną. Ruch odpala się, gdy rysunek wejdzie w kadr,
+// stoi poza kadrem, przy ograniczonym ruchu widać stan końcowy.
+//
+// Zasady z uwag Szymona (studio/ZASADY): arkusz wypełnia człowiek ręcznie, każdy swój; skill obsługuje tylko osoba
+// prowadząca; zestaw to pierwszy krok, wykonanie (agenci AI) robimy my; „możecie zacząć od mapy”, metoda z naszych
+// wdrożeń w uproszczonej formie.
+//
+// Jeden przykład przez całą stronę: firma serwisowa (klimatyzacja), 5 osób: Ania (zgłoszenia), Marek (handlowiec),
+// Kasia (biuro i faktury), Paweł (kierownik serwisu), Tomek (magazyn). Liczby się spinają: 61 czynności, 312 h
+// miesięcznie, 41 poza procedurami; przyjęcie zgłoszenia 86 h (9 min u Marka, 35 min u Kasi), wyceny 41 h, protokoły
+// i faktury 28 h, raport 17 h; po zmianie 24 / 15 / 6 / 3 h, razem 172 → 48 h, wraca ok. 124 h. W arkuszu Ani
+// 14 kroków, 11 spoza procedury.
+// DO POTWIERDZENIA PRZED PUBLIKACJĄ: wszystkie liczby to przykład (opisany na stronie); poziom „sami” (ok. 65 h)
+// to szacunek; zdanie o pierwszej rozmowie.
+// noindex do decyzji Szymona. Zgłoszenia: „Mapa czynności · pobranie” (formularz z e-mailem) i Kontakt.
 import LaBase from '../layouts/LaBase.astro';
-const title = "Mapa czynności: sprawdź, co AI może przejąć w Twojej firmie | Let's automate";
-const description = "Arkusz i 5 skilli do Claude, ChatGPT, Copilota i Gemini. Zespół spisuje swoją pracę przez tydzień, a AI robi z tego plan na start. Za darmo.";
+import GcFaq from '../components/GcFaq.astro';
+import Styl from '../components/usluga/Styl.astro';
+import Anim from '../components/usluga/Anim.astro';
+import Hero from '../components/usluga/Hero.astro';
+import Procesy from '../components/usluga/Procesy.astro';
+import Pas from '../components/usluga/Pas.astro';
+import DlaKogo from '../components/usluga/DlaKogo.astro';
+import Kontakt from '../components/usluga/Kontakt.astro';
+import CtaPasek from '../components/usluga/CtaPasek.astro';
+
+const title = "Mapa czynności: sprawdźcie, co AI może przejąć w Waszej firmie | Let's automate";
+const description = "Bezpłatny zestaw: arkusz dla zespołu i skill AI, który robi z niego diagnozę i plan wdrożenia. Uproszczona wersja metody z naszych wdrożeń, do samodzielnej pracy w tydzień.";
+
+const KROKI_SKILLA = [
+  { t: 'Sprawdzenie arkuszy', a: 'Czyta arkusze, które oddał zespół, i wskazuje wiersze, z których nic jeszcze nie wynika: za szerokie, bez kroków, bez czasu.', b: 'Gotową wiadomość z pytaniami do każdej osoby. Poprawki ludzie wpisują sami, w swoich arkuszach.' },
+  { t: 'Diagnoza zespołu', a: 'Łączy te same sprawy u różnych osób w procesy, liczy godziny w miesiącu i pyta, które procesy macie opisane.', b: 'Listę procesów z godzinami, pracę obok procedur i trzy procesy na start, wybrane na liczbach.' },
+  { t: 'Jeden standard', a: 'Porównuje, jak ten sam proces robią różne osoby, bierze najlepszą wersję za bazę i dokłada to, co coś poprawia.', b: 'Standard procesu krok po kroku i zasady, które zna tylko jedna osoba.' },
+  { t: 'AI, system czy człowiek', a: 'Przypisuje każdy krok do AI, systemu albo człowieka i mówi, czego potrzebuje AI: dokumentów, zasad, przykładów.', b: 'Proces po zmianie, pięć przypadków do testów i podział na to, co zrobicie sami, i to, co wymaga agenta.' },
+  { t: 'Plan dla zarządu', a: 'Składa wszystko w jedną stronę i liczy rachunek na stawkach, które podacie. Niczego nie zakłada.', b: 'Trzy procesy na start, koszt dziś i po zmianie, plan na 30 dni i jedno pytanie do decyzji.' },
+];
+
+const FAQ = [
+  { q: 'Czy pracownicy muszą używać AI?', a: 'Nie. Zespół dostaje tylko arkusz w Excelu i wypełnia go ręcznie, każdy swój, kilka minut dziennie przez kilka dni. Skill obsługuje jedna osoba, która prowadzi mapę.' },
+  { q: 'Nie mamy spisanych procedur. Czy to ma sens?', a: 'Tym bardziej. Mapa zbiera pracę z codziennych zajęć, także tę, która dzieje się obok procedur. Po tygodniu macie opis procesów, którego wcześniej nie było.' },
+  { q: 'W jakim AI działa skill?', a: 'W Claude, ChatGPT, Microsoft Copilocie, Gemini i Appto. W Claude wgrywacie jeden plik, w pozostałych wklejacie instrukcję i dodajecie pliki etapów. Wszystko jest opisane w zestawie.' },
+  { q: 'Czy nasze dane trafiają do Was?', a: 'Nie. Analiza dzieje się w AI, którego już używacie. W arkuszach nie wpisujecie nazwisk klientów ani danych osobowych.' },
+  { q: 'Ile to kosztuje?', a: 'Zestaw jest bezpłatny. Płatne jest dopiero wdrożenie, jeśli zechcecie, żebyśmy zbudowali agentów dla procesów z Waszej mapy.' },
+  { q: 'Co po mapie?', a: 'Część zrobicie sami od razu, w czacie AI z kontekstem. Pełny zwrot czasu zwykle daje dopiero agent, który pracuje na Waszych programach. Takich agentów wdrażamy i możemy zacząć od Waszej mapy.' },
+  { q: 'Możecie zrobić mapę z nami?', a: 'Tak. Przeprowadzimy ten tydzień z Waszym zespołem, w ramach wdrożenia AI pod klucz.' },
+];
 ---
-<LaBase topbar={false} title={title} description={description} ctaHref="#wiersz" nav={null} naglowek={false} noindex={true}>
-<style is:global>
-html{scroll-behavior:smooth}
-.mc{
+<LaBase topbar={false} title={title} description={description} ctaHref="#pobierz" ctaLabel="Pobierz zestaw" nav="uslugi" noindex={true}>
+<style is:global slot="head">
+/* ===== MAPA CZYNNOŚCI · rysunki tej strony (prefiks mc-, xl-, mh-, ma-, mz-, kz-, iw-, pm-, pob-) ===== */
+.mc{--xl:#107c41;--xl-d:#185c37;--xl-g:#e1e1e1;--xl-h:#f3f3f3;--xl-t:#252525;--xl-f:"Aptos","Calibri","Segoe UI",system-ui,-apple-system,sans-serif;
+  --p-ania:#d6336c;--p-marek:#6d4aff;--p-kasia:#e8590c;--p-pawel:#1c7ed6;--p-tomek:#0b8a7c;--p-ai:#0f1a14}
 
-  --deep:#07140D; --deep2:#0C1E14; --card:#0F2419; --fg:#F4F8F2; --mut:#93A69B; --soft:#C9D5CE; --line:rgba(244,248,242,.12);
-  --acc:#00CD77; --amber:#F2B233; --pen:#E5484D;
-  --paper:#FBFAF6; --grid:#DCE2DE; --head:#EEF2EF; --ink:#1C2420; --gray:#6B7A72; --ok:#0A7A52;
-  --t-ai:#00A862; --t-sys:#2F7FE0; --t-cz:#D98A00; --t-zn:#9AA39E;
-  --p-ania:#E5487F; --p-marek:#7C5CFF; --p-kasia:#F2762E; --p-piotr:#0EA5E9; --p-tomek:#14B8A6; --p-ai:#1C2420;
-  --f-d:"Schibsted Grotesk","Helvetica Neue",Arial,sans-serif;
-  --f-m:"JetBrains Mono",ui-monospace,Menlo,monospace;
-  color-scheme:dark;}
-.mc *{
-box-sizing:border-box}
+/* ---------- okno Excela ---------- */
+.xl{position:relative;background:#fff;border-radius:10px;overflow:hidden;font-family:var(--xl-f);color:var(--xl-t);
+  box-shadow:0 1px 0 rgba(15,26,20,.04),0 24px 60px -28px rgba(15,26,20,.45),0 0 0 1px rgba(15,26,20,.1)}
+.xl-tb{display:flex;align-items:center;gap:8px;height:34px;padding:0 10px;background:var(--xl-d);color:#fff;font-size:12.5px}
+.xl-tb b{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.xl-ico{flex:none;display:grid;place-items:center;width:18px;height:18px;border-radius:3px;background:#fff;color:var(--xl-d);font:800 11px/1 var(--xl-f)}
+.xl-av{flex:none;margin-left:auto;display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--c,#888);color:#fff;font:700 10px/1 var(--xl-f);box-shadow:0 0 0 2px var(--xl-d)}
+.xl-rb{display:flex;gap:2px;height:28px;align-items:flex-end;padding:0 8px;background:#f8f8f8;border-bottom:1px solid var(--xl-g);font-size:11.5px;color:#555;white-space:nowrap;overflow:hidden}
+.xl-rb span{padding:6px 8px}
+.xl-rb .on{color:var(--xl);font-weight:600;box-shadow:inset 0 -2px 0 var(--xl)}
+.xl-fb{display:grid;grid-template-columns:52px 26px 1fr;align-items:stretch;border-bottom:1px solid var(--xl-g);background:#fff;font-size:12.5px}
+.xl-nb{display:flex;align-items:center;padding:0 8px;border-right:1px solid var(--xl-g);color:#444}
+.xl-fx{display:flex;align-items:center;justify-content:center;border-right:1px solid var(--xl-g);color:#777;font-style:italic;font-family:Georgia,serif;font-size:12px}
+.xl-fv{display:flex;align-items:center;min-height:26px;padding:4px 8px;white-space:nowrap;overflow:hidden;min-width:0}
+.xl-g{position:relative;display:grid;font-size:12.5px;line-height:1.25;background:#fff}
+.xl-g > *{height:30px;min-width:0;display:flex;align-items:center;padding:0 7px;border-right:1px solid var(--xl-g);border-bottom:1px solid var(--xl-g);white-space:nowrap;overflow:hidden}
+.xl-g > .kl,.xl-g > .rn{background:var(--xl-h);color:#666;font-size:11px;justify-content:center;padding:0}
+.xl-g > .kl{height:22px}
+.xl-g > .kl.on,.xl-g > .rn.on{background:#d3f0e0;color:var(--xl-d);font-weight:600}
+.xl-g > .nag{background:var(--xl-d);color:#fff;font-weight:700;font-size:12px}
+.xl-g > .prz{background:#f6f4ee;color:#8a8a8a;font-style:italic}
+.xl-g > .c{position:relative}
+.xl-g > .c.mn{justify-content:flex-end;font-variant-numeric:tabular-nums}
+.xl-tabs{display:flex;align-items:stretch;height:28px;background:#f3f3f3;border-top:1px solid var(--xl-g);font-size:11.5px;color:#555;white-space:nowrap;overflow:hidden}
+.xl-tabs span{display:flex;align-items:center;padding:0 12px;border-right:1px solid var(--xl-g)}
+.xl-tabs .on{background:#fff;color:var(--xl);font-weight:600;box-shadow:inset 0 -2px 0 var(--xl)}
+.xl-tabs i{display:flex;align-items:center;padding:0 10px;font-style:normal;color:#888}
+/* zaznaczenie (kolor osoby w --c) i karetka */
+.xl .akt{box-shadow:inset 0 0 0 2px var(--c,var(--xl));z-index:2}
+.xl .akt::after{content:"";position:absolute;right:-1px;bottom:-1px;width:6px;height:6px;background:var(--c,var(--xl));border:1px solid #fff}
+.xl .pisze > .t::after,.pisze.kar::after{content:"";display:inline-block;width:1.5px;height:1em;margin-left:1px;vertical-align:-2px;background:var(--c,var(--xl-t));animation:mc-kar 1s steps(1) infinite}
+@keyframes mc-kar{50%{opacity:0}}
+/* kursor osoby: strzałka i podpis w jej kolorze */
+.mc-k{position:absolute;left:0;top:0;z-index:6;width:15px;height:19px;pointer-events:none;opacity:0;will-change:transform,opacity}
+.mc-k svg{display:block;width:15px;height:19px;fill:var(--c);stroke:#fff;stroke-width:1.4;filter:drop-shadow(0 2px 3px rgba(0,0,0,.22))}
+.mc-k em{position:absolute;left:10px;top:16px;padding:3px 7px;border-radius:4px 8px 8px 8px;background:var(--c);color:#fff;font:700 10.5px/1.1 var(--xl-f);font-style:normal;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.18)}
+.mc-k.lewo em{left:auto;right:8px;border-radius:8px 4px 8px 8px}
+/* licznik obok podpisu kafla */
+.mc-licz{display:flex;align-items:baseline;gap:10px;font-size:13px;color:var(--t2)}
+.mc-licz b{font-size:clamp(22px,2vw,28px);font-weight:700;letter-spacing:-.03em;color:var(--t1);font-variant-numeric:tabular-nums}
+.mc-licz em{font-style:normal;color:var(--t3)}
 
-.mc{
-margin:0;background:var(--deep);color:var(--fg);font-family:var(--f-d);-webkit-font-smoothing:antialiased;overflow-x:clip}
-.mc .hist h1,.mc .hist h2{
-margin:0;font-weight:800;letter-spacing:-.04em;line-height:1.04;text-wrap:balance;color:var(--fg)}
-.mc .hist h1 em,.mc .hist h2 em{
-font-style:normal;color:var(--acc)}
-.mc .wrap{
-max-width:1120px;margin:0 auto;padding:0 max(16px,env(safe-area-inset-left,0px))}
-.mc .ety{
-margin:0;font:700 12px/1.2 var(--f-m);letter-spacing:.12em;text-transform:uppercase;color:var(--acc)}
-.mc .lead{
-margin:14px 0 0;font:500 clamp(16px,4.3vw,21px)/1.42 var(--f-d);color:var(--soft);max-width:34em;text-wrap:pretty}
-.mc .btn{
-display:inline-flex;align-items:center;justify-content:center;gap:8px;font:700 16px/1 var(--f-d);color:#06170E;background:var(--acc);padding:16px 22px;border-radius:999px;text-decoration:none;border:0;cursor:pointer}
-.mc .btn-2{
-background:transparent;color:var(--fg);box-shadow:inset 0 0 0 1.5px var(--line)}
-.mc .sr{
-position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
-.mc .pulapka{
-position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
-.mc .bar{
-position:fixed;left:0;right:0;top:0;z-index:20;padding-top:env(safe-area-inset-top,0px);background:linear-gradient(180deg,rgba(7,20,13,.96) 60%,rgba(7,20,13,0));transition:opacity .3s,transform .3s}
-.mc .bar.off{
-opacity:0;transform:translateY(-100%);pointer-events:none}
-.mc .bar-in{
-max-width:1120px;margin:0 auto;height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 max(16px,env(safe-area-inset-left,0px))}
-.mc .logo svg{
-height:17px;width:auto;display:block}
-.mc .bar-cta{
-font:700 14px/1 var(--f-d);color:#06170E;background:var(--acc);padding:11px 15px;border-radius:999px;text-decoration:none}
-.mc .ark{
-position:relative;background:var(--paper);color:var(--ink);border-radius:14px;box-shadow:0 30px 80px -30px rgba(0,0,0,.75),0 0 0 1px rgba(0,0,0,.05);font-family:var(--f-d)}
-.mc .ark-tab{
-display:flex;align-items:flex-end;gap:2px;padding:8px 10px 0;background:#E4EAE6;border-radius:14px 14px 0 0;font:600 12px/1 var(--f-d);color:var(--gray)}
-.mc .ark-tab span{
-padding:8px 12px;border-radius:8px 8px 0 0;white-space:nowrap}
-.mc .ark-tab .on{
-background:var(--paper);color:var(--ink)}
-.mc .ark-g{
-position:relative;display:grid;font-size:13.5px;line-height:1.3}
-.mc .ark-g>*{
-border-right:1px solid var(--grid);border-bottom:1px solid var(--grid);padding:0 9px;min-width:0;height:38px;display:flex;align-items:center}
-.mc .ark-g>b{
-background:var(--head);font:700 12px/1.2 var(--f-d);color:#3D4A43;height:32px}
-.mc .ark-g>.rn{
-background:var(--head);font:500 11px/1 var(--f-m);color:var(--gray);font-style:normal;justify-content:center;padding:0}
-.mc .c{
-white-space:nowrap;overflow:hidden;position:relative}
-.mc .mn{
-justify-content:flex-end;font-family:var(--f-m)}
-.mc .c.akt{
-box-shadow:inset 0 0 0 2px var(--c,var(--t-ai));z-index:1}
-.mc .pisze::after{
-content:"";display:inline-block;width:1.5px;height:1.05em;background:var(--c,var(--ink));margin-left:1px;flex:none}
-.mc .kur{
-position:absolute;left:0;top:0;z-index:5;pointer-events:none;will-change:transform,opacity;opacity:0;display:block;width:15px;height:19px}
-.mc .kur svg{
-display:block;width:15px;height:19px;fill:var(--c);stroke:#fff;stroke-width:1.4;filter:drop-shadow(0 2px 3px rgba(0,0,0,.25));flex:none}
-.mc .kur em{
-font:700 11px/1 var(--f-d);font-style:normal;color:#fff;background:var(--c);padding:4px 7px;border-radius:5px 9px 9px 9px;position:absolute;left:10px;top:16px;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.2)}
-.mc .kur.lewo em{
-left:auto;right:8px;border-radius:9px 5px 9px 9px}
-.mc .hero{
-min-height:100svh;display:flex;flex-direction:column;justify-content:center;gap:34px;padding:calc(88px + env(safe-area-inset-top,0px)) 0 40px}
-.mc .hero h1{
-font-size:clamp(38px,10.4vw,78px);margin-top:14px;max-width:13em}
-.mc .hero-cta{
-margin-top:26px;display:flex;flex-wrap:wrap;align-items:center;gap:12px 18px}
-.mc .hero-dop{
-font:500 14px/1.3 var(--f-d);color:var(--mut)}
-.mc .g-hero{
-grid-template-columns:30px .9fr 1.2fr 1.9fr 64px}
-.mc .g-hero>span{
-height:46px}
-.mc .g-hero .c{
-color:rgba(28,36,32,var(--o,1))}
-@media (min-width:1000px){
-.mc .hero{
-display:grid;grid-template-columns:1.05fr .95fr;align-items:center;max-width:1120px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:16px;gap:40px}
-.mc .hero>.wrap{
-padding:0;max-width:none}
-.mc #arkH{
-width:100%}
-.mc .g-hero{
-grid-template-columns:30px 1fr 1.6fr 60px;font-size:15px}
-.mc .g-hero .d{
-display:none}
-.mc .g-hero>span{
-height:60px}
-.mc .g-hero>b{
-height:38px;font-size:13px}
+/* ---------- 1 · hero: trzy pliki na blacie ---------- */
+.mh{margin:0}
+.mh-stos{position:relative;height:clamp(330px,30vw,420px)}
+.mh .xl{position:absolute;width:min(560px,94%)}
+.mh .xl:nth-child(1){left:0;top:0;transform:rotate(-2.2deg);opacity:.95}
+.mh .xl:nth-child(2){left:4%;top:12%;transform:rotate(1.4deg)}
+.mh .xl:nth-child(3){left:9%;top:25%}
+.mh .xl-g{grid-template-columns:26px 34px .9fr 1fr 1.6fr}
+@media (max-width:900px){
+  .mh-stos{height:340px;margin-top:8px}
+  .mh .xl{width:100%}
+  .mh .xl:nth-child(1){left:-2%;top:0}
+  .mh .xl:nth-child(2){left:1%;top:9%}
+  .mh .xl:nth-child(3){left:3%;top:19%;width:97%}
+  .mh .xl-g{grid-template-columns:22px 0 0 1fr 1.4fr}
+  .mh .xl-g > .a,.mh .xl-g > .b{padding:0;border:0}
+  .mh .xl-rb{display:none}
 }
-@media (max-width:640px){
-.mc .g-hero{
-grid-template-columns:24px 1fr 1.5fr 48px}
-.mc .g-hero .d{
-display:none}
-.mc .g-hero>*{
-padding:0 7px}}
-.mc .teza{
-min-height:100svh;display:flex;align-items:center;padding:12vh 0}
-.mc .teza h2{
-font-size:clamp(30px,8vw,60px);margin-top:12px;max-width:15em}
-.mc .teza-p{
-margin:18px 0 0;font:600 15px/1.4 var(--f-d);color:var(--acc)}
-.mc .przek{
-position:relative;color:var(--mut);white-space:nowrap}
-.mc .przek::after{
-content:"";position:absolute;left:-2%;right:-2%;top:54%;height:.08em;background:var(--pen);transform:scaleX(var(--k,0));transform-origin:0 50%}
-.mc .sc{
-position:relative;height:calc(var(--h) * 1svh)}
-.mc .pin{
-position:sticky;top:0;height:100svh;overflow:hidden;display:flex}
-.mc .strefy{
-display:flex;flex-direction:column;width:100%;padding-top:calc(76px + env(safe-area-inset-top,0px));padding-bottom:max(22px,env(safe-area-inset-bottom,0px))}
-.mc .pod{
-font-size:clamp(25px,6.8vw,50px);margin-top:10px;max-width:16em}
-.mc .obraz{
-flex:1;min-height:0;position:relative;margin:16px 0 12px;display:flex;align-items:center;justify-content:center}
-.mc [data-fit]{
-transform-origin:50% 50%}
-.mc .zd{
-position:relative;margin:0;min-height:4.1em;font:600 clamp(16px,4.4vw,22px)/1.35 var(--f-d);color:var(--fg);max-width:34em}
-.mc .zd p{
-margin:0;position:absolute;left:0;right:0;top:0;opacity:0;will-change:opacity,transform}
-.mc .zd p:first-child{
-opacity:1}
-.mc .zd b{
-color:var(--acc)}
-.mc .zd.cicha{
-min-height:2.8em;font-size:clamp(14px,3.8vw,18px);color:var(--soft);font-weight:500}
-.mc .scena1{
-position:relative;width:min(580px,100%);height:520px}
-.mc .proc{
-position:absolute;left:0;right:0;top:40px;margin:0 auto;width:min(420px,92%);background:#fff;color:var(--ink);border-radius:6px;padding:20px 22px 24px;box-shadow:0 30px 80px -30px rgba(0,0,0,.75);transform-origin:50% 0;will-change:transform,opacity;z-index:2}
-.mc .proc-h{
-font:700 11.5px/1.3 var(--f-m);letter-spacing:.06em;text-transform:uppercase;color:var(--gray);padding-bottom:12px;border-bottom:2px solid var(--ink)}
-.mc .proc ol{
-margin:14px 0 0;padding-left:26px;font:600 20px/1.6 var(--f-d)}
-.mc .ark-ania{
-position:absolute;left:0;right:0;top:0;will-change:transform,opacity}
-.mc .g-ania{
-grid-template-columns:30px 1fr 64px 150px}
-.mc .lista-c::before{
-content:"▾";order:2;margin-left:auto;color:var(--gray);font-size:11px}
-.mc .lista{
-position:absolute;right:10px;top:74px;width:178px;background:#fff;border-radius:8px;box-shadow:0 14px 30px -8px rgba(0,0,0,.35),0 0 0 1px var(--grid);padding:4px;z-index:4;opacity:0;transform-origin:50% 0;will-change:transform,opacity}
-.mc .lista span{
-display:block;padding:7px 9px;border-radius:5px;font:500 13px/1.2 var(--f-d)}
-.mc .lista span.hl{
-background:#E6F6EE;color:var(--ok);font-weight:700}
-.mc .jak{
-padding:8px 0 10px;background:#fff;border-radius:0 0 14px 14px}
-.mc .jak-h{
-font:700 11.5px/1 var(--f-m);color:var(--gray);letter-spacing:.06em;text-transform:uppercase;padding:2px 12px 6px}
-.mc .jak ol{
-margin:0;padding:0;list-style:none;display:grid}
-.mc .jak li{
-display:flex;gap:8px;align-items:center;height:24px;padding:0 12px;font:500 13.5px/1 var(--f-d);color:var(--ink);opacity:0;will-change:opacity}
-.mc .jak li .k{
-font:600 11px/1 var(--f-m);color:var(--gray);min-width:16px;text-align:right;flex:none}
-.mc .jak li.nowy .k{
-color:var(--pen)}
-.mc .jak li .t{
-white-space:nowrap;overflow:hidden;position:relative;display:flex;align-items:center}
-.mc .jak li .nz{
-margin-left:auto;font:600 10.5px/1 var(--f-m);color:var(--gray);background:var(--head);padding:4px 6px;border-radius:4px;white-space:nowrap;opacity:0;flex:none}
-@media (max-width:640px){
-.mc .g-ania{
-grid-template-columns:24px 1fr 52px 126px}
-.mc .g-ania>*{
-padding:0 7px}
-.mc .jak li{
-font-size:12.5px;height:23px}
-.mc .lista{
-width:150px}
-.mc .lista span{
-font-size:12px}}
-.mc .ark-zesp{
-width:min(700px,100%)}
-.mc .dzien{
-margin-left:auto;background:transparent!important;color:var(--ok);font-weight:700;font-family:var(--f-m)}
-.mc .g-zesp{
-grid-template-columns:30px 70px 1fr 74px 118px}
-.mc .g-zesp .wp{
-justify-content:center;text-align:center}
-.mc .g-zesp .w{
-justify-content:center;font:700 12px/1 var(--f-d);opacity:0;will-change:opacity}
-.mc .g-zesp .w.tak{
-color:var(--ok)}
-.mc .g-zesp .w.nie{
-color:var(--pen);background:#FDECEC}
-.mc .g-zesp>span{
-height:34px;font-size:13px}
-.mc .g-zesp .kto{
-font-weight:700;color:var(--kc)}
-.mc .g-zesp>span.drob{
-transition:background .4s}
-.mc .ark-zesp.drob-on .drob{
-background:#FFF1CF}
-.mc .suma{
-display:flex;align-items:baseline;justify-content:flex-end;gap:10px;padding:12px 14px;background:var(--deep2);color:var(--fg);font:600 14px/1 var(--f-d);border-radius:0 0 14px 14px}
-.mc .suma b{
-font:700 28px/1 var(--f-m);color:var(--acc);min-width:3.6em;text-align:right}
-@media (max-width:640px){
-.mc .g-zesp{
-grid-template-columns:22px 46px 1fr 32px 66px}
-.mc .g-zesp>b.wp{
-font-size:10.5px;padding:0 4px}
-.mc .g-zesp>span{
-height:44px}
-.mc .g-zesp>span:nth-child(4n+3){
-white-space:normal;line-height:1.2}
-.mc .g-zesp>b{
-font-size:11px}
-.mc .g-zesp .w{
-font-size:11px}
-.mc .g-zesp>*{
-padding:0 7px}
-.mc .g-zesp>span{
-font-size:12.5px}}
-.mc .spr{
-display:flex;flex-direction:column;gap:12px;width:min(720px,100%)}
-.mc .spr-st{
-margin-left:auto;background:transparent!important;color:var(--t-cz);font-weight:700}
-.mc .spr-st.gotowy{
-color:var(--ok)}
-.mc .g-spr{
-grid-template-columns:28px 1fr 1.5fr .8fr}
-.mc .g-spr>span{
-font-size:12.5px;transition:background .3s;height:52px;white-space:normal;line-height:1.25}
-.mc .g-spr>span.flag{
-background:#FFF1CF}
-.mc .uwagi{
-margin:0;padding:0;list-style:none;display:grid;gap:7px}
-.mc .uwagi li{
-display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:baseline;padding:10px 12px;border-radius:10px;background:var(--card);border:1px solid var(--line);border-left:4px solid var(--t-cz);font:500 14px/1.35 var(--f-d);color:var(--fg);opacity:0;will-change:opacity,transform;transition:border-color .3s}
-.mc .uwagi li.zal{
-border-left-color:var(--t-ai)}
-.mc .uwagi li.zal span{
-color:var(--mut);text-decoration:line-through;text-decoration-color:rgba(147,166,155,.6)}
-.mc .uwagi b{
-font:700 11px/1.4 var(--f-m);color:var(--t-cz);white-space:nowrap;letter-spacing:.03em}
-.mc .uwagi li.zal b{
-color:var(--t-ai)}
-@media (max-width:640px){
-.mc .g-spr{
-grid-template-columns:22px 1fr 1.3fr .7fr}
-.mc .g-spr>*{
-padding:0 6px}
-.mc .g-spr>span{
-font-size:11.5px}
-.mc .uwagi li{
-font-size:13px;padding:8px 10px}}
-.mc .diag{
-width:min(620px,100%);display:flex;flex-direction:column;gap:14px}
-.mc .tabs{
-display:flex;gap:6px;flex-wrap:wrap}
-.mc .tabs span{
-display:flex;align-items:center;gap:6px;padding:7px 10px;border-radius:8px;background:var(--paper);color:var(--ink);font:700 12px/1 var(--f-d);will-change:transform,opacity;box-shadow:0 8px 20px -10px rgba(0,0,0,.6)}
-.mc .tabs span::before{
-content:"";width:8px;height:8px;border-radius:2px;background:var(--c)}
-.mc .procesy{
-display:grid;gap:9px}
-.mc .pr{
-background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;opacity:0;will-change:transform,opacity;transition:border-color .4s,box-shadow .4s}
-.mc .pr.start{
-border-color:var(--acc);box-shadow:0 0 0 1px var(--acc)}
-.mc .pr-g{
-display:flex;justify-content:space-between;gap:12px;align-items:baseline}
-.mc .pr-g b{
-font:700 16.5px/1.2 var(--f-d)}
-.mc .pr-h{
-font:700 19px/1 var(--f-m);color:var(--acc);white-space:nowrap}
-.mc .pr-h i{
-font-style:normal}
-.mc .pr-kto{
-margin-top:4px;font:500 13px/1.2 var(--f-d);color:var(--mut)}
-.mc .pr-bar{
-margin-top:9px;height:6px;border-radius:3px;background:rgba(255,255,255,.07);overflow:hidden}
-.mc .pr-bar i{
-display:block;height:100%;width:100%;background:var(--acc);border-radius:3px;transform-origin:0 50%;transform:scaleX(0);will-change:transform}
-.mc .pr-uw{
-margin-top:8px;font:600 13px/1.3 var(--f-d);color:var(--amber);opacity:0}
-.mc .agenci{
-width:min(620px,100%);display:grid;gap:10px}
-.mc .ag{
-background:var(--paper);color:var(--ink);border-radius:14px;padding:12px 14px 10px;box-shadow:0 30px 80px -30px rgba(0,0,0,.75);opacity:0;will-change:transform,opacity}
-.mc .ag-h{
-display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;padding-bottom:8px;border-bottom:1px solid var(--grid)}
-.mc .ag-h b{
-font:800 15px/1.2 var(--f-d)}
-.mc .ag-h span{
-margin-left:auto;font:500 11px/1.2 var(--f-m);color:var(--gray)}
-.mc .ag-d{
-width:9px;height:9px;border-radius:50%;background:var(--t-ai);box-shadow:0 0 0 3px rgba(0,168,98,.18);flex:none}
-.mc .ag-log{
-margin:6px 0 0;padding:0;list-style:none;display:grid;gap:2px}
-.mc .ag-log li{
-position:relative;display:flex;gap:9px;align-items:baseline;min-height:22px;font:500 13.5px/1.3 var(--f-d);opacity:0;will-change:opacity,transform}
-.mc .ag-log i{
-font:600 11px/1 var(--f-m);font-style:normal;color:var(--gray);flex:none}
-.mc .ag-log .dec .czeka,.mc .ag-log .dec .zatw{
-font-weight:700;transition:opacity .3s}
-.mc .ag-log .dec .czeka{
-color:var(--t-cz)}
-.mc .ag-log .dec .zatw{
-position:absolute;left:44px;color:var(--ok);opacity:0}
-.mc .ag-log .dec.ok .czeka{
-opacity:0}
-.mc .ag-log .dec.ok .zatw{
-opacity:1}
-@media (max-width:640px){
-.mc .ag-h span{
-margin-left:17px;width:100%}
-.mc .ag-log li{
-font-size:12.5px}}
-.mc .rozk-w{
-position:relative;width:min(760px,100%);display:flex;flex-direction:column;gap:10px}
-.mc .leg{
-display:flex;flex-wrap:wrap;gap:6px 14px;font:700 12px/1 var(--f-m);letter-spacing:.04em}
-.mc .leg span::before{
-content:"";display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
-.mc .l-ai::before{
-background:var(--t-ai)}
-.mc .l-sys::before{
-background:var(--t-sys)}
-.mc .l-cz::before{
-background:var(--t-cz)}
-.mc .l-zn::before{
-background:var(--t-zn)}
-.mc .rozk{
-margin:0;padding:0;list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:5px 6px;will-change:transform,opacity}
-.mc .rozk li{
-display:flex;gap:7px;align-items:center;height:40px;padding:0 9px;border-radius:7px;background:#16301F;font:500 12.5px/1.2 var(--f-d);color:var(--soft);border-left:4px solid transparent;transition:background .35s,border-color .35s,color .35s,opacity .35s}
-.mc .rozk li b{
-font:600 10px/1 var(--f-m);color:var(--mut);min-width:14px}
-.mc .rozk li.ai{
-border-color:var(--t-ai);background:rgba(0,168,98,.17);color:var(--fg)}
-.mc .rozk li.sys{
-border-color:var(--t-sys);background:rgba(47,127,224,.18);color:var(--fg)}
-.mc .rozk li.cz{
-border-color:var(--t-cz);background:rgba(217,138,0,.2);color:var(--fg)}
-.mc .rozk li.zn{
-border-color:var(--t-zn);color:var(--mut);text-decoration:line-through;opacity:.55}
-.mc .po{
-position:absolute;left:0;right:0;top:50%;margin:0 auto;width:min(540px,100%);opacity:0;pointer-events:none;background:var(--paper);color:var(--ink);border-radius:14px;padding:18px 18px 16px;box-shadow:0 30px 80px -30px rgba(0,0,0,.75);will-change:transform,opacity}
-.mc .po-h{
-font:700 11.5px/1 var(--f-m);letter-spacing:.08em;text-transform:uppercase;color:var(--gray);margin-bottom:10px}
-.mc .po ol{
-margin:0;padding:0;list-style:none;display:grid;gap:7px}
-.mc .po li{
-padding:10px 12px;border-radius:9px;font:600 15px/1.3 var(--f-d);border-left:5px solid}
-.mc .po .t-ai{
-border-color:var(--t-ai);background:#E6F6EE}
-.mc .po .t-sys{
-border-color:var(--t-sys);background:#E7F0FC}
-.mc .po .t-cz{
-border-color:var(--t-cz);background:#FCF1DC}
-@media (max-width:640px){
-.mc .rozk li{
-font-size:11px;padding:0 6px;gap:5px;height:38px}
-.mc .rozk li b{
-display:none}}
-.mc .odz{
-width:min(640px,100%);display:grid;gap:12px}
-.mc .odz-r{
-display:grid;grid-template-columns:1fr 64px;grid-template-areas:"n v" "b b";gap:6px 10px;align-items:baseline}
-.mc .odz-r span{
-grid-area:n;font:600 15px/1.2 var(--f-d);color:var(--soft)}
-.mc .odz-r b{
-grid-area:v;text-align:right;font:700 18px/1 var(--f-m);color:var(--fg)}
-.mc .odz-b{
-grid-area:b;position:relative;height:14px;border-radius:7px;background:rgba(255,255,255,.06);overflow:hidden}
-.mc .odz-b i{
-position:absolute;left:0;top:0;bottom:0;width:100%;border-radius:7px;transform-origin:0 50%;will-change:transform}
-.mc .odz-b .was{
-background:rgba(229,72,77,.38)}
-.mc .odz-b .jest{
-background:var(--acc)}
-.mc .odz-w{
-margin-top:10px;padding:16px 18px;border-radius:14px;background:var(--paper);color:var(--ink);opacity:0;will-change:transform,opacity}
-.mc .odz-w b{
-display:block;font:800 clamp(34px,9vw,52px)/1 var(--f-d);letter-spacing:-.03em;color:var(--ok)}
-.mc .odz-w span{
-display:block;margin-top:6px;font:600 15px/1.35 var(--f-d)}
-.mc .raport{
-width:min(500px,100%);background:#fff;color:var(--ink);border-radius:6px;padding:20px 20px 18px;box-shadow:0 30px 80px -30px rgba(0,0,0,.75);opacity:0;will-change:transform,opacity}
-.mc .raport header{
-display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:4px 12px;border-bottom:2px solid var(--ink);padding-bottom:9px}
-.mc .raport header b{
-font:800 18px/1 var(--f-d);white-space:nowrap}
-.mc .raport header span{
-font:500 12px/1 var(--f-m);color:var(--gray);white-space:nowrap}
-.mc .raport h3{
-margin:14px 0 6px;font:700 11px/1 var(--f-m);letter-spacing:.08em;text-transform:uppercase;color:var(--gray)}
-.mc .raport ol{
-margin:0;padding-left:20px;display:grid;gap:6px}
-.mc .raport li b{
-display:block;font:700 15px/1.2 var(--f-d)}
-.mc .raport li span{
-font:500 13px/1.3 var(--f-d);color:#46524C}
-.mc .tyg{
-display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
-.mc .tyg span{
-background:var(--head);border-radius:6px;padding:8px 6px;font:600 12px/1.1 var(--f-d);text-align:center;color:#3D4A43}
-.mc .tyg b{
-display:block;font:700 16px/1 var(--f-m);color:var(--ok);margin-bottom:3px}
-.mc .decyzja{
-margin-top:12px;padding:11px 12px;border-radius:8px;background:#E6F6EE;border-left:5px solid var(--t-ai);font:700 14px/1.3 var(--f-d)}
-.mc .zestaw{
-padding:90px 0 40px}
-.mc .zestaw h2{
-font-size:clamp(28px,7.4vw,52px);margin-top:10px;max-width:16em}
-.mc .pliki{
-margin:26px 0 0;padding:0;list-style:none;display:grid;gap:8px;max-width:640px}
-.mc .pliki li{
-display:flex;gap:14px;align-items:center;padding:12px 14px;border-radius:12px;background:var(--card);border:1px solid var(--line)}
-.mc .pliki b{
-display:block;font:700 16px/1.2 var(--f-d)}
-.mc .pliki li span:not(.ik){
-font:500 14px/1.3 var(--f-d);color:var(--mut)}
-.mc .ik{
-flex:none;width:38px;height:38px;border-radius:9px;display:grid;place-items:center;font:700 15px/1 var(--f-m);background:rgba(0,205,119,.14);color:var(--acc)}
-.mc .ik.xl{
-background:#1D6F42;color:#fff;font-size:11px}
-.mc .ik.txt{
-background:#2A3B32;color:var(--soft);font-size:11px}
-.mc .pliki li.skill{
-align-items:flex-start}
-.mc .pliki ol{
-margin:8px 0 0;padding-left:20px;display:grid;gap:3px;font:500 14px/1.35 var(--f-d);color:var(--soft)}
-.mc .pliki ol li{
-display:list-item;padding:0;border:0;background:none;border-radius:0}
-.mc .gdzie{
-margin:20px 0 0;font:500 15px/1.45 var(--f-d);color:var(--soft);max-width:36em}
-.mc .koniec{
-padding:70px 0 70px}
-.mc .koniec h2{
-font-size:clamp(34px,9vw,64px)}
-.mc .ark-cta{
-margin-top:24px;max-width:760px}
-.mc .g-cta{
-grid-template-columns:30px .8fr 1.3fr 1.5fr}
-.mc .g-cta>*{
-height:auto;min-height:40px;padding:8px 10px}
-.mc .g-cta>b{
-min-height:32px}
-.mc .g-cta .szary{
-color:var(--gray);font-size:13px;white-space:normal}
-.mc .cel-in{
-position:relative;display:flex;align-items:center;padding:0!important;box-shadow:inset 0 0 0 2px var(--t-ai);background:#fff;overflow:visible}
-.mc .cel-in input{
-flex:1;min-width:0;border:0;background:transparent;font:600 16px/1 var(--f-d);color:var(--ink);padding:12px 8px 12px 10px;outline:none}
-.mc .cel-in input::placeholder{
-color:#9AA7A0}
-.mc .cel-in button{
-flex:none;border:0;background:var(--t-ai);color:#fff;font:700 18px/1 var(--f-m);width:42px;align-self:stretch;cursor:pointer}
-.mc .kur.ty{
---c:var(--acc);opacity:1;left:auto;right:70px;top:6px;transition:opacity .25s}
-.mc .kur.ty em{
-color:#06170E}
-.mc .cel-in:focus-within .kur.ty,.mc .ark-cta.ok .kur.ty{
-opacity:0}
-.mc .ark-cta.ok .cel-in,.mc .ark-om.ok .cel-in{
-background:#E6F6EE}
-.mc .ark-cta.ok .g-cta>span{
-background:#E6F6EE}
-.mc .blad{
-margin:0;padding:0 14px;font:600 13px/1.3 var(--f-d);color:var(--pen)}
-.mc .blad:not(:empty){
-padding:8px 14px}
-.mc .zgoda{
-display:flex;gap:9px;align-items:flex-start;padding:10px 14px 14px;font:500 12px/1.35 var(--f-d);color:var(--gray)}
-.mc .zgoda input{
-margin-top:2px;accent-color:var(--t-ai)}
-.mc .zgoda a{
-color:var(--gray)}
-.mc .zgoda.err{
-color:var(--pen)}
-.mc .pobrane{
-padding:4px 14px 16px;color:var(--ink);font:500 15px/1.4 var(--f-d)}
-.mc .pobrane p{
-margin:8px 0}
-.mc .pob-l{
-display:flex;flex-wrap:wrap;gap:8px}
-.mc .pob-l .btn{
-font-size:14px;padding:12px 16px}
-.mc .pob-l .btn-2{
-color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--grid)}
-.mc .pob-d{
-font-size:13px;color:var(--gray)}
-.mc .ark-om{
-margin-top:12px}
-.mc .ark-om .cel-in{
-box-shadow:inset 0 0 0 1.5px var(--grid)}
-.mc .om-ok{
-margin:0;padding:10px 14px 14px;font:600 14px/1.3 var(--f-d);color:var(--ok)}
-.mc .om-d{
-margin:18px 0 0;font:500 14px/1.4 var(--f-d);color:var(--mut)}
-.mc .om-d a{
-color:var(--acc)}
-@media (max-width:640px){
-.mc .g-cta{
-grid-template-columns:24px 1fr 1.25fr}
-.mc .g-cta>b.jk{
-display:none}
-.mc .g-cta .cel-in{
-grid-column:1/-1}
-.mc .g-cta>*{
-padding:8px 8px}
+
+/* ---------- 3a · procedura i arkusz Ani ---------- */
+.ma-uk{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,8fr);gap:clamp(20px,3vw,44px);align-items:start;padding:0 clamp(2px,.8vw,14px)}
+.ma-proc{position:relative;margin-top:24px;padding:22px 22px 24px;background:#fff;border-radius:4px;box-shadow:0 18px 40px -24px rgba(15,26,20,.5),0 0 0 1px rgba(15,26,20,.06);transform:rotate(-1.5deg)}
+.ma-proc small{display:block;font:600 11px/1.3 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--t3);padding-bottom:10px;border-bottom:1.5px solid var(--t1)}
+.ma-proc ol{margin:14px 0 0;padding:0;list-style:none;display:grid;gap:10px}
+.ma-proc li{display:flex;align-items:center;gap:10px;font-size:17px;font-weight:600;letter-spacing:-.01em}
+.ma-proc li i{flex:none;width:18px;height:18px;border-radius:4px;box-shadow:inset 0 0 0 1.5px var(--linia);display:grid;place-items:center;transition:background .3s,box-shadow .3s}
+.ma-proc li i svg{width:12px;height:12px;stroke:#fff;stroke-width:2.4;fill:none;opacity:0;transition:opacity .3s}
+.ma-proc li.ok i{background:var(--ziel-c);box-shadow:none}.ma-proc li.ok i svg{opacity:1}
+.ma-proc p{margin:16px 0 0;font-size:13.5px;line-height:1.5;color:var(--t2)}
+.ma .xl-fb{grid-template-rows:auto}
+.ma .xl-fv{display:block;height:calc(14 * 21px + 14px);padding:7px 10px;white-space:normal;align-items:start}
+.ma-l{display:flex;align-items:center;gap:8px;height:21px;font-size:13px;opacity:0;will-change:opacity}
+.ma-l .n{flex:none;min-width:22px;font-variant-numeric:tabular-nums;color:#888;font-size:11.5px}
+.ma-l.nowy .n{color:#c92a2a;font-weight:700}
+.ma-l .t{white-space:nowrap;overflow:hidden;min-width:0}
+.ma-l .nz{margin-left:auto;flex:none;padding:2px 6px;border-radius:3px;background:var(--xl-h);color:#666;font-size:10.5px;opacity:0}
+.ma .xl-g{grid-template-columns:26px 1fr 1fr 1.6fr 58px}
+@media (max-width:900px){
+  .ma-uk{grid-template-columns:1fr}
+  .ma-proc{margin:0 8px;transform:none}
+  .ma .xl-g{grid-template-columns:22px 0 1fr 1.3fr 44px}
+  .ma .xl-g > .b{padding:0;border:0}
+  .ma-l{font-size:12px}
+  .ma-l .nz{display:none}
+  .xl-fb{grid-template-columns:38px 22px 1fr}
+  .ma .xl-rb{display:none}
 }
-.mc .stopka{
-padding:30px 0 calc(30px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line)}
-.mc .stopka .wrap{
-display:flex;justify-content:space-between;align-items:center;gap:12px;font:500 13px/1.3 var(--f-d);color:var(--mut)}
-.mc .stopka a{
-color:var(--mut)}
-@media (prefers-reduced-motion:reduce){
+
+/* ---------- 3b · arkusze zespołu ---------- */
+.mz-uk{padding:0 clamp(2px,.8vw,14px)}
+.mz .xl-g{grid-template-columns:26px 92px 1fr 90px 120px}
+.mz .xl-g > .kto{font-weight:700;color:var(--kc)}
+.mz .xl-g > .w{justify-content:center;font-weight:700;font-size:12px}
+.mz .xl-g > .w.tak{color:var(--ziel-c)}
+.mz .xl-g > .w.nie{color:var(--burs-c)}
+.mz .xl-g > .w.nie.on{background:repeating-linear-gradient(135deg,rgba(214,134,30,.28) 0 1.5px,rgba(214,134,30,0) 1.5px 6px),rgba(240,163,58,.12)}
+.mz .xl-g > .suma{background:#f6f8f6;font-weight:700}
+.mz .rw{opacity:0;will-change:opacity}
+.mz .xl-tabs span[style]{gap:6px}
+.mz .xl-tabs span[style]::before{content:"";width:7px;height:7px;border-radius:2px;background:var(--c)}
+@media (max-width:900px){
+  .mz .xl-g{grid-template-columns:22px 52px 1fr 40px 58px}
+  .mz .xl-g > *{padding:0 5px;font-size:11.5px}
+  .mz .xl-rb{display:none}
+  .mz .xl-tabs span{padding:0 8px}
 }
+
+/* ---------- 4 · scena: pięć kroków ---------- */
+.kz{position:relative;margin-top:clamp(28px,3vw,44px);display:grid}
+.kz > article,.kz-uk > *,.pob > *,.ma-uk > *{min-width:0}
+.kz > article{grid-area:1/1;opacity:0;visibility:hidden;transform:translateY(14px);transition:opacity .45s,transform .45s cubic-bezier(.2,.7,.2,1),visibility 0s .45s}
+.kz > article.akt{opacity:1;visibility:visible;transform:none;transition:opacity .45s,transform .45s cubic-bezier(.2,.7,.2,1)}
+.kz-uk{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:clamp(20px,2.6vw,40px);align-items:start}
+.kz-op{max-width:520px;margin:0 0 clamp(18px,2vw,26px);font-size:15.5px;line-height:1.6;color:rgba(255,255,255,.7)}
+.kz-op b{color:#fff}
+.kz-papier{background:#fff;color:var(--t1);border-radius:12px;padding:18px 20px;box-shadow:0 30px 70px -30px rgba(0,0,0,.6)}
+.kz-papier h4{margin:0 0 10px;font-size:13px;font-weight:700;color:var(--t3);letter-spacing:.02em}
+/* krok 1: komentarze w arkuszu i wiadomość do Marka */
+.kz1 .xl-g{grid-template-columns:26px 1fr 1.4fr 1fr}
+.kz1 .xl-g > *{height:44px;white-space:normal;line-height:1.25}
+.kz1 .xl-g > .kl{height:22px}
+.kz1 .kom::before{content:"";position:absolute;right:0;top:0;border-style:solid;border-width:0 8px 8px 0;border-color:transparent #c92a2a transparent transparent}
+.kz-not{display:grid;gap:8px;margin-top:12px}
+.kz-not div{display:grid;grid-template-columns:auto 1fr;gap:10px;padding:10px 12px;background:#fff8d6;border:1px solid #ecd98a;border-radius:4px;color:#3b3420;font:500 13px/1.4 var(--xl-f);box-shadow:0 6px 16px -10px rgba(0,0,0,.4)}
+.kz-not b{font:700 11px/1.4 var(--xl-f);color:#8a6d00;white-space:nowrap}
+.kz-msg p{margin:0 0 8px;font-size:14px;line-height:1.5}
+.kz-msg ol{margin:0 0 8px;padding-left:20px;display:grid;gap:6px;font-size:14px;line-height:1.45}
+.kz-msg small{display:block;color:var(--t3);font-size:12.5px}
+/* krok 2: procesy */
+.kz-pr{display:grid;gap:8px}
+.kz-pr li{list-style:none;display:grid;grid-template-columns:1fr auto;gap:4px 14px;align-items:baseline;padding:12px 14px;border-radius:10px;background:#fff;color:var(--t1)}
+.kz-pr ul{margin:0;padding:0;display:grid;gap:8px}
+.kz-pr b{font-size:15.5px;font-weight:700;letter-spacing:-.01em}
+.kz-pr .h{font-size:20px;font-weight:700;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.kz-pr small{font-size:12.5px;color:var(--t2)}
+.kz-pr .tag{justify-self:end;font-size:11.5px;font-weight:700;padding:3px 8px;border-radius:999px}
+.kz-pr .tag.start{background:var(--ziel);color:var(--ink)}
+.kz-pr .tag.obok{color:var(--burs-c);background:rgba(240,163,58,.16)}
+.kz-pr .bar{grid-column:1/-1;height:6px;border-radius:3px;background:var(--linia2);overflow:hidden}
+.kz-pr .bar i{display:block;height:100%;width:calc(var(--w) * 1%);background:var(--ziel-c);border-radius:3px}
+.kz-pr .uw{grid-column:1/-1;font-size:12.5px;font-weight:600;color:var(--burs-c)}
+/* krok 3: trzy wersje i standard */
+.kz-wer{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.kz-wer div{padding:12px;border-radius:10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);font-size:12.5px;line-height:1.45;color:rgba(255,255,255,.75)}
+.kz-wer b{display:block;color:#fff;font-size:14px;margin-bottom:2px}
+.kz-wer em{display:block;font-style:normal;color:var(--ziel);font-weight:700;margin-bottom:8px}
+.kz-wer div.baza{border-color:var(--ziel);box-shadow:0 0 0 1px var(--ziel)}
+.kz-std ol{margin:0;padding-left:20px;display:grid;gap:4px;font-size:13.5px;line-height:1.4}
+.kz-std li.z{color:var(--ziel-c);font-weight:600}
+.kz-std .zas{margin-top:12px;padding:10px 12px;border-radius:8px;background:var(--papier);font-size:13px;line-height:1.45}
+.kz-std .zas b{display:block;font-size:12px;color:var(--t3)}
+/* krok 4: kroki w kolorach */
+.kz-rz{margin:0;padding:0;list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.kz-rz li{display:flex;align-items:center;gap:8px;min-height:38px;padding:6px 10px;border-radius:8px;background:#fff;color:var(--t1);font-size:12.5px;line-height:1.25;border-left:4px solid}
+.kz-rz li span{margin-left:auto;flex:none;font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:999px}
+.kz-rz .ai{border-color:var(--ziel-c)}.kz-rz .ai span{background:rgba(0,205,119,.16);color:var(--ziel-c)}
+.kz-rz .sys{border-color:#1c7ed6}.kz-rz .sys span{background:rgba(28,126,214,.12);color:#1c62a8}
+.kz-rz .cz{border-color:var(--burs)}.kz-rz .cz span{background:rgba(240,163,58,.2);color:var(--burs-c)}
+.kz-rz .zn{border-color:#adb5b0;color:var(--t3);text-decoration:line-through}.kz-rz .zn span{background:var(--linia2);color:var(--t3);text-decoration:none}
+.kz-po ol{margin:0;padding:0;list-style:none;display:grid;gap:8px}
+.kz-po li{padding:10px 12px;border-radius:8px;border-left:4px solid;font-size:14px;font-weight:600;line-height:1.35}
+.kz-po .ai{border-color:var(--ziel-c);background:#e9f8f0}.kz-po .sys{border-color:#1c7ed6;background:#eaf2fc}.kz-po .cz{border-color:var(--burs);background:#fdf3e2}
+/* krok 5: raport */
+.kz-rap header{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:4px 12px;padding-bottom:9px;border-bottom:2px solid var(--t1)}
+.kz-rap header b{font-size:18px;font-weight:800;letter-spacing:-.02em}
+.kz-rap header span{font:500 12px/1 var(--mono);color:var(--t3)}
+.kz-rap h5{margin:14px 0 6px;font:600 11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--t3)}
+.kz-rap table{width:100%;border-collapse:collapse;font-size:13px}
+.kz-rap td{padding:6px 0;border-bottom:1px solid var(--linia2)}
+.kz-rap td + td{text-align:right;white-space:nowrap;padding-left:10px}
+.kz-rap .tyg{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.kz-rap .tyg span{padding:8px 6px;border-radius:6px;background:var(--papier);font-size:12px;font-weight:600;text-align:center}
+.kz-rap .tyg b{display:block;font-size:15px;color:var(--ziel-c)}
+.kz-rap .dec{margin-top:12px;padding:11px 12px;border-radius:8px;background:#e9f8f0;border-left:4px solid var(--ziel-c);font-size:14px;font-weight:700;line-height:1.35}
+@media (max-width:980px){
+  .kz-uk{grid-template-columns:1fr}
+  .kz-wer{grid-template-columns:1fr}
+  .kz1 .xl-g{grid-template-columns:22px 1fr 1.2fr .8fr}
+  .kz1 .xl-g > *{font-size:11.5px;padding:0 5px}
+  .kz-rz{grid-template-columns:1fr}
+}
+
+/* ---------- 5 · ile wraca ---------- */
+.iw{margin-top:clamp(48px,5vw,72px);display:grid;grid-template-columns:minmax(0,7.4fr) minmax(0,4.6fr);gap:clamp(28px,4vw,72px);align-items:end}
+.iw-l{margin:0;padding:0;list-style:none;display:grid;gap:22px}
+.iw-l li{display:grid;grid-template-columns:1fr auto;gap:8px 16px;align-items:baseline}
+.iw-l b{font-size:clamp(16px,1.4vw,19px);font-weight:700;letter-spacing:-.015em}
+.iw-l .v{font-size:15px;color:var(--t2);font-variant-numeric:tabular-nums;white-space:nowrap}
+.iw-l .v s{color:var(--t3);text-decoration-color:var(--burs);text-decoration-thickness:2px}
+.iw-l .v strong{color:var(--t1);font-size:clamp(18px,1.6vw,22px);letter-spacing:-.02em}
+.iw-b{grid-column:1/-1;position:relative;height:14px;border-radius:7px;background:var(--linia2);overflow:hidden}
+.iw-b i{position:absolute;left:0;top:0;bottom:0;width:calc(var(--a) / 86 * 100%);border-radius:7px}
+.iw-b .przed{opacity:1}
+.iw-b .po{background:var(--ziel);width:calc(var(--a) / 86 * 100%);transition:width 1.3s cubic-bezier(.2,.7,.2,1) calc(.3s + var(--i) * .15s)}
+.iw.on .iw-b .po{width:calc(var(--b) / 86 * 100%)}
+.iw.gra:not(.on) .iw-b .po{width:calc(var(--a) / 86 * 100%)}
+.iw-sum{padding:clamp(24px,2.6vw,36px);border-radius:24px;background:var(--papier)}
+.iw-sum p{margin:0;font-size:15px;color:var(--t2)}
+.iw-sum .duzy{margin:6px 0 0;font-size:clamp(40px,5vw,72px);line-height:1;font-weight:700;letter-spacing:-.05em;color:var(--t1)}
+.iw-sum .duzy s{color:var(--t3);font-size:.55em;text-decoration-color:var(--burs);text-decoration-thickness:3px}
+.iw-sum .wr{margin-top:18px;padding-top:16px;border-top:1px solid var(--linia);font-size:16px;line-height:1.5;color:var(--t1)}
+.iw-sum .wr b{color:var(--ziel-c)}
+.iw-leg{display:flex;gap:18px;margin-top:6px;font-size:13px;color:var(--t2)}
+.iw-leg span{display:flex;align-items:center;gap:7px}
+.iw-leg i{width:18px;height:8px;border-radius:4px}
+@media (max-width:980px){.iw{grid-template-columns:1fr}}
+
+/* ---------- 6 · po mapie ---------- */
+.pm{margin-top:clamp(48px,5vw,72px);display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:clamp(14px,1.6vw,22px);align-items:stretch}
+.pm-k{display:flex;flex-direction:column;padding:clamp(24px,2.6vw,36px);border-radius:24px;background:#fff;box-shadow:0 0 0 1px var(--linia2)}
+.pm-k.my{position:relative;overflow:hidden;background:var(--ink);color:#fff;box-shadow:none}
+.pm-k.my::before{content:"";position:absolute;inset:0;background:radial-gradient(520px 320px at 90% 110%,rgba(0,205,119,.22),transparent 70%);pointer-events:none}
+.pm-k > *{position:relative}
+.pm-k small{font-size:13px;font-weight:700;color:var(--ziel-c)}
+.pm-k.my small{color:var(--ziel)}
+.pm-k h3{margin:8px 0 0;font-size:clamp(22px,2.2vw,30px);font-weight:700;letter-spacing:-.03em;line-height:1.1}
+.pm-k dl{margin:22px 0 0;display:grid;gap:14px}
+.pm-k dt{font-size:12.5px;font-weight:700;color:var(--t3)}
+.pm-k.my dt{color:rgba(255,255,255,.5)}
+.pm-k dd{margin:3px 0 0;font-size:15px;line-height:1.5;color:var(--t1)}
+.pm-k.my dd{color:rgba(255,255,255,.86)}
+.pm-h{margin-top:auto;padding-top:22px;display:flex;align-items:baseline;gap:10px;border-top:1px solid var(--linia)}
+.pm-k.my .pm-h{border-color:rgba(255,255,255,.14)}
+.pm-h b{font-size:clamp(30px,3vw,44px);font-weight:700;letter-spacing:-.04em;line-height:1;font-variant-numeric:tabular-nums}
+.pm-k.my .pm-h b{color:var(--ziel)}
+.pm-h span{font-size:13.5px;color:var(--t2);line-height:1.35}
+.pm-k.my .pm-h span{color:rgba(255,255,255,.62)}
+.pm-log{margin:18px 0 0;padding:12px 14px;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);list-style:none;display:grid;gap:7px;font-size:13px;line-height:1.35}
+.pm-log li{display:flex;gap:10px;color:rgba(255,255,255,.85)}
+.pm-log i{flex:none;font-style:normal;font-family:var(--mono);font-size:11.5px;color:rgba(255,255,255,.45);padding-top:1px}
+.pm-log .ok{color:var(--ziel);font-weight:700}
+@media (max-width:900px){.pm{grid-template-columns:1fr}}
+
+/* ---------- 7 · pobierz ---------- */
+.mc-pob{padding:clamp(56px,7vw,96px) var(--ram) clamp(56px,7vw,96px)}
+.pob{position:relative;overflow:hidden;display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(28px,4vw,64px);align-items:center;padding:clamp(36px,5vw,80px) var(--pin);border-radius:clamp(20px,2.2vw,32px);color:#fff;
+  background:radial-gradient(760px 480px at 88% 110%,rgba(0,205,119,.22),rgba(0,205,119,0) 70%),radial-gradient(600px 380px at 0% -10%,rgba(0,205,119,.07),rgba(0,205,119,0) 70%),var(--ink)}
+.pob > *{position:relative;z-index:1}
+.pob-t .v3-h2{color:#fff}
+.pob-t .v3-sub{margin-top:18px}
+.pob-pl{margin:26px 0 0;padding:0;list-style:none;display:grid;gap:12px}
+.pob-pl li{display:flex;gap:12px;align-items:flex-start;font-size:15px;line-height:1.45;color:rgba(255,255,255,.72)}
+.pob-pl b{display:block;color:#fff;font-size:15.5px}
+.pob-pl .ik{flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:8px;font:700 10.5px/1 var(--mono);background:rgba(255,255,255,.08);color:#fff}
+.pob-pl .ik.xls{background:var(--xl)}
+.pob-pl .ik.ai{background:var(--ziel);color:var(--ink);font-size:12px}
+.pob .xl-g{grid-template-columns:26px .8fr 1.25fr 1.6fr}
+.pob .xl-g > *{height:auto;min-height:44px;white-space:normal;line-height:1.3;padding:6px 8px}
+.pob .xl-g > .kl{min-height:22px;padding:0}
+.pob .xl-g > .szary{color:#777}
+.pob-cel{position:relative;padding:0!important;box-shadow:inset 0 0 0 2px var(--xl);overflow:visible!important;background:#fff}
+.pob-cel input{width:100%;height:100%;min-height:44px;border:0;background:transparent;padding:0 46px 0 8px;font:600 15px/1 var(--xl-f);color:var(--xl-t);outline:none}
+.pob-cel input::placeholder{color:#9aa}
+.pob-cel button{position:absolute;right:3px;top:3px;bottom:3px;width:38px;border:0;border-radius:3px;background:var(--xl);color:#fff;font:700 16px/1 var(--mono);cursor:pointer}
+.pob-cel .mc-k{opacity:1;left:auto;right:52px;top:8px;transition:opacity .2s}
+.pob-cel:focus-within .mc-k,.pob.ok .pob-cel .mc-k{opacity:0}
+.pob-cel .mc-k em{color:var(--ink)}
+.pob .xl-pod{padding:12px 12px 14px;font:500 12.5px/1.45 var(--xl-f);color:#555;background:#fff}
+.pob-zg{display:flex;gap:9px;align-items:flex-start}
+.pob-zg input{margin-top:2px;accent-color:var(--xl)}
+.pob-zg a{color:#555}
+.pob-zg.err{color:#c92a2a}
+.pob-bl{margin:0;color:#c92a2a;font:600 13px/1.4 var(--xl-f)}
+.pob-bl:empty{display:none}
+.pob-ok{display:grid;gap:10px;color:var(--xl-t)}
+.pob-ok p{margin:0;font-size:14px}
+.pob-ok div{display:flex;flex-wrap:wrap;gap:8px}
+.pob-ok a{display:inline-flex;align-items:center;padding:10px 14px;border-radius:999px;font:700 14px/1 var(--f-d,inherit);text-decoration:none}
+.pob-ok a.g{background:var(--ziel);color:var(--ink)}
+.pob-ok a.d{box-shadow:inset 0 0 0 1.5px #ccd;color:var(--xl-t)}
+.pob.ok .pob-cel{box-shadow:inset 0 0 0 2px var(--xl);background:#e9f6ee}
+.pob.ok .xl-g > .szary{background:#e9f6ee}
+@media (max-width:980px){
+  .pob{grid-template-columns:1fr}
+  .pob .xl-g{grid-template-columns:22px 1fr 1.2fr}
+  .pob .xl-g > .kl.d,.pob .xl-g > .nag.d{display:none}
+  .pob-cel{grid-column:1/-1}
+}
+
+@media (prefers-reduced-motion:reduce){.xl .pisze > .t::after,.pisze.kar::after{animation:none}}
+.ma .xl-nb,.ma .xl-fx{align-items:flex-start;padding-top:8px}
+
 </style>
-<div class="mc">
-<header class="bar" id="bar"><div class="bar-in">
-  <a class="logo" href="/" aria-label="Let's automate"><svg width="237" height="41" viewBox="0 0 237 41" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_4016_1321)"><path d="M126.179 11.1201H119.973L121.055 13.1157H123.346V13.6903H123.276C122.456 13.6903 121.72 14.1976 121.428 14.9669L115.801 29.877H118.115L119.711 25.6741H129.263L130.859 29.877H133.174L126.175 11.1201H126.179ZM126.83 23.6785H120.43L124.395 13.2502H124.633L128.571 23.6785H126.827H126.83Z" fill="#F4F8F2"></path><path d="M158.801 23.1478C158.801 18.918 161.781 15.9111 166.011 15.9111C170.241 15.9111 173.22 18.918 173.22 23.1478C173.22 27.3776 170.214 30.4113 166.011 30.4113C161.808 30.4113 158.801 27.4045 158.801 23.1478ZM171.013 23.1478C171.013 20.1141 168.91 17.9068 166.011 17.9068C163.111 17.9068 161.008 20.1141 161.008 23.1478C161.008 26.1816 163.084 28.4157 166.011 28.4157C168.937 28.4157 171.013 26.2084 171.013 23.1478Z" fill="#F4F8F2"></path><path d="M222.55 22.986C222.55 18.8872 225.53 15.9072 229.679 15.9072C233.829 15.9072 236.731 18.8873 236.731 23.0129C236.731 23.2783 236.731 23.5975 236.704 23.8898H224.811C225.13 26.6044 227.099 28.4119 229.841 28.4119C231.836 28.4119 233.593 27.4006 234.443 25.8048L236.278 26.7354C235.186 29.0233 232.767 30.4074 229.787 30.4074C225.584 30.4074 222.55 27.2931 222.55 22.9827V22.986ZM234.42 21.9479C234.02 19.5256 232.132 17.9029 229.579 17.9029C227.025 17.9029 225.214 19.5256 224.841 21.9479H234.42Z" fill="#F4F8F2"></path><path d="M153.664 26.3388V20.0999C153.664 19.3742 153.076 18.7829 152.347 18.7829H152.112V18.2118H153.661V18.195L157.118 18.2118V16.4379H153.661L153.687 12.1006H151.957L151.45 16.4379H149.27V18.195H151.45V26.416C151.45 28.7846 152.888 30.3806 155.149 30.3806C155.814 30.3806 156.691 30.2461 157.329 30.0345V28.2504C156.826 28.4117 156.133 28.5158 155.734 28.5158C154.457 28.5158 153.657 27.6121 153.657 26.3354L153.664 26.3388Z" fill="#F4F8F2"></path><path d="M217.389 26.3388V20.0999C217.389 19.3742 216.802 18.7829 216.073 18.7829H215.837V18.2118H217.386V18.195L220.843 18.2118V16.4379H217.386L217.413 12.1006H215.683L215.176 16.4379H212.995V18.195H215.176V26.416C215.176 28.7846 216.613 30.3806 218.875 30.3806C219.54 30.3806 220.416 30.2461 221.055 30.0345V28.2504C220.551 28.4117 219.859 28.5158 219.459 28.5158C218.182 28.5158 217.383 27.6121 217.383 26.3354L217.389 26.3388Z" fill="#F4F8F2"></path><path d="M144.643 16.4419V24.2631C144.643 26.6317 142.702 28.3619 140.44 28.3619C138.179 28.3619 136.795 26.7392 136.795 24.4512V16.4419H134.588V24.6596C134.588 27.5892 136.802 30.0989 139.722 30.3375C141.143 30.4549 142.433 30.0214 143.417 29.1616C143.84 28.7919 144.072 28.251 144.072 27.69V27.1961H144.643V28.0394V29.8736H146.851V16.4385H144.643V16.4419Z" fill="#F4F8F2"></path><path d="M191.366 15.938C189.344 15.938 187.801 16.9493 186.871 18.5182H186.632C185.86 16.9493 184.133 15.9111 182.241 15.9111C181.072 15.9111 180.057 16.3244 179.288 17.0064C178.875 17.3759 178.646 17.9101 178.646 18.4645V19.0927H178.065V16.4419H175.935V29.8771H178.142V21.8409C178.142 19.4724 179.58 17.9034 181.761 17.9034C183.941 17.9034 185.221 19.4724 185.221 21.8409V29.8771H187.428V21.8409C187.428 19.553 188.944 17.9034 191.101 17.9034C193.123 17.9034 194.584 19.553 194.584 21.8409V29.8771H196.792V21.8678C196.792 18.3838 194.531 15.9347 191.363 15.9347L191.366 15.938Z" fill="#F4F8F2"></path><path d="M205.151 15.9375C201.771 15.9375 199.563 17.7484 199.563 20.594H201.798C201.771 18.9175 203.101 17.9331 205.124 17.9331C207.331 17.9331 208.635 19.1023 208.635 20.9131V21.444L204.909 21.8975C200.917 22.3511 198.895 24.1048 198.895 26.4734C198.895 28.8419 200.81 30.3033 203.709 30.3033C205.221 30.3033 206.444 29.8834 207.371 29.1007C207.805 28.7344 208.04 28.1868 208.04 27.619V27.068H208.631V29.88H210.839V20.9669C210.839 17.9063 208.631 15.9375 205.144 15.9375H205.151ZM208.635 24.5315C208.635 26.7925 206.773 28.469 204.032 28.469C202.221 28.469 201.106 27.6963 201.106 26.4196C201.106 25.1429 202.17 24.1048 204.909 23.7588L208.635 23.3321V24.5281V24.5315Z" fill="#F4F8F2"></path><path d="M89.4541 17.6842H92.9111L89.4541 17.6641V17.6842Z" fill="#F4F8F2"></path><path d="M57.9139 28.5764L57.5108 28.1733L57.8634 27.8205C58.4816 27.2023 58.8277 26.3658 58.8277 25.4956V10.5889H56.4053V29.3458H68.2717V27.2158H60.6351C59.7616 27.2158 58.925 27.5618 58.3102 28.18L57.9139 28.5764Z" fill="#F4F8F2"></path><path d="M89.4542 25.8085V19.5696C89.4542 18.844 88.8661 18.2526 88.137 18.2526H87.9018V17.6815H89.4508V17.6647L92.9078 17.6815V15.9076H89.4508L89.4774 11.5703H87.7472L87.24 15.9076H85.0596V17.6647H87.24V25.8858C87.24 28.2543 88.678 29.85 90.939 29.85C91.6043 29.85 92.4811 29.7158 93.1194 29.5042V27.7202C92.6156 27.8814 91.9234 27.9855 91.5237 27.9855C90.2468 27.9855 89.4474 27.0818 89.4474 25.8051L89.4542 25.8085Z" fill="#F4F8F2"></path><path d="M104.593 21.5515C102.597 21.313 100.79 21.1786 100.79 19.5022C100.79 18.118 102.12 17.2411 104.062 17.2411C106.138 17.2411 107.546 18.2793 107.573 19.9288H109.727C109.727 17.1605 107.439 15.3799 104.086 15.3799C100.733 15.3799 98.6834 16.9757 98.6834 19.5828C98.6834 22.6434 101.583 23.3086 104.086 23.6009C106.108 23.8664 107.942 24.0007 107.942 25.7545C107.942 27.1655 106.639 28.0155 104.616 28.0155C102.09 28.0155 100.598 26.712 100.571 24.797H98.4414C98.4414 27.9886 100.675 29.8801 104.536 29.8801C107.969 29.8801 110.015 28.3649 110.015 25.7309C110.015 22.5124 107.116 21.8741 104.586 21.5549L104.593 21.5515Z" fill="#F4F8F2"></path><path d="M96.5263 12.5846V12.9172L96.2372 13.2061C95.73 13.7134 95.4443 14.4021 95.4443 15.1177V17.7248C96.5431 17.7248 97.4333 16.8345 97.4333 15.7359V11.3516H95.4443V12.5879H96.5263V12.5846Z" fill="#F4F8F2"></path><path d="M76.8151 15.377C72.6659 15.377 69.686 18.357 69.686 22.4557C69.686 26.7662 72.7198 29.8806 76.9226 29.8806C79.9028 29.8806 82.3249 28.4964 83.4134 26.2085L81.5791 25.2779C80.7292 26.8737 78.972 27.8849 76.9765 27.8849C74.235 27.8849 72.2662 26.0741 71.947 23.3629H83.8401C83.867 23.0706 83.867 22.7514 83.867 22.486C83.867 18.3603 80.9138 15.3803 76.8151 15.3803V15.377ZM71.974 21.4176C72.3467 18.9953 74.235 17.3726 76.711 17.3726C79.187 17.3726 81.1524 18.9953 81.5521 21.4176H71.974Z" fill="#F4F8F2"></path><path d="M31.1674 0.5V17.4327C29.7901 11.2307 26.1381 0.5 26.1381 0.5H17.1107C18.599 6.44658 20.7794 12.7694 21.6328 16.7405H21.6193C20.7291 14.2443 18.7435 10.4076 14.2919 4.60213C13.1564 3.12389 12.0275 1.72963 11.0029 0.5H0C6.53453 7.53847 13.5092 17.1168 13.5092 20.5C13.5092 23.8832 6.53453 33.4614 0 40.5H11.0029C12.0309 39.2705 13.1597 37.8762 14.2919 36.3979C18.636 30.7301 20.635 26.9405 21.5522 24.4409C20.6484 28.4254 18.4176 34.6543 16.8822 40.5H25.9298C25.9298 40.5 29.6389 30.4245 31.1035 24.3636L30.8349 40.5H39.6641L39.9966 20.5538V0.5H31.1674Z" fill="#00CD77"></path></g><defs><clipPath id="clip0_4016_1321"><rect width="236.879" height="40" fill="white" transform="translate(0 0.5)"></rect></clipPath></defs></svg></a>
-  <a class="bar-cta" id="barCta" href="#wiersz">Pobierz zestaw</a>
-</div></header>
+<div class="v3 mc">
+<Styl />
+<Anim />
 
-<main class="hist">
-
-<!-- 0. HERO: trzy osoby wypełniają arkusz naraz -->
-<section class="hero" id="h">
-  <div class="wrap hero-tx">
-    <p class="ety">Zestaw za darmo · arkusz i skill AI</p>
-    <h1>Sprawdź w tydzień, co <em>AI może przejąć</em> w&nbsp;Twojej firmie.</h1>
-    <p class="lead">Zespół spisuje swoją pracę w arkuszu, a skill w Waszym AI prowadzi Cię przez analizę i robi z tego plan na start. Od tego samego arkusza zaczynamy wdrożenia.</p>
-    <div class="hero-cta"><a class="btn" href="#wiersz">Pobierz arkusz i skill</a><span class="hero-dop">Claude, ChatGPT, Copilot, Gemini albo Appto</span></div>
-  </div>
-  <div class="wrap hero-ob">
-    <div class="ark" id="arkH" aria-hidden="true">
-      <div class="ark-tab"><span class="on">Moje czynności</span><span>Podsumowanie</span></div>
-      <div class="ark-g g-hero">
-        <i class="rn"></i><b class="d">Gdy</b><b>Co</b><b>Jak</b><b class="mn">Czas</b>
-        <i class="rn">1</i><span class="c d"></span><span class="c"></span><span class="c"></span><span class="c mn"></span>
-        <i class="rn">2</i><span class="c d"></span><span class="c"></span><span class="c"></span><span class="c mn"></span>
-        <i class="rn">3</i><span class="c d"></span><span class="c"></span><span class="c"></span><span class="c mn"></span>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- TEZA -->
-<section class="teza" id="t">
-  <div class="wrap">
-    <p class="ety">Od czego zacząć</p>
-    <h2>Nie zaczynaj wdrożenia AI <span class="przek">od narzędzia</span>. Zacznij <em>od mapy</em>.</h2>
-    <p class="lead">Mapę czynności opracowaliśmy na bazie naszych wdrożeń AI. Tu dostajesz ją w uproszczonej formie, do samodzielnej pracy. Jeśli chcesz, zrobimy ją z Tobą.</p>
-    <p class="teza-p">Zobacz, jak wygląda w firmie serwisowej na pięć osób.</p>
-  </div>
-</section>
-
-<!-- 1. ANIA: procedura 3 kroki, arkusz 14 -->
-<section class="sc" id="s1" style="--h:250">
-  <div class="pin"><div class="wrap strefy">
-    <p class="ety">Powód 1</p>
-    <h2 class="pod">AI zrobi tylko to, co ktoś <em>opisał krok po kroku</em>.</h2>
-    <div class="obraz">
-      <div class="scena1" data-fit>
-        <div class="proc" id="proc">
-          <div class="proc-h">Procedura · Przyjęcie zgłoszenia</div>
-          <ol><li>Przyjmij zgłoszenie</li><li>Umów technika</li><li>Potwierdź klientowi</li></ol>
-        </div>
-        <div class="ark ark-ania" id="arkA">
-          <div class="ark-tab"><span class="on">Ania · obsługa zgłoszeń</span></div>
-          <div class="ark-g g-ania">
-            <i class="rn"></i><b>Co</b><b class="mn">Czas</b><b>Częstotliwość</b>
-            <i class="rn">4</i><span class="c" id="aCo"></span><span class="c mn" id="aCz"></span><span class="c lista-c" id="aCs"></span>
-          </div>
-          <div class="lista" id="aLi"><span>Kilka razy dziennie</span><span>Codziennie</span><span>Kilka razy w tygodniu</span><span>Raz w tygodniu</span></div>
-          <div class="jak"><div class="jak-h">Jak</div><ol id="aJak"></ol></div>
-        </div>
-      </div>
-    </div>
-    <div class="zd" id="z1"><p>W procedurze są 3 kroki. Nie ma tu czego oddać AI.</p><p>Ania zapisała 14. <b>Jedenastu</b> nie ma w żadnym dokumencie.</p><p>Dopiero teraz widać, które kroki może zrobić AI, a które system.</p></div>
-  </div></div>
-</section>
-
-<!-- 2. CAŁY ZESPÓŁ, 4 DNI -->
-<section class="sc" id="s2" style="--h:230">
-  <div class="pin"><div class="wrap strefy">
-    <p class="ety">Powód 2 · Praca obok procesów</p>
-    <h2 class="pod">Większość pracy dzieje się <em>obok procesów</em>.</h2>
-    <div class="obraz">
-      <div class="ark ark-zesp" id="arkZ" data-fit>
-        <div class="ark-tab"><span class="on">Mapa czynności · zespół</span><span class="dzien" id="dzien">wtorek</span></div>
-        <div class="ark-g g-zesp" id="gZ">
-          <i class="rn"></i><b>Kto</b><b>Co</b><b class="mn">h / mies.</b><b class="wp">Procedura</b>
-        </div>
-        <div class="suma"><span id="sumaL">Razem</span><b id="suma">0 h</b></div>
-      </div>
-    </div>
-    <div class="zd" id="z2"><p>Pięć osób, cztery dni, kilka minut dziennie. Każdy wpisuje swoje, w trakcie pracy.</p><p><b>41 z 61</b> czynności nie ma w żadnej procedurze. Właśnie tę pracę najłatwiej oddać AI.</p><p>Nie macie dokumentacji ani procesów? Nie szkodzi. Mapa zbierze je z codziennej pracy w tydzień.</p></div>
-  </div></div>
-</section>
-
-<!-- 3. SPRAWDŹ ARKUSZ -->
-<section class="sc" id="s3" style="--h:230">
-  <div class="pin"><div class="wrap strefy">
-    <p class="ety">Krok 1 · Sprawdzenie arkuszy</p>
-    <h2 class="pod">AI czyta arkusz i pyta. <em>Poprawia człowiek.</em></h2>
-    <div class="obraz">
-      <div class="spr" data-fit>
-        <div class="ark ark-spr" id="arkS">
-          <div class="ark-tab"><span class="on">Marek · handlowiec</span><span class="spr-st" id="sprSt"></span></div>
-          <div class="ark-g g-spr">
-            <i class="rn"></i><b>Co</b><b>Jak</b><b>AI</b>
-            <i class="rn">1</i><span class="c" id="m1">Obsługa klienta</span><span class="c">maile, telefony</span><span class="c" id="m1a"></span>
-            <i class="rn">2</i><span class="c">Przygotowuję wycenę naprawy</span><span class="c" id="m2">Robię wycenę w Excelu i wysyłam</span><span class="c">ChatGPT do maila</span>
-            <i class="rn">3</i><span class="c">Raport sprzedaży dla Piotra</span><span class="c">Eksport z systemu → arkusz → mail</span><span class="c" id="m3a"></span>
-          </div>
-        </div>
-        <ul class="uwagi" id="uwagi">
-          <li><b>Wiersz 1</b><span>Za szeroko. Co się na to składa? Rozpisz w osobnych wierszach.</span></li>
-          <li><b>Wiersz 2</b><span>Skąd bierzesz ceny części? Dopisz to w „Jak”.</span></li>
-          <li><b>Wiersz 3</b><span>Używasz tu AI? Jeśli nie, napisz dlaczego.</span></li>
-        </ul>
-      </div>
-    </div>
-    <div class="zd" id="z3"><p>Zbierasz arkusze, a AI wskazuje wiersze, z których nic jeszcze nie wynika. Pytania odsyłasz ludziom.</p><p>Marek poprawia swój arkusz sam, bo tylko on wie, jak pracuje.</p></div>
-  </div></div>
-</section>
-
-<!-- 4. DIAGNOZA -->
-<section class="sc" id="s4" style="--h:210">
-  <div class="pin"><div class="wrap strefy">
-    <p class="ety">Powód 3 · Krok 2 · Diagnoza zespołu</p>
-    <h2 class="pod">Od czego zacząć, wybieracie <em>na liczbach</em>.</h2>
-    <div class="obraz">
-      <div class="diag" data-fit>
-        <div class="tabs" id="tabs"><span style="--c:var(--p-ania)">Ania</span><span style="--c:var(--p-marek)">Marek</span><span style="--c:var(--p-kasia)">Kasia</span><span style="--c:var(--p-piotr)">Piotr</span><span style="--c:var(--p-tomek)">Tomek</span></div>
-        <div class="procesy" id="procesy">
-          <div class="pr" data-h="86"><div class="pr-g"><b>Przyjęcie zgłoszenia</b><span class="pr-h"><i>0</i> h</span></div><div class="pr-kto">Ania · Marek · Kasia</div><div class="pr-bar"><i></i></div><div class="pr-uw">9 min u Marka, 35 min u Kasi: każdy robi to inaczej</div></div>
-          <div class="pr" data-h="41"><div class="pr-g"><b>Wyceny dla klientów</b><span class="pr-h"><i>0</i> h</span></div><div class="pr-kto">Marek · Piotr</div><div class="pr-bar"><i></i></div></div>
-          <div class="pr" data-h="28"><div class="pr-g"><b>Protokoły i faktury po wizycie</b><span class="pr-h"><i>0</i> h</span></div><div class="pr-kto">Kasia</div><div class="pr-bar"><i></i></div></div>
-          <div class="pr" data-h="17"><div class="pr-g"><b>Raport miesięczny dla klienta</b><span class="pr-h"><i>0</i> h</span></div><div class="pr-kto">Piotr</div><div class="pr-bar"><i></i></div></div>
-        </div>
-      </div>
-    </div>
-    <div class="zd" id="z4"><p>AI łączy arkusze całego zespołu i liczy, gdzie naprawdę idzie czas.</p><p>Nie według tego, kto najgłośniej prosi o „jakieś AI”.</p></div>
-  </div></div>
-</section>
-
-<!-- 5. AI / SYSTEM / CZŁOWIEK -->
-<section class="sc" id="s5" style="--h:220">
-  <div class="pin"><div class="wrap strefy">
-    <p class="ety">Kroki 3 i 4 · Standard i podział</p>
-    <h2 class="pod">Każdy krok dostaje <em>swoje miejsce</em>.</h2>
-    <div class="obraz">
-      <div class="rozk-w" data-fit>
-        <div class="leg" id="leg"><span class="l-ai">AI</span><span class="l-sys">System</span><span class="l-cz">Człowiek</span><span class="l-zn">Znika</span></div>
-        <ol class="rozk" id="rozk"></ol>
-        <div class="po" id="po">
-          <div class="po-h">Przyjęcie zgłoszenia po zmianie</div>
-          <ol><li class="t-ai">AI czyta zgłoszenie, sprawdza umowę i gwarancję</li><li class="t-sys">System proponuje technika, termin i część</li><li class="t-cz">Ania zatwierdza jednym kliknięciem</li><li class="t-sys">Klient i technik dostają termin</li></ol>
-        </div>
-      </div>
-    </div>
-    <div class="zd" id="z5"><p>Najpierw jeden standard z trzech wersji. Potem każdy krok: AI, system albo człowiek.</p><p>Z 14 kroków Ani zostaje jeden: decyzja.</p></div>
-  </div></div>
-</section>
-
-<!-- 6. ILE WRACA -->
-<section class="sc" id="s6" style="--h:200">
-  <div class="pin"><div class="wrap strefy">
-    <p class="ety">Ile wraca do zespołu</p>
-    <h2 class="pod">Cztery procesy: 172&nbsp;h&nbsp;→&nbsp;<em><span id="odT">172</span>&nbsp;h</em> miesięcznie.</h2>
-    <div class="obraz">
-      <div class="odz" data-fit>
-        <div class="odz-r" data-a="86" data-b="24"><span>Przyjęcie zgłoszenia</span><div class="odz-b"><i class="was"></i><i class="jest"></i></div><b>86 h</b></div>
-        <div class="odz-r" data-a="41" data-b="15"><span>Wyceny dla klientów</span><div class="odz-b"><i class="was"></i><i class="jest"></i></div><b>41 h</b></div>
-        <div class="odz-r" data-a="28" data-b="6"><span>Protokoły i faktury</span><div class="odz-b"><i class="was"></i><i class="jest"></i></div><b>28 h</b></div>
-        <div class="odz-r" data-a="17" data-b="3"><span>Raport dla klienta</span><div class="odz-b"><i class="was"></i><i class="jest"></i></div><b>17 h</b></div>
-        <div class="odz-w" id="odW"><b>ok. 124 h</b><span>miesięcznie wraca do zespołu. Ania przyjmie dwa razy więcej zgłoszeń, bez nowej osoby.</span></div>
-      </div>
-    </div>
-    <div class="zd cicha"><p>Przykład. Wasze liczby policzy skill z Waszych arkuszy i Waszych stawek.</p></div>
-  </div></div>
-</section>
-
-<!-- 7. RAPORT DLA ZARZĄDU -->
-<section class="sc" id="s7" style="--h:150">
-  <div class="pin"><div class="wrap strefy">
-    <p class="ety">Krok 5 · Plan dla zarządu</p>
-    <h2 class="pod">Po tygodniu masz plan, który szef przeczyta <em>w trzy minuty</em>.</h2>
-    <div class="obraz">
-      <article class="raport" id="raport" data-fit>
-        <header><b>Mapa czynności</b><span>Firma serwisowa · grudzień</span></header>
-        <h3>Trzy procesy na start</h3>
-        <ol>
-          <li><b>Przyjęcie zgłoszenia</b><span>dziś ok. 86 h, po zmianie ok. 24 h · AI sprawdza, Ania zatwierdza</span></li>
-          <li><b>Wyceny dla klientów</b><span>41 h → 15 h · szkic z cennika, handlowiec wysyła</span></li>
-          <li><b>Protokoły i faktury</b><span>28 h → 6 h · system z protokołu technika</span></li>
-        </ol>
-        <h3>Plan na 30 dni</h3>
-        <div class="tyg"><span><b>1</b>kontekst</span><span><b>2</b>budowa</span><span><b>3</b>testy</span><span><b>4</b>zespół</span></div>
-        <div class="decyzja">Czy zaczynamy od przyjęcia zgłoszeń i dajemy Ani 4 h tygodniowo na miesiąc?</div>
-      </article>
-    </div>
-    <div class="zd cicha"><p>Rachunek na Waszych stawkach. Skill o nie zapyta i niczego nie zakłada.</p></div>
-  </div></div>
-</section>
-
-<!-- 7b. OD MAPY DO AGENTÓW -->
-<section class="sc" id="ag" style="--h:210">
-  <div class="pin"><div class="wrap strefy">
-    <p class="ety">Po mapie</p>
-    <h2 class="pod">Plan już masz. <em>Agenci AI zrobią to za Was.</em></h2>
-    <div class="obraz">
-      <div class="agenci" data-fit>
-        <div class="ag"><div class="ag-h"><i class="ag-d"></i><b>Agent zgłoszeń</b><span>Outlook · system serwisowy · kalendarz</span></div>
-          <ul class="ag-log"><li><i>09:12</i>Zgłoszenie z maila: umowa i gwarancja sprawdzone</li><li><i>09:13</i>Termin: wtorek 10:00, technik Bartek, część jest</li><li class="dec"><i>09:14</i><span class="czeka">Czeka na decyzję Ani</span><span class="zatw">Ania zatwierdziła · klient ma termin</span></li></ul></div>
-        <div class="ag"><div class="ag-h"><i class="ag-d"></i><b>Agent wycen</b><span>poczta · cennik dostawcy · Excel</span></div>
-          <ul class="ag-log"><li><i>10:02</i>Zapytanie o naprawę klimatyzatora: części z cennika</li><li><i>10:03</i>Szkic wyceny czeka w skrzynce Marka</li></ul></div>
-        <div class="ag"><div class="ag-h"><i class="ag-d"></i><b>Agent protokołów</b><span>zdjęcie protokołu · system · faktury</span></div>
-          <ul class="ag-log"><li><i>15:40</i>Protokół ze zdjęcia: 3 części, 2 h pracy</li><li><i>15:41</i>Faktura gotowa do wysłania</li></ul></div>
-      </div>
-    </div>
-    <div class="zd" id="zag"><p>Na Waszych systemach i Waszych zasadach. Ludzie zatwierdzają tylko decyzje.</p><p>Takich agentów wdrażamy. Przychodzisz z gotową mapą, więc od pierwszej rozmowy mówimy o budowie.</p></div>
-  </div></div>
-</section>
-
-<!-- 8. ZESTAW -->
-<section class="zestaw" id="s8">
-  <div class="wrap">
-    <p class="ety">W zestawie</p>
-    <h2>Wszystko na tydzień pracy. <em>Dane zostają u Was.</em></h2>
-    <ul class="pliki">
-      <li><span class="ik xl">xlsx</span><div><b>Arkusz dla zespołu</b><span>każdy wypełnia swój ręcznie; podsumowanie liczy się samo</span></div></li>
-      <li><span class="ik txt">txt</span><div><b>Wiadomość do zespołu</b><span>do wklejenia na Slacka, Teams albo w mail</span></div></li>
-      <li class="skill"><span class="ik">AI</span><div><b>Skill „Mapa czynności” dla Ciebie</b><span>prowadzi przez analizę w pięciu krokach:</span>
-        <ol><li>Sprawdzenie arkuszy i pytania do ludzi</li><li>Diagnoza zespołu: gdzie idzie czas</li><li>Jeden standard procesu</li><li>AI, system czy człowiek</li><li>Plan dla zarządu na 30 dni</li></ol></div></li>
-    </ul>
-    <p class="gdzie">To uproszczona wersja metody, którą stosujemy we wdrożeniach, przygotowana do samodzielnej pracy. Zespół dostaje tylko arkusz. Skill obsługujesz Ty, w Claude, ChatGPT, Copilocie, Gemini albo Appto. Analiza dzieje się w Waszym AI: nikomu niczego nie wysyłacie.</p>
-  </div>
-</section>
-
-<!-- 9. TWOJA FIRMA: nowy wiersz w arkuszu -->
-<section class="koniec" id="wiersz">
-  <div class="wrap">
-    <h2>Teraz <em>Twoja firma</em>.</h2>
-    <p class="lead">Dopisz wiersz. Wpisz e-mail i naciśnij Enter, a zestaw pobierze się od razu.</p>
-    <div class="ark ark-cta" id="arkCta">
-      <div class="ark-tab"><span class="on">Mapa czynności · Twoja firma</span></div>
-      <form class="ark-g g-cta" id="fZ" novalidate>
-        <i class="rn"></i><b>Gdy</b><b>Co</b><b class="jk">Jak</b>
-        <i class="rn">1</i><span class="szary">W tym tygodniu</span><span class="szary">Sprawdzamy, co AI może u nas przejąć</span>
-        <label class="cel-in jk" id="celZ"><span class="sr">Twój e-mail</span><input id="iZ" type="email" inputmode="email" autocomplete="email" placeholder="Twój e-mail" enterkeyhint="send"><button type="submit" id="bZ" aria-label="Pobierz zestaw">↵</button>
-          <span class="kur ty" id="kTy" aria-hidden="true"><svg viewBox="0 0 16 20"><path d="M1 1v15.5l4.2-3.9 2.7 6.1 2.6-1.2-2.7-6h5.9z"/></svg><em>Ty</em></span></label>
-        <input type="text" name="kontrola" class="pulapka" tabindex="-1" autocomplete="off" aria-hidden="true">
-      </form>
-      <p class="blad" id="eZ" role="alert"></p>
-      <label class="zgoda" id="zgZ"><input type="checkbox" id="cZ"><span>Zgadzam się na wiadomości od Let's automate o tym zestawie (najwyżej kilka maili, wypis jednym kliknięciem). <a href="/polityka-prywatnosci">Prywatność</a></span></label>
-      <div class="pobrane" id="okZ" hidden>
-        <p><b>Gotowe.</b> Zestaw się pobiera. Jeśli nie ruszył:</p>
-        <div class="pob-l"><a class="btn" id="dZip" href="/materialy/mapa-czynnosci-zestaw.zip" download>Cały zestaw (.zip)</a><a class="btn btn-2" href="/materialy/Mapa-czynnosci.xlsx" download>Sam arkusz (.xlsx)</a></div>
-        <p class="pob-d">Zacznij od pliku JAK-UZYWAC.md: tam jest plan tygodnia i jak włączyć skill.</p>
-      </div>
-    </div>
-
-    <div class="ark ark-cta ark-om" id="omowienie">
-      <form class="ark-g g-cta" id="fO" novalidate>
-        <i class="rn">2</i><span class="szary">Po mapie</span><span class="szary">Wdrażamy agentów AI z Let's automate. Najpierw 30 min rozmowy o Waszej mapie, za darmo</span>
-        <label class="cel-in jk"><span class="sr">Telefon albo e-mail</span><input id="iO" type="text" autocomplete="email" placeholder="telefon albo e-mail" enterkeyhint="send"><button type="submit" id="bO" aria-label="Porozmawiajmy o wdrożeniu">↵</button></label>
-        <input type="text" name="kontrola" class="pulapka" tabindex="-1" autocomplete="off" aria-hidden="true">
-      </form>
-      <p class="blad" id="eO" role="alert"></p>
-      <p class="om-ok" id="okO" hidden>Dzięki! Odezwiemy się w jeden dzień roboczy i umówimy termin.</p>
-    </div>
-    <p class="om-d">Możesz też zrobić mapę z nami: przeprowadzimy ten tydzień z Twoim zespołem. <a href="/wdrozenie-ai-pod-klucz">Wdrożenie AI pod klucz</a></p>
-  </div>
-</section>
-
-</main>
-
-<footer class="stopka"><div class="wrap"><a class="logo" href="/" aria-label="Let's automate"><svg width="237" height="41" viewBox="0 0 237 41" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_4016_1321)"><path d="M126.179 11.1201H119.973L121.055 13.1157H123.346V13.6903H123.276C122.456 13.6903 121.72 14.1976 121.428 14.9669L115.801 29.877H118.115L119.711 25.6741H129.263L130.859 29.877H133.174L126.175 11.1201H126.179ZM126.83 23.6785H120.43L124.395 13.2502H124.633L128.571 23.6785H126.827H126.83Z" fill="#F4F8F2"></path><path d="M158.801 23.1478C158.801 18.918 161.781 15.9111 166.011 15.9111C170.241 15.9111 173.22 18.918 173.22 23.1478C173.22 27.3776 170.214 30.4113 166.011 30.4113C161.808 30.4113 158.801 27.4045 158.801 23.1478ZM171.013 23.1478C171.013 20.1141 168.91 17.9068 166.011 17.9068C163.111 17.9068 161.008 20.1141 161.008 23.1478C161.008 26.1816 163.084 28.4157 166.011 28.4157C168.937 28.4157 171.013 26.2084 171.013 23.1478Z" fill="#F4F8F2"></path><path d="M222.55 22.986C222.55 18.8872 225.53 15.9072 229.679 15.9072C233.829 15.9072 236.731 18.8873 236.731 23.0129C236.731 23.2783 236.731 23.5975 236.704 23.8898H224.811C225.13 26.6044 227.099 28.4119 229.841 28.4119C231.836 28.4119 233.593 27.4006 234.443 25.8048L236.278 26.7354C235.186 29.0233 232.767 30.4074 229.787 30.4074C225.584 30.4074 222.55 27.2931 222.55 22.9827V22.986ZM234.42 21.9479C234.02 19.5256 232.132 17.9029 229.579 17.9029C227.025 17.9029 225.214 19.5256 224.841 21.9479H234.42Z" fill="#F4F8F2"></path><path d="M153.664 26.3388V20.0999C153.664 19.3742 153.076 18.7829 152.347 18.7829H152.112V18.2118H153.661V18.195L157.118 18.2118V16.4379H153.661L153.687 12.1006H151.957L151.45 16.4379H149.27V18.195H151.45V26.416C151.45 28.7846 152.888 30.3806 155.149 30.3806C155.814 30.3806 156.691 30.2461 157.329 30.0345V28.2504C156.826 28.4117 156.133 28.5158 155.734 28.5158C154.457 28.5158 153.657 27.6121 153.657 26.3354L153.664 26.3388Z" fill="#F4F8F2"></path><path d="M217.389 26.3388V20.0999C217.389 19.3742 216.802 18.7829 216.073 18.7829H215.837V18.2118H217.386V18.195L220.843 18.2118V16.4379H217.386L217.413 12.1006H215.683L215.176 16.4379H212.995V18.195H215.176V26.416C215.176 28.7846 216.613 30.3806 218.875 30.3806C219.54 30.3806 220.416 30.2461 221.055 30.0345V28.2504C220.551 28.4117 219.859 28.5158 219.459 28.5158C218.182 28.5158 217.383 27.6121 217.383 26.3354L217.389 26.3388Z" fill="#F4F8F2"></path><path d="M144.643 16.4419V24.2631C144.643 26.6317 142.702 28.3619 140.44 28.3619C138.179 28.3619 136.795 26.7392 136.795 24.4512V16.4419H134.588V24.6596C134.588 27.5892 136.802 30.0989 139.722 30.3375C141.143 30.4549 142.433 30.0214 143.417 29.1616C143.84 28.7919 144.072 28.251 144.072 27.69V27.1961H144.643V28.0394V29.8736H146.851V16.4385H144.643V16.4419Z" fill="#F4F8F2"></path><path d="M191.366 15.938C189.344 15.938 187.801 16.9493 186.871 18.5182H186.632C185.86 16.9493 184.133 15.9111 182.241 15.9111C181.072 15.9111 180.057 16.3244 179.288 17.0064C178.875 17.3759 178.646 17.9101 178.646 18.4645V19.0927H178.065V16.4419H175.935V29.8771H178.142V21.8409C178.142 19.4724 179.58 17.9034 181.761 17.9034C183.941 17.9034 185.221 19.4724 185.221 21.8409V29.8771H187.428V21.8409C187.428 19.553 188.944 17.9034 191.101 17.9034C193.123 17.9034 194.584 19.553 194.584 21.8409V29.8771H196.792V21.8678C196.792 18.3838 194.531 15.9347 191.363 15.9347L191.366 15.938Z" fill="#F4F8F2"></path><path d="M205.151 15.9375C201.771 15.9375 199.563 17.7484 199.563 20.594H201.798C201.771 18.9175 203.101 17.9331 205.124 17.9331C207.331 17.9331 208.635 19.1023 208.635 20.9131V21.444L204.909 21.8975C200.917 22.3511 198.895 24.1048 198.895 26.4734C198.895 28.8419 200.81 30.3033 203.709 30.3033C205.221 30.3033 206.444 29.8834 207.371 29.1007C207.805 28.7344 208.04 28.1868 208.04 27.619V27.068H208.631V29.88H210.839V20.9669C210.839 17.9063 208.631 15.9375 205.144 15.9375H205.151ZM208.635 24.5315C208.635 26.7925 206.773 28.469 204.032 28.469C202.221 28.469 201.106 27.6963 201.106 26.4196C201.106 25.1429 202.17 24.1048 204.909 23.7588L208.635 23.3321V24.5281V24.5315Z" fill="#F4F8F2"></path><path d="M89.4541 17.6842H92.9111L89.4541 17.6641V17.6842Z" fill="#F4F8F2"></path><path d="M57.9139 28.5764L57.5108 28.1733L57.8634 27.8205C58.4816 27.2023 58.8277 26.3658 58.8277 25.4956V10.5889H56.4053V29.3458H68.2717V27.2158H60.6351C59.7616 27.2158 58.925 27.5618 58.3102 28.18L57.9139 28.5764Z" fill="#F4F8F2"></path><path d="M89.4542 25.8085V19.5696C89.4542 18.844 88.8661 18.2526 88.137 18.2526H87.9018V17.6815H89.4508V17.6647L92.9078 17.6815V15.9076H89.4508L89.4774 11.5703H87.7472L87.24 15.9076H85.0596V17.6647H87.24V25.8858C87.24 28.2543 88.678 29.85 90.939 29.85C91.6043 29.85 92.4811 29.7158 93.1194 29.5042V27.7202C92.6156 27.8814 91.9234 27.9855 91.5237 27.9855C90.2468 27.9855 89.4474 27.0818 89.4474 25.8051L89.4542 25.8085Z" fill="#F4F8F2"></path><path d="M104.593 21.5515C102.597 21.313 100.79 21.1786 100.79 19.5022C100.79 18.118 102.12 17.2411 104.062 17.2411C106.138 17.2411 107.546 18.2793 107.573 19.9288H109.727C109.727 17.1605 107.439 15.3799 104.086 15.3799C100.733 15.3799 98.6834 16.9757 98.6834 19.5828C98.6834 22.6434 101.583 23.3086 104.086 23.6009C106.108 23.8664 107.942 24.0007 107.942 25.7545C107.942 27.1655 106.639 28.0155 104.616 28.0155C102.09 28.0155 100.598 26.712 100.571 24.797H98.4414C98.4414 27.9886 100.675 29.8801 104.536 29.8801C107.969 29.8801 110.015 28.3649 110.015 25.7309C110.015 22.5124 107.116 21.8741 104.586 21.5549L104.593 21.5515Z" fill="#F4F8F2"></path><path d="M96.5263 12.5846V12.9172L96.2372 13.2061C95.73 13.7134 95.4443 14.4021 95.4443 15.1177V17.7248C96.5431 17.7248 97.4333 16.8345 97.4333 15.7359V11.3516H95.4443V12.5879H96.5263V12.5846Z" fill="#F4F8F2"></path><path d="M76.8151 15.377C72.6659 15.377 69.686 18.357 69.686 22.4557C69.686 26.7662 72.7198 29.8806 76.9226 29.8806C79.9028 29.8806 82.3249 28.4964 83.4134 26.2085L81.5791 25.2779C80.7292 26.8737 78.972 27.8849 76.9765 27.8849C74.235 27.8849 72.2662 26.0741 71.947 23.3629H83.8401C83.867 23.0706 83.867 22.7514 83.867 22.486C83.867 18.3603 80.9138 15.3803 76.8151 15.3803V15.377ZM71.974 21.4176C72.3467 18.9953 74.235 17.3726 76.711 17.3726C79.187 17.3726 81.1524 18.9953 81.5521 21.4176H71.974Z" fill="#F4F8F2"></path><path d="M31.1674 0.5V17.4327C29.7901 11.2307 26.1381 0.5 26.1381 0.5H17.1107C18.599 6.44658 20.7794 12.7694 21.6328 16.7405H21.6193C20.7291 14.2443 18.7435 10.4076 14.2919 4.60213C13.1564 3.12389 12.0275 1.72963 11.0029 0.5H0C6.53453 7.53847 13.5092 17.1168 13.5092 20.5C13.5092 23.8832 6.53453 33.4614 0 40.5H11.0029C12.0309 39.2705 13.1597 37.8762 14.2919 36.3979C18.636 30.7301 20.635 26.9405 21.5522 24.4409C20.6484 28.4254 18.4176 34.6543 16.8822 40.5H25.9298C25.9298 40.5 29.6389 30.4245 31.1035 24.3636L30.8349 40.5H39.6641L39.9966 20.5538V0.5H31.1674Z" fill="#00CD77"></path></g><defs><clipPath id="clip0_4016_1321"><rect width="236.879" height="40" fill="white" transform="translate(0 0.5)"></rect></clipPath></defs></svg></a><span>Let's automate · <a href="/polityka-prywatnosci">Polityka prywatności</a></span></div></footer>
-
+<!-- ============ 1 · HERO (jasny: wynik to dokument) ============
+     Trzy osoby, każda w swoim pliku, wpisują po jednej czynności. Okna leżą jedno na drugim jak kartki na
+     blacie; pętla stoi, kiedy hero nie widać. -->
+<Hero wariant="jasny" lead="Mapa czynności to uproszczona wersja metody z naszych wdrożeń. Zespół przez kilka dni spisuje swoją pracę w arkuszu, a skill w Waszym AI robi z tego diagnozę i plan na start. Za darmo, do samodzielnej pracy." cta={{ href: '#pobierz', t: 'Pobierz zestaw' }} link={{ href: '#jak-wyglada', t: 'Zobaczcie, jak działa skill →' }}>
+<Fragment slot="h1">Sprawdźcie w tydzień, co AI może <span>przejąć w Waszej firmie</span></Fragment>
+<figure class="mh hero-wid" role="img" aria-label="Trzy arkusze Mapa czynności: Ania, Marek i Kasia, każde w swoim pliku, wpisują po jednej czynności z dnia pracy." data-mh>
+<div class="mh-stos" aria-hidden="true">
+<div class="xl " data-kto="kasia"><div class="xl-tb"><span class="xl-ico">X</span><b>Mapa-czynnosci_Kasia.xlsx</b><span class="xl-av" style="--c:#e8590c">K</span></div><div class="xl-rb"><span>Plik</span><span class="on">Narzędzia główne</span><span>Wstawianie</span><span>Układ strony</span><span>Formuły</span><span>Dane</span></div><div class="xl-fb"><span class="xl-nb">B5</span><span class="xl-fx">fx</span><span class="xl-fv"></span></div><div class="xl-g" ><i class="kl"></i><i class="kl a">A</i><i class="kl b">B</i><i class="kl ">C</i><i class="kl ">D</i><i class="rn">3</i><span class="nag a">Lp.</span><span class="nag b">Gdy</span><span class="nag">Co</span><span class="nag">Jak</span><i class="rn">4</i><span class="prz a">PRZ.</span><span class="prz b">Każdy poniedziałek</span><span class="prz">Raport statusu dla klienta</span><span class="prz">Zbieram info → dokument → mail</span><i class="rn">5</i><span class="c a">1</span><span class="c kar b" data-w="Po wizycie technika" data-adr="B5"></span><span class="c kar" data-w="Wystawiam fakturę" data-adr="C5"></span><span class="c kar" data-w="Protokół ze zdjęcia → przepisuję do faktury" data-adr="D5"></span><i class="rn">6</i><span class="a"></span><span class="b"></span><span></span><span></span></div><div class="xl-tabs"><span>Instrukcja</span><span class="on">Moje czynności</span><span>Podsumowanie</span><i>+</i></div></div>
+<div class="xl " data-kto="marek"><div class="xl-tb"><span class="xl-ico">X</span><b>Mapa-czynnosci_Marek.xlsx</b><span class="xl-av" style="--c:#6d4aff">M</span></div><div class="xl-rb"><span>Plik</span><span class="on">Narzędzia główne</span><span>Wstawianie</span><span>Układ strony</span><span>Formuły</span><span>Dane</span></div><div class="xl-fb"><span class="xl-nb">B5</span><span class="xl-fx">fx</span><span class="xl-fv"></span></div><div class="xl-g" ><i class="kl"></i><i class="kl a">A</i><i class="kl b">B</i><i class="kl ">C</i><i class="kl ">D</i><i class="rn">3</i><span class="nag a">Lp.</span><span class="nag b">Gdy</span><span class="nag">Co</span><span class="nag">Jak</span><i class="rn">4</i><span class="prz a">PRZ.</span><span class="prz b">Każdy poniedziałek</span><span class="prz">Raport statusu dla klienta</span><span class="prz">Zbieram info → dokument → mail</span><i class="rn">5</i><span class="c a">1</span><span class="c kar b" data-w="Po telefonie klienta" data-adr="B5"></span><span class="c kar" data-w="Przygotowuję wycenę" data-adr="C5"></span><span class="c kar" data-w="Cennik w Excelu → kopiuję pozycje do maila" data-adr="D5"></span><i class="rn">6</i><span class="a"></span><span class="b"></span><span></span><span></span></div><div class="xl-tabs"><span>Instrukcja</span><span class="on">Moje czynności</span><span>Podsumowanie</span><i>+</i></div></div>
+<div class="xl " data-kto="ania"><div class="xl-tb"><span class="xl-ico">X</span><b>Mapa-czynnosci_Ania.xlsx</b><span class="xl-av" style="--c:#d6336c">A</span></div><div class="xl-rb"><span>Plik</span><span class="on">Narzędzia główne</span><span>Wstawianie</span><span>Układ strony</span><span>Formuły</span><span>Dane</span></div><div class="xl-fb"><span class="xl-nb">B5</span><span class="xl-fx">fx</span><span class="xl-fv"></span></div><div class="xl-g" ><i class="kl"></i><i class="kl a">A</i><i class="kl b">B</i><i class="kl ">C</i><i class="kl ">D</i><i class="rn">3</i><span class="nag a">Lp.</span><span class="nag b">Gdy</span><span class="nag">Co</span><span class="nag">Jak</span><i class="rn">4</i><span class="prz a">PRZ.</span><span class="prz b">Każdy poniedziałek</span><span class="prz">Raport statusu dla klienta</span><span class="prz">Zbieram info → dokument → mail</span><i class="rn">5</i><span class="c a">1</span><span class="c kar b" data-w="Gdy przyjdzie mail" data-adr="B5"></span><span class="c kar" data-w="Przyjmuję zgłoszenie" data-adr="C5"></span><span class="c kar" data-w="Mail → umowa w PDF → kalendarz → telefon" data-adr="D5"></span><i class="rn">6</i><span class="a"></span><span class="b"></span><span></span><span></span></div><div class="xl-tabs"><span>Instrukcja</span><span class="on">Moje czynności</span><span>Podsumowanie</span><i>+</i></div></div>
 </div>
+</figure>
+</Hero>
+
+<!-- ============ 2 · CZYM JEST ============ -->
+<section id="czym-jest" class="v3-sek v3-papier">
+<div class="v3-def">
+<h2 class="v3-h2m">Czym jest mapa czynności?</h2>
+<div>
+<p class="v3-def-duzy rv">Mapa czynności to arkusz, w którym każda osoba z zespołu przez kilka dni spisuje swoją pracę krok po kroku, i skill AI, który z tych arkuszy robi diagnozę: gdzie idzie czas, co może przejąć AI, co system, a co zostaje u ludzi. Od tej samej mapy zaczynamy nasze wdrożenia. W zestawie dostajecie ją w uproszczonej formie, do samodzielnej pracy.</p>
+</div>
+</div>
+<Procesy tytul="Pięć kroków skilla" etykietaA="Co robi" etykietaB="Co dostajecie" pozycje={KROKI_SKILLA} />
+</section>
+
+<!-- ============ 2b · ZIELONY PAS ============ -->
+<Pas tekst="Jeśli po mapie nie będzie jasne, od czego zacząć, powiemy Wam to na pierwszej rozmowie" foto="/piotr-wojciuk.jpg" fotoW={1002} fotoH={1100} alt="Piotr Wojciuk, New Business Lead w Let's automate" imie="Piotr Wojciuk" rola="New Business Lead" />
+
+<!-- ============ 3 · DLACZEGO ============
+     Teza i dwa bloki: arkusz Ani (procedura 3 kroki, w arkuszu 14) i arkusze zespołu (41 z 61 poza procedurami). -->
+<section id="dlaczego" class="v3-sek">
+<h2 class="v3-h2m">Dlaczego wdrożenie AI zaczyna się od mapy</h2>
+<p class="v3-teza rv"><span>Większość pracy w firmie dzieje się obok procedur.</span> AI przejmie tylko tę, którą ktoś opisał krok po kroku</p>
+
+<div class="dl-blok">
+<div class="dl-gl"><h3>Procedura ma trzy kroki, Ania zapisała czternaście</h3><p>W procedurze przyjęcia zgłoszenia są trzy kroki. Ania przez kilka dni wpisywała, co naprawdę robi: szuka umowy w PDF, pyta magazyn o część, przekleja opis usterki. Jedenastu z tych kroków nie ma w żadnym dokumencie, a bez nich AI nie ma czego przejąć.</p></div>
+<figure class="dl-kafel ma" data-ma>
+<div class="ts4-gl"><b>Przyjęcie zgłoszenia · procedura i arkusz Ani</b><div class="mc-licz"><span>Spoza procedury</span><b data-ma-licz>0</b><em>z 14 kroków</em></div></div>
+<div class="ma-uk" role="img" aria-label="Z lewej procedura przyjęcia zgłoszenia: trzy kroki. Z prawej arkusz Ani: w pasku formuły kolumna Jak, czternaście kroków, jedenaście z nich spoza procedury." aria-hidden="false">
+<div class="ma-proc"><small>Procedura · Przyjęcie zgłoszenia</small><ol><li><i><svg viewBox="0 0 12 12"><path d="M2.5 6.2l2.3 2.3 4.7-5"/></svg></i>Przyjmij zgłoszenie</li><li><i><svg viewBox="0 0 12 12"><path d="M2.5 6.2l2.3 2.3 4.7-5"/></svg></i>Umów technika</li><li><i><svg viewBox="0 0 12 12"><path d="M2.5 6.2l2.3 2.3 4.7-5"/></svg></i>Potwierdź klientowi</li></ol><p>Ostatnia zmiana: dwa lata temu.</p></div><div class="xl " data-kto="ania"><div class="xl-tb"><span class="xl-ico">X</span><b>Mapa-czynnosci_Ania.xlsx</b><span class="xl-av" style="--c:#d6336c">A</span></div><div class="xl-rb"><span>Plik</span><span class="on">Narzędzia główne</span><span>Wstawianie</span><span>Układ strony</span><span>Formuły</span><span>Dane</span></div><div class="xl-fb"><span class="xl-nb">D5</span><span class="xl-fx">fx</span><div class="xl-fv"><div class="ma-l"><span class="n">1</span><span class="t" data-v="Czytam mail od klienta"></span><span class=nz>Outlook</span></div><div class="ma-l nowy"><span class="n">2</span><span class="t" data-v="Szukam klienta w systemie po nazwie"></span><span class=nz>system</span></div><div class="ma-l nowy"><span class="n">3</span><span class="t" data-v="Otwieram umowę serwisową"></span><span class=nz>PDF na dysku</span></div><div class="ma-l nowy"><span class="n">4</span><span class="t" data-v="Sprawdzam, czy jest gwarancja"></span><span class=nz>arkusz</span></div><div class="ma-l nowy"><span class="n">5</span><span class="t" data-v="Brak numeru seryjnego: piszę do klienta"></span><span class=nz>Outlook</span></div><div class="ma-l nowy"><span class="n">6</span><span class="t" data-v="Czekam, wracam do maila po 2 h"></span></div><div class="ma-l"><span class="n">7</span><span class="t" data-v="Szukam wolnego technika"></span><span class=nz>kalendarz</span></div><div class="ma-l nowy"><span class="n">8</span><span class="t" data-v="Dzwonię do technika, czy zdąży"></span><span class=nz>telefon</span></div><div class="ma-l nowy"><span class="n">9</span><span class="t" data-v="Pytam magazyn o część"></span><span class=nz>WhatsApp</span></div><div class="ma-l nowy"><span class="n">10</span><span class="t" data-v="Wpisuję zlecenie do systemu"></span><span class=nz>system</span></div><div class="ma-l nowy"><span class="n">11</span><span class="t" data-v="Przeklejam opis usterki z maila"></span><span class=nz>system</span></div><div class="ma-l"><span class="n">12</span><span class="t" data-v="Wysyłam klientowi termin"></span><span class=nz>Outlook</span></div><div class="ma-l nowy"><span class="n">13</span><span class="t" data-v="Wpisuję termin technikowi"></span><span class=nz>kalendarz</span></div><div class="ma-l nowy"><span class="n">14</span><span class="t" data-v="Odhaczam zgłoszenie w zestawieniu"></span><span class=nz>arkusz</span></div></div></div><div class="xl-g" ><i class="kl"></i><i class="kl b">B</i><i class="kl ">C</i><i class="kl on">D</i><i class="kl ">E</i><i class="rn">3</i><span class="nag b">Gdy</span><span class="nag">Co</span><span class="nag">Jak</span><span class="nag mn">Czas</span><i class="rn">4</i><span class="prz b">Każdy poniedziałek</span><span class="prz">Raport statusu dla klienta</span><span class="prz">Zbieram info → dokument → mail</span><span class="prz mn">60</span><i class="rn on">5</i><span class="c b">Gdy przyjdzie mail</span><span class="c kar" data-c5 data-v="Przyjmuję zgłoszenie od klienta"></span><span class="c" data-d5></span><span class="c kar mn" data-f5></span><i class="rn">6</i><span class="b"></span><span></span><span></span><span></span></div><div class="xl-tabs"><span>Instrukcja</span><span class="on">Moje czynności</span><span>Podsumowanie</span><i>+</i></div></div>
+</div>
+</figure>
+</div>
+
+<div class="dl-blok">
+<div class="dl-gl"><h3>41 z 61 czynności nie ma w żadnej procedurze</h3><p>Pięć osób przez cztery dni, kilka minut dziennie. Pilnowanie protokołów, ceny u trzech dostawców, telefony przed sezonem: tego nikt nie spisał, a właśnie to zajmuje najwięcej czasu. Nie macie procedur ani dokumentacji? Mapa zbierze je z codziennej pracy.</p></div>
+<figure class="dl-kafel mz" data-mz data-poza="196">
+<div class="ts4-gl"><b>Arkusze pięciu osób w jednym zestawieniu</b><div class="mc-licz"><span>Poza procedurami</span><b data-mz-licz>0 h</b><em>z 312 h miesięcznie</em></div></div>
+<div class="mz-uk" role="img" aria-label="Zestawienie arkuszy pięciu osób: kto, co, godziny w miesiącu i czy czynność jest w procedurze. Większość wierszy nie ma procedury.">
+<div class="xl " data-kto=""><div class="xl-tb"><span class="xl-ico">X</span><b>Mapa-czynnosci_zespol.xlsx</b></div><div class="xl-rb"><span>Plik</span><span class="on">Narzędzia główne</span><span>Wstawianie</span><span>Układ strony</span><span>Formuły</span><span>Dane</span></div><div class="xl-fb"><span class="xl-nb">D2</span><span class="xl-fx">fx</span><span class="xl-fv">Procedura</span></div><div class="xl-g" ><i class="kl"></i><i class="kl ">A</i><i class="kl ">B</i><i class="kl ">C</i><i class="kl ">D</i><i class="rn">1</i><span class="nag">Kto</span><span class="nag">Co</span><span class="nag mn">h / mies.</span><span class="nag">Procedura</span><i class="rn rw">2</i><span class="c rw kto" style="--kc:#d6336c">Ania</span><span class="c rw">Przyjmuję zgłoszenie serwisowe</span><span class="c rw mn">33</span><span class="c rw w tak" data-v="✓ jest"></span><i class="rn rw">3</i><span class="c rw kto" style="--kc:#6d4aff">Marek</span><span class="c rw">Przygotowuję wycenę naprawy</span><span class="c rw mn">24</span><span class="c rw w tak" data-v="✓ jest"></span><i class="rn rw">4</i><span class="c rw kto" style="--kc:#e8590c">Kasia</span><span class="c rw">Pilnuję brakujących protokołów</span><span class="c rw mn">9</span><span class="c rw w nie" data-v="brak"></span><i class="rn rw">5</i><span class="c rw kto" style="--kc:#0b8a7c">Tomek</span><span class="c rw">Sprawdzam ceny u trzech dostawców</span><span class="c rw mn">14</span><span class="c rw w nie" data-v="brak"></span><i class="rn rw">6</i><span class="c rw kto" style="--kc:#d6336c">Ania</span><span class="c rw">Szukam umowy klienta na dysku</span><span class="c rw mn">8</span><span class="c rw w nie" data-v="brak"></span><i class="rn rw">7</i><span class="c rw kto" style="--kc:#1c7ed6">Paweł</span><span class="c rw">Poprawiam wyceny przed wysyłką</span><span class="c rw mn">11</span><span class="c rw w nie" data-v="brak"></span><i class="rn rw">8</i><span class="c rw kto" style="--kc:#6d4aff">Marek</span><span class="c rw">Dzwonię do klientów przed sezonem</span><span class="c rw mn">7</span><span class="c rw w nie" data-v="brak"></span><i class="rn rw">9</i><span class="c rw kto" style="--kc:#e8590c">Kasia</span><span class="c rw">Przepisuję protokół do faktury</span><span class="c rw mn">28</span><span class="c rw w tak" data-v="✓ jest"></span><i class="rn rw">10</i><span class="c rw kto" style="--kc:#d6336c">Ania</span><span class="c rw">Przypominam o przeglądach</span><span class="c rw mn">6</span><span class="c rw w nie" data-v="brak"></span><i class="rn rw">11</i><span class="c rw kto" style="--kc:#0b8a7c">Tomek</span><span class="c rw">Odpowiadam technikom o części</span><span class="c rw mn">15</span><span class="c rw w nie" data-v="brak"></span><i class="rn">12</i><span class="suma">Razem</span><span class="suma">61 czynności, tu pierwsze 10</span><span class="suma mn">312</span><span class="suma">41 bez procedury</span></div><div class="xl-tabs"><span style="--c:#d6336c">Ania</span><span style="--c:#6d4aff">Marek</span><span style="--c:#e8590c">Kasia</span><span style="--c:#1c7ed6">Paweł</span><span style="--c:#0b8a7c">Tomek</span><span class="on">Zestawienie</span></div></div>
+</div>
+</figure>
+</div>
+</section>
+
+<!-- ============ 4 · JAK WYGLĄDA ============
+     Ciemna scena z pięcioma krokami skilla. Każdy krok to obiekt: arkusz z komentarzami, procesy z godzinami,
+     trzy wersje i standard, kroki w kolorach, jedna strona dla zarządu. -->
+<section id="jak-wyglada" class="v3-sek v3-scena v3-ziarno">
+<div class="v8-gl">
+<h2 class="v3-h2 jasny">Jak skill prowadzi przez analizę</h2>
+<p class="v3-sub jasny">Na przykładzie tej samej firmy serwisowej. Zespół dostaje tylko arkusz, skill obsługuje osoba, która prowadzi mapę.</p>
+</div>
+<div class="v3-zak" role="tablist" aria-label="Kroki skilla" data-kz>
+<button role="tab" aria-selected="true" aria-controls="kz-0" id="kz-b0">1 · Sprawdzenie</button>
+<button role="tab" aria-selected="false" aria-controls="kz-1" id="kz-b1">2 · Diagnoza</button>
+<button role="tab" aria-selected="false" aria-controls="kz-2" id="kz-b2">3 · Standard</button>
+<button role="tab" aria-selected="false" aria-controls="kz-3" id="kz-b3">4 · Podział</button>
+<button role="tab" aria-selected="false" aria-controls="kz-4" id="kz-b4">5 · Plan</button>
+</div>
+<div class="kz" data-kz-p>
+<article id="kz-0" role="tabpanel" aria-labelledby="kz-b0"><p class="kz-op">Osoba prowadząca wkleja arkusze, które oddał zespół. Skill wskazuje wiersze, z których nic jeszcze nie wynika, i pisze <b>gotową wiadomość do każdej osoby</b>. Poprawki ludzie wpisują sami.</p><div class="kz-uk"><div><div class="xl kz1" data-kto="marek"><div class="xl-tb"><span class="xl-ico">X</span><b>Mapa-czynnosci_Marek.xlsx</b><span class="xl-av" style="--c:#6d4aff">M</span></div><div class="xl-rb"><span>Plik</span><span class="on">Narzędzia główne</span><span>Wstawianie</span><span>Układ strony</span><span>Formuły</span><span>Dane</span></div><div class="xl-fb"><span class="xl-nb">C5</span><span class="xl-fx">fx</span><span class="xl-fv">Obsługa klienta</span></div><div class="xl-g" ><i class="kl"></i><i class="kl ">C</i><i class="kl ">D</i><i class="kl ">H</i><i class="rn">3</i><span class="nag">Co</span><span class="nag">Jak</span><span class="nag">AI</span><i class="rn">5</i><span class="c kom">Obsługa klienta</span><span class="c">maile, telefony</span><span class="c"></span><i class="rn">6</i><span class="c">Przygotowuję wycenę naprawy</span><span class="c kom">Robię wycenę w Excelu i wysyłam</span><span class="c">ChatGPT do maila</span><i class="rn">7</i><span class="c">Raport sprzedaży dla Pawła</span><span class="c">Eksport z systemu → arkusz → mail</span><span class="c kom"></span></div><div class="xl-tabs"><span>Instrukcja</span><span class="on">Moje czynności</span><span>Podsumowanie</span><i>+</i></div></div><div class="kz-not"><div><b>C5</b>Za szeroko. Co się na to składa? Rozpisz każdą rzecz w osobnym wierszu.</div><div><b>D6</b>Skąd bierzesz ceny części? Dopisz to w „Jak”.</div><div><b>H7</b>Używasz tu AI? Jeśli nie, napisz dlaczego.</div></div></div><div class="kz-papier kz-msg"><h4>Wiadomość do Marka</h4><p>Marek, dzięki za arkusz. Trzy pytania, zanim zrobimy diagnozę:</p><ol><li>Wiersz 5, „Obsługa klienta”: co się na to składa? Rozpisz to w osobnych wierszach.</li><li>Wiersz 6: skąd bierzesz ceny części do wyceny?</li><li>Wiersz 7: używasz tu AI? Jeśli nie, napisz dlaczego.</li></ol><p>Poprawki wpisz proszę w swoim arkuszu.</p><small>Do wysłania na Slacku, w Teams albo mailem</small></div></div></article>
+<article id="kz-1" role="tabpanel" aria-labelledby="kz-b1"><p class="kz-op">Skill łączy te same sprawy u różnych osób w procesy, liczy godziny w miesiącu i pyta, które procesy macie opisane. <b>Trzy procesy na start wybiera na liczbach.</b></p><div class="kz-uk"><div class="kz-pr"><ul><li><b>Przyjęcie zgłoszenia</b><span class="h">86 h</span><small>Ania · Marek · Kasia</small><span class="tag start">na start</span><span class="bar"><i style="--w:100"></i></span><span class=uw>9 min u Marka, 35 min u Kasi: każdy robi to inaczej</span></li><li><b>Wyceny dla klientów</b><span class="h">41 h</span><small>Marek · Paweł</small><span class="tag start">na start</span><span class="bar"><i style="--w:48"></i></span></li><li><b>Protokoły i faktury po wizycie</b><span class="h">28 h</span><small>Kasia</small><span class="tag start">na start</span><span class="bar"><i style="--w:33"></i></span></li><li><b>Raport miesięczny dla klienta</b><span class="h">17 h</span><small>Paweł</small><span class="tag obok">obok procedur</span><span class="bar"><i style="--w:20"></i></span></li></ul></div><div class="kz-papier kz-rap"><h4>Diagnoza zespołu</h4><table><tr><td>Spisane czynności</td><td>61</td></tr><tr><td>Godziny w miesiącu</td><td>312 h</td></tr><tr><td>Obok procedur</td><td>196 h</td></tr><tr><td>Procesy robione przez kilka osób różnie</td><td>2</td></tr></table><div class="dec">Na start: przyjęcie zgłoszenia, wyceny, protokoły i faktury. Razem 155 h w miesiącu.</div></div></div></article>
+<article id="kz-2" role="tabpanel" aria-labelledby="kz-b2"><p class="kz-op">Przyjęcie zgłoszenia robią trzy osoby. Skill bierze <b>najlepszą wersję za bazę</b>, dokłada z innych to, co coś poprawia, i wypisuje zasady, które zna tylko jedna osoba.</p><div class="kz-uk"><div class="kz-wer"><div class="baza"><b>Ania</b><em>14 kroków · 22 min</em>sprawdza umowę i gwarancję przed terminem; czeka na numer seryjny</div><div><b>Marek</b><em>9 kroków · 9 min</em>nie sprawdza gwarancji; dzwoni do technika dopiero po sprawdzeniu części</div><div><b>Kasia</b><em>16 kroków · 35 min</em>wszystko przepisuje ręcznie do dwóch miejsc</div></div><div class="kz-papier kz-std"><h4>Standard · 12 kroków</h4><ol><li>Czytam zgłoszenie z maila</li><li>Szukam klienta i umowy serwisowej</li><li>Sprawdzam gwarancję</li><li>Brak numeru seryjnego: proszę o zdjęcie tabliczki</li><li class="z">Sprawdzam część w magazynie (z wersji Marka)</li><li class="z">Dopiero potem dzwonię do technika (z wersji Marka)</li><li>Wpisuję zlecenie do systemu</li><li>Wysyłam klientowi termin</li><li>…cztery kolejne</li></ol><div class="zas"><b>Zasada z głowy · zna ją Ania</b>Klient z umową ramową nie płaci za dojazd. Tego nie ma w żadnym cenniku.</div></div></div></article>
+<article id="kz-3" role="tabpanel" aria-labelledby="kz-b3"><p class="kz-op">Każdy krok standardu dostaje swoje miejsce: AI, system albo człowiek. Skill mówi też, <b>co zrobicie sami od jutra, a co wymaga agenta</b> na Waszych programach.</p><div class="kz-uk"><ol class="kz-rz"><li class="ai">Czytam mail od klienta<span>AI</span></li><li class="sys">Szukam klienta w systemie po nazwie<span>system</span></li><li class="ai">Otwieram umowę serwisową<span>AI</span></li><li class="ai">Sprawdzam, czy jest gwarancja<span>AI</span></li><li class="ai">Brak numeru seryjnego: piszę do klienta<span>AI</span></li><li class="zn">Czekam, wracam do maila po 2 h<span>znika</span></li><li class="sys">Szukam wolnego technika<span>system</span></li><li class="cz">Dzwonię do technika, czy zdąży<span>człowiek</span></li><li class="sys">Pytam magazyn o część<span>system</span></li><li class="sys">Wpisuję zlecenie do systemu<span>system</span></li><li class="zn">Przeklejam opis usterki z maila<span>znika</span></li><li class="sys">Wysyłam klientowi termin<span>system</span></li><li class="sys">Wpisuję termin technikowi<span>system</span></li><li class="zn">Odhaczam zgłoszenie w zestawieniu<span>znika</span></li></ol><div class="kz-papier kz-po"><h4>Przyjęcie zgłoszenia po zmianie</h4><ol><li class="ai">AI czyta zgłoszenie, sprawdza umowę i gwarancję</li><li class="sys">System proponuje technika, termin i część</li><li class="cz">Ania zatwierdza jednym kliknięciem</li><li class="sys">Klient i technik dostają termin</li></ol></div></div></article>
+<article id="kz-4" role="tabpanel" aria-labelledby="kz-b4"><p class="kz-op">Na koniec jedna strona, którą zarząd przeczyta w trzy minuty. <b>Rachunek liczy się na Waszych stawkach</b>: skill o nie zapyta i niczego nie zakłada.</p><div class="kz-uk"><div class="kz-papier kz-rap"><header><b>Mapa czynności</b><span>Firma serwisowa · grudzień</span></header><h5>Trzy procesy na start</h5><table><tr><td>Przyjęcie zgłoszenia</td><td>86 h → 24 h</td></tr><tr><td>Wyceny dla klientów</td><td>41 h → 15 h</td></tr><tr><td>Protokoły i faktury</td><td>28 h → 6 h</td></tr></table><h5>Plan na 30 dni</h5><div class="tyg"><span><b>1</b>kontekst</span><span><b>2</b>budowa</span><span><b>3</b>testy</span><span><b>4</b>zespół</span></div><div class="dec">Czy zaczynamy od przyjęcia zgłoszeń i dajemy Ani 4 h tygodniowo na miesiąc?</div></div><div class="kz-papier kz-rap"><h5>Jak to zrealizować</h5><table><tr><td>Sami, od jutra: szkic odpowiedzi w czacie AI</td><td>86 → ok. 65 h</td></tr><tr><td>Agent AI na Waszych programach</td><td>86 → ok. 24 h</td></tr></table><p style="margin:12px 0 0;font-size:13px;color:var(--t2)">Pod planem skill dopisuje, gdzie porozmawiać o wdrożeniu agentów.</p></div></div></article>
+</div>
+</section>
+
+<!-- ============ 5 · ILE WRACA ============ -->
+<section id="ile-wraca" class="v3-sek">
+<div class="v8-gl">
+<h2 class="v3-h2">Ile czasu wraca do zespołu</h2>
+<p class="v3-sub">Przykład firmy serwisowej z tej strony: cztery procesy z diagnozy. Wasze liczby skill policzy z Waszych arkuszy i Waszych stawek.</p>
+</div>
+<div class="iw" data-anim data-gra>
+<div><ul class="iw-l"><li style="--a:86;--b:24;--i:0"><b>Przyjęcie zgłoszenia</b><span class="v"><s>86 h</s> → <strong>24 h</strong></span><div class="iw-b"><i class="przed czk-j"></i><i class="po"></i></div></li><li style="--a:41;--b:15;--i:1"><b>Wyceny dla klientów</b><span class="v"><s>41 h</s> → <strong>15 h</strong></span><div class="iw-b"><i class="przed czk-j"></i><i class="po"></i></div></li><li style="--a:28;--b:6;--i:2"><b>Protokoły i faktury</b><span class="v"><s>28 h</s> → <strong>6 h</strong></span><div class="iw-b"><i class="przed czk-j"></i><i class="po"></i></div></li><li style="--a:17;--b:3;--i:3"><b>Raport miesięczny dla klienta</b><span class="v"><s>17 h</s> → <strong>3 h</strong></span><div class="iw-b"><i class="przed czk-j"></i><i class="po"></i></div></li></ul><div class="iw-leg"><span><i class="czk-j"></i>dziś</span><span><i style="background:var(--ziel)"></i>po zmianie</span></div></div><div class="iw-sum"><p>Cztery procesy, godziny w miesiącu</p><p class="duzy"><s>172 h</s> 48 h</p><p class="wr">Wraca <b>ok. 124 godzin miesięcznie</b>. Ania przyjmie dwa razy więcej zgłoszeń bez nowej osoby.</p></div>
+</div>
+</section>
+
+<!-- ============ 6 · PO MAPIE ============
+     Most do wdrożenia: co zrobicie sami, a co robią agenci na Waszych programach. Kolumna z nami na ciemnej karcie
+     (standard: ciemne jest tylko to, co jest innym obiektem). -->
+<section id="po-mapie" class="v3-sek v3-papier">
+<div class="v8-gl">
+<h2 class="v3-h2">Po mapie: co zrobicie sami, a co zrobią agenci</h2>
+<p class="v3-sub">Ten sam proces, przyjęcie zgłoszenia, 86 godzin miesięcznie. Skill w kroku 4 rozpisuje to dla każdego Waszego procesu.</p>
+</div>
+<div class="pm"><article class="pm-k"><small>Sami, od jutra</small><h3>AI w czacie, z kontekstem z mapy</h3><dl><dt>Co robi AI</dt><dd>Pisze szkic odpowiedzi do klienta, kiedy Ania wklei zgłoszenie i umowę.</dd><dt>Kto przenosi dane</dt><dd>Ania: kopiuje z maila do czatu i z czatu do systemu.</dd><dt>Start</dt><dd>Od razu, z instrukcji, którą da skill.</dd></dl><div class="pm-h"><b>65 h</b><span>tyle mniej więcej zostaje<br>z 86 h miesięcznie</span></div></article><article class="pm-k my"><small>Z nami · agenci AI na Waszych programach</small><h3>Agent przyjmuje zgłoszenia, Ania tylko zatwierdza</h3><dl><dt>Co robi AI</dt><dd>Czyta maile, sprawdza umowę i gwarancję, proponuje technika, termin i część.</dd><dt>Kto przenosi dane</dt><dd>Nikt. Agent pracuje w poczcie, systemie serwisowym i kalendarzu.</dd><dt>Kto pilnuje jakości</dt><dd>Testy na Waszych sprawach przed startem i opieka po nim.</dd></dl><ul class="pm-log"><li><i>09:12</i>Zgłoszenie z maila: umowa i gwarancja sprawdzone</li><li><i>09:13</i>Wtorek 10:00, technik Bartek, część jest</li><li><i>09:14</i><span class="ok">Ania zatwierdziła · klient ma termin</span></li></ul><div class="pm-h"><b>24 h</b><span>tyle mniej więcej zostaje<br>z 86 h miesięcznie</span></div></article></div><CtaPasek tytul="Porozmawiajmy o agentach dla procesów z Waszej mapy." href="#kontakt" cta="Umów rozmowę" />
+</section>
+
+<!-- ============ 7 · POBIERZ ============ -->
+<section id="pobierz" class="mc-pob">
+<div class="pob"><div class="pob-t"><h2 class="v3-h2">Pobierzcie zestaw</h2><p class="v3-sub jasny">Dopiszcie wiersz: e-mail i Enter. Zestaw pobierze się od razu, bezpłatnie.</p><ul class="pob-pl"><li><span class="ik xls">xlsx</span><span><b>Arkusz dla zespołu</b>Każdy wypełnia swój, ręcznie. Podsumowanie liczy się samo.</span></li><li><span class="ik">txt</span><span><b>Wiadomość do zespołu</b>Gotowa na Slacka, Teams albo mail.</span></li><li><span class="ik ai">AI</span><span><b>Skill „Mapa czynności”</b>Dla osoby prowadzącej. Pięć kroków, od sprawdzenia arkuszy do planu dla zarządu.</span></li></ul></div><div><div class="xl " data-kto=""><div class="xl-tb"><span class="xl-ico">X</span><b>Mapa-czynnosci.xlsx</b></div><div class="xl-rb"><span>Plik</span><span class="on">Narzędzia główne</span><span>Wstawianie</span><span>Układ strony</span><span>Formuły</span><span>Dane</span></div><div class="xl-fb"><span class="xl-nb">D5</span><span class="xl-fx">fx</span><span class="xl-fv"></span></div><form class="xl-g" id="fZ" novalidate><i class="kl"></i><i class="kl ">B</i><i class="kl ">C</i><i class="kl d">D</i><i class="rn">3</i><span class="nag">Gdy</span><span class="nag">Co</span><span class="nag d">Jak</span><i class="rn on">5</i><span class="szary">W tym tygodniu</span><span class="szary">Sprawdzamy, co AI może u nas przejąć</span><label class="pob-cel"><span class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Wasz e-mail</span><input id="iZ" type="email" inputmode="email" autocomplete="email" placeholder="Wasz e-mail" enterkeyhint="send"><button type="submit" id="bZ" aria-label="Pobierz zestaw">↵</button><span class="mc-k" style="--c:#00CD77" aria-hidden="true"><svg viewBox="0 0 16 20"><path d="M1 1v15.5l4.2-3.9 2.7 6.1 2.6-1.2-2.7-6h5.9z"/></svg><em>Wy</em></span></label><input type="text" name="kontrola" class="pulapka" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0"></form><div class="xl-pod"><p class="pob-bl" id="eZ" role="alert"></p><label class="pob-zg" id="zgZ"><input type="checkbox" id="cZ"><span>Zgadzam się na wiadomości od Let's automate o tym zestawie (najwyżej kilka maili, wypis jednym kliknięciem). <a href="/polityka-prywatnosci">Prywatność</a></span></label><div class="pob-ok" id="okZ" hidden><p><b>Gotowe.</b> Zestaw się pobiera. Jeśli nie ruszył:</p><div><a class="g" id="dZip" href="/materialy/mapa-czynnosci-zestaw.zip" download>Cały zestaw (.zip)</a><a class="d" href="/materialy/Mapa-czynnosci.xlsx" download>Sam arkusz (.xlsx)</a></div><p style="color:#666;font-size:13px">Zacznijcie od pliku JAK-UZYWAC.md: plan tygodnia i jak włączyć skill.</p></div></div><div class="xl-tabs"><span>Instrukcja</span><span class="on">Moje czynności</span><span>Podsumowanie</span><i>+</i></div></div></div></div>
+</section>
+
+<!-- ============ 8 · DLA KOGO ============ -->
+<DlaKogo sub="Najlepiej, kiedy zespół pracuje w mailu, arkuszach i kilku systemach, a AI jest już w firmie, tylko nie widać go w wyniku." warunki={[
+  { t: 'Firma usługowa od 5 do 200 osób', d: 'Obsługa klientów, zleceń, ofert i dokumentów: tam mapa znajduje najwięcej pracy do oddania.' },
+  { t: 'Bez spisanych procesów też', d: 'Mapa zbiera pracę z codziennych zajęć, więc dokumentacja nie jest potrzebna na starcie.' },
+  { t: 'Jest ktoś, kto poprowadzi tydzień', d: 'Właściciel, kierownik albo osoba od wdrożenia AI. Zespół potrzebuje kilku minut dziennie.' },
+]} nie={[
+  'Firma na dwie, trzy osoby, w której właściciel sam wie, gdzie idzie czas.',
+  'Praca jest głównie fizyczna, przy maszynach albo w terenie, a w biurze dzieje się niewiele.',
+  'Chcecie od razu konkretnego narzędzia do jednej rzeczy: wtedy lepiej porozmawiać o <a href="/wdrozenie-ai-pod-klucz">wdrożeniu pod klucz</a>.',
+]} />
+
+<!-- ============ 9 · KONTAKT ============ -->
+<Kontakt tytul="Wolicie zrobić mapę z nami?" lead="Przeprowadzimy ten tydzień z Waszym zespołem albo od razu zaczniemy od agentów dla procesów z Waszej mapy." zrodlo="Mapa czynności · rozmowa" pytanie="Co chcecie zrobić?" podpowiedz="Np. mamy mapę i chcemy agenta do przyjmowania zgłoszeń. Albo: poprowadźcie z nami ten tydzień." />
+</div>
+
+<GcFaq heading="Pytania, które padają przed pobraniem" ctaLabel="Zadajcie nam swoje →" items={FAQ} />
+
 <script is:inline>
-/* Mapa czynności v3: sceny przewijane razem ze stroną.
-   Zasada (studio/ZASADY → „Ludzie przy pracy i płynny ruch”): wszystkie elementy są w kodzie od początku,
-   w trakcie przewijania zmieniają się tylko transform, opacity i tekst. Postęp sceny p (0–1) jest wygładzany,
-   więc ruch nie skacze przy szarpanym przewijaniu. ?s=<id>&p=<0-1> ustawia stronę na scenie (zrzuty). */
+/* MAPA CZYNNOŚCI v6 · ruch rysunków. Każdy rysunek to „odtwarzacz” z czasem w sekundach: gra, kiedy jest
+   w kadrze, stoi poza kadrem, przy ograniczonym ruchu od razu pokazuje stan końcowy. Układ makiet jest stały:
+   zmienia się tylko tekst, przezroczystość i położenie kursorów. ?t=<s> zatrzymuje wszystko w danej chwili (zrzuty). */
 (()=>{
 const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
-const qs=new URLSearchParams(location.search);
-const SNAP=!!window.__snap||qs.has('s');
-const cl=(x,a=0,b=1)=>x<a?a:x>b?b:x;
-const seg=(p,a,b)=>cl((p-a)/(b-a));
-const ez=t=>t*t*(3-2*t);
-const lerp=(a,b,t)=>a+(b-a)*t;
-const OS={ania:'#E5487F',marek:'#7C5CFF',kasia:'#F2762E',piotr:'#0EA5E9',tomek:'#14B8A6',ai:'#1C2420'};
-const IM={ania:'Ania',marek:'Marek',kasia:'Kasia',piotr:'Piotr',tomek:'Tomek',ai:'AI · Mapa czynności'};
+const qs=new URLSearchParams(location.search), STOP=qs.has('t')?parseFloat(qs.get('t')):null;
+const RED=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const cl=(x,a=0,b=1)=>x<a?a:x>b?b:x, seg=(t,a,b)=>cl((t-a)/(b-a)), ez=t=>t*t*(3-2*t), lerp=(a,b,t)=>a+(b-a)*t;
+const OS={ania:'#d6336c',marek:'#6d4aff',kasia:'#e8590c',pawel:'#1c7ed6',tomek:'#0b8a7c',ai:'#0f1a14'};
+const IM={ania:'Ania',marek:'Marek',kasia:'Kasia',pawel:'Paweł',tomek:'Tomek',ai:'AI · Mapa czynności'};
+const STRZ='<svg viewBox="0 0 16 20"><path d="M1 1v15.5l4.2-3.9 2.7 6.1 2.6-1.2-2.7-6h5.9z"/></svg>';
 
-/* ── narzędzia: tekst, geometria, kursory ── */
+/* ── tekst, geometria, kursory ── */
 const cv=document.createElement('canvas').getContext('2d'), fonty=new WeakMap();
-function szer(el,txt){let f=fonty.get(el);if(!f){const s=getComputedStyle(el);f=`${s.fontStyle} ${s.fontWeight} ${s.fontSize} ${s.fontFamily}`;fonty.set(el,f);}cv.font=f;return cv.measureText(txt).width;}
+function szer(el,t){let f=fonty.get(el);if(!f){const s=getComputedStyle(el);f=`${s.fontStyle} ${s.fontWeight} ${s.fontSize} ${s.fontFamily}`;fonty.set(el,f);}cv.font=f;return cv.measureText(t).width;}
 let geoC=new Map();
-function geo(el,root){
-  let g=geoC.get(el); if(g&&g.root===root)return g;
-  let x=0,y=0,e=el; while(e&&e!==root){x+=e.offsetLeft;y+=e.offsetTop;e=e.offsetParent;}
-  const s=getComputedStyle(el);
-  g={root,x,y,w:el.offsetWidth,h:el.offsetHeight,pl:parseFloat(s.paddingLeft)||0,pr:parseFloat(s.paddingRight)||0,mn:el.classList.contains('mn'),zaw:s.whiteSpace==='normal',lh:parseFloat(s.lineHeight)||parseFloat(s.fontSize)*1.25};
-  geoC.set(el,g); return g;
-}
+function geo(el,root){let g=geoC.get(el);if(g)return g;let x=0,y=0,e=el;while(e&&e!==root){x+=e.offsetLeft;y+=e.offsetTop;e=e.offsetParent;}
+  const s=getComputedStyle(el);g={x,y,w:el.offsetWidth,h:el.offsetHeight,pl:parseFloat(s.paddingLeft)||0,pr:parseFloat(s.paddingRight)||0,mn:el.classList.contains('mn')};geoC.set(el,g);return g;}
 function tekst(el,t){if(el._t!==t){el.textContent=t;el._t=t;}}
 function klasa(el,k,on){if(!!el['_'+k]!==on){el.classList.toggle(k,on);el['_'+k]=on;}}
-function kursor(root,kto){
-  const k=document.createElement('span'); k.className='kur'; k.style.setProperty('--c',OS[kto]);
-  k.innerHTML='<svg viewBox="0 0 16 20"><path d="M1 1v15.5l4.2-3.9 2.7 6.1 2.6-1.2-2.7-6h5.9z"/></svg><em>'+IM[kto]+'</em>';
-  root.appendChild(k); return {el:k,root,x:-1,y:-1,o:-1,l:null};
-}
-function stawK(k,x,y,o){
-  const l=x>(k.root._w||(k.root._w=k.root.offsetWidth))-96; if(l!==k.l){k.el.classList.toggle('lewo',l);k.l=l;}
+function kursor(root,kto){const k=document.createElement('span');k.className='mc-k';k.style.setProperty('--c',OS[kto]);k.innerHTML=STRZ+'<em>'+IM[kto]+'</em>';root.appendChild(k);return{el:k,root,x:-1,y:-1,o:-1,l:null};}
+function stawK(k,x,y,o){const l=x>k.root.offsetWidth-110;if(l!==k.l){k.el.classList.toggle('lewo',l);k.l=l;}
   if(Math.abs(k.x-x)>.15||Math.abs(k.y-y)>.15){k.el.style.transform=`translate3d(${x.toFixed(1)}px,${y.toFixed(1)}px,0)`;k.x=x;k.y=y;}
-  o=cl(o); if(Math.abs(k.o-o)>.004){k.el.style.opacity=o.toFixed(3);k.o=o;}
-}
-/* punkt karetki: koniec wpisanego tekstu w komórce */
-function punkt(el,root,txt,klik){
-  const g=geo(el,root);
-  if(klik) return [g.x+Math.min(g.w*.45,60),g.y+g.h*.5];
-  const sz=szer(el,txt), dost=g.w-g.pl-g.pr;
-  if(g.zaw&&sz>dost){const n=Math.ceil(sz/dost), l=n-1; return [g.x+g.pl+Math.min(sz-l*dost,dost)+1, g.y+g.h/2-n*g.lh/2+(l+.5)*g.lh-3];}
-  const x=g.mn?g.x+g.w-g.pr:g.x+g.pl+Math.min(sz,dost);
-  return [x+1,g.y+g.h*.5-3];
-}
-/* napisy pod sceną: kilka zdań na zmianę, płynnie */
-function napisy(box,progi){
-  const ps=$$('p',box);
-  return p=>ps.forEach((el,i)=>{
-    const a=i?seg(p,progi[i-1]-.025,progi[i-1]+.025):1, b=i<ps.length-1?1-seg(p,progi[i]-.025,progi[i]+.025):1, o=Math.min(a,b);
-    if(Math.abs((el._o??-1)-o)>.004){el.style.opacity=o.toFixed(3);el.style.transform=`translate3d(0,${((1-o)*(i&&a<1?8:-8)).toFixed(1)}px,0)`;el._o=o;}
-  });
-}
+  o=cl(o);if(Math.abs(k.o-o)>.004){k.el.style.opacity=o.toFixed(3);k.o=o;}}
+function punkt(el,root,txt,klik){const g=geo(el,root);if(klik)return[g.x+Math.min(g.w*.45,60),g.y+g.h*.55];
+  const wolne=el.classList.contains('t')?1e4:g.w-g.pl-g.pr-2;
+  const x=g.mn?g.x+g.w-g.pr:g.x+g.pl+Math.min(szer(el,txt),wolne);return[x+1,g.y+g.h*.5-2];}
 
-/* ── silnik wpisywania: zadania {kto, el, tekst, a, b, z (tekst do skasowania), klik} ──
-   Kursor osoby jedzie do komórki przed startem zadania (RUCH), wpisuje tekst w [a,b], potem czeka. */
-function silnik(root,zad,opt={}){
-  const RUCH=opt.ruch||.035, ksy={};
-  zad.forEach(z=>{z.dl=z.tekst?z.tekst.length:0; if(!ksy[z.kto])ksy[z.kto]=kursor(root,z.kto);});
-  const po=kto=>zad.filter(z=>z.kto===kto);
-  const wid=opt.widoczny||{};
-  function wpis(z,p){
-    const t=seg(p,z.a,z.b);
-    if(z.klik) return null;
-    if(z.z!=null){ if(p<z.a) return z.z; if(t<.35) return z.z.slice(0,Math.ceil(z.z.length*(1-t/.35))); return z.tekst.slice(0,Math.round(z.dl*(t-.35)/.65)); }
-    if(p<z.a) return z.przed??'';
-    return z.tekst.slice(0,Math.round(z.dl*t));
-  }
-  return p=>{
-    for(const z of zad){
-      const w=wpis(z,p); if(w!=null) tekst(z.el,w);
-      const akt=p>=z.a-RUCH*.4&&p<=z.b+RUCH*.6;
+/* ── wpisywanie: zadania {kto, el, tekst, a, b (sekundy), klik, el2 (pokaż też tu, np. pasek formuły)} ── */
+function silnik(root,zad,{ruch=.45,widoczny={}}={}){
+  const ksy={};zad.forEach(z=>{z.dl=z.tekst?z.tekst.length:0;if(!ksy[z.kto])ksy[z.kto]=kursor(root,z.kto);});
+  const wpis=(z,t)=>z.klik?null:(t<z.a?'':z.tekst.slice(0,Math.round(z.dl*seg(t,z.a,z.b))));
+  return t=>{
+    for(const z of zad){const w=wpis(z,t);if(w!=null){tekst(z.t||z.el,w);}
+      const akt=t>=z.a-ruch*.5&&t<=z.b+ruch*.7;
       if(akt&&z.el._c!==z.kto){z.el.style.setProperty('--c',OS[z.kto]);z.el._c=z.kto;}
-      klasa(z.el,'akt',akt);
-      klasa(z.el,'pisze',!z.klik&&p>=z.a&&p<z.b);
-    }
-    for(const kto in ksy){
-      const L=po(kto); let i=L.findIndex(z=>p<z.a); if(i<0)i=L.length;
-      const ter=L[Math.max(0,i-1)], nast=L[i];
-      const pt=z=>punkt(z.el,root,z.klik?'':(wpis(z,p)??''),z.klik);
-      let [x,y]=pt(i===0?L[0]:ter);
-      if(nast&&i>0&&p>nast.a-RUCH){const t=ez(seg(p,nast.a-RUCH,nast.a));const[x2,y2]=punkt(nast.el,root,'',nast.klik);x=lerp(x,x2,t);y=lerp(y,y2,t);}
-      const pierw=L[0], ost=L[L.length-1], w=wid[kto]||[pierw.a-RUCH*1.8, ost.b+RUCH*2.2];
-      const o=Math.min(seg(p,w[0],w[0]+RUCH*.8),1-seg(p,w[1],w[1]+RUCH*.8));
-      stawK(ksy[kto],x,y,o);
-    }
+      if(!z.bezRamki)klasa(z.el,'akt',akt);klasa(z.kar||z.el,'pisze',!z.klik&&t>=z.a&&t<z.b);}
+    for(const kto in ksy){const L=zad.filter(z=>z.kto===kto);let i=L.findIndex(z=>t<z.a);if(i<0)i=L.length;
+      const ter=L[Math.max(0,i-1)],nast=L[i];const pt=z=>punkt(z.t||z.el,root,z.klik?'':(wpis(z,t)??''),z.klik);
+      let[x,y]=pt(i===0?L[0]:ter);
+      if(nast&&i>0&&t>nast.a-ruch){const k=ez(seg(t,nast.a-ruch,nast.a));const[x2,y2]=punkt(nast.t||nast.el,root,'',nast.klik);x=lerp(x,x2,k);y=lerp(y,y2,k);}
+      const w=widoczny[kto]||[L[0].a-ruch*1.6,L[L.length-1].b+ruch*2];
+      stawK(ksy[kto],x,y,Math.min(seg(t,w[0],w[0]+.3),1-seg(t,w[1],w[1]+.3)));}
   };
 }
 
-/* ── HERO: trzy osoby wypełniają swoje wiersze, w pętli czasu ── */
-const arkH=$('#arkH');
-const HERO=[['ania',['Gdy przyjdzie mail','Przyjmuję zgłoszenie','Mail → umowa w PDF → kalendarz','20']],
-            ['marek',['Po telefonie klienta','Przygotowuję wycenę','Cennik w Excelu → kopiuję do maila','35']],
-            ['kasia',['Po wizycie technika','Wystawiam fakturę','Protokół ze zdjęcia → przepisuję','15']]];
-let hero=null, heroT0=performance.now();
-function zbudujHero(){
-  $$('.kur',arkH).forEach(k=>k.remove());
-  const rzedy=$$('.g-hero>.c',arkH), zad=[]; let koniec=0;
-  HERO.forEach(([kto,tx],r)=>{
-    let t=.6+r*1.1;
-    tx.forEach((s,c)=>{const el=rzedy[r*4+c]; if(!el.offsetParent)return; t+=.5; const d=Math.max(.35,s.length/17); zad.push({kto,el,tekst:s,a:t,b:t+d}); t+=d+.25;});
-    koniec=Math.max(koniec,t);
+/* ── odtwarzacze ── */
+const GRACZE=[];
+function gracz(el,dl,f,{petla=true,koniec=null}={}){const g={el,dl,f,petla,t:0,wid:false,koniec:koniec??dl};GRACZE.push(g);return g;}
+
+/* 1 · HERO: trzy pliki, każda osoba wpisuje jedną czynność */
+const mh=$('[data-mh]');
+if(mh){
+  const okna=$$('.xl',mh), fs=[];
+  okna.forEach((xl,i)=>{const kto=xl.dataset.kto, cel=$$('.c[data-w]',xl), fv=$('.xl-fv',xl), nb=$('.xl-nb',xl);
+    let t=.6+i*1.3; const zad=[];
+    cel.forEach(c=>{if(!c.offsetParent||c.offsetWidth<8)return; t+=.45; const d=Math.max(.4,c.dataset.w.length/16); zad.push({kto,el:c,tekst:c.dataset.w,a:t,b:t+d}); t+=d+.3;});
+    const f=silnik(xl,zad,{widoczny:{[kto]:[.1+i*1.3,99]}});
+    fs.push(t2=>{f(t2); const z=zad.filter(z=>t2>=z.a-.2).pop(); tekst(fv,z?z.tekst.slice(0,Math.round(z.dl*seg(t2,z.a,z.b))):''); tekst(nb,z?z.el.dataset.adr:'B5');});
   });
-  const L=koniec+2.4, f=silnik(arkH,zad,{ruch:.5,widoczny:{ania:[-.2,koniec+1.6],marek:[-.2,koniec+1.6],kasia:[-.2,koniec+1.6]}});
-  const g=$('.g-hero',arkH);
-  hero={L,f,g,koniec};
-}
-function klatkaHero(now){
-  if(!hero)return;
-  let t=SNAP?hero.koniec*.62:((now-heroT0)/1000)%hero.L;
-  const zanik=1-seg(t,hero.koniec+1.6,hero.koniec+2.2);
-  hero.g.style.setProperty('--o',zanik.toFixed(3));
-  hero.f(t);
+  const kon=.6+okna.length*1.3+9;
+  const zan=t=>{const o=1-seg(t,kon+1.8,kon+2.3);mh.style.setProperty('--o',o.toFixed(3));$$('.c[data-w]',mh).forEach(c=>c.style.opacity=o.toFixed(3));};
+  gracz(mh,kon+2.4,t=>{fs.forEach(f=>f(t));zan(t);},{koniec:kon});
 }
 
-/* ── S1: procedura 3 kroki → arkusz Ani, 14 kroków ── */
-const KROKI=[['Czytam mail od klienta','Outlook'],['Szukam klienta w systemie po nazwie','system',1],['Otwieram umowę serwisową','PDF na dysku',1],
- ['Sprawdzam, czy jest gwarancja','arkusz',1],['Brak numeru seryjnego: piszę do klienta','Outlook',1],['Czekam, wracam do maila po 2 h','',1],
- ['Szukam wolnego technika','kalendarz'],['Dzwonię do technika, czy zdąży','telefon',1],['Pytam magazyn o część','WhatsApp',1],
- ['Wpisuję zlecenie do systemu','system',1],['Przeklejam opis usterki z maila','system',1],['Wysyłam klientowi termin','Outlook'],
- ['Wpisuję termin technikowi','kalendarz',1],['Odhaczam zgłoszenie w zestawieniu','arkusz',1]];
-const arkA=$('#arkA'), proc=$('#proc'), aJak=$('#aJak'), aLi=$('#aLi'), aOpc=$$('span',aLi);
-aJak.innerHTML=KROKI.map((k,i)=>`<li class="${k[2]?'nowy':''}"><span class="k">${i+1}</span><span class="t"></span><span class="nz">${k[1]}</span></li>`).join('');
-const jakLi=$$('li',aJak), jakT=jakLi.map(li=>$('.t',li)), jakNz=jakLi.map(li=>$('.nz',li));
-const zadA=[{kto:'ania',el:$('#aCo'),tekst:'Przyjmuję zgłoszenie',a:.2,b:.27}];
-KROKI.forEach((k,i)=>{const a=.3+i*.031; zadA.push({kto:'ania',el:jakT[i],tekst:k[0],a,b:a+.024});});
-zadA.push({kto:'ania',el:$('#aCz'),tekst:'22',a:.765,b:.785});
-zadA.push({kto:'ania',el:$('#aCs'),klik:1,a:.81,b:.825});
-zadA.push({kto:'ania',el:aOpc[0],klik:1,a:.85,b:.875});
-const s1f=silnik(arkA,zadA,{widoczny:{ania:[.15,.97]}}), z1=napisy($('#z1'),[.24,.84]);
-function s1(p){
-  const t=ez(seg(p,.1,.22));
-  proc.style.transform=`translate3d(0,${(-60*t).toFixed(1)}px,0) scale(${(1-.25*t).toFixed(3)}) rotate(${(-3*t).toFixed(2)}deg)`;
-  proc.style.opacity=(1-seg(p,.13,.22)).toFixed(3);
-  const a=ez(seg(p,.12,.2)); arkA.style.opacity=a.toFixed(3); arkA.style.transform=`translate3d(0,${(30*(1-a)).toFixed(1)}px,0)`;
-  jakLi.forEach((li,i)=>{const z=zadA[i+1],o=seg(p,z.a-.012,z.a); if(li._o!==o){li.style.opacity=o.toFixed(3);li._o=o;} jakNz[i].style.opacity=seg(p,z.b,z.b+.015).toFixed(3);});
-  const lo=seg(p,.815,.835)*(1-seg(p,.885,.9)); aLi.style.opacity=lo.toFixed(3); aLi.style.transform=`translate3d(0,${(-6*(1-lo)).toFixed(1)}px,0) scale(${(.97+.03*lo).toFixed(3)})`;
-  klasa(aOpc[0],'hl',p>.86);
-  tekst($('#aCs'),p>.885?'Kilka razy dziennie':'');
-  s1f(p); z1(p);
+/* 3a · procedura i arkusz Ani: 14 kroków w pasku formuły, 11 spoza procedury */
+const ma=$('[data-ma]');
+if(ma){
+  const xl=$('.xl',ma), linie=$$('.ma-l',ma), licz=$('[data-ma-licz]',ma), proc=$$('.ma-proc li',ma), d5=$('[data-d5]',ma), c5=$('[data-c5]',ma), f5=$('[data-f5]',ma);
+  const zad=[{kto:'ania',el:c5,tekst:c5.dataset.v,a:.8,b:2}];
+  let t=2.6; linie.forEach(l=>{const tx=$('.t',l).dataset.v; zad.push({kto:'ania',el:d5,t:$('.t',l),kar:l,tekst:tx,a:t,b:t+Math.max(.5,tx.length/26),bezRamki:true}); t+=Math.max(.5,tx.length/26)+.18;});
+  const kJ=t; zad.push({kto:'ania',el:f5,tekst:'22',a:kJ+.5,b:kJ+.8});
+  const f=silnik(xl,zad,{widoczny:{ania:[.2,kJ+2.5]}}), pelny=linie.map(l=>$('.t',l).dataset.v);
+  const DOP={0:0,6:1,11:2};
+  gracz(ma,kJ+6,t=>{
+    f(t); let n=0, ile=0;
+    linie.forEach((l,i)=>{const z=zad[i+1],o=t>=z.a-.05?1:0; if(l._o!==o){l.style.opacity=o;l._o=o;} const nz=$('.nz',l); const q=seg(t,z.b,z.b+.25); if(nz&&nz._q!==q){nz.style.opacity=q;nz._q=q;} if(t>=z.b){n=i+1; if(l.classList.contains('nowy'))ile++;}});
+    klasa(d5,'akt',t>=2.3&&t<kJ+.3); d5.style.setProperty('--c',OS.ania);
+    tekst(d5,pelny.slice(0,n).join(' → '));
+    proc.forEach((li,j)=>klasa(li,'ok',Object.entries(DOP).some(([k,v])=>v===j&&n>+k)));
+    tekst(licz,String(ile));
+  },{koniec:kJ+1});
 }
 
-/* ── S2: cały zespół przez cztery dni ── */
-/* [kto, co, h/mies., jest w procedurze?] — praca obok procesów (Szymon 11-21) */
-const ZESP=[['ania','Przyjmuję zgłoszenie serwisowe',33,1],['marek','Przygotowuję wycenę naprawy',24,1],['kasia','Pilnuję brakujących protokołów',9,0],
- ['tomek','Sprawdzam ceny u 3 dostawców',14,0],['ania','Szukam umowy klienta na dysku',8,0],['piotr','Poprawiam wyceny przed wysyłką',11,0],
- ['marek','Dzwonię do klientów przed sezonem',7,0],['kasia','Przepisuję protokół do faktury',28,1],['ania','Przypominam o przeglądach',6,0],
- ['tomek','Odpowiadam technikom o części',15,0]];
-const gZ=$('#gZ'), arkZ=$('#arkZ');
-gZ.insertAdjacentHTML('beforeend',ZESP.map(([k,c,h,w],i)=>`<i class="rn">${i+5}</i><span class="c kto" style="--kc:${OS[k]}"></span><span class="c"></span><span class="c mn"></span><span class="c w ${w?'tak':'nie'}">${w?'✓ jest':'brak'}</span>`).join(''));
-const zc=$$('.c',gZ), zadZ=[], ktoC=[], wpC=[];
-ZESP.forEach(([k,c,h],i)=>{const a=.04+i*.056; ktoC.push([zc[i*4],IM[k],a]); wpC.push(zc[i*4+3]); zadZ.push({kto:k,el:zc[i*4+1],tekst:c,a,b:a+.045},{kto:k,el:zc[i*4+2],tekst:String(h),a:a+.05,b:a+.058});});
-const s2f=silnik(arkZ,zadZ), z2=napisy($('#z2'),[.66,.86]), dzien=$('#dzien'), suma=$('#suma'), sumaL=$('#sumaL');
-function s2(p){
-  ktoC.forEach(([el,im,a])=>tekst(el,p>=a-.01?im:''));
-  s2f(p);
-  tekst(dzien,p<.2?'wtorek':p<.4?'środa':p<.6?'czwartek':'piątek');
-  tekst(suma,Math.round(312*ez(seg(p,.04,.62)))+' h');
-  wpC.forEach((el,i)=>{const o=seg(p,.64+i*.012,.67+i*.012); if(el._o!==o){el.style.opacity=o.toFixed(3);el._o=o;}});
-  tekst(sumaL,p>.62?'Razem, 61 czynności':'Razem');
-  z2(p);
+/* 3b · arkusze zespołu: wiersze przychodzą z kart osób, potem kolumna „Procedura” */
+const mz=$('[data-mz]');
+if(mz){
+  const rw=$$('.rw',mz), w=$$('.w',mz), licz=$('[data-mz-licz]',mz), ile=+mz.dataset.poza;
+  const N=rw.length/5;
+  gracz(mz,13,t=>{
+    for(let r=0;r<N;r++){const o=ez(seg(t,.4+r*.45,.75+r*.45));for(let c=0;c<5;c++){const el=rw[r*5+c];if(Math.abs((el._o??-1)-o)>.01){el.style.opacity=o.toFixed(3);el.style.transform=`translate3d(0,${(8*(1-o)).toFixed(1)}px,0)`;el._o=o;}}}
+    w.forEach((el,i)=>{const on=t>.4+N*.45+.3+i*.22; klasa(el,'on',on); tekst(el,on?el.dataset.v:'');});
+    tekst(licz,Math.round(ile*ez(seg(t,.4+N*.45+.3,.4+N*.45+.3+w.length*.22)))+' h');
+  },{koniec:9});
 }
 
-/* ── S3: osoba prowadząca sprawdza arkusz Marka skillem, Marek poprawia ── */
-const arkS=$('#arkS'), uw=$$('#uwagi li'), sprSt=$('#sprSt'), m1=$('#m1'), m2=$('#m2'), m3a=$('#m3a');
-const zadS=[{kto:'ai',el:m1,klik:1,a:.08,b:.12},{kto:'ai',el:m2,klik:1,a:.24,b:.28},{kto:'ai',el:m3a,klik:1,a:.4,b:.44},
-  {kto:'marek',el:m1,z:'Obsługa klienta',tekst:'Odpowiadam o termin wizyty',a:.6,b:.7},
-  {kto:'marek',el:m2,z:'Robię wycenę w Excelu i wysyłam',tekst:'Ceny z cennika dostawcy → Excel → mail',a:.74,b:.84},
-  {kto:'marek',el:m3a,tekst:'nie, nie wiem jak',a:.87,b:.92}];
-const s3f=silnik(arkS,zadS,{widoczny:{ai:[.04,.52],marek:[.55,.97]}}), z3=napisy($('#z3'),[.58]);
-const UWP=[[.13,.71],[.29,.85],[.45,.93]], FL=[[m1,.11,.71],[m2,.27,.85],[m3a,.43,.93]];
-function s3(p){
-  s3f(p);
-  uw.forEach((li,i)=>{const o=ez(seg(p,UWP[i][0],UWP[i][0]+.05)); li.style.opacity=o.toFixed(3); li.style.transform=`translate3d(0,${(10*(1-o)).toFixed(1)}px,0)`; klasa(li,'zal',p>UWP[i][1]);});
-  FL.forEach(([el,a,b])=>klasa(el,'flag',p>a&&p<b));
-  tekst(sprSt,p<.05?'':p<.5?'Sprawdzam…':p<.94?'3 pytania':'Gotowy do diagnozy'); klasa(sprSt,'gotowy',p>=.94);
-  z3(p);
+/* 4 · scena: zakładki kroków skilla, same idą dalej, dopóki ktoś nie kliknie */
+const kz=$('[data-kz]');
+if(kz){
+  const btn=$$('button',kz), pan=$$('[data-kz-p] > article');
+  let akt=0, klik=false, od=0, wid=false;
+  const pokaz=i=>{akt=i;btn.forEach((b,j)=>b.setAttribute('aria-selected',j===i?'true':'false'));pan.forEach((p,j)=>{p.classList.toggle('akt',j===i);p.toggleAttribute('inert',j!==i);});od=performance.now();};
+  btn.forEach((b,i)=>b.addEventListener('click',()=>{klik=true;pokaz(i);}));
+  new IntersectionObserver(e=>e.forEach(x=>{wid=x.isIntersecting;od=performance.now();}),{threshold:.35}).observe($('[data-kz-p]'));
+  setInterval(()=>{if(!klik&&wid&&!RED&&performance.now()-od>9000)pokaz((akt+1)%btn.length);},500);
+  pokaz(STOP!=null&&qs.has('k')?+qs.get('k'):0);
 }
 
-/* ── S4: diagnoza zespołu ── */
-const tabs=$$('#tabs span'), prs=$$('.pr'), z4=napisy($('#z4'),[.72]);
-const prN=prs.map(el=>$('.pr-h i',el)), prB=prs.map(el=>$('.pr-bar i',el)), prU=$('.pr-uw',prs[0]);
-function s4(p){
-  tabs.forEach((el,i)=>{const t=ez(seg(p,.08+i*.025,.24+i*.025)); el.style.transform=`translate3d(0,${(46*t).toFixed(1)}px,0) scale(${(1-.15*t).toFixed(3)})`; el.style.opacity=(1-t).toFixed(3);});
-  prs.forEach((el,i)=>{const a=.2+i*.08, o=ez(seg(p,a,a+.08)), h=+el.dataset.h, b=ez(seg(p,a+.04,a+.22));
-    el.style.opacity=o.toFixed(3); el.style.transform=`translate3d(0,${(-18*(1-o)).toFixed(1)}px,0)`;
-    prB[i].style.transform=`scaleX(${(h/86*b).toFixed(4)})`; tekst(prN[i],String(Math.round(h*b)));});
-  prU.style.opacity=seg(p,.6,.66).toFixed(3);
-  klasa(prs[0],'start',p>.78);
-  z4(p);
-}
-
-/* ── S5: każdy krok na swoim miejscu ── */
-const RODZ=['ai','sys','ai','ai','ai','zn','sys','cz','sys','sys','zn','sys','sys','zn'];
-const rozk=$('#rozk'); rozk.innerHTML=KROKI.map((k,i)=>`<li><b>${i+1}</b>${k[0]}</li>`).join('');
-const rl=$$('li',rozk), po=$('#po'), leg=$('#leg'), z5=napisy($('#z5'),[.74]);
-function s5(p){
-  rl.forEach((li,i)=>{const k=p>.06+i*.035?RODZ[i]:''; if(li._k!==k){li.className=k;li._k=k;}});
-  const c=ez(seg(p,.66,.76)); rozk.style.opacity=(1-c).toFixed(3); rozk.style.transform=`scale(${(1-.05*c).toFixed(3)})`;
-  leg.style.opacity=(1-c).toFixed(3);
-  const o=ez(seg(p,.72,.82)); po.style.opacity=o.toFixed(3); po.style.transform=`translate3d(0,${(-50+10*(1-o)).toFixed(1)}%,0)`;
-  z5(p);
-}
-
-/* ── S6: ile wraca ── */
-const odR=$$('.odz-r'), odT=$('#odT'), odW=$('#odW');
-const odJ=odR.map(r=>$('.jest',r)), odV=odR.map(r=>$('b',r));
-odR.forEach(r=>{$('.was',r).style.transform=`scaleX(${(+r.dataset.a/86).toFixed(4)})`;});
-function s6(p){
-  let suma=0;
-  odR.forEach((r,i)=>{const a=+r.dataset.a,b=+r.dataset.b,t=ez(seg(p,.12+i*.06,.5+i*.06)),v=lerp(a,b,t); suma+=v;
-    odJ[i].style.transform=`scaleX(${(v/86).toFixed(4)})`; tekst(odV[i],Math.round(v)+' h');});
-  tekst(odT,String(Math.round(suma)));
-  const o=ez(seg(p,.74,.84)); odW.style.opacity=o.toFixed(3); odW.style.transform=`translate3d(0,${(16*(1-o)).toFixed(1)}px,0)`;
-}
-
-/* ── S7: raport ── */
-const raport=$('#raport');
-function s7(p){const o=ez(seg(p,.04,.3)); raport.style.opacity=o.toFixed(3); raport.style.transform=`translate3d(0,${(40*(1-o)).toFixed(1)}px,0) rotate(${(-1.2*o).toFixed(2)}deg)`;}
-
-/* ── po mapie: agenci robią pracę, Ania zatwierdza ── */
-const agK=$$('.ag'), agL=agK.map(a=>$$('.ag-log li',a)), agDec=$('.ag-log .dec'), zag=napisy($('#zag'),[.74]);
-function sAg(p){
-  agK.forEach((el,i)=>{const o=ez(seg(p,.04+i*.09,.14+i*.09)); el.style.opacity=o.toFixed(3); el.style.transform=`translate3d(0,${(24*(1-o)).toFixed(1)}px,0)`;
-    agL[i].forEach((li,j)=>{const a=.12+i*.09+j*.1, q=ez(seg(p,a,a+.05)); if(li._o!==q){li.style.opacity=q.toFixed(3);li.style.transform=`translate3d(${(-8*(1-q)).toFixed(1)}px,0,0)`;li._o=q;}});});
-  klasa(agDec,'ok',p>.62);
-  zag(p);
-}
-
-/* ── teza: „od narzędzia” skreślone, gdy tekst wjeżdża na ekran ── */
-const teza=$('#t'), przek=$('.przek',teza);
-
-/* ── dopasowanie obrazów sceny do ich strefy (na telefonie tylko zmniejsza, na dużym ekranie do 1,3×) ── */
-function fit(){
-  $$('[data-fit]').forEach(el=>{const o=el.closest('.obraz');if(!o)return;el.style.scale='';
-    const max=innerWidth>=1100&&innerHeight>=760?1.3:1, k=Math.min(max,o.clientHeight/el.offsetHeight,o.clientWidth/el.offsetWidth);el.style.scale=Math.abs(k-1)>.005?k.toFixed(3):'';});
-}
-
-const SC=[['s1',s1],['s2',s2],['s3',s3],['s4',s4],['s5',s5],['s6',s6],['s7',s7],['ag',sAg]].map(([id,f])=>({el:document.getElementById(id),f,p:0,cel:0,ost:-1}));
-const bar=$('#bar'), kon=$('#wiersz'), hEl=$('#h');
-function cel(s,vh){const r=s.el.getBoundingClientRect();return {p:cl(-r.top/Math.max(1,r.height-vh)),blisko:r.bottom>-vh*.5&&r.top<vh*1.5};}
-let ostT=performance.now();
-function klatka(now){
-  const vh=innerHeight, dt=Math.min(.1,(now-ostT)/1000); ostT=now;
-  const k=SNAP?1:1-Math.exp(-dt*14);
-  /* najpierw wszystkie odczyty układu, potem zapisy: bez przeliczania strony w środku klatki */
-  const cele=SC.map(s=>cel(s,vh)), hr=hEl.getBoundingClientRect(), tr=teza.getBoundingClientRect(), kr=kon.getBoundingClientRect();
-  SC.forEach((s,i)=>{
-    const c=cele[i]; if(!c.blisko&&!SNAP)return;
-    s.p+=(c.p-s.p)*k; if(Math.abs(c.p-s.p)<.0004)s.p=c.p;
-    if(Math.abs(s.p-s.ost)>.0002){s.ost=s.p;s.f(s.p);}
-  });
-  if(hr.bottom>0)klatkaHero(now);
-  przek.style.setProperty('--k',ez(seg(vh-tr.top,vh*.35,vh*.7)).toFixed(3));
-  klasa(bar,'off',kr.top<vh*.5&&kr.bottom>0);
-  if(!window.__snap)requestAnimationFrame(klatka);
-}
-function start(){
-  geoC=new Map(); fit(); zbudujHero();
-  SC.forEach(s=>{s.ost=-1;});
-  if(SNAP){const c=cel; SC.forEach(s=>{s.p=c(s,innerHeight).p;s.f(s.p);});}
-}
-let rT; addEventListener('resize',()=>{clearTimeout(rT);rT=setTimeout(()=>{geoC=new Map();$$('.ark').forEach(a=>a._w=0);fit();zbudujHero();SC.forEach(s=>{s.ost=-1;});},150);});
-start();
-if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{geoC=new Map();$$('.ark').forEach(a=>a._w=0);fit();zbudujHero();SC.forEach(s=>s.ost=-1);if(window.__snap)requestAnimationFrame(klatka);});
-const qsS=qs.get('s');
-if(qsS){const el=document.getElementById(qsS); if(el){document.documentElement.style.scrollBehavior='auto'; scrollTo(0,el.getBoundingClientRect().top+scrollY+parseFloat(qs.get('p')||0)*Math.max(0,el.offsetHeight-innerHeight));}}
+/* ── pętla ── */
+const io=new IntersectionObserver(e=>e.forEach(x=>{const g=GRACZE.find(g=>g.el===x.target);if(g)g.wid=x.isIntersecting;}),{threshold:.2});
+GRACZE.forEach(g=>io.observe(g.el));
+let ost=performance.now();
+function klatka(now){const dt=Math.min(.1,(now-ost)/1000);ost=now;
+  for(const g of GRACZE){ if(RED){if(!g.fin){g.f(g.koniec);g.fin=1;}continue;}
+    if(STOP!=null){if(g._s!==STOP){g.f(STOP);g._s=STOP;}continue;}
+    if(!g.wid)continue; g.t+=dt; if(g.t>g.dl){g.t=g.petla?0:g.dl;} g.f(g.t);}
+  requestAnimationFrame(klatka);}
+const start=()=>{geoC=new Map();GRACZE.forEach(g=>g.f(STOP??0));};
+start(); if(document.fonts&&document.fonts.ready)document.fonts.ready.then(start);
+let rT;addEventListener('resize',()=>{clearTimeout(rT);rT=setTimeout(()=>{geoC=new Map();},150);});
 requestAnimationFrame(klatka);
-if(window.__snap)addEventListener('scroll',()=>{ostT=performance.now();requestAnimationFrame(klatka);},{passive:true});
-window.__klatka=klatka;
 })();
 
-/* ── wiersze w arkuszu: pobranie zestawu (e-mail) i omówienie (telefon albo e-mail) ──
-   POST /api/kontakt jak formularz strony (Zgody.astro dokłada Lead dla Mety).
-   Do statystyk idzie tylko zdarzenie i kanał, nigdy dane osoby. */
+/* ── 7 · pobranie zestawu: e-mail w komórce arkusza, Enter ──
+   POST /api/kontakt jak każdy formularz strony (Zgody.astro dokłada Lead dla Mety). Do statystyk idzie tylko
+   zdarzenie, nigdy dane osoby. ?z= dopisuje źródło (np. raport, mail-d8). */
 (()=>{
 const $=(s)=>document.querySelector(s);
 const stat=(e,p)=>{try{window.laStat&&window.laStat(e,p||{});}catch(x){}};
-const MAIL=/^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
-const qs=new URLSearchParams(location.search);
-const z=qs.get('z')||'';
-const ref=()=>{try{return localStorage.getItem('referrer')||'';}catch(x){return '';}};
-function wyslij(dane){
-  return fetch('/api/kontakt',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(dane)})
-   .then(o=>{if(!o.ok)return o.json().catch(()=>({})).then(j=>{throw new Error(j.blad||'blad');});});
-}
-/* 1. pobranie */
-const fZ=$('#fZ'), iZ=$('#iZ'), eZ=$('#eZ'), cZ=$('#cZ'), zgZ=$('#zgZ'), okZ=$('#okZ'), ark=$('#arkCta'), bZ=$('#bZ');
-let w1=false;
-iZ.addEventListener('input',()=>{eZ.textContent='';});
-cZ.addEventListener('change',()=>zgZ.classList.remove('err'));
-iZ.addEventListener('focus',()=>stat('mapa_pole',{}),{once:true});
-document.querySelectorAll('a[href="#wiersz"]').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();stat('mapa_cta',{skad:a.id||'tresc'});$('#wiersz').scrollIntoView({behavior:'smooth',block:'start'});setTimeout(()=>{try{iZ.focus({preventScroll:true});}catch(x){}},800);}));
-fZ.addEventListener('submit',e=>{
-  e.preventDefault(); if(w1)return;
-  const v=iZ.value.trim();
-  if(!MAIL.test(v)){eZ.textContent=v?'Ten e-mail chyba jest niepełny.':'Wpisz e-mail, na który wyślemy zestaw.';iZ.focus();return;}
-  if(!cZ.checked){zgZ.classList.add('err');eZ.textContent='Zaznacz zgodę poniżej.';return;}
-  w1=true; bZ.disabled=true; bZ.textContent='…';
-  wyslij({email:v,telefon:'',wiadomosc:'Pobranie zestawu „Mapa czynności” (arkusz + skill) z landingu /mapa-czynnosci.',
-    firma_www:fZ.elements.kontrola.value||'',zrodlo:'Mapa czynności · pobranie'+(z?' · '+z:'')+' · '+location.pathname,referrer:ref()})
-  .then(()=>{
+const MAIL=/^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/, z=new URLSearchParams(location.search).get('z')||'';
+const pob=$('.pob'), f=$('#fZ'), i=$('#iZ'), e=$('#eZ'), c=$('#cZ'), zg=$('#zgZ'), ok=$('#okZ'), b=$('#bZ');
+if(!f)return;
+let w=false;
+i.addEventListener('input',()=>{e.textContent='';});
+i.addEventListener('focus',()=>stat('mapa_pole',{}),{once:true});
+c.addEventListener('change',()=>zg.classList.remove('err'));
+document.querySelectorAll('a[href="#pobierz"]').forEach(a=>a.addEventListener('click',()=>{stat('mapa_cta',{skad:a.closest('section')?.id||'nav'});setTimeout(()=>{try{i.focus({preventScroll:true});}catch(x){}},900);}));
+f.addEventListener('submit',ev=>{
+  ev.preventDefault(); if(w)return;
+  const v=i.value.trim();
+  if(!MAIL.test(v)){e.textContent=v?'Ten e-mail chyba jest niepełny.':'Wpiszcie e-mail, na który wyślemy zestaw.';i.focus();return;}
+  if(!c.checked){zg.classList.add('err');e.textContent='Zaznaczcie zgodę poniżej.';return;}
+  w=true; b.disabled=true; b.textContent='…';
+  let ref='';try{ref=localStorage.getItem('referrer')||'';}catch(x){}
+  fetch('/api/kontakt',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({email:v,telefon:'',
+    wiadomosc:'Pobranie zestawu „Mapa czynności” (arkusz + skill) z landingu /mapa-czynnosci.',firma_www:f.elements.kontrola.value||'',
+    zrodlo:'Mapa czynności · pobranie'+(z?' · '+z:'')+' · '+location.pathname,referrer:ref})})
+  .then(o=>{if(!o.ok)return o.json().catch(()=>({})).then(j=>{throw new Error(j.blad||'blad');});
     try{window.dataLayer=window.dataLayer||[];window.dataLayer.push({event:'formularz_wyslany',zrodlo:'Mapa czynności · pobranie'});}catch(x){}
-    stat('mapa_pobranie',{});
-    ark.classList.add('ok'); bZ.textContent='✓'; iZ.readOnly=true; zgZ.hidden=true; okZ.hidden=false;
-    setTimeout(()=>{try{$('#dZip').click();}catch(x){}},400);
-  })
-  .catch(x=>{w1=false;bZ.disabled=false;bZ.textContent='↵';eZ.textContent='Nie doszło. Spróbuj jeszcze raz albo napisz: hello@letsautomate.pl';stat('mapa_blad',{powod:String(x&&x.message||'blad').slice(0,30)});});
+    stat('mapa_pobranie',{}); pob.classList.add('ok'); b.textContent='✓'; i.readOnly=true; zg.hidden=true; ok.hidden=false;
+    setTimeout(()=>{try{$('#dZip').click();}catch(x){}},400);})
+  .catch(x=>{w=false;b.disabled=false;b.textContent='↵';e.textContent='Nie doszło. Spróbujcie jeszcze raz albo napiszcie: hello@letsautomate.pl';stat('mapa_blad',{powod:String(x&&x.message||'blad').slice(0,30)});});
 });
-/* 2. omówienie */
-const fO=$('#fO'), iO=$('#iO'), eO=$('#eO'), okO=$('#okO'), om=$('#omowienie'), bO=$('#bO');
-let w2=false;
-iO.addEventListener('input',()=>{eO.textContent='';});
-fO.addEventListener('submit',e=>{
-  e.preventDefault(); if(w2)return;
-  const v=iO.value.trim(); let email='',telefon='';
-  if(v.includes('@')){if(!MAIL.test(v)){eO.textContent='Ten e-mail chyba jest niepełny.';return;}email=v;}
-  else{const c=v.replace(/\D/g,''); if(c.length<9){eO.textContent=v?'Za mało cyfr?':'Wpisz telefon albo e-mail.';return;} telefon=(c.length===9?'+48 ':'+')+c.replace(/^00/,'');}
-  w2=true; bO.disabled=true; bO.textContent='…';
-  wyslij({email,telefon,wiadomosc:'Po mapie czynności: rozmowa o wdrożeniu agentów AI (30 min, bezpłatnie).',
-    firma_www:fO.elements.kontrola.value||'',zrodlo:'Mapa czynności · omówienie'+(z?' · '+z:'')+' · '+location.pathname,referrer:ref()})
-  .then(()=>{
-    try{window.dataLayer=window.dataLayer||[];window.dataLayer.push({event:'formularz_wyslany',zrodlo:'Mapa czynności · omówienie'});}catch(x){}
-    stat('mapa_omowienie',{kanal:telefon?'telefon':'email'});
-    om.classList.add('ok'); bO.textContent='✓'; iO.readOnly=true; okO.hidden=false;
-  })
-  .catch(x=>{w2=false;bO.disabled=false;bO.textContent='↵';eO.textContent='Nie doszło. Spróbuj jeszcze raz.';});
-});
-if(location.hash==='#omowienie'||z==='raport'){setTimeout(()=>{om.scrollIntoView({block:'center'});},300);}
 })();
 
 </script>
