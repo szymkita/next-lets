@@ -232,6 +232,8 @@ const CURSOR = '<svg viewBox="-2 -2 42 60" aria-hidden="true"><path d="M0 0 L0 5
 .pa-mk-c svg{width:17px;height:24px;filter:drop-shadow(0 2px 3px rgba(0,0,0,.3))}
 .pa-mk-c span{display:flex;align-items:center;gap:6px;margin-top:17px;padding:3px 9px 3px 3px;border-radius:999px;background:var(--ziel);color:var(--ink);font-family:"Schibsted Grotesk",system-ui,sans-serif;font-size:11.5px;font-weight:700;white-space:nowrap;box-shadow:0 6px 14px -6px rgba(0,0,0,.4)}
 .pa-mk-c img{width:20px;height:20px;border-radius:50%;object-fit:cover}
+.pa-mk-c{transition:opacity .3s}
+.pa-mk.bez .pa-mk-c{opacity:0}
 .pa-mk.lewo .pa-mk-c{left:auto;right:calc(100% - 14px);flex-direction:row-reverse}
 .pa-mk.lewo .pa-mk-c svg{transform:scaleX(-1)}
 .pa-mk.lewo .pa-mk-c span{padding:3px 3px 3px 9px;flex-direction:row-reverse}
@@ -826,7 +828,7 @@ function historia(k){
   hsPn.classList.toggle('wro',k===3);
   hs.classList.toggle('ciemna',k>=4);
   const f=k-4;
-  if(f>=0&&f<4){ naCel(hsMk,$(`[data-cel="${CELE[f]}"]`,hsPn),hsSg,f===2?2:5,f===2?112:0); hsMk.classList.add('lewo'); hsMk.classList.add('on'); } else hsMk.classList.remove('on');
+  if(f>=0&&f<4){ naCel(hsMk,$(`[data-cel="${CELE[f]}"]`,hsPn),hsSg,f===2?2:5,f===2?112:0); hsMk.classList.add('lewo'); hsMk.classList.toggle('bez',f===2); hsMk.classList.add('on'); } else hsMk.classList.remove('on');
   hsNr.forEach(nr=>{ naNr(nr,$(`[data-cel="${nr.dataset.nr}"]`,hsPn),hsSg); nr.classList.toggle('on',k===8); });
 }
 function ustaw(s,k){
