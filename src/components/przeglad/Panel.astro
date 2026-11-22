@@ -1,0 +1,60 @@
+---
+// PANEL ZAMÓWIEŃ INSTALVO — aplikacja przykładowej hurtowni instalacyjnej z Poznania (panel.instalvo.pl),
+// zbudowana przez dział operacji w Claude Code. Bohater landingu /przeglad-aplikacji: ten sam panel w hero,
+// w historii („rośnie” → „pod spodem”) i w scenie rozwoju. Własna marka klienta: petrol + miedź (rury),
+// Inter w UI. Domena instalvo.pl wolna w NASK 22.11.2026 — do potwierdzenia przez Szymona.
+// data-g = elementy, które w historii pojawiają się miesiąc po miesiącu (m = moduły, r = wiersze, a = osoby);
+// poza historią widać wszystko. data-cel = miejsca, na które najeżdża przegląd. data-licz = liczby rosnące.
+import { HI } from '../usluga/ikony';
+const WIERSZE = [
+  { nr: 'ZAM-24817', k: 'Instal-Tech Sp. z o.o.', h: ['TK', '#0e7490', 'Tomasz K.'], kw: '18 420,00 zł', s: ['W realizacji', '#b45309', '#fef3c7'], g: 'r0' },
+  { nr: 'ZAM-24816', k: 'Termo-Bud', h: ['KM', '#7c3aed', 'Karolina M.'], kw: '6 112,40 zł', s: ['Nowe', '#1d4ed8', '#dbeafe'], g: 'r0' },
+  { nr: 'ZAM-24815', k: 'Hydro-Serwis s.c.', h: ['TK', '#0e7490', 'Tomasz K.'], kw: '2 980,00 zł', s: ['Wysłane', '#047857', '#d1fae5'], g: 'r0' },
+  { nr: 'ZAM-24814', k: 'Ciepło-Dom', h: ['PR', '#be185d', 'Paweł R.'], kw: '11 240,90 zł', s: ['Wysłane', '#047857', '#d1fae5'], g: 'r1' },
+  { nr: 'ZAM-24813', k: 'Aqua-Montaż', h: ['KM', '#7c3aed', 'Karolina M.'], kw: '940,00 zł', s: ['Wysłane', '#047857', '#d1fae5'], g: 'r1' },
+  { nr: 'ZAM-24812', k: 'Instal-Tech Sp. z o.o.', h: ['TK', '#0e7490', 'Tomasz K.'], kw: '3 506,00 zł', s: ['Zafakturowane', '#475569', '#eef1f4'], g: 'r1' },
+  { nr: 'ZAM-24811', k: 'Grzejniki Wolski', h: ['PR', '#be185d', 'Paweł R.'], kw: '7 815,20 zł', s: ['Zafakturowane', '#475569', '#eef1f4'], g: 'r1' },
+  { nr: 'ZAM-24810', k: 'Termo-Bud', h: ['KM', '#7c3aed', 'Karolina M.'], kw: '1 204,00 zł', s: ['Zafakturowane', '#475569', '#eef1f4'], g: 'r1' },
+  { nr: 'ZAM-24809', k: 'Wod-Kan Serwis', h: ['TK', '#0e7490', 'Tomasz K.'], kw: '4 377,60 zł', s: ['Zafakturowane', '#475569', '#eef1f4'], g: 'r1' },
+];
+const OSOBY = [['AK', '#c2410c', 'a0'], ['AW', '#0f766e', 'a1'], ['TK', '#0e7490', 'a1'], ['KM', '#7c3aed', 'a1'], ['PR', '#be185d', 'a2'], ['EM', '#4d7c0f', 'a2']];
+// słupki: zamówienia dziennie w listopadzie (dni robocze)
+const SLUPKI = [142, 168, 151, 177, 133, 160, 171, 149, 182, 158, 139, 174, 166, 187, 153, 161];
+const max = Math.max(...SLUPKI);
+const { klasa = '' } = Astro.props;
+---
+<div class={`pn ${klasa}`} aria-hidden="true">
+<div class="pn-ch"><span class="pn-kr"><i></i><i></i><i></i></span><span class="pn-url"><svg viewBox="0 0 16 16"><path fill="currentColor" fill-rule="evenodd" d="M8 1a3.5 3.5 0 0 0-3.5 3.5V7A1.5 1.5 0 0 0 3 8.5v5A1.5 1.5 0 0 0 4.5 15h7a1.5 1.5 0 0 0 1.5-1.5v-5A1.5 1.5 0 0 0 11.5 7V4.5A3.5 3.5 0 0 0 8 1Zm2 6V4.5a2 2 0 1 0-4 0V7h4Z" clip-rule="evenodd"/></svg>panel.instalvo.pl<span>/zamowienia</span></span></div>
+<div class="pn-app">
+<nav class="pn-bok">
+<p class="pn-zn"><i><svg viewBox="0 0 16 16"><path fill="#fff" d="M8 2.2c2.4 2.8 3.7 4.8 3.7 6.6a3.7 3.7 0 0 1-7.4 0c0-1.8 1.3-3.8 3.7-6.6Z"/><path fill="none" stroke="#e0793b" stroke-width="1.3" stroke-linecap="round" d="M6.3 9.4a1.8 1.8 0 0 0 1.7 1.3"/></svg></i><span>Instalvo<small>panel</small></span></p>
+<a class="on" data-g="m0"><svg viewBox="0 0 16 16" set:html={HI['inbox']}></svg><span>Zamówienia</span><b>18</b></a>
+<a data-g="m1"><svg viewBox="0 0 16 16" set:html={HI['users']}></svg><span>Klienci</span></a>
+<a data-g="m1"><svg viewBox="0 0 16 16" set:html={HI['user']}></svg><span>Handlowcy</span></a>
+<a data-g="m2"><svg viewBox="0 0 16 16" set:html={HI['arrow-down-tray']}></svg><span>Eksport dla biura</span></a>
+<a data-g="m2"><svg viewBox="0 0 16 16" set:html={HI['tag']}></svg><span>Cennik i rabaty</span></a>
+</nav>
+<div class="pn-gl">
+<div class="pn-top">
+<span class="pn-szuk"><svg viewBox="0 0 16 16" set:html={HI['magnifying-glass']}></svg>Szukaj: zamówienie, klient, NIP</span>
+<span class="pn-oddz" data-cel="oddz"><i></i>Poznań<em class="pn-wro"><i></i>Wrocław</em></span>
+<span class="pn-av" data-cel="av">{OSOBY.map(([t, c, g]) => <i data-g={g} style={`--c:${c}`}>{t}</i>)}<b data-g="a2">+8</b></span>
+<span class="pn-gear" data-cel="gear"><svg viewBox="0 0 16 16" set:html={HI['adjustments-horizontal']}></svg></span>
+</div>
+<div class="pn-h"><div><h4>Zamówienia</h4><small>listopad · oddział Poznań</small></div><div class="pn-akc"><span class="pn-b" data-cel="eksport" data-g="m2"><svg viewBox="0 0 16 16" set:html={HI['arrow-down-tray']}></svg>Eksport</span><span class="pn-b g">+ Nowe<span class="pn-dl"> zamówienie</span></span></div></div>
+<div class="pn-kpi">
+<div><small>W&nbsp;listopadzie</small><b data-licz="0">3 468</b></div>
+<div><small>Wartość netto</small><b data-licz="1">1 306 251 zł</b></div>
+<div class="pn-k3"><small>Czeka na wysyłkę</small><b data-licz="2">52</b></div>
+<svg class="pn-wyk" viewBox="0 0 160 40" preserveAspectRatio="none">{SLUPKI.map((v, i) => <rect x={i * 10 + 1} y={40 - (v / max) * 36} width="7" height={(v / max) * 36} rx="1.5" fill={i === SLUPKI.length - 1 ? '#e0793b' : '#0b3d47'} opacity={i === SLUPKI.length - 1 ? 1 : 0.85}></rect>)}</svg>
+</div>
+<div class="pn-t" data-cel="tabela">
+<div class="pn-tr pn-th"><span>Nr</span><span>Klient</span><span class="pn-dl">Handlowiec</span><span class="n">Kwota</span><span class="pn-st-k">Status</span></div>
+{WIERSZE.map((w) => (
+<div class="pn-tr" data-g={w.g}><span class="pn-nr">{w.nr}</span><span class="pn-kl">{w.k}</span><span class="pn-dl pn-hn"><i style={`--c:${w.h[1]}`}>{w.h[0]}</i>{w.h[2]}</span><span class="n">{w.kw}</span><span class="pn-st-k"><em style={`--c:${w.s[1]};--b:${w.s[2]}`}>{w.s[0]}</em></span></div>
+))}
+</div>
+</div>
+</div>
+<slot />
+</div>

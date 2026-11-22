@@ -1,0 +1,906 @@
+---
+// PRZEGLĄD APLIKACJI — /przeglad-aplikacji. Landing pod płatne reklamy Meta (Let's Automate, usługa Guided Coding).
+// Oferta: płatny przegląd aplikacji, którą firma zbudowała z AI (Claude Code, Codex, Cursor, Lovable), w cenie
+// listopadowej. Cel: zgłoszenie aplikacji do przeglądu (mierzymy zgłoszenia, nie wejścia).
+// Dla kogo (Szymon, 22.11.2026): właściciel albo prezes firmy 20–200 osób, w której ktoś nietechniczny zbudował
+// z AI narzędzie, na którym pracuje dział; kierownik IT albo dyrektor operacyjny, który odpowiada za aplikacje
+// budowane w działach; firma, która chce wpuścić do aplikacji klientów albo partnerów. Przychodzi z reklamy na
+// telefonie, zimny. Hero mówi o firmie i zespole (odsiewa hobbystów), cena widać od pierwszego ekranu.
+// Dwie osie w słowach Szymona: „sprawdzimy, czy jest bezpieczna” i „żebyś się nie musiał cofać za jakiś czas
+// z jej rozwojem”. Wartość ceny: odpowiedź, czy rozwijać, poprawić, czy przepisać, i kolejność poprawek.
+// Bez obietnic tempa i terminów wykonania (Szymon 22.11: „kto nam za to zapłaci”).
+//
+// Historia: panel zamówień przykładowej hurtowni instalacyjnej Instalvo z Poznania (panel.instalvo.pl), ten sam
+// przykład co na /guided-coding/audyt-aplikacji (Anna, Adam, eksport dla biura, Wrocław). Znaleziska, liczby
+// i teksty raportu wzięte z sekcji „Co znajdujemy pod spodem” i „Po co analiza” strony audytu.
+// Sceny: 1 hero · 2 historia (panel rośnie marzec → dziś, potem przegląd odsłania 4 rzeczy pod spodem) ·
+// 3 rozwój (za pół roku / za rok / za dwa lata, bez przeglądu i po nim) · 4 kiedy zgłosić · 5 co dostajecie
+// (raport z werdyktem) · 6 dowód (kim jesteśmy, NARS) · 7 zielony pas · 8 cena + zlecenie przeglądu · 9 FAQ.
+// Źródła i kopie wersji: ~/filmy/gc-przeglad-kampania/landing/ (v1, v2…). noindex, poza menu i sitemapą.
+//
+// DO POTWIERDZENIA PRZEZ SZYMONA
+//   · PROMO niżej: 4 900 zł netto = przegląd techniczny (dziś „analiza techniczna od 12 000 zł”),
+//     liczy się zgłoszenie do 30.11.2026 23:59, przegląd może ruszyć później;
+//   · nazwa i domena Instalvo / panel.instalvo.pl (domena wolna w NASK 22.11, sprawdź w Google);
+//   · moduł „Cennik i rabaty” w panelu i liczby w makiecie (KPI, osoby) są poglądowe;
+//   · prowadzi Piotr Wojciuk (pierwszy kontakt), przegląd prowadzi inżynier, raport podpisuje Marcel Bilski;
+//   · zdania „najgroźniejsze zwykle poprawia się w kilka godzin” i „raport omawiamy razem”.
+
+// ===== jedna stała do zmiany: cena, cena odniesienia, koniec promocji =====
+const PROMO = {
+  cena: '4 900 zł',             // netto
+  zwykle: 'od 12 000 zł',       // netto, cena analizy technicznej z /guided-coding/audyt-aplikacji
+  koniecISO: '2026-11-30T23:59:59+01:00',
+  koniecTxt: '30 listopada',
+  koniecKr: '30.11',
+};
+const ZRODLO = 'Przegląd aplikacji · listopad';
+
+import LaBase from '../layouts/LaBase.astro';
+import GcFaq from '../components/GcFaq.astro';
+import Styl from '../components/usluga/Styl.astro';
+import Anim from '../components/usluga/Anim.astro';
+import Cytat from '../components/usluga/Cytat.astro';
+import Pas from '../components/usluga/Pas.astro';
+import Panel from '../components/przeglad/Panel.astro';
+import { HI } from '../components/usluga/ikony';
+
+const title = "Przegląd aplikacji zbudowanej z AI | Let's automate";
+const description = `Wasza firma pracuje na aplikacji zbudowanej z AI? Sprawdzimy, czy jest bezpieczna i czy da się ją rozwijać bez cofania się. Do ${PROMO.koniecTxt} przegląd za ${PROMO.cena} netto.`;
+
+// historia: teksty u góry (k = podpis, h = zdanie) i na dole (b) dla kolejnych kroków
+const HIST = [
+  { k: 'Marzec', h: 'Anna z działu operacji buduje w Claude Code panel zamówień.', b: 'Po kilku tygodniach handlowcy przestają wpisywać zamówienia do Excela.' },
+  { k: 'Czerwiec', h: 'Na panelu pracuje cały dział handlowy.', b: 'Dochodzą klienci, handlowcy i rabaty. Panel działa, więc nikt nie pyta, co jest w środku.' },
+  { k: 'Wrzesień', h: 'Przez panel przechodzi 3 400 zamówień miesięcznie.', b: 'Do tego eksport dla biura rachunkowego. Zamówienia z Excela już nie wrócą.' },
+  { k: 'Dziś', h: 'W przyszłym kwartale ma na nim pracować Wrocław.', b: 'A jak panel działa w środku, wie tylko Anna. Nikt techniczny tam nie zajrzał.' },
+  { k: 'Przegląd · 1 z 4', h: 'Dane klientów trafiają do logów.', b: 'Przy każdym eksporcie NIP-y i telefony klientów lądują w zapisie zdarzeń. Widzi je pięć osób, w tym dwie spoza firmy.' },
+  { k: 'Przegląd · 2 z 4', h: 'Do kodu ma dostęp pięć osób. Dwie już przy nim nie pracują.', b: 'W kodzie leży hasło do skrzynki zamowienia@, więc każda z nich może wysłać maila w imieniu firmy.' },
+  { k: 'Przegląd · 3 z 4', h: 'Kopia bazy robi się co noc. Nikt nigdy z niej nie wracał.', b: 'Nie wiadomo, czy po awarii w piątek handlowcy zobaczyliby w poniedziałek swoje zamówienia.' },
+  { k: 'Przegląd · 4 z 4', h: 'Za próby z wiosny firma wciąż płaci.', b: 'Trzy projekty, których nikt nie otwierał od kwietnia, razem około 200 zł miesięcznie.' },
+  { k: 'Po przeglądzie', h: 'Żadnej z tych rzeczy nie widać w panelu.', b: 'Najgroźniejsze zwykle poprawia się w kilka godzin. Trzeba je tylko najpierw znaleźć.' },
+];
+const ROZW = [
+  { k: 'Za pół roku · bez przeglądu', h: 'Wrocław dostaje kopię panelu.', b: 'Najprostsze wyjście. Tylko że od tej pory każdą poprawkę trzeba robić dwa razy.' },
+  { k: 'Za pół roku · po przeglądzie', h: 'Wrocław pracuje w tym samym panelu co Poznań.', b: 'Przegląd mówi, co zmienić przedtem, żeby drugi oddział nie dostał osobnej kopii.', ok: true },
+  { k: 'Za rok · bez przeglądu', h: 'Roczne zestawienie dla biura staje.', b: 'Eksport bierze wszystkie zamówienia naraz. Przy 41 208 wierszach kończy się błędem, a biuro czeka z zamknięciem roku.' },
+  { k: 'Za rok · po przeglądzie', h: 'Eksport idzie porcjami i trwa dwie minuty.', b: 'Miejsca, które nie udźwigną wzrostu, poprawiacie, zanim zatrzymają pracę działu.', ok: true },
+  { k: 'Za dwa lata · bez przeglądu', h: 'Panel ma przejąć ktoś, kto go nie budował.', b: 'Projekt od zera umie uruchomić tylko Anna. Bez niej nowa osoba zaczyna od zgadywania.' },
+  { k: 'Za dwa lata · po przeglądzie', h: 'Nowa osoba przejmuje panel bez czekania na autorkę.', b: 'Instrukcje i zasady z przeglądu zostają w projekcie, a AI czyta je przy każdej zmianie.', ok: true },
+  { k: 'Dlatego teraz', h: 'Przegląd daje kolejność, według której rozwijacie tę samą aplikację.', b: 'Zamiast za rok budować ją od nowa.', ok: true },
+];
+const MOMENTY = [
+  { t: 'Przed rozbudową.', d: 'Nowe moduły, więcej ludzi, drugi oddział.' },
+  { t: 'Przed wpuszczeniem klientów.', d: 'Portal albo panel zamówień dla klientów i partnerów.' },
+  { t: 'Gdy zna ją jedna osoba.', d: 'Autor zmienia dział, idzie na urlop albo odchodzi z firmy.' },
+  { t: 'Przed kolejnymi pieniędzmi.', d: 'Zanim zdecydujecie, czy w nią dalej inwestować.' },
+];
+const POZ = [
+  ['Dane klientów trafiają do logów', 'godzina'],
+  ['Hasło do poczty w kodzie i w historii', '2 godziny'],
+  ['Nikt nie sprawdził powrotu z kopii', 'pół dnia'],
+  ['Eksport stanie przy większym ruchu', 'dzień'],
+  ['Ścieżka zamówienia nie ma testu', 'półtora dnia'],
+  ['Płatne usługi zostały po próbach', 'godzina'],
+  ['Projekt od zera uruchamia tylko autorka', 'dwa popołudnia'],
+];
+const DOSTAJECIE = [
+  { t: 'Inżynier, który sam buduje z AI', d: 'Przegląd prowadzi ktoś, kto na co dzień pracuje w tych samych narzędziach co Wasz zespół. Sprawdzamy między innymi bezpieczeństwo, wydajność i architekturę.' },
+  { t: 'Raport dla osoby, która decyduje', d: 'Pierwsze strony mówią, w jakim stanie jest aplikacja i co poprawić najpierw. Dalej pozycje dla osoby, która poprawia, napisane tak, że nie musi programować.' },
+  { t: 'Omówienie i poprawki', d: 'Raport omawiamy razem. Większość poprawek zrobicie sami, z instrukcją i poleceniem do wklejenia w Claude Code. Trudniejsze robimy razem przy jednym ekranie.' },
+  { t: 'Kod i decyzje zostają Wasze', d: 'Umowę o poufności podpisujemy przed pierwszym dostępem. Wystarczy zaproszenie do projektu, do cofnięcia jednym kliknięciem.' },
+];
+const faq = [
+  { q: 'Aplikacja jest za logowaniem albo działa tylko na komputerze osoby, która ją zbudowała. Da się?',
+    a: 'Tak. Wystarczy dostęp do kodu, czyli zaproszenie do miejsca, gdzie leży projekt, do cofnięcia jednym kliknięciem. Jeśli kod jest na razie tylko u autora, umawiamy spotkanie, na którym pokażecie nam aplikację, i tam ustalamy resztę.' },
+  { q: 'Nie mamy działu IT ani programisty. Czy to dla nas?',
+    a: 'Tak. Raport piszemy dla osoby, która nie programuje. Większość poprawek zrobicie sami, z instrukcją i poleceniem do wklejenia w Claude Code. Trudniejsze, jak próbne odtworzenie kopii, robimy razem przy jednym ekranie.' },
+  { q: 'Chcemy wpuścić do aplikacji klientów albo partnerów. Kiedy przegląd?',
+    a: 'Przed pierwszą osobą z zewnątrz. Wtedy dane klientów, dostępy i hasła są sprawdzone, zanim zaloguje się ktoś spoza firmy, a poprawki są najprostsze.' },
+  { q: `Co obejmuje cena ${PROMO.cena} netto?`,
+    a: `Przegląd techniczny aplikacji: sprawdzamy między innymi bezpieczeństwo, wydajność i architekturę. Do tego raport dla osoby, która decyduje, i jego omówienie. Cena dotyczy zgłoszeń do ${PROMO.koniecTxt}; zwykle taki przegląd kosztuje ${PROMO.zwykle} netto.` },
+  { q: 'Musicie mieć dostęp do wszystkiego?',
+    a: 'Nie. Wystarczy podgląd do projektu i do miejsca, gdzie leży kod. Umowę o poufności podpisujemy przed pierwszym dostępem. Kod, dostępy i decyzje zostają Wasze, a wycenę dalszej pracy dostaniecie tylko wtedy, gdy o nią poprosicie.' },
+];
+const LOGA = [['sports-med.svg', 'Sports-Med', 308], ['nars.svg', 'NARS', 235], ['sevium.svg', 'Sevium', 206], ['odo-24.svg', 'ODO 24', 158], ['x3d.svg', 'X3D', 143]];
+const CURSOR = '<svg viewBox="-2 -2 42 60" aria-hidden="true"><path d="M0 0 L0 56 L14 43 L38 40 Z" fill="#0f1a14" stroke="#ffffff" stroke-width="3.5" stroke-linejoin="round"/></svg>';
+---
+<LaBase topbar={false} title={title} description={description} ctaHref="#zgloszenie" ctaLabel="Zgłoś aplikację" nav="uslugi" noindex={true}>
+<Styl />
+<Anim />
+<style is:global>
+/* ===== PRZEGLĄD APLIKACJI (prefiksy pa-, pn-, zn-, zl-) ===== */
+.pa{--pen:#c8402c;--miedz:#e0793b;--petrol:#0b3d47;overflow-x:clip}
+.pa *{box-sizing:border-box}
+.pa-w{max-width:1440px;margin:0 auto}
+.pa-k{display:flex;align-items:center;gap:10px;margin:0;font-size:13.5px;font-weight:650;letter-spacing:-.003em;color:var(--ziel-c);transition:color .5s}
+.pa-k::before{content:"";flex:none;width:20px;height:2px;background:currentColor}
+.pa-h2{margin:0;font-size:clamp(32px,4.6vw,64px);line-height:1.02;letter-spacing:-.046em;font-weight:700;color:var(--t1);text-wrap:balance}
+.pa-h2 span{color:var(--t3)}
+.pa-h2.jasny{color:#fff}
+.pa-h2.jasny span{color:rgba(255,255,255,.5)}
+.pa .v3-btn{cursor:pointer;border:0;font-family:inherit;text-decoration:none}
+
+/* ---------- PANEL Instalvo ---------- */
+.pn{position:relative;display:flex;flex-direction:column;overflow:hidden;border-radius:12px;background:#fff;color:#1c2427;font-family:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:12.5px;line-height:1.35;letter-spacing:-.006em;-webkit-font-smoothing:antialiased;
+  box-shadow:0 0 0 1px rgba(15,26,20,.08),0 2px 4px rgba(15,26,20,.05),0 40px 70px -40px rgba(15,26,20,.55);transition:transform .7s cubic-bezier(.2,.8,.2,1),opacity .5s}
+.pn svg{display:block;flex:none}
+.pn-ch{flex:none;display:flex;align-items:center;gap:10px;height:34px;padding:0 12px;background:#f5f6f7;border-bottom:1px solid #e8ebed}
+.pn-kr{display:flex;gap:5px}
+.pn-kr i{width:9px;height:9px;border-radius:50%;background:#dfe3e6}
+.pn-url{display:flex;align-items:center;gap:6px;margin:0 auto;padding:4px 14px;border-radius:7px;background:#eaedef;font-size:11.5px;color:#2b3438;white-space:nowrap}
+.pn-url svg{width:11px;height:11px;color:#5f6b71}
+.pn-url span{color:#8a949a}
+.pn-app{flex:1;min-height:0;display:grid;grid-template-columns:48px minmax(0,1fr)}
+.pn-bok{display:flex;flex-direction:column;gap:3px;padding:10px 7px;background:var(--petrol);color:rgba(255,255,255,.72)}
+.pn-zn{display:flex;align-items:center;gap:9px;margin:0 0 10px;padding:0 1px;font-weight:700;font-size:13.5px;color:#fff;letter-spacing:-.02em}
+.pn-zn i{display:grid;place-items:center;flex:none;width:32px;height:32px;border-radius:9px;background:var(--miedz)}
+.pn-zn i svg{width:19px;height:19px}
+.pn-zn span{display:none}
+.pn-zn small{display:block;font-size:10.5px;font-weight:500;color:rgba(255,255,255,.55);letter-spacing:0}
+.pn-bok a{position:relative;display:flex;align-items:center;gap:9px;height:32px;padding:0 9px;border-radius:8px;font-size:12.5px;white-space:nowrap;color:inherit;text-decoration:none}
+.pn-bok a svg{width:15px;height:15px;fill:currentColor}
+.pn-bok a span{display:none}
+.pn-bok a.on{background:rgba(255,255,255,.13);color:#fff}
+.pn-bok a b{position:absolute;right:2px;top:2px;min-width:15px;height:15px;padding:0 4px;border-radius:8px;background:var(--miedz);color:#fff;font-size:9.5px;font-weight:700;line-height:15px;text-align:center}
+.pn-gl{min-width:0;display:flex;flex-direction:column}
+.pn-top{flex:none;display:flex;align-items:center;gap:8px;height:46px;padding:0 10px 0 12px;border-bottom:1px solid #eef0f2}
+.pn-szuk{display:none}
+.pn-oddz{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 10px;border-radius:8px;border:1px solid #e1e5e8;font-size:11.5px;font-weight:600;white-space:nowrap}
+.pn-oddz i{width:7px;height:7px;border-radius:50%;background:#10b981}
+.pn-wro{display:inline-flex;align-items:center;gap:6px;max-width:0;overflow:hidden;opacity:0;font-style:normal;transition:max-width .6s,opacity .4s,margin .6s}
+.pn-wro::before{content:"";width:1px;height:14px;background:#e1e5e8}
+.pn-av{display:flex;align-items:center;margin-left:auto}
+.pn-av i{display:grid;place-items:center;width:25px;height:25px;margin-left:-7px;border-radius:50%;background:var(--c);color:#fff;font-style:normal;font-size:9.5px;font-weight:700;box-shadow:0 0 0 2px #fff}
+.pn-av b{margin-left:5px;font-size:11px;font-weight:600;color:#5f6b71}
+.pn-gear{display:grid;place-items:center;width:28px;height:28px;border-radius:8px;border:1px solid #e1e5e8;color:#4a555b}
+.pn-gear svg{width:14px;height:14px;fill:currentColor}
+.pn-h{flex:none;display:flex;align-items:flex-end;justify-content:space-between;gap:8px;padding:13px 12px 10px}
+.pn-h h4{margin:0;font-size:16px;font-weight:650;letter-spacing:-.02em}
+.pn-h small{display:block;margin-top:2px;font-size:11px;color:#6b767c;white-space:nowrap}
+.pn-akc{display:flex;gap:6px}
+.pn-b{display:inline-flex;align-items:center;gap:5px;height:28px;padding:0 9px;border-radius:7px;border:1px solid #dde2e5;font-size:11.5px;font-weight:600;white-space:nowrap}
+.pn-b svg{width:12px;height:12px;fill:currentColor}
+.pn-b.g{border-color:var(--petrol);background:var(--petrol);color:#fff}
+.pn-dl{display:none}
+.pn-kpi{flex:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));margin:0 12px 10px;border:1px solid #eceff1;border-radius:10px}
+.pn-kpi > div{min-width:0;padding:8px 10px}
+.pn-kpi > div + div{border-left:1px solid #eceff1}
+.pn-kpi small{display:block;font-size:10.5px;color:#6b767c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pn-kpi b{display:block;margin-top:2px;font-size:16.5px;font-weight:650;letter-spacing:-.02em;font-variant-numeric:tabular-nums;white-space:nowrap}
+.pn-k3,.pn-wyk{display:none!important}
+.pn-t{flex:1;min-height:0}
+.pn-tr{display:grid;grid-template-columns:74px minmax(0,1fr) auto;align-items:center;gap:10px;height:35px;padding:0 12px;border-top:1px solid #f0f2f4;font-size:12px;white-space:nowrap}
+.pn-th{height:28px;border-top:0;font-size:10.5px;font-weight:550;color:#6b767c}
+.pn-tr > span{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.pn-nr{font-variant-numeric:tabular-nums;color:#4a555b}
+.pn-tr .n{text-align:right;font-variant-numeric:tabular-nums;font-weight:550}
+.pn-st-k{display:none}
+.pn-st-k em{display:inline-flex;align-items:center;gap:5px;padding:2px 8px;border-radius:999px;background:var(--b);color:var(--c);font-style:normal;font-size:11px;font-weight:600}
+.pn-st-k em::before{content:"";width:5px;height:5px;border-radius:50%;background:currentColor}
+.pn-hn{display:none;align-items:center;gap:7px}
+.pn-hn i{display:grid;place-items:center;flex:none;width:20px;height:20px;border-radius:50%;background:var(--c);color:#fff;font-style:normal;font-size:8.5px;font-weight:700}
+.pn-h > div:first-child{min-width:0}
+.pn-h small{overflow:hidden;text-overflow:ellipsis}
+@media (max-width:400px){
+  .pn-top{gap:6px;padding:0 8px 0 10px}
+  .pn-av i{width:23px;height:23px}
+  .pn-av i:nth-child(n+5){display:none}
+  .pn.wro .pn-av i:nth-child(n+4){display:none}
+  .pn-oddz{padding:0 8px;gap:5px}
+  .pn-h{padding:12px 10px 9px}
+  .pn-b{padding:0 7px;font-size:11px}
+  .pn-kpi{margin:0 10px 10px}
+  .pn-tr{grid-template-columns:75px minmax(0,1fr) auto;padding:0 10px;gap:7px}
+}
+@media (min-width:560px){
+  .pn-tr{grid-template-columns:76px minmax(0,1fr) auto 104px}
+  .pn-st-k{display:block}
+  .pn-th .pn-st-k{display:block}
+}
+@media (min-width:1000px){
+  .pn-app{grid-template-columns:176px minmax(0,1fr)}
+  .pn-bok{padding:12px 10px}
+  .pn-zn span,.pn-bok a span{display:block}
+  .pn-bok a b{position:static;margin-left:auto}
+  .pn-szuk{display:flex;align-items:center;gap:7px;flex:1;max-width:280px;height:30px;padding:0 10px;border-radius:8px;background:#f2f4f5;font-size:11.5px;color:#8a949a;white-space:nowrap;overflow:hidden}
+  .pn-szuk svg{width:13px;height:13px;fill:currentColor}
+  .pn-dl{display:inline}
+  .pn-hn.pn-dl{display:flex}
+  .pn-th .pn-dl{display:block}
+  .pn-h{padding:16px 16px 12px}
+  .pn-h h4{font-size:18px}
+  .pn-kpi{grid-template-columns:repeat(3,minmax(0,1fr)) minmax(0,1.3fr);margin:0 16px 12px}
+  .pn-k3{display:block!important}
+  .pn-wyk{display:block!important;width:100%;height:100%;padding:10px 12px;border-left:1px solid #eceff1}
+  .pn-tr{grid-template-columns:80px minmax(0,1.25fr) minmax(0,.9fr) 104px 116px;padding:0 16px}
+}
+@media (min-width:1000px) and (max-width:1499px){
+  .pn-hn{font-size:0;gap:0}
+  .pn-hn i{font-size:8.5px}
+}
+/* panel w historii: elementy pojawiają się miesiąc po miesiącu */
+.rosnie [data-g]{transition:opacity .45s ease,transform .45s ease}
+.rosnie [data-g]:not(.on){opacity:0;transform:translateY(5px)}
+.pn.wro .pn-wro{max-width:120px;opacity:1}
+
+/* ---------- znacznik przeglądu (ramka + kursor) ---------- */
+.pa-mk{position:absolute;z-index:2;left:0;top:0;width:var(--w,80px);height:var(--h,30px);transform:translate(var(--x,0),var(--y,0));border:2px solid var(--ziel);border-radius:9px;box-shadow:0 0 0 4px rgba(0,205,119,.22);pointer-events:none;opacity:0;
+  transition:transform .65s cubic-bezier(.2,.8,.2,1),width .65s cubic-bezier(.2,.8,.2,1),height .65s cubic-bezier(.2,.8,.2,1),opacity .35s}
+.pa-mk.on{opacity:1}
+.pa-mk-c{position:absolute;left:calc(100% - 14px);top:calc(100% - 10px);display:flex;align-items:flex-start;gap:3px}
+.pa-mk-c svg{width:17px;height:24px;filter:drop-shadow(0 2px 3px rgba(0,0,0,.3))}
+.pa-mk-c span{display:flex;align-items:center;gap:6px;margin-top:17px;padding:3px 9px 3px 3px;border-radius:999px;background:var(--ziel);color:var(--ink);font-family:"Schibsted Grotesk",system-ui,sans-serif;font-size:11.5px;font-weight:700;white-space:nowrap;box-shadow:0 6px 14px -6px rgba(0,0,0,.4)}
+.pa-mk-c img{width:20px;height:20px;border-radius:50%;object-fit:cover}
+.pa-mk.lewo .pa-mk-c{left:auto;right:calc(100% - 14px);flex-direction:row-reverse}
+.pa-mk.lewo .pa-mk-c svg{transform:scaleX(-1)}
+.pa-mk.lewo .pa-mk-c span{padding:3px 3px 3px 9px;flex-direction:row-reverse}
+.pa-nr{position:absolute;z-index:4;left:0;top:0;display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--pen);color:#fff;font-family:"Inter",system-ui,sans-serif;font-size:11px;font-weight:700;box-shadow:0 0 0 4px rgba(200,64,44,.22);transform:translate(var(--x,0),var(--y,0)) scale(.4);opacity:0;transition:opacity .35s,transform .45s cubic-bezier(.3,1.5,.5,1)}
+.pa-nr.on{opacity:1;transform:translate(var(--x,0),var(--y,0)) scale(1)}
+
+/* ---------- HERO ---------- */
+.pa-h{padding:0 var(--ram)}
+.pa-h-in{position:relative;overflow:hidden;display:grid;grid-template-columns:minmax(0,1fr);gap:26px;padding:clamp(30px,4.6vw,72px) var(--pin) 0;border-radius:clamp(20px,2.2vw,32px);
+  background:radial-gradient(700px 520px at 85% 90%,rgba(0,205,119,.15),rgba(0,205,119,0) 66%),var(--papier)}
+.pa-h1{margin:0;font-size:clamp(35px,9.6vw,44px);line-height:1.03;letter-spacing:-.05em;font-weight:700;color:var(--t1);text-wrap:balance}
+.pa-h1 span{display:block;margin-top:.12em;color:var(--ziel-c)}
+.pa-lead{margin:16px 0 0;max-width:560px;font-size:clamp(16px,4.2vw,19px);line-height:1.55;color:var(--t2);text-wrap:pretty}
+.pa-cena{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 12px;margin:22px 0 0}
+.pa-cena-k{flex-basis:100%;font-size:14px;font-weight:650;color:var(--t1)}
+.pa-cena-k em{font-style:normal;color:var(--ziel-c)}
+.pa-cena b{font-size:clamp(30px,8vw,40px);line-height:1.05;letter-spacing:-.04em;font-weight:700;color:var(--t1);font-variant-numeric:tabular-nums}
+.pa-cena b small{font-size:.48em;letter-spacing:-.01em;font-weight:650;color:var(--t2)}
+.pa-cena s{font-size:15px;color:var(--t3);text-decoration-thickness:1.5px}
+.pa-h-ak{display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px;margin-top:20px}
+.pa-h-od{font-size:13.5px;color:var(--t2)}
+.pa-h-od b{color:var(--t1);font-variant-numeric:tabular-nums}
+.pa-h-sc{position:relative;height:300px;margin:0 calc(-1 * var(--pin) + 10px)}
+.pa-h-sc .pn{position:absolute;left:0;right:0;top:0;height:620px;border-radius:12px 12px 0 0}
+@media (min-width:1000px){
+  .pa-h-in{grid-template-columns:minmax(0,5.3fr) minmax(0,6.7fr);gap:clamp(28px,3.6vw,64px);min-height:min(calc(100svh - 100px),780px)}
+  .pa-h-t{align-self:center;padding-bottom:clamp(40px,4.6vw,72px)}
+  .pa-h1{font-size:clamp(44px,3.9vw,64px)}
+  .pa-lead{font-size:19px}
+  .pa-h-sc{align-self:end;height:clamp(440px,40vw,640px);margin:0 calc(-1 * var(--pin) + 24px) 0 0}
+  .pa-h-sc .pn{height:760px}
+}
+
+/* ---------- LOGOTYPY ---------- */
+.pa-loga{padding:clamp(28px,4vw,52px) var(--pad) 0}
+.pa-loga-t{display:flex;align-items:center;gap:12px;margin:0 0 10px;font-size:14px;color:var(--t2)}
+.pa-loga-t::before{content:"";width:22px;height:2px;background:var(--ziel)}
+.pa-loga-t b{color:var(--t1)}
+.pa-loga-m{overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 8%,#000 92%,transparent 100%);mask-image:linear-gradient(90deg,transparent 0,#000 8%,#000 92%,transparent 100%)}
+.pa-loga ul{list-style:none;margin:0;padding:0;display:flex;gap:clamp(18px,3vw,48px);width:max-content;animation:pa-loga 30s linear infinite}
+@keyframes pa-loga{to{transform:translateX(calc(-50% - clamp(9px,1.5vw,24px)))}}
+.pa-loga li{flex:0 0 auto;width:clamp(130px,13vw,190px);height:clamp(60px,6vw,80px);display:flex;align-items:center;justify-content:center}
+.pa-loga img{display:block;height:clamp(50px,5.4vw,66px);width:auto;max-width:86%;filter:grayscale(1);opacity:.7;mix-blend-mode:multiply}
+
+/* ---------- SCENY przewijane ---------- */
+.pa-sc{position:relative;height:calc(var(--h) * 1vh);height:calc(var(--h) * 1svh);margin:clamp(28px,4vw,56px) var(--ram) 0}
+.pa-st{position:sticky;top:0;height:100vh;height:100svh;display:flex;flex-direction:column;gap:12px;padding:78px var(--pin) calc(86px + env(safe-area-inset-bottom));overflow:hidden;border-radius:clamp(20px,2.2vw,32px);background:var(--papier);transition:background-color .7s ease}
+.pa-sc.ciemna .pa-st{background:var(--ink)}
+.pa-tz{position:relative;flex:none;height:124px}
+.pa-tz > div,.pa-bz > p{position:absolute;inset:0 0 auto;opacity:0;transform:translateY(10px);transition:opacity .35s ease,transform .45s cubic-bezier(.2,.8,.2,1)}
+.pa-tz > div.on,.pa-bz > p.on{opacity:1;transform:none}
+.pa-tz h2{margin:9px 0 0;font-size:clamp(23px,6.3vw,30px);line-height:1.08;letter-spacing:-.035em;font-weight:700;color:var(--t1);text-wrap:balance;transition:color .5s}
+.pa-bz{position:relative;flex:none;height:66px}
+.pa-bz > p{margin:0;font-size:15px;line-height:1.45;color:var(--t2);text-wrap:pretty;transition:opacity .35s ease,transform .45s cubic-bezier(.2,.8,.2,1),color .5s}
+.pa-sc.ciemna .pa-tz h2{color:#fff}
+.pa-sc.ciemna .pa-k{color:var(--ziel)}
+.pa-sc.ciemna .pa-bz > p{color:rgba(255,255,255,.74)}
+.pa-k.zle{color:var(--pen)}
+.pa-sg{position:relative;flex:1;min-height:0}
+.pa-sg > .pn{position:absolute;inset:0}
+.pa-pkt{display:flex;gap:5px;margin-left:auto}
+.pa-pkt i{width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.25;transition:opacity .3s}
+@media (min-width:1000px){
+  .pa-st{display:grid;grid-template-columns:minmax(0,4.1fr) minmax(0,7.9fr);grid-template-rows:minmax(0,1fr) auto;column-gap:clamp(32px,4vw,72px);row-gap:0;padding:112px var(--pin) 104px}
+  .pa-tz{grid-column:1;grid-row:1;align-self:center;height:250px}
+  .pa-tz h2{margin-top:14px;font-size:clamp(34px,3vw,46px);line-height:1.05}
+  .pa-bz{grid-column:1;grid-row:2;height:120px}
+  .pa-bz > p{font-size:18px;line-height:1.55}
+  .pa-sg{grid-column:2;grid-row:1 / 3}
+}
+
+/* ---------- ZNALEZISKA (karty spod panelu) ---------- */
+.pa-zn{position:absolute;z-index:3;left:-6px;right:-6px;bottom:-4px;border-radius:11px;font-family:"Inter",system-ui,sans-serif;font-size:12px;line-height:1.4;letter-spacing:-.005em;opacity:0;transform:translateY(26px) scale(.98);pointer-events:none;
+  transition:opacity .4s ease,transform .55s cubic-bezier(.2,.8,.2,1);box-shadow:0 0 0 1px rgba(15,26,20,.1),0 30px 60px -20px rgba(0,0,0,.6)}
+.pa-zn.on{opacity:1;transform:none}
+.zn-w{background:#fff;color:#1c2427}
+.zn-d{background:#0d1012;color:#cfd6dc;box-shadow:0 0 0 1px rgba(255,255,255,.12),0 30px 60px -20px rgba(0,0,0,.8)}
+.zn-g{display:flex;align-items:center;gap:8px;padding:9px 12px;border-bottom:1px solid #eceff1;font-size:11.5px;color:#5f6b71;white-space:nowrap}
+.zn-g b{font-weight:650;color:#1c2427}
+.zn-g span:last-child{margin-left:auto;color:#8a949a}
+.zn-d .zn-g{border-color:#22272b;color:#8b949c}
+.zn-d .zn-g b{color:#eef2f5}
+.zn-lg{padding:6px 0 4px;font-family:"JetBrains Mono",ui-monospace,Menlo,monospace;font-size:10.8px;line-height:1.6}
+.zn-lg p{display:grid;grid-template-columns:72px minmax(0,1fr);gap:8px;margin:0;padding:5px 12px}
+.zn-lg p + p{border-top:1px solid #1b1f23}
+.zn-lg time{color:#6c7680;white-space:nowrap}
+.zn-lg span{color:#e4e9ed;overflow-wrap:anywhere}
+.zn-pen{position:relative;display:inline-block;white-space:nowrap}
+.zn-pen::after{content:"";position:absolute;inset:-3px -5px;border:1.7px solid var(--pen);border-radius:50%;transform:rotate(-2.5deg)}
+.zn-d .zn-pen::after{border-color:#ff7a62}
+.zn-pn{margin:0;padding:4px 12px 11px;font-family:"Caveat",cursive;font-weight:600;font-size:21px;line-height:1.05;color:var(--pen);transform:rotate(-1.5deg);transform-origin:left}
+.zn-d .zn-pn{color:#ff8a72}
+.zn-r{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:1px 10px;align-items:center;margin:0 12px;padding:6px 0;border-top:1px solid #f0f2f4}
+.zn-g + .zn-r{border-top:0}
+.zn-r b{font-weight:600;font-size:12px}
+.zn-r small{grid-column:1;font-size:10.8px;color:#6b767c}
+.zn-r > span{grid-row:1 / 3;grid-column:2;font-size:11px;color:#6b767c;white-space:nowrap;font-variant-numeric:tabular-nums}
+.zn-r.x b{color:#9a3412}
+.zn-r.x > span{color:#b42318}
+.zn-r.sk b,.zn-r.sk > span{text-decoration:line-through;text-decoration-color:var(--pen);text-decoration-thickness:1.6px}
+.zn-r.ok > span{color:#047857;font-weight:600}
+.zn-suma{display:flex;justify-content:space-between;margin:0 12px;padding:7px 0 2px;border-top:1.5px solid #1c2427;font-weight:650;font-variant-numeric:tabular-nums}
+@media (max-width:999px) and (max-height:760px){
+  .pa-st{padding-top:74px;gap:9px}
+  .pa-tz{height:96px}
+  .pa-tz h2{margin-top:6px;font-size:21.5px}
+  .pa-bz{height:62px}
+  .pa-bz > p{font-size:14px;line-height:1.42}
+  .zn-lg p + p,.zn-r.kr,.zn-pn.kr{display:none}
+  .zn-r small{display:none}
+  .zn-r{padding:5px 0}
+  .zn-pn{font-size:19px;padding-bottom:8px}
+}
+@media (min-width:1000px){
+  .pa-zn{left:auto;right:-18px;bottom:28px;width:min(470px,62%)}
+  .zn-lg{font-size:11.5px}
+  .zn-pn{font-size:24px}
+}
+
+/* ---------- ROZWÓJ: kopia, eksport, przekazanie ---------- */
+.pa-rz .pn{z-index:2}
+.pa-kopia{position:absolute;inset:0;z-index:1;display:flex;flex-direction:column;overflow:hidden;border-radius:12px;background:#fff;font-family:"Inter",system-ui,sans-serif;font-size:12px;opacity:0;
+  box-shadow:0 0 0 1px rgba(15,26,20,.1),0 30px 60px -30px rgba(15,26,20,.5);transform:scale(.9);transition:transform .7s cubic-bezier(.2,.8,.2,1),opacity .5s}
+.pa-kopia .pn-ch{background:#f5f6f7}
+.pa-kopia .kp-h{padding:12px 12px 8px;font-size:15px;font-weight:650}
+.pa-kopia .kp-h small{display:block;margin-top:2px;font-size:11px;font-weight:400;color:#6b767c}
+.pa-kopia .pn-tr{grid-template-columns:74px minmax(0,1fr) auto}
+.pa-kopia .zn-pn{position:absolute;right:10px;top:40px;padding:0;font-size:23px;text-align:right;transform:rotate(-4deg)}
+.pa-rz[data-k="0"] .pn{transform:translate(-3%,7%) scale(.9)}
+.pa-rz[data-k="0"] .pa-kopia{opacity:1;transform:translate(4%,-5%) scale(.9)}
+.pa-ov{position:absolute;z-index:5;left:0;right:0;top:50%;margin:0 auto;width:min(420px,calc(100% - 8px));border-radius:12px;background:#fff;color:#1c2427;font-family:"Inter",system-ui,sans-serif;font-size:12px;line-height:1.4;opacity:0;transform:translateY(-40%) scale(.96);pointer-events:none;
+  box-shadow:0 0 0 1px rgba(15,26,20,.1),0 40px 80px -24px rgba(15,26,20,.6);transition:opacity .4s,transform .55s cubic-bezier(.2,.8,.2,1)}
+.pa-ov.on{opacity:1;transform:translateY(-50%)}
+.pa-ov-tlo{position:absolute;inset:0;z-index:4;border-radius:12px;background:rgba(11,61,71,.28);opacity:0;transition:opacity .4s;pointer-events:none}
+.pa-ov-tlo.on{opacity:1}
+.ek-in{padding:14px 16px 16px}
+.ek-in h5{margin:0;font-size:14.5px;font-weight:650;letter-spacing:-.015em}
+.ek-in > small{display:block;margin-top:2px;font-size:11.5px;color:#6b767c}
+.ek-bar{position:relative;height:10px;margin:14px 0 8px;border-radius:5px;background:#eef1f3;overflow:hidden}
+.ek-bar i{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:5px;transition:width 1.4s cubic-bezier(.3,.7,.3,1) .2s}
+.ek-st{position:relative;height:38px}
+.ek-st p{position:absolute;inset:0;display:flex;align-items:flex-start;gap:8px;margin:0;font-size:12px;opacity:0;transition:opacity .35s}
+.ek-st p svg{flex:none;width:15px;height:15px;margin-top:1px}
+.pa-rz[data-k="2"] .ek-bar i{width:63%;background:#d9483b}
+.pa-rz[data-k="3"] .ek-bar i{width:100%;background:#10a46c}
+.pa-rz[data-k="2"] .ek-st .zle,.pa-rz[data-k="3"] .ek-st .ok{opacity:1}
+.ek-st .zle{color:#b42318}
+.ek-st .ok{color:#047857}
+.ek-m{display:flex;justify-content:space-between;font-size:11px;color:#6b767c;font-variant-numeric:tabular-nums}
+.pz-l{margin:0;padding:6px 16px 12px;list-style:none}
+.pz-l li{position:relative;display:grid;grid-template-columns:18px minmax(0,1fr);gap:9px;align-items:center;padding:8px 0;border-top:1px solid #f0f2f4;font-size:12.3px}
+.pz-l li:first-child{border-top:0}
+.pz-l li i{display:grid;place-items:center;width:18px;height:18px;border-radius:5px;box-shadow:inset 0 0 0 1.5px #c9d0d4;transition:background .35s,box-shadow .35s}
+.pz-l li i svg{width:12px;height:12px;opacity:0;transition:opacity .3s}
+.pz-l li span{color:#9aa3a8;transition:color .35s}
+.pa-rz[data-k="5"] .pz-l li i{background:#10a46c;box-shadow:none}
+.pa-rz[data-k="5"] .pz-l li i svg{opacity:1}
+.pa-rz[data-k="5"] .pz-l li span{color:#1c2427}
+.pa-rz[data-k="5"] .pz-l li:nth-child(2) i{transition-delay:.12s}
+.pa-rz[data-k="5"] .pz-l li:nth-child(3) i{transition-delay:.24s}
+.pa-rz[data-k="5"] .pz-l li:nth-child(4) i{transition-delay:.36s}
+.pz-pn{position:absolute;left:18px;bottom:22px;margin:0;font-family:"Caveat",cursive;font-weight:600;font-size:22px;line-height:1;color:var(--pen);transform:rotate(-5deg);transition:opacity .35s}
+.pa-rz[data-k="5"] .pz-pn{opacity:0}
+.pz-kto{transition:opacity .35s}
+.pa-rz[data-k="4"] .pz-kto{opacity:0}
+.pz-kto{display:flex;align-items:center;gap:9px;margin:0 16px 14px;padding:9px 10px;border-radius:8px;background:#f5f7f8;font-size:11.5px;color:#4a555b}
+.pz-kto i{display:grid;place-items:center;flex:none;width:24px;height:24px;border-radius:50%;background:#64748b;color:#fff;font-style:normal;font-size:9px;font-weight:700}
+
+/* ---------- KIEDY ---------- */
+.pa-kd{padding:clamp(80px,10vw,150px) var(--pad) 0}
+.pa-kd-l{list-style:none;margin:clamp(28px,4vw,56px) 0 0;padding:0;display:grid;grid-template-columns:minmax(0,1fr);border-top:1px solid var(--linia)}
+.pa-kd-l li{display:grid;grid-template-columns:34px minmax(0,1fr);gap:4px 12px;padding:18px 0;border-bottom:1px solid var(--linia)}
+.pa-kd-l li > i{grid-row:1 / 3;font-style:normal;font-size:13px;font-weight:700;color:var(--ziel-c);font-variant-numeric:tabular-nums;padding-top:5px}
+.pa-kd-l b{font-size:clamp(20px,2vw,26px);line-height:1.15;letter-spacing:-.03em;font-weight:700}
+.pa-kd-l span{font-size:15.5px;line-height:1.5;color:var(--t2)}
+.pa-kd-p{margin:22px 0 0;max-width:640px;font-size:15.5px;line-height:1.55;color:var(--t2)}
+@media (min-width:1000px){
+  .pa-kd-g{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:clamp(32px,5vw,96px);align-items:end}
+  .pa-kd-l{grid-template-columns:repeat(2,minmax(0,1fr));column-gap:clamp(32px,4vw,72px);border-top:0}
+  .pa-kd-l li{border-top:1px solid var(--linia);border-bottom:0}
+  .pa-kd-p{margin:0}
+}
+
+/* ---------- CO DOSTAJECIE: raport ---------- */
+.pa-cd{padding:clamp(80px,10vw,150px) var(--pad) 0}
+.pa-cd-g{display:grid;gap:36px}
+.pa-cd .v3-sub{margin-top:18px}
+.pa-rap{position:relative;margin:0 -4px}
+.rp-s{position:relative;padding:20px 18px 18px;border-radius:4px;background:#fffefa;font-family:"Inter",system-ui,sans-serif;color:#1c2427;font-size:12.3px;line-height:1.45;transform:rotate(-.8deg);
+  box-shadow:0 0 0 1px rgba(15,26,20,.07),0 2px 3px rgba(15,26,20,.05),0 40px 60px -34px rgba(15,26,20,.5)}
+.rp-gl{display:flex;justify-content:space-between;gap:10px;padding-bottom:10px;border-bottom:1px solid #e9ecee;font-size:10.8px;color:#6b767c;white-space:nowrap}
+.rp-gl b{color:#1c2427;font-weight:650}
+.rp-s h4{margin:14px 0 0;font-size:17px;line-height:1.22;letter-spacing:-.025em;font-weight:700;text-wrap:balance}
+.rp-s > p{margin:8px 0 0;color:#3d474c;text-wrap:pretty}
+.rp-wer{display:flex;flex-wrap:wrap;align-items:center;gap:6px 16px;margin:14px 0 4px;padding:10px 0;border-top:1px dashed #e1e5e8;border-bottom:1px dashed #e1e5e8;font-size:12px;color:#8a949a}
+.rp-wer small{flex-basis:100%;font-size:10.5px;font-weight:600;color:#6b767c}
+.rp-wer span{position:relative}
+.rp-wer span.ja{color:#1c2427;font-weight:650}
+.rp-wer span.ja::after{content:"";position:absolute;inset:-5px -9px;border:1.8px solid var(--pen);border-radius:50%;transform:rotate(-3deg)}
+.rp-l{margin:12px 0 0;padding:0;list-style:none;counter-reset:rp}
+.rp-l li{display:grid;grid-template-columns:20px minmax(0,1fr) auto;gap:8px;align-items:center;padding:6px 0;border-top:1px solid #f0f2f4;font-size:12px}
+.rp-l li::before{counter-increment:rp;content:counter(rp);display:grid;place-items:center;width:18px;height:18px;border-radius:50%;background:#e9edef;color:#3d474c;font-size:9.5px;font-weight:700}
+.rp-l li:nth-child(-n+3)::before{background:var(--pen);color:#fff}
+.rp-l li small{font-size:11px;color:#6b767c;white-space:nowrap}
+.rp-pod{display:flex;align-items:center;gap:9px;margin-top:14px;padding:12px 0 26px;border-top:1px solid #e9ecee;font-size:11.5px;color:#6b767c}
+.rp-pod img{width:28px;height:28px;border-radius:50%;object-fit:cover}
+.rp-pod b{display:block;color:#1c2427;font-weight:650}
+.rp-pol{position:relative;z-index:2;width:min(330px,86%);margin:-22px -4px 0 auto;padding:11px 13px;border-radius:10px;background:#0d1012;color:#e4e9ed;font-family:"JetBrains Mono",ui-monospace,monospace;font-size:10.8px;line-height:1.55;transform:rotate(.8deg);box-shadow:0 26px 40px -20px rgba(0,0,0,.6)}
+.rp-pol small{display:block;margin-bottom:5px;font-family:"Inter",system-ui,sans-serif;font-size:10.5px;font-weight:600;color:#8b949c}
+.pa-cd-l{list-style:none;margin:clamp(40px,5vw,72px) 0 0;padding:0;display:grid;grid-template-columns:minmax(0,1fr);gap:0}
+.pa-cd-l li{padding:18px 0;border-top:1px solid var(--linia)}
+.pa-cd-l b{display:block;font-size:18px;line-height:1.25;letter-spacing:-.02em;font-weight:700}
+.pa-cd-l span{display:block;margin-top:6px;font-size:15px;line-height:1.55;color:var(--t2);text-wrap:pretty}
+@media (min-width:1000px){
+  .pa-cd-g{grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:clamp(40px,6vw,110px);align-items:center}
+  .rp-s{padding:28px 30px 24px;font-size:13px}
+  .rp-s h4{font-size:21px}
+  .pa-cd-l{grid-template-columns:repeat(4,minmax(0,1fr));column-gap:clamp(24px,3vw,48px)}
+}
+
+/* ---------- DOWÓD ---------- */
+.pa-dw{padding:clamp(80px,10vw,150px) var(--pad) clamp(60px,8vw,110px)}
+.pa-dw .v3-sub{margin-top:18px;max-width:640px}
+.pa-dw .v3-cyt{margin-top:clamp(40px,6vw,72px)!important}
+@media (min-width:1000px){ .pa-dw-g{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:clamp(32px,5vw,96px);align-items:end} .pa-dw .v3-sub{margin:0} }
+
+/* ---------- ZGŁOSZENIE: cena + zlecenie ---------- */
+.pa-zg{padding:var(--ram) var(--ram) calc(var(--ram) + 92px + env(safe-area-inset-bottom));scroll-margin-top:70px}
+.pa-zg-pl{position:relative;overflow:hidden;display:grid;gap:30px;padding:clamp(40px,7vw,100px) var(--pin);border-radius:clamp(20px,2.2vw,32px);background:var(--ink);color:#fff}
+.pa-zg-pl::before{content:"";position:absolute;inset:auto -20% -50% 30%;height:100%;background:radial-gradient(closest-side,rgba(0,205,119,.16),rgba(0,205,119,0));pointer-events:none}
+.pa-zg-pl > *{position:relative}
+.pa-zg-a{order:1}
+.zl{order:2}
+.pa-zg-b{order:3}
+.pa-zg-b .pa-kan{margin-top:0}
+.pa-zg .pa-cena-k{color:#fff}
+.pa-zg .pa-cena-k em{color:var(--ziel)}
+.pa-zg-cena{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 16px;margin:22px 0 0}
+.pa-zg-cena b{font-size:clamp(56px,15vw,112px);line-height:.95;letter-spacing:-.055em;font-weight:700;font-variant-numeric:tabular-nums}
+.pa-zg-cena b small{font-size:.3em;letter-spacing:-.01em;color:rgba(255,255,255,.7)}
+.pa-zg-cena s{font-size:16px;color:rgba(255,255,255,.55);text-decoration-thickness:1.5px}
+.pa-od{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;margin:20px 0 0;font-size:14px;color:rgba(255,255,255,.7)}
+.pa-od-c{display:flex;gap:6px}
+.pa-od-c span{display:flex;flex-direction:column;align-items:center;min-width:50px;padding:7px 6px 5px;border-radius:9px;background:rgba(255,255,255,.08);font-family:"JetBrains Mono",ui-monospace,monospace;font-size:20px;font-weight:700;line-height:1;color:#fff;font-variant-numeric:tabular-nums}
+.pa-od-c small{margin-top:4px;font-family:"Schibsted Grotesk",system-ui,sans-serif;font-size:10.5px;font-weight:600;color:rgba(255,255,255,.55)}
+.pa-zg-p{margin:22px 0 0;max-width:520px;font-size:clamp(16px,4.2vw,18px);line-height:1.55;color:rgba(255,255,255,.74);text-wrap:pretty}
+.pa-zg-p b{color:#fff}
+.pa-kan{display:flex;flex-wrap:wrap;gap:10px 22px;margin:22px 0 0}
+.pa-kan a{display:inline-flex;align-items:center;gap:8px;font-size:15px;font-weight:650;color:#fff;text-decoration:none;border-bottom:1px solid rgba(255,255,255,.25);padding-bottom:3px}
+.pa-kan a svg{width:15px;height:15px;fill:var(--ziel)}
+.pa-zg-cyt{margin:26px 0 0;max-width:520px;padding-left:14px;border-left:2px solid var(--ziel);font-size:15px;line-height:1.5;color:rgba(255,255,255,.74)}
+.pa-zg-cyt b{display:block;margin-top:6px;font-size:13.5px;font-weight:600;color:#fff}
+.pa-zg-cyt b span{font-weight:400;color:rgba(255,255,255,.6)}
+/* zlecenie przeglądu: kartka */
+.zl{position:relative;margin:0 -4px;padding:22px 18px 20px;border-radius:5px;background:#fffdf7;color:var(--t1);transform:rotate(-.5deg);
+  box-shadow:0 1px 0 rgba(0,0,0,.05),0 40px 80px -30px rgba(0,0,0,.75)}
+.zl::before{content:"";position:absolute;left:0;right:0;top:0;height:6px;border-radius:5px 5px 0 0;background:repeating-linear-gradient(90deg,var(--ziel-c) 0 18px,transparent 18px 24px);opacity:.8}
+.zl-gl{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding-bottom:12px;border-bottom:2px solid var(--t1)}
+.zl-gl h3{margin:0;font-size:21px;line-height:1.1;letter-spacing:-.03em;font-weight:700}
+.zl-gl h3 small{display:block;margin-top:4px;font-size:12.5px;font-weight:500;letter-spacing:0;color:var(--t2)}
+.zl-gl span{flex:none;font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;line-height:1.5;color:var(--t2);text-align:right}
+.zl-p{display:block;margin:0;padding:14px 0 12px;border:0;border-bottom:1px solid rgba(15,26,20,.1)}
+.zl-p legend,.zl-lab{display:block;float:none;width:100%;padding:0;margin:0 0 8px;font-size:13.5px;font-weight:650;color:var(--t1)}
+.zl-p legend small,.zl-lab small{font-weight:500;color:var(--t3)}
+.zl-i{display:block;width:100%;padding:8px 2px 7px;border:0;border-bottom:1.5px dashed rgba(15,26,20,.35);border-radius:0;background:transparent;font:500 17px/1.3 "Schibsted Grotesk",system-ui,sans-serif;color:var(--t1);outline:none;transition:border-color .2s}
+.zl-i::placeholder{color:#a3aba5;font-weight:400}
+.zl-i:focus{border-bottom:1.5px solid var(--ziel-c)}
+.zl-ch{display:flex;flex-wrap:wrap;gap:7px}
+.zl-ch label{position:relative;cursor:pointer}
+.zl-ch input{position:absolute;opacity:0;pointer-events:none}
+.zl-ch span{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 13px;border-radius:999px;box-shadow:inset 0 0 0 1.5px rgba(15,26,20,.18);font-size:14.5px;font-weight:550;color:var(--t1);transition:background .15s,box-shadow .15s,color .15s}
+.zl-ch input:checked + span{background:var(--t1);color:#fff;box-shadow:none}
+.zl-ch input:focus-visible + span{outline:2px solid var(--ziel-c);outline-offset:2px}
+.zl-err{display:block;min-height:17px;margin-top:4px;font-size:13px;color:#c0392b}
+.zl-z{display:flex;align-items:flex-start;gap:9px;margin:14px 0 16px;font-size:12.5px;line-height:1.4;color:var(--t2);cursor:pointer}
+.zl-z input{position:absolute;opacity:0;pointer-events:none}
+.zl-box{position:relative;flex:none;width:18px;height:18px;border-radius:5px;background:#fff;box-shadow:inset 0 0 0 1.5px #a8b0aa}
+.zl-z input:checked + .zl-box{background:var(--ziel-c);box-shadow:none}
+.zl-z input:checked + .zl-box::after{content:"";position:absolute;left:6px;top:2.5px;width:5px;height:9px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg)}
+.zl-z input:focus-visible + .zl-box{outline:2px solid var(--ziel-c);outline-offset:2px}
+.zl-z.err .zl-box{box-shadow:inset 0 0 0 2px #c0392b}
+.zl-z a{color:var(--t2)}
+.zl .v3-btn{width:100%;justify-content:space-between}
+.zl .v3-btn[disabled]{opacity:.65;cursor:default}
+.zl-dol{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-top:14px;font-size:12px;color:var(--t2)}
+.zl-dol b{font-size:14px;color:var(--t1)}
+.zl-hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.zl-ok{display:none;margin:14px 0 0;font-size:16px;font-weight:650;line-height:1.45;color:var(--ziel-c)}
+.zl.przyjete .zl-ok{display:block}
+.zl.przyjete .v3-btn,.zl.przyjete .zl-z{display:none}
+.zl.przyjete .zl-p{opacity:.55;pointer-events:none}
+.zl-pc{position:absolute;z-index:3;left:50%;top:44%;display:flex;flex-direction:column;align-items:center;gap:2px;padding:12px 20px 10px;border:3.5px solid var(--pen);border-radius:10px;color:var(--pen);font-family:"JetBrains Mono",ui-monospace,monospace;text-transform:uppercase;text-align:center;pointer-events:none;
+  opacity:0;transform:translate(-50%,-50%) rotate(-11deg) scale(1.9);mix-blend-mode:multiply;transition:opacity .18s ease,transform .42s cubic-bezier(.25,1.6,.45,1);
+  -webkit-mask-image:radial-gradient(circle at 30% 40%,#000 0 55%,rgba(0,0,0,.72) 75%,#000 100%);mask-image:radial-gradient(circle at 30% 40%,#000 0 55%,rgba(0,0,0,.72) 75%,#000 100%)}
+.zl-pc b{font-size:22px;line-height:1.05;font-weight:800;letter-spacing:.02em;white-space:nowrap}
+.zl-pc span{font-size:11.5px;font-weight:700;letter-spacing:.08em}
+.zl-pc::before{content:"";position:absolute;inset:3px;border:1.5px solid var(--pen);border-radius:6px}
+.zl.przyjete .zl-pc{opacity:.9;transform:translate(-50%,-50%) rotate(-11deg) scale(1)}
+@media (min-width:1000px){
+  .pa-zg-pl{grid-template-columns:minmax(0,1fr) minmax(0,560px);grid-template-rows:auto auto;column-gap:clamp(40px,6vw,110px);row-gap:0;align-items:end}
+  .pa-zg-a{grid-column:1;grid-row:1}
+  .pa-zg-b{grid-column:1;grid-row:2;align-self:start;padding-top:24px}
+  .zl{grid-column:2;grid-row:1 / 3;align-self:center}
+  .pa-zg-pl{padding-left:max(var(--pin),calc((100% - 1300px) / 2));padding-right:max(var(--pin),calc((100% - 1300px) / 2))}
+  .zl{padding:30px 30px 26px}
+}
+@media (max-width:370px){ .pa-od-c span{min-width:44px;font-size:18px} .zl-ch span{padding:0 11px;font-size:14px} }
+
+/* ---------- przyklejona pigułka ---------- */
+.pa-pas{position:fixed;left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom));z-index:45;display:flex;align-items:center;gap:8px;padding:7px 7px 7px 18px;border-radius:999px;background:#fff;color:var(--t1);
+  box-shadow:0 18px 44px -10px rgba(0,0,0,.45),0 0 0 1px rgba(15,26,20,.08);transform:translateY(calc(100% + 24px));transition:transform .45s cubic-bezier(.2,.8,.2,1)}
+.pa-pas.on{transform:none}
+.pa-pas-t{display:flex;flex-direction:column;min-width:0;flex:1}
+.pa-pas-t b{font-size:17px;line-height:1.1;letter-spacing:-.02em;font-weight:700;white-space:nowrap}
+.pa-pas-t b small{font-size:12px;font-weight:600;color:var(--t2)}
+.pa-pas-t span{font-size:12px;font-weight:600;color:var(--ziel-c);white-space:nowrap}
+.pa-pas .v3-btn{padding:7px 7px 7px 16px;font-size:15px;gap:10px}
+.pa-pas .v3-btn span{width:32px;height:32px}
+.pa-pas-tel{display:grid;place-items:center;flex:none;width:46px;height:46px;border-radius:50%;background:var(--papier);color:var(--t1)}
+.pa-pas-tel svg{width:17px;height:17px;fill:currentColor}
+@media (max-width:370px){ .pa-pas-tel{display:none} .pa-pas{padding-left:14px} }
+@media (min-width:1000px){ .pa-pas{left:auto;right:24px;bottom:22px;width:470px} }
+@media (prefers-reduced-motion:reduce){
+  .pa-loga ul{animation:none}
+  .pa *{transition-duration:.01s!important}
+}
+</style>
+
+<div class="v3 pa" data-koniec={PROMO.koniecISO}>
+
+{/* ============ 1 · HERO ============ */}
+<section class="pa-h" id="hero">
+<div class="pa-h-in">
+<div class="pa-h-t">
+<h1 class="pa-h1">Wasza firma pracuje na aplikacji zbudowanej z&nbsp;AI? <span>Sprawdzimy, czy jest bezpieczna.</span></h1>
+<p class="pa-lead">I czy da się ją rozwijać tak, żebyście za pół roku nie musieli się z&nbsp;nią cofać. Po przeglądzie wiecie, czy ją rozwijać, poprawić, czy przepisać, i&nbsp;od czego zacząć.</p>
+<p class="pa-cena"><span class="pa-cena-k">Przegląd aplikacji <em>do {PROMO.koniecTxt}</em></span><b>{PROMO.cena} <small>netto</small></b><s>zwykle {PROMO.zwykle}</s></p>
+<div class="pa-h-ak">
+<a href="#zgloszenie" class="v3-btn" data-skad="hero">Zgłoś aplikację do przeglądu <span aria-hidden="true">→</span></a>
+<span class="pa-h-od" data-od-krotko>Cena listopadowa jeszcze przez <b>kilka dni</b></span>
+</div>
+</div>
+<figure class="pa-h-sc" role="img" aria-label="Panel zamówień hurtowni instalacyjnej Instalvo pod adresem panel.instalvo.pl: lista listopadowych zamówień oddziału w Poznaniu, liczba zamówień, wartość i wykres. Na przycisk eksportu najeżdża ramka przeglądu z kursorem Marcela." style="margin:0">
+<Panel />
+<div class="pa-mk lewo" data-mk="hero" aria-hidden="true"><span class="pa-mk-c"><Fragment set:html={CURSOR} /><span><img src="/guided-coding/marcel-bilski-96.jpg" alt="" width="96" height="96">Marcel · przegląd</span></span></div>
+</figure>
+</div>
+</section>
+
+<div class="pa-loga">
+<p class="pa-loga-t"><b>Zaufali nam</b> m.in.</p>
+<div class="pa-loga-m"><ul aria-label="Klienci Let's automate">
+{LOGA.map(([p, n, w]) => <li><img src={`/uploads/klienci/${p}`} alt={n} width={w} height="88" loading="lazy"></li>)}
+{LOGA.map(([p, , w]) => <li aria-hidden="true"><img src={`/uploads/klienci/${p}`} alt="" width={w} height="88" loading="lazy"></li>)}
+</ul></div>
+</div>
+
+{/* ============ 2 · HISTORIA: panel rośnie, potem przegląd zagląda pod spód ============ */}
+<section class="pa-sc pa-hs" id="historia" style="--h:480" data-scena={HIST.length} data-k="0" aria-label="Historia panelu zamówień Instalvo">
+<div class="pa-st">
+<div class="pa-tz">
+{HIST.map((s, i) => <div class={i === 0 ? 'on' : ''} data-w={i}><p class="pa-k">{s.k}</p><h2>{s.h}</h2></div>)}
+</div>
+<div class="pa-sg">
+<Panel klasa="rosnie" />
+<div class="pa-mk" data-mk="hs" aria-hidden="true"><span class="pa-mk-c"><Fragment set:html={CURSOR} /><span><img src="/guided-coding/marcel-bilski-96.jpg" alt="" width="96" height="96">Marcel · przegląd</span></span></div>
+{['eksport', 'av', 'tabela', 'gear'].map((c, i) => <b class="pa-nr" data-nr={c} aria-hidden="true">{i + 1}</b>)}
+
+<div class="pa-zn zn-d" data-w="4" aria-hidden="true">
+<div class="zn-g"><b>Logi</b><span>/api/eksport</span><span>ostatnie 30 dni</span></div>
+<div class="zn-lg">
+<p><time>18.11 16:40</time><span>eksport [&#123;"nr":"ZAM-24790","klient":"Instal-Tech Sp. z o.o.",<em class="zn-pen" style="font-style:normal">"nip":"7792318845"</em>,<em class="zn-pen" style="font-style:normal">"tel":"+48 601 552 914"</em>,…&#125;</span></p>
+<p><time>12.11 08:12</time><span>eksport [&#123;"nr":"ZAM-24511","klient":"Termo-Bud","nip":"6312004917",…</span></p>
+</div>
+<p class="zn-pn">leży tu od lipca, widzi to 5 osób</p>
+</div>
+
+<div class="pa-zn zn-w" data-w="5" aria-hidden="true">
+<div class="zn-g"><span>panel-instalvo ·</span><b>Kto ma dostęp do kodu</b><span>5 osób</span></div>
+<div class="zn-r kr"><b>Anna Kowalczyk</b><small>operacje · autorka panelu</small><span>dziś</span></div>
+<div class="zn-r kr"><b>Adam Wiśniewski</b><small>operacje</small><span>dziś</span></div>
+<div class="zn-r x"><b>Firma od wdrożenia</b><small>pomagała przy starcie w marcu</small><span>kwiecień</span></div>
+<div class="zn-r x"><b>Bartek, stażysta</b><small>staż do czerwca</small><span>czerwiec</span></div>
+<div class="zn-r"><b>Tomasz K.</b><small>handlowiec, „na wszelki wypadek”</small><span>nigdy</span></div>
+<p class="zn-pn">każdy zna hasło do zamowienia@</p>
+</div>
+
+<div class="pa-zn zn-w" data-w="6" aria-hidden="true">
+<div class="zn-g"><span>panel-instalvo ·</span><b>Kopie bazy danych</b><span>baza zamówień</span></div>
+<div class="zn-r ok"><b>Kopia automatyczna</b><small>codziennie o 2:00 · ostatnia dziś</small><span>działa</span></div>
+<div class="zn-r"><b>Powrót z kopii</b><small>próba odtworzenia zamówień</small><span><em class="zn-pen" style="font-style:normal;color:#b42318">nikt nie próbował</em></span></div>
+<p class="zn-pn">a jak padnie w piątek?</p>
+</div>
+
+<div class="pa-zn zn-w" data-w="7" aria-hidden="true">
+<div class="zn-g"><span>instalvo ·</span><b>Projekty na rachunku</b><span>USD, netto</span></div>
+<div class="zn-r"><b>panel-instalvo</b><small>baza danych · używany codziennie</small><span>$25.00</span></div>
+<div class="zn-r sk"><b>panel-v2-proba</b><small>ostatnio otwarty 11 kwietnia</small><span>$25.00</span></div>
+<div class="zn-r sk"><b>eksport-test</b><small>ostatnio otwarty 3 kwietnia</small><span>$10.00</span></div>
+<div class="zn-r sk"><b>ocr-faktur-test</b><small>ostatnie użycie 28 marca</small><span>$14.20</span></div>
+<div class="zn-suma"><span>Razem miesięcznie</span><span>$74.20</span></div>
+<p class="zn-pn">3 z 4 nikt nie używa od kwietnia</p>
+</div>
+</div>
+<div class="pa-bz">
+{HIST.map((s, i) => <p class={i === 0 ? 'on' : ''} data-w={i}>{s.b}</p>)}
+</div>
+</div>
+</section>
+
+{/* ============ 3 · ROZWÓJ: żeby nie cofać się ============ */}
+<section class="pa-sc pa-rz" id="rozwoj" style="--h:360" data-scena={ROZW.length} data-k="0" aria-label="Co się dzieje z panelem, gdy firma rośnie: bez przeglądu i po nim">
+<div class="pa-st">
+<div class="pa-tz">
+{ROZW.map((s, i) => <div class={i === 0 ? 'on' : ''} data-w={i}><p class={`pa-k${s.ok ? '' : ' zle'}`}>{s.k}</p><h2>{s.h}</h2></div>)}
+</div>
+<div class="pa-sg">
+<div class="pa-kopia" aria-hidden="true">
+<div class="pn-ch"><span class="pn-kr"><i></i><i></i><i></i></span><span class="pn-url">panel-wroclaw.instalvo.pl<span>/zamowienia</span></span></div>
+<div class="kp-h">Zamówienia<small>kopia panelu · oddział Wrocław</small></div>
+<div class="pn-tr pn-th"><span>Nr</span><span>Klient</span><span class="n">Kwota</span></div>
+<div class="pn-tr"><span class="pn-nr">WRO-00412</span><span class="pn-kl">Instal-Tech Sp. z o.o.</span><span class="n">5 310,00 zł</span></div>
+<div class="pn-tr"><span class="pn-nr">WRO-00411</span><span class="pn-kl">Aqua-Montaż</span><span class="n">2 074,80 zł</span></div>
+<p class="zn-pn">każda poprawka 2 razy</p>
+</div>
+<Panel klasa="pn-rz" />
+<div class="pa-ov-tlo" data-w="2-5" aria-hidden="true"></div>
+<div class="pa-ov" data-w="2-3" aria-hidden="true">
+<div class="zn-g"><svg viewBox="0 0 16 16" style="width:13px;height:13px;fill:#5f6b71" set:html={HI['arrow-down-tray']}></svg><b>Eksport dla biura</b><span>panel.instalvo.pl</span></div>
+<div class="ek-in">
+<h5>Zestawienie roczne 2027</h5>
+<small>oba oddziały · dla biura rachunkowego</small>
+<div class="ek-bar"><i></i></div>
+<div class="ek-m"><span>41 208 wierszy</span><span>plik do biura</span></div>
+<div class="ek-st" style="margin-top:10px">
+<p class="zle"><svg viewBox="0 0 16 16" fill="currentColor" set:html={HI['x-mark']}></svg>Przekroczono czas oczekiwania. Spróbuj ponownie później.</p>
+<p class="ok"><svg viewBox="0 0 16 16" fill="currentColor" set:html={HI['check-circle']}></svg>Gotowe. Eksport poszedł porcjami, plik czeka na biuro.</p>
+</div>
+</div>
+</div>
+<div class="pa-ov" data-w="4-5" aria-hidden="true">
+<div class="zn-g"><b>Przekazanie panelu</b><span>panel-instalvo</span></div>
+<ul class="pz-l">
+<li><i><svg viewBox="0 0 16 16" fill="#fff" set:html={HI['check']}></svg></i><span>Instrukcja uruchomienia od zera</span></li>
+<li><i><svg viewBox="0 0 16 16" fill="#fff" set:html={HI['check']}></svg></i><span>Zasady, które AI czyta przy każdej zmianie</span></li>
+<li><i><svg viewBox="0 0 16 16" fill="#fff" set:html={HI['check']}></svg></i><span>Powrót z kopii, sprawdzony na próbę</span></li>
+<li><i><svg viewBox="0 0 16 16" fill="#fff" set:html={HI['check']}></svg></i><span>Lista osób z dostępem do kodu</span></li>
+</ul>
+<p class="pz-kto"><i>NO</i>Nowa osoba w operacjach przejmuje panel</p>
+<p class="pz-pn">„zapytaj Annę”</p>
+</div>
+</div>
+<div class="pa-bz">
+{ROZW.map((s, i) => <p class={i === 0 ? 'on' : ''} data-w={i}>{s.b}</p>)}
+</div>
+</div>
+</section>
+
+{/* ============ 4 · KIEDY ============ */}
+<section class="pa-kd" id="kiedy">
+<div class="pa-w">
+<div class="pa-kd-g">
+<h2 class="pa-h2">Najlepszy moment na przegląd <span>jest przed kolejnym krokiem.</span></h2>
+<p class="pa-kd-p">Raport piszemy dla właściciela firmy albo kierownika IT, który odpowiada za aplikacje budowane w&nbsp;działach.</p>
+</div>
+<ol class="pa-kd-l">
+{MOMENTY.map((m, i) => <li><i>0{i + 1}</i><b>{m.t}</b><span>{m.d}</span></li>)}
+</ol>
+</div>
+</section>
+
+{/* ============ 5 · CO DOSTAJECIE ============ */}
+<section class="pa-cd" id="co-dostajecie">
+<div class="pa-w">
+<div class="pa-cd-g">
+<div>
+<h2 class="pa-h2">Po przeglądzie wiecie, <span>czy rozwijać, poprawić, czy przepisać.</span></h2>
+<p class="v3-sub">I&nbsp;w&nbsp;jakiej kolejności to zrobić, żeby rozwijać tę samą aplikację, zamiast za rok budować ją od nowa.</p>
+</div>
+<figure class="pa-rap" role="img" aria-label={`Pierwsza strona raportu z przeglądu panelu zamówień Instalvo. Werdykt: rozwijać dalej, po poprawkach. Panel można rozwijać dalej, także we Wrocławiu, najpierw dwie poprawki. Kolejność poprawek: ${POZ.map((p, i) => `${i + 1}. ${p[0]}, ${p[1]}`).join('; ')}. Obok polecenie do wklejenia w Claude Code.`} style="margin:0">
+<div class="rp-s" aria-hidden="true">
+<div class="rp-gl"><span><b>Przegląd aplikacji</b> · panel.instalvo.pl</span><span>str. 1 z 9</span></div>
+<h4>Panel można rozwijać dalej, także we&nbsp;Wrocławiu. Najpierw dwie poprawki.</h4>
+<p>Aplikacja robi to, czego potrzebuje dział, i&nbsp;nie wymaga przepisania. Najpilniejsze są dane klientów i&nbsp;dostęp do kodu: obie poprawki zrobicie sami w&nbsp;trzy godziny.</p>
+<div class="rp-wer"><small>Werdykt</small><span class="ja">rozwijać dalej, po poprawkach</span><span>poprawić i&nbsp;zatrzymać</span><span>przepisać</span></div>
+<ol class="rp-l">{POZ.map((p) => <li><span>{p[0]}</span><small>{p[1]}</small></li>)}</ol>
+<div class="rp-pod"><img src="/guided-coding/marcel-bilski-96.jpg" alt="" width="96" height="96" loading="lazy"><span><b>Marcel Bilski</b>Tech Lead, Let's automate</span></div>
+</div>
+<div class="rp-pol" aria-hidden="true"><small>Pozycja 1 · do wklejenia w&nbsp;Claude Code</small>W&nbsp;pliku api/eksport.ts zmień zapis w&nbsp;logach tak, żeby trafiała tam tylko liczba zamówień, bez danych klientów. Niczego innego w&nbsp;eksporcie nie zmieniaj.</div>
+</figure>
+</div>
+<ul class="pa-cd-l">
+{DOSTAJECIE.map((d) => <li><b>{d.t}</b><span>{d.d}</span></li>)}
+</ul>
+</div>
+</section>
+
+{/* ============ 6 · DOWÓD ============ */}
+<section class="pa-dw" id="dowod">
+<div class="pa-w">
+<div class="pa-dw-g">
+<h2 class="pa-h2">Od lat budujemy dla firm <span>wewnętrzne systemy, które automatyzują pracę.</span></h2>
+<p class="v3-sub">Mamy analityków, mocne zaplecze technologiczne oraz własne metody i&nbsp;narzędzia. Z&nbsp;nich korzystamy, kiedy sprawdzamy Waszą aplikację.</p>
+</div>
+<Cytat cytat="Let’s automate wziął pełną odpowiedzialność za projekt i dowiózł go do końca. To dlatego powierzyliśmy im kolejny, znacznie większy." logo="/uploads/klienci/nars.svg" logoAlt="NARS Polska" imie="Jakub Ciołkowski" rola="Członek Zarządu, NARS Polska" />
+</div>
+</section>
+
+<Pas tekst="Po przeglądzie wiecie, na czym stoi aplikacja i jak rozwijać ją przez kolejne lata" foto="/marcel-bilski.jpg" fotoW={1200} fotoH={2526} alt="Marcel Bilski, Tech Lead w Let's automate" imie="Marcel Bilski" rola="Tech Lead" href="#zgloszenie" cta="Zgłoś aplikację" />
+
+{/* ============ 7–8 · CENA I ZLECENIE PRZEGLĄDU ============ */}
+<section class="pa-zg" id="zgloszenie">
+<div class="pa-zg-pl">
+<div class="pa-zg-a">
+<h2 class="pa-h2 jasny">Zgłoście aplikację <span>do przeglądu.</span></h2>
+<p class="pa-zg-cena"><span class="pa-cena-k" style="flex-basis:100%;font-size:15px;font-weight:650">Cena dla zgłoszeń <em>do {PROMO.koniecTxt}</em></span><b>{PROMO.cena} <small>netto</small></b><s>zwykle {PROMO.zwykle}</s></p>
+<div class="pa-od" data-od-duzy><span>Do końca zostało</span><span class="pa-od-c"><span data-od="d">–<small>dni</small></span><span data-od="h">–<small>godz.</small></span><span data-od="m">–<small>min</small></span><span data-od="s">–<small>sek.</small></span></span></div>
+<p class="pa-zg-p">Za tyle dostajecie <b>odpowiedź, czy tę aplikację rozwijać, poprawić, czy przepisać</b>, i&nbsp;kolejność poprawek, według której zrobicie to sami albo z&nbsp;nami.</p>
+</div>
+<div class="pa-zg-b">
+<p class="pa-kan"><a href="tel:+48571399932" data-tel="zgloszenie"><svg viewBox="0 0 16 16" aria-hidden="true" set:html={HI['phone']}></svg>+48 571 399 932</a><a href="mailto:hello@letsautomate.pl"><svg viewBox="0 0 16 16" aria-hidden="true" set:html={HI['envelope']}></svg>hello@letsautomate.pl</a></p>
+<blockquote class="pa-zg-cyt">„Korzystamy z&nbsp;usług Let’s automate od roku. Świetna komunikacja, łatwo się dogadać, a&nbsp;jakość usług na wysokim poziomie.”<b>Dominik Chylewski <span>· Wspólnik, X3D</span></b></blockquote>
+</div>
+
+<form class="zl" id="zlecenie" novalidate>
+<div class="zl-gl"><h3>Zlecenie przeglądu<small>aplikacji zbudowanej z&nbsp;AI</small></h3><span>nr <b data-zl-nr>PA/11/2026</b><br><span data-zl-data>listopad 2026</span></span></div>
+<div class="zl-p"><label class="zl-lab" for="zl-app">Co to za aplikacja? <small>(jedno zdanie)</small></label><input class="zl-i" id="zl-app" name="aplikacja" type="text" maxlength="240" placeholder="Np. panel zamówień działu handlowego" autocomplete="off"></div>
+<fieldset class="zl-p"><legend>Ile osób na niej pracuje?</legend><div class="zl-ch">
+{['do 5', '6–20', '21–50', 'ponad 50'].map((v) => <label><input type="radio" name="osoby" value={v}><span>{v}</span></label>)}
+</div></fieldset>
+<fieldset class="zl-p"><legend>Kto ma do niej dostęp? <small>(opcjonalnie)</small></legend><div class="zl-ch">
+{['tylko nasz zespół', 'także klienci lub partnerzy'].map((v) => <label><input type="radio" name="dostep" value={v}><span>{v}</span></label>)}
+</div></fieldset>
+<fieldset class="zl-p"><legend>W czym powstała?</legend><div class="zl-ch">
+{['Claude Code', 'Codex', 'Cursor', 'Lovable', 'inne'].map((v) => <label><input type="radio" name="narzedzie" value={v}><span>{v}</span></label>)}
+</div></fieldset>
+<div class="zl-p" style="border-bottom:0"><label class="zl-lab" for="zl-kontakt">Telefon albo e-mail</label><input class="zl-i" id="zl-kontakt" name="kontakt" type="text" autocomplete="tel" autocapitalize="off" spellcheck="false" placeholder="571 000 000" aria-describedby="zl-err"><span class="zl-err" id="zl-err" aria-live="polite"></span></div>
+<label class="zl-z"><input type="checkbox" name="zgoda"><span class="zl-box" aria-hidden="true"></span><span>Zgoda na kontakt w&nbsp;sprawie zgłoszenia (<a href="/polityka-prywatnosci">polityka prywatności</a>)</span></label>
+<button type="submit" class="v3-btn"><i class="zl-wt" style="font-style:normal">Zadzwońcie do mnie</i><span aria-hidden="true">→</span></button>
+<p class="zl-ok" role="status"></p>
+<div class="zl-dol"><span>Cena listopadowa</span><b>{PROMO.cena} netto</b></div>
+<div class="zl-hp" aria-hidden="true"><input name="kontrola" tabindex="-1" autocomplete="off" data-1p-ignore data-lpignore="true"></div>
+<div class="zl-pc" aria-hidden="true"><b>Przyjęte<br>do przeglądu</b><span data-zl-pc>Let's automate</span></div>
+</form>
+</div>
+</section>
+
+<GcFaq heading="Zanim zgłosicie <span style='color:#0a7a52'>aplikację</span>" lead="Jeśli Waszego pytania tu nie ma, zadzwońcie: +48 571 399 932." ctaLabel="Zgłoś aplikację →" ctaHref="#zgloszenie" items={faq} />
+
+<div class="pa-pas" id="pas" aria-hidden="true">
+<span class="pa-pas-t"><b>{PROMO.cena} <small>netto</small></b><span data-od-pas>do {PROMO.koniecKr}</span></span>
+<a href="tel:+48571399932" class="pa-pas-tel" aria-label="Zadzwoń: +48 571 399 932" data-tel="pasek" tabindex="-1"><svg viewBox="0 0 16 16" set:html={HI['phone']}></svg></a>
+<a href="#zgloszenie" class="v3-btn" data-skad="pasek" tabindex="-1">Zgłoś aplikację <span aria-hidden="true">→</span></a>
+</div>
+</div>
+
+<script is:inline>
+/* PRZEGLĄD APLIKACJI — sceny przewijane palcem, odliczanie i zlecenie przeglądu.
+   Wszystkie elementy są w kodzie od początku; przewijanie zmienia tylko klasę „on”, położenie i tekst. */
+(()=>{
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const cl=(v,a=0,b=1)=>Math.min(b,Math.max(a,v));
+const stat=(e,p)=>{try{window.laStat&&window.laStat(e,p||{});}catch(x){}};
+const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ----- znacznik przeglądu: ramka nad elementem panelu ----- */
+function naCel(mk,cel,pud,pad,maxH){
+  if(!mk||!cel||!pud) return; const a=cel.getBoundingClientRect(), b=pud.getBoundingClientRect(); pad=pad||4; const hh=maxH?Math.min(a.height,maxH):a.height;
+  mk.style.setProperty('--x',(a.left-b.left-pad).toFixed(1)+'px'); mk.style.setProperty('--y',(a.top-b.top-pad).toFixed(1)+'px');
+  mk.style.setProperty('--w',(a.width+2*pad).toFixed(1)+'px'); mk.style.setProperty('--h',(hh+2*pad).toFixed(1)+'px');
+}
+function naNr(nr,cel,pud){ const a=cel.getBoundingClientRect(), b=pud.getBoundingClientRect(); nr.style.setProperty('--x',(a.right-b.left-14).toFixed(1)+'px'); nr.style.setProperty('--y',(a.top-b.top-10).toFixed(1)+'px'); }
+const hero=$('#hero'), hmk=$('[data-mk="hero"]');
+function heroMk(){ const sc=$('.pa-h-sc'); naCel(hmk,$('[data-cel="eksport"]',sc),sc,5); hmk.classList.add('on'); }
+
+/* ----- liczby w panelu ----- */
+const KPI=[[214,186412,9],[1873,702118,31],[3412,1284906,47],[3468,1306251,52]];
+const fmt=n=>String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g,' ');
+function liczby(pn,poz){ $$('[data-licz]',pn).forEach(el=>{ const i=+el.dataset.licz, z=+(el.dataset.v||KPI[3][i]), d=KPI[poz][i], suf=i===1?' zł':''; el.dataset.v=d;
+  if(RM||z===d){ el.textContent=fmt(d)+suf; return; } const t0=performance.now(); const kr=t=>{ const p=cl((t-t0)/700), e=1-Math.pow(1-p,3); el.textContent=fmt(z+(d-z)*e)+suf; if(p<1) requestAnimationFrame(kr); }; requestAnimationFrame(kr); }); }
+
+/* ----- sceny ----- */
+const zakres=s=>{ const m=String(s).match(/^(\d+)(?:-(\d+)|(\+))?$/); if(!m) return [0,-1]; const a=+m[1]; return [a,m[3]?99:(m[2]!==undefined?+m[2]:a)]; };
+const sceny=$$('[data-scena]').map(el=>({el,n:+el.dataset.scena,k:-1,w:$$('[data-w]',el).map(e=>({e,z:zakres(e.dataset.w)}))}));
+const hs=$('#historia'), hsSg=$('.pa-sg',hs), hsPn=$('.pn',hs), hsMk=$('[data-mk="hs"]',hs), hsNr=$$('[data-nr]',hs);
+const rz=$('#rozwoj'), rzPn=$('.pn',rz);
+const CELE=['eksport','av','tabela','gear'];
+function historia(k){
+  const poz=Math.min(k,3), gr={m:[0,1,2,2][poz],r:[0,1,1,1][poz],a:[0,1,2,2][poz]};
+  $$('[data-g]',hsPn).forEach(e=>{ const g=e.dataset.g, t=g[0], v=+g.slice(1); e.classList.toggle('on',v<=gr[t]); });
+  liczby(hsPn,poz);
+  hsPn.classList.toggle('wro',k===3);
+  hs.classList.toggle('ciemna',k>=4);
+  const f=k-4;
+  if(f>=0&&f<4){ naCel(hsMk,$(`[data-cel="${CELE[f]}"]`,hsPn),hsSg,f===2?2:5,f===2?112:0); hsMk.classList.toggle('lewo',f!==2); hsMk.classList.add('on'); } else hsMk.classList.remove('on');
+  hsNr.forEach(nr=>{ naNr(nr,$(`[data-cel="${nr.dataset.nr}"]`,hsPn),hsSg); nr.classList.toggle('on',k===8); });
+}
+function ustaw(s,k){
+  s.k=k; s.el.dataset.k=k; s.w.forEach(({e,z})=>e.classList.toggle('on',k>=z[0]&&k<=z[1]));
+  if(s.el===hs) historia(k); if(s.el===rz) rzPn.classList.toggle('wro',k>=1);
+}
+let raf=0;
+function klatka(){ raf=0; const vh=innerHeight; sceny.forEach(s=>{ const r=s.el.getBoundingClientRect(); const p=cl(-r.top/Math.max(1,r.height-vh)); const k=Math.min(s.n-1,Math.floor(p*s.n*0.999+0.0001)); if(k!==s.k) ustaw(s,k); }); pasek(); }
+const ruch=()=>{ if(!raf) raf=requestAnimationFrame(klatka); };
+addEventListener('scroll',ruch,{passive:true});
+addEventListener('resize',()=>{ heroMk(); sceny.forEach(s=>{ const k=s.k; s.k=-1; ustaw(s,k<0?0:k); }); ruch(); });
+document.fonts&&document.fonts.ready.then(()=>{ heroMk(); sceny.forEach(s=>{ if(s.k>=0){ const k=s.k; ustaw(s,k); } }); });
+
+/* ----- odliczanie do końca ceny listopadowej ----- */
+const KON=new Date($('[data-koniec]').dataset.koniec).getTime();
+const odD=$('[data-od-duzy]'), odK=$('[data-od-krotko]'), odP=$('[data-od-pas]');
+const dni=n=>n===1?'1 dzień':n+' dni';
+function odlicz(){
+  const r=KON-Date.now();
+  if(r<=0){ if(odD) odD.innerHTML='<span>Cena listopadowa się skończyła. Zadzwońcie, podamy aktualną.</span>'; if(odK) odK.textContent=''; if(odP) odP.textContent='cena listopadowa minęła'; return false; }
+  const d=Math.floor(r/864e5), h=Math.floor(r/36e5)%24, m=Math.floor(r/6e4)%60, s=Math.floor(r/1e3)%60, z=v=>String(v).padStart(2,'0');
+  const u=(k,v)=>{ const el=$(`[data-od="${k}"]`); if(el) el.firstChild.nodeValue=v; };
+  u('d',d); u('h',z(h)); u('m',z(m)); u('s',z(s));
+  if(odK) odK.innerHTML=d>=1?`Cena listopadowa jeszcze przez <b>${dni(d)}</b>`:`Cena listopadowa jeszcze przez <b>${h} godz. ${z(m)} min</b>`;
+  if(odP) odP.textContent=d>=1?`jeszcze ${dni(d)}`:`ostatni dzień`;
+  return true;
+}
+if(odlicz()) setInterval(odlicz,1000);
+
+/* ----- pigułka na dole: po hero, schowana przy zleceniu ----- */
+const pas=$('#pas'), zg=$('#zgloszenie');
+let wyslane=false;
+function pasek(){ const vh=innerHeight, h=hero.getBoundingClientRect(), z=zg.getBoundingClientRect(); const on=!wyslane&&h.bottom<vh*.35&&(z.top>vh*.9||z.bottom<vh*.2); pas.classList.toggle('on',on); pas.setAttribute('aria-hidden',on?'false':'true'); $$('a',pas).forEach(a=>a.tabIndex=on?0:-1); }
+let skad='zlecenie';
+$$('[data-skad]').forEach(a=>a.addEventListener('click',e=>{ skad=a.dataset.skad; stat('przeglad_cta',{skad}); e.preventDefault(); const f=$('#zlecenie'); const y=f.getBoundingClientRect().top+scrollY-(innerWidth<1000?72:96); scrollTo({top:y,behavior:RM?'auto':'smooth'}); setTimeout(()=>{try{$('#zl-app').focus({preventScroll:true});}catch(x){}},RM?0:700); }));
+$$('[data-tel]').forEach(a=>a.addEventListener('click',()=>stat('tel_klik',{skad:a.dataset.tel})));
+
+/* ----- zlecenie przeglądu: POST /api/kontakt (Zgody.astro dokłada Lead dla Mety) ----- */
+const f=$('#zlecenie'), wej=$('#zl-kontakt'), err=$('#zl-err'), wt=$('.zl-wt',f), btn=$('button[type=submit]',f), zg0=$('input[name=zgoda]',f);
+const MAIL=/^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
+const dzis=new Date(), dd=String(dzis.getDate()).padStart(2,'0'), mm=String(dzis.getMonth()+1).padStart(2,'0');
+$('[data-zl-data]').textContent=`${dd}.${mm}.${dzis.getFullYear()}`; $('[data-zl-pc]').textContent=`${dd}.${mm}.${dzis.getFullYear()} · Let's automate`;
+$('[data-zl-nr]').textContent=`PA/${mm}/${String(dzis.getFullYear()).slice(2)}/${String((dzis.getHours()*60+dzis.getMinutes())%997).padStart(3,'0')}`;
+const mailem=v=>/[a-ząćęłńóśźż@]/i.test(v);
+wej.addEventListener('input',()=>{ err.textContent=''; wt.textContent=mailem(wej.value)?'Napiszcie do mnie':'Zadzwońcie do mnie'; });
+zg0.addEventListener('change',()=>$('.zl-z',f).classList.remove('err'));
+function rozpoznaj(v){
+  if(v.includes('@')) return MAIL.test(v)?{email:v,telefon:''}:{blad:'adres chyba niepełny?'};
+  const c=v.replace(/\D/g,''); if(c.length<9) return {blad:v?'za mało cyfr?':'tu wpisz numer albo e-mail'};
+  return {email:'',telefon:(c.length===9?'+48 ':'+')+c.replace(/^00/,'')};
+}
+let wysylam=false;
+f.addEventListener('submit',e=>{ e.preventDefault(); if(wysylam||wyslane) return;
+  const r=rozpoznaj(wej.value.trim());
+  if(r.blad){ err.textContent=r.blad; wej.focus(); return; }
+  if(!zg0.checked){ $('.zl-z',f).classList.add('err'); err.textContent='zaznacz zgodę poniżej'; return; }
+  const v=n=>{ const el=f.querySelector(`input[name="${n}"]:checked`); return el?el.value:''; };
+  const app=f.elements.aplikacja.value.trim(), os=v('osoby'), dos=v('dostep'), nz=v('narzedzie');
+  const wiad=['Zlecenie przeglądu aplikacji (landing '+location.pathname+').', app?'Aplikacja: '+app+'.':'', os?'Pracuje na niej: '+os+' osób.':'', dos?'Dostęp: '+dos+'.':'', nz?'Zbudowana w: '+nz+'.':'', 'Proszę o '+(r.telefon?'telefon':'maila')+'.'].filter(Boolean).join(' ');
+  wysylam=true; btn.disabled=true; wt.textContent='Wysyłam…';
+  let ref=''; try{ref=localStorage.getItem('referrer')||'';}catch(x){}
+  fetch('/api/kontakt',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},
+    body:JSON.stringify({email:r.email,telefon:r.telefon,wiadomosc:wiad,firma_www:f.elements.kontrola.value||'',zrodlo:'Przegląd aplikacji · listopad · '+skad+' · '+location.pathname,referrer:ref})})
+  .then(o=>{ if(!o.ok) return o.json().catch(()=>({})).then(j=>{throw new Error(j.blad||'blad');});
+    wyslane=true; err.textContent=''; pasek();
+    try{window.dataLayer=window.dataLayer||[];window.dataLayer.push({event:'formularz_wyslany',zrodlo:'Przegląd aplikacji · listopad'});}catch(x){}
+    stat('przeglad_wyslane',{skad,kanal:r.telefon?'telefon':'email',osoby:os,narzedzie:nz});
+    $('.zl-ok',f).textContent=r.telefon?'Dziękujemy. Piotr Wojciuk zadzwoni, żeby ustalić dostęp do aplikacji i termin przeglądu.':'Dziękujemy. Piotr Wojciuk odpisze, żeby ustalić dostęp do aplikacji i termin przeglądu.';
+    f.classList.add('przyjete'); })
+  .catch(x=>{ wysylam=false; btn.disabled=false; wt.textContent=r.email?'Napiszcie do mnie':'Zadzwońcie do mnie';
+    err.textContent=x&&x.message==='brak-konfiguracji'?'nie działa, zadzwoń: 571 399 932':'nie doszło, spróbuj jeszcze raz';
+    stat('przeglad_blad',{powod:String(x&&x.message||'blad').slice(0,30)}); });
+});
+heroMk(); klatka();
+})();
+</script>
+</LaBase>
