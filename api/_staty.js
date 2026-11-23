@@ -35,20 +35,22 @@ export async function sql(query, params = []) {
   return j;
 }
 
-const SCHEMA = `CREATE TABLE IF NOT EXISTS zdarzenia (
+const TABELE = ['zdarzenia', 'appto_zdarzenia'];   // appto_zdarzenia: appto.ai (23.11.2026), zbierane przez /api/hit-appto
+const SCHEMA = t => `CREATE TABLE IF NOT EXISTS ${t} (
   id bigserial PRIMARY KEY, ts timestamptz NOT NULL DEFAULT now(), vid text, uid text, e text NOT NULL, path text,
   ref text, src text, med text, kamp text, tresc text, kraj text, urz text, w int, p jsonb)`;
 
 // one row per event; creates the table on first use
-export async function zapisz(row) {
+export async function zapisz(row, tab = 'zdarzenia') {
+  if (!TABELE.includes(tab)) throw new Error('tabela ' + tab);
   const cols = ['vid', 'uid', 'e', 'path', 'ref', 'src', 'med', 'kamp', 'tresc', 'kraj', 'urz', 'w', 'p'];
   const vals = cols.map(c => (c === 'p' ? (row.p ? JSON.stringify(row.p) : null) : row[c] ?? null));
-  const q = `INSERT INTO zdarzenia (${cols.join(',')}) VALUES (${cols.map((_, i) => '$' + (i + 1)).join(',')})`;
+  const q = `INSERT INTO ${tab} (${cols.join(',')}) VALUES (${cols.map((_, i) => '$' + (i + 1)).join(',')})`;
   try { return await sql(q, vals); }
   catch (e) {
     if (!/does not exist/.test(e.message)) throw e;
-    await sql(SCHEMA);
-    await sql('CREATE INDEX IF NOT EXISTS zdarzenia_ts ON zdarzenia (ts)');
+    await sql(SCHEMA(tab));
+    await sql(`CREATE INDEX IF NOT EXISTS ${tab}_ts ON ${tab} (ts)`);
     return sql(q, vals);
   }
 }
