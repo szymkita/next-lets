@@ -5,7 +5,9 @@ import { zapisz, visitor, device, isBot, sql } from './_staty.js';
 
 const cut = (v, n) => (v == null ? null : String(v).slice(0, n));
 const NAME = /^[a-z0-9_]{1,40}$/;
-const ORIGIN = /^https:\/\/(www\.)?appto\.ai$/;
+// 26.11.2026: także chat.appto.ai, czyli strona rejestracji w aplikacji (zdarzenia rejestracja_*, wytyczne:
+// ~/filmy/appto-rejestracja-analityka/WYTYCZNE-dla-agenta-appto.md); łączą się z wizytą po p.ap_v.
+const ORIGIN = /^https:\/\/(www\.|chat\.)?appto\.ai$/;
 
 export default async function handler(req, res) {
   const origin = String(req.headers.origin || '');
