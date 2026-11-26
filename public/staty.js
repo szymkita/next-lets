@@ -1,7 +1,7 @@
 // letsautomate.pl · własne statystyki odwiedzin bez cookies (zapis: /api/hit → baza Neon „lets-staty-db”, Frankfurt).
 // Mierzy: wejścia ze źródłem (UTM, fbclid, adres odsyłający), przewinięcie co 10%, gdzie ludzie się zatrzymują
 // (sekundy na każdym 5-procentowym pasie strony i w każdej sekcji), kiedy i skąd wychodzą, każde kliknięcie
-// (mapa kliknięć, martwe i wściekłe kliknięcia), przyciski i linki, formularze (start, pola, wysyłka, bez treści pól),
+// (mapa kliknięć, martwe i wściekłe kliknięcia), przyciski i linki, formularze (start, pola, stan pól bez ich treści, próba i wynik wysyłki, porzucenie),
 // kopiowanie tekstu, filmy. Stały identyfikator (powroty z innych dni) tylko po zgodzie na statystyki w banerze.
 (function () {
   if (navigator.webdriver || /[?&]mapa=1/.test(location.search) || /bot|crawl|spider|headless|lighthouse/i.test(navigator.userAgent)) { window.laStat = function () {}; return; }
@@ -116,18 +116,105 @@
     }
   }, true);
 
-  // ---- formularze: start, kolejne pola (tylko nazwa pola), próba wysyłki; zgłoszenie zapisuje serwer (/api/kontakt) ----
+  // ---- formularze: tylko stan pól, nigdy ich treść ----
+  // start (pierwsze kliknięcie w pole), kolejne pola, stan pola po wyjściu z niego (pusty / niepełny / poprawny,
+  // długość opisu w przedziałach), próba wysłania i jej wynik (odrzucona przez formularz: które pola i jaki komunikat;
+  // wysłana: odpowiedź serwera), a przy zamknięciu strony porzucony formularz (stan pól, ostatnie pole, czas).
+  // Wartości pól nie wychodzą poza przeglądarkę. Zgłoszenie zapisuje też serwer (/api/kontakt).
   function nazwaFormularza(f) { return (f.getAttribute('data-zrodlo') || f.id || f.getAttribute('name') || (f.closest('section') && f.closest('section').id) || 'formularz').slice(0, 40); }
+  function formOf(el) { return el && (el.form || (el.closest && el.closest('form'))); }
+  function nazwaPola(el) { return (el.name || el.id || '').slice(0, 30); }
+  function liczone(el) {
+    if (!el || !el.tagName || !/^(INPUT|TEXTAREA)$/.test(el.tagName)) return false;
+    if (/^(hidden|submit|button|radio|file|password)$/.test(el.type)) return false;
+    if (/kontrola|firma_www|honeypot|^hp$/i.test(el.name || '') || el.closest('[aria-hidden="true"]')) return false; // pułapka na boty
+    return !!nazwaPola(el);
+  }
+  function stanPola(el) {
+    if (el.type === 'checkbox') return el.checked ? 'zaznaczone' : 'puste';
+    var v = String(el.value || '').trim();
+    if (!v) return 'puste';
+    var n = (el.name || '') + ' ' + (el.id || '') + ' ' + el.type;
+    if (/mail/i.test(n) || (/kontakt/i.test(n) && /@/.test(v))) return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v) ? 'poprawny mail' : 'niepełny mail';
+    if (/tel|phone/i.test(n) || (/kontakt/i.test(n) && /^[\d\s()+-]+$/.test(v))) { var c = v.replace(/\D/g, '').length; return c >= 9 ? 'poprawny telefon' : 'za krótki telefon'; }
+    var d = v.length; return d <= 20 ? 'tekst 1–20' : d <= 100 ? 'tekst 21–100' : 'tekst 100+';
+  }
+  var FS = []; // stan formularzy na tej stronie
+  function stanForm(f) {
+    for (var i = 0; i < FS.length; i++) if (FS[i].f === f) return FS[i];
+    var z = { f: f, nf: nazwaFormularza(f), pola: [], stany: {}, start: Date.now(), ost: '', proby: 0, wyslany: false, porzucony: false };
+    FS.push(z); return z;
+  }
+  function stanyPol(z) {
+    var o = {}, n = 0; [].slice.call(z.f.elements || []).forEach(function (el) { if (liczone(el) && n < 8) { o[nazwaPola(el).slice(0, 20)] = stanPola(el); n++; } }); return o;
+  }
+  // /api/hit przyjmuje p do 600 znaków: najpierw tniemy komunikaty, potem stany pól
+  function zmiesc(p) { if (JSON.stringify(p).length > 560) p.komunikaty = (p.komunikaty || []).slice(0, 1); if (JSON.stringify(p).length > 560) delete p.stany; return p; }
   document.addEventListener('focusin', function (ev) {
-    var pole = ev.target, f = pole.form || (pole.closest && pole.closest('form'));
-    if (!f || !pole.name && !pole.id) return;
-    var nf = nazwaFormularza(f);
-    if (!f.dataset.laStart) { f.dataset.laStart = '1'; wyslij('formularz_start', { f: nf }); }
-    var np = (pole.name || pole.id).slice(0, 30), znane = (f.dataset.laPola || '').split(',');
-    if (znane.indexOf(np) < 0) { f.dataset.laPola = (f.dataset.laPola ? f.dataset.laPola + ',' : '') + np; wyslij('pole', { f: nf, pole: np, nr: znane.filter(Boolean).length + 1 }); }
+    var pole = ev.target, f = formOf(pole);
+    if (!f || !liczone(pole) && !/SELECT/.test(pole.tagName || '')) return;
+    var z = stanForm(f), np = nazwaPola(pole); if (!np) return;
+    if (!f.dataset.laStart) { f.dataset.laStart = '1'; z.start = Date.now(); wyslij('formularz_start', { f: z.nf }); }
+    z.ost = np;
+    if (z.pola.indexOf(np) < 0) { z.pola.push(np); wyslij('pole', { f: z.nf, pole: np, nr: z.pola.length }); }
   });
-  document.addEventListener('submit', function (ev) { var f = ev.target; if (f && f.tagName === 'FORM') wyslij('formularz_wyslij', { f: nazwaFormularza(f), pola: (f.dataset.laPola || '').split(',').filter(Boolean).length }); }, true);
-  document.addEventListener('invalid', function (ev) { var p = ev.target; if (p && p.form) wyslij('pole_blad', { f: nazwaFormularza(p.form), pole: (p.name || p.id || '').slice(0, 30) }); }, true);
+  function poWyjsciuZPola(ev) {
+    var el = ev.target, f = formOf(el); if (!f || !liczone(el)) return;
+    var z = stanForm(f), np = nazwaPola(el), st = stanPola(el);
+    if (z.stany[np] === st) return; // bez powtórek, tylko zmiana stanu
+    if (z.stany[np] === undefined && st === 'puste') { z.stany[np] = st; return; } // kliknął i wyszedł bez wpisywania: widać po „pole”
+    z.stany[np] = st; wyslij('pole_stan', { f: z.nf, pole: np, stan: st });
+  }
+  document.addEventListener('focusout', poWyjsciuZPola, true);
+  document.addEventListener('change', function (ev) { if (ev.target && ev.target.type === 'checkbox') poWyjsciuZPola(ev); }, true);
+
+  // Wysyłka: formularze mają własną walidację (novalidate), więc po kliknięciu „wyślij” patrzymy, czy poszło
+  // zapytanie do /api/kontakt. Jeśli nie, formularz odrzucił wysłanie: zapisujemy stan pól i komunikaty (nasze, nie wpisy osoby).
+  var ostWysylany = null;
+  var _fetch = window.fetch;
+  if (_fetch) window.fetch = function (u, o) {
+    var url = String(u && u.url || u || ''), z = /\/api\/kontakt/.test(url) ? (ostWysylany || FS[FS.length - 1] || null) : null;
+    var r = _fetch.apply(this, arguments);
+    if (z) {
+      z.wyslany = true; var t0 = Date.now();
+      r.then(function (res) { wyslij('formularz_odpowiedz', { f: z.nf, status: res.status, ms: Date.now() - t0 }); },
+             function () { wyslij('formularz_odpowiedz', { f: z.nf, status: 'siec', ms: Date.now() - t0 }); });
+    }
+    return r;
+  };
+  function komunikaty(f) {
+    var out = [];
+    [].slice.call(f.querySelectorAll('[aria-invalid="true"], .err, .error, .is-invalid, [class*="-err"], [class*="blad"]')).forEach(function (el) {
+      if (out.length >= 3) return;
+      var r = el.getBoundingClientRect(); if (r.width < 2 || r.height < 2 || /^(INPUT|TEXTAREA|SELECT|LABEL)$/.test(el.tagName) || el.querySelector('input,textarea,select,label')) return; // sam komunikat, bez pola i etykiety
+      var t = (el.textContent || '').replace(/\s+/g, ' ').trim();
+      if (t && t.length <= 80 && out.indexOf(t) < 0 && !/@|\d{6,}/.test(t)) out.push(t.slice(0, 60));
+    });
+    return out;
+  }
+  document.addEventListener('submit', function (ev) {
+    var f = ev.target; if (!f || f.tagName !== 'FORM') return;
+    var z = stanForm(f); z.proby++; ostWysylany = z;
+    var przed = z.wyslany;
+    wyslij('formularz_wyslij', { f: z.nf, pola: z.pola.length, proba: z.proby });
+    setTimeout(function () {
+      if (z.wyslany && !przed) return; // zapytanie poszło, wynik przyjdzie w „formularz_odpowiedz”
+      var st = stanyPol(z), zle = Object.keys(st).filter(function (k) { return !/^poprawny|^zaznaczone|^tekst/.test(st[k]); });
+      var el = f.querySelector('[aria-invalid="true"]');
+      wyslij('formularz_odrzucony', zmiesc({ f: z.nf, proba: z.proby, zle: zle.slice(0, 6), stany: st, komunikaty: komunikaty(f), fokus: el ? nazwaPola(el) : '' }));
+    }, 700);
+  }, true);
+  document.addEventListener('invalid', function (ev) { var p = ev.target; if (p && p.form) wyslij('pole_blad', { f: nazwaFormularza(p.form), pole: nazwaPola(p) }); }, true);
+  // Porzucony: przy zamknięciu albo schowaniu strony, gdy formularz był zaczęty i nic nie poszło.
+  function porzucone() {
+    FS.forEach(function (z) {
+      if (z.wyslany || z.porzucony || !(z.f.dataset.laStart || z.proby || Object.keys(z.stany).length)) return;
+      z.porzucony = true;
+      wyslij('formularz_porzucony', zmiesc({ f: z.nf, stany: stanyPol(z), ostatnie: z.ost, sek: Math.round((Date.now() - z.start) / 1000), proby: z.proby }));
+    });
+  }
+  document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'hidden') porzucone(); });
+  window.addEventListener('pagehide', porzucone);
 
   // ---- kopiowanie (np. maila, telefonu) i filmy ----
   document.addEventListener('copy', function () { var t = String(window.getSelection() || '').trim(); wyslij('kopiowanie', { dl: t.length, co: /@/.test(t) ? 'mail' : /\d{3}.?\d{3}.?\d{3}/.test(t) ? 'telefon' : 'tekst' }); });
