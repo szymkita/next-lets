@@ -15,6 +15,12 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') { res.setHeader('Access-Control-Allow-Methods', 'POST'); res.setHeader('Access-Control-Allow-Headers', 'Content-Type'); return res.status(204).end(); }
   if (req.method !== 'POST') return res.status(405).end();
   if (origin && !ORIGIN.test(origin)) return res.status(403).end();
+  // 26.11.2026: zdarzenia mogą przyjść przez https://www.appto.ai/api/staty (przekazanie po stronie serwera, bez Origin).
+  // Wtedy IP i kraj osoby są w nagłówkach x-appto-ip / x-appto-country, a x-forwarded-for to serwer appto.ai.
+  // Bez wspólnego sekretu ktoś mógłby podsunąć fałszywe IP, ale zaburzyłby wyłącznie własne liczenie w statystykach.
+  const przekazaneIp = !origin && String(req.headers['x-appto-ip'] || '').trim().slice(0, 64);
+  if (przekazaneIp) req.headers['x-forwarded-for'] = przekazaneIp;
+  const kraj = (!origin && req.headers['x-appto-country']) || req.headers['x-vercel-ip-country'];
   const ua = String(req.headers['user-agent'] || '');
   if (isBot(ua)) return res.status(204).end();
   let b = req.body;
@@ -27,7 +33,7 @@ export default async function handler(req, res) {
     await zapisz({
       vid: visitor(req), uid: cut(b.i, 40) || null, e: b.e, path: cut(b.u, 200), ref,
       src: cut(b.s, 100), med: cut(b.m, 100), kamp: cut(b.c, 150), tresc: cut(b.t, 150),
-      kraj: cut(req.headers['x-vercel-ip-country'], 4), urz: device(ua), w: Number.isFinite(+b.w) ? Math.round(+b.w) : null, p,
+      kraj: cut(kraj, 4), urz: device(ua), w: Number.isFinite(+b.w) ? Math.round(+b.w) : null, p,
     }, 'appto_zdarzenia');
     if (Math.random() < 0.002) await sql("DELETE FROM appto_zdarzenia WHERE ts < now() - interval '14 months'");
   } catch (e) { console.error('staty appto', e.message); }
